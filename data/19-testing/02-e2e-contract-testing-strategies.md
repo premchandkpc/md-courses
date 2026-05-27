@@ -1,5 +1,28 @@
 # E2E & Contract Testing Strategies
 
+## Table of Contents
+
+1. [E2E Testing Fundamentals](#e2e-testing-fundamentals)
+2. [E2E Test Architecture](#e2e-test-architecture)
+3. [UI Automation Frameworks](#ui-automation-frameworks)
+4. [E2E Execution Flows](#e2e-execution-flows)
+5. [Flakiness in E2E Tests](#flakiness-in-e2e-tests)
+6. [Contract Testing Deep Dive](#contract-testing-deep-dive)
+7. [Provider & Consumer Tests](#provider--consumer-tests)
+8. [Pact Framework Internals](#pact-framework-internals)
+9. [API Contract Verification](#api-contract-verification)
+10. [Microservice Contract Testing](#microservice-contract-testing)
+11. [Consumer-Driven Contracts](#consumer-driven-contracts)
+12. [Contract Evolution](#contract-evolution)
+13. [Failure Modes & Edge Cases](#failure-modes--edge-cases)
+14. [Performance in E2E](#performance-in-e2e)
+15. [Complete Code Examples](#complete-code-examples)
+16. [Production Stories](#production-stories)
+17. [Comparison & Trade-offs](#comparison--trade-offs)
+
+
+---
+
 **Table of Contents**
 1. [E2E Testing Fundamentals](#e2e-testing-fundamentals)
 2. [E2E Test Architecture](#e2e-test-architecture)

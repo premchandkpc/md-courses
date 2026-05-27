@@ -1,5 +1,22 @@
 # Advanced TypeScript Types and Patterns
 
+## Table of Contents
+
+1. [1. Branded Types for Type Safety](#1-branded-types-for-type-safety)
+2. [2. Builder Pattern with Types](#2-builder-pattern-with-types)
+3. [3. Fluent API Design with Generics](#3-fluent-api-design-with-generics)
+4. [4. Type-Safe Event Emitters](#4-type-safe-event-emitters)
+5. [5. Type-Safe State Machines](#5-type-safe-state-machines)
+6. [6. Higher-Order Types (HKT Simulation)](#6-higher-order-types-hkt-simulation)
+7. [7. Overloads, this Parameters, Assertion Functions](#7-overloads-this-parameters-assertion-functions)
+8. [8. Nullish Operators](#8-nullish-operators)
+9. [9. Symbol Types, Unique Symbols, Branded Primitives](#9-symbol-types-unique-symbols-branded-primitives)
+10. [10. Declaration Merging, Module Augmentation, Global Augmentation](#10-declaration-merging-module-augmentation-global-augmentation)
+11. [11. Path Mapping and Exports Maps](#11-path-mapping-and-exports-maps)
+
+
+---
+
 ## 1. Branded Types for Type Safety
 
 ### Basic Branded Types

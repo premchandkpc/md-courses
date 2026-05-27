@@ -1,5 +1,24 @@
 # 01 Prometheus: Metrics, Scraping, and Storage
 
+## Table of Contents
+
+1. [SECTION 1: NOOB EXPLANATION (Analogies)](#section-1-noob-explanation-analogies)
+2. [SECTION 2: COMPLETE INTERNALS](#section-2-complete-internals)
+3. [SECTION 3: END-TO-END FLOWS](#section-3-end-to-end-flows)
+4. [SECTION 4: LARGE-SCALE SYSTEMS](#section-4-large-scale-systems)
+5. [SECTION 5: FAILURE ANALYSIS](#section-5-failure-analysis)
+6. [SECTION 6: EDGE CASES](#section-6-edge-cases)
+7. [SECTION 7: INTERVIEW QUESTIONS (with Answers)](#section-7-interview-questions-with-answers)
+8. [SECTION 8: PERFORMANCE ANALYSIS](#section-8-performance-analysis)
+9. [SECTION 9: SECURITY](#section-9-security)
+10. [SECTION 10: COMPLETE CODE EXAMPLES](#section-10-complete-code-examples)
+11. [SECTION 11: PRODUCTION INCIDENT STORIES](#section-11-production-incident-stories)
+12. [SECTION 12: COMPARISON TABLE](#section-12-comparison-table)
+13. [CONCLUSION](#conclusion)
+
+
+---
+
 **Audience:** FAANG interview candidates, platform engineers, SREs  
 **Depth:** Noob → Production-scale distributed systems  
 **Length:** 850+ lines  

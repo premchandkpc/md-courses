@@ -1,5 +1,19 @@
 # Optimization Patterns Deep Dive
 
+## Table of Contents
+
+1. [CPU Optimization](#cpu-optimization)
+2. [Memory Optimization](#memory-optimization)
+3. [I/O Optimization](#io-optimization)
+4. [Concurrency Optimization](#concurrency-optimization)
+5. [Network Optimization](#network-optimization)
+6. [Database Optimization](#database-optimization)
+7. [Latency vs Throughput](#latency-vs-throughput)
+8. [Cost-Based Optimization](#cost-based-optimization)
+
+
+---
+
 ## CPU Optimization
 
 ### Algorithmic Complexity

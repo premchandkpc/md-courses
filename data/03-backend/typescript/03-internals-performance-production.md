@@ -1,5 +1,21 @@
 # TypeScript Internals, Performance, and Production Patterns
 
+## Table of Contents
+
+1. [1. Compiler Internals](#1-compiler-internals)
+2. [2. tsconfig: Compiler Options Deep Dive](#2-tsconfig-compiler-options-deep-dive)
+3. [3. Performance: Incremental Builds, skipLibCheck, isolatedModules](#3-performance-incremental-builds-skiplibcheck-isolatedmodules)
+4. [4. TypeScript with React](#4-typescript-with-react)
+5. [5. TypeScript with Node.js](#5-typescript-with-nodejs)
+6. [6. TypeScript in Large Codebases](#6-typescript-in-large-codebases)
+7. [7. Migration from JS to TypeScript](#7-migration-from-js-to-typescript)
+8. [8. Testing TypeScript Types](#8-testing-typescript-types)
+9. [9. Production Stories: Type Issues at Scale](#9-production-stories-type-issues-at-scale)
+10. [10. Monorepo with TypeScript: Nx, Turborepo](#10-monorepo-with-typescript-nx-turborepo)
+
+
+---
+
 ## 1. Compiler Internals
 
 ### Parser

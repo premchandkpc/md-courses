@@ -1425,3 +1425,98 @@ class EventBus:
             await self.pubsub.unsubscribe()
             await self.pubsub.close()
 ```
+
+
+## Observability
+
+```mermaid
+flowchart LR
+    A[Python App] --> B[Metrics]
+    A --> C[Logs]
+    A --> D[Traces]
+    B --> E[Prometheus]
+    C --> F[Loki/ELK]
+    D --> G[Jaeger/Tempo]
+    E --> H[Grafana]
+    F --> H
+    G --> H
+    H --> I[Alerts]
+```
+
+### Key Metrics
+
+| Metric | Unit | Threshold | Indicates |
+|--------|------|-----------|-----------|
+| Request latency (p99) | ms | < 500ms | Application performance |
+| GIL contention | % | < 10% | CPU-bound threads blocking |
+| Thread count | count | < 200 | Thread pool exhaustion |
+| Connection pool size | count | < 80% of max | Pool exhaustion risk |
+| GC pause (Python) | ms | < 50ms | Reference cycle overhead |
+| Memory RSS | MB | < 80% limit | Memory leak risk |
+
+### Logs
+
+- **ERROR**: Unhandled exceptions, connection failures, import errors, OOM
+- **WARN**: Slow API endpoints, retry attempts, pool exhaustion approaching
+- **INFO**: Server start/stop, worker lifecycle, config loaded
+- **DEBUG**: Per-request timing, async task trace, GC collection stats
+
+### Traces
+
+Use OpenTelemetry Python SDK. Auto-instrument popular frameworks (Flask, FastAPI, Django). Propagate trace context via HTTP headers and message headers.
+
+### Alerts
+
+| Severity | Condition | Response |
+|----------|-----------|----------|
+| P0 | Error rate > 5% | Roll back recent deploy |
+| P1 | p99 latency > 2s | Profile and identify slowdown |
+| P1 | Connection pool > 90% | Increase pool size |
+| P2 | Memory > 80% limit | Check for memory leak |
+
+### Dashboards
+
+**Python Runtime Dashboard**: request latency (p50/p95/p99), error rate by endpoint, GC pauses, thread pool utilization, memory usage, connection pool status.
+
+
+## Common Failures
+
+### Failure: Memory Leak from Cyclic References
+
+- **Symptoms**: RSS grows continuously, eventually OOM. Python GC runs frequently. Objects not freed.
+- **Root Cause**: Objects define `__del__` methods AND participate in reference cycles. Cyclic GC (gc.garbage) can't collect objects with `__del__`. Common with circular parent-child references in ORM models.
+- **Detection**: `gc.get_objects()` count increasing. `gc.garbage` list populated. `objgraph.show_growth()` shows unreclaimed objects.
+- **Recovery**: 1) Force GC: `gc.collect()`. 2) Inspect `gc.garbage`. 3) Add more instances. 4) Restart periodically.
+- **Prevention**: Avoid `__del__` in classes that could be cyclic. Use `weakref` for parent references. Use `gc.set_debug(gc.DEBUG_LEAK)` in development. Test with `tracemalloc`.
+
+### Failure: GIL Contention
+
+- **Symptoms**: High CPU but low throughput. CPU-bound threads don't improve performance. Adding threads makes it worse.
+- **Root Cause**: Python's GIL prevents multiple threads from executing Python bytecode simultaneously. Threads waiting for GIL introduce context switch overhead. CPU-bound tasks in threads don't parallelize.
+- **Detection**: `perf top` shows `PyEval_EvalFrameEx` at high CPU. `py-spy` shows threads in `__pthread_cond_wait` (waiting for GIL).
+- **Recovery**: 1) Use multiprocessing instead of threading. 2) Use async/await for I/O. 3) Move CPU work to C extensions.
+- **Prevention**: Use `multiprocessing` for CPU-bound work. Use `asyncio` for I/O-bound. Use Numba/Cython for numerical work.
+
+### Failure: Pickle Deserialization Attack
+
+- **Symptoms**: Unauthorized code execution. Remote command execution. RCE vulnerability.
+- **Root Cause**: `pickle.loads()` on untrusted data executes arbitrary Python code during deserialization. Attackers craft malicious pickle payloads.
+- **Detection**: IDS/IPS alert on pickle payloads. Security audit finding. Unusual processes spawned.
+- **Recovery**: 1) Rotate all credentials. 2) Patch immediately. 3) Audit all pickle usage. 4) Incident response.
+- **Prevention**: Never unpickle untrusted data. Use JSON or messagepack instead. If pickle required, sign payloads with HMAC. Use `pickle.Unpickler` with restricted `find_class`.
+
+### Failure: Slow Import at Startup
+
+- **Symptoms**: Cold start takes > 30s. Container health check fails. Serverless function cold start > 5s.
+- **Root Cause**: Lazy imports in module scope. Heavy libraries imported at module level. Circular imports causing repeated resolution.
+- **Detection**: Profile startup with `python -X importtime -c "import app" 2> import.log` then `tuna import.log`.
+- **Recovery**: 1) Move imports into functions. 2) Use lazy loading. 3) Remove unused imports.
+- **Prevention**: Audit imports with `flake8-import-order`. Use `importlib.import_module` for heavy deps. Profile startup time in CI.
+
+### Failure: asyncio Task Leak
+
+- **Symptoms**: Memory grows, event loop runs forever, tasks never complete. asyncio.Task count increases monotonically.
+- **Root Cause**: `create_task()` called but task never awaited. Task falls through to garbage collection with "Task was destroyed but it is pending" warning. Common in fire-and-forget patterns.
+- **Detection**: `asyncio.all_tasks()` count growing. Warning logs: "Task was destroyed but it is pending". Event loop may be blocked.
+- **Recovery**: 1) Cancel leaked tasks: `asyncio.gather(*asyncio.all_tasks(), return_exceptions=True)`. 2) Restart.
+- **Prevention**: Track created tasks in a set and ensure completion. Use `TaskGroup` (Python 3.11+). Always `await` or `task.cancel()`. Add task count monitoring.

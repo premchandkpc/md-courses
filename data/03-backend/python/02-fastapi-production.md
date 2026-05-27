@@ -1488,3 +1488,23 @@ async def test_async_performance():
     print(f"Throughput: {throughput:.0f} req/s")
     assert throughput > 100
 ```
+
+
+## Common Failures
+
+### Failure: Connection Pool Exhaustion
+
+- **Symptoms**: Database timeouts, slow queries, HTTP 503s. `psycopg2.pool.PoolError: pool exhausted` in logs.
+- **Root Cause**: Database connection pool size too small for concurrent requests. Connections not returned to pool (missing `await conn.close()` or not using context managers). Starved by long-running queries.
+- **Detection**: `db_pool_available` metric hits 0. Connection wait time increases. SQL `active_connections` spikes.
+- **Recovery**: 1) Increase pool size temporarily. 2) Kill long-running queries. 3) Restart service. 4) Add connection pooling middleware (pgbouncer).
+- **Prevention**: Always use `async with` context manager for connections. Set pool size based on `max_connections * pool_overflow`. Monitor `pool_size` and `pool_available`. Use RDS Proxy or pgbouncer.
+- **Production Story**: A migration added an endpoint that made 50 sequential DB queries without async concurrency. Under 100 concurrent requests, each connection held for 3s. Pool of 20 was exhausted in < 1s. Fix: batched queries into single request and used `async with` for all connections.
+
+### Failure: Slow JSON Validation on Request Body
+
+- **Symptoms**: High CPU, slow request handling for endpoints with large request bodies. Pydantic validation dominates CPU profile.
+- **Root Cause**: Pydantic v1 validation is CPU-intensive for large nested models. Each request is re-validated even if same schema.
+- **Detection**: CPU profile shows `pydantic.main.BaseModel.__init__` at top. Request duration correlates with body size.
+- **Recovery**: 1) Use `orm_mode` to skip validation on DB reads. 2) Cache validated models. 3) Switch to Pydantic v2 (5-10x faster).
+- **Prevention**: Use Pydantic v2 which has Rust-based validation. Use `model_validate()` instead of `model_validate()` on cached data. Limit request body size. Use fast streaming validators for large payloads.

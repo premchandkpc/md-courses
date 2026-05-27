@@ -2214,3 +2214,48 @@ Key takeaways:
 4. **Concurrency requires discipline** (race conditions everywhere)
 5. **Security is hard** (secrets, supply chain, RBAC)
 6. **Monitoring is essential** (queue times, failures, costs)
+
+
+## Observability
+
+```mermaid
+flowchart LR
+    A[Docker Host] --> B[Metrics]
+    A --> C[Logs]
+    B --> E[Prometheus/cAdvisor]
+    C --> F[Loki/ELK]
+    E --> H[Grafana]
+    F --> H
+    H --> I[Alerts]
+```
+
+### Key Metrics
+
+| Metric | Unit | Threshold | Indicates |
+|--------|------|-----------|-----------|
+| Container CPU usage | % | < 80% of limit | CPU contention |
+| Container memory usage | % | < 80% of limit | Memory pressure |
+| Container restart count | count/min | 0 | CrashLoop |
+| Image pull latency | s | < 30s | Registry issues |
+| Docker daemon file descriptors | count | < 70% of ulimit | Daemon health |
+| Layer cache hit rate | % | > 50% | Build efficiency |
+| Disk usage (overlay2) | % | < 80% | Cleanup needed |
+
+### Logs
+
+- **ERROR**: Container exit code != 0, OOMKilled, daemon errors, storage driver errors
+- **WARN**: Image pull slow, container restart, resource limit approaching, DNS resolution slow
+- **INFO**: Container start/stop, image pull complete, daemon ready, network created
+
+### Alerts
+
+| Severity | Condition | Response |
+|----------|-----------|----------|
+| P0 | Container restarts > 3/min | Investigate crash |
+| P1 | Disk usage > 85% | Clean up images/volumes |
+| P1 | Daemon unresponsive | Restart dockerd |
+| P2 | Image pull > 60s | Check registry mirror |
+
+### Dashboards
+
+**Docker Host Dashboard**: container count, CPU/memory/disk per container, restart rate, image size distribution, layer usage.

@@ -413,3 +413,111 @@ aws eks update-nodegroup-version --cluster-name prod --nodegroup-name spot-4
 - [Kubernetes Networking](../../../07-kubernetes/03-kubernetes-networking.md) — CNI plugins, network policies, Ingress
 - [Kubernetes Security](../../../07-kubernetes/04-kubernetes-security.md) — RBAC, Pod Security, OPA Gatekeeper
 - [CloudWatch Observability](../cloudwatch/02-cloudwatch-observability.md) — Container Insights, Prometheus metrics
+
+
+## Observability
+
+```mermaid
+flowchart LR
+    A[EKS Cluster] --> B[Metrics]
+    A --> C[Logs]
+    A --> D[Traces]
+    B --> E[Prometheus]
+    C --> F[Loki/ELK]
+    D --> G[Jaeger/Tempo]
+    E --> H[Grafana]
+    F --> H
+    G --> H
+    H --> I[Alerts]
+```
+
+### Key Metrics
+
+| Metric | Unit | Threshold | Indicates |
+|--------|------|-----------|-----------|
+| Pod restart count | count/min | < 1 | CrashLoopBackOff |
+| Node CPU pressure | % | < 80% | Node overcommitment |
+| Node memory pressure | % | < 80% | Memory fragmentation |
+| API server latency (p99) | ms | < 1000ms | API server overload |
+| etcd fsync latency | ms | < 10ms | etcd disk I/O bottleneck |
+| CoreDNS forward latency | ms | < 50ms | DNS resolution issues |
+| CNI pod startup delay | s | < 5s | Network plugin issues |
+| kubelet PLEG relist | s | < 1s | Container runtime issues |
+
+### Logs
+
+- **ERROR**: Pod CrashLoopBackOff, Node NotReady, OOMKilled, API server errors, etcd leader changes
+- **WARN**: Pod pending > 5min, node pressure, PVC pending, ImagePullBackOff
+- **INFO**: Node joined, deployment scaled, service created, configmap updated
+- **DEBUG**: API request details, controller reconciliation loops, scheduler decisions
+
+### Traces
+
+Use OpenTelemetry operator with auto-instrumentation for envoy/kube-api. Trace API server request flow. Use Jaeger for distributed tracing across services.
+
+### Alerts
+
+| Severity | Condition | Response |
+|----------|-----------|----------|
+| P0 | Node NotReady > 5min | Drain and replace node |
+| P0 | etcd leader changes > 3 in 5min | Check etcd cluster health |
+| P1 | Pod crash loop > 5 restarts | Check pod logs and events |
+| P1 | API server latency > 2s | Scale API server, check etcd |
+| P2 | CoreDNS latency > 100ms | Scale CoreDNS, check network |
+| P2 | Node disk pressure | Clean up images, add storage |
+
+### Dashboards
+
+**Cluster Overview**: node count (Ready/NotReady), pod count (Running/Pending/Failed), CPU/memory utilization, API server request rate and latency, etcd leader and latency.
+
+**Workload Dashboard**: per-deployment pod count, restart rate, CPU/memory usage, network TX/RX, PVC usage, rollout status.
+
+**Networking Dashboard**: CoreDNS query rate/latency, CNI pod assign latency, service/endpoint count, network policy count.
+
+
+## Common Failures
+
+### Failure: Node Pressure (Disk/Memory/PID)
+
+- **Symptoms**: Pods evicted from node, `NodeHasDiskPressure` or `NodeHasMemoryPressure` condition true. `kubectl describe node` shows pressure conditions.
+- **Root Cause**: Container logs filling disk, Docker image buildup, memory leak in system components, PID exhaustion from too many containers.
+- **Detection**: `node_disk_pressure` metric true. `kubelet_eviction_count` increasing. `node_filesystem_free` low. Container runtime logs show "no space left on device".
+- **Recovery**: 1) `kubectl drain <node>` to evict pods. 2) Clean up unused images: `docker system prune -a` or `crictl rmi --prune`. 3) Remove large container logs: `truncate -s 0 /var/log/containers/*.log`. 4) Increase node size or add more nodes.
+- **Prevention**: Configure log rotation in container runtime (max-size, max-file). Use node auto-repair (Karpenter/AWS Node Health Check). Set resource limits on pods. Monitor disk usage (alert at 80%).
+- **Production Story**: A logging-heavy service wrote 50GB of logs per day per pod. Without log rotation, node disk filled in 3 days. All pods evicted, cluster degraded. Fix: added `--log-rotate-max-size=10M --log-rotate-max-backups=5` to container runtime, and moved logs to CloudWatch via fluentd sidecar.
+
+### Failure: CrashLoopBackOff with OOMKilled
+
+- **Symptoms**: Pod restarts repeatedly. `kubectl get pods` shows `CrashLoopBackOff`. `kubectl describe pod` shows `OOMKilled` exit reason.
+- **Root Cause**: Memory limit too low for the workload. Memory leak in application. Heap grows until limit reached, then killed by OOM killer.
+- **Detection**: `container_memory_working_set_bytes` equals memory limit. Pod restart count increasing. Exit code 137 (SIGKILL).
+- **Recovery**: 1) Increase memory limit temporarily. 2) `kubectl logs --previous` to check last crash logs. 3) Identify memory leak via heap dump. 4) Roll back to known-good version if recent deploy caused it.
+- **Prevention**: Set resource requests equal to limits (Guaranteed QoS). Monitor memory usage trend. Add memory limits based on load testing. Use VPA for initial sizing. Implement memory leak detection in CI.
+- **Production Story**: A Java microservice had `-Xmx512m` but container memory limit was 256MB. The JVM allocated heap up to 512MB, got OOMKilled within 30s of each restart. Took 2h to diagnose because heap dump was lost on each restart. Fix: set `-Xmx200m` and added `-XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/dumps/`.
+
+### Failure: CoreDNS Outage
+
+- **Symptoms**: Services can't resolve DNS, inter-service communication fails, curl to service names fails. `nslookup kubernetes.default.svc.cluster.local` times out.
+- **Root Cause**: CoreDNS pod(s) OOM or CrashLoopBackOff. Network policy blocking DNS traffic (port 53). Node-local DNS cache misconfigured. CoreDNS forwarder to upstream DNS fails.
+- **Detection**: CoreDNS pod restart count > 0. `coredns_dns_request_duration_seconds` p99 > 5s. DNS query failures in application logs. `kubectl -n kube-system logs -l k8s-app=kube-dns` shows errors.
+- **Recovery**: 1) Scale CoreDNS: `kubectl -n kube-system scale deployment/coredns --replicas=3`. 2) Check CoreDNS logs for errors. 3) Check network policies. 4) Restart CoreDNS pods.
+- **Prevention**: Run 2+ CoreDNS replicas with PodAntiAffinity. Set resource requests/limits. Monitor CoreDNS metrics with Prometheus. Use node-local DNS cache. Set `upstream` DNS to reliable resolvers.
+- **Production Story**: A cluster-wide network policy change accidentally blocked UDP port 53 for all pods not in `kube-system`. CoreDNS could still talk to upstream but pods couldn't talk to CoreDNS. All service discovery failed for 15 minutes before rollback. Fix: added explicit network policy allowing egress to CoreDNS on port 53 for all namespaces.
+
+### Failure: CNI Pod Networking Delay
+
+- **Symptoms**: New pods take 30s-2min to reach `Running` state. Existing pods work fine. Pod creation latency spikes.
+- **Root Cause**: AWS VPC CNI IP exhaustion (ENI and /28 subnets). IPAMD (AWS CNI's IP allocator) WARM_ENI_TARGET or WARM_IP_TARGET too low for burst scale-up. Subnet CIDR exhaustion.
+- **Detection**: `aws-node` pod logs show "failed to assign IP address". `kubectl describe pod <pending-pod>` shows "could not assign IP". `maxIP` in VPC CNI metrics near limit.
+- **Recovery**: 1) Increase `WARM_IP_TARGET` and `WARM_ENI_TARGET`. 2) Add secondary CIDR blocks. 3) Use custom networking with larger subnets. 4) Switch to IPv6 mode.
+- **Prevention**: Monitor IP usage with VPC CNI metrics. Pre-warm IP pool with `WARM_IP_TARGET=5`. Reserve CIDR blocks for pod expansion. Use Karpenter for faster node provisioning. Consider Cilium with ENI mode for better IP management.
+- **Production Story**: During a major deployment, 500 new pods were created simultaneously. VPC CNI had only 10 warm IPs. Each ENI attachment took 3-5s, and each new EC2 instance added only 1 ENI per minute. Pod startup latency went from 5s to 2min. Fix: set `WARM_IP_TARGET=20` and `WARM_ENI_TARGET=5`.
+
+### Failure: API Server Overload
+
+- **Symptoms**: `kubectl` commands timeout, controller managers report errors, etcd leader changes, pod creation fails.
+- **Root Cause**: Too many API requests from controllers, operators, or CI/CD. `kube-controller-manager` and `kube-scheduler` make frequent API calls. Aggressive watches from informers. Controller loops without rate limiting.
+- **Detection**: API server `request_duration_seconds` p99 > 10s. etcd `backend_commit_duration_seconds` > 1s. `kubectl top` shows high API server CPU/memory. List-watch request rate too high.
+- **Recovery**: 1) Identify heavy API consumers via API server audit logs. 2) Throttle aggressive controllers. 3) Scale API server vertically. 4) Restart etcd if stuck.
+- **Prevention**: Set `--max-requests-inflight` and `--max-mutating-requests-inflight`. Use API priority and fairness (APF) to isolate heavy controllers. Monitor etcd latency. Avoid list operations on large resources.
+- **Production Story**: A monitoring operator used `List` on all pods every 5 seconds across 500 nodes (10K pods). This saturated the API server and etcd. Fix: changed to `Watch` + `Informer` pattern with `ResyncPeriod=5m`.

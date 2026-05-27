@@ -398,3 +398,94 @@ with conn.cursor() as cur:
 - [NoSQL Databases](../05-nosql-databases.md) — Document, wide-column, and KV comparison
 - [Distributed Transactions](../../09-distributed-systems/02-distributed-transactions.md) — 2PC, Saga, Outbox patterns
 - [Redis Caching](../../08-databases/04-redis-caching.md) — Cache-aside, write-through, invalidation strategies
+
+
+## Observability
+
+```mermaid
+flowchart LR
+    A[PostgreSQL] --> B[Metrics]
+    A --> C[Logs]
+    B --> E[Prometheus/postgres_exporter]
+    C --> F[Loki/ELK]
+    E --> H[Grafana]
+    F --> H
+    H --> I[Alerts]
+```
+
+### Key Metrics
+
+| Metric | Unit | Threshold | Indicates |
+|--------|------|-----------|-----------|
+| Cache hit ratio (shared_buffers) | % | > 99% | Buffer cache effectiveness |
+| Connection count | count | < 80% of max_connections | Pool exhaustion |
+| Replication lag | bytes / s | < 10MB / < 60s | Replica health |
+| Autovacuum worker count | count | > 0 | Dead tuple cleanup |
+| Dead tuple ratio | % | < 20% | Vacuum effectiveness |
+| Transaction ID age | count | < 1B (out of 2B) | XID wraparound risk |
+| Query latency (p99) | ms | < 200ms | Query performance |
+| Checkpoint frequency | /h | < 10 | WAL generation rate |
+
+### Logs
+
+- **ERROR**: Deadlock detected, out of shared memory, connection failures, replication conflict
+- **WARN**: Long queries > 5s, checkpoint frequency high, autovacuum triggered, replication lag
+- **INFO**: Checkpoint complete, backup start/end, autovacuum run, config reload
+- **DEBUG**: Slow queries (enable `log_min_duration_statement`), lock waits
+
+### Alerts
+
+| Severity | Condition | Response |
+|----------|-----------|----------|
+| P0 | Replication lag > 60s | Check replica I/O, increase resources |
+| P0 | Cache hit ratio < 95% | Increase shared_buffers, tune queries |
+| P1 | Connection count > 90% of max | Kill idle connections, add pooler |
+| P1 | Dead tuple ratio > 30% | Manual VACUUM |
+| P2 | XID age > 1.5B | Emergency vacuum, wraparound risk |
+
+### Dashboards
+
+**PostgreSQL Overview**: active connections, cache hit ratio, transactions per second, query latency (p50/p99), dead tuple ratio, replication lag, autovacuum activity, checkpoint frequency.
+
+
+## Common Failures
+
+### Failure: Connection Pool Exhaustion
+
+- **Symptoms**: New connections fail with "remaining connection slots reserved". Application timeouts and 500s.
+- **Root Cause**: max_connections too low. Application doesn't return connections. Idle-in-transaction sessions. Middleware pool (pgbouncer) undersized.
+- **Detection**: `pg_stat_activity` shows many idle connections. CloudWatch `DatabaseConnections` at max. Logs: "FATAL: remaining connection slots are reserved".
+- **Recovery**: 1) `SELECT pg_terminate_backend(pid) WHERE state='idle'`. 2) Increase max_connections (requires restart). 3) Deploy pgbouncer. 4) Set `idle_in_transaction_session_timeout`.
+- **Prevention**: Set connection pool limits per-application. Monitor with CloudWatch alarm at 80%. Use RDS Proxy.
+
+### Failure: Replication Lag
+
+- **Symptoms**: Read replicas return stale data. Replica lag grows until WAL segments removed.
+- **Root Cause**: Replica cannot keep up with write rate. Long-running queries on replica block WAL replay. Insufficient replica IOPS.
+- **Detection**: `pg_stat_replication.replay_lag`. CloudWatch `ReplicaLag` metric. `pg_wal_lsn_diff()`.
+- **Recovery**: 1) Scale up replica. 2) Kill long queries on replica. 3) Rebuild replica if WAL removed.
+- **Prevention**: Monitor `wal_keep_segments`. Use replication slots. Ensure replica has sufficient IOPS.
+
+### Failure: Autovacuum Bloat
+
+- **Symptoms**: Table size >> data size. Query performance degrades. I/O increases.
+- **Root Cause**: High write rate generates dead tuples faster than autovacuum cleans. Autovacuum cost limit throttles cleanup.
+- **Detection**: `pg_stat_user_tables.n_dead_tup` increasing. Table size via `pg_total_relation_size`. Autovacuum workers at 100% CPU.
+- **Recovery**: 1) `VACUUM (VERBOSE, ANALYZE)` heavy tables. 2) `REINDEX TABLE`. 3) Tune autovacuum.
+- **Prevention**: Set `autovacuum_vacuum_scale_factor=0.01`. Increase `autovacuum_vacuum_cost_limit=2000`. Monitor dead tuple ratio.
+
+### Failure: XID Wraparound
+
+- **Symptoms**: Database becomes read-only, or crashes with "database is not accepting commands to avoid wraparound". Emergency.
+- **Root Cause**: Transaction ID (32-bit counter) wraps after 2B transactions. If autovacuum doesn't freeze XIDs before 2B, PostgreSQL stops accepting writes.
+- **Detection**: `SELECT age(datfrozenxid) FROM pg_database` approaching 2 billion. WARNING logs: "database X may be wrapped around".
+- **Recovery**: 1) Single-user mode `VACUUM FREEZE` (downtime required). 2) Create new database and copy data.
+- **Prevention**: Ensure autovacuum is never disabled. Monitor `age(datfrozenxid)`. Set `autovacuum_freeze_max_age=500000000`.
+
+### Failure: Checkpoint Storm
+
+- **Symptoms**: Regular I/O spikes every checkpoint interval. WAL write latency spikes during checkpoint. Query latency spikes.
+- **Root Cause**: Checkpoint writes all dirty buffers at once. `max_wal_size` too small causes frequent checkpoints. `checkpoint_completion_target` too aggressive.
+- **Detection**: I/O wait spikes at regular intervals. `pg_stat_bgwriter.buffers_checkpoint` high. `checkpoint_write_time` increasing.
+- **Recovery**: 1) Increase `max_wal_size` (e.g., 2x current WAL generation per checkpoint). 2) Increase `checkpoint_timeout` to 15-30min.
+- **Prevention**: Set `max_wal_size` to 2-3x of WAL generated between checkpoints. Set `checkpoint_completion_target=0.9`. Monitor `pg_stat_bgwriter`.

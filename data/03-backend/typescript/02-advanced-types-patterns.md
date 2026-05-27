@@ -1585,3 +1585,53 @@ import { specificUtil } from "@utils/specificUtil";
 // Over:
 import { specificUtil } from "@utils"; // (barrel file that re-exports everything)
 ```
+
+
+## Observability
+
+```mermaid
+flowchart LR
+    A[Node.js/TS App] --> B[Metrics]
+    A --> C[Logs]
+    A --> D[Traces]
+    B --> E[Prometheus]
+    C --> F[Loki/ELK]
+    D --> G[Jaeger/Tempo]
+    E --> H[Grafana]
+    F --> H
+    G --> H
+    H --> I[Alerts]
+```
+
+### Key Metrics
+
+| Metric | Unit | Threshold | Indicates |
+|--------|------|-----------|-----------|
+| Event loop lag | ms | < 50ms | Blocking sync operations |
+| GC pause (V8) | ms | < 100ms | Memory pressure |
+| Heap used | MB | < 80% limit | Memory leak |
+| Active handles | count | < 5000 | Connection leak |
+| libuv threadpool busy | % | < 70% | Thread pool starvation |
+
+### Logs
+
+- **ERROR**: Uncaught exceptions, promise rejections, connection pool exhaustion
+- **WARN**: Event loop lag > 100ms, memory threshold crossed
+- **INFO**: Server start/stop, module load, config loaded
+- **DEBUG**: Per-request timing, async operation tracing
+
+### Traces
+
+Use OpenTelemetry JS SDK with auto-instrumentation. Propagate context through `AsyncLocalStorage`.
+
+### Alerts
+
+| Severity | Condition | Response |
+|----------|-----------|----------|
+| P0 | Event loop lag > 1s | Remove blocking sync operations |
+| P1 | Heap > 500MB | Take heap snapshot |
+| P2 | GC pause > 1s | Reduce allocation rate |
+
+### Dashboards
+
+**Node.js Runtime Dashboard**: event loop lag, GC pause time, heap used/total, active handles, libuv utilization.

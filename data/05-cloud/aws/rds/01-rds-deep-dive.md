@@ -700,3 +700,105 @@ MAINTENANCE     =  The 1-hour window at 3am Sunday
 ---
 
 **Next**: [IAM Deep Dive](../iam/01-iam-deep-dive.md) — Access management
+
+
+## Observability
+
+```mermaid
+flowchart LR
+    A[RDS] --> B[Metrics]
+    A --> C[Logs]
+    A --> D[Traces]
+    B --> E[CloudWatch]
+    B --> F[Prometheus]
+    C --> G[CloudWatch Logs]
+    D --> H[X-Ray]
+    E --> I[Grafana]
+    F --> I
+    G --> I
+    H --> I
+    I --> J[Alerts]
+```
+
+### Key Metrics
+
+| Metric | Unit | Threshold | Indicates |
+|--------|------|-----------|-----------|
+| DatabaseConnections | count | < 80% of max_connections | Connection pool exhaustion |
+| CPUUtilization | % | < 75% | Query efficiency |
+| ReadLatency / WriteLatency | ms | < 10ms | I/O bottleneck |
+| DiskQueueDepth | count | < 10 | I/O saturation |
+| FreeStorageSpace | bytes | > 20% of total | Storage growth |
+| ReplicaLag | ms | < 1000ms | Replication issues |
+| NetworkThroughput | bytes/s | varies | Data transfer volume |
+
+### Logs
+
+- **ERROR**: Connection failures, deadlock detected, out of shared memory, replication conflict
+- **WARN**: Long-running query (> 5s), autovacuum triggered, checkpoint frequency high
+- **INFO**: Backup started/completed, parameter group change, failover event
+- **DEBUG**: Slow query logs (enable via `log_min_duration_statement`), lock wait details
+
+### Traces
+
+Use AWS X-Ray or OpenTelemetry to trace database queries. Capture query text, duration, rows returned, and connection pool state.
+
+### Alerts
+
+| Severity | Condition | Response |
+|----------|-----------|----------|
+| P0 | FreeStorageSpace < 5GB | Scale storage or archive data |
+| P0 | ReplicaLag > 60s | Check replica I/O, increase resources |
+| P1 | CPU > 90% for 5min | Identify heavy queries, scale up |
+| P1 | Connection count > 90% of max | Add connection pooling, scale |
+| P2 | ReadLatency > 50ms | Check cache hit ratio, IOPS |
+
+### Dashboards
+
+**RDS Overview**: instance health, connections, CPU/memory, read/write latency, IOPS, storage space, network throughput.
+
+**Replication Dashboard**: replica lag, replication slot state, WAL generation rate, archive lag.
+
+
+## Common Failures
+
+### Failure: Connection Pool Exhaustion
+
+- **Symptoms**: New connections fail with "too many clients". Application timeouts. `FATAL: remaining connection slots are reserved for non-replication superuser connections`.
+- **Root Cause**: max_connections too low for workload. Application not closing connections. Connection pooling layer (pgbouncer/RDS Proxy) misconfigured. Idle connections from ORM (Hibernate/Sequelize).
+- **Detection**: RDS CloudWatch `DatabaseConnections` metric at max. `pg_stat_activity` shows many `idle in transaction` connections. Application logs show connection failures.
+- **Recovery**: 1) `SELECT pg_terminate_backend(pid)` to kill idle connections. 2) Increase `max_connections` temporarily (requires reboot). 3) Scale up instance size. 4) Deploy pgbouncer or RDS Proxy.
+- **Prevention**: Configure connection pool limits in application. Set `idle_in_transaction_session_timeout`. Use `pg_stat_activity` monitoring. Set CloudWatch alarm at 80% of max.
+- **Production Story**: A Rails app with 20 Puma workers each checked out 5 connections. max_connections was 200. During deploy (rolling restart), old workers held connections during graceful shutdown -> 200 connections used, new workers couldn't connect. Fix: reduced per-worker pool to 2, added pgbouncer.
+
+### Failure: Replication Lag > WAL Retention
+
+- **Symptoms**: Read replicas fall behind, queries return stale data. Replica lag grows until replica needs rebuild. `ERROR: requested WAL segment XXX has already been removed`.
+- **Root Cause**: Replica CPU/I/O too slow to keep up with primary write rate. Long-running queries on replica block WAL replay. wal_keep_segments too low. Replication slot doesn't advance.
+- **Detection**: `ReplicaLag` CloudWatch metric > threshold. `pg_stat_replication.replay_lag` increasing. `replay_lag` in `pg_stat_replication`.
+- **Recovery**: 1) Scale up replica instance. 2) Kill long-running queries on replica. 3) Rebuild replica if WAL removed. 4) Reduce write load on primary.
+- **Prevention**: Monitor `wal_generation_rate` and ensure `wal_keep_segments` covers peak lag. Use replication slots with monitoring. Ensure replica has sufficient IOPS. Use read-only traffic to replicas only.
+
+### Failure: Autovacuum Not Keeping Up
+
+- **Symptoms**: Table bloat (table size >> actual data), XID wraparound risk, performance degradation. `pg_stat_user_tables.n_dead_tup` steadily increases.
+- **Root Cause**: High write throughput generates dead tuples faster than autovacuum can clean. Autovacuum throttled by default (cost_limit=200). Large tables need more aggressive tuning.
+- **Detection**: `n_dead_tup / n_live_tup` ratio > 20%. Table size growing faster than row count. Autovacuum workers constantly at 100% CPU. `age(datfrozenxid)` approaching 2 billion.
+- **Recovery**: 1) Manually `VACUUM (VERBOSE, ANALYZE)` heavy tables. 2) Temporarily set `autovacuum_vacuum_cost_limit=0` to disable throttling. 3) `REINDEX TABLE` if bloat severe.
+- **Prevention**: Set `autovacuum_vacuum_scale_factor=0.01` for large tables. Increase `autovacuum_vacuum_cost_limit` to 2000. Monitor dead tuple ratio. Schedule off-peak vacuum maintenance.
+
+### Failure: Long-Running Query
+
+- **Symptoms**: High CPU, blocked vacuum, replication lag, connection pool exhaustion.
+- **Root Cause**: Missing index causing full table scan. Inefficient query plan. Data skew invalidating cached plan. Lock contention (DDL waiting for query).
+- **Detection**: `pg_stat_activity` shows query running > 5min. `pg_locks` shows granted=true, blocked=true. `state_change` timestamp old.
+- **Recovery**: 1) `SELECT pg_cancel_backend(pid)` to cancel. 2) `SELECT pg_terminate_backend(pid)` if cancel fails. 3) Add missing index. 4) `ANALYZE` to update stats.
+- **Prevention**: Set `statement_timeout`. Enable `auto_explain` for slow queries. Monitor `pg_stat_activity`. Regular `ANALYZE`. Query plan review in CI.
+
+### Failure: Deadlock Detection
+
+- **Symptoms**: Transaction aborted with "deadlock detected" error. Application retries.
+- **Root Cause**: Two transactions each hold locks the other needs. Circular lock dependency. Common with concurrent updates on multiple rows in different order.
+- **Detection**: PostgreSQL logs "deadlock detected" with detail and SQL. Application logs show serialization failures.
+- **Recovery**: Application retries the transaction. System self-heals.
+- **Prevention**: Always acquire locks in consistent order. Use `pg_advisory_lock` for application-level ordering. Shorten transaction durations. Use `NOWAIT` or `SKIP LOCKED` where appropriate.

@@ -1879,3 +1879,97 @@ function handleAction(action: { type: string }): void {
 // Breaking type changes must be major version
 // Use type tests to enforce backward compatibility
 ```
+
+
+## Observability
+
+```mermaid
+flowchart LR
+    A[Node.js/TS App] --> B[Metrics]
+    A --> C[Logs]
+    A --> D[Traces]
+    B --> E[Prometheus]
+    C --> F[Loki/ELK]
+    D --> G[Jaeger/Tempo]
+    E --> H[Grafana]
+    F --> H
+    G --> H
+    H --> I[Alerts]
+```
+
+### Key Metrics
+
+| Metric | Unit | Threshold | Indicates |
+|--------|------|-----------|-----------|
+| Event loop lag | ms | < 50ms | Blocking sync operations |
+| GC pause (V8) | ms | < 100ms | Memory pressure |
+| Heap used | MB | < 80% limit | Memory leak |
+| Active handles | count | < 5000 | Connection leak |
+| libuv threadpool busy | % | < 70% | Thread pool starvation |
+
+### Logs
+
+- **ERROR**: Uncaught exceptions, promise rejections, connection pool exhaustion
+- **WARN**: Event loop lag > 100ms, memory threshold crossed
+- **INFO**: Server start/stop, module load, config loaded
+- **DEBUG**: Per-request timing, async operation tracing
+
+### Traces
+
+Use OpenTelemetry JS SDK with auto-instrumentation. Propagate context through `AsyncLocalStorage`.
+
+### Alerts
+
+| Severity | Condition | Response |
+|----------|-----------|----------|
+| P0 | Event loop lag > 1s | Remove blocking sync operations |
+| P1 | Heap > 500MB | Take heap snapshot |
+| P2 | GC pause > 1s | Reduce allocation rate |
+
+### Dashboards
+
+**Node.js Runtime Dashboard**: event loop lag, GC pause time, heap used/total, active handles, libuv utilization.
+
+
+## Common Failures
+
+### Failure: Event Loop Starvation
+
+- **Symptoms**: App unresponsive, timeouts, event loop lag > 1s. High CPU, low throughput.
+- **Root Cause**: Sync blocking on main thread: `JSON.parse` on huge payloads, `fs.readFileSync`, `crypto.pbkdf2Sync`, regex catastrophic backtracking.
+- **Detection**: `process.hrtime()` monitoring. Flame graphs from `clinic.js`. `event_loop_lag` metric increasing.
+- **Recovery**: 1) Move to worker_threads. 2) Use streaming. 3) Break into chunks with setImmediate(). 4) Restart.
+- **Prevention**: Profile with `clinic doctor`. Audit for sync APIs. Use streaming JSON. Use worker pools. Add event loop monitoring.
+- **Production Story**: Express CSV export built 200MB JSON and called `JSON.stringify` sync. Blocked event loop for 6s. Fix: streaming JSON serialization + background worker.
+
+### Failure: Memory Leak from Closures
+
+- **Symptoms**: RSS grows continuously, OOMKilled. Heap snapshots show retained objects.
+- **Root Cause**: Closures capturing large scope. Event emitters with anonymous listeners that are never removed. Express route handlers in loops.
+- **Detection**: `v8.writeHeapSnapshot()` shows retained size growing. Chrome DevTools Memory tab via inspector.
+- **Recovery**: 1) Take heap snapshot. 2) Identify retaining path. 3) Remove listeners. 4) Nullify references.
+- **Prevention**: Use `emitter.once()`. Call `removeListener()` in cleanup. Avoid handlers in loops. Use WeakMap for caches.
+
+### Failure: Async/Await Deadlock
+
+- **Symptoms**: Requests hang, no errors, event loop responsive but no progress.
+- **Root Cause**: Promise that never resolves — missing await, forgotten resolve, circular wait in worker pool.
+- **Detection**: `--trace-warnings` shows unhandled rejections. `process._getActiveHandles()` shows pending ops.
+- **Recovery**: 1) Add timeout wrappers. 2) Restart process.
+- **Prevention**: Always add `.catch()` to promises. Use `p-timeout`. Add global `unhandledRejection` handler.
+
+### Failure: Memory Bloat from Dependencies
+
+- **Symptoms**: High memory baseline, slow startup, large node_modules.
+- **Root Cause**: Importing large libraries for small features (e.g., `lodash` for `_.pick`). Tree-shaking not configured properly.
+- **Detection**: `source-map-explorer` or `webpack-bundle-analyzer` shows large chunks.
+- **Recovery**: 1) Replace with native alternatives. 2) Enable proper tree-shaking. 3) Use esbuild for bundling.
+- **Prevention**: Audit bundle size in CI. Prefer native APIs over lodash. Use `tsup` or `esbuild` for bundling.
+
+### Failure: Source Maps Leaking in Production
+
+- **Symptoms**: Unauthenticated access to `.map` files reveals full source code. Security audit finding.
+- **Root Cause**: Build pipeline generates and deploys source maps to production without access controls.
+- **Detection**: Security scan finds `/static/js/*.map` accessible publicly.
+- **Recovery**: 1) Remove `.map` files from production. 2) Rotate any exposed secrets.
+- **Prevention**: Use `hidden-source-map` in webpack (sentry integration without public exposure). Exclude `.map` in deploy scripts.

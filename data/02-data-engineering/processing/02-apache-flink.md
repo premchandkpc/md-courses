@@ -1101,6 +1101,66 @@ log4j.logger.org.apache.flink.runtime.state=DEBUG
 - [Distributed Systems](../../09-distributed-systems/) — Scale and consistency
 
 
-## Practical Example
+## Interview Questions
 
-See code examples above for practical usage patterns.
+### Beginner Level
+
+**Q1: What is the difference between stream processing and batch processing?**
+
+**Why interviewers ask this**: Fundamental distinction for any data engineer.
+
+**Ideal answer structure**:
+1. **Batch**: Processes bounded data at rest (e.g., nightly Hive/Spark jobs). High latency (minutes-hours). Data is finite. Typically runs on schedules.
+2. **Stream**: Processes unbounded data in motion (e.g., Kafka → Flink). Low latency (milliseconds-seconds). Data is continuous. Runs continuously.
+3. **Flink is unique**: It handles BOTH modes — it treats batch as a bounded stream. Same runtime, same API for both.
+4. **Use cases**: Batch for ETL, reporting, ML training. Stream for fraud detection, real-time dashboards, anomaly detection.
+
+**Common wrong answer**: "Flink only does streaming" — Flink also handles batch perfectly via the same streaming engine.
+
+**Q2**: What is exactly-once semantics in stream processing and how does Flink achieve it?
+
+**Answer**: Exactly-once means every event is processed exactly once, even on failures. Flink achieves it via: 1) **Checkpoints**: periodic snapshots of operator state and stream offsets. On failure, Flink restores from the latest checkpoint and replays source data. 2) **Exactly-once sinks**: idempotent writes (e.g., Kafka producer with `idempotence=true`) or two-phase commit with `TwoPhaseCommitSinkFunction`. 3) **Barriers**: checkpoint barriers flow through the DAG — when an operator receives all input barriers, it snapshots its state. Flink doesn't guarantee exactly-once to external systems unless the sink supports transactions.
+
+### Intermediate Level
+
+**Q3: How do watermarks work in Flink and why are they necessary?**
+
+**Answer**: Watermarks represent the progress of event time. They answer "how late can events be allowed?" Watermarks = `MAX(event_timestamp_seen) - allowed_lateness`. They trigger window computations: when watermark passes window end time, the window fires. Types: **Periodic** (emit every N ms based on observed lateness), **Punctuated** (emit on specific events). Without watermarks, event-time windows would never fire because out-of-order events might arrive indefinitely. Choosing watermark strategy depends on data source: BoundedOutOfOrderness (for known max lateness), custom (for domain-specific logic). Too aggressive = high latency but more misses; too conservative = high correctness but more latency.
+
+**Q4**: Compare Apache Flink with Apache Spark Structured Streaming. When would you choose one over the other?
+
+**Answer**: **Flink**: Native streaming engine (records processed immediately), true event-time processing, stateful exactly-once, rich windowing (session, sliding, tumbling), fine-grained recovery (per-operator checkpoint). **Spark Streaming**: Micro-batch architecture (records processed in mini-batches), higher latency (sub-second to minutes), excellent ecosystem (MLlib, Spark SQL), easier for mixed batch+streaming workloads. **Choose Flink when**: sub-second latency needed, complex event-time semantics (session windows, custom watermarks), stateful operations at scale. **Choose Spark Streaming when**: tight Spark ecosystem integration, >1s latency is acceptable, teams already have Spark expertise, mixed batch-stream workloads.
+
+### Senior Level
+
+**Q5: Your Flink job has high backpressure. How do you diagnose and fix it?**
+
+**Why interviewers ask this**: Tests production debugging skills.
+
+**Answer**: 1) **Detect**: Flink Web UI shows backpressure as high (red). Checkpoint duration increases. Kafka consumer lag grows. 2) **Root causes**: a) Sink is bottleneck (slow DB writes). b) Operator parallelism too low. c) Skew in key distribution (hot keys). d) Heavy state operations (RocksDB flushing). 3) **Diagnose**: Check `taskmanager.ts` from `/metrics` for `busyTimeMsPerSecond`. Use Flame Graph (Flink 1.14+). 4) **Fixes**: a) Increase parallelism for slow operators. b) Add batching in sink (bulk writes, group commits). c) Rebalance key distribution with salt keys. d) Optimize RocksDB: increase write buffer size, use `RocksDBStateBackend` with incremental checkpoints. e) Tune network buffers: `taskmanager.network.memory.buffer-deflate`.
+
+**Q6**: Design a real-time fraud detection pipeline for a payment system processing 100K transactions/second.
+
+**Answer**: 1) **Source**: Kafka topic with payment events (partitioned by merchant_id). 2) **Flink job**: a) **Keyed by user_id** — patterns per user across merchants. b) **CEP library** (Complex Event Processing) for pattern detection: "3 transactions > $1000 in 5 minutes" = potential fraud. c) **State**: RocksDB with 7-day TTL for user transaction history. d) **Model inference**: side-input from Model Server for ML-based anomaly scores. e) **Sink**: alert topic to Kafka, latency-critical alerts to Redis Pub/Sub for real-time blocking. 3) **Scaling**: 50 parallel subtasks, each with key groups managed by Flink. 4) **Checkpoints**: incremental, every 30 seconds. 5) **Graceful degradation**: if model server is down, fall back to rule-based scoring. SLA: p99 latency < 500ms.
+
+### Staff/Principal Level
+
+**Q7: Your 200-parallelism Flink job processes 500K events/s but has widening checkpoint latency (from 10s to 5 minutes). Diagnose.**
+
+**Why**: Tests understanding of Flink's internal checkpointing and state backends.
+
+**Answer**: **RocksDB state backend checkpoint issues**. Symptoms: checkpoint aligned time grows, sync half-time grows, number of in-flight checkpoints increases. Root causes: 1) **RocksDB compaction thrashing** — too many small SSTables due to high write rate. 2) **Large state per key** — if each key stores megabytes of state, the transfer to DFS is slow. 3) **Network contention** — checkpoint data competes with regular data shuffle. 4) **DFS slowness** (S3 throttling, HDFS NameNode congestion). Fix: 1) Switch to **unaligned checkpoints** (Flink 1.11+) — operators checkpoint immediately without waiting for barriers. 2) Increase `state.backend.rocksdb.writebuffer.size`. 3) Decrease checkpoint interval but increase timeout (e.g., 60s interval, 30min timeout). 4) Use **incremental checkpoints** (transfer only changed SSTable files). 5) Dedicate network bandwidth for checkpoint data (separate NIC or QoS). 6) Monitor `rocksdb_compaction_pending` metric.
+
+**Q8**: Your organization uses both Spark (batch) and Flink (streaming). You need to build a unified data platform. Design the architecture.
+
+**Answer**: 1) **Storage layer**: Object store (S3/ADLS/GCS) as data lake — Iceberg/Delta Lake tables for batch and streaming. 2) **Streaming writes**: Flink writes to Iceberg tables via `FlinkSink` — micro-batches that produce Iceberg manifests. 3) **Batch reads**: Spark reads Iceberg tables for historical analysis, ML training (no latency sensitivity). 4) **Streaming reads**: Flink reads Iceberg table's incremental changes via `IcebergSource` with streaming mode (reads new snapshots continuously). 5) **Catalog**: AWS Glue / Hive Metastore for unified metadata. 6) **Deployment**: Flink on Kubernetes (K8s operator), Spark on EMR/K8s (Spark Operator). 7) **Monitoring**: Prometheus metrics from both → Grafana. 8) **Schema evolution**: both engines support Iceberg schema evolution (add/drop columns) without downtime. 9) **Consistency**: Iceberg's snapshot isolation ensures batch reads don't see partial streaming writes.
+
+### Tricky Edge Cases
+
+**Q9**: A Flink job processes events from Kafka. After a checkpoint restore, all events from the last 5 minutes are reprocessed. Why?
+
+**Answer**: **Checkpoint alignment + source output mode**. If the Kafka consumer's checkpoint offset is behind the last committed sink, or if the job uses `AT_LEAST_ONCE` mode. More likely: **unaligned checkpoints or timing issue** — the checkpoint barrier was emitted but not all sources were at the same offset. The real edge: **Kafka topic compaction** removed old offsets, and the checkpoint pointed to an offset that was already compacted away. Flink falls back to `auto.offset.reset=earliest`, reading from the earliest available offset. Fix: 1) Use aligned checkpoints for exactly-once sinks. 2) Disable topic compaction on Kafka input topics (or set `cleanup.policy=delete`). 3) Set `checkpointing.timeout` high enough for large state.
+
+**Q10**: Two Flink jobs read the same Kafka topic. Job A has backpressure, Job B is fine. They use the same consumer group. Job B starts missing messages. Why?
+
+**Answer**: **Kafka consumer group rebalancing**. Both jobs in the same `group.id` means Kafka treats them as a single consumer group. When Job A's consumers fall behind (backpressure), Kafka triggers a rebalance — consumers from both jobs are reassigned partitions. Job B's consumers may get fewer partitions or become idle during the rebalance. The rebalance also triggers the "stop-the-world" phase where no consumers process anything (EOS rebalance). Fix: 1) Use **different consumer groups** for different jobs. 2) Use **standalone consumer** mode (`assign` partitions manually) instead of `subscribe`. 3) Use **static group membership** to avoid rebalances on individual consumer failure.

@@ -928,3 +928,58 @@ CLASSLOADER      =  A librarian who follows the chain of command:
 ---
 
 **Next**: [Java Memory Model & GC](06-java-memory-gc.md) — Memory model, garbage collection algorithms, profilers
+
+
+## Observability
+
+```mermaid
+flowchart LR
+    A[Java App] --> B[Metrics]
+    A --> C[Logs]
+    A --> D[Traces]
+    B --> E[Prometheus/Micrometer]
+    C --> F[Loki/ELK]
+    D --> G[Jaeger/Tempo]
+    E --> H[Grafana]
+    F --> H
+    G --> H
+    H --> I[Alerts]
+```
+
+### Key Metrics
+
+| Metric | Unit | Threshold | Indicates |
+|--------|------|-----------|-----------|
+| JVM heap used | % | < 75% | Memory pressure |
+| GC pause (p99) | ms | < 100ms | GC tuning needed |
+| Young GC frequency | /min | < 10 | Object allocation rate |
+| Full GC frequency | /min | 0 (ideally) | Memory leak or metaspace |
+| Thread count | count | < 500 | Thread pool exhaustion |
+| Connection pool usage | % | < 80% | Database pool saturation |
+| Class loading rate | classes/s | < 100 | Dynamic class generation |
+| File descriptor count | count | < 70% of ulimit | FD leak |
+
+### Logs
+
+- **ERROR**: Uncaught exceptions, OOM, stack traces, connection pool exhaustion, thread starvation
+- **WARN**: Slow queries, long GC pauses, retry attempts, deprecated API usage
+- **INFO**: Server start/stop, context initialization, config loaded, scheduled tasks
+- **DEBUG**: SQL queries with params, request/response headers, method entry/exit timing
+
+### Traces
+
+Use Micrometer Tracing (formerly Spring Cloud Sleuth) or OpenTelemetry Java SDK. Propagate trace context via MDC for log correlation.
+
+### Alerts
+
+| Severity | Condition | Response |
+|----------|-----------|----------|
+| P0 | Full GC > 1 in 5min | Heap dump, identify leak |
+| P0 | Error rate > 5% | Rollback, check heap |
+| P1 | GC pause > 1s | Tune GC, reduce heap pressure |
+| P1 | Thread starvation | Increase pool, check deadlocks |
+| P2 | Heap > 85% for 10min | Schedule capacity increase |
+
+### Dashboards
+
+**JVM Dashboard**: heap usage (young/old/metaspace), GC pause (count, duration per generation), thread states (runnable/blocked/waiting), class loading, JIT compilation time, file descriptor count.

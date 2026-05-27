@@ -452,3 +452,100 @@ public Function<String, String> uppercase() {
 | Complexity | High | Low | Features vs Ease of Use |
 | Scalability | Excellent | Good | Horizontal vs Vertical |
 | Cost | High | Low | Features vs Budget |
+
+## Observability
+
+```mermaid
+flowchart LR
+    A[Java App] --> B[Metrics]
+    A --> C[Logs]
+    A --> D[Traces]
+    B --> E[Prometheus/Micrometer]
+    C --> F[Loki/ELK]
+    D --> G[Jaeger/Tempo]
+    E --> H[Grafana]
+    F --> H
+    G --> H
+    H --> I[Alerts]
+```
+
+### Key Metrics
+
+| Metric | Unit | Threshold | Indicates |
+|--------|------|-----------|-----------|
+| JVM heap used | % | < 75% | Memory pressure |
+| GC pause (p99) | ms | < 100ms | GC tuning needed |
+| Young GC frequency | /min | < 10 | Object allocation rate |
+| Full GC frequency | /min | 0 (ideally) | Memory leak or metaspace |
+| Thread count | count | < 500 | Thread pool exhaustion |
+| Connection pool usage | % | < 80% | Database pool saturation |
+| Class loading rate | classes/s | < 100 | Dynamic class generation |
+| File descriptor count | count | < 70% of ulimit | FD leak |
+
+### Logs
+
+- **ERROR**: Uncaught exceptions, OOM, stack traces, connection pool exhaustion, thread starvation
+- **WARN**: Slow queries, long GC pauses, retry attempts, deprecated API usage
+- **INFO**: Server start/stop, context initialization, config loaded, scheduled tasks
+- **DEBUG**: SQL queries with params, request/response headers, method entry/exit timing
+
+### Traces
+
+Use Micrometer Tracing (formerly Spring Cloud Sleuth) or OpenTelemetry Java SDK. Propagate trace context via MDC for log correlation.
+
+### Alerts
+
+| Severity | Condition | Response |
+|----------|-----------|----------|
+| P0 | Full GC > 1 in 5min | Heap dump, identify leak |
+| P0 | Error rate > 5% | Rollback, check heap |
+| P1 | GC pause > 1s | Tune GC, reduce heap pressure |
+| P1 | Thread starvation | Increase pool, check deadlocks |
+| P2 | Heap > 85% for 10min | Schedule capacity increase |
+
+### Dashboards
+
+**JVM Dashboard**: heap usage (young/old/metaspace), GC pause (count, duration per generation), thread states (runnable/blocked/waiting), class loading, JIT compilation time, file descriptor count.
+
+
+## Common Failures
+
+### Failure: OutOfMemoryError
+
+- **Symptoms**: Application crashes with `java.lang.OutOfMemoryError`. Heap dump on exit. 503s from load balancer.
+- **Root Cause**: Memory leak (unclosed streams, collections growing unbounded, ThreadLocal not cleaned). Heap too small for workload. Metaspace leak from dynamic class loading.
+- **Detection**: `jstat -gcutil <pid> 1s` shows Old Gen filling. `jmap -histo:live <pid>` shows leaking class count. GC logs show Full GC repeatedly.
+- **Recovery**: 1) Increase heap with `-Xmx`. 2) Enable `-XX:+HeapDumpOnOutOfMemoryError`. 3) Analyze heap dump with Eclipse MAT. 4) Restart with increased resources.
+- **Prevention**: Profile with `jprofiler`/`async-profiler`. Set `-Xmx` high enough. Use `-XX:+ExitOnOutOfMemoryError` for fail-fast. Implement proper resource cleanup in `finally`/`try-with-resources`.
+
+### Failure: Full GC Storm
+
+- **Symptoms**: Latency spikes, CPU high, throughput drops. GC log shows Full GC events in quick succession.
+- **Root Cause**: Old Gen fills up faster than concurrent GC can clear. Large object allocation (direct to Old Gen). GC fragmentation. Too many concurrent GC threads competing.
+- **Detection**: GC logs show Full GC events. `jstat -gcutil` shows Old Gen at > 90% after GC. `jmap -histo` shows large byte arrays.
+- **Recovery**: 1) Increase heap size. 2) Switch to G1GC or ZGC. 3) Reduce allocation rate. 4) Enable `-XX:+UseStringDeduplication`.
+- **Prevention**: Use G1GC with `-XX:MaxGCPauseMillis=200`. Set `-XX:G1HeapRegionSize=16m`. Monitor allocation rate with async-profiler.
+
+### Failure: Thread Pool Exhaustion
+
+- **Symptoms**: "RejectedExecutionException" in logs. Tasks queue up and time out. Deadlock between thread pools.
+- **Root Cause**: Task submitted faster than thread pool can process. Thread pool queue bounded. Deadlock where pool A waits for pool B, pool B waits for pool A.
+- **Detection**: `jstack` shows threads in `parking to await` or `locked`. `ThreadPoolExecutor` metrics show queue size growing. Active count = pool size.
+- **Recovery**: 1) `jstack` dump for deadlock analysis. 2) Emergency increase pool size. 3) Reduce task submission rate. 4) Restart.
+- **Prevention**: Use separate thread pools for different workloads. Set appropriate queue capacity and rejection policy. Monitor pool active count and queue depth. Use `ThreadPoolExecutor` with `CallerRunsPolicy` as safety net.
+
+### Failure: ClassLoader Leak
+
+- **Symptoms**: Metaspace grows unbounded, Full GC on Metaspace, eventually OOM: Metaspace.
+- **Root Cause**: Application redeploy (Tomcat) creates new ClassLoader each time. Old ClassLoader not garbage collected because some reference (often from a library thread) holds it alive. Common with thread pools initialized at deploy time.
+- **Detection**: `jstat -gcutil` shows Metaspace usage climbing. Heap dump shows many `ClassLoader` instances. PermGen/Metaspace GC before OOM.
+- **Recovery**: 1) Restart application server. 2) Increase Metaspace size. 3) Patch library holding ClassLoader reference.
+- **Prevention**: Always use `ThreadFactory` that sets daemon threads. Use `Thread.setContextClassLoader(null)` for library threads. Test redeploy with `Profiler` to verify ClassLoader cleanup.
+
+### Failure: Deadlock
+
+- **Symptoms**: Threads stuck, no progress, application partially frozen. Thread dump shows threads in BLOCKED state all holding locks others need.
+- **Root Cause**: Circular lock dependency. Two+ threads each hold a lock and wait for another thread's lock. Classic dining philosophers.
+- **Detection**: `jstack` shows deadlock detection: "Found one Java-level deadlock". Thread state: BLOCKED on a lock held by another thread that's waiting on this thread's lock.
+- **Recovery**: 1) Kill the stuck threads or restart JVM. 2) `jstack -l <pid>` to identify deadlocked threads. 3) Fix locking order in code.
+- **Prevention**: Always acquire locks in consistent order. Use `tryLock` with timeout instead of `synchronized`. Use `java.util.concurrent` classes. Enable `-XX:+PrintConcurrentLocks`.

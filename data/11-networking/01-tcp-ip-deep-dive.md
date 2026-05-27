@@ -1224,6 +1224,70 @@ To exceed single-core throughput:
 
 ---
 
-## 19. Simplest Mental Model
+## Interview Questions
+
+### Beginner Level
+
+**Q1: Walk through what happens when you type google.com into a browser.**
+
+**Why interviewers ask this**: Classic interview question that tests networking knowledge top to bottom.
+
+**Ideal answer structure**:
+1. **DNS resolution**: Browser checks local cache → OS cache → `/etc/hosts` → recursive DNS resolver → root/TLD/authoritative nameservers → returns IP.
+2. **TCP handshake**: SYN → SYN-ACK → ACK (3-way handshake to google.com:443).
+3. **TLS handshake**: Client Hello (supported ciphers) → Server Hello + Certificate → Key Exchange → Finished. (HTTP/1.1 or H2).
+4. **HTTP request**: GET / → server processes → HTML response.
+5. **Rendering**: Browser parses HTML, requests additional resources (CSS, JS, images) over additional connections (HTTP/1.1) or multiplexed stream (HTTP/2).
+
+**Common wrong answer**: "The browser just sends a GET request" — misses DNS and TCP/TLS setup which dominate latency.
+
+**Q2**: What is the difference between TCP and UDP? When would you use each?
+
+**Answer**: **TCP**: Connection-oriented, reliable (ACKs + retransmission), in-order delivery, congestion control, flow control. Used for: HTTP, SSH, email, file transfer. **UDP**: Connectionless, unreliable (no ACKs), no ordering guarantee, no congestion control. Used for: DNS, VoIP, video streaming, gaming, QUIC (HTTP/3). TCP adds ~15-20% overhead vs UDP. TCP is better when data integrity matters; UDP when speed/latency matter and some loss is acceptable.
+
+### Intermediate Level
+
+**Q3: How does TCP congestion control work? Explain slow start, congestion avoidance, and fast recovery.**
+
+**Answer**: 1) **Slow start**: cwnd starts at 10 MSS (~14KB). Each ACK doubles cwnd (exponential growth). Until ssthresh (slow start threshold, ~64KB default). 2) **Congestion avoidance**: After ssthresh, additive increase (cwnd += 1 MSS per RTT). On packet loss (triple duplicate ACK or timeout): Reno sets ssthresh = cwnd/2, cwnd = ssthresh, then additive increase. CUBIC (default Linux) uses cubic function for better throughput over high-BDP networks. 3) **Fast recovery**: On triple duplicate ACK, Reno retransmits lost segment, sets cwnd = ssthresh + 3 MSS, ACKs increase cwnd temporarily. TCP includes also: **FACK** (forward ACK for retransmission), **SACK** (selective ACK — only retransmit lost segments, not entire window). Modern Linux uses **TCP BBR** (model-based, not loss-based) which paces based on measured bandwidth and RTT.
+
+**Q4**: Explain the TCP three-way handshake in detail. What happens to the sequence numbers?
+
+**Answer**: 1) **Client → Server (SYN)**: Sequence number = X (random, e.g., 28475839). SYN flag set. 2) **Server → Client (SYN-ACK)**: Acknowledgment = X+1. Sequence number = Y (server's random ISN). SYN + ACK flags set. 3) **Client → Server (ACK)**: Acknowledgment = Y+1. Sequence = X+1. ACK flag set. Connection established. What happens: Both sides synchronize initial sequence numbers (ISNs) for tracking bytes sent/received. The random ISN prevents TCP sequence prediction attacks (blind in-window attacks). SYN flood mitigation: SYN cookies (send SYN-ACK with encoded sequence number, if ACK comes with correct seq-1, allocate resources). Modern Linux: SYN cookies on by default under SYN flood.
+
+### Senior Level
+
+**Q5: A user reports that their application is experiencing "Connection timed out" but only for certain hosts. How do you diagnose this?**
+
+**Why interviewers ask this**: Tests practical network troubleshooting methodology.
+
+**Answer**: 1) **Check connectivity**: `ping <host>` (ICMP reachable?). 2) **Check TCP**: `telnet <host> <port>` or `nc -vz <host> <port>` (is port open?). 3) **DNS**: `nslookup <host>` (resolving correctly?). 4) **Traceroute**: `traceroute -n <host>` — where does the path stop? 5) **Firewall**: Could be client firewall (outbound) or server firewall (inbound). Check `iptables -L`, security groups (AWS). 6) **SYN flood / connection limits**: `netstat -s | grep -i listen` — check for listen queue overflow (`listen_overflows`). 7) **MTU issues**: packet too large with DF bit set → ICMP "fragmentation needed" is blocked. 8) **Bonding issues**: if multi-homed, routing table wrong. 9) **TCP timestamps**: if client/server have incompatible timestamp settings. Use `tcpdump -i eth0 host <host> and port <port>` to see if SYN reaches server. No SYN → client routing or firewall. SYN sent but no SYN-ACK → server not listening or server-side firewall.
+
+**Q6**: Design a low-latency networking strategy for a global real-time multiplayer game with <50ms RTT requirement.
+
+**Answer**: 1) **Edge network**: deploy game servers in multiple regions (us-east, eu-west, ap-southeast). Use Route53 latency-based routing to direct players to closest region. 2) **Protocol**: **UDP** for game state (position, actions) with custom reliability layer (only retransmit dropped packets — not all). 3) **QUIC/HTTP3** for matchmaking (built on UDP, 0-RTT connection for returning players). 4) **Game transport**: WebSocket over TCP for lobby/chat, custom binary protocol over UDP for gameplay (KCP or enet). 5) **Global coordination**: centralized matchmaking service via TCP (tolerates 100ms latency). Game state synchronization via **replicated compute** (callbacks or deterministic lockstep). 6) **Optimizations**: TCP BBR congestion control, kernel bypass (DPDK for server-side packet processing), `SO_BUSYPOLL` for low-latency accept, `SO_REUSEPORT` for multi-process listening. 7) **Infrastructure**: AWS Global Accelerator (anycast IP → edge → fastest path to origin).
+
+### Staff/Principal Level
+
+**Q7: Your company's TCP-based service in us-east-1 has high tail latency for users in Europe. You see packet loss is <0.1%. The bottleneck is NOT bandwidth. What is it?**
+
+**Why**: Tests understanding of TCP performance physics — latency not bandwidth.
+
+**Answer**: **Latency, not loss**. RTT between Europe and us-east-1 is ~80-120ms. With TCP's additive increase, cwnd grows slowly. For a 100ms RTT connection with 10MB of data: slow start doubles cwnd per RTT, so 10MB takes ~20 RTTs = 2 seconds just to fill the pipe. **Bufferbloat**: intermediate buffers fill up, increasing RTT to 200-300ms. **TCP initial window**: with 10 MSS startup (~14KB), it takes many RTTs to reach full speed. Fix: 1) **Deploy servers in Europe**. 2) **BBR congestion control** — model-based (uses pacing, not loss detection) → better for long-fat pipes. 3) **TCP Fast Open (TFO)** — send data in SYN for returning users. 4) **HTTP/3 (QUIC)** — 0-RTT connection establishment + built-on UDP with better loss handling. 5) **Optimize window**: increase `tcp_rmem` / `tcp_wmem` max. 6) **Avoid bufferbloat**: use fq_codel qdisc (`tc qdisc add dev eth0 root fq_codel`). 7) **Edge caching (CDN)** for static content.
+
+**Q8**: Design a multi-region active-active architecture with TCP connections that must survive a region failover without application-level reconnection.
+
+**Answer**: 1) **Global Anycast IP**: use AWS Global Accelerator or Cloudflare. BGP anycast routes to the nearest healthy origin. On failover, BGP advertisement withdrawn for unhealthy region → traffic routes to healthy region. 2) **TCP anycast challenge**: TCP state is per-server. If the new region doesn't have the TCP state, connection resets. Solution: **TCP connection migration** — QUIC (connection ID, not IP-based) migrates natively. For TCP: 3) **L4 load balancer with state replication**: use NGINX Plus or HAProxy with connection table sync across regions (expensive). 4) **Alternative proxy**: Envoy with active health checking + connection draining + client retry (application handles reconnect). 5) **Safe approach**: use **HTTP/3 (QUIC)** end-to-end — 0-RTT reconnect to new server. DNS failover with low TTL (60s) → clients reconnect to new IP. 6) **DNS-based**: Route53 health checks → failover record set. Clients detect connection loss → retry DNS → connect to new region. Best for modern apps that handle reconnect gracefully.
+
+### Tricky Edge Cases
+
+**Q9**: Your server sends a TCP segment with FIN flag but the client never closes the connection. The server's `ss` shows CLOSE_WAIT state. Why is the connection stuck?
+
+**Answer**: **Application bug — client hasn't called close()**. TCP state: Server sends FIN → Client receives FIN → Client is in CLOSE_WAIT (waiting for application to close()). If the client application never calls `close()` or `shutdown()`, CLOSE_WAIT persists indefinitely. The server is in FIN_WAIT_2. These connections consume resources. Fix: 1) Add timeout for CLOSE_WAIT sockets: `net.ipv4.tcp_keepalive_time`. 2) Set `SO_LINGER` with timeout in server. 3) Fix the client application to properly close connections. 4) Use `ss -tan state close-wait` to monitor. CLOSE_WAIT = application bug on the side that receives FIN.
+
+**Q10**: You have two servers with identical TCP tuning, same kernel, same application. One shows 10x higher retransmission rate. What could cause this?
+
+**Answer**: **Link layer differences**: 1) **Duplex mismatch**: if one side is full-duplex and other is half-duplex (auto-negotiation failure) → collisions + retransmits. 2) **Faulty NIC or cable**: CRC errors on the switch port. Check `ethtool -S eth0` for `rx_crc_errors`, `rx_frame_errors`. 3) **Switch buffer exhaustion**: one port is oversubscribed (too many flows through that switch). 4) **Interrupt coalescence**: `ethtool -c eth0` — if adaptive RX/TX is off, one server may have more interrupts and drop frames. 5) **LRO/GRO (Large Receive Offload)**: if one server has it off and the other on, the offload-capable one has better coalescing → fewer TCP segments → fewer retransmissions. 6) **TCP offload**: TSO/GSO checksum offloading — if one NIC has broken offload, corrupt packets → TCP checksum failures → retransmissions. Fix: compare `ethtool -k eth0` features; compare `/sys/class/net/eth0/statistics/` errors; use `tcpdump` on both to see if retransmits are server's fault or client's.
+
 
 > **TCP/IP is a postal service for the internet. Ethernet is the local mail truck that delivers between houses on your street. IP is the envelope with addresses — it tells the postal system which city and house. TCP is the registered mail service that confirms every package arrived, re-sends lost ones, and makes sure they're in order. The 3-way handshake is "I'll send a letter, you confirm, I confirm back" before any real communication. The congestion window is how many packages you're willing to have on trucks at once — slow start means you start with one, double until you see a traffic jam (loss), then ease back. BBR is a GPS that measures how fast the road system actually is and paces your packages to avoid traffic jams entirely. All the offloading (TSO/GRO/RSS) is like having automated sorting machines at the post office — the mail carrier (NIC) handles the heavy lifting so the clerks (CPU) can focus on the actual mail (applications).**

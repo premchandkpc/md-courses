@@ -1232,3 +1232,98 @@ func main() {
 4. **Monitor in production:** Real user impact matters
 5. **Optimize for your workload:** Different loads need different tuning
 
+
+
+## Observability
+
+```mermaid
+flowchart LR
+    A[Go App] --> B[Metrics]
+    A --> C[Logs]
+    A --> D[Traces]
+    B --> E[Prometheus]
+    C --> F[Loki/ELK]
+    D --> G[Jaeger/Tempo]
+    E --> H[Grafana]
+    F --> H
+    G --> H
+    H --> I[Alerts]
+```
+
+### Key Metrics
+
+| Metric | Unit | Threshold | Indicates |
+|--------|------|-----------|-----------|
+| goroutine count | count | < 100K per instance | Goroutine leak or high concurrency |
+| GC pause duration (p99) | ms | < 10ms | GC pressure |
+| GC CPU fraction | % | < 5% | Excessive GC overhead |
+| heap_inuse | bytes | < 80% of GOGC target | Memory leak |
+| mutex_wait_time (p99) | ns | < 1ms | Lock contention |
+| scheduler latency | ns | < 100μs | Preemption issues |
+
+### Logs
+
+- **ERROR**: Panic recoveries, request failures, connection drops
+- **WARN**: Slow shutdown, channel near capacity, retry attempts
+- **INFO**: Server start/stop, config loaded, GC cycle stats
+- **DEBUG**: Channel timing, goroutine lifecycle, allocation sites
+
+### Traces
+
+Use OpenTelemetry Go SDK. Propagate trace context through `context.Context` across goroutine boundaries. Key spans: channel operations, WaitGroup waits, mutex acquisition.
+
+### Alerts
+
+| Severity | Condition | Response |
+|----------|-----------|----------|
+| P0 | goroutine count > 500K | Heap profile, identify leak |
+| P1 | GC pause p99 > 50ms | Tune GOGC, reduce allocations |
+| P2 | mutex_wait_time > 10ms | Profile contention |
+
+### Dashboards
+
+**Go Runtime Dashboard**: goroutine count by state, GC duration phases, heap allocation rate, GC CPU fraction, mutex wait time, scheduler latency.
+
+
+## Common Failures
+
+### Failure: Goroutine Leak
+
+- **Symptoms**: Memory grows unbounded, latency increases, OOM kills. goroutine count increases steadily.
+- **Root Cause**: Goroutine blocks on channel send with no receiver, or blocks on channel receive with no sender. Missing `ctx.Done()` check. Worker pool not cleaned up on shutdown.
+- **Detection**: `runtime.NumGoroutine()` climbing. `pprof/goroutine?debug=2` shows thousands in same `chan send`/`chan recv` state.
+- **Recovery**: 1) `kill -SIGQUIT <PID>` dump stacks. 2) Identify stuck goroutines. 3) Emergency restart. 4) Send/close blocking channel.
+- **Prevention**: Use `select` with `ctx.Done()`. Use `errgroup.WithContext`. Add timeout to all blocking ops. Run `go vet -tests`.
+- **Production Story**: A Kafka consumer sent to buffered channel, but worker goroutine panicked silently. Over 12h, goroutines grew from 20 to 800K. Node OOM'd. Fix: deferred `wg.Done()` after panic recovery and `context.WithTimeout` on channel sends.
+
+### Failure: Channel Deadlock
+
+- **Symptoms**: App hangs completely, health checks fail. No error logs.
+- **Root Cause**: Send to unbuffered channel with no receiver. Missing `default` in `select`. Wrong channel direction in signature.
+- **Detection**: All goroutines in `chan send`/`chan receive` state. Zero throughput.
+- **Recovery**: 1) Dump stacks. 2) Identify blocking channel. 3) Start missing reader goroutine. 4) Restart.
+- **Prevention**: Use `select` with `ctx.Done()` and `default`. Use buffered channels. Run `go vet`.
+
+### Failure: GC Pause Storm
+
+- **Symptoms**: Latency spikes every few minutes. P99 rises 10x during GC.
+- **Root Cause**: High allocation rate forces frequent GC. GOGC=100 triggers at heap doubling. Large heaps (>4GB) scan slowly.
+- **Detection**: `go_gc_duration_seconds` p99 > 100ms. GC frequency > 10/min. CPU shows `runtime.gcBgMarkWorker` > 20%.
+- **Recovery**: 1) Temporarily increase GOGC to 200-400. 2) Scale horizontally. 3) Profile allocations.
+- **Prevention**: Use `sync.Pool`. Pre-allocate slices. Use streaming JSON parsers. Profile with `-benchmem`.
+
+### Failure: Mutex Contention
+
+- **Symptoms**: Low CPU, low throughput, requests queue. High `mutex_wait_time`.
+- **Root Cause**: Many goroutines competing for same mutex. Critical section too large (I/O while holding lock).
+- **Detection**: Mutex profile shows contention points. Flame graph shows wide `sync.Mutex.Lock` bars.
+- **Recovery**: 1) Profile with `go tool pprof -mutex`. 2) Shard mutex. 3) Reduce critical section.
+- **Prevention**: Use RWMutex for read-heavy. Shard with hash partitioning. Use atomic ops for counters.
+
+### Failure: Memory Leak from Slice Substring
+
+- **Symptoms**: Memory grows steadily, never released. OOM after days.
+- **Root Cause**: `s[:n]` on large string/slice keeps entire backing array alive.
+- **Detection**: Heap profile shows unexpected large retained objects.
+- **Recovery**: 1) Take heap profile. 2) Restart periodically. 3) Use `strings.Clone()`.
+- **Prevention**: Use `strings.Clone()` before keeping substrings. Use `bytes.Clone()` for byte slices.

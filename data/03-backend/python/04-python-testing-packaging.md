@@ -686,3 +686,55 @@ def test_create_charge_bad(mock_post):
 │                                                              │
 └──────────────────────────────────────────────────────────────┘
 ```
+
+
+## Observability
+
+```mermaid
+flowchart LR
+    A[Python App] --> B[Metrics]
+    A --> C[Logs]
+    A --> D[Traces]
+    B --> E[Prometheus]
+    C --> F[Loki/ELK]
+    D --> G[Jaeger/Tempo]
+    E --> H[Grafana]
+    F --> H
+    G --> H
+    H --> I[Alerts]
+```
+
+### Key Metrics
+
+| Metric | Unit | Threshold | Indicates |
+|--------|------|-----------|-----------|
+| Request latency (p99) | ms | < 500ms | Application performance |
+| GIL contention | % | < 10% | CPU-bound threads blocking |
+| Thread count | count | < 200 | Thread pool exhaustion |
+| Connection pool size | count | < 80% of max | Pool exhaustion risk |
+| GC pause (Python) | ms | < 50ms | Reference cycle overhead |
+| Memory RSS | MB | < 80% limit | Memory leak risk |
+
+### Logs
+
+- **ERROR**: Unhandled exceptions, connection failures, import errors, OOM
+- **WARN**: Slow API endpoints, retry attempts, pool exhaustion approaching
+- **INFO**: Server start/stop, worker lifecycle, config loaded
+- **DEBUG**: Per-request timing, async task trace, GC collection stats
+
+### Traces
+
+Use OpenTelemetry Python SDK. Auto-instrument popular frameworks (Flask, FastAPI, Django). Propagate trace context via HTTP headers and message headers.
+
+### Alerts
+
+| Severity | Condition | Response |
+|----------|-----------|----------|
+| P0 | Error rate > 5% | Roll back recent deploy |
+| P1 | p99 latency > 2s | Profile and identify slowdown |
+| P1 | Connection pool > 90% | Increase pool size |
+| P2 | Memory > 80% limit | Check for memory leak |
+
+### Dashboards
+
+**Python Runtime Dashboard**: request latency (p50/p95/p99), error rate by endpoint, GC pauses, thread pool utilization, memory usage, connection pool status.

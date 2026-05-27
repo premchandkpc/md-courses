@@ -20,12 +20,13 @@ graph TB
 3. Argo CD Architecture Internals
 4. Progressive Delivery Strategies
 5. Large-Scale Multi-Cluster Systems
-6. Failure Scenarios & Recovery
-7. Kustomize & Helm Integration
-8. Production Incidents
-9. Security & RBAC
-10. Code Examples
-11. Comparison Tables
+6. Zero-Downtime Deployment Strategies
+7. Failure Scenarios & Recovery
+8. Kustomize & Helm Integration
+9. Production Incidents
+10. Security & RBAC
+11. Code Examples
+12. Comparison Tables
 
 ---
 
@@ -796,7 +797,378 @@ Developer's workflow:
 
 ---
 
-## Section 6: Failure Scenarios & Recovery
+## Section 6: Zero-Downtime Deployment Strategies
+
+Achieving zero-downtime deployments requires combining deployment strategies, traffic management, and observability.
+
+### Blue-Green Deployments
+
+```mermaid
+graph LR
+    subgraph "Before"
+        LB1["Load Balancer"] -->|"100%"| B1["BLUE (v1)<br/>Active"]
+        LB1 -.->|"0%"| G1["GREEN (v2)<br/>Idle"]
+    end
+    subgraph "After"
+        LB2["Load Balancer"] -->|"0%"| B2["BLUE (v1)<br/>Idle"]
+        LB2 -->|"100%"| G2["GREEN (v2)<br/>Active"]
+    end
+```
+
+```yaml
+# Argo Rollouts: Blue-Green
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
+metadata:
+  name: myapp
+spec:
+  replicas: 10
+  revisionHistoryLimit: 2
+  strategy:
+    blueGreen:
+      activeService: myapp-active    # serving traffic
+      previewService: myapp-preview  # new version, no traffic
+      autoPromotionEnabled: false    # manual approval
+      previewReplicaCount: 10        # full capacity in preview
+      scaleDownDelaySeconds: 600     # keep old version for rollback
+  selector:
+    matchLabels:
+      app: myapp
+  template:
+    metadata:
+      labels:
+        app: myapp
+    spec:
+      containers:
+      - name: myapp
+        image: myapp:v2.0.0
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: myapp-active
+spec:
+  selector:
+    app: myapp
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: myapp-preview
+spec:
+  selector:
+    app: myapp
+```
+
+### Canary Deployments
+
+```yaml
+# Argo Rollouts: Canary with automatic analysis
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
+metadata:
+  name: myapp-canary
+spec:
+  replicas: 10
+  strategy:
+    canary:
+      maxSurge: "25%"
+      maxUnavailable: 0      # zero-downtime guarantee
+      steps:
+      - setWeight: 5
+      - pause: { duration: 2m }
+      - setWeight: 25
+      - pause: { duration: 5m }
+      - setWeight: 50
+      - pause: { duration: 5m }
+      - setWeight: 75
+      - pause: { duration: 5m }
+      - setWeight: 100
+      analysis:
+        templates:
+        - templateName: success-rate
+        - templateName: latency-increase
+        args:
+        - name: service-name
+          value: myapp-canary
+---
+apiVersion: argoproj.io/v1alpha1
+kind: AnalysisTemplate
+metadata:
+  name: success-rate
+spec:
+  args:
+  - name: service-name
+  metrics:
+  - name: success-rate
+    interval: 60s
+    successCondition: result > 0.99
+    failureLimit: 3
+    provider:
+      prometheus:
+        query: |
+          sum(rate(
+            http_requests_total{job="{{args.service-name}}", status=~"2.*"}
+            [5m]
+          )) /
+          sum(rate(
+            http_requests_total{job="{{args.service-name}}"}[5m]
+          ))
+  - name: latency-increase
+    interval: 60s
+    successCondition: result < 0.2
+    failureLimit: 2
+    provider:
+      prometheus:
+        query: |
+          (
+            histogram_quantile(0.99, sum(rate(
+              http_request_duration_seconds_bucket{job="canary"}
+              [5m]
+            )) by (le))
+            -
+            histogram_quantile(0.99, sum(rate(
+              http_request_duration_seconds_bucket{job="stable"}
+              [5m]
+            )) by (le))
+          )
+          /
+          histogram_quantile(0.99, sum(rate(
+            http_request_duration_seconds_bucket{job="stable"}
+            [5m]
+          )) by (le))
+```
+
+### Rolling Deployments
+
+```yaml
+# Kubernetes-native rolling update
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: myapp
+spec:
+  replicas: 10
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1       # max pods unavailable during update
+      maxSurge: 1             # max extra pods during update
+  minReadySeconds: 30         # wait 30s after pod is ready
+  revisionHistoryLimit: 5
+  selector:
+    matchLabels:
+      app: myapp
+  template:
+    metadata:
+      labels:
+        app: myapp
+    spec:
+      containers:
+      - name: myapp
+        image: myapp:v2.0.0
+        readinessProbe:       # crucial for zero-downtime
+          httpGet:
+            path: /ready
+            port: 8080
+          initialDelaySeconds: 5
+          periodSeconds: 10
+          failureThreshold: 3
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          initialDelaySeconds: 15
+          periodSeconds: 20
+      terminationGracePeriodSeconds: 60  # graceful shutdown
+```
+
+```text
+Rolling Update Behavior:
+  0s:    kubectl set image → rollout triggered
+  0s:    New ReplicaSet created with desired count
+  10s:   New pod starts (v2)
+  20s:   Readiness probe passes → pod added to service
+  30s:   Old pod starts terminating (SIGTERM → 60s grace)
+  90s:   Grace period expires → SIGKILL if still running
+  100s:  Next old pod terminates (1 at a time)
+  200s:  All 10 pods replaced → rollout complete
+
+  Traffic flow during rollout:
+    ├─ v1 pods: still serving during old pod termination
+    ├─ v2 pods: added to service as they become ready
+    └─ Zero downtime IF readiness probes work correctly
+```
+
+### A/B Testing Deployments
+
+```yaml
+# Istio VirtualService for A/B testing
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: myapp-ab
+spec:
+  hosts:
+  - myapp
+  http:
+  - match:
+    - headers:
+        x-ab-variant:
+          exact: "B"
+    route:
+    - destination:
+        host: myapp
+        subset: v2
+  - match:
+    - headers:
+        x-ab-variant:
+          exact: "A"
+    route:
+    - destination:
+        host: myapp
+        subset: v1
+  - route:   # default traffic to A
+    - destination:
+        host: myapp
+        subset: v1
+      weight: 100
+---
+# A/B test can also route by cookie, user-agent, region
+  - match:
+    - headers:
+        cookie:
+          regex: "^(.*?;)?(variant=B)(;.*)?$"
+    route:
+    - destination:
+        host: myapp
+        subset: v2
+```
+
+### Feature Flags
+
+```typescript
+// LaunchDarkly feature flag integration
+import { init } from '@launchdarkly/node-server-sdk';
+
+const client = init(process.env.LAUNCH_DARKLY_SDK_KEY);
+
+async function handler(req: Request, res: Response) {
+  const user = { key: req.userId, name: req.userName };
+
+  // Deploy new code flagged off — no user impact
+  const useNewCheckout = await client.variation(
+    'new-checkout-flow',
+    user,
+    false  // default = off
+  );
+
+  if (useNewCheckout) {
+    return newCheckoutFlow(req);    // new code (canary for specific users)
+  }
+  return oldCheckoutFlow(req);      // stable code (everyone else)
+}
+```
+
+### Deployment Strategies Comparison
+
+| Strategy | Complexity | Rollback Speed | Traffic Control | Infra Cost | Use Case |
+|----------|-----------|----------------|----------------|------------|----------|
+| **Rolling** | Low | Slow (sequential) | None (per-pod) | Normal | Simple apps, low risk |
+| **Blue-Green** | Medium | Instant (LB switch) | Full (environment) | 2x during deploy | Web apps, APIs |
+| **Canary** | High | Fast (scale down) | Fine-grained (%) | 1.1x-1.5x | High-risk changes |
+| **A/B Testing** | High | Fast (config change) | Per-user (%) | 1.1x-1.5x | Feature experiments |
+| **Shadow/Mirroring** | Very High | None (no user impact) | Mirror only | 2x | Traffic validation |
+| **Feature Flags** | Medium | Instant (toggle off) | Per-user/group | Normal | Progressive rollout, kill switches |
+
+### Deployment Safety & Rollback Strategies
+
+```yaml
+# Automatic rollback triggers
+rollback_triggers:
+  error_rate:
+    condition: "error_rate > 1% for 3 consecutive 1-min windows"
+    action: abort_and_rollback
+
+  latency:
+    condition: "p99_latency > 500ms for 2 consecutive windows"
+    action: abort_and_rollback
+
+  crash_loop:
+    condition: "CrashLoopBackOff detected on any new pod"
+    action: immediate_rollback
+
+  manual:
+    condition: "Human triggers rollback via Slack/API"
+    action: immediate_rollback
+
+# Argo Rollouts: automatic rollback on analysis failure
+  analysis:
+    - templateName: error-rate
+      failureLimit: 3
+      startingStep: 1   # start analysis after step 1
+```
+
+```text
+Rollback Strategies:
+  Git Revert:         git revert HEAD && git push
+                      Argo auto-syncs (fast, auditable)
+
+  Scale Down Canary:  kubectl scale rollout myapp --replicas=0
+                      Traffic returns to stable version
+
+  Blue-Green Switch:  Revert service selector to old version
+                      (instant if old version still running)
+
+  Feature Flag:       Toggle flag off → old code path
+                      (immediate, no deployment needed)
+```
+
+### Deployment Windows & Safety
+
+```yaml
+# Deployment safety policy
+deployment_policy:
+  allowed_windows:
+    - days: [monday, tuesday, wednesday, thursday]
+      hours: [09:00, 16:00]    # business hours only
+    - days: [friday]
+      hours: [09:00, 12:00]    # no Friday afternoon deploys
+
+  blackout_periods:
+    - name: "Black Friday"
+      start: "2024-11-25 00:00Z"
+      end: "2024-11-30 00:00Z"
+    - name: "Quarter-end freeze"
+      repeat: quarterly
+      duration: "7d"
+
+  safety_checks:
+    - name: "Recent backup verified"
+      max_age: 24h
+      blocking: true
+    - name: "Error budget available"
+      min_remaining: 50%
+      blocking: true
+    - name: "CI/CD green"
+      blocking: true
+    - name: "On-call engineer available"
+      blocking: true
+```
+
+**Production Considerations:**
+- Readiness probes are critical for zero-downtime — configure them correctly
+- Database migrations must be backward-compatible (add-only, no destructive changes until confirmed)
+- Graceful shutdown: handle SIGTERM, drain connections, complete in-flight requests
+- PreStop hooks: delay termination until load balancer deregisters the pod
+- Pod Disruption Budgets: ensure minimum available pods during voluntary disruptions
+- Test rollback path as thoroughly as the forward path
+- Monitor deployment metrics: time-to-rollout, rollback rate, failure rate
+- Run zero-downtime drills in staging before enabling in production
+
+---
+
+## Section 7: Failure Scenarios & Recovery
 
 ### Incident 1: Sync Stuck in "Syncing" State
 
@@ -1027,7 +1399,7 @@ $ kustomize build overlays/dev | kubectl apply -f - --dry-run=client
 
 ---
 
-## Section 7: Kustomize & Helm Integration
+## Section 8: Kustomize & Helm Integration
 
 ### Kustomize Patches & Overlays
 
@@ -1227,7 +1599,7 @@ spec:
 
 ---
 
-## Section 8: Production Incidents
+## Section 9: Production Incidents
 
 ### Incident 1: Image Tag Immutability Issue
 
@@ -1433,7 +1805,7 @@ $ argocd app sync myapp
 
 ---
 
-## Section 9: Security & RBAC
+## Section 10: Security & RBAC
 
 ### RBAC Model in Argo CD
 
@@ -1600,7 +1972,7 @@ spec:
 
 ---
 
-## Section 10: Code Examples
+## Section 11: Code Examples
 
 ### Complete Argo CD Setup
 
@@ -1743,7 +2115,7 @@ data:
 
 ---
 
-## Section 11: Comparison Tables
+## Section 12: Comparison Tables
 
 | Feature | Argo CD | Flux | Helm |
 |---------|---------|------|------|
@@ -1759,7 +2131,7 @@ data:
 
 ---
 
-## Section 12: Best Practices Checklist
+## Section 13: Best Practices Checklist
 
 - [ ] **Source of Truth**: All manifests in git, never kubectl apply to prod
 - [ ] **PR Reviews**: Require approval before deployment

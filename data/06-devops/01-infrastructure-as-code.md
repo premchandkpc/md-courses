@@ -2259,4 +2259,66 @@ Infrastructure as Code — PRD Checklist
 
 ---
 
-**Navigation**: [Configuration Management](02-configuration-management.md) → [DevOps & SRE Practices](03-devops-sre-practices.md) → back to [Index](../indexes.md)
+## Interview Questions
+
+### Beginner Level
+
+**Q1: What is Infrastructure as Code (IaC) and why is it important?**
+
+**Why interviewers ask this**: Fundamental DevOps concept — tests understanding of automation vs manual management.
+
+**Ideal answer structure**:
+1. **What**: Managing and provisioning infrastructure through machine-readable definition files, not manual configuration. Code = CloudFormation, Terraform, CDK, Pulumi.
+2. **Why important**: **Reproducibility** (same code → same infra every time), **Version control** (infra changes tracked in git), **Auditability** (who changed what and when), **Automation** (CI/CD pipelines can provision/destroy), **Idempotency** (apply again = same state).
+3. **Types**: **Declarative** (Terraform, CloudFormation — "what" not "how"), **Imperative** (CDK, Pulumi — "how" via code), **Mutative** (Ansible, Chef — push config to running infra).
+
+**Common wrong answer**: "IaC means using the AWS console" — that's the opposite. IaC explicitly means NOT using click-ops consoles.
+
+**Q2**: Compare Terraform and AWS CloudFormation. When would you use which?
+
+**Answer**: **Terraform**: Cloud-agnostic (AWS, GCP, Azure), state management via backend (S3/DynamoDB), HCL syntax, richer community modules, plan-output before apply. **CloudFormation**: AWS-native, integrates with StackSets for multi-region/account, drift detection, Change Sets, no external state store needed. Use Terraform for: multi-cloud strategy, existing Terraform expertise, complex logic (count, for_each, expressions), provider-agnostic tooling. Use CloudFormation for: AWS-only shops, tight integration with CodePipeline, org-level governance via Service Catalog, organizations that already use CloudFormation StackSets.
+
+### Intermediate Level
+
+**Q3: Explain Terraform's state management. What happens when state is corrupted or out of sync?**
+
+**Answer**: Terraform state maps real-world resources to configuration. Stored locally (`terraform.tfstate`) or remotely (S3 + DynamoDB locking). State contains: resource metadata, dependencies, attributes, and sensitive data (passwords). When state is out of sync: 1) **Refresh**: `terraform refresh` updates state with real infra (reads all resources). 2) **State mismatch**: if someone manually deleted a resource, `terraform plan` will show it being re-created. 3) **State corruption**: recover from backup (`terraform state pull` to inspect, `terraform state push` with caution). 4) **Locking**: use DynamoDB for state locking to prevent concurrent modifies. 5) **Import**: `terraform import <address> <id>` to bring existing resources under management. Best practice: use Terraform Cloud, Spacelift, or Atlantis for state management with RBAC.
+
+**Q4**: How does Terraform's dependency graph work?
+
+**Answer**: Terraform builds a directed acyclic graph (DAG) of resource dependencies. Implicit dependencies via references: `aws_instance.web` referencing `aws_security_group.sg.id`. Explicit dependencies via `depends_on`. The graph determines: creation order (parents first), destruction order (reverse), and parallel execution (independent resources in parallel). `terraform graph` outputs DOT format for visualization. The DAG enables Terraform to: minimize wait time (parallel independent resources), correctly sequence dependent resources (SG before EC2), and optimize destroy operations.
+
+### Senior Level
+
+**Q5: Your Terraform apply fails with "Error: Failed to acquire state lock". Another engineer is on PTO. What do you do?**
+
+**Why interviewers ask this**: Tests practical incident response with IaC.
+
+**Answer**: 1) Check DynamoDB lock table: `aws dynamodb get-item --table-name terraform-locks --key '{"LockID": {"S": "<state-file-path>"}}'`. Check `Info` attribute for who holds the lock. 2) If lock is stale (engineer's terminal died), force unlock: `terraform force-unlock <LOCK_ID>`. 3) If lock is live (another apply in progress), wait for it to complete. 4) Prevent future issues: implement **remote state locking** with DynamoDB (mandatory) and `terraform apply` in CI/CD only (no direct applies). Use **Atlantis** for PR-based workflow — locks are tied to PR lifecycle. Never force-unlock during active state mutation.
+
+**Q6**: Design an IaC strategy for a multi-account AWS organization with 50 accounts, 500 developers, and compliance requirements (SOC2, PCI).
+
+**Answer**: 1) **Account structure**: Organization with OUs (Security, Infrastructure, Workloads). 2) **IaC workflow**: Terraform modules in monorepo (or per-team repos). Atlantis for PR-based approval. 3) **State management**: Terraform Cloud workspaces (one per account+region). State access via API tokens with IP-restricted policies. 4) **Guardrails**: HashiCorp Sentinel (or OPA) policies on Terraform Cloud: enforce encryption, prohibit public S3 buckets, require tags, validate CIDR ranges. 5) **CI/CD**: GitHub Actions → plan → approve (team lead + security reviewer) → apply. 6) **Multi-account**: Use `terraform_remote_state` sparingly. Prefer **StackSet** for org-wide resources (IAM roles, guardrails). Use **Control Tower** with custom blueprints for account baseline. 7) **Secrets**: HashiCorp Vault or AWS Secrets Manager for dynamic secrets — Terraform reads via `data` sources, not hardcoded.
+
+### Staff/Principal Level
+
+**Q7: Your Terraform code has 5,000+ resources. A single `terraform plan` takes 30 minutes. Your developers are frustrated. Design a solution.**
+
+**Why**: Tests large-scale Terraform refactoring skills.
+
+**Answer**: 1) **Break monolith**: split into logical modules (networking, security, compute, data) with separate state files. Each team manages their own. 2) **Use `terraform plan` targeting**: `-target=module.vpc` for fast partial plans. 3) **Use `terraform workspace`** per environment (dev/staging/prod) vs `terraform_state` in module outputs. 4) **Migration**: use `terraform state mv` to move resources to new state files. 5) **Alternatives**: consider Terragrunt (DRY, remote state management). CDKTF (~10x faster plans via synthesized JSON). 6) **Parallel state fetching**: if state is slow via S3, use Terraform Cloud (faster state API). 7) **CI optimization**: skip `plan` for pure `main` branch changes with no infra impact (use changelist detection). 8) **Short-term**: upgrade to Terraform 1.6+ (parallel provider operations — plans 2-3x faster). Long-term: consider migrating to Pulumi (faster state engine) or AWS CDK.
+
+**Q8**: A state file leak exposes internal infrastructure details (VPC IDs, subnet CIDRs, RDS endpoints). Design a security strategy for Terraform state.
+
+**Answer**: 1) **Encrypt at rest**: S3 bucket with SSE-S3 (AES-256) or SSE-KMS. 2) **Encrypt in transit**: HTTPS for all API calls. 3) **Access control**: S3 bucket policy with `deny` for non-authorized roles. DynamoDB table for locking with restricted access. 4) **Sensitive values**: use Terraform's `sensitive = true` attribute (hides from CLI output, masks in logs). 5) **Secret management**: don't store secrets in state — use Vault/Secrets Manager/SSM Parameter Store with `data.aws_secretsmanager_secret`. 6) **Audit**: S3 access logs for state file reads. CloudTrail for `GetObject` on state bucket. 7) **State file backup**: versioning enabled on S3 bucket. 8) **Alternative**: Terraform Cloud (state encrypted, RBAC-controlled, no direct access).
+
+### Tricky Edge Cases
+
+**Q9**: Terraform reports "Resource already exists" but the resource is NOT in your state file. How did this happen and how do you fix it?
+
+**Answer**: **State missing but resource exists**. Causes: 1) Someone deleted/modified state without updating real resources. 2) Resource created outside Terraform (console/CLI/CloudFormation). 3) Branch merge caused state file to be overwritten with old version. Fix: 1) `terraform import <resource_address> <resource_id>` to add existing resource to state. 2) Run `terraform plan` to verify now-detected resource. 3) Prevent via: always use `terraform state rm` before deleting infra manually; implement state versioning; use `prevent_destroy = true` for critical resources to catch mistakes.
+
+**Q10**: You run `terraform apply` and it says it will destroy an entire production database. `terraform plan` didn't show this destruction. What happened?
+
+**Answer**: **State drift + missing lifecycle block**. Scenario: someone renamed a resource (e.g., `aws_db_instance.prod` → `aws_db_instance.prod_v2`) in code but didn't `terraform state mv`. Terraform sees "old name is gone, new name is added" = delete old + create new. Or: state was refreshed and picked up a change that triggered replacement. Also: **for_each key change** — if you change the key in a `for_each` map, Terraform destroys the old resource and creates a new one. Fix: 1) Always use `lifecycle { prevent_destroy = true }` on production databases. 2) Before refactoring, `terraform state mv` to rename resources. 3) Run `terraform plan` with `-refresh-only` to detect drift before making changes. 4) Enable `-destroy` flag in CI only for explicit destroy pipelines.
+

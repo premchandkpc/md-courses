@@ -726,3 +726,61 @@ EVICTION         =  When your notebook is full, you have to
 ---
 
 **Next**: [CloudWatch Deep Dive](../cloudwatch/01-cloudwatch-deep-dive.md) — Monitoring and observability
+
+
+## Observability
+
+```mermaid
+flowchart LR
+    A[ElastiCache] --> B[Metrics]
+    A --> C[Logs]
+    A --> D[Traces]
+    B --> E[CloudWatch]
+    B --> F[Prometheus/Redis-Exporter]
+    C --> G[CloudWatch Logs]
+    E --> H[Grafana]
+    F --> H
+    H --> I[Alerts]
+```
+
+### Key Metrics
+
+| Metric | Unit | Threshold | Indicates |
+|--------|------|-----------|-----------|
+| CPUUtilization | % | < 75% | Command complexity |
+| CacheHits / CacheMisses | ratio | > 90% hit | Cache effectiveness |
+| CurrConnections | count | < 80% of max | Connection leak |
+| Evictions | count/min | 0 | Memory pressure |
+| SwapUsage | bytes | 0 | Swapping (bad for perf) |
+| ReplicationLag | bytes | < 1MB (or 0) | Replica lag |
+| KeyCount | count | varies | Memory growth trend |
+| NetworkBytesIn/Out | bytes/s | < 50% of bandwidth | Network saturation |
+
+### Logs
+
+- **ERROR**: OOM command denied, connection refused, replication broken
+- **WARN**: Evictions increasing, swap usage > 0, replication buffer growing
+- **INFO**: Cluster topology changes, failover events, config changes
+- **DEBUG**: Slow log entries (enable via `slowlog-log-slower-than`)
+
+### Traces
+
+Trace cache operations with OpenTelemetry. Track cache hit/miss per key pattern. Monitor command latency distribution per command type.
+
+### Alerts
+
+| Severity | Condition | Response |
+|----------|-----------|----------|
+| P0 | Evictions > 0 | Increase memory or TTL, reduce cache size |
+| P0 | Replication broken | Restart replication, check network |
+| P1 | CPU > 90% | Identify expensive commands, scale |
+| P1 | SwapUsage > 0 | Reduce memory pressure, restart |
+| P2 | Cache hit rate < 80% | Review caching strategy, warm cache |
+
+### Dashboards
+
+**Redis Overview**: CPU, memory usage, connections, hit rate, evictions, keyspace hits/misses, network I/O, command throughput.
+
+**Command Dashboard**: per-command latency (p50/p99), command rate, slow log entries, top commands by CPU.
+
+**Replication Dashboard**: replication lag, replica count, master-replica link status, replication buffer size.

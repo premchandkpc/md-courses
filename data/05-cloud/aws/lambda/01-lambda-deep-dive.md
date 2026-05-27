@@ -794,4 +794,67 @@ VERSIONS        =  Frozen recipe cards. V1 = original snacks.
 
 ---
 
-**Next**: [RDS Deep Dive](../rds/01-rds-deep-dive.md) — Relational databases
+## Interview Questions
+
+### Beginner Level
+
+**Q1: What is AWS Lambda and what are its key limitations?**
+
+**Why interviewers ask this**: Tests understanding of serverless fundamentals — both benefits and constraints.
+
+**Ideal answer structure**:
+1. **What**: FaaS (Function as a Service) — run code without provisioning servers. Pay per invocation and duration.
+2. **Benefits**: No servers, auto-scaling to thousands of concurrent executions, integrated with 200+ AWS services.
+3. **Key limits**: 15-minute timeout, 10GB max memory, 6MB request/response payload (sync, 256KB for async), 1000 concurrent executions default (soft limit, can be raised), 512MB /tmp storage, 50MB zipped deployment package.
+4. **Cold starts**: First invocation can take 0.5-5 seconds depending on runtime (Java/GraalVM slowest, Python/Node fastest, SnapStart helps).
+
+**Common wrong answer**: "Lambda scales infinitely with no limits" — there are hard limits on concurrency, payload size, and execution duration.
+
+**Q2**: What is a cold start and how do you mitigate it?
+
+**Answer**: Cold start = time to create a new execution environment: 1) Download code (from S3 or container image). 2) Initialize runtime (Python/Node/Java). 3) Run initialization code outside handler. 4) Execute handler. Mitigations: 1) **Provisioned Concurrency** — keep N environments warm (expensive). 2) **Warmers** — CloudWatch Events pinging every 5 minutes (less reliable). 3) **SnapStart** (Java 11+) — snapshot microVM after init, restore on cold start (90% reduction). 4) **Minimize dependencies** — fewer jars/packages → smaller download. 5) **Use AWS Graviton** (arm64) — faster init, cheaper. 6) **Prefer Python/Node over Java** for latency-sensitive paths.
+
+### Intermediate Level
+
+**Q3: How does Lambda's synchronous invocation flow work end-to-end, including scaling and concurrency?**
+
+**Answer**: 1) Invocation via API Gateway/ALB → Lambda service places request on internal queue. 2) Lambda service checks Reserved Concurrency → if exceeded, throttles with 429. 3) If capacity available, assigns an execution environment (sandbox) from the warm pool or creates a new one. 4) Sandbox runs handler with event, returns response. 5) Sandbox stays warm for ~5-15 minutes after last invocation (idle timeout). Scaling: Lambda starts with burst (500-3000 depending on region), then adds 500/min. Each sandbox processes one request at a time for sync invocations (concurrent requests = concurrent sandboxes). Provisioned Concurrency pre-creates sandboxes.
+
+**Q4**: Compare Lambda with ECS Fargate. When would you use each?
+
+**Answer**: **Lambda** — event-driven, short-lived (<15min), low volume, variable traffic, simple request-response. **Fargate** — long-running services (web servers, workers), predictable traffic patterns, need for larger resources (10GB+ memory), stateful workloads, container orchestration. Lambda auto-scales faster but has cold starts. Fargate ECS has constant latency but requires capacity planning. Cost: Lambda is cheaper for intermittent workloads (<10M invocations/month); Fargate is cheaper for steady-state high traffic. Choose Lambda for: webhooks, image processing, S3 events, IoT backends. Choose Fargate for: web APIs with consistent 1000+ RPS, ML inference, long-running streaming consumers.
+
+### Senior Level
+
+**Q5: Your Lambda function that processes S3 events is seeing high error rates and duplicate processing. Diagnose.**
+
+**Why interviewers ask this**: Tests practical debugging of event-driven serverless architectures.
+
+**Answer**: **Multiple issues possible**: 1) **S3 event notifications are at-least-once** — same event may be delivered multiple times. Add idempotency key (object ETag + event timestamp). 2) **Lambda retries** — on error, Lambda retries sync invocations 2x (3 total), async invocations 2x then DLQ. Check `X-Request-Id` for duplicate invocations. 3) **S3 PUT events** — an overwrite generates two events (PUT + potentially ETag mismatch with multipart upload). 4) **Concurrent overwrites** — two S3 PUTs → two Lambda invocations processing the same key simultaneously → race condition. Fix: DynamoDB idempotency table (check if `key+timestamp` processed). Use SQS FIFO queue as event source (deduplication). 5) **Error source**: check CloudWatch Logs for `Task timed out` (function duration > timeout) or out-of-memory (`/tmp` full).
+
+**Q6**: Design a serverless real-time file processing pipeline. S3 bucket receives 10K files/minute, each 100MB. Files need to be validated, transformed, and loaded to Redshift.
+
+**Answer**: 1) **S3 event → SQS queue** (buffer — decouple S3 → Lambda scaling). 2) **Lambda triggers on SQS**: batch of 10 messages, each processes one file (100MB). But Lambda has 15-min timeout and 10GB max memory — processing 100MB files may take 5-15 minutes. Idea: **split file processing into stages**: a) S3 event → Lambda (validation: schema check, file size, CRC) → write metadata to DynamoDB. b) **Step Functions** express workflow for transformation: parallel children map over file chunks (EC2/EMR for actual transformation), each writes to staging S3. c) **Redshift COPY** from staging S3 via `COPY` command or Spectrum. d) **Alternative**: use ECS Fargate tasks for transformation (100MB files fit better in 8GB+ container), triggered by SQS → EventBridge → ECS RunTask. 3) **Monitoring**: CloudWatch dashboard for SQS depth (buffer health), Lambda errors, Step Functions executions, Redshift load latency.
+
+### Staff/Principal Level
+
+**Q7: Your company has 500 Lambda functions across 10 microservices. Tracing a single request across these functions is nearly impossible. Design the observability strategy.**
+
+**Why**: Tests ability to design observability for distributed serverless systems.
+
+**Answer**: 1) **Distributed tracing**: AWS X-Ray with `AWS_DISTRIBUTED_TRACING_ENABLED=true`. Propagate trace ID via HTTP headers (API Gateway → Lambda → Step Functions → downstream). 2) **Structured logging**: JSON format with `correlationId`, `functionName`, `coldStart`, `memoryUsed`, `duration`. 3) **Centralized logging**: OpenSearch / CloudWatch Logs Insights with query patterns per trace ID. 4) **Enhanced monitoring**: Lambda Powertools (Python/TypeScript/Java) — auto-inject Lambda context into logs. 5) **Metrics**: Custom CloudWatch metrics: `ProcessingDuration`, `BatchSize`, `ErrorType` (timeout/memory/exception). 6) **Distributed trace across services**: SQS message attributes carry `TraceId`, propagated by Lambda Powertools. 7) **Step Functions tracing**: X-Ray integration for state machine executions — visualize entire workflow. 8) **Anti-patterns**: no correlated logging, inconsistent error codes, missing trace IDs in async invocations (SNS/SQS payloads must carry them).
+
+**Q8**: Design a Lambda-based migration strategy to move a legacy monolithic Java application to serverless without downtime.
+
+**Answer**: 1) **Strangler Fig pattern**: API Gateway routes traffic to both old monolith and new Lambda functions. 2) **Extract first**: Identify bounded contexts (e.g., user management, orders, payments). Extract the smallest, least-coupled one first (e.g., user management). 3) **Lambda composition**: Use Step Functions to orchestrate multiple Lambda functions for complex flows (order processing: validate → charge → ship). 4) **Data migration**: Dual-write strategy — monolith writes to both old and new DB (Neptune migration). 5) **Performance**: Use SnapStart for Java (init time reduction by 90%). Use Lambda Response Streaming for large payloads. 6) **Networking**: VPC Lambda with ENI per SG — limit to subnets that need DB access; use RDS Proxy to avoid connection storms. 7) **Gradual shift**: 5% → 25% → 50% → 100% traffic to Lambda, monitoring error rates, latency, and cost. 8) **Rollback**: Use canary deployments with Lambda aliases and weighted routing. Keep old monolith running at 0% desired capacity for fast rollback.
+
+### Tricky Edge Cases
+
+**Q9**: A Lambda function triggered by an S3 event writes output to the same S3 bucket. The function goes into infinite recursion and by the time it's stopped, you've incurred $10K in charges. How does this happen and how do you prevent it?
+
+**Answer**: **Infinite recursion**: Lambda reads file from S3 → processes → writes result to same S3 bucket → result file triggers another Lambda invocation → repeats. Each invocation charges. Also: **S3 event amplification** — batch operations (multi-part uploads, incomplete multipart uploads, S3 replication events) generate multiple events. Prevention: 1) **Separate input/output buckets** — never read and write to the same bucket. 2) **Prefix/suffix filter** on S3 event notification (`prefix=incoming/`, `suffix=.input`). 3) **Reserved Concurrency = 1** for the function so only one invocation happens at a time (mitigation, not prevention). 4) **Budget alerts** — set CloudWatch Billing alarms at $100 threshold. 5) **DLQ on failure** — if something goes wrong, trap to DLQ. 6) **SQS queue between S3 and Lambda** — allows inspection and backpressure.
+
+**Q10**: Lambda function running in a VPC with RDS. On cold start, the function times out connecting to RDS. Warm invocations work fine. Why?
+
+**Answer**: **VPC cold start ENI creation delay**. Lambda creates an Elastic Network Interface (ENI) in your VPC on cold start — this takes 5-15 seconds. If the Lambda timeout is 3 seconds, the function times out before the ENI is ready. Also: **NAT Gateway** required for internet access from VPC Lambda (needs public subnet + NAT). The cold start + ENI setup + NAT route propagation + RDS connection creates a multi-second delay. Fix: 1) Increase Lambda timeout to 30+ seconds. 2) Use **RDS Proxy** — maintains connection pool so Lambda doesn't need to open new connections on each invocation. 3) Use **Provisioned Concurrency** to keep environments warm. 4) Use `Lambda-VPC` with managed NAT Gateway (not NAT instance). 5) Alternatively: move function outside VPC and use Secrets Manager + IAM database auth instead of direct VPC access.
+

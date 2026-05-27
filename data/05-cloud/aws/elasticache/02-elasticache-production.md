@@ -575,3 +575,106 @@ EVAL "redis.call('INCR', KEYS[1])" 1 user:123
 > Cluster mode = multiple whiteboards (shards). Replication = copy notes to another room. RDB = photo of whiteboard. AOF = every pen stroke recorded. Eviction = which notes to erase when full. Streams = ticker tape of events. Pub/Sub = shout to everyone listening. Sorted sets = ranking board with scores.
 >
 > **Key rule**: caching helps only with high hit rate. Monitor CacheHits vs CacheMisses. Set TTLs. Choose right eviction policy. High miss rate = paying for a slow misdirection.
+
+
+## Observability
+
+```mermaid
+flowchart LR
+    A[ElastiCache] --> B[Metrics]
+    A --> C[Logs]
+    A --> D[Traces]
+    B --> E[CloudWatch]
+    B --> F[Prometheus/Redis-Exporter]
+    C --> G[CloudWatch Logs]
+    E --> H[Grafana]
+    F --> H
+    H --> I[Alerts]
+```
+
+### Key Metrics
+
+| Metric | Unit | Threshold | Indicates |
+|--------|------|-----------|-----------|
+| CPUUtilization | % | < 75% | Command complexity |
+| CacheHits / CacheMisses | ratio | > 90% hit | Cache effectiveness |
+| CurrConnections | count | < 80% of max | Connection leak |
+| Evictions | count/min | 0 | Memory pressure |
+| SwapUsage | bytes | 0 | Swapping (bad for perf) |
+| ReplicationLag | bytes | < 1MB (or 0) | Replica lag |
+| KeyCount | count | varies | Memory growth trend |
+| NetworkBytesIn/Out | bytes/s | < 50% of bandwidth | Network saturation |
+
+### Logs
+
+- **ERROR**: OOM command denied, connection refused, replication broken
+- **WARN**: Evictions increasing, swap usage > 0, replication buffer growing
+- **INFO**: Cluster topology changes, failover events, config changes
+- **DEBUG**: Slow log entries (enable via `slowlog-log-slower-than`)
+
+### Traces
+
+Trace cache operations with OpenTelemetry. Track cache hit/miss per key pattern. Monitor command latency distribution per command type.
+
+### Alerts
+
+| Severity | Condition | Response |
+|----------|-----------|----------|
+| P0 | Evictions > 0 | Increase memory or TTL, reduce cache size |
+| P0 | Replication broken | Restart replication, check network |
+| P1 | CPU > 90% | Identify expensive commands, scale |
+| P1 | SwapUsage > 0 | Reduce memory pressure, restart |
+| P2 | Cache hit rate < 80% | Review caching strategy, warm cache |
+
+### Dashboards
+
+**Redis Overview**: CPU, memory usage, connections, hit rate, evictions, keyspace hits/misses, network I/O, command throughput.
+
+**Command Dashboard**: per-command latency (p50/p99), command rate, slow log entries, top commands by CPU.
+
+**Replication Dashboard**: replication lag, replica count, master-replica link status, replication buffer size.
+
+
+## Common Failures
+
+### Failure: Cache Stampede
+
+- **Symptoms**: DB load spikes 10x, response latency increases, application partially unavailable. Cache hit rate drops to near 0% then recovers.
+- **Root Cause**: Cache key expires, and all concurrent requests try to recompute it at once. Without locking, N requests each hit the DB simultaneously. Common at cache TTL boundaries.
+- **Detection**: CloudWatch `CacheMisses` spikes, `CacheHits` drops. DB CPU/connections spike. Application latency graph shows sharp vertical line. Error rate spikes (DB connection pool exhausted).
+- **Recovery**: 1) Pre-warm cache by recomputing popular keys. 2) Temporarily extend TTL for healthy keys. 3) Add rate limiting to recompute path. 4) DB emergency scaling.
+- **Prevention**: Use mutex lock on cache recompute (SET NX). Use probabilistic early expiration. Add jitter to TTL values. Use write-through cache instead of lazy loading. Stagger TTLs across keys.
+- **Production Story**: Black Friday traffic hit 500K req/s on a product page. Cache TTL was exactly 60s. Every 60s, all servers recomputed the same keys simultaneously, driving 50K DB queries at once. DB pool exhausted for 10s. Fix: added +-30% TTL jitter and mutex with SET NX.
+
+### Failure: Fork-Based Save Latency (BGSAVE)
+
+- **Symptoms**: Latency spikes every few minutes, correlated with RDB/AOF rewrite. P99 latency 10x higher during save.
+- **Root Cause**: Redis forks main process for BGSAVE/BGREWRITEAOF. Fork blocks all requests (even in child process) due to copy-on-write on large memory. For 10GB Redis instance, fork can take 300ms+. COW page faults cause latency.
+- **Detection**: `fork` duration in latency history. CloudWatch CPU spike. Command latency increases during save window. `redis_fork_rate` or `rdb_bgsave_in_progress` metric.
+- **Recovery**: 1) Disable automatic BGSAVE temporarily. 2) Direct traffic away from primary. 3) Reduce Redis memory. 4) If AOF, use `appendfsync no` temporarily.
+- **Prevention**: Keep Redis memory < 4GB per node. Use `repl-diskless-sync` for replicas. Schedule saves during low traffic. Use Redis on Graviton (faster fork). Consider KeyDB for fork-less persistence.
+- **Production Story**: A Redis instance with 8GB memory experienced 2s latency spikes every 15 minutes during BGSAVE. Traced to `fork` taking 400ms plus copy-on-write page faults. Fix: split data across 4 smaller Redis instances (2GB each) on separate nodes.
+
+### Failure: OOM on Write Commands
+
+- **Symptoms**: Write commands fail with `OOM command not allowed when used memory > 'maxmemory'`. Data not persisted. Application write failures.
+- **Root Cause**: `maxmemory` reached and eviction policy set to `noeviction`. Memory leak in application (writes without TTL). Data growth exceeds capacity.
+- **Detection**: `used_memory` at `maxmemory`. CloudWatch Evictions metric at 0 (if noeviction) or high (if eviction policy set). Write error logs.
+- **Recovery**: 1) Increase `maxmemory`. 2) Change eviction policy to `allkeys-lru`. 3) Delete large keys manually. 4) Add shards or nodes.
+- **Prevention**: Monitor memory trend and set alerts at 75%. Set appropriate eviction policy. Use `volatile-lru` if some keys have TTL. Add capacity planning.
+
+### Failure: Replication Buffer Overflow
+
+- **Symptoms**: Replica disconnects, full resync required, network bandwidth spikes. Master sends 10GB RDB unnecessarily.
+- **Root Cause**: Replica can't keep up with master write rate. Replication buffer (client-output-buffer-limit) exceeds limit, causing disconnection. Replica reconnects, triggers full resync, which further overloads master.
+- **Detection**: `client-output-buffer-limit` exceeded logs. `master_sync_in_progress`. `repl_backlog_histlen` keeps growing. Network `BytesOut` spikes.
+- **Recovery**: 1) Increase `client-output-buffer-limit slave`. 2) Scale up replica instance. 3) Pause write-heavy workloads temporarily.
+- **Prevention**: Monitor replication lag. Set `client-output-buffer-limit slave 512mb 256mb 60`. Use diskless replication. Ensure replica has same memory specs as master.
+
+### Failure: Cluster Failover Storm
+
+- **Symptoms**: Multiple cluster nodes fail in cascade. Data loss on failover. Cluster in `fail` state. `CLUSTER NODES` shows many nodes as `fail?`.
+- **Root Cause**: Network partition isolates subset of nodes. Node timeout too aggressive. Underlying infrastructure issue (AZ failure, ENI detachment). Ephemeral storage failure.
+- **Detection**: Cluster log shows `FAIL` messages for multiple nodes. `cluster_state:fail`. Gossip messages detected as failing nodes propagate.
+- **Recovery**: 1) `CLUSTER FAILOVER` on remaining replicas. 2) `CLUSTER FORGET` failed nodes. 3) Re-add nodes. 4) Ensure all slots covered.
+- **Prevention**: Set `cluster-node-timeout` high enough (15-30s). Spread nodes across AZs. Use replica-announce-ip for correct IP propagation. Monitor cluster health with `redis-cli --cluster check`.

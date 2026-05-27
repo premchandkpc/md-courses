@@ -402,3 +402,84 @@ def get_top_players(game: str, page: int = 0, page_size: int = 10):
 ### Q2: How would you design a Redis deployment for high availability with automatic failover?
 
 **Answer**: Use Redis Sentinel for HA. Deploy at least 3 Sentinel nodes (odd number for quorum) monitoring a master-replica pair. Sentinels use gossip to agree on master status — if a master is unreachable, a leader election happens (requires majority), and a replica is promoted. Configure the application to connect via Sentinel (not directly to master) so it gets the current master address. For higher scale, use Redis Cluster with 3 masters and 3 replicas — data is sharded across 16384 hash slots, each master replicates to one replica. If a master fails, its replica is promoted. Cluster mode provides both HA and horizontal scaling but has limitations (multi-key operations only within same hash slot).
+
+
+## Observability
+
+```mermaid
+flowchart LR
+    A[Redis] --> B[Metrics]
+    A --> C[Logs]
+    B --> E[Prometheus/redis_exporter]
+    C --> F[Loki/ELK]
+    E --> H[Grafana]
+    F --> H
+    H --> I[Alerts]
+```
+
+### Key Metrics
+
+| Metric | Unit | Threshold | Indicates |
+|--------|------|-----------|-----------|
+| Hit rate (keyspace_hits/keyspace_misses) | % | > 90% | Cache efficiency |
+| Evicted keys per second | count/s | 0 | Memory pressure |
+| Memory fragmentation ratio | ratio | 1.0-1.5 | Fragmentation |
+| Connected clients | count | < 80% of maxclients | Connection exhaustion |
+| Replication lag | bytes | 0 | Replica sync state |
+| Instantaneous ops/sec | ops/s | varies | Throughput capacity |
+| CPU (Redis) | % | < 75% | Command complexity |
+| Slow log count | count/h | < 10 | Slow commands |
+
+### Logs
+
+- **ERROR**: OOM on write, replication failure, cluster fail state, AOF rewrite failure
+- **WARN**: Evictions > 0, memory > maxmemory, replication buffer growing, fork delay
+- **INFO**: BGSAVE complete, AOF rewrite, failover, replica connected, config rewrite
+
+### Alerts
+
+| Severity | Condition | Response |
+|----------|-----------|----------|
+| P0 | Evictions > 0 | Increase maxmemory, add nodes |
+| P0 | Replication broken | Fix network, rebuild replica |
+| P1 | Hit rate < 80% | Warm cache, review TTLs |
+| P2 | Memory fragmentation > 1.5 | Restart or use MEMORY PURGE |
+
+### Dashboards
+
+**Redis Overview**: CPU, memory, hit rate, evictions, connected clients, commands/sec, network I/O.
+
+
+## Common Failures
+
+### Failure: Cache Stampede
+
+- **Symptoms**: DB load spikes, latency increases. Cache miss rate suddenly 100% for popular keys.
+- **Root Cause**: All cache keys expire at same TTL boundary. N concurrent requests hit DB simultaneously.
+- **Detection**: Hit rate drops to 0 then recovers. DB CPU/IOPS spike.
+- **Recovery**: Pre-warm cache. Extend TTL for popular keys. Add mutex lock.
+- **Prevention**: Add TTL jitter (+-30%). Use mutex with SET NX. Probabilistic early expiration.
+
+### Failure: Memory Fragmentation
+
+- **Symptoms**: `used_memory_rss` >> `used_memory`. Process memory high but data small. OOM risk despite low data.
+- **Root Cause**: Redis allocates/frees differently-sized objects. Jemalloc can't return pages to OS. Common with frequent expiry/deletion.
+- **Detection**: `mem_fragmentation_ratio` > 1.5. RSS growing but used_memory stable.
+- **Recovery**: 1) `MEMORY PURGE` (Redis 4+). 2) Restart instance (reload from AOF/RDB). 3) Add more memory.
+- **Prevention**: Use `maxmemory-policy allkeys-lru`. Keep TTLs consistent (same-size keys). Use Redis 4+ jemalloc improvements.
+
+### Failure: Fork-Based Save Latency
+
+- **Symptoms**: Latency spikes, correlated with BGSAVE/AOF rewrite. P99 10x during save.
+- **Root Cause**: BGSAVE forks Redis process. Fork blocks for large heaps. Copy-on-write page faults.
+- **Detection**: Fork duration in latency history. Redis latency spikes on :6379.
+- **Recovery**: 1) Disable auto BGSAVE. 2) Schedule saves off-peak. 3) Reduce instance memory.
+- **Prevention**: Keep memory < 4GB per instance. Use `repl-diskless-sync`. Schedule saves.
+
+### Failure: Cluster Failover Issues
+
+- **Symptoms**: Data loss on failover. Cluster in fail state. Write commands fail.
+- **Root Cause**: Network partition. Node timeout too aggressive. Quorum not met.
+- **Detection**: `CLUSTER INFO` shows `cluster_state:fail`. `cluster_known_nodes` missing.
+- **Recovery**: 1) `CLUSTER FAILOVER TAKEOVER` on replicas. 2) Re-add failed nodes. 3) Ensure slot coverage.
+- **Prevention**: Set `cluster-node-timeout` appropriately. Use 3+ nodes in different AZs.

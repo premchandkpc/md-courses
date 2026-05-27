@@ -25,6 +25,7 @@ Distributed Redis sharding across 16384 hash slots. `CRC16(key) % 16384 -> assig
 ```text
 No Cluster: 1 shard (primary + replicas). Max 161 GB. No horizontal scaling.
 Cluster Enabled: Up to 500 shards. Reshard online with zero downtime.
+
 ```
 
 **Resharding**: Slots moved from source to target shard. Source marks IMPORTING, target marks MIGRATING. Keys migrated incrementally. Clients retry MOVED/ASK redirects during migration.
@@ -79,13 +80,16 @@ ZINCRBY leaderboard 100 alice     # add/increment score
 ZRANGE leaderboard 0 9 REV        # top 10
 ZRANK leaderboard alice           # get rank
 ZREM leaderboard bob              # remove member
+
 ```
 
 **Sliding window rate limiting**:
+
 ```bash
 ZREMRANGEBYSCORE ratelimit:user1 0 <now - 60s>
 ZCARD ratelimit:user1             # current count in window
 ZADD ratelimit:user1 <now> <uuid> # record new request
+
 ```
 
 ## Memcached vs Redis
@@ -188,6 +192,348 @@ Memcached has no native clustering. ElastiCache provides auto-discovery via AWS 
 **TLS overhead**: ~1ms per connection handshake. Pool keeps connections alive. Redis 6 ACL prevents auth bypass.
 
 **Read-from-replica client pattern**: Redis Cluster mode - MOVED redirect handles this. Standalone - use Reader Endpoint which round-robins across replicas. Client sets `READONLY` mode (Redis >= 3.2). No stale data tolerance for reads.
+
+---
+
+## Code Examples
+
+### Java Client (Lettuce — Redis)
+
+```java
+import io.lettuce.core.*;
+import io.lettuce.core.api.sync.RedisCommands;
+
+// Connection
+RedisClient client = RedisClient.create("rediss://auth-token@endpoint:6380");
+StatefulRedisConnection<String, String> connection = client.connect();
+RedisCommands<String, String> commands = connection.sync();
+
+// Cache-Aside Pattern
+String getCacheKey(String userId) {
+  String cached = commands.get("user:" + userId);
+  if (cached != null) return cached;
+  
+  // Fetch from DB
+  String user = fetchFromDB(userId);
+  commands.setex("user:" + userId, Duration.ofMinutes(30), user);
+  return user;
+}
+
+// Sorted Set (Leaderboard)
+commands.zadd("leaderboard", 1000.0, "alice");
+commands.zadd("leaderboard", 950.0, "bob");
+List<ScoredValue<String>> top10 = 
+  commands.zrevrangeWithScores("leaderboard", 0, 9);
+
+// Pipeline (batch operations)
+List<Object> results = connection.sync().multi(
+  RedisCommand.zadd(...),
+  RedisCommand.zadd(...),
+  RedisCommand.zrange(...)
+);
+
+```
+
+### Python (redis-py)
+
+```python
+import redis
+from datetime import timedelta
+
+# Connection with pooling
+r = redis.Redis(
+  host='endpoint.cache.amazonaws.com',
+  port=6380,
+  ssl=True,
+  decode_responses=True,
+  socket_pool_kwargs={'max_connections': 50}
+)
+
+# Cache-Aside
+def get_user(user_id):
+  key = f"user:{user_id}"
+  cached = r.get(key)
+  if cached:
+    return json.loads(cached)
+  
+  user = fetch_from_db(user_id)
+  r.setex(key, timedelta(minutes=30), json.dumps(user))
+  return user
+
+# Rate limiting with sorted sets
+def check_rate_limit(user_id, max_requests=100, window=60):
+  key = f"ratelimit:{user_id}"
+  now = time.time()
+  r.zremrangebyscore(key, 0, now - window)
+  
+  count = r.zcard(key)
+  if count >= max_requests:
+    return False
+  
+  r.zadd(key, {str(uuid.uuid4()): now})
+  r.expire(key, window)
+  return True
+
+# Streams (event log)
+r.xadd("events", {"user": "alice", "action": "login"})
+messages = r.xread({"events": "0-0"}, count=10)
+
+```
+
+### Node.js (ioredis)
+
+```javascript
+const Redis = require('ioredis');
+const redis = new Redis({
+  host: 'endpoint.cache.amazonaws.com',
+  port: 6380,
+  tls: {},
+  maxRetriesPerRequest: 3,
+  retryStrategy: (times) => Math.min(times * 50, 2000)
+});
+
+// Cache-Aside with promises
+async function getUser(userId) {
+  const cached = await redis.get(`user:${userId}`);
+  if (cached) return JSON.parse(cached);
+  
+  const user = await fetchFromDB(userId);
+  await redis.setex(`user:${userId}`, 1800, JSON.stringify(user));
+  return user;
+}
+
+// Pub/Sub for notifications
+redis.on('message', (channel, message) => {
+  console.log(`${channel}: ${message}`);
+});
+redis.subscribe('notifications');
+
+// Publish
+redis.publish('notifications', 'User alice logged in');
+
+// Redis Streams
+await redis.xadd('orders', '*', 'user_id', 'alice', 'amount', '99.99');
+const messages = await redis.xrange('orders', '-', '+', 'COUNT', 10);
+
+```
+
+---
+
+## Common Failure Modes & Solutions
+
+### 1. Cache Stampede (Thundering Herd)
+
+**Problem**: Multiple requests miss cache simultaneously → all query DB → DB overload.
+
+```
+
+Time:    T0              T1              T2
+         └─ User 1 → DB  └─ User 2 → DB  └─ User 3 → DB
+         └─ User 4 → DB  └─ User 5 → DB  └─ ... (1000s)
+         
+Result: DB spike, timeouts, cascading failures
+
+```
+
+**Solution 1: Probabilistic early expiration**
+
+```python
+def smart_ttl(base_ttl=1800):
+  return base_ttl * random.uniform(0.7, 1.0)  # Stagger expiration
+
+redis.setex(key, smart_ttl(), value)
+
+```
+
+**Solution 2: Lease pattern**
+
+```python
+def get_with_lease(key):
+  val = redis.get(key)
+  if val:
+    lease_time = redis.ttl(key)
+    if lease_time < 300:  # < 5 minutes left
+      trigger_background_refresh(key)  # Async refresh
+    return val
+  
+  # Cache miss: fetch and set
+  val = fetch_from_db()
+  redis.setex(key, 1800, val)
+  return val
+
+```
+
+### 2. Hot Partition (Single Shard Overload)
+
+**Problem**: Uneven key distribution → one shard saturated, others idle.
+
+```
+
+Shard 1: User profiles (heavily accessed)
+  CPU: 95%, Network: Saturated
+  
+Shard 2: Analytics (infrequently accessed)
+  CPU: 5%, Network: 10%
+
+```
+
+**Root cause**: Hash slot allocation based on key.
+
+**Solution 1: Add prefix to key**
+
+```python
+# Before (all same shard):
+r.set("alice:profile", ...)
+r.set("alice:history", ...)
+r.set("alice:settings", ...)
+
+# After (distributed across shards):
+r.set(f"user:{random.randint(0,99):02d}:alice:profile", ...)
+
+```
+
+**Solution 2: Rebalance slots**
+
+```bash
+redis-cli --cluster rebalance endpoint:6379 --auto-weights
+
+```
+
+### 3. Memory Leak / OOM
+
+**Problem**: Evictions spike, latency increases, replicas run OOM.
+
+**Root causes**:
+- Keys without TTL accumulating
+- Unreleased connections holding memory
+- Large values pushing exceeding maxmemory
+
+**Debugging**:
+
+```bash
+redis-cli --latency           # Measure latency spikes
+redis-cli memory doctor       # Analyze memory
+redis-cli --bigkeys           # Find large keys
+SLOWLOG GET 10               # Slow operations
+
+```
+
+**Fix**:
+
+```python
+# Set TTL on all keys
+for key in redis.scan_iter():
+  if redis.ttl(key) == -1:  # No TTL
+    redis.expire(key, 86400)  # 24 hours
+
+# Monitor evictions
+if redis.info()['evicted_keys'] > 1000:
+  scale_cluster()
+
+```
+
+### 4. Replication Lag During High Write Load
+
+**Problem**: Replica falls behind primary → stale reads.
+
+```
+
+Primary: Receives 10,000 writes/sec
+Replica: Falls 2-3 seconds behind
+Clients reading from replica see stale data
+
+```
+
+**Solution**: Increase replication backlog
+
+```bash
+CONFIG SET repl-backlog-size 67108864  # 64 MB (default 1 MB)
+
+```
+
+### 5. Connection Pool Exhaustion
+
+**Problem**: Clients hold all pool connections → others timeout.
+
+**Solution**: Monitor and tune
+
+```python
+pool = redis.ConnectionPool(
+  host='endpoint',
+  max_connections=100,  # Increase from default 50
+  socket_keepalive=True,
+  socket_keepalive_options={
+    1: (1, 3)  # (TCP_KEEPIDLE, TCP_KEEPINTVL)
+  }
+)
+
+```
+
+---
+
+## Interview Questions
+
+### 1. Design a rate limiter using Redis.
+
+**Answer**: Use sorted sets with sliding window:
+- Key: `ratelimit:{user_id}`
+- Score: timestamp of each request
+- Value: request UUID
+- Remove expired entries: `ZREMRANGEBYSCORE key 0 (now - window)`
+- Count current: `ZCARD key`
+- Reject if count >= limit
+
+Trade-off: Sorted set operations O(log N) per request. Alternative: Leaky bucket with `DECRBY` + `EXPIRE` (O(1) but less accurate).
+
+### 2. Explain cache invalidation strategies. Which is hardest?
+
+**Strategies**:
+- **TTL**: Automatic expiration. Simple but risks stale data.
+- **Event-based**: DB writes invalidate cache. Complex but accurate.
+- **Conditional**: Check version/ETag. Balances both.
+
+**Hardest**: Distributed event-based invalidation across multiple services. Requires event bus (Kafka), idempotent handlers, retry logic.
+
+### 3. Your Redis cluster experiences sudden evictions. Diagnose.
+
+**Investigation steps**:
+1. Check memory usage: `INFO memory` → is `used_memory` near `maxmemory`?
+2. Check evictions: `INFO stats` → compare `evicted_keys` trend.
+3. Check hot keys: `redis-cli --hotkeys` or XREAD from `__keyevent__:evicted__` stream.
+4. Check slow log: identify expensive operations.
+5. Check network: `INFO stats` → `total_net_input_bytes`, `total_net_output_bytes`.
+
+**Fix**:
+- Increase `maxmemory` (vertical scale).
+- Add shards (horizontal scale).
+- Improve eviction policy from `allkeys-lru` to `allkeys-lfu` if hot/cold distribution.
+- Add TTLs to transient keys.
+- Reduce request rate (application level).
+
+### 4. What's the difference between `WATCH` and Lua transactions?
+
+**WATCH**: Optimistic locking. Aborts if watched key changed. Application must retry.
+
+```redis
+WATCH user:123
+value = GET user:123
+value = value + 1
+MULTI
+SET user:123 value
+EXEC
+
+```
+
+**Lua**: Atomic server-side script. No conflicts. Must be idempotent.
+
+```redis
+EVAL "redis.call('INCR', KEYS[1])" 1 user:123
+
+```
+
+**Choose**:
+- WATCH: When conflict expected to be rare.
+- Lua: When conflicts common or operation complex.
 
 ---
 

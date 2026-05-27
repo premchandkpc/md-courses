@@ -1534,3 +1534,13 @@ Solution:
 4. **Consider NewSQL (CockroachDB, Spanner)** for distributed txns without manual 2PC management.
 5. **Circuit breakers** for distributed txns. Fail fast when deadlock rate exceeds threshold.
 ```
+
+---
+
+## Related
+
+- [Databases](../../08-databases/) — Outages, corruption, performance
+- [Distributed Systems](../../09-distributed-systems/) — Consensus, cascade failures
+- [Kubernetes](../../07-kubernetes/) — Cluster failures
+- [Networking](../../11-networking/) — DNS, TCP issues
+- [SRE](../../14-sre-observability/) — Incident response

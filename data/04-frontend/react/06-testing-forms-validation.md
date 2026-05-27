@@ -1372,3 +1372,13 @@ test('loads data', async () => {
 - [ ] Debounced validation has proper cleanup on unmount
 - [ ] Coverage thresholds enforced in CI
 - [ ] Snapshot tests reviewed regularly (not just updated blindly)
+
+---
+
+## Related
+
+- [Networking](../../11-networking/) — HTTP, performance, optimization
+- [Security](../../13-security/) — CORS, authentication, XSS prevention
+- [Backend](../../03-backend/) — API design and contracts
+- [Performance Engineering](../../18-performance-engineering/) — Browser rendering
+- [Testing](../../19-testing/) — E2E and component testing

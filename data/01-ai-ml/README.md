@@ -384,3 +384,13 @@ Quantifying information, uncertainty, and divergence—critical for loss functio
 | [10 — Messaging](../10-messaging/) | Event-driven ML pipelines, streaming inference, async model communication |
 | [14 — SRE/Observability](../14-sre-observability/) | ML system monitoring, drift detection, alerting, model health metrics |
 | [15 — System Design](../15-system-design/) | Designing ML systems at scale, recommendation systems, search ranking |
+
+---
+
+## Related
+
+- [Databases](../../08-databases/) — Vector search, embeddings storage
+- [Python Backend](../../03-backend/) — ML inference APIs
+- [Cloud Platforms](../../05-cloud/) — GPU/TPU infrastructure
+- [Data Engineering](../../02-data-engineering/) — Training data pipelines
+- [Performance Engineering](../../18-performance-engineering/) — Model optimization

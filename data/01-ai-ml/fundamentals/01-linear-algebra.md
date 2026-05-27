@@ -817,3 +817,13 @@ ratio = dist_projected / dist_original  # ≈ 1
 **Problem 4**: Use random projection to reduce a 10,000-dimensional vector to 100 dimensions and measure the distortion of pairwise distances.
 
 **Problem 5**: Implement power iteration for the top-5 eigenvalues of a sparse matrix representing a web graph adjacency matrix.
+
+---
+
+## Related
+
+- [Databases](../../08-databases/) — Vector search, embeddings storage
+- [Python Backend](../../03-backend/) — ML inference APIs
+- [Cloud Platforms](../../05-cloud/) — GPU/TPU infrastructure
+- [Data Engineering](../../02-data-engineering/) — Training data pipelines
+- [Performance Engineering](../../18-performance-engineering/) — Model optimization

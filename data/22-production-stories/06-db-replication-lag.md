@@ -1204,3 +1204,13 @@ max_standby_streaming_delay = 600
 8. **WAL archiving is not optional.** Without it, a replication slot issue can fill the disk and crash the primary.
 9. **Parallel replication (MySQL 8.0) is a game-changer for lag reduction.** Enable `slave_parallel_workers` and `LOGICAL_CLOCK`.
 10. **ETL from replicas requires tolerance for staleness.** If the ETL needs consistent data, read from primary or verify lag first.
+
+---
+
+## Related
+
+- [Databases](../../08-databases/) — Outages, corruption, performance
+- [Distributed Systems](../../09-distributed-systems/) — Consensus, cascade failures
+- [Kubernetes](../../07-kubernetes/) — Cluster failures
+- [Networking](../../11-networking/) — DNS, TCP issues
+- [SRE](../../14-sre-observability/) — Incident response

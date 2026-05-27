@@ -1052,3 +1052,13 @@ groups:
 8. **Test fork behavior** under production load before going live. Use `redis-cli --intrinsic-latency` to measure baseline.
 9. **maxmemory should include COW headroom.** On a 32 GB machine, set maxmemory to ~16-18 GB, not 28 GB.
 10. **Client-side caching (RESP3 tracking) reduces network round trips** and makes hot keys a non-issue — the server notifies clients on key changes.
+
+---
+
+## Related
+
+- [Databases](../../08-databases/) — Outages, corruption, performance
+- [Distributed Systems](../../09-distributed-systems/) — Consensus, cascade failures
+- [Kubernetes](../../07-kubernetes/) — Cluster failures
+- [Networking](../../11-networking/) — DNS, TCP issues
+- [SRE](../../14-sre-observability/) — Incident response

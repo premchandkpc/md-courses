@@ -1290,3 +1290,13 @@ groups:
 8. **Read-after-write consistency requires application awareness.** The database can't solve this alone — the application must route reads to primary after writes.
 9. **Test autovacuum under write load** before going to production. Simulate 2x peak traffic and verify vacuum can keep up.
 10. **PostgreSQL gives you enough rope to hang yourself.** It trusts you to configure it safely. Monitoring is not optional — it's survival.
+
+---
+
+## Related
+
+- [Databases](../../08-databases/) — Outages, corruption, performance
+- [Distributed Systems](../../09-distributed-systems/) — Consensus, cascade failures
+- [Kubernetes](../../07-kubernetes/) — Cluster failures
+- [Networking](../../11-networking/) — DNS, TCP issues
+- [SRE](../../14-sre-observability/) — Incident response

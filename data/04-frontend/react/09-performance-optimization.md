@@ -404,3 +404,13 @@ Track bundle size per commit with `bundlesize` or `size-limit` in CI.
 | Context | Split or atom state | `zustand`, `jotai`, split contexts |
 | Heavy CPU | Web Workers | `comlink`, `Worker` |
 | Monitoring | Web Vitals + PerformanceObserver | `web-vitals`, `PerformanceObserver` |
+
+---
+
+## Related
+
+- [Networking](../../11-networking/) — HTTP, performance, optimization
+- [Security](../../13-security/) — CORS, authentication, XSS prevention
+- [Backend](../../03-backend/) — API design and contracts
+- [Performance Engineering](../../18-performance-engineering/) — Browser rendering
+- [Testing](../../19-testing/) — E2E and component testing

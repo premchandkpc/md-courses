@@ -816,3 +816,13 @@ props.put(ProducerConfig.BUFFER_MEMORY_CONFIG, 33554432);  // 32 MB
 8. **Test rebalance behavior** under load with chaos engineering. A rebalance that works with 10 partitions will behave differently with 1000.
 9. **Consumer lag alerts must trigger BEFORE rebalance threshold.** Alert at 50% of `max.poll.interval.ms` processing time.
 10. **Document the broker start order** after a cluster-wide outage. Starting controllers first, then ordinary brokers, avoids unnecessary leader elections.
+
+---
+
+## Related
+
+- [Databases](../../08-databases/) — Outages, corruption, performance
+- [Distributed Systems](../../09-distributed-systems/) — Consensus, cascade failures
+- [Kubernetes](../../07-kubernetes/) — Cluster failures
+- [Networking](../../11-networking/) — DNS, TCP issues
+- [SRE](../../14-sre-observability/) — Incident response

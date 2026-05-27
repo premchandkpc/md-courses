@@ -1112,3 +1112,13 @@ def train_neural_network(model, X_train, y_train, X_val, y_val,
 **Problem 4**: Train a ResNet-18 on CIFAR-10 with both BatchNorm and LayerNorm. Compare convergence speed, final accuracy, and sensitivity to batch size.
 
 **Problem 5**: Implement Mixture of Experts with noisy top-k gating. Train on a synthetic dataset and show how expert specialization emerges.
+
+---
+
+## Related
+
+- [Databases](../../08-databases/) — Vector search, embeddings storage
+- [Python Backend](../../03-backend/) — ML inference APIs
+- [Cloud Platforms](../../05-cloud/) — GPU/TPU infrastructure
+- [Data Engineering](../../02-data-engineering/) — Training data pipelines
+- [Performance Engineering](../../18-performance-engineering/) — Model optimization

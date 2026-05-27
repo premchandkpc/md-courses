@@ -2690,3 +2690,13 @@ $ python3 -c "import socket; print(socket.getaddrinfo('api.meridianpay.com', 443
 ---
 
 *End of document — DNSSEC, TTL management, cache poisoning, and multi-provider DNS failure patterns for production SRE teams.*
+
+---
+
+## Related
+
+- [Databases](../../08-databases/) — Outages, corruption, performance
+- [Distributed Systems](../../09-distributed-systems/) — Consensus, cascade failures
+- [Kubernetes](../../07-kubernetes/) — Cluster failures
+- [Networking](../../11-networking/) — DNS, TCP issues
+- [SRE](../../14-sre-observability/) — Incident response

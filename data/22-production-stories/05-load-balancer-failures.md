@@ -974,3 +974,13 @@ $ echo "show stat" | socat /var/run/haproxy.sock stdio | \
 8. **Test failover scenarios regularly.** A DNS failover that works in theory may fail when the primary region actually goes down.
 9. **Rate limiting at the LB protects backends from traffic spikes.** Always configure rate limiting zones.
 10. **Use both L4 (NLB) and L7 (ALB/Nginx) load balancers** in layers — NLB for high-throughput connection handling, ALB for intelligent routing.
+
+---
+
+## Related
+
+- [Databases](../../08-databases/) — Outages, corruption, performance
+- [Distributed Systems](../../09-distributed-systems/) — Consensus, cascade failures
+- [Kubernetes](../../07-kubernetes/) — Cluster failures
+- [Networking](../../11-networking/) — DNS, TCP issues
+- [SRE](../../14-sre-observability/) — Incident response

@@ -318,3 +318,13 @@ Compile-time framework. Minimal runtime, reactive by default.
 | [06 — DevOps](../06-devops/) | Frontend CI/CD, build pipelines, preview deployments (Vercel, Netlify), Docker for SSR apps |
 | [11 — Networking](../11-networking/) | HTTP/2 multiplexing, CDN routing, TLS termination, DNS resolution impact on page load |
 | [17 — Software Architecture](../17-software-architecture/) | Frontend architecture patterns (micro-frontends, module federation), design systems |
+
+---
+
+## Related
+
+- [Networking](../../11-networking/) — HTTP, performance, optimization
+- [Security](../../13-security/) — CORS, authentication, XSS prevention
+- [Backend](../../03-backend/) — API design and contracts
+- [Performance Engineering](../../18-performance-engineering/) — Browser rendering
+- [Testing](../../19-testing/) — E2E and component testing

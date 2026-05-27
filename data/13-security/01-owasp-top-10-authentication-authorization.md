@@ -2258,3 +2258,13 @@ Attacker uses forged token to:
 ---
 
 **End of File: 900+ lines**
+
+---
+
+## Related
+
+- [Networking](../../11-networking/) — TLS, DNS security
+- [Cloud Platforms](../../05-cloud/) — IAM, network policies
+- [Kubernetes](../../07-kubernetes/) — Pod security, RBAC
+- [Backend](../../03-backend/) — Input validation, auth
+- [Databases](../../08-databases/) — Encryption, access control

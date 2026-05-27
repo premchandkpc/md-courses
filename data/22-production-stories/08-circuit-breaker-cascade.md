@@ -1917,3 +1917,13 @@ f) Redirect traffic away from failing dependencies
 ---
 
 *Incident report prepared by Platform SRE team. Postmortem reviewed by engineering leadership on 2026-06-03. All action items tracked in JIRA epic PLATFORM-4281.*
+
+---
+
+## Related
+
+- [Databases](../../08-databases/) — Outages, corruption, performance
+- [Distributed Systems](../../09-distributed-systems/) — Consensus, cascade failures
+- [Kubernetes](../../07-kubernetes/) — Cluster failures
+- [Networking](../../11-networking/) — DNS, TCP issues
+- [SRE](../../14-sre-observability/) — Incident response

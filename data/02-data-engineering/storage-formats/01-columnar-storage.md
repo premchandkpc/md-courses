@@ -681,3 +681,13 @@ Data Lake:
   Staging: Parquet (optimized for Spark ETL)
   Curated: Parquet with Z-order (optimized for analytics queries)
 ```
+
+---
+
+## Related
+
+- [Databases](../../08-databases/) — Data storage and querying
+- [Messaging](../../10-messaging/) — Event streaming (Kafka)
+- [Cloud Platforms](../../05-cloud/) — Data warehousing (Redshift, BigQuery)
+- [Backend](../../03-backend/) — Data service APIs
+- [Distributed Systems](../../09-distributed-systems/) — Scale and consistency

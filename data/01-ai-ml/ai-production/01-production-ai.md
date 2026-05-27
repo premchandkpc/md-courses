@@ -869,3 +869,13 @@ class AlertManager:
 **Problem 4**: Create a comprehensive monitoring dashboard tracking P50/P95/P99 latency, error rates, token usage, and cost per request.
 
 **Problem 5**: Build a CI/CD pipeline for ML models that validates data quality, runs evaluation on a held-out set, checks metric thresholds, and promotes to staging only if all gates pass.
+
+---
+
+## Related
+
+- [Databases](../../08-databases/) — Vector search, embeddings storage
+- [Python Backend](../../03-backend/) — ML inference APIs
+- [Cloud Platforms](../../05-cloud/) — GPU/TPU infrastructure
+- [Data Engineering](../../02-data-engineering/) — Training data pipelines
+- [Performance Engineering](../../18-performance-engineering/) — Model optimization

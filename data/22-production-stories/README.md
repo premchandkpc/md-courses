@@ -538,3 +538,13 @@ The Three Questions After Every Incident:
 ---
 
 **Next**: [Project Architectures](../23-projects/README.md) · [SRE & Observability](../14-sre-observability/README.md)
+
+---
+
+## Related
+
+- [Databases](../../08-databases/) — Outages, corruption, performance
+- [Distributed Systems](../../09-distributed-systems/) — Consensus, cascade failures
+- [Kubernetes](../../07-kubernetes/) — Cluster failures
+- [Networking](../../11-networking/) — DNS, TCP issues
+- [SRE](../../14-sre-observability/) — Incident response

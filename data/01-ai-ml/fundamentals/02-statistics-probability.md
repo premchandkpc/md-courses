@@ -945,3 +945,13 @@ def sample_with_temperature(logits, temperature=1.0):
 **Problem 4**: Implement Thompson Sampling for a multi-armed bandit problem with 10 arms and Bernoulli rewards.
 
 **Problem 5**: Using Monte Carlo methods, estimate the variance of the sampling distribution of the median for different sample sizes.
+
+---
+
+## Related
+
+- [Databases](../../08-databases/) — Vector search, embeddings storage
+- [Python Backend](../../03-backend/) — ML inference APIs
+- [Cloud Platforms](../../05-cloud/) — GPU/TPU infrastructure
+- [Data Engineering](../../02-data-engineering/) — Training data pipelines
+- [Performance Engineering](../../18-performance-engineering/) — Model optimization

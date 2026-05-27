@@ -1054,3 +1054,13 @@ class ModelCICD:
 **Problem 4**: Build an LLM observability dashboard that tracks token usage, costs, latency, and safety violations across model versions.
 
 **Problem 5**: Implement a CI/CD pipeline for ML that validates model quality against thresholds before promoting to production.
+
+---
+
+## Related
+
+- [Databases](../../08-databases/) — Vector search, embeddings storage
+- [Python Backend](../../03-backend/) — ML inference APIs
+- [Cloud Platforms](../../05-cloud/) — GPU/TPU infrastructure
+- [Data Engineering](../../02-data-engineering/) — Training data pipelines
+- [Performance Engineering](../../18-performance-engineering/) — Model optimization

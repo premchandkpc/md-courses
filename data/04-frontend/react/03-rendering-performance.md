@@ -1179,3 +1179,13 @@ graph TD
 - [ ] No inline functions/objects passed to children without memo
 - [ ] Error boundaries don't cause cascading re-renders
 - [ ] React.memo wrapped on exported components in shared library
+
+---
+
+## Related
+
+- [Networking](../../11-networking/) — HTTP, performance, optimization
+- [Security](../../13-security/) — CORS, authentication, XSS prevention
+- [Backend](../../03-backend/) — API design and contracts
+- [Performance Engineering](../../18-performance-engineering/) — Browser rendering
+- [Testing](../../19-testing/) — E2E and component testing

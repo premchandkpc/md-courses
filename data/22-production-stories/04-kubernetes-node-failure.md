@@ -1088,3 +1088,13 @@ description: "Priority for production workloads."
 8. **Monitor CoreDNS, CNI, and API server as critical path components.** If any of these fails, the cluster stops working.
 9. **Use priority classes to differentiate critical from best-effort workloads.** During eviction, critical pods stay running.
 10. **Reserve kubelet/system resources via kubeReserved and systemReserved.** Prevents kubelet from being starved by pods.
+
+---
+
+## Related
+
+- [Databases](../../08-databases/) — Outages, corruption, performance
+- [Distributed Systems](../../09-distributed-systems/) — Consensus, cascade failures
+- [Kubernetes](../../07-kubernetes/) — Cluster failures
+- [Networking](../../11-networking/) — DNS, TCP issues
+- [SRE](../../14-sre-observability/) — Incident response

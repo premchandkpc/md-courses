@@ -1378,3 +1378,13 @@ The lint rule is a static analysis that runs at build time — it does not rely 
 - [ ] No `useLayoutEffect` where `useEffect` suffices
 - [ ] All hooks called unconditionally at top level
 - [ ] `useTransition` or `useDeferredValue` for expensive re-renders
+
+---
+
+## Related
+
+- [Networking](../../11-networking/) — HTTP, performance, optimization
+- [Security](../../13-security/) — CORS, authentication, XSS prevention
+- [Backend](../../03-backend/) — API design and contracts
+- [Performance Engineering](../../18-performance-engineering/) — Browser rendering
+- [Testing](../../19-testing/) — E2E and component testing

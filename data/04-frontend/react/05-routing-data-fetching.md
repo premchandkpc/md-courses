@@ -964,3 +964,13 @@ sequenceDiagram
 - [ ] Offline mutation queue with replay logic
 - [ ] Persistent cache excludes sensitive data
 - [ ] `cacheTime` > `staleTime`
+
+---
+
+## Related
+
+- [Networking](../../11-networking/) — HTTP, performance, optimization
+- [Security](../../13-security/) — CORS, authentication, XSS prevention
+- [Backend](../../03-backend/) — API design and contracts
+- [Performance Engineering](../../18-performance-engineering/) — Browser rendering
+- [Testing](../../19-testing/) — E2E and component testing

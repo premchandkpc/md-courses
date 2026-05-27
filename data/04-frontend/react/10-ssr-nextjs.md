@@ -366,3 +366,13 @@ Hydration proceeds incrementally — interactive as each chunk arrives
 | Geolocation / auth check | Middleware (Edge) |
 | Large images | next/image + remotePatterns |
 | Security headers | Middleware or next.config |
+
+---
+
+## Related
+
+- [Networking](../../11-networking/) — HTTP, performance, optimization
+- [Security](../../13-security/) — CORS, authentication, XSS prevention
+- [Backend](../../03-backend/) — API design and contracts
+- [Performance Engineering](../../18-performance-engineering/) — Browser rendering
+- [Testing](../../19-testing/) — E2E and component testing

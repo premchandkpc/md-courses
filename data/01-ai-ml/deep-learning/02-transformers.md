@@ -1187,3 +1187,13 @@ class ContinuousBatchingScheduler:
 **Problem 4**: Implement rotary position embeddings (RoPE) from scratch and verify that attention scores depend only on relative position, not absolute position.
 
 **Problem 5**: Measure the theoretical FLOPs and memory requirements for a 7B parameter model. Calculate the optimal batch size and sequence length given an A100 80GB GPU.
+
+---
+
+## Related
+
+- [Databases](../../08-databases/) — Vector search, embeddings storage
+- [Python Backend](../../03-backend/) — ML inference APIs
+- [Cloud Platforms](../../05-cloud/) — GPU/TPU infrastructure
+- [Data Engineering](../../02-data-engineering/) — Training data pipelines
+- [Performance Engineering](../../18-performance-engineering/) — Model optimization

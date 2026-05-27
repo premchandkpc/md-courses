@@ -1377,3 +1377,13 @@ async function getFeatureFlags(userId) {
 - [ ] Offline page / graceful degradation for PWA
 - [ ] Error budget alerts configured
 - [ ] Performance budget defined and enforced
+
+---
+
+## Related
+
+- [Networking](../../11-networking/) — HTTP, performance, optimization
+- [Security](../../13-security/) — CORS, authentication, XSS prevention
+- [Backend](../../03-backend/) — API design and contracts
+- [Performance Engineering](../../18-performance-engineering/) — Browser rendering
+- [Testing](../../19-testing/) — E2E and component testing

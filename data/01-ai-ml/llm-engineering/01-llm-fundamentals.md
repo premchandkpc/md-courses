@@ -1199,3 +1199,13 @@ def train_llm(model, tokenizer, dataset, config):
 **Problem 4**: Build a beam search decoder with length penalty and repetition penalty. Compare output quality vs greedy decoding.
 
 **Problem 5**: Implement Speculative Decoding with a smaller draft model (e.g., 70M) verifying against a larger target model (e.g., 1B). Measure wall-clock speedup.
+
+---
+
+## Related
+
+- [Databases](../../08-databases/) — Vector search, embeddings storage
+- [Python Backend](../../03-backend/) — ML inference APIs
+- [Cloud Platforms](../../05-cloud/) — GPU/TPU infrastructure
+- [Data Engineering](../../02-data-engineering/) — Training data pipelines
+- [Performance Engineering](../../18-performance-engineering/) — Model optimization

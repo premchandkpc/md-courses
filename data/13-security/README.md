@@ -161,3 +161,13 @@ Each file includes content at multiple depth levels:
 **Created:** May 27, 2024
 **For:** Elite engineering learning repository
 **Depth:** Professional → FAANG interview level
+
+---
+
+## Related
+
+- [Networking](../../11-networking/) — TLS, DNS security
+- [Cloud Platforms](../../05-cloud/) — IAM, network policies
+- [Kubernetes](../../07-kubernetes/) — Pod security, RBAC
+- [Backend](../../03-backend/) — Input validation, auth
+- [Databases](../../08-databases/) — Encryption, access control

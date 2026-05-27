@@ -1097,3 +1097,13 @@ Normalizing a todo app with 10 todos is unnecessary. Normalization starts paying
 - [ ] No state management library for simple form state
 - [ ] Redux DevTools disabled in production middleware
 - [ ] URL state used for shareable/app-state (search, filters, page)
+
+---
+
+## Related
+
+- [Networking](../../11-networking/) — HTTP, performance, optimization
+- [Security](../../13-security/) — CORS, authentication, XSS prevention
+- [Backend](../../03-backend/) — API design and contracts
+- [Performance Engineering](../../18-performance-engineering/) — Browser rendering
+- [Testing](../../19-testing/) — E2E and component testing

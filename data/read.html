@@ -423,7 +423,7 @@
         text = text.replace(`__CODE${i}__`, `<pre><code>${esc(code)}</code></pre>`);
       }
       for (let i = 0; i < diagrams.length; i++) {
-        text = text.replace(`__MERMAID${i}__`, `<div class="mermaid">${esc(diagrams[i])}</div>`);
+        text = text.replace(`__MERMAID${i}__`, `<div class="mermaid">${diagrams[i]}</div>`);
       }
       if (diagrams.length > 0) {
         setTimeout(() => window.mermaid && window.mermaid.contentLoaded && window.mermaid.contentLoaded(), 0);

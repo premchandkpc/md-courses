@@ -1,0 +1,223 @@
+# Git Commands Cheat Sheet
+
+Essential Git commands for daily development.
+
+## Setup
+
+```bash
+git config --global user.name "Your Name"
+git config --global user.email "your.email@example.com"
+git config --list                           # View all config
+```
+
+## Creating & Cloning
+
+```bash
+git init                                    # Initialize new repo
+git clone <url>                             # Clone existing repo
+git clone <url> <directory>                 # Clone into specific directory
+git clone --depth 1 <url>                   # Shallow clone (faster)
+```
+
+## Basic Workflow
+
+```bash
+git status                                  # Show working tree status
+git add <file>                              # Stage single file
+git add .                                   # Stage all changes
+git add -A                                  # Stage all (including deletions)
+git add -p                                  # Interactive staging (patch mode)
+
+git commit -m "message"                     # Commit with message
+git commit -am "message"                    # Stage and commit tracked files
+git commit --amend                          # Modify last commit
+git commit --amend --no-edit                # Amend without changing message
+```
+
+## Viewing History
+
+```bash
+git log                                     # Show commit history
+git log --oneline                           # Condensed history
+git log --graph --oneline --all             # Visual branch history
+git log -p                                  # Show changes with commits
+git log --stat                              # Show file change statistics
+git log -n 5                                # Last 5 commits
+git log --since="2 weeks ago"               # Commits in last 2 weeks
+git log --author="name"                     # Commits by author
+git log --grep="pattern"                    # Search commit messages
+
+git show <commit>                           # Show specific commit
+git show <commit>:<file>                    # Show file at commit
+git diff                                    # Unstaged changes
+git diff --staged                           # Staged changes
+git diff <branch1> <branch2>                # Compare branches
+git diff <commit1> <commit2>                # Compare commits
+
+git blame <file>                            # Show who changed each line
+git log -p <file>                           # Full history of file
+```
+
+## Branching
+
+```bash
+git branch                                  # List local branches
+git branch -a                               # List all branches
+git branch <branch-name>                    # Create new branch
+git branch -d <branch-name>                 # Delete branch (safe)
+git branch -D <branch-name>                 # Force delete branch
+git branch -m <old-name> <new-name>        # Rename branch
+
+git checkout <branch>                       # Switch to branch
+git checkout -b <branch>                    # Create and switch to branch
+git switch <branch>                         # Modern alternative to checkout
+git switch -c <branch>                      # Create and switch (modern)
+```
+
+## Merging
+
+```bash
+git merge <branch>                          # Merge branch into current
+git merge --no-ff <branch>                  # Merge with merge commit
+git merge --squash <branch>                 # Squash commits before merge
+git merge --abort                           # Abort merge in progress
+
+git rebase <branch>                         # Rebase current on branch
+git rebase -i HEAD~3                        # Interactive rebase last 3 commits
+git rebase --continue                       # Continue after resolving conflicts
+git rebase --abort                          # Cancel rebase
+```
+
+## Remote Operations
+
+```bash
+git remote -v                               # List remotes with URLs
+git remote add origin <url>                 # Add remote
+git remote remove <name>                    # Remove remote
+git remote rename <old> <new>               # Rename remote
+
+git push origin <branch>                    # Push branch to remote
+git push -u origin <branch>                 # Push and set upstream
+git push origin --all                       # Push all branches
+git push origin --delete <branch>           # Delete remote branch
+git push origin <local>:<remote>            # Push to different remote branch
+
+git pull                                    # Fetch and merge
+git pull --rebase                           # Fetch and rebase
+git fetch                                   # Fetch without merging
+git fetch origin <branch>                   # Fetch specific branch
+```
+
+## Undoing Changes
+
+```bash
+git restore <file>                          # Discard changes in file
+git restore --staged <file>                 # Unstage file
+git reset <file>                            # Unstage file (traditional)
+git reset HEAD~1                            # Undo last commit, keep changes
+git reset --hard HEAD~1                     # Undo last commit, discard changes
+
+git revert <commit>                         # Create commit that undoes changes
+git clean -fd                               # Remove untracked files/dirs
+git checkout <commit> -- <file>             # Restore file from commit
+```
+
+## Stashing
+
+```bash
+git stash                                   # Save changes temporarily
+git stash list                              # List stashes
+git stash show stash@{0}                    # Show stash contents
+git stash pop                               # Apply and remove latest stash
+git stash apply stash@{0}                   # Apply stash without removing
+git stash drop stash@{0}                    # Delete stash
+git stash clear                             # Delete all stashes
+```
+
+## Tags
+
+```bash
+git tag                                     # List tags
+git tag <tag-name>                          # Create lightweight tag
+git tag -a <tag-name> -m "message"         # Create annotated tag
+git show <tag-name>                         # Show tag details
+git push origin <tag-name>                  # Push specific tag
+git push origin --tags                      # Push all tags
+git tag -d <tag-name>                       # Delete local tag
+git push origin :refs/tags/<tag-name>       # Delete remote tag
+```
+
+## Advanced
+
+```bash
+git cherry-pick <commit>                    # Apply specific commit to current branch
+git bisect start                            # Binary search for problematic commit
+git reflog                                  # Show reference history
+git fsck --lost-found                       # Find dangling commits
+
+git rebase -i --root                        # Rewrite entire history
+git filter-branch                           # Rewrite history (use git-filter-repo instead)
+git rev-parse HEAD                          # Get current commit hash
+git rev-list --count HEAD                   # Count commits in current branch
+```
+
+## Useful Aliases
+
+Add to `.gitconfig`:
+```
+[alias]
+  st = status
+  co = checkout
+  br = branch
+  ci = commit
+  unstage = restore --staged
+  last = log -1 HEAD
+  visual = log --graph --oneline --all
+  amend = commit --amend --no-edit
+  revertlast = revert HEAD
+  sync = !git fetch origin && git rebase origin/main
+```
+
+## Common Workflows
+
+### Feature Branch Workflow
+```bash
+git checkout main
+git pull origin main
+git checkout -b feature/my-feature
+# ... make changes
+git add .
+git commit -m "feat: add feature"
+git push -u origin feature/my-feature
+# Create PR on GitHub/GitLab
+```
+
+### Fix Last Commit Message
+```bash
+git commit --amend -m "new message"
+git push origin <branch> --force-with-lease
+```
+
+### Undo Published Commit
+```bash
+git revert <commit-hash>
+git push origin main
+```
+
+### Sync Fork with Upstream
+```bash
+git remote add upstream <original-repo-url>
+git fetch upstream
+git checkout main
+git rebase upstream/main
+git push origin main --force-with-lease
+```
+
+## Troubleshooting
+
+```bash
+git fsck --full                             # Check repository integrity
+git gc                                      # Garbage collection
+git reflog                                  # Find lost commits
+git log --all --oneline --graph             # Visualize all refs
+```

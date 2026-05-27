@@ -4,6 +4,213 @@
 
 ---
 
+## Layer 1: Beginner Mental Model
+
+**Analogy**: Like shipping containers. A container is a standardized box (Linux cgroups + namespaces) with your app inside. You can ship the box anywhere (dev, staging, prod) and it runs the same. Healthcheck = inspecting the box during transit. Logging = recording what happened in the box.
+
+**Why it matters**:
+- **Netflix**: Switched to containers, reduced deployment time 10x (1 hour → 6 minutes).
+- **Stripe**: Containers = reproducible environments, developers can't say "works on my machine" (it runs in the container).
+- **Uber**: Multi-container apps (microservices) = scale individual services. One overloaded service doesn't crash others.
+- **Cost**: Containers reduce resource waste (share host kernel), save 30% infrastructure costs ($10M/year at scale).
+
+**Core insight**: Container != VM. No hypervisor overhead. But less isolated than VMs (share kernel). Use containers for cloud, VMs for isolation.
+
+---
+
+## Layer 4: Production Reality
+
+### Docker Production Failure Modes
+
+| Failure | Symptoms | Root Cause | Fix |
+|---------|----------|-----------|-----|
+| **Zombie Processes** | `ps aux` shows defunct processes | Parent process doesn't reap child (SIGCHLD), init system not Docker | Use `--init` flag (tini), or proper signal handling in app |
+| **OOM Kill** | Container suddenly exits with code 137 | No memory limit set, app leaks memory, reaches host limit | Set `--memory=2gb`, add swap limit, monitor with `docker stats` |
+| **Disk Full** | Container stops, no space on device | Logs bloat, no rotation configured, `/var/lib/docker` full | Set log rotation (max-size), use `--log-driver=none`, prune images |
+| **Unhealthy Healthcheck** | Container shows unhealthy, then restart loop | Healthcheck too strict (3s timeout, too short), app slow to start | Increase start period (--health-start-period=30s), more lenient checks |
+| **Signal Handling Broken** | SIGTERM ignored, docker stop waits 10s then SIGKILL | App doesn't handle signals, PID 1 isn't the app | Use exec form in entrypoint, handle SIGTERM gracefully |
+| **Layer Cache Miss** | Build takes 10min (should be 30s) | Dockerfile layers out of order, frequently changing layer near top | Order Dockerfile: FROM → stable deps → code → entrypoint |
+| **Image Bloat** | Docker image 2GB (should be 200MB) | Base image huge (ubuntu vs alpine), dependencies not cleaned, build artifacts left | Use multi-stage, alpine, clean apt cache (RUN ... && rm -rf /var/cache) |
+| **Compose Port Conflict** | Port 8080 in use, can't start container | Multiple containers define same port, another service already running | Use dynamic port mapping, check docker ps for conflicts |
+
+### Production Incident: Google Cloud Build OOM (2018)
+
+**Context**: Google Cloud Build used Docker containers to build customer code. During peak hours, build containers hit OOM and crashed, causing build failures.
+
+**What happened**:
+- Build container: `docker run -m 4gb ubuntu:18.04 /build.sh`
+- Build script compiled large Java project
+- Compiler (javac) needed 6GB (malloc), but limit was 4GB
+- OOM killer triggered, killed javac process
+- Build failed mysteriously (no error message, just exit 137)
+- Customers saw "Build failed" with no useful logs
+
+**The bug**:
+```dockerfile
+# ❌ Buggy: No memory limit, rely on Docker default
+FROM ubuntu:18.04
+RUN apt-get update && apt-get install -y openjdk-11-jdk
+COPY build.sh /build.sh
+RUN /build.sh  # ← May need >4GB for large projects
+```
+
+**The fix**:
+```dockerfile
+# ✅ Fixed: Explicit memory constraints + heap limiting
+FROM ubuntu:18.04
+RUN apt-get update && apt-get install -y openjdk-11-jdk
+COPY build.sh /build.sh
+ENV _JAVA_OPTIONS="-Xmx6gb"  # ← Limit JVM heap
+RUN /build.sh
+```
+
+```bash
+# Also in docker run
+docker run -m 8gb -e _JAVA_OPTIONS="-Xmx6gb" ubuntu:18.04 /build.sh
+# Memory: 8GB total, 6GB to JVM, 2GB for OS
+```
+
+**Result**: Build containers now sized per language. Java = 8GB, Go = 2GB, Node = 1GB. Failures eliminated.
+
+---
+
+## Layer 5: Staff Engineer Perspective
+
+### Container Strategy Tradeoffs
+
+| Strategy | Complexity | Performance | Cost | Security | Use Case |
+|----------|-----------|-------------|------|----------|----------|
+| **Single container per service** | Low | Excellent | $$ | Good | Microservices |
+| **Multi-container pod (Kubernetes)** | High | Excellent | $$ | Excellent | Complex services (sidecar logging) |
+| **Compose (dev)** | Low | Good (local) | $0 | Minimal | Local development |
+| **Docker Swarm** | Medium | Good | $ | Medium | Simple prod (deprecated trend) |
+| **Hybrid (VM + container)** | Very high | Excellent | $$$ | Excellent | Compliance-heavy (financial) |
+
+### Scaling Pattern: Single Host → Global Infrastructure
+
+**Stage 1 (Startup)**: Docker on single host
+- Development machine or small cloud instance
+- Docker Compose for local testing
+- Cost: $50-100/month
+
+**Stage 2 (Growth)**: Docker Swarm or small Kubernetes
+- 3 hosts in one data center
+- Containers distributed, restart on failure
+- Basic monitoring (docker stats)
+- Cost: $500-1K/month
+
+**Stage 3 (Scale)**: Kubernetes multi-region
+- 100+ nodes across 3 regions
+- Auto-scaling (HPA), auto-healing
+- Advanced networking (mesh), security (admission controllers)
+- Cost: $10K-50K/month
+
+**Stage 4 (Enterprise)**: Custom container orchestration
+- Thousands of hosts, global deployment
+- Custom CRI (Container Runtime Interface) integration
+- Multi-cloud (AWS, GCP, Azure) orchestration
+- Cost: $100K+/month, dedicated platform team
+
+**Real example: Amazon**:
+- 2010: EC2 instances, custom scripts
+- 2014: Internal container system (protoype)
+- 2017: ECS (Elastic Container Service), managed Kubernetes
+- 2023: Fargate (serverless containers), Lambda (function containers)
+- Result: 50M containers deployed annually, sub-second scaling
+
+---
+
+## Layer 5: Interview Questions
+
+### Level 1 (Junior Engineer)
+
+**Q1: What's a Docker container? How is it different from a VM?**
+A: Container = process in a box (cgroups + namespaces), shares host kernel. VM = full OS virtualization, own kernel. Containers: faster, lighter (MB vs GB), more isolation loss. Use containers for scale, VMs for isolation.
+- Why asked: Fundamentals
+- Expected: Understand shared kernel, size/speed advantage, isolation tradeoff
+
+**Q2: What's a healthcheck? Why does Docker care?**
+A: Healthcheck = periodic command (e.g., curl localhost:8080). If fails N times, Docker marks unhealthy, can restart. Use to detect app hung (listening but broken), not just crashed.
+- Why asked: Container monitoring
+- Expected: Understand detection of "dead but running" containers
+
+### Level 2 (Mid-Level Engineer)
+
+**Q3: OOM killer hit your container. How do you debug?**
+A:
+1. `docker logs --tail 100 container` (look for OOM messages)
+2. `docker inspect container` (check memory limit)
+3. `docker stats` (monitor live memory)
+4. `docker exec -it container bash` (debug memory usage in app)
+5. If memory limit too low: increase with `docker update --memory 4gb container`
+6. If app leaks: profile with `valgrind`, `jmap` (Java), etc.
+- Why asked: Memory troubleshooting
+- Expected: Know tools, know limits, know app profiling
+
+**Q4: Dockerfile layer caching. Explain when cache breaks.**
+A: Docker caches layers. Layer N uses hash of layer N-1 content. If any Dockerfile instruction changes, layer cache invalidates N and all following layers. Solution: order FROM → stable dependencies → code → entrypoint.
+- Why asked: Build performance
+- Expected: Understand layer dependency, cache invalidation
+
+### Level 3 (Senior Engineer)
+
+**Q5: Design Dockerfile for Java app (100MB jar, 500MB deps). Target: <200MB image, fast rebuild.**
+A:
+- Multi-stage build:
+  - Stage 1: compile app (download deps, compile, large)
+  - Stage 2: runtime (copy compiled jar, JRE, minimal)
+- Base image: openjdk:11-jre-slim (not ubuntu) = saves 300MB
+- Deps: layer separately from code (code changes often, deps rarely)
+- Result: final image ~200MB (jar + slim JRE + libc)
+- Cache: code layer rebuilds often, deps layer cached
+- Build time: 2min first build, 30s rebuild
+- Why asked: Optimization, real constraints
+- Expected: Multi-stage strategy, layer ordering, base image choice
+
+**Q6: Compose file for microservices (web + api + db). Handle networking, logging, restart.**
+A:
+- Services: web (nginx), api (Python), db (Postgres)
+- Networking: auto (compose network), DNS (container name = hostname)
+- Healthcheck: api → db connectivity check
+- Restart: unless-stopped (survives compose down/up)
+- Logging: json-file with rotation (max-size=10m)
+- Dependencies: web depends_on api, api depends_on db
+- Monitoring: expose metrics port (Prometheus)
+- Why asked: Production-like config
+- Expected: Network understanding, health checks, logging strategy
+
+### Level 4 (Staff Engineer)
+
+**Q7: Migrate 100 services from VMs to Docker. Plan the rollout.**
+A:
+- Phase 1 (2 weeks): Containerize top 10 services (highest value), test in staging
+- Phase 2 (2 weeks): Parallel run (Docker + VM) on 10 services, monitor parity
+- Phase 3 (4 weeks): Rollout: 25% → 50% → 100% by service criticality
+- Risk: config drift (configs live outside container), secrets exposure (don't put in image)
+- Mitigation: use ConfigMap/Secret for config, scan images (Docker Scout), canary traffic
+- Cost savings: VMs → containers = 30% infrastructure cost reduction
+- Ops training: team must learn Docker debugging, log aggregation
+- Rollback: keep VM images, revert traffic if issues found
+- Timeline: 2 months full migration, 1 month stabilization
+- Why asked: Large-scale migration, risk management
+- Expected: Phased approach, risk mitigation, cost/benefit
+
+**Q8: Design container image registry strategy for company with 10K+ images.**
+A:
+- Centralized registry (Docker Hub, ECR, Artifactory) with caching layer
+- Tagging: app:v1.2.3 (semantic versioning), app:latest (skip in prod)
+- Scanning: every image scanned for vulnerabilities (CVE database)
+- Storage: store in S3/GCS (cheap), cache locally (fast pulls)
+- Access control: RBAC by team, secrets rotated
+- Retention: delete images >6 months old (save storage costs)
+- Mirrors: copy popular images to regional registries (faster pulls)
+- Cost: centralized = $10K/month, mirrors = +$5K/month
+- Monitoring: pull failures, scan failures alert
+- Why asked: Scale, security, operational patterns
+- Expected: Centralization strategy, scanning, access control, cost awareness
+
+---
+
 
 
 ```mermaid

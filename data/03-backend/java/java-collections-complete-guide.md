@@ -1,10 +1,12 @@
-# Java Collections: Complete Reference Guide
+# Java Collections: Complete Guide with Real Scenarios
 
 ## Overview
 
-Java Collections Framework provides reusable data structures. Organized by interface hierarchy:
-- **Collection** → List, Set, Queue
-- **Map** (standalone hierarchy)
+Java Collections Framework provides reusable data structures organized by:
+- **Collection** → List, Set, Queue (for single values)
+- **Map** → Key-value pairs (separate hierarchy)
+
+Know the right collection = faster code, lower memory, fewer bugs.
 
 ---
 

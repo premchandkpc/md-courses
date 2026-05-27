@@ -2,6 +2,37 @@
 
 > **Scope**: Custom hooks, hook composition, testing hooks, HOCs vs render props, compound components, polymorphic components, controlled/uncontrolled, forwardRef, generic components
 
+
+## Custom Hook Composition
+
+```mermaid
+graph LR
+    B1["useState"]
+    B2["useEffect"]
+    B3["useContext"]
+    
+    B1 --> UF["useFetch"]
+    B2 --> UF
+    
+    B1 --> UL["useLocalStorage"]
+    B2 --> UL
+    
+    B1 --> UT["useToggle"]
+    
+    UF --> COMP["MyComponent"]
+    UL --> COMP
+    UT --> COMP
+    
+    style B1 fill:#4a8bc2
+    style B2 fill:#4a8bc2
+    style B3 fill:#4a8bc2
+    style UF fill:#2d5a7b
+    style UL fill:#2d5a7b
+    style UT fill:#2d5a7b
+    style COMP fill:#c73e1d
+```
+
+
 ## 1. Custom Hooks Fundamentals
 
 Custom hooks are functions that use built-in hooks and share stateful logic between components. They must start with `use`.

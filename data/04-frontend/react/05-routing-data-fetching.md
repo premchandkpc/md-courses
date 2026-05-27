@@ -4,6 +4,31 @@
 
 ---
 
+
+## Router Navigation Flow
+
+```mermaid
+sequenceDiagram
+    participant U as User
+    participant BR as Browser
+    participant R as Router
+    participant C as Component
+    
+    U->>BR: Click Link
+    BR->>R: pushState
+    R->>R: Match route
+    R->>C: Render new
+    C->>C: useEffect
+    C->>C: Fetch data
+    
+    U->>BR: Back button
+    BR->>R: popstate
+    R->>R: Match URL
+    R->>C: Unmount old
+    R->>C: Mount new
+```
+
+
 ## 1. React Router Fundamentals
 
 React Router v6 uses a nested route tree with the History API — no page reloads, only React re-renders.

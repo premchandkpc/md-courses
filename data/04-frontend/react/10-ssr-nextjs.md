@@ -2,6 +2,43 @@
 
 > **Scope**: SSR, SSG, ISR, RSC, edge runtime, streaming SSR, PPR, server actions, middleware, routing, data fetching, caching
 
+
+## SSR vs CSR vs SSG
+
+```mermaid
+graph TB
+    subgraph CSR["Client-Side Render"]
+        C1["Send empty HTML<br/>+ JS bundle"]
+        C2["Browser runs JS"]
+        C3["Renders to DOM"]
+    end
+    
+    subgraph SSR["Server-Side Render"]
+        S1["Server renders<br/>to HTML"]
+        S2["Send HTML + JS"]
+        S3["Browser hydrates"]
+    end
+    
+    subgraph SSG["Static Generation"]
+        G1["Build time<br/>render"]
+        G2["Cache HTML"]
+        G3["Serve static"]
+    end
+    
+    C1 --> C2 --> C3
+    S1 --> S2 --> S3
+    G1 --> G2 --> G3
+    
+    C3 --> FAST["FCP slow<br/>LCP slow"]
+    S3 --> MID["FCP fast<br/>LCP fast"]
+    G3 --> FASTEST["FCP fastest<br/>LCP fastest"]
+    
+    style CSR fill:#c73e1d
+    style SSR fill:#4a8bc2
+    style SSG fill:#1a5d3a
+```
+
+
 ## 1. SSR Fundamentals
 
 Server-Side Rendering converts React components to HTML on the server per request. Three phases:

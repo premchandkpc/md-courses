@@ -9,6 +9,30 @@
 
 ---
 
+## Production Error Handling Strategy
+
+```mermaid
+graph TD
+    A["Error occurs<br/>in production"] --> B{Type?}
+    B -->|Sync| C["Error Boundary<br/>Catches render"]
+    B -->|Async| D["try/catch<br/>Promise.catch"]
+    B -->|Network| E["Retry logic<br/>Fallback UI"]
+    
+    C --> F["Log to<br/>error service"]
+    D --> F
+    E --> F
+    F --> G["Show user<br/>friendly message"]
+    G --> H["Maintain session"]
+    
+    style A fill:#c73e1d
+    style B fill:#2d5a7b
+    style C fill:#4a8bc2
+    style D fill:#4a8bc2
+    style E fill:#4a8bc2
+    style H fill:#1a5d3a
+```
+
+
 ## 1. React Error Boundaries — Full Coverage
 
 Error boundaries catch JavaScript errors during **render, lifecycle methods, and constructors** of the entire tree below them.

@@ -2,6 +2,29 @@
 
 > **Scope**: Profiling, rendering optimization, bundle optimization, code splitting, lazy loading, virtualization, memoization, CWV, Lighthouse, perf budgets
 
+
+## Performance Optimization Checklist
+
+```mermaid
+graph TD
+    A["Find bottleneck"] --> B{Type?}
+    B -->|Render slow| C["React.memo<br/>useMemo<br/>useCallback"]
+    B -->|Bundle big| D["Code split<br/>Lazy load<br/>Tree shake"]
+    B -->|Runtime slow| E["Virtual lists<br/>Windowing<br/>Defer"]
+    B -->|Network slow| F["Cache<br/>Compress<br/>CDN"]
+    
+    C --> G["Measure"]
+    D --> G
+    E --> G
+    F --> G
+    G --> H["Verify"]
+    
+    style A fill:#4a8bc2
+    style B fill:#c73e1d
+    style H fill:#1a5d3a
+```
+
+
 ## 1. React Profiler
 
 ### DevTools Profiler

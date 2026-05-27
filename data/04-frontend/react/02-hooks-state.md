@@ -4,6 +4,33 @@
 
 ---
 
+
+## Hooks Execution Model
+
+```mermaid
+sequenceDiagram
+    participant C as Component
+    participant H as React Hooks
+    participant R as Renderer
+    
+    C->>H: Call useState(init)
+    H->>H: Fiber has hooks list
+    H-->>C: [state, setState]
+    C->>R: Return JSX
+    R->>R: Create VDOM
+    
+    Note over C: Event: onClick
+    C->>H: setState(newVal)
+    H->>H: Mark dirty
+    R->>R: Schedule render
+    R->>C: Call again
+    C->>H: Call useState(init)
+    H-->>C: [newVal, setState]
+    C->>R: Return JSX
+    R->>R: Reconcile & patch
+```
+
+
 ## 1. useState — The Foundation
 
 ```jsx

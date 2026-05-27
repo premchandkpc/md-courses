@@ -4,6 +4,24 @@
 
 ---
 
+
+## React Testing Strategy
+
+```mermaid
+graph TB
+    E2E["🔝 E2E<br/>Playwright<br/>Full flow"]
+    INT["Integration<br/>RTL<br/>Components"]
+    UNIT["Unit<br/>Jest<br/>Functions"]
+    
+    UNIT -.-> INT
+    INT -.-> E2E
+    
+    style UNIT fill:#4a8bc2
+    style INT fill:#2d5a7b
+    style E2E fill:#c73e1d
+```
+
+
 ## 1. React Testing Library Philosophy
 
 **Core principle**: Test components the way users use them. Don't test implementation details.

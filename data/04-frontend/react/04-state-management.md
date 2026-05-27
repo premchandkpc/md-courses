@@ -4,6 +4,34 @@
 
 ---
 
+
+## State Management Strategies Comparison
+
+```mermaid
+graph TB
+    subgraph L["📦 Local State"]
+        LS["useState<br/>Component level<br/>Not shared"]
+    end
+    
+    subgraph C["🔗 Context API"]
+        CA["createContext<br/>Tree level<br/>Provider wraps"]
+    end
+    
+    subgraph G["🏢 Redux/Zustand"]
+        ST["Global Store<br/>Centralized<br/>Predictable"]
+    end
+    
+    COMP["Component"] -.-> LS
+    COMP -.-> CA
+    COMP -.-> ST
+    
+    style LS fill:#4a8bc2
+    style CA fill:#2d5a7b
+    style ST fill:#c73e1d
+    style COMP fill:#1a3a52
+```
+
+
 ## 1. Local State (useState)
 
 The simplest form — state belongs to a single component.

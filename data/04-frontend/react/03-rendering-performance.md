@@ -4,6 +4,28 @@
 
 ---
 
+
+## Rendering Pipeline
+
+```mermaid
+graph LR
+    A["State/Props<br/>Change"] --> B["Render<br/>Reconcile"]
+    B --> C["VDOM<br/>tree"]
+    C --> D["Diff<br/>algorithm"]
+    D --> E["Calculate<br/>edits"]
+    E --> F["Commit<br/>Phase"]
+    F --> G["DOM<br/>Update"]
+    G --> H["Browser<br/>Paint"]
+    
+    I["useMemo<br/>useCallback<br/>React.memo"] -.->|Optimize| B
+    
+    style A fill:#c73e1d
+    style B fill:#2d5a7b
+    style F fill:#1a5d3a
+    style H fill:#1a3a52
+```
+
+
 ## 1. Virtual DOM — What It Actually Is
 
 The Virtual DOM is a lightweight JavaScript object tree representing the real DOM. It is **not** a virtual copy of the DOM — it's a tree of React element objects.

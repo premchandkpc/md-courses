@@ -4,6 +4,31 @@
 
 ---
 
+
+## Component Architecture Diagram
+
+```mermaid
+graph TB
+    A["React Component"] --> B["Class Component"]
+    A --> C["Functional Component"]
+    B --> B1["this.state"]
+    B --> B2["this.props"]
+    B --> B3["Lifecycle Methods"]
+    C --> C1["useState Hook"]
+    C --> C2["useEffect Hook"]
+    C --> C3["Custom Hooks"]
+    B1 --> D["Re-render on<br/>state change"]
+    C1 --> D
+    B2 --> E["Props passed<br/>from parent"]
+    C2 --> E
+    style A fill:#4a8bc2
+    style B fill:#2d5a7b
+    style C fill:#2d5a7b
+    style D fill:#1a5d3a
+    style E fill:#1a5d3a
+```
+
+
 ## 1. JSX Transpilation: What Really Happens
 
 JSX is syntactic sugar for `React.createElement` calls. Babel compiles it during build.

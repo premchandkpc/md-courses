@@ -118,12 +118,20 @@
 
 ## Top Priority Files (Tier 1: 100+ pts)
 
-Still need comprehensive enhancement:
+### Completed ✅
 
-1. **04-frontend/react/08-custom-hooks-patterns.md** (100pts)
-   - Missing: beginner intro, layers, failures, code, interviews, story
-   - Estimated effort: 1-2 hours
-   
+1. **04-frontend/react/08-custom-hooks-patterns.md** (100pts) ✅ COMPLETED
+   - Added: Full 5-layer structure (beginner → staff)
+   - Added: 6 production failures with debugging
+   - Added: Instagram + Uber production incident stories
+   - Added: 4-level interview questions (junior → staff)
+   - Added: 3 hands-on labs
+   - Added: Fiber architecture deep dive
+   - Lines: 504 → 1532 (3x expansion)
+   - Estimated effort: 2 hours
+
+### In Progress
+
 2. **cheat-sheets/sql-queries.md** (90pts)
    - Missing: beginner, failures, code, labs, story
    - Estimated effort: 1-2 hours

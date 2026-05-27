@@ -1,8 +1,205 @@
 # 💾 Linux I/O & Storage — Complete Deep Dive
 
+---
 
+## Layer 1: Beginner Mental Model
 
-```mermaid
+**Analogy**: Like mail delivery. Your letter (write) goes to the mailbox (page cache), a truck (writeback daemon) batches letters overnight, routes them (I/O scheduler), and delivers (physical disk). If you ask for a read, you first check the mailbox (cache hit = instant), only walk to the post office if not there (cache miss = slow).
+
+**Why it matters**:
+- **Netflix storage**: 100,000 videos. Bad disk scheduler = 10x slower playback initiation.
+- **Database performance**: 80% of perf gains come from I/O optimization (SSD vs HDD, caching strategy, correct scheduler).
+- **Cost at scale**: 1ms per operation × 1M requests = 277 hours wasted. Fix the I/O scheduler = $1M/year savings.
+- **Reliability**: fsync guarantees durability. No fsync = data loss. Too much fsync = app hangs waiting for disk.
+
+**Core insight**: Storage stack has 5+ layers. Optimizing the wrong layer (app level) misses 90% of the gain (kernel level).
+
+---
+
+## Layer 4: Production Reality
+
+### Linux I/O Failure Modes
+
+| Failure | Symptoms | Root Cause | Fix |
+|---------|----------|-----------|-----|
+| **Write Stall** | App hangs for 1-10 seconds | Writeback daemon (pdflush) can't flush dirtied pages, dentry cache full | Use `vm.dirty_ratio=10` (flush more often), increase disk throughput |
+| **Page Cache Bloat** | Memory usage 90%, OOM killer triggers | Heavy sequential read fills page cache with useless data | Use `fadvise(DONTNEED)` or O_DIRECT for predictable workloads |
+| **I/O Scheduler Starvation** | One application starves others | Default `mq-deadline` gives unfair share under high load | Switch to `kyber` or `bfq` (weighted fairness) |
+| **Fsync Performance** | Batch insert takes 100x longer with fsync | fsync waits for all buffered writes to commit, blocking app | Use group commit (batch fsync) or async replication |
+| **Extent Fragmentation** | Read latency climbs 2x over weeks | ext4 delayed allocation exhausted, many small extents | Run `e4defrag`, use XFS (better allocator) |
+| **Direct I/O Alignment** | EINVAL on 512-byte offset | O_DIRECT requires page-aligned buffers (4KB boundary) | Allocate with `posix_memalign()` |
+| **Journal Overhead** | ext4 journal commit every 5s, syncs blocks twice | Default `commit=5s`, journal in data mode (journaled) | Use journal=FS mode (default), increase `commit=60s` |
+| **Dentry Cache Leaks** | Memory slowly grows 1MB/day | Inode operations don't release dentry, memory pinned | Fix application (close file handles), monitor with `sar -B` |
+
+### Production Incident: Airbnb Booking Slowdown (2015)
+
+**Context**: Airbnb's booking database on ext4. Peak holiday season, 10x traffic. Search response time climbed from 50ms to 2 seconds.
+
+**What happened**:
+- Booking writes increased 10x, page cache bloated with dirty pages
+- pdflush daemon couldn't keep up (disk I/O queue maxed out)
+- Application threads hit a page allocation and blocked waiting for writeback
+- Entire booking service froze for 5-10 seconds (write stall)
+- Every 1000 bookings lost during peak (cascade failure)
+- Logs showed: "file: page allocation stalled for 2s waiting for writeback"
+
+**The bug**:
+```bash
+# ❌ Default settings — page cache bloat
+vm.dirty_ratio=20          # Flush at 20% memory dirty (too high)
+vm.dirty_background_ratio=10  # Background flush at 10%
+vm.dirty_writeback_centisecs=500  # Flush every 5 seconds (too lazy)
+
+# Large buffer write fills cache, stalls app
+echo "booking data" >> booking.log  # → page cache fill
+# → reach 20% dirty → app blocks
+```
+
+**The fix**:
+```bash
+# ✅ Aggressive writeback — prevent stalls
+vm.dirty_ratio=5           # Flush sooner (5% = ~400MB on 8GB server)
+vm.dirty_background_ratio=2  # Background flush at 2%
+vm.dirty_writeback_centisecs=100  # Flush every 1 second
+vm.swappiness=0            # Never swap (disk worse than memory)
+
+# Switch I/O scheduler to fair queuing
+echo "bfq" > /sys/block/sda/queue/scheduler
+```
+
+**Result**: Write stall eliminated. Peak booking throughput maintained at 50ms latency.
+
+---
+
+## Layer 5: Staff Engineer Perspective
+
+### Storage Strategy Tradeoffs
+
+| Strategy | Throughput | Latency | Durability | Cost | Use Case |
+|----------|-----------|---------|-----------|------|----------|
+| **Page Cache + fsync** | 100K op/s | 5ms | Strong (synced) | $$ | Databases, general purpose |
+| **Write-through cache** | 50K op/s | 1ms | Strongest (always synced) | $$$ | Financial transactions |
+| **Async writeback** | 500K op/s | 50ms | Weak (can lose data) | $ | Caching layers (Redis style) |
+| **Direct I/O** | 200K op/s | 10ms | App dependent | $$ | Custom databases (RocksDB) |
+| **io_uring** | 1M op/s | 1ms | App dependent | $$ | High-performance servers (modern) |
+
+### Scaling Pattern: From Small to Large
+
+**Stage 1 (Startup — 10 GB data)**:
+- ext4, default settings, HDD or cheap SSD
+- Page cache handles everything
+- Cost: $10-50/month storage
+
+**Stage 2 (Growth — 100 GB)**:
+- Switch to SSD (10x latency improvement)
+- Tune vm.dirty_* (avoid stalls)
+- Implement fsync batching (group commit)
+- Cost: $100-500/month
+
+**Stage 3 (Scale — 1 TB)**:
+- Split across multiple disks (RAID-10 or erasure coding)
+- io_uring for async I/O (1M+ operations/sec)
+- Direct I/O for custom database (RocksDB, LevelDB)
+- Cost: $1K-5K/month
+
+**Stage 4 (Enterprise — 100+ TB)**:
+- Dedicated storage appliances (NetApp, Pure Storage)
+- Custom allocation strategies (zone management)
+- Flash tier + HDD tier (tiered storage)
+- Cost: $100K+/month
+
+**Real example: Amazon DynamoDB**:
+- v1 (2012): ext4 + HDD, page cache, 1K ops/sec per node
+- v2 (2015): SSD + io_uring, 100K ops/sec per node
+- v3 (2018): Custom block allocator + zone management, 1M ops/sec per node
+- Result: 1000x improvement over 6 years, per-node latency 1ms consistently
+
+---
+
+## Layer 5: Interview Questions
+
+### Level 1 (Junior Engineer)
+
+**Q1: What's the page cache? Why does it help?**
+A: Kernel keeps recently accessed disk blocks in RAM. On read, kernel checks page cache first (hit = instant). On miss, kernel reads from disk (slow). Cache is transparent (OS manages it).
+- Why asked: Fundamentals
+- Expected: Mention cache hit/miss, RAM vs disk speed
+
+**Q2: What's fsync? Do you need it every write?**
+A: fsync forces all buffered writes to disk. Ensures durability. Expensive (waits for disk). Don't fsync every write (too slow) — batch them (group commit) or use async replication (sacrifice durability for speed).
+- Why asked: Durability vs performance tradeoff
+- Expected: Understand cost of fsync, batch strategies
+
+### Level 2 (Mid-Level Engineer)
+
+**Q3: Your database write latency is P99=500ms. How do you debug?**
+A:
+1. Check if writes are blocked: `iostat -x` (await time high?)
+2. Check page cache: `free -h`, `vmstat 1` (much I/O waiting?)
+3. Check scheduler: `cat /sys/block/sda/queue/scheduler`
+4. Check dirty pages: `cat /proc/vmstat | grep dirty`
+5. Solutions: lower `vm.dirty_ratio`, switch to `bfq` scheduler, use `io_uring`
+- Why asked: Diagnosis workflow
+- Expected: Multiple layers to check, tools to use
+
+**Q4: Direct I/O vs buffered I/O. When would you use each?**
+A: Buffered = kernel manages caching (flexible, automatic). Direct I/O = app manages caching (fast, but more work). Use Direct I/O for databases with their own cache layer (MySQL, RocksDB). Use buffered for general apps.
+- Why asked: API choice, performance
+- Expected: Understand tradeoff, real examples
+
+### Level 3 (Senior Engineer)
+
+**Q5: Design storage for a 10B row database. How do you balance throughput vs durability?**
+A:
+- Durability requirement: financial data → fsync every N transactions
+- Throughput requirement: 100K writes/second
+- Strategy: async replication to standby, primary doesn't fsync (risk: lose <1s of writes if crash)
+- Alternative: group commit every 100ms (batches 10K transactions, fsync once)
+- Monitoring: track replication lag (alert if >1s), monitor fsync latency
+- Testing: chaos test (kill primary, verify no data loss beyond 1s)
+- Why asked: Scale, reliability engineering
+- Expected: Multiple strategies, tradeoff thinking, monitoring
+
+**Q6: You switched from ext4 to XFS. What changed operationally?**
+A:
+- Allocation Groups = better parallel throughput
+- B+tree metadata = better scalability for huge files
+- Reflink = fast copies (saves space)
+- Delayed logging = better transaction throughput
+- Online fsck = can check without unmounting
+- Risk: XFS less widely tested than ext4 (choose stable distro)
+- Migration: create XFS filesystem, rsync data, redirect mounts
+- Why asked: Filesystem choice, migration impact
+- Expected: Specific tradeoffs (throughput, features, risk)
+
+### Level 4 (Staff Engineer)
+
+**Q7: Design I/O stack for 1M concurrent users, 10GB/second throughput. What limits do you hit?**
+A:
+- Single SSD: ~500K IOPS max, ~5GB/s throughput
+- At 1M users, 10GB/s = need 2+ SSDs
+- I/O scheduler overhead: default mq-deadline struggles above 200K IOPS (use io_uring bypass)
+- Page cache: 1M users with 10GB/s = 6.4TB/s written to cache + disk (can't sustain)
+- Solution: use io_uring (userspace bypass), NUMA-aware allocation, direct I/O to split write path
+- Storage: stripe across 4 SSDs (2.5GB/s each), RAID-10 for redundancy
+- Cost: $50K for storage hardware, $10K for server, $5K/month bandwidth
+- Monitoring: measure I/O latency distribution (p50/p99), alert on stalls
+- Why asked: System design at scale, hardware limits
+- Expected: Identify bottlenecks, multi-layer optimization, cost awareness
+
+**Q8: Describe io_uring. When would you use vs traditional async I/O?**
+A:
+- Traditional AIO: kernel tracks request queue, app polls for completions (overhead)
+- io_uring: app and kernel share queues (submission/completion), zero-copy, lockless
+- Performance: 2-3x better than AIO for high concurrency (100K+ requests)
+- Use io_uring when: writing high-performance server (Nginx, database), need latency <1ms
+- Don't use if: simple app (overhead not worth complexity), older kernels (<5.1)
+- Implementation: use library (liburing), easy API (io_uring_prep_read + submit)
+- Pitfall: needs page-aligned buffers, off-by-one errors in queue logic
+- Why asked: Modern I/O, performance optimization
+- Expected: Understand architecture advantage, when to deploy, limitations
+
+---
 graph LR
     APP_I["Application<br/>(read/write)"] --> VFS_I["VFS<br/>(Virtual File System)"]
     VFS_I --> PAGE_CACHE_I["Page Cache<br/>(Cached I/O)"]

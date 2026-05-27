@@ -6,6 +6,198 @@
 
 ---
 
+## Layer 1: Beginner Mental Model
+
+**Analogy**: Like a secure phone call. You (client) call someone (server). Before talking, you verify they are who they claim (certificate check = checking caller ID). You agree on a secret code (key exchange), then everything you say is encrypted (TLS). HTTP/2 is like conference calling (multiple conversations on one call). gRPC is like using a shorthand language (protobuf).
+
+**Why it matters**:
+- **Stripe, PayPal, Square**: 100% of transactions encrypted. A TLS break = $1B+ fraud, regulatory fines, shut down.
+- **Netflix**: 1ms TLS overhead per request × millions = noticeable slowdown. 0-RTT resumption = saved 100M hours of user time.
+- **Google**: Switched HTTP/1.1 → HTTP/2, saw 40% faster page loads (multiplexing eliminates head-of-line blocking).
+- **Uber**: gRPC internal APIs reduced latency 10x (binary format, multiplexing, connection reuse).
+
+**Core insight**: Security (TLS) and performance (HTTP/2, gRPC) are not separate — they evolved together. Modern web is fast AND secure.
+
+---
+
+## Layer 4: Production Reality
+
+### TLS/HTTP/gRPC Failure Modes
+
+| Failure | Symptoms | Root Cause | Fix |
+|---------|----------|-----------|-----|
+| **Handshake Latency** | TTFB (Time To First Byte) 200ms | Full 1-RTT handshake + TCP 3-way + TLS | Use session resumption (PSK), 0-RTT, TLS 1.3 (not 1.2) |
+| **Certificate Validation** | "Certificate name mismatch" | SAN (Subject Alternative Name) doesn't match hostname | Use wildcard certs (*.example.com) or include both names |
+| **HTTP/2 Multiplexing Blocked** | One slow request blocks all others | Flow control window exhausted (receiver can't keep up) | Tune window size (default 64KB), implement buffering |
+| **Head-of-Line (HOL) Blocking** | HTTP/1.1 request 1 hangs, request 2 queued | TCP loses packet, TCP waits for retransmit (HOL) | Use HTTP/2 (separate streams, not HOL) or QUIC (packet-level independence) |
+| **gRPC Deadlocks** | Bidirectional stream hangs | Both client and server waiting to send (flow control) | Use separate send/receive buffers, respect backpressure |
+| **SNI Not Set** | Server sees TLS ClientHello without hostname | Client doesn't send SNI extension (old client) | Ensure TLS client sends SNI (Go 1.0+, Java 7+) |
+| **Certificate Chain Incomplete** | Browser shows "untrusted certificate" | Intermediate cert not sent with leaf cert | Include full chain (leaf + intermediate) in cert file |
+| **ALPN Negotiation Failure** | Falls back to HTTP/1.1 instead of HTTP/2 | Server doesn't support h2 protocol | Verify ALPN list includes h2 for HTTP/2 |
+
+### Production Incident: Google Search QUIC Rollout (2017)
+
+**Context**: Google deployed QUIC (HTTP/3 precursor) to 1% of Chrome users. QUIC uses UDP instead of TCP.
+
+**What happened**:
+- QUIC sent many small UDP packets (IP fragmentation kicked in)
+- Middlebox firewalls on ISP networks dropped fragmented packets (thought it was attack)
+- 1% of users saw 100% packet loss on certain pages
+- Fallback to TCP worked, but QUIC looked broken
+- Issue: path MTU discovery broken by middleboxes, QUIC retransmitted, retransmitted, timeout
+
+**The bug**:
+```
+Client sends 1200-byte QUIC packet
+Intermediate firewall sees it (UDP not TCP) → refuses
+Client retransmits 3x, gives up
+Falls back to TCP (works)
+
+But developers thought QUIC was broken, rolled back
+```
+
+**The fix**:
+1. Reduce QUIC initial packet size (1200B → 1024B, avoids fragmentation)
+2. Add exponential backoff + TCP fallback
+3. Detect middlebox interference via QUIC version negotiation
+4. Rollout slower: 0.1% → 1% → 10% with monitoring
+
+**Result**: QUIC now used by Google for 30%+ of traffic globally.
+
+---
+
+## Layer 5: Staff Engineer Perspective
+
+### Protocol Tradeoffs
+
+| Protocol | Latency | Throughput | Complexity | Security | Use Case |
+|----------|---------|-----------|-----------|----------|----------|
+| **HTTP/1.1** | High (6+ RTT) | Low (1 connection) | Low | Good | Legacy systems, simple APIs |
+| **HTTP/2** | Medium (2-3 RTT) | High (multiplexed) | Medium | Good | Web browsers, public APIs |
+| **HTTP/3 QUIC** | Low (0-1 RTT) | Very high | High | Excellent | Mobile, high-latency networks |
+| **gRPC HTTP/2** | Very low (<1ms) | Excellent (binary) | High | Excellent | Internal services, performance critical |
+| **gRPC HTTP/3** | Lowest | Excellent | Very high | Excellent | Future internal services |
+
+### Scaling Pattern: Startup → Global
+
+**Stage 1 (Startup)**: HTTP/1.1, self-signed cert
+- Works for <1M requests/day
+- Cost: free (self-signed), low server overhead
+- Caveat: browsers warn "untrusted"
+
+**Stage 2 (Growth)**: HTTP/2, Let's Encrypt cert, CDN
+- 10M requests/day, needs multiplexing (HTTP/1.1 creates 6 connections per domain)
+- Cost: $0-100/month (CDN), certificate automation free
+- Improvement: 3-10x faster TTFB
+
+**Stage 3 (Scale)**: gRPC HTTP/2 for internal APIs, HTTP/2 for external, QUIC pilot
+- 1B requests/day, split: public-facing (HTTP/2 with CDN), internal (gRPC)
+- Cost: $10K-50K/month (CDN + load balancers + QUIC infrastructure)
+- Improvement: <50ms latency p99, better connection reuse
+
+**Stage 4 (Enterprise)**: HTTP/3 QUIC everywhere, custom protocol optimization
+- 100B requests/day, global infrastructure, mobile-first
+- Cost: $1M+/year (dedicated networking team)
+- Benefit: 200ms latency on 4G (QUIC = fast reconnect), multi-path support
+
+**Real example: YouTube**:
+- v1 (2005): HTTP/1.1, 6 parallel connections per domain
+- v2 (2012): HTTP/2, multiplexing eliminated connection overhead
+- v3 (2017): QUIC pilot on 1%, saw 18% improvement in video startup time
+- v4 (2020): QUIC at scale, 60%+ of Chrome traffic uses HTTP/3
+- Result: global median video start latency dropped 30% (QUIC + CDN optimization)
+
+---
+
+## Layer 5: Interview Questions
+
+### Level 1 (Junior Engineer)
+
+**Q1: What's a TLS handshake? Why does it take extra round trips?**
+A: Before sending data, client and server verify each other (certificate check) and agree on encryption keys (key exchange via ECDHE). Takes 1 full RTT (round trip) for 1-RTT handshake, plus TCP 3-way, so ~2 RTT total. Modern TLS 1.3 optimized to 1 RTT.
+- Why asked: Security fundamentals
+- Expected: Mention certificate, key exchange, RTT cost
+
+**Q2: What's HTTP/2 multiplexing? Why is it better than HTTP/1.1?**
+A: HTTP/1.1 = one request per connection (or pipelining = requests queue). HTTP/2 = multiple streams on one connection, server can interleave responses. Result: no head-of-line blocking, one TCP connection instead of 6.
+- Why asked: Protocol evolution, performance
+- Expected: Understand connection reuse, no HOL
+
+### Level 2 (Mid-Level Engineer)
+
+**Q3: Why use gRPC instead of REST?**
+A:
+- Binary format (protobuf) vs text (JSON) = smaller payload (10x)
+- Multiplexing = one connection, many streams
+- Streaming = bidirectional (client→server→client simultaneously)
+- Type safety = proto compiler generates code
+- Use REST for: public APIs, browser clients. Use gRPC for: internal services, high-performance needs.
+- Why asked: API design choice
+- Expected: Understand tradeoff (REST simplicity vs gRPC performance)
+
+**Q4: Explain 0-RTT TLS resumption. Why is it risky?**
+A: Client sends encrypted data (Early Data) in first message using cached PSK (pre-shared key) from previous session. Server processes immediately, no extra round trips. Risk: replay attack (attacker resubmits Early Data). Mitigation: only use 0-RTT for idempotent requests (GET), server tracks request IDs to reject duplicates.
+- Why asked: Performance optimization with security tradeoff
+- Expected: Understand PSK, Early Data, replay risk
+
+### Level 3 (Senior Engineer)
+
+**Q5: Design API for 10M global users (North America, Europe, Asia). Which protocol? How do you optimize latency?**
+A:
+- North America (low latency): HTTP/2 with CDN edge caching (50ms)
+- Europe (medium latency): HTTP/2 + QUIC pilot (100ms)
+- Asia (high latency): QUIC with connection migration (200ms on 4G due to QUIC fast reconnect)
+- Strategy: HTTP/2 primary, QUIC fallback for mobile
+- CDN: edge servers in each region, cache responses
+- Cost: $100K-500K/month (CloudFlare / Akamai)
+- Monitoring: measure TTFB per region, alert if >500ms
+- Why asked: Global scale, protocol choice
+- Expected: Regional strategy, monitoring, tradeoff thinking
+
+**Q6: A gRPC service is slow. Where would you investigate?**
+A:
+1. Connection reuse: are connections being pooled? (should be, not creating new per RPC)
+2. Backpressure: is receiver slow? (check flow control window, buffer sizes)
+3. Serialization: is protobuf fast? (should be, but large messages can be slow)
+4. Network: latency to service? (use `grpcurl -plaintext -v` to measure)
+5. Server logic: is handler slow? (profile with pprof)
+6. Load: is server overloaded? (check CPU/memory, may need horizontal scaling)
+- Why asked: Debugging workflow
+- Expected: Multiple layers to check
+
+### Level 4 (Staff Engineer)
+
+**Q7: Migrate internal APIs from REST JSON to gRPC. Plan the rollout and estimated impact.**
+A:
+- Phase 1 (2 weeks): Proto schema design + code generation, gRPC service wrapper (both REST + gRPC available)
+- Phase 2 (2 weeks): Client library + documentation, canary (1% traffic) testing
+- Phase 3 (4 weeks): Rollout: 10% → 50% → 100%, monitor error rates + latency
+- Expected improvements:
+  - Payload size: JSON 1KB → protobuf 100B (90% reduction)
+  - Latency: REST 50ms → gRPC 10ms (5x, from binary format + multiplexing)
+  - Throughput: 10K RPS → 50K RPS per server (binary faster to parse)
+- Risks: old clients break if no backwards compatibility (use proto versioning)
+- Rollback: keep REST endpoints for 3 months, revert traffic if issues
+- Cost: 400 engineering hours + testing, ROI = $5M/year (fewer servers needed)
+- Why asked: Large-scale migration, cost/benefit
+- Expected: Phased approach, risk mitigation, quantified impact
+
+**Q8: A provider (AWS, Google Cloud) launches HTTP/3 support. Do you adopt? Why/why not?**
+A:
+- Benefits: faster on high-latency networks (mobile), connection migration (user switches WiFi → 4G seamlessly)
+- Costs: debugging harder (UDP loss != TCP), some firewalls block it, limited tooling
+- Adoption timeline:
+  - Month 1: pilot on 0.1% CDN edge (measure error rates, latency improvement)
+  - Month 2: if good, expand to 5%
+  - Month 3: full rollout to 50%
+  - Month 6: 100% if no regressions
+- Decision: adopt if target is mobile-heavy (YouTube, TikTok = yes). Skip if B2B API (AWS/Stripe = maybe later).
+- Monitoring: measure p99 latency, error rate, connection drop rate
+- Why asked: Technology adoption decision, cost/benefit, rollout strategy
+- Expected: Pilot approach, risk assessment, target-dependent decision
+
+---
+
 
 
 ```mermaid

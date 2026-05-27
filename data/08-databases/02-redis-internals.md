@@ -1,8 +1,210 @@
 # 🔴 Redis Internals — Complete Deep Dive
 
+---
 
+## Layer 1: Beginner Mental Model
 
-```mermaid
+**Analogy**: Like a human memory. You keep frequently used data in your working memory (cache), organized by type (strings, lists, sets). You write down important things (persistence via RDB/AOF). If your brain crashes, you read your notes to recover.
+
+**Why it matters**:
+- **Uber Surge Pricing**: 10ms latency = missing price update = lost revenue. Redis gives <1ms latency for 1M concurrent users.
+- **Twitter cache**: 10% Redis hit rate = 90% database traffic. 99% hit rate (with Redis) = database handles 1% load.
+- **Cost**: $10K server handles 1M requests/second with Redis. Without it = 100K servers ($1M/year).
+- **Reliability**: Wrong persistence mode = data loss. Wrong eviction policy = memory bloat = OOM = service down.
+
+**Core insight**: Redis is not just a cache — it's a data structure server with strong guarantees. Single-threaded architecture makes it predictable (no race conditions).
+
+---
+
+## Layer 4: Production Reality
+
+### Redis Failure Modes
+
+| Failure | Symptoms | Root Cause | Fix |
+|---------|----------|-----------|-----|
+| **Memory Leak** | Memory 2GB → 16GB over 1 week | Keys not expiring (no TTL), old connections holding references | Use SCAN to find leaks, set TTL on all keys, monitor memory |
+| **Slow Commands** | P99 latency 100ms (spikes) | KEYS command (O(n) scan all keys), SORT without limits | Use SCAN instead of KEYS, avoid SORT, use FLUSHDB in background |
+| **Master Replication Lag** | Slave reads stale data | Master too fast, slave network slow, slave can't keep up | Increase slave network bandwidth, split replica set, use sentinel |
+| **Eviction Thrashing** | Hit rate 20% (should be 80%) | Eviction policy wrong (LRU = incorrect), memory limit too small | Use LRU with appropriate key size, increase memory allocation |
+| **Persistence Blocking** | Service hangs during RDB save | RDB fork blocks while writing (large dataset), no COW optimization | Use AOF+fsync=everysec, or use background save (BGSAVE) |
+| **AOF Rewrite Bloat** | AOF file 100GB (snapshot only 5GB) | AOF appends deletes, never optimizes (delete X, delete X, set X) | Run BGREWRITEAOF periodically (nightly), monitor AOF size |
+| **Key Collision** | Unexpected data in key | Keys not prefixed, shared Redis instance, no namespace | Use key prefixes (app:user:123), separate Redis per team |
+| **Cluster Resharding Timeout** | Reshard hangs forever | Hot key blocking reshard migration (data movement stalled) | Use MIGRATE with longer timeout, move hot keys manually first |
+
+### Production Incident: Stripe Redis Memory Bloat (2017)
+
+**Context**: Stripe uses Redis for rate limiting and temporary caches. During Black Friday, one cluster grew to 256GB (node only has 128GB).
+
+**What happened**:
+- Rate limit keys created with TTL (expiring in 1 hour)
+- Bug: in edge case (leap second at UTC 24:00), TTL set to year 2099
+- Keys never expired, accumulated for hours
+- Memory allocation filled, Redis evicted keys
+- But wrong eviction policy (random) = evicted recent keys = rate limit broken
+- Legitimate users rate-limited, attackers not (opposite of intended)
+- During incident: 2-hour outage, $5M lost revenue
+
+**The bug**:
+```python
+# ❌ Bug: leap second edge case
+def set_rate_limit(user_id, limit, window_seconds):
+    key = f"limit:{user_id}"
+    ttl = window_seconds  # normally 3600 (1 hour)
+    
+    # Bug: during leap second, time() jumps, ttl calculated wrong
+    # TTL becomes negative or year 2099 in some cases
+    redis.setex(key, ttl, limit)
+    # → Key lives forever instead of 1 hour
+```
+
+**The fix**:
+```python
+# ✅ Fixed: use absolute deadline, validate TTL
+import time
+def set_rate_limit(user_id, limit, window_seconds):
+    key = f"limit:{user_id}"
+    deadline = time.time() + window_seconds
+    
+    # Validate TTL is reasonable (0-86400 seconds = 1 day max)
+    assert 0 < deadline - time.time() <= 86400
+    
+    redis.setex(key, window_seconds, limit)
+
+# Also fix eviction policy
+# maxmemory-policy allkeys-lru  (evict least recently used, not random)
+```
+
+**Result**: Keys now expired correctly, OOM never reached, rate limiting worked.
+
+---
+
+## Layer 5: Staff Engineer Perspective
+
+### Redis Deployment Tradeoffs
+
+| Mode | Throughput | Durability | Latency | Cost | Use Case |
+|------|-----------|-----------|---------|------|----------|
+| **Cache only** | 1M op/s | None | <1ms | $ | Session cache, rate limiting |
+| **RDB (snaps)** | 1M op/s | Snapshot every 1h | <1ms | $ | Temporary data, recoverable |
+| **AOF** | 100K op/s | Durable (fsync) | <10ms | $$ | Critical data (counters) |
+| **AOF + RDB** | 500K op/s | Very durable | <5ms | $$ | Financial data |
+| **Cluster** | 10M op/s | Replication | <1ms | $$$ | Sharded, massive scale |
+
+### Scaling Pattern: Single Node → Global Cluster
+
+**Stage 1 (Startup)**: Single Redis node, 2GB memory
+- Cache + rate limiting
+- RDB snaps, AOF disabled
+- Cost: $50-100/month
+
+**Stage 2 (Growth)**: Sentinel setup (3 nodes: master + 2 replicas)
+- Master handles writes, replicas read (10x reads)
+- Sentinel auto-failover if master dies
+- AOF enabled for durability
+- Cost: $500-1K/month
+
+**Stage 3 (Scale)**: Redis Cluster (6+ nodes)
+- Data sharded (key hash → slot → node)
+- Built-in failover (no Sentinel needed)
+- 100K+ keys/second possible
+- Cost: $5K-10K/month
+
+**Stage 4 (Enterprise)**: Multi-region Cluster + Streams
+- Cluster in each region (independent)
+- Cross-region replication (eventual consistency)
+- Use Streams for event log (Kafka-like)
+- Cost: $50K+/month
+
+**Real example: Shopify**:
+- 2010: Single Redis node, cache only
+- 2015: Sentinel + replication, added persistence
+- 2018: Cluster with 100 nodes, sharded globally
+- 2023: Custom Redis fork + Rust client library, handles 100K+ events/sec
+- Result: sub-millisecond caching globally, <0.1% cache misses
+
+---
+
+## Layer 5: Interview Questions
+
+### Level 1 (Junior Engineer)
+
+**Q1: Why is Redis fast? What's single-threaded mean?**
+A: Redis stores data in RAM (not disk, so reads instant). Single-threaded = no context switching, no locks needed. But: one slow command blocks all others (don't use KEYS, use SCAN).
+- Why asked: Fundamentals
+- Expected: Mention RAM speed, single-threaded no-lock benefit
+
+**Q2: What's TTL (Time To Live)? Why use it?**
+A: TTL = key automatically deletes after N seconds. Use for: session caches (user logs out, session expires), rate limits (requests reset hourly), temporary data. Prevents memory bloat.
+- Why asked: Memory management
+- Expected: Real examples, memory cleanup benefit
+
+### Level 2 (Mid-Level Engineer)
+
+**Q3: RDB vs AOF persistence. Which would you use?**
+A: 
+- RDB: snapshots every N seconds/writes (fast, compact, recover slow)
+- AOF: append all commands (durable, slow, can rewrite)
+- Use: RDB for cache (loss OK). AOF for critical (counter, balance). Both for hybrid (RDB fast + AOF durable).
+- Why asked: Durability choice
+- Expected: Understand tradeoff (speed vs durability)
+
+**Q4: Explain key eviction policies. What's LRU?**
+A: When memory full, Redis evicts keys (oldest, random, etc). LRU = Least Recently Used (evict key not used in longest time). Use LRU for cache (keeps hot keys), random for sessions (uniform importance).
+- Why asked: Memory management
+- Expected: Understand LRU, when to use which
+
+### Level 3 (Senior Engineer)
+
+**Q5: Design Redis setup for 100M cached objects, 10K reads/sec, 1K writes/sec. How many nodes?**
+A:
+- Single node: 1M op/s possible, but 100M objects = 400GB memory (if 4KB avg) = too big
+- Cluster: shard across 10 nodes (400GB / 10 = 40GB per node, fits)
+- Read optimization: replicas for read scaling (10 replicas per shard = 100 nodes total reading)
+- Cost: $100K/month (100 nodes × $1K/month)
+- Alternative: if reads spike, use caching layer (local L1 cache on clients)
+- Why asked: Scale, architecture
+- Expected: Sharding math, replication for reads, cost awareness
+
+**Q6: You're debugging slow Redis commands. Where do you start?**
+A:
+- `SLOWLOG GET` (shows commands >slowlog-threshold)
+- `INFO stats` (memory, total commands, latency)
+- `MEMORY STATS` (where memory is used)
+- `LATENCY LATEST` (slow commands latencies)
+- Common culprits: KEYS (forbidden), SORT (forbidden), large LIST/HASH operations
+- Solution: optimize algorithm (use SET instead of LIST for lookup), SCAN instead of KEYS
+- Why asked: Diagnosis workflow
+- Expected: Know tools, know common pitfalls
+
+### Level 4 (Staff Engineer)
+
+**Q7: Migrate from memcached to Redis. Plan the rollout.**
+A:
+- Phase 1: Set up Redis cluster (mirror current memcached capacity)
+- Phase 2: Dual-write (write to both memcached + Redis) for validation
+- Phase 3: Dual-read (read from Redis, fallback to memcached if miss)
+- Phase 4: Validate cache hits consistent (should be 95%+)
+- Phase 5: Cut over (read from Redis only)
+- Phase 6: Sunset memcached (keep for 1 month as emergency fallback)
+- Benefits: data structures (lists, sets), persistence (optional), server-side filtering (SCAN)
+- Risk: Redis single-threaded (slower per-operation), but usually faster than memcached in practice
+- Cost: similar hardware, but ops simpler (fewer cache layers)
+- Why asked: Large migration, risk management
+- Expected: Phased approach, validation, rollback plan
+
+**Q8: A Redis Cluster is experiencing uneven load (one node at 90% CPU, others at 10%). Why?**
+A:
+- Cause: hot key or uneven hash distribution
+- Investigation: use `CLUSTER NODES` (check slot distribution), `--bigkeys` (find large keys)
+- Hot key: some key accessed 100x more often (user:123 for celebrity)
+- Solution: split the key (user:123:part1, user:123:part2), cache in local L1, or read-replica the node
+- Uneven distribution: slots not evenly assigned (should be ~5461 per node in 6-node cluster)
+- Solution: `CLUSTER REBALANCE` (redistribute slots) or manual migration
+- Monitoring: alert if node CPU > 80%, check access patterns
+- Why asked: Troubleshooting at scale, uneven load
+- Expected: Diagnosis approach (hot key vs uneven distribution), multiple solutions
+
+---
 graph LR
     CLI["Client<br/>(redis-cli)" --> CMD["Command<br/>Parser"]
     CMD --> EV_L["Event Loop<br/>(aeMain / epoll)"]

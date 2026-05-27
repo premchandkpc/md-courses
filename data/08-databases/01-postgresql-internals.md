@@ -6,6 +6,174 @@
 
 ---
 
+## LAYER 1: Beginner's Mental Model 🧠
+
+### Why PostgreSQL?
+
+PostgreSQL = **ACID guarantees you trust with your life**
+
+**Facebook transactional systems:** Every payment, every user state change = PostgreSQL ✓ (you can rely on)
+**SQLite in phone:** Fast but can lose data if crash (acceptable risk for mobile)
+**Redis in-memory:** Super fast but data goes away if reboot (OK for cache, not for ledger)
+
+PostgreSQL trades speed for **correctness**: Your data won't be corrupted, even if server explodes.
+
+### Real Impact
+
+```
+Bug in app: Processes 1000 refunds, crashes halfway → 500 processed
+
+Without PostgreSQL:
+  500 customers got refunds, 500 didn't (inconsistent)
+  Finance: "Which 500?" → Audit nightmare
+
+With PostgreSQL (ACID):
+  Either all 1000 refund OR zero refund (transaction atomicity)
+  Finance: "It failed, retry" → Clear
+```
+
+**Cost of data corruption:** $1M+ in audits + refunds
+
+---
+
+## LAYER 4: Production Failures & Debugging 🚨
+
+### Common PostgreSQL Failures
+
+| Failure | Symptom | Root Cause | Prevention |
+|---------|---------|-----------|-----------|
+| **Bloat** | Query slow, table 50GB (should be 5GB) | Too many dead rows (undead tuples) | Aggressive autovacuum settings |
+| **Transaction Wraparound** | DB goes read-only | xid counter wraps (2B tx limit) | Vacuum before 1M txs before wraparound |
+| **Connection Pool Exhaustion** | "FATAL: sorry, too many clients" | All 100 connections in use, app leaks | Use pgBouncer, set max_connections |
+| **Replication Lag** | Standby reads old data | Primary too fast for standby | Increase wal_keep_size |
+| **Checkpoint Stall** | IO spikes, query 10s → 60s | Checkpoint writing all dirty pages | Increase checkpoint_timeout |
+| **OOM Crash** | Process killed, server restarts | work_mem too high per backend | Set to (RAM / max_connections) |
+
+### Real Production Incident: Transaction Wraparound (2 Week Downtime)
+
+**Company:** Large SaaS running PostgreSQL for 10 years
+
+**Problem:** Database went read-only without warning. Every write failed.
+
+```
+Timeline:
+T-8 weeks: Autovacuum not running (admin disabled for "performance")
+T-2 weeks: xid counter at 2B-1M (approaching wraparound limit)
+T-1 week: Database becomes read-only unexpectedly
+T-0: Debugging nightmare:
+  - Logs: "database shut down in recovery"
+  - Reality: PostgreSQL protecting data integrity
+  - Every write: "ERROR: database is shut down"
+
+Investigation:
+  - SELECT max(datfrozenxid) FROM pg_database;
+  - Result: 2147483646 (2^31-1, max xid!)
+  - Recovery: Full vacuum of entire database
+  - Duration: 2 weeks (50 million transactions, 10TB data)
+  - During recovery: Read-only mode, no writes possible
+  - Revenue impact: $500K (SaaS unavailable)
+
+Fix:
+- Aggressive autovacuum: vacuum_cost_delay = 0
+- Schedule maintenance window monthly
+- Monitor: SELECT max(datfrozenxid) regularly
+```
+
+### Observability
+
+```sql
+-- Monitor transaction age
+SELECT datname, age(datfrozenxid) as tx_age 
+FROM pg_database 
+WHERE datname NOT IN ('template0', 'template1');
+
+-- Monitor autovacuum
+SELECT schemaname, relname, last_vacuum, last_autovacuum
+FROM pg_stat_user_tables
+WHERE relname = 'large_table';
+
+-- Monitor bloat
+SELECT pg_size_pretty(pg_total_relation_size('table_name'));
+SELECT (SELECT EXTRACT(EPOCH FROM NOW())) - 
+       (SELECT EXTRACT(EPOCH FROM CREATION_TIME)) as table_age;
+```
+
+---
+
+## Interview Questions 💼
+
+### Level 1: Junior
+
+**Q: What's MVCC? Why is it important?**
+
+A: MVCC (Multi-Version Concurrency Control) = Each transaction sees consistent snapshot of data. Multiple versions of same row exist simultaneously.
+
+```sql
+-- Transaction A: SELECT age FROM users WHERE id=1; → sees age=30
+-- Transaction B: UPDATE users SET age=31 WHERE id=1; (in progress)
+-- Transaction A: Still sees age=30 (not affected by B's changes)
+-- Transaction B: COMMIT; Now new queries see age=31
+```
+
+**Q: What's WAL (Write-Ahead Log)?**
+
+A: Write log first, then apply to database. If crash, replay log to recover data.
+
+### Level 2: Intermediate
+
+**Q: Design autovacuum strategy for a table with 1M inserts/day and 100K deletes/day.**
+
+A:
+```sql
+ALTER TABLE events SET (
+  autovacuum_vacuum_scale_factor = 0.01,  -- vacuum if 1% dead rows
+  autovacuum_analyze_scale_factor = 0.005, -- analyze if 0.5% changes
+  autovacuum_vacuum_cost_delay = 10,      -- spread cost over time
+  autovacuum_vacuum_cost_limit = 1000     -- limit per cycle
+);
+```
+
+### Level 3: Senior
+
+**Q: Standby in replication is 1 hour behind primary. How do you fix it?**
+
+A: Bottleneck analysis:
+1. Network latency: Check pg_stat_replication.sync_state
+2. Standby apply speed: Slow disk or high wal_receiver_timeout
+3. Primary WAL generation: Too fast (high transaction rate)
+
+Fix:
+```sql
+-- Increase standby parallelism
+max_parallel_workers_per_gather = 8
+
+-- Increase WAL parallelism on primary
+max_wal_senders = 10
+wal_level = logical
+```
+
+---
+
+## Production Story: Stripe PostgreSQL at 1M Transactions/sec
+
+Challenge: PostgreSQL must handle payment scale reliably.
+
+**Stripe's approach:**
+1. **Horizontal scaling:** Sharding by customer_id (each shard: 1-2M customers)
+2. **Read replicas:** Analytics offloaded to replicas
+3. **Connection pooling:** PgBouncer handles 100K connections
+4. **MVCC tuning:** Aggressive vacuum (wraparound = death)
+5. **WAL streaming:** Continuous archival to S3
+
+**Result:**
+- Millions of payments/day (each ACID-guaranteed)
+- Zero data loss (despite hardware failures)
+- <10ms latency (99th percentile)
+
+**Key lesson:** PostgreSQL is not slow. Misconfiguration is slow.
+
+---
+
 
 
 ```mermaid

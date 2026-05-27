@@ -1,8 +1,208 @@
 # 🔐 Kubernetes Security — Complete Deep Dive
 
+---
 
+## LAYER 1: Beginner's Mental Model 🧠
 
-```mermaid
+### Real-World Analogy
+
+**Kubernetes Security = Apartment Building Security**
+
+- **RBAC (Role-Based Access)** = Keys. Janitor gets key to hallway, residents get key to apartment, nobody gets master key
+- **Pod Security Standards** = Building codes. Stove must have safety valve, doors need locks (prevents dangerous configs)
+- **NetworkPolicy** = Firewall. Apartment can only receive visitors from registered list (white-list access)
+- **Secrets** = Vault. Passwords locked in safe, not written on wall
+- **ServiceAccount** = ID card. App has identity, proves it's allowed to do things
+
+### Why It Matters
+
+**Without security (everything open):**
+```
+Attacker gains access to 1 container
+→ Can access all other containers
+→ Can read all secrets (DB passwords, API keys)
+→ Can modify other apps
+→ Result: Entire cluster compromised
+```
+
+**With Kubernetes security (layered):**
+```
+Attacker gains access to container A
+→ RBAC: Can only access pod A's namespace
+→ NetworkPolicy: Can only talk to pod B (blocked from others)
+→ Secrets: Encrypted, attacker can't read passwords
+→ SecurityContext: Can't run as root (limited damage)
+Result: Blast radius contained to pod A
+```
+
+---
+
+## LAYER 4: Production Failures 🚨
+
+### Common K8s Security Failures
+
+| Failure | Symptom | Root Cause | Prevention |
+|---------|---------|-----------|-----------|
+| **Over-Permissive RBAC** | Dev reads prod secrets | Role has `*` on `*` (admin) | Use least privilege, audit RBAC |
+| **Unencrypted Secrets** | Attacker reads etcd, gets passwords | Encryption disabled | Enable `EncryptionAtRest` in API server |
+| **Pod Escape** | Container breaks out to host | No SecurityContext, runs as root | Use PodSecurityPolicy / PSA |
+| **Lateral Movement** | Pod talks to all others | No NetworkPolicy | Default deny all, allow specific flows |
+| **Image From Anywhere** | Pulls malicious image from attacker registry | No image registry policy | Use `ImagePolicyWebhook`, scan images |
+| **Unpatched Kubelet** | Kernel exploit, complete node compromise | Node not updated in 6 months | Automated node patching, drain + upgrade |
+
+### Real Incident: Capital One Kubernetes Breach (2019)
+
+**Problem:** Attacker accessed Kubernetes through misconfigured IAM role.
+
+```
+Timeline:
+1. CloudTrail shows IAM role overly permissive
+2. Attacker exploits Pod → escapes to host
+3. Gets AWS credentials from EC2 metadata service
+4. Can now list all S3 buckets
+5. Downloads 100M customer records
+
+Root causes:
+- SecurityContext not enforced (pod ran as root)
+- RBAC too permissive (service account could list all secrets)
+- No NetworkPolicy (pod could reach metadata service)
+- No audit logging (didn't detect until later)
+```
+
+### Prevention Checklist
+
+```yaml
+# SecurityContext: prevent root + limit capabilities
+spec:
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 1000
+    fsReadOnlyRootFilesystem: true
+    capabilities:
+      drop: ["ALL"]
+
+# PodSecurityPolicy / PSA: enforce at cluster level
+apiVersion: policy/v1beta1
+kind: PodSecurityPolicy
+metadata:
+  name: restricted
+spec:
+  privileged: false
+  allowPrivilegeEscalation: false
+  requiredDropCapabilities: ["ALL"]
+  runAsUser:
+    rule: "MustRunAsNonRoot"
+  fsGroup:
+    rule: "MustRunAs"
+    ranges: [{min: 1000, max: 65535}]
+
+# NetworkPolicy: whitelist only needed flows
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: app-policy
+spec:
+  podSelector:
+    matchLabels:
+      app: web
+  policyTypes:
+  - Ingress
+  ingress:
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          name: ingress
+    ports:
+    - protocol: TCP
+      port: 8080
+
+# Secrets: use external secret manager
+apiVersion: v1
+kind: SecretProviderClass
+metadata:
+  name: vault-secrets
+spec:
+  provider: vault
+  parameters:
+    vaultAddress: "https://vault:8200"
+```
+
+---
+
+## Interview Questions 💼
+
+### Level 1: Junior
+
+**Q: What's RBAC? Give an example.**
+
+A: RBAC = Role-based access control. Define what users/serviceaccounts can do.
+
+```yaml
+Role: "pod-reader" can "get,watch,list" "pods"
+RoleBinding: User "alice" has role "pod-reader"
+Result: alice can read pods, not delete them
+```
+
+### Level 2: Intermediate
+
+**Q: Design RBAC for a team: frontend devs (1 ns), backend devs (1 ns), ops (all ns).**
+
+A:
+```yaml
+# Frontend devs: can deploy in frontend ns only
+- Role: deploy-frontend (actions: create, get, list pods/deployments)
+- RoleBinding: group "frontend-devs" in namespace "frontend"
+
+# Backend devs: can deploy in backend ns
+- Role: deploy-backend (same as above)
+- RoleBinding: group "backend-devs" in namespace "backend"
+
+# Ops: admin on all namespaces
+- ClusterRole: cluster-admin
+- ClusterRoleBinding: group "ops"
+```
+
+### Level 3: Senior
+
+**Q: Design network policies for microservices: web → api → database.**
+
+A:
+```yaml
+# Web can accept from ingress, talk to api only
+NetworkPolicy:
+  selector: web
+  ingress: from ingress-controller
+  egress: to api (port 8080)
+
+# API can talk to web and database only
+NetworkPolicy:
+  selector: api
+  ingress: from web
+  egress: to database (port 5432)
+
+# Database: no ingress except from api
+NetworkPolicy:
+  selector: database
+  ingress: from api
+```
+
+---
+
+## Production Story: Uber Kubernetes Security
+
+Challenge: Uber runs 1000+ microservices in Kubernetes. One pod compromise = $1M loss.
+
+**Defense layers:**
+1. RBAC: Each service gets identity, can only read its own secrets
+2. PSA: Blocks privileged pods (limits blast radius)
+3. NetworkPolicy: Services can only talk to dependencies
+4. Secrets: Encrypted at rest, rotated every 30 days
+5. Runtime: Falco monitors unusual syscalls
+6. Audit: All API calls logged to SecurityHub
+
+**Result:** Even if 1 pod compromised, attacker limited to that microservice's data.
+
+---
 graph LR
     RBAC["RBAC<br/>(Role/ClusterRole)"] --> SUBJ["Subject<br/>(User/ServiceAccount)"]
     SUBJ --> ROLE_B["Role / ClusterRole<br/>(Rules)"]

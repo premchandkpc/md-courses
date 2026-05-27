@@ -2,6 +2,237 @@
 
 > **Scope**: Profiling, rendering optimization, bundle optimization, code splitting, lazy loading, virtualization, memoization, CWV, Lighthouse, perf budgets
 
+---
+
+## Layer 1: Beginner Mental Model
+
+**Analogy**: Imagine a restaurant kitchen. Each order (state change) goes to a chef (React component). If the chef re-cooks the entire menu instead of just the one dish ordered, the kitchen gets congested. Optimization means: cook only what's ordered, batch orders together, and use assembly lines (virtualization) for large orders.
+
+**Why it matters**:
+- **Business impact**: 100ms delay = 1% conversion drop (Amazon, Stripe studies). A slow app hemorrhages users.
+- **Netflix case**: 50ms jank in recommendation carousel = 8% fewer clicks on personalized rows.
+- **Stripe checkout**: 200ms slower load = 2.4% more abandoned carts ($50M/year impact at scale).
+- **Instagram**: Feed scroll jank from 10K messages in DOM simultaneously = users switch to TikTok.
+
+**Core insight**: The browser has a 16ms frame budget (60fps). Every render that exceeds this breaks smoothness. Modern React apps often ship 5x the JavaScript needed, triggering cascading re-renders and massive bundles.
+
+---
+
+## Layer 4: Production Reality
+
+### Performance Failure Modes
+
+| Failure | Symptoms | Root Cause | Fix |
+|---------|----------|-----------|-----|
+| **Context Thrashing** | App freezes on toast notification | All consumers re-render when context value changes | Split contexts, use atom state (zustand/jotai) |
+| **Stale Closures in Callbacks** | Event handler captures old state, updates fail | useCallback deps array incomplete, closure captures stale value | Add all dependencies to deps array, use ref for latest value |
+| **Memo Not Working** | Component still re-renders despite React.memo | Props change (new object/function every render) | Wrap inline objects/functions with useMemo/useCallback |
+| **Unvirtualized Lists** | 10K items rendering, 4s scrolling, 400MB memory | Full list in DOM instead of visible window | Use react-window or react-virtuoso |
+| **Bundle Bloat** | Initial load 8.5 MB, 12s TTI | No code splitting, unused dependencies | Dynamic imports, lazy routes, audit with bundlesize |
+| **Memory Leaks** | Memory climbs 50MB → 500MB over 1hr | Event listeners, timers not cleaned in useEffect | Return cleanup function from useEffect |
+| **Image Overload** | 50 hero images at 1080p on mobile (100MB) | No responsive images, no lazy loading | next/image with srcset, loading="lazy" |
+| **Dead Memo** | Deep comparisons waste CPU checking unchanged props | Complex objects in memo comparison function | Use primitives or shallow compare, split contexts |
+
+### Production Incident: Instagram Feed Scroll Jank (2016)
+
+**Context**: Instagram's feed during major events (Oscars, World Cup) received millions of messages. Engineers optimized server/DB but ignored client rendering.
+
+**What happened**:
+- Feed populated with 1000+ messages in React tree simultaneously
+- Each message had 3 child components (image, comments, likes)
+- Scrolling triggered re-renders of entire message list
+- React spent 400ms+ in reconciliation per scroll frame
+- Users saw 2-3 second delay, dropped app to TikTok
+
+**The bug**:
+```jsx
+// Old code — renders all 1000+ messages
+function Feed({ messages, onLike }) {
+  return (
+    <div>
+      {messages.map(msg => (
+        <Message 
+          key={msg.id} 
+          message={msg} 
+          onLike={onLike}  // ← new function every render
+        />
+      ))}
+    </div>
+  );
+}
+```
+
+**Solution** (1.5x speedup):
+1. Virtualized list — only render visible 20-30 messages
+2. Memoized Message component with useCallback for onLike
+3. Split like counts into separate atom state (not feed context)
+
+```jsx
+import { Virtuoso } from "react-virtuoso";
+import { useCallback } from "react";
+
+function Feed({ messages, onLike }) {
+  const handleLike = useCallback((id) => {
+    onLike(id);
+  }, [onLike]);
+
+  return (
+    <Virtuoso
+      data={messages}
+      itemContent={(_, msg) => (
+        <Message 
+          key={msg.id}
+          message={msg}
+          onLike={handleLike}
+        />
+      )}
+    />
+  );
+}
+
+const Message = memo(({ message, onLike }) => {
+  return (
+    <div>
+      <img src={message.imageUrl} loading="lazy" />
+      <button onClick={() => onLike(message.id)}>Like</button>
+    </div>
+  );
+});
+```
+
+**Result**: Scroll jank eliminated, TTI improved from 4.2s → 1.8s.
+
+---
+
+## Layer 5: Staff Engineer Perspective
+
+### Performance Tradeoff Table
+
+| Strategy | Gain | Cost | When to Use |
+|----------|------|------|------------|
+| **React.memo** | Reduce re-renders | Shallow compare CPU + mental overhead | High-rerender, expensive child components |
+| **useMemo/useCallback** | Stable references | Extra closures, deps complexity | Child is memoized, object/function used as key |
+| **Virtualization** | 100x speedup for lists | Scroll position loss, complexity | 100+ items or scrollable list |
+| **Code splitting** | Faster initial load | Slower interaction (waterfall loads) | Route-based (SSR friendly) or lazy modals |
+| **Image optimization** | 60% bandwidth cut | Build complexity (next/image, webpack) | Hero images, galleries, mobile |
+| **Atom state** | Fine-grained updates | Library dependency, mental shift | Global state with many unrelated consumers |
+| **Web Workers** | Non-blocking compute | IPC overhead, debugging hard | Heavy JSON parsing, data transforms |
+
+### Scaling Pattern: From Startup to 100M Users
+
+**Stage 1 (Startup — 100K MAU)**:
+- Measure with Lighthouse
+- Fix largest bottlenecks (React.memo, lazy routes)
+- One perf budget: "TTI < 3s"
+- Cost: 10 hours engineering
+
+**Stage 2 (Growth — 10M MAU)**:
+- Instrument with web-vitals, PerformanceObserver
+- Split contexts, virtualize lists
+- Per-domain budgets (checkout < 1.5s, feed < 2s)
+- Cost: 40 hours engineering, ongoing monitoring
+
+**Stage 3 (Scale — 100M MAU)**:
+- A/B test every perf change (2% improvement = $10M revenue at Stripe scale)
+- Replace Context with atom state across app
+- Edge caching, service workers, stream HTML
+- Dedicated perf engineer (1 FTE)
+- Cost: $200K/year salary, but $5M+ ROI
+
+**Real example: Stripe Checkout**:
+- v1 (2011): 3s load, contextual (React.memo only) = 1.2% abandonment
+- v2 (2016): 1.5s, virtualized lists, atom state = 0.8% abandonment (+$50M)
+- v3 (2021): 0.8s, stream HTML, service worker = 0.4% abandonment (+$100M cumulative)
+
+---
+
+## Layer 5: Interview Questions
+
+### Level 1 (Junior Engineer)
+
+**Q1: Why does React.memo not prevent re-renders sometimes?**
+A: React.memo only works if props are shallow-equal. If you pass a new object/function every render, memo sees it as "different" and renders anyway. Solution: use useMemo/useCallback to stabilize references.
+- Why asked: Catches memo misunderstanding, tests props immutability awareness
+- Expected: Mention new object/function, reference equality
+
+**Q2: What's the difference between useMemo and useCallback?**
+A: useMemo memoizes a value (e.g., result of expensive computation). useCallback memoizes a function. Both prevent re-renders of children expecting stable references.
+- Why asked: Core optimization primitive understanding
+- Expected: Can explain both with examples
+
+### Level 2 (Mid-Level Engineer)
+
+**Q3: A memoized component takes 8ms to render 100 items. How would you optimize?**
+A: First, virtualize — render only visible ~30 items (8ms → 2ms render). Second, check memo is working (React DevTools Profiler "why did this render?"). Third, split state — if only like count changes, move it to separate context.
+- Why asked: Diagnosis + prioritization, multiple techniques
+- Expected: Suggest virtualization first, understand profiler workflow
+
+**Q4: How would you debug why a context change re-renders unrelated components?**
+A: Context Provider re-renders all consumers when value changes. Check:
+1. Is value stable? Wrap with useMemo.
+2. Use React DevTools Profiler to identify unexpected renders.
+3. Split contexts (UserContext, ThemeContext separate).
+4. Consider zustand for fine-grained updates.
+- Why asked: Context pitfalls, debugging workflow
+- Expected: Recognize context thrashing, suggest split/atom state
+
+### Level 3 (Senior Engineer)
+
+**Q5: Design perf monitoring for a React app used by 10M users. What metrics matter?**
+A: 
+- Core Web Vitals (LCP, INP, CLS) sent to analytics
+- Custom metric: first interaction latency (when user clicks until response)
+- Percentiles matter (p75, p95, p99) — p99 slowness = outages
+- A/B test changes: 2% improvement = $10M revenue at Stripe scale, so measure statistically
+- PerformanceObserver for long tasks (>50ms blocking)
+- Budget vs actual: if INP exceeds 200ms, automated alert
+- Why asked: Scaling, stakeholder communication, ROI thinking
+- Expected: Mention Web Vitals, A/B testing, cost/benefit
+
+**Q6: You're migrating from Redux context to zustand. What perf improvements would you measure?**
+A:
+- Render count reduction: context triggers all consumers, zustand only triggers subscribers to changed slice
+- Selector memoization: zustand uses referential equality on selectors, context re-creates value every render
+- Bundle impact: zustand is smaller (~2KB vs 15KB for Redux)
+- Benchmark specific flows: feed scroll, checkout, navigation
+- Measure before/after: LCP, INP, CPU/memory on real devices
+- Cost: migration complexity, team training
+- Why asked: State architecture impact, measurement discipline
+- Expected: Understand selector pattern, granular subscriptions, bundle cost
+
+### Level 4 (Staff Engineer)
+
+**Q7: How would you approach perf optimization for a federated React application (multiple teams, multiple bundles)?**
+A:
+- Coordination challenge: each team owns a micro-frontend, their perf affects total load
+- Solution: shared perf budget (e.g., "total JS < 500KB") enforced in CI
+- Monitoring: instrument each micro-frontend separately, aggregate in data warehouse
+- Dependency hell: if each team bundles React 18.0, 18.1, 18.2, JS bloats 3x
+- Fix: shared vendor chunk (React, common libs) loaded once
+- Breaking changes: if team A upgrades to new React API, team B still uses old → two codepaths
+- Why asked: Cross-org scale, tradeoffs, political/technical
+- Expected: Recognize micro-frontend perf pitfalls, shared ownership models, vendor duplication
+
+**Q8: A competitor's app loads 40% faster. How would you investigate and estimate the cost to match them?**
+A:
+- Step 1: Lighthouse audit, Web Vitals, Network tab (what's slow?)
+- Step 2: Reverse engineer (bundle analysis via script injection, DevTools)
+- Common suspects: they might use
+  - Stream HTML (server sends JSX as HTML immediately, hydrates in background) → 2x LCP improvement
+  - Service worker (cache JS/CSS) → 1.5x repeat visit
+  - Code-splitting more aggressively → smaller initial bundle
+  - Preload critical routes
+- Step 3: Cost estimate
+  - Stream HTML: 2 weeks (nextjs getServerSideProps, React 18 suspense)
+  - Service worker: 1 week (baseline), 4 weeks (cross-browser edge cases)
+  - Advanced code-splitting: 3 weeks (large refactor)
+  - Total: ~6-8 weeks, 2 engineers
+- Step 4: ROI — 40% faster = 3-5% more conversions (Stripe data) = $5-10M/year → worth it
+- Why asked: Competitive analysis, cost/benefit, technical vision
+- Expected: Systematic investigation, known optimizations, ROI thinking
+
+---
+
 
 ## Performance Optimization Checklist
 

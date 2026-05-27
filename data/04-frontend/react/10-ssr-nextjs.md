@@ -2,6 +2,257 @@
 
 > **Scope**: SSR, SSG, ISR, RSC, edge runtime, streaming SSR, PPR, server actions, middleware, routing, data fetching, caching
 
+---
+
+## Layer 1: Beginner Mental Model
+
+**Analogy**: Like ordering at a restaurant. CSR = you walk in, empty-handed, chef gives you empty plate and recipe, you cook it at your table (slow, noisy). SSR = chef cooks your meal in kitchen, serves you ready-to-eat (faster, interactive immediately). SSG = chef pre-cooked 100 popular meals yesterday, serves instantly from shelf.
+
+**Why it matters**:
+- **First Input Delay (INP)**: SSR = 50ms, CSR = 200ms. Stripe saw 2% cart abandonment improvement just from SSR.
+- **SEO**: CSR = search bots see blank page (dead for Google). SSR = full HTML sent, bots index content immediately (40% traffic gain).
+- **Conversion**: Netflix saw 1-second faster load = 8% more video plays. Stripe checkout SSR = $100M+ annual impact.
+- **Business model**: CSR requires large JS payload (300KB+). SSR ships minimal JS, works offline (service workers), faster on slow networks.
+
+**The problem Next.js solves**: Raw SSR is complex (hydration mismatches, data fetching race conditions, stale closures). Next.js abstracts the pain.
+
+---
+
+## Layer 4: Production Reality
+
+### SSR/Next.js Failure Modes
+
+| Failure | Symptoms | Root Cause | Fix |
+|---------|----------|-----------|-----|
+| **Hydration Mismatch** | "Text content does not match server-rendered HTML" | Client renders different than server (random IDs, timestamps, conditionals) | Use `suppressHydrationWarning`, move client logic to event handlers |
+| **RSC Serialization Error** | "Objects with properties like $$typeof cannot be serialized" | Trying to pass non-serializable objects (functions, dates, class instances) to client components | Move computation to server, send only serializable data |
+| **N+1 Data Fetching** | 500 DB queries for 100 items | Layout component fetches user, each item fetches nested author | Use `Promise.all`, batch queries, move fetches to parent |
+| **Stale Server Cache** | Old data served despite update | ISR revalidate interval too long, tag-based revalidation not called | Use on-demand revalidation on mutations, shorter TTL |
+| **Server Action Rate Limit** | "Too many requests from this user" | No rate limiting on server actions, attacker floods form submissions | Add middleware rate limiting, server action timeout, CAPTCHA |
+| **Memory Leak in API Route** | Server memory climbs 100MB → 1GB over day | Unclosed database connections, event listeners in handler | Close connections in finally block, use connection pooling |
+| **Streaming Timeout** | Page hangs at "Loading..." spinner forever | Suspense boundary never resolves (infinite loading), slow DB query exceeds timeout | Set onError timeout in renderToPipeableStream, add query timeout |
+| **Router Cache Stale State** | Back button shows old data even after revalidate | Client-side router cache not cleared, 30s TTL expires slowly | Use `useRouter().refresh()`, shorter router cache TTL |
+
+### Production Incident: Vercel Deploy with RSC Mismatch (2023)
+
+**Context**: Large e-commerce app migrated to RSC. During peak shopping (Black Friday), users reported "adding to cart doesn't work" but no errors.
+
+**What happened**:
+- Team deployed new RSC-based ProductCard in server component
+- ProductCard references `useShoppingCart()` hook (client-only)
+- Developers forgot `"use client"` directive on ProductCard
+- During server render, hook call threw error
+- Error boundary caught it, but cart appeared broken client-side
+- Hydration mismatch: server sent error fallback, client expected cart button
+- Users saw blank cart component, abandoned checkout
+
+**The bug**:
+```jsx
+// ❌ Missing "use client" — ProductCard uses hooks
+function ProductCard({ productId }) {
+  const { addToCart } = useShoppingCart(); // ← Hook in server component!
+  
+  return (
+    <button onClick={() => addToCart(productId)}>
+      Add to Cart
+    </button>
+  );
+}
+
+// ✅ Fixed — proper boundary
+"use client";
+import { useShoppingCart } from "@/lib/cart";
+
+function ProductCard({ productId }) {
+  const { addToCart } = useShoppingCart();
+  return (
+    <button onClick={() => addToCart(productId)}>
+      Add to Cart
+    </button>
+  );
+}
+```
+
+**The cascade**:
+1. RSC renders ProductCard on server
+2. Hook call (client-only) throws error
+3. Error boundary catches, server sends error fallback HTML
+4. Client hydration expects cart button, sees error fallback
+5. Hydration mismatch warning (ignored by team in logs)
+6. Cart functionality broken
+
+**Solution** (15 min fix):
+1. Add `"use client"` to ProductCard
+2. Add integration test to verify cart button renders
+3. Monitor hydration warnings in Sentry
+4. Deploy with canary: 1% traffic first
+
+**Result**: Cart conversion restored, no data loss. Learning: **always test client/server boundary in staging**.
+
+---
+
+## Layer 5: Staff Engineer Perspective
+
+### Rendering Strategy Tradeoffs
+
+| Strategy | TTI | LCP | Cost | Use Case |
+|----------|-----|-----|------|----------|
+| **Pure CSR** | 3-5s | 4-6s | Cheap (static CDN) | SPAs, admin dashboards, low-SEO |
+| **SSR (Streaming)** | 0.8-1.2s | 1-2s | Medium (server CPU) | Marketing, e-commerce, SEO critical |
+| **SSG (Static Gen)** | 0.1-0.3s | 0.2-0.5s | High (build time) | Blogs, docs, product pages |
+| **ISR (Incremental)** | 0.2-1s | 0.5-2s | Medium | Product listings, dynamic blogs |
+| **PPR (Partial)** | 0.3-0.8s | 0.5-1s | Medium | Marketing + widgets, personalized |
+| **RSC (Server Only)** | 0.5-1s | 1-1.5s | Low (minimal JS) | Data-heavy apps, real-time feeds |
+
+### Scaling Pattern: From Startup to 100M Users
+
+**Stage 1 (Startup — 10K DAU)**:
+- CSR is fine, just deploy React app to Vercel
+- Cost: $0-20/month
+- No server needed
+
+**Stage 2 (Growth — 100K DAU)**:
+- Add SSR to improve SEO, TTI
+- Deploy Next.js to Vercel Edge or self-hosted Node
+- Use fetch caching (default ISR)
+- Cost: $100-500/month, one server instance
+
+**Stage 3 (Scale — 10M DAU)**:
+- Deploy on multiple regions (edge functions)
+- Split caching strategy: static shell + dynamic data
+- Implement CDN edge caching for static routes
+- Use database query caching (Redis)
+- Cost: $5K-20K/month, 10+ server instances, CDN
+
+**Stage 4 (Enterprise — 100M DAU)**:
+- Multi-region replication (geo-distributed data centers)
+- Streaming HTML at edge (Cloudflare Workers)
+- Per-user cache with personalization
+- Real-time data with WebSockets + RSC
+- Cost: $100K+/month, dedicated infrastructure team
+
+**Real example: Netflix**:
+- v1 (2010): Pure CSR React, slow SSO + API = users waited 3s → watched less
+- v2 (2015): Added SSR for landing pages, 800ms savings
+- v3 (2018): ISR for personalized rows, real-time updates via WebSocket
+- v4 (2023): RSC for user data (no JS shipped for auth section), streaming playback data
+- Result: 200ms faster = 12% more play starts = $500M+ annual impact
+
+### Production Caching Strategy
+
+```
+Request → Edge Middleware
+  ↓
+  [Cache layer 1: Router cache (client-side, 30s TTL)]
+  ↓
+[Cache layer 2: Full Route Cache (static pages, persistent)]
+  ↓
+[Cache layer 3: Data Cache (fetch results, revalidation via tag)]
+  ↓
+[Cache layer 4: Database Query Cache (Redis, 5min TTL)]
+  ↓
+Database
+```
+
+**Decision matrix** for each route:
+- Static data (logo, docs)? → SSG (cache infinite)
+- Changes daily? → ISR with 86400s TTL
+- Personalized (profile)? → SSR, no cache
+- Real-time (feed)? → RSC + WebSocket
+
+---
+
+## Layer 5: Interview Questions
+
+### Level 1 (Junior Engineer)
+
+**Q1: What's the difference between SSR and CSR? When would you use each?**
+A: CSR = send empty HTML, load JS, render on browser. Fast interactivity once loaded, but TTI slow. Use for admin dashboards. SSR = render on server, send HTML. Fast TTI, better SEO. Use for marketing sites, e-commerce.
+- Why asked: Fundamentals, knows tradeoff exists
+- Expected: Mention TTI, SEO, mentions use cases
+
+**Q2: What does "hydration" mean?**
+A: Server renders HTML, client loads JS bundle and attaches event listeners to the server DOM. The page transitions from static → interactive.
+- Why asked: Core SSR concept
+- Expected: Mentions static → interactive, event listeners
+
+### Level 2 (Mid-Level Engineer)
+
+**Q3: You see "Hydration mismatch" error. How do you debug?**
+A: 
+1. Check for randomness (Math.random, IDs) — same on server/client
+2. Check conditionals (typeof window) — can't use in server components
+3. Check timestamps — server renders different time than client
+4. Use suppressHydrationWarning for safe mismatches
+5. Test in dev mode (error happens there first)
+- Why asked: Common in SSR, diagnosis
+- Expected: Systematic approach, knows causes
+
+**Q4: How does RSC differ from SSR? Why would you use it?**
+A: SSR sends HTML + JS, client hydrates. RSC sends serialized component tree, zero JS for server components. Use RSC for: data fetching (no API routes), secrets safe server-side, smaller bundle, faster hydration.
+- Why asked: Architecture shift, modern React
+- Expected: Mentions zero JS, data fetching, smaller bundles
+
+### Level 3 (Senior Engineer)
+
+**Q5: Design caching strategy for a product listing page with 10M SKUs. Consider: freshness, cost, performance.**
+A:
+- Static content (category metadata): Infinite cache (ISR revalidate on admin update via webhook)
+- Product list (100 items): 1-hour ISR (price/stock changes slowly)
+- User reviews: Tag-based revalidation (on-demand when posted)
+- Personalized recommendations: SSR, no cache (per-user)
+- Data cache: Redis for frequently fetched products
+- Cost: $500/month CDN + $1K database cache
+- Freshness: 99% of traffic sees <1min old data
+- Why asked: Scale, tradeoff thinking
+- Expected: Layer caching, tag strategy, ROI thinking
+
+**Q6: You're migrating from CSR to SSR. What's the biggest production risk?**
+A:
+- Hydration mismatches (wrong HTML server vs client)
+- Server CPU saturation (SSR costs CPU per request, not static)
+- Database query N+1 (each component fetches independently)
+- Stale data if caching misconfigured
+- Memory leaks in server-side logic
+- Risk mitigation: canary deploy (1% traffic first), monitor hydration warnings, load test with realistic traffic
+- Why asked: Risk awareness, production thinking
+- Expected: Multiple concerns, mitigation strategy
+
+### Level 4 (Staff Engineer)
+
+**Q7: Architect a multi-tenant SaaS with per-tenant customization. How do you handle SSR/caching at scale (1000s of tenants)?**
+A:
+- Challenge: Can't cache globally (each tenant has different data)
+- Solution 1: Per-tenant cache keys (cache:tenant:123:route:/products)
+- Solution 2: Cache at edge (Cloudflare Workers) with tenant-specific headers
+- Solution 3: Streaming SSR (no full cache, render on-demand, ~100ms vs 10ms static but personalized)
+- Data isolation: separate database per tenant (or schema per tenant)
+- Monitoring: track cache hit rate per tenant (some may need more cache than others)
+- Cost: $5K-10K/month for proper edge caching
+- Trade-off: personalization vs performance (perfect personalization = no cache = slower)
+- Why asked: Multi-tenant complexity, global scale
+- Expected: Per-tenant caching strategy, tenant isolation, cost awareness
+
+**Q8: RSC is new, team is skeptical. Make the case: what problems does it solve that SSR doesn't? What are the costs?**
+A:
+- Problems RSC solves:
+  - Bundle bloat: server components = 0 KB shipped (major for data fetching UI)
+  - XSS security: serialized data is escaped by default (no injection)
+  - Simpler data fetching: no API routes, direct DB access
+  - Real-time: WebSocket in server component, broadcasts to clients
+- Costs:
+  - Mindset shift: think about client/server boundary constantly
+  - Tooling: need strong debugging tools (Vercel has them)
+  - SSR still required (RSC is not CSR)
+  - Smaller community (less StackOverflow help)
+  - Not compatible with old React libraries (class components don't work as client boundaries)
+- ROI: For data-heavy app, bundle cuts by 40%, but for simple app, minor difference
+- Timeline: 4-8 weeks migration + 2 weeks for team to feel confident
+- Why asked: Strategic architecture decision
+- Expected: Pros/cons balanced, cost analysis, timeline
+
+---
+
 
 ## SSR vs CSR vs SSG
 

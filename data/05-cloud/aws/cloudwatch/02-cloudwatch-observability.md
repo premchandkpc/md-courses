@@ -211,3 +211,43 @@ CloudWatch alarms trigger EventBridge events -> Lambda, SQS, Step Functions.
 > Metrics = gauges on the wall. Logs = paper tapes printing everything. Metric filters = sensors that beep on keywords. Alarms = bells when gauges hit red. Dashboards = configured wall displays. Logs Insights = search box for past events. Contributor Insights = who's talking most on the radio. ServiceLens = big board showing how everything connects. Synthetics = robots pressing buttons to verify things work. RUM = dashcam of real user experience.
 >
 > **Key rule**: CloudWatch costs can explode. Set log retention, filter unnecessary logs, use composite alarms, prefer metric math + anomaly detection. Observability should inform, not overwhelm.
+
+
+---
+
+## Code Examples
+
+```python
+# Example implementation
+# [Add language-specific code demonstrating core concept]
+pass
+```
+
+---
+
+## Common Failure Modes
+
+**Problem**: [Key issue in production]
+
+**Root cause**: [Why it happens]
+
+**Solution**: [How to fix]
+
+---
+
+## Interview Questions
+
+### Q1: [Core concept question]
+
+**Answer**: [Detailed explanation with trade-offs]
+
+### Q2: [Design/architecture question]
+
+**Answer**: [Best practices and reasoning]
+
+---
+
+## Related
+
+- [Related domain 1](#)
+- [Related domain 2](#)

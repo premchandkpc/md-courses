@@ -277,3 +277,35 @@ degraded response (stale data).
 > - **Chat System** = Walkie-talkie network across a city. Each user has a base station (WebSocket). Gateways route messages. Small groups get messages forwarded to everyone (write fanout). Large groups check a bulletin board (read fanout). Presence service = live on/offline directory.
 > - **Video Streaming** = Multi-format printing press. Upload photo, press produces wallet(240p), 4×6(480p), 8×10(720p), poster(1080p) all at once. Each format cut into strips (segments) and packed in envelopes (HLS/DASH). Local print shops stock popular sizes (CDN). Your phone picks the right size based on connection speed (ABR).
 > - **Rate Limiter** = Club bouncer counting people per time window. Token bucket = bowl of tokens replenishing at fixed rate, need one to enter. Sliding window = exactly how many entered in last 60s. Distributed = multiple bouncers coordinating across doors. 429 = "Club is full, come back later."
+
+---
+
+## Code Examples
+
+```python
+# Example implementation
+# [Add language-specific code demonstrating core concept]
+pass
+```
+
+---
+
+## Common Failure Modes
+
+**Problem**: [Key issue in production]
+
+**Root cause**: [Why it happens]
+
+**Solution**: [How to fix]
+
+---
+
+## Interview Questions
+
+### Q1: [Core concept question]
+
+**Answer**: [Detailed explanation with trade-offs]
+
+### Q2: [Design/architecture question]
+
+**Answer**: [Best practices and reasoning]

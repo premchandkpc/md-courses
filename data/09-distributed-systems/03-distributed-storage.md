@@ -292,3 +292,36 @@ cur.execute("INSERT INTO sensor_data VALUES (NOW(), 'sensor-01', 23.5, 65.2)")
 ## Simplest Mental Model
 
 **Distributed storage spreads data across machines while making it look like one system.** GFS/HDFS uses a central brain (NameNode) tracking file chunks. Ceph replaces the brain with math (CRUSH — compute location from name). **DynamoDB is a giant hash table** with machines responsible for key ranges. **CockroachDB does the same with SQL** — each range of rows is a tiny Raft group. Pick central metadata for simplicity, CRUSH for scalability, key-value for performance, or distributed SQL for transactions.
+
+
+---
+
+## Code Examples
+
+```python
+# Example implementation
+# [Add language-specific code demonstrating core concept]
+pass
+```
+
+---
+
+## Common Failure Modes
+
+**Problem**: [Key issue in production]
+
+**Root cause**: [Why it happens]
+
+**Solution**: [How to fix]
+
+---
+
+## Interview Questions
+
+### Q1: [Core concept question]
+
+**Answer**: [Detailed explanation with trade-offs]
+
+### Q2: [Design/architecture question]
+
+**Answer**: [Best practices and reasoning]

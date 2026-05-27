@@ -214,3 +214,43 @@ Max:            Longest request (often outlier)
 - Avoid tail latencies (P99+) at all costs
 - Budget 50% of target for external dependencies
 - Keep local operations < 10% of total budget
+
+
+---
+
+## Code Examples
+
+```python
+# Example implementation
+# [Add language-specific code demonstrating core concept]
+pass
+```
+
+---
+
+## Common Failure Modes
+
+**Problem**: [Key issue in production]
+
+**Root cause**: [Why it happens]
+
+**Solution**: [How to fix]
+
+---
+
+## Interview Questions
+
+### Q1: [Core concept question]
+
+**Answer**: [Detailed explanation with trade-offs]
+
+### Q2: [Design/architecture question]
+
+**Answer**: [Best practices and reasoning]
+
+---
+
+## Related
+
+- [Related domain 1](#)
+- [Related domain 2](#)

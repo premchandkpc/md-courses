@@ -219,3 +219,43 @@ Automated AMI pipeline:
 > VPC = castle wall. Security groups = gate guards who remember who they let out (stateful). NACLs = outer wall guards checking ID each time (stateless). IMDSv2 = password-protected notice board. Instance profiles = royal seals (IAM roles). ENA/EFA/ENA Express = gravel road vs fiber optic vs multi-lane highway. Nitro = superior castle foundation.
 >
 > **Key rule**: never trust the network. Use IMDSv2, SSM over SSH, IAM roles over keys, least-privilege SGs, encryption everywhere.
+
+
+---
+
+## Code Examples
+
+```python
+# Example implementation
+# [Add language-specific code demonstrating core concept]
+pass
+```
+
+---
+
+## Common Failure Modes
+
+**Problem**: [Key issue in production]
+
+**Root cause**: [Why it happens]
+
+**Solution**: [How to fix]
+
+---
+
+## Interview Questions
+
+### Q1: [Core concept question]
+
+**Answer**: [Detailed explanation with trade-offs]
+
+### Q2: [Design/architecture question]
+
+**Answer**: [Best practices and reasoning]
+
+---
+
+## Related
+
+- [Related domain 1](#)
+- [Related domain 2](#)

@@ -266,3 +266,36 @@ BOTTLEROCKET    =  Game console OS. Locked down. Atomic updates.
 EKS ANYWHERE    =  Factory playbook in your garage.
 EKS BLUEPRINTS  =  Pre-designed factory blueprint. Just build.
 ```
+
+
+---
+
+## Code Examples
+
+```python
+# Example implementation
+# [Add language-specific code demonstrating core concept]
+pass
+```
+
+---
+
+## Common Failure Modes
+
+**Problem**: [Key issue in production]
+
+**Root cause**: [Why it happens]
+
+**Solution**: [How to fix]
+
+---
+
+## Interview Questions
+
+### Q1: [Core concept question]
+
+**Answer**: [Detailed explanation with trade-offs]
+
+### Q2: [Design/architecture question]
+
+**Answer**: [Best practices and reasoning]

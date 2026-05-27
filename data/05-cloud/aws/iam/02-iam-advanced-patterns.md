@@ -274,3 +274,36 @@ CONDITIONS       =  "Only from office WiFi" (SourceIp),
 SERVICE-LINKED   =  Pre-configured uniform for each
 ROLE                service (RDS, Lambda). Tailored fit.
 ```
+
+
+---
+
+## Code Examples
+
+```python
+# Example implementation
+# [Add language-specific code demonstrating core concept]
+pass
+```
+
+---
+
+## Common Failure Modes
+
+**Problem**: [Key issue in production]
+
+**Root cause**: [Why it happens]
+
+**Solution**: [How to fix]
+
+---
+
+## Interview Questions
+
+### Q1: [Core concept question]
+
+**Answer**: [Detailed explanation with trade-offs]
+
+### Q2: [Design/architecture question]
+
+**Answer**: [Best practices and reasoning]

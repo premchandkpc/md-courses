@@ -261,3 +261,36 @@ PostgreSQL is a factory with dedicated workers:
 6. SHARED MEMORY = whiteboard (shared notes between workers)
 7. MEMORY CONTEXTS = binder sections (tear out one when done)
 ```
+
+
+---
+
+## Code Examples
+
+```python
+# Example implementation
+# [Add language-specific code demonstrating core concept]
+pass
+```
+
+---
+
+## Common Failure Modes
+
+**Problem**: [Key issue in production]
+
+**Root cause**: [Why it happens]
+
+**Solution**: [How to fix]
+
+---
+
+## Interview Questions
+
+### Q1: [Core concept question]
+
+**Answer**: [Detailed explanation with trade-offs]
+
+### Q2: [Design/architecture question]
+
+**Answer**: [Best practices and reasoning]

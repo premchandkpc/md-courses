@@ -2,7 +2,9 @@
   "permissions": {
     "allow": [
       "Bash(find /Users/ramyachowdary/Documents/prem-work/md-courses/data -type f -name \"*.md\" -newer /tmp -mmin -10 2>/dev/null | head -20)",
-      "Read(//private/tmp/**)"
+      "Read(//private/tmp/**)",
+      "Bash(python3 /tmp/expand_thin_files.py)",
+      "Bash(python3)"
     ]
   }
 }

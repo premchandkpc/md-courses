@@ -204,3 +204,43 @@ RDS Event Notifications via SNS. Categories with namespaces: **DB Instance** (cr
 > Multi-AZ = spare tire (sync, auto-failover). Read Replicas = valet parks a copy elsewhere (async, manual-promote). RDS Proxy = traffic cop directing drivers to open spots. Aurora = conveyor belt sharing one garage (6 copies across 3 floors, < 30s failover). Serverless = garage that auto-expands. Performance Insights = dashboard showing which queries cause traffic jams. Blue/Green = backup garage to test changes before switchover.
 >
 > **Key decision**: Aurora vs RDS standard. Aurora costs more but gives 6-way replication, < 30s failover, 128 TB storage. Choose RDS for simple/small workloads. Choose Aurora for production HA needs.
+
+
+---
+
+## Code Examples
+
+```python
+# Example implementation
+# [Add language-specific code demonstrating core concept]
+pass
+```
+
+---
+
+## Common Failure Modes
+
+**Problem**: [Key issue in production]
+
+**Root cause**: [Why it happens]
+
+**Solution**: [How to fix]
+
+---
+
+## Interview Questions
+
+### Q1: [Core concept question]
+
+**Answer**: [Detailed explanation with trade-offs]
+
+### Q2: [Design/architecture question]
+
+**Answer**: [Best practices and reasoning]
+
+---
+
+## Related
+
+- [Related domain 1](#)
+- [Related domain 2](#)

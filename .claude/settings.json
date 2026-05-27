@@ -9,7 +9,10 @@
       "Bash(node server.js)",
       "Bash(pkill -f \"node server.js\")",
       "Bash(curl -s http://localhost:3000/api/tree)",
-      "Bash(pkill -f \"node.*server.js\")"
+      "Bash(pkill -f \"node.*server.js\")",
+      "Bash(curl -s http://localhost:3000/api/file?path=01-ai-ml/agentic-ai/01-agents-fundamentals.md)",
+      "Bash(curl -s http://localhost:3000/api/files)",
+      "Bash(curl -s 'http://localhost:3000/api/file?path=12-operating-systems/05-process-threads-fibers.md')"
     ]
   }
 }

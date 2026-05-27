@@ -277,6 +277,23 @@ This knowledge universe is a living document. Contributions follow these princip
 3. Add cross-references to related domains
 4. Include production stories, failure analysis, or code examples where relevant
 
+### Tech Debt & Known Gaps
+
+See **[TECH_DEBT.md](TECH_DEBT.md)** for the complete 16-category improvement roadmap covering:
+
+- 🔴 **83 empty stub directories** — scaffolding to populate or prune
+- 🔴 **24 monolith files** over 1500 lines needing splitting
+- 🔴 **Zero interactive/simulation/animation content** — `interactive-simulations/` is empty
+- 🟠 **Missing code examples** in system-design, networking, databases, foundations
+- 🟠 **22 thin files** under 300 lines needing expansion
+- 🟠 **Zero mermaid diagrams** in 16 dense content domains
+- 🟠 **No cross-references** between 5 key domains (AI/ML, Data Eng, Frontend, Security, Stories)
+- 🟡 **Missing interview questions** in 17 domains
+- 🟡 **Missing failure/incident coverage** in 7 domains
+- 🟡 **Empty `cheat-sheets/` directory**
+- 🟢 **No runnable code** — 100% markdown, zero executable examples
+- 🟢 **No real-world project implementations** in `23-projects/`
+
 ### Evolution Roadmap
 
 - Interactive simulations for distributed systems algorithms (Raft, gossip, consistent hashing)

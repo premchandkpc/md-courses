@@ -6,6 +6,23 @@
 
 ---
 
+
+
+```mermaid
+graph LR
+    A["📥 Input"] --> B["🔄 Transform"]
+    B --> C["🧹 Clean"]
+    C --> D["✓ Validate"]
+    D --> E["💾 Store"]
+    E --> F["📤 Output"]
+    style A fill:#4a8bc2
+    style B fill:#2d5a7b
+    style C fill:#2d5a7b
+    style D fill:#1a5d3a
+    style E fill:#2d5a7b
+    style F fill:#c73e1d
+```
+
 ## 1. Overview
 
 The AI Tutor Engine is an LLM-powered interactive tutor that understands engineering concepts at depth, retrieves relevant knowledge from the platform's curated content, and responds with explanations, diagrams, simulations, and code examples. It uses a Retrieval-Augmented Generation (RAG) pipeline grounded in the Knowledge Graph, with tool-calling capabilities to execute simulations, generate visualizations, and run code.

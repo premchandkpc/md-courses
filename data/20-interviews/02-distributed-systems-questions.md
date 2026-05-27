@@ -2,6 +2,21 @@
 
 > **Scope:** 100+ distributed systems interview questions at FAANG/senior level, organized by category (Consistency & CAP, Consensus, Distributed Storage, Distributed Caching, System Design Problem Solving). Each question includes approach breakdown, common mistakes, expected answer for senior level, edge cases, and follow-up questions. ASCII diagrams are included for key concepts.
 
+
+
+```mermaid
+graph LR
+    A["Input<br/>Layer"] --> B["Hidden<br/>Layers"]
+    B --> C["Hidden<br/>Layers"]
+    C --> D["Output<br/>Layer"]
+    B --> E["Activation<br/>Functions"]
+    E --> B
+    style A fill:#4a8bc2
+    style B fill:#2d5a7b
+    style C fill:#2d5a7b
+    style D fill:#c73e1d
+```
+
 ## Table of Contents
 
 - [Consistency & CAP](#consistency--cap)

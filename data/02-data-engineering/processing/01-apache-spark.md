@@ -1,5 +1,20 @@
 # Apache Spark
 
+
+
+```mermaid
+graph LR
+    A["Thread 1"] --> D["Shared<br/>Resource"]
+    B["Thread 2"] --> D
+    C["Thread 3"] --> D
+    D --> E["Mutex/<br/>Lock"]
+    style A fill:#4a8bc2
+    style B fill:#4a8bc2
+    style C fill:#4a8bc2
+    style D fill:#c73e1d
+    style E fill:#1a5d3a
+```
+
 ## Overview
 
 Apache Spark is a unified, distributed computing engine for large-scale data processing. It provides high-level APIs in Scala, Python, Java, and R, along with an optimized engine that supports general execution graphs (DAGs). Spark was developed at UC Berkeley AMPLab in 2009, open-sourced in 2010, and became a top-level Apache project in 2014.

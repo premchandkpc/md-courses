@@ -2,6 +2,21 @@
 
 This directory contains three comprehensive, production-grade deep dives into application security for elite engineering teams.
 
+
+
+```mermaid
+graph LR
+    A["Input<br/>Layer"] --> B["Hidden<br/>Layers"]
+    B --> C["Hidden<br/>Layers"]
+    C --> D["Output<br/>Layer"]
+    B --> E["Activation<br/>Functions"]
+    E --> B
+    style A fill:#4a8bc2
+    style B fill:#2d5a7b
+    style C fill:#2d5a7b
+    style D fill:#c73e1d
+```
+
 ## Files
 
 ### 1. OWASP Top 10, Authentication & Authorization (2,260 lines, 70KB)

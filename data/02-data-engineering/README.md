@@ -2,6 +2,23 @@
 
 The discipline of building and maintaining the infrastructure that enables data generation, storage, processing, and analysis at scale. Data engineering is the foundation upon which analytics, machine learning, and business intelligence are built—without reliable data pipelines, every downstream system fails.
 
+
+
+```mermaid
+graph LR
+    A["📥 Input"] --> B["🔄 Transform"]
+    B --> C["🧹 Clean"]
+    C --> D["✓ Validate"]
+    D --> E["💾 Store"]
+    E --> F["📤 Output"]
+    style A fill:#4a8bc2
+    style B fill:#2d5a7b
+    style C fill:#2d5a7b
+    style D fill:#1a5d3a
+    style E fill:#2d5a7b
+    style F fill:#c73e1d
+```
+
 ## Table of Contents
 
 - [Data Processing](#data-processing)

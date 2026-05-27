@@ -2,6 +2,21 @@
 
 > Comprehensive reference for Amazon SQS and SNS — every major concept, feature, and integration pattern.
 
+
+
+```mermaid
+graph LR
+    A["Input<br/>Layer"] --> B["Hidden<br/>Layers"]
+    B --> C["Hidden<br/>Layers"]
+    C --> D["Output<br/>Layer"]
+    B --> E["Activation<br/>Functions"]
+    E --> B
+    style A fill:#4a8bc2
+    style B fill:#2d5a7b
+    style C fill:#2d5a7b
+    style D fill:#c73e1d
+```
+
 ## 📑 Table of Contents
 
 - [1. Core Concepts](#1-core-concepts)

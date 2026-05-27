@@ -6,6 +6,21 @@
 
 ---
 
+
+
+```mermaid
+graph LR
+    A["Input<br/>Layer"] --> B["Hidden<br/>Layers"]
+    B --> C["Hidden<br/>Layers"]
+    C --> D["Output<br/>Layer"]
+    B --> E["Activation<br/>Functions"]
+    E --> B
+    style A fill:#4a8bc2
+    style B fill:#2d5a7b
+    style C fill:#2d5a7b
+    style D fill:#c73e1d
+```
+
 ## Table of Contents
 
 1. [Scenario A: Read-After-Write Inconsistency — User Writes → Read from Stale Replica → Duplicate Write](#scenario-a-read-after-write-inconsistency--user-writes--read-from-stale-replica--duplicate-write)

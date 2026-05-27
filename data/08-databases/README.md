@@ -2,6 +2,23 @@
 
 The theory and practice of data storage, retrieval, and management. Covers relational databases (PostgreSQL, MySQL), NoSQL systems (MongoDB, Cassandra, DynamoDB), in-memory stores (Redis), distributed SQL (CockroachDB, TiDB, Spanner), storage engine internals (B+tree, LSM, MVCC, WAL), query optimization, performance tuning, and troubleshooting.
 
+
+
+```mermaid
+graph TB
+    A["Client"] --> B["Query"]
+    B --> C["Parser"]
+    C --> D["Optimizer"]
+    D --> E["Executor"]
+    E --> F["Index"]
+    F --> G["Storage"]
+    G --> H["Result"]
+    style A fill:#4a8bc2
+    style B fill:#2d5a7b
+    style G fill:#c73e1d
+    style H fill:#1a5d3a
+```
+
 ## Table of Contents
 
 - [Relational Databases](#relational-databases)

@@ -2,6 +2,21 @@
 
 > **Scope:** A tiered, self-paced curriculum spanning 5 phases from absolute beginner to Staff/Principal Engineer. Each phase covers programming fundamentals, systems knowledge, operations, architecture, and soft skills. Estimated time per phase, key topics, recommended books, projects, and success metrics are included.
 
+
+
+```mermaid
+graph LR
+    A["Input<br/>Layer"] --> B["Hidden<br/>Layers"]
+    B --> C["Hidden<br/>Layers"]
+    C --> D["Output<br/>Layer"]
+    B --> E["Activation<br/>Functions"]
+    E --> B
+    style A fill:#4a8bc2
+    style B fill:#2d5a7b
+    style C fill:#2d5a7b
+    style D fill:#c73e1d
+```
+
 ## Table of Contents
 
 - [Phase 1: Foundation (0–6 Months)](#phase-1-foundation-0-6-months)

@@ -2,6 +2,21 @@
 
 The art and science of building server-side systems that power applications—APIs, services, data processing, authentication, and integration. Backend engineering covers language-specific mastery, API design, architecture patterns, performance optimization, and production operations.
 
+
+
+```mermaid
+graph LR
+    A["Thread 1"] --> D["Shared<br/>Resource"]
+    B["Thread 2"] --> D
+    C["Thread 3"] --> D
+    D --> E["Mutex/<br/>Lock"]
+    style A fill:#4a8bc2
+    style B fill:#4a8bc2
+    style C fill:#4a8bc2
+    style D fill:#c73e1d
+    style E fill:#1a5d3a
+```
+
 ## Table of Contents
 
 - [Languages](#languages)

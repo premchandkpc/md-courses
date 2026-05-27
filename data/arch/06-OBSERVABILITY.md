@@ -6,6 +6,18 @@
 
 ---
 
+
+
+```mermaid
+graph TB
+    A["Heap"] --> B["Objects<br/>Reference Types"]
+    C["Stack"] --> D["Primitives<br/>Pointers"]
+    E["Garbage<br/>Collector"] -.->|Mark & Sweep| A
+    style A fill:#c73e1d
+    style C fill:#4a8bc2
+    style E fill:#1a5d3a
+```
+
 ## 1. Overview
 
 The Observability Stack provides comprehensive visibility into every layer of the platform: application metrics, distributed traces, structured logs, system events, and kernel-level profiling. Built on OpenTelemetry with Grafana LGTM stack (Loki, Grafana, Tempo, Mimir), it enables SLO-driven alerting, quick incident diagnosis, and capacity planning.

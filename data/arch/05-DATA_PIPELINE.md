@@ -6,6 +6,23 @@
 
 ---
 
+
+
+```mermaid
+graph LR
+    A["📥 Input"] --> B["🔄 Transform"]
+    B --> C["🧹 Clean"]
+    C --> D["✓ Validate"]
+    D --> E["💾 Store"]
+    E --> F["📤 Output"]
+    style A fill:#4a8bc2
+    style B fill:#2d5a7b
+    style C fill:#2d5a7b
+    style D fill:#1a5d3a
+    style E fill:#2d5a7b
+    style F fill:#c73e1d
+```
+
 ## 1. Overview
 
 The Content & Data Pipeline transforms raw markdown source files into interactive, rendered experiences. It parses markdown into an AST, extracts metadata and relationships, compiles scene graphs for the Visualization Engine, indexes content for search, and publishes events for downstream consumers. The pipeline is event-driven, incremental, and designed for real-time content updates.

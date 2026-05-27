@@ -1,5 +1,22 @@
 # Lakehouse Architecture
 
+
+
+```mermaid
+graph TB
+    A["Client"] --> B["Query"]
+    B --> C["Parser"]
+    C --> D["Optimizer"]
+    D --> E["Executor"]
+    E --> F["Index"]
+    F --> G["Storage"]
+    G --> H["Result"]
+    style A fill:#4a8bc2
+    style B fill:#2d5a7b
+    style G fill:#c73e1d
+    style H fill:#1a5d3a
+```
+
 ## Data Lake vs Warehouse vs Lakehouse
 
 ### Evolution

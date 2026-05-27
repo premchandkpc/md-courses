@@ -4,6 +4,21 @@
 
 ---
 
+
+
+```mermaid
+graph LR
+    A["Input<br/>Layer"] --> B["Hidden<br/>Layers"]
+    B --> C["Hidden<br/>Layers"]
+    C --> D["Output<br/>Layer"]
+    B --> E["Activation<br/>Functions"]
+    E --> B
+    style A fill:#4a8bc2
+    style B fill:#2d5a7b
+    style C fill:#2d5a7b
+    style D fill:#c73e1d
+```
+
 ## Table of Contents
 
 - [Event Sourcing](#-event-sourcing-with-kafka) · [1. CQRS](#1-cqrs-with-kafka) · [2. Outbox](#2-outbox-pattern) · [3. Transactional Messaging](#3-transactional-messaging) · [4. Idempotent Consumers](#4-idempotent-consumers) · [5. DLQ & Retry](#5-dead-letter-queues--retry-topics) · [6. Compacted Topics](#6-compacted-topics-for-state) · [7. Streaming Joins](#7-streaming-joins) · [8. Windowed Aggregations](#8-windowed-aggregations) · [9. Global KTables](#9-global-ktables) · [10. Interactive Queries](#10-interactive-queries) · [11. Exactly-Once](#11-exactly-once-end-to-end) · [12. MirrorMaker](#12-kafka-mirrormaker-for-dr) · [Simplest Mental Model](#-simplest-mental-model)

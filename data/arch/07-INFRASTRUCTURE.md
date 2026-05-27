@@ -6,6 +6,23 @@
 
 ---
 
+
+
+```mermaid
+graph TB
+    A["Client"] --> B["Query"]
+    B --> C["Parser"]
+    C --> D["Optimizer"]
+    D --> E["Executor"]
+    E --> F["Index"]
+    F --> G["Storage"]
+    G --> H["Result"]
+    style A fill:#4a8bc2
+    style B fill:#2d5a7b
+    style G fill:#c73e1d
+    style H fill:#1a5d3a
+```
+
 ## 1. Overview
 
 The platform runs on Kubernetes with a service mesh (Istio), GitOps-driven deployments (ArgoCD), and a multi-environment strategy (dev/staging/prod). This blueprint covers cluster architecture, networking, database strategy, CI/CD, disaster recovery, cost optimization, and security posture.

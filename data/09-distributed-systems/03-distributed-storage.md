@@ -2,6 +2,21 @@
 
 > **Scope**: GFS/HDFS (architecture, leases, NameNode HA, federation, erasure coding), Ceph (RADOS, CRUSH algorithm, RBD, CephFS), S3 (architecture, consistency, storage classes), DynamoDB (partitioning, GSI/LSI, adaptive capacity, Merkle trees), FoundationDB (SSI, multi-key transactions, layers), TiKV (Raft-based, PD, RocksDB), CockroachDB (range, leaseholder, geo-partitioning), InfluxDB (TSM engine), TimescaleDB (hypertable, compression).
 
+
+
+```mermaid
+graph LR
+    A["Input<br/>Layer"] --> B["Hidden<br/>Layers"]
+    B --> C["Hidden<br/>Layers"]
+    C --> D["Output<br/>Layer"]
+    B --> E["Activation<br/>Functions"]
+    E --> B
+    style A fill:#4a8bc2
+    style B fill:#2d5a7b
+    style C fill:#2d5a7b
+    style D fill:#c73e1d
+```
+
 ## Table of Contents
 
 1. GFS / HDFS Architecture

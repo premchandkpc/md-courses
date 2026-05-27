@@ -2,6 +2,18 @@
 
 The foundation of all distributed communication. Covers the TCP/IP stack, HTTP protocol evolution (1.1, 2, 3), QUIC, gRPC, DNS, CDN, load balancing algorithms, TLS, packet flow, and the full breadth of how data moves across networks.
 
+
+
+```mermaid
+graph TB
+    A["Heap"] --> B["Objects<br/>Reference Types"]
+    C["Stack"] --> D["Primitives<br/>Pointers"]
+    E["Garbage<br/>Collector"] -.->|Mark & Sweep| A
+    style A fill:#c73e1d
+    style C fill:#4a8bc2
+    style E fill:#1a5d3a
+```
+
 ## Table of Contents
 
 - [TCP/IP Stack](#tcpip-stack)

@@ -1,5 +1,19 @@
 # Testing Fundamentals: Unit & Integration Testing
 
+
+
+```mermaid
+graph LR
+    A["BEGIN"] --> B["Read"]
+    B --> C["Write"]
+    C --> D{ACID?}
+    D -->|Yes| E["COMMIT"]
+    D -->|No| F["ROLLBACK"]
+    style A fill:#4a8bc2
+    style E fill:#1a5d3a
+    style F fill:#c73e1d
+```
+
 ## Table of Contents
 
 1. [Noob Explanation](#noob-explanation)

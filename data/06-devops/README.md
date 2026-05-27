@@ -2,6 +2,23 @@
 
 The intersection of development and operations—automating the build, test, deploy, and operate lifecycle. Covers infrastructure as code, CI/CD pipelines, configuration management, containerization, SRE practices, security integration (DevSecOps), and the cultural practices that enable rapid, reliable software delivery.
 
+
+
+```mermaid
+graph LR
+    A["📥 Input"] --> B["🔄 Transform"]
+    B --> C["🧹 Clean"]
+    C --> D["✓ Validate"]
+    D --> E["💾 Store"]
+    E --> F["📤 Output"]
+    style A fill:#4a8bc2
+    style B fill:#2d5a7b
+    style C fill:#2d5a7b
+    style D fill:#1a5d3a
+    style E fill:#2d5a7b
+    style F fill:#c73e1d
+```
+
 ## Table of Contents
 
 - [Infrastructure as Code](#infrastructure-as-code)

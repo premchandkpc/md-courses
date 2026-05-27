@@ -17,7 +17,11 @@
       "Bash(python3 /tmp/enhance_agents.py)",
       "Bash(curl -s 'http://localhost:3000/api/file?path=01-ai-ml/ai-production/01-production-ai.md')",
       "Bash(python3 /tmp/enhance_production.py)",
-      "Bash(curl -s 'http://localhost:3000/api/file?path=02-data-engineering/orchestration/01-airflow-dagster.md')"
+      "Bash(curl -s 'http://localhost:3000/api/file?path=02-data-engineering/orchestration/01-airflow-dagster.md')",
+      "Bash(python3 /tmp/enhance_airflow.py)",
+      "Bash(curl -s 'http://localhost:3000/api/file?path=04-frontend/react/01-components-jsx.md')",
+      "Bash(curl -s http://localhost:3000)",
+      "Bash(python3 /tmp/add_prod_diagram.py)"
     ]
   }
 }

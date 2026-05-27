@@ -2,6 +2,21 @@
 
 > **Scope:** 150+ Java interview questions organized by experience level (Junior, Mid, Senior, Staff/Principal) and category (Core Java, Collections, Concurrency, JVM, Spring/Spring Boot). Each question includes detailed answers, common mistakes, and interviewer expectations.
 
+
+
+```mermaid
+graph LR
+    A["Input<br/>Layer"] --> B["Hidden<br/>Layers"]
+    B --> C["Hidden<br/>Layers"]
+    C --> D["Output<br/>Layer"]
+    B --> E["Activation<br/>Functions"]
+    E --> B
+    style A fill:#4a8bc2
+    style B fill:#2d5a7b
+    style C fill:#2d5a7b
+    style D fill:#c73e1d
+```
+
 ## Table of Contents
 
 - [Junior (0–2 Years)](#junior-0-2-years)

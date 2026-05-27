@@ -6,6 +6,23 @@
 
 ---
 
+
+
+```mermaid
+graph TB
+    A["Client"] --> B["Query"]
+    B --> C["Parser"]
+    C --> D["Optimizer"]
+    D --> E["Executor"]
+    E --> F["Index"]
+    F --> G["Storage"]
+    G --> H["Result"]
+    style A fill:#4a8bc2
+    style B fill:#2d5a7b
+    style G fill:#c73e1d
+    style H fill:#1a5d3a
+```
+
 ## 1. Executive Summary
 
 The static study-notes repository is being transformed into an **interactive engineering knowledge platform** — a living system where learners can explore concepts visually, simulate distributed systems in-browser, query an AI tutor trained on curated content, and contribute new knowledge through a structured pipeline.

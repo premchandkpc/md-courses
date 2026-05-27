@@ -2,6 +2,21 @@
 
 The theory and practice of building systems that span multiple machines, networks, and data centers. Covers consensus algorithms, replication, consistency models, CAP/PACELC, distributed storage, caching, transactions, stream processing, and distributed computing patterns.
 
+
+
+```mermaid
+graph LR
+    A["Thread 1"] --> D["Shared<br/>Resource"]
+    B["Thread 2"] --> D
+    C["Thread 3"] --> D
+    D --> E["Mutex/<br/>Lock"]
+    style A fill:#4a8bc2
+    style B fill:#4a8bc2
+    style C fill:#4a8bc2
+    style D fill:#c73e1d
+    style E fill:#1a5d3a
+```
+
 ## Table of Contents
 
 - [Consensus](#consensus)

@@ -1,5 +1,20 @@
 # Apache Flink
 
+
+
+```mermaid
+graph LR
+    A["Thread 1"] --> D["Shared<br/>Resource"]
+    B["Thread 2"] --> D
+    C["Thread 3"] --> D
+    D --> E["Mutex/<br/>Lock"]
+    style A fill:#4a8bc2
+    style B fill:#4a8bc2
+    style C fill:#4a8bc2
+    style D fill:#c73e1d
+    style E fill:#1a5d3a
+```
+
 ## Overview
 
 Apache Flink is a distributed stream processing framework designed for stateful computations over unbounded and bounded data streams. It provides high throughput, low latency (real-time), and exactly-once semantics. Flink originated from the Stratosphere research project at TU Berlin and became a top-level Apache project in 2015.

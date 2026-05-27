@@ -2,6 +2,21 @@
 
 > **Scope**: Processing semantics (at-most-once, at-least-once, exactly-once), Kafka Streams (topology, KStream/KTable, state stores, exactly-once, DSL operators, Processor API), Apache Flink (DataStream API, event time, watermarks, windowing, state management, checkpointing, fault tolerance), stream-batch unification.
 
+
+
+```mermaid
+graph LR
+    A["Input<br/>Layer"] --> B["Hidden<br/>Layers"]
+    B --> C["Hidden<br/>Layers"]
+    C --> D["Output<br/>Layer"]
+    B --> E["Activation<br/>Functions"]
+    E --> B
+    style A fill:#4a8bc2
+    style B fill:#2d5a7b
+    style C fill:#2d5a7b
+    style D fill:#c73e1d
+```
+
 ## Table of Contents
 
 1. Stream Processing Semantics

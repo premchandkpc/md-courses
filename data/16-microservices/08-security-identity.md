@@ -1,5 +1,20 @@
 # 🔐 Microservices Security — Complete Deep Dive
 
+
+
+```mermaid
+graph LR
+    A["Input<br/>Layer"] --> B["Hidden<br/>Layers"]
+    B --> C["Hidden<br/>Layers"]
+    C --> D["Output<br/>Layer"]
+    B --> E["Activation<br/>Functions"]
+    E --> B
+    style A fill:#4a8bc2
+    style B fill:#2d5a7b
+    style C fill:#2d5a7b
+    style D fill:#c73e1d
+```
+
 ## Table of Contents
 - [1. OAuth 2.0 & OIDC](#1-oauth-20--oidc)
 - [2. JWT Deep Dive](#2-jwt-deep-dive)

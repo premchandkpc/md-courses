@@ -18,6 +18,205 @@ Jump directly to location
 
 ---
 
+## Layer 1: Beginner Mental Model
+
+**Analogy**: Like a restaurant waiter. Without index (memory): customer asks for "salads with tomato", waiter checks every plate on every table (1000 checks). With index (mental map): waiter remembers "tomato dishes → table 5, 12, 18" (3 lookups). Inverted index (Elasticsearch) = kitchen organizing all ingredients by name, quantities, recipes.
+
+**Why it matters**:
+- **LinkedIn**: 1 trillion indexed documents. Without indexing, every search = scan 1 trillion (impossible). Inverted index = search in milliseconds.
+- **Stripe**: Search transactions by customer. With index: <10ms. Without: 10+ seconds.
+- **Uber**: Spatial indexes on map (restaurants, drivers). Without: 10s latency. With: <50ms.
+- **Cost**: A bad index strategy = 100x slower queries = need 10 servers. Good indexing = 1 server. That's $100K/month difference.
+
+**Core insight**: Index is a tradeoff: faster reads, slower writes, more storage. Choose wisely based on query pattern.
+
+---
+
+## Layer 4: Production Reality
+
+### Indexing Failure Modes
+
+| Failure | Symptoms | Root Cause | Fix |
+|---------|----------|-----------|-----|
+| **Slow Query** | WHERE email = 'user@example.com' takes 10s | No index on email column | Create index: `CREATE INDEX idx_email ON users(email)` |
+| **Index Bloat** | Index size 10GB, table only 500MB | Dead rows not cleaned, fragmentation | Rebuild: `REINDEX` (PostgreSQL) or `OPTIMIZE TABLE` (MySQL) |
+| **Write Latency** | INSERT takes 100ms (should be 10ms) | Too many indexes (every INSERT updates all indexes) | Drop unused indexes, consolidate into composite |
+| **Query Plan Worse** | After adding index, query slower | Query planner chose table scan instead | Update stats: `ANALYZE` (PostgreSQL) or `ANALYZE TABLE` (MySQL) |
+| **Memory Exhaustion** | Server crashes with OOM | B-Tree indexes loaded entirely in RAM, heap overflow | Increase server RAM, use partial indexes, enable compression |
+| **Deadlock on Insert** | INSERT hangs forever | Multiple indexes have locks, circular wait | Check lock order, adjust index order, use covering index |
+| **Full Table Scan Still** | Index exists but query still scans | Index column has NULL values (indexes skip NULLs) | Use `IS NOT NULL` in WHERE, or filter NULLs in app |
+| **Inverse Index Corruption** | Search returns partial results | Inverted index out of sync with table | Rebuild inverted index (Elasticsearch: `_forcemerge`, `_refresh`) |
+
+### Production Incident: Slack Message Search Outage (2016)
+
+**Context**: Slack's message search (millions of queries/day) suddenly slowed to 30+ seconds per query. Users couldn't search messages.
+
+**What happened**:
+- Slack indexed every message in Elasticsearch (inverted index)
+- Inverted index: `word -> [message_id1, message_id2, ...]`
+- Query: "coffee" → lookup inverted index → found 1M messages containing "coffee"
+- But index wasn't optimized: had 1000 index segments (files)
+- Each segment required opening, reading → slow merge operation
+- Search latency climbed to 30s
+
+**The bug**:
+```json
+// ❌ Buggy: index not optimized, 1000 segments
+GET /slack-messages/_search?q=coffee
+// Elasticsearch merges 1000 segments on the fly
+// Takes 30 seconds
+```
+
+**The fix**:
+```bash
+# ✅ Fixed: force merge to optimize index
+curl -X POST "localhost:9200/slack-messages/_forcemerge?max_num_segments=1"
+# Merges 1000 segments → 1 segment
+# Search now <1 second
+
+# Also: enable automatic merging policy
+{
+  "index.merge.policy": "tiered",
+  "index.merge.scheduler.max_merge_count": 8
+}
+```
+
+**Result**: Search queries dropped from 30s → <1s. Slack search restored.
+
+---
+
+## Layer 5: Staff Engineer Perspective
+
+### Index Strategy Tradeoffs
+
+| Strategy | Read Speed | Write Speed | Storage | Use Case |
+|----------|-----------|-----------|---------|----------|
+| **No index** | Slow (scan all) | Fast | Minimal | Rare queries, small tables |
+| **Single B-Tree** | Fast (balanced) | Medium | +20% | General queries, ranges |
+| **Multiple Indexes** | Very fast | Slow | +100% | Complex queries, analytics |
+| **Covering Index** | Fastest (no table access) | Medium | +50% | Specific queries only |
+| **Inverted (Elasticsearch)** | Very fast (text search) | Medium | +200% | Full-text, documents |
+| **Bitmap (low-card)** | Very fast | Medium | +10% | Analytics (gender, status) |
+| **Spatial (GIS)** | Fast (range queries) | Medium | +50% | Maps, GPS |
+| **Partial (filtered)** | Very fast (small) | Fast | +5% | Subset queries only |
+
+### Scaling Pattern: Single Table → Petabyte Search
+
+**Stage 1 (Startup)**: Single B-Tree index on primary key
+- Table size: 1GB
+- Query latency: <10ms
+- Cost: $50/month
+
+**Stage 2 (Growth)**: Multiple indexes (email, user_id, created_at)
+- Table size: 100GB
+- Query latency: <50ms
+- Cost: $500/month
+
+**Stage 3 (Scale)**: Elasticsearch for search, PostgreSQL for transactional
+- Index size: 1TB (text search)
+- Query latency: <100ms (ES) + <10ms (PG)
+- Cost: $5K/month (ES cluster + PG)
+
+**Stage 4 (Enterprise — Slack scale)**: Global search cluster
+- Index size: 100TB (all messages ever)
+- Query latency: <1s (optimized merge policy)
+- Cost: $50K+/month (dedicated search team)
+
+**Real example: Google Search**:
+- v1 (1998): Simple B-Tree on URL, latency 1-5s
+- v2 (2000): Inverted index on whole web, latency 0.1-0.5s
+- v3 (2010): Distributed inverted index, 1B documents, latency <0.1s
+- v4 (2023): Machine learning ranking on top of inverted index, latency <0.05s
+- Index size: 100+ PB (entire web), compressed
+
+---
+
+## Layer 5: Interview Questions
+
+### Level 1 (Junior)
+
+**Q1: What's an index? Why do we need indexes if they use more storage?**
+A: Index = lookup table (word → location). Slows writes (maintain index), but speeds reads 100x (search in milliseconds vs scan). Use if reads >> writes.
+- Why asked: Tradeoff understanding
+- Expected: Know read/write cost, storage cost
+
+**Q2: What's an inverted index?**
+A: Inverted index = word → documents containing word. Different from normal index (document → words). Used by Elasticsearch, search engines. Fast full-text search.
+- Why asked: Text search mechanism
+- Expected: Understand inversion, use case (search engines)
+
+### Level 2 (Mid-Level)
+
+**Q3: A query is slow even with an index. How do you debug?**
+A:
+1. Check if index is being used: `EXPLAIN PLAN` (PostgreSQL) or `EXPLAIN` (MySQL)
+2. If not: stats stale (run `ANALYZE`), column has NULLs (index skips them)
+3. If yes but still slow: index fragmented (REINDEX), or index size exceeds RAM (too much I/O)
+4. Solution: rebuild index, increase RAM, create covering index
+- Why asked: Diagnosis
+- Expected: Know EXPLAIN, know refresh/rebuild commands
+
+**Q4: When would you use a covering index?**
+A: Covering index includes all columns needed for query (no table access). Fast but storage intensive. Use for: frequently run queries, columns rarely change, query returns few columns.
+- Why asked: Index selection
+- Expected: Understand storage/speed tradeoff, covering benefit
+
+### Level 3 (Senior)
+
+**Q5: Design indexing strategy for 100B-row table (user events: user_id, timestamp, event_type, value).**
+A:
+- Primary: (user_id, timestamp) — most common query is "events for user X on date Y"
+- Secondary: (event_type, timestamp) — analytics on event trends
+- Composite: avoid (too many combinations)
+- Partial: index only last 90 days (events expire after 90 days) → smaller index
+- Storage: each index 10% of table size = 100GB index space
+- Write cost: inserts slow, use batch inserts (amortize index update)
+- Monitoring: monitor slow queries, add indexes as patterns emerge
+- Why asked: Real-world scale, index selection
+- Expected: Composite indexes, partial indexes, monitoring
+
+**Q6: Elasticsearch is slow on text search. Debug approach.**
+A:
+1. Check index segment count: `GET /_stats` (if >100 segments → slow)
+2. Force merge to optimize: `POST /index/_forcemerge?max_num_segments=1`
+3. Check query latency: use Kibana profiler to see which parts are slow
+4. Common: phrase queries slow, wildcard queries slow (no prefix optimization)
+5. Solution: use "match" instead of "phrase", avoid leading wildcards
+6. Scale: shard larger (distribute segments), use replica (parallel search)
+- Why asked: Production troubleshooting
+- Expected: Know ES optimization, segment merging, profiling
+
+### Level 4 (Staff)
+
+**Q7: Migrate from Elasticsearch 5 to 8 (breaking changes in index format). Plan.**
+A:
+- Phase 1: Set up new cluster (Elasticsearch 8), run in parallel
+- Phase 2: Dual-index (write to both 5 and 8), validate search result parity
+- Phase 3: Reindex (bulk copy from 5 → 8, may take days for petabyte)
+- Phase 4: Cut over (read from 8, monitor for issues)
+- Phase 5: Sunset (delete old cluster)
+- Risks: mapping changes (new fields incompatible), query DSL changes (aggregations), index size changes (reindex may expand)
+- Downtime: zero (parallel indexing, gradual cutover)
+- Timeline: 1-2 months for large cluster
+- Cost: 2x cluster resources during parallel phase
+- Why asked: Large migration, compatibility
+- Expected: Parallel strategy, reindexing plan, risk management
+
+**Q8: Design global search for 1B documents across 10 regions. Index strategy.**
+A:
+- Shard strategy: geographic sharding (documents hashed by location) → search hits local shard first
+- Replication: 3 replicas per shard (survive 2 datacenter failures)
+- Index: inverted index for full-text, composite for filtering (location + date)
+- Refresh: 1-second latency for new documents (refresh every 1s)
+- Merge: background merge policy (merge segments during off-peak)
+- Monitoring: track query latency per region, segment count, shard balance
+- Cost: 3 clusters × 10 regions = 30 shards, ~$500K/month
+- Tradeoff: geographic distribution = higher latency (travel between regions), but local queries fast
+- Why asked: Global scale, distributed indexing
+- Expected: Sharding strategy, replication, monitoring
+
+---
+
 ## Table of Contents
 
 - [Index Type Mindmap](#-index-type-mindmap)

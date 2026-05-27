@@ -21,7 +21,8 @@
       "Bash(python3 /tmp/enhance_airflow.py)",
       "Bash(curl -s 'http://localhost:3000/api/file?path=04-frontend/react/01-components-jsx.md')",
       "Bash(curl -s http://localhost:3000)",
-      "Bash(python3 /tmp/add_prod_diagram.py)"
+      "Bash(python3 /tmp/add_prod_diagram.py)",
+      "Bash(bash /tmp/validate.sh)"
     ]
   }
 }

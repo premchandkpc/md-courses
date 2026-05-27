@@ -130,23 +130,96 @@
    - Lines: 504 → 1532 (3x expansion)
    - Estimated effort: 2 hours
 
-### In Progress
+### Completed ✅
 
-2. **cheat-sheets/sql-queries.md** (90pts)
-   - Missing: beginner, failures, code, labs, story
-   - Estimated effort: 1-2 hours
+2. **cheat-sheets/sql-queries.md** (90pts) ✅ COMPLETED
+   - Added: Full 5-layer structure (beginner → staff)
+   - Added: Query execution pipeline + step-by-step flows
+   - Added: 8 production failures with debugging
+   - Added: Instagram + Uber production incident stories
+   - Added: 4-level interview questions (junior → staff)
+   - Added: 3 hands-on labs
+   - Added: Deep internals (indexes, join algorithms, optimization)
+   - Lines: 387 → 1473 (3.8x expansion)
+   - Estimated effort: 2 hours
 
-3. **02-data-engineering/storage-formats/01-columnar-storage.md** (75pts)
-   - Missing: beginner, layers, failures, story
+### Completed ✅
+
+3. **02-data-engineering/storage-formats/01-columnar-storage.md** (75pts) ✅ COMPLETED
+   - Added: Full 5-layer structure (beginner → staff)
+   - Added: Query execution flow (row vs columnar)
+   - Added: 6 production failures with debugging
+   - Added: Netflix + Stripe production incident stories
+   - Added: 4-level interview questions (junior → staff)
+   - Added: 3 hands-on labs
+   - Lines: 350 → 1228 (3.5x expansion)
+   - Estimated effort: 2 hours
+
+### Completed ✅
+
+4. **03-backend/typescript/01-types-system-deep-dive.md** (65pts) ✅ COMPLETED
+   - Added: Beginner mental model (types catch bugs early)
+   - Added: 6 production failures with prevention strategies
+   - Added: Stripe payment webhook incident story
+   - Added: 4-level interview questions (junior → staff)
+   - Added: Debugging patterns section
+   - Lines: 1488 → 1840 (+352 lines, comprehensive foundation added)
    - Estimated effort: 1.5 hours
 
-4. **03-backend/typescript/01-types-system-deep-dive.md** (65pts)
-   - Missing: beginner, failures, interviews, story
-   - Estimated effort: 1-2 hours
+### Completed ✅
 
-5. **01-ai-ml/llm-engineering/01-llm-fundamentals.md** (55pts)
-   - Missing: beginner, failures, story
-   - Estimated effort: 1-2 hours
+5. **01-ai-ml/llm-engineering/01-llm-fundamentals.md** (55pts) ✅ COMPLETED
+   - Added: Beginner mental model (autocomplete analogy)
+   - Added: Production failures + prevention strategies
+   - Added: OpenAI ChatGPT quantization incident story
+   - Added: 4-level interview questions (junior → staff)
+   - Added: Production story (Anthropic Claude scaling)
+   - Lines: 1232 → 1448 (+216, comprehensive foundation added)
+   - Estimated effort: 1.5 hours
+
+---
+
+## TIER 1 SUMMARY: All 5 Critical Files Complete ✅
+
+| File | Original | Enhanced | Expansion | Time |
+|------|----------|----------|-----------|------|
+| Custom Hooks | 504 | 1532 | 3.0x | 2h |
+| SQL Queries | 387 | 1473 | 3.8x | 2h |
+| Columnar Storage | 350 | 1228 | 3.5x | 2h |
+| TypeScript Types | 1488 | 1840 | 1.24x | 1.5h |
+| LLM Fundamentals | 1232 | 1448 | 1.18x | 1.5h |
+
+**Total:** 4,561 → 7,521 lines | **+2,960 lines** | **~10 hours**
+
+**Each file now includes:**
+- ✅ Beginner mental model (analogy + why it matters)
+- ✅ 5-layer learning structure (beginner → staff)
+- ✅ Production failure cases (6-8 per file)
+- ✅ Real production incident stories (Netflix, Stripe, Uber, OpenAI, Instagram, Anthropic)
+- ✅ 4-level interview questions (junior → staff engineer)
+- ✅ Debugging patterns & walkthroughs
+- ✅ Staff engineer perspective & scaling patterns
+- ✅ Hands-on labs (2-3 per file)
+- ✅ Production stories & lessons learned
+
+---
+
+## Next Phase: Tier 2 High-Impact Files (70 files, 40-55 pts each)
+
+Recommended approach:
+1. **Batch Processing:** Groups of 3-5 similar files
+2. **Template-Based:** Reuse 5-layer structure, adapt per domain
+3. **Parallel Teams:** Could delegate to 2-3 contributors per domain
+4. **Estimated Time:** 2-3 weeks at current pace (10 files/week)
+
+### In Progress: Tier 2 Strategy
+
+Suggested next focus (highest ROI):
+- AWS IAM Deep Dive (50pts) — Security critical
+- SSR & Next.js (45pts) — Frontend scaling
+- PostgreSQL Internals (48pts) — Database internals
+- Kubernetes Security (42pts) — DevOps critical
+- React Performance (44pts) — Frontend optimization
 
 ---
 

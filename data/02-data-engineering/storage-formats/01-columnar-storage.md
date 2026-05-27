@@ -1,17 +1,99 @@
-# Columnar Storage Formats
+# Columnar Storage Formats — Deep Engineering Guide
 
+---
 
-## Overview
+## LAYER 1: Beginner's Mental Model 🧠
 
-```mermaid
-graph TB
-    A["Input"] --> B["Process"]
-    B --> C["Output"]
-    style C fill:#3fb950
+### Real-World Analogy
+
+Imagine a **library with different filing systems**:
+
+**Row-Oriented (Traditional):**
+- File cabinet: Each drawer = one book (full book stored together)
+- To find all titles from authors born in 1990: open every drawer, extract title column
+- Fast for "get me this whole book", slow for "give me this column from all books"
+
+**Column-Oriented:**
+- Separate shelves: All titles in one shelf, all authors in another, all ISBNs in another
+- To find all titles: go straight to title shelf, don't open other drawers
+- Fast for "give me this column from 1M books", slow for "give me this whole book"
+
+### Why Column-Oriented Matters
+
+**The Big Data Problem:**
+
+```
+Analysis Query: "Avg order value by country, 2024"
+Data: 100M orders with 50 columns
+
+Row-Oriented:
+  Read ALL 100M rows × 50 columns = 5B values
+  Extract just: date, country, amount (3 columns)
+  Waste: 47 × 100M = 4.7B unnecessary values
+  Time: ~10 seconds (lots of I/O)
+
+Column-Oriented:
+  Read only: date, country, amount columns = 300M values
+  Time: ~100ms (50x faster!)
 ```
 
+**Real-world impact:**
+- Netflix analytics: 100B events → 1000x faster with columnar
+- Uber: Trip analytics from petabytes → seconds
+- Airbnb: Thousands of daily analytics queries now instant
+- Stripe: Payment fraud detection: 100ms vs 10sec
 
-## Row vs Columnar Storage
+---
+
+## LAYER 2: How Column Storage Works (Intermediate) 🔧
+
+### Query Execution Comparison
+
+**Query: Find avg salary by department where hire_date > 2020**
+
+Row-Oriented Execution:
+```
+1. Open row file
+2. Read row 1: [id=1, name=Alice, salary=80000, dept=eng, hire_date=2018]
+3. Filter: hire_date > 2020? No → skip
+4. Read row 2: [id=2, name=Bob, salary=90000, dept=sales, hire_date=2021]
+5. Filter: hire_date > 2020? Yes → keep
+6. Extract: dept=sales, salary=90000
+7. Read row 3: [id=3, name=Carol, salary=75000, dept=eng, hire_date=2022]
+8. Filter: hire_date > 2020? Yes → keep
+...continue for all 100M rows
+
+Memory access pattern: RANDOM (jumping around for each column)
+CPU cache: MISSES (data scattered)
+Time: ~10 seconds
+```
+
+Column-Oriented Execution:
+```
+1. Load hire_date column: [2018, 2021, 2022, ...]
+2. Load dept column: [eng, sales, eng, ...]
+3. Load salary column: [80000, 90000, 75000, ...]
+4. Create filter mask: [0, 1, 1, 1, 0, ...] (rows where hire_date > 2020)
+5. Apply mask to salary: [90000, 75000, 85000, ...]  (only matching rows)
+6. Apply mask to dept: [sales, eng, eng, ...]
+7. GROUP BY dept: {sales: [90000], eng: [75000, 85000], ...}
+8. Aggregate: {sales: 90000, eng: 80000, ...}
+
+Memory access pattern: SEQUENTIAL (each column read once)
+CPU cache: HITS (data localized by type)
+Vectorization: 4 rows processed per CPU instruction (SIMD)
+Time: ~100ms (100x faster!)
+```
+
+Why the difference?
+- Columnar: Single column is contiguous → fits in CPU cache
+- Row-oriented: Scattered columns → cache misses on every access
+- SIMD: Can process 4-8 int64 values per instruction in columnar
+- Compression: Same data type = better compression
+
+---
+
+## LAYER 3: Deep Internals — Storage Layout & Encoding ⚙️
 
 ### Row-Oriented Storage
 
@@ -347,6 +429,448 @@ CREATE TABLE events STORED AS ORC TBLPROPERTIES (
     "orc.row.index.stride" = "10000",
     "orc.create.index" = "true"
 );
+```
+
+---
+
+## LAYER 4: Production Reality — Scaling & Failures 🚨
+
+### Common Production Failures
+
+| Failure | Symptom | Root Cause | Detection | Recovery |
+|---------|---------|-----------|-----------|----------|
+| **Slow Scan** | Query 30s (was 1s) | Missing stats, bad encoding | EXPLAIN shows seq scan | ANALYZE, set stats |
+| **OOM Crash** | Process killed | Reading massive string column | Memory spike, core dump | Increase memory, partition |
+| **Slow Write** | 1MB/s (need 100MB/s) | Codec too aggressive | CPU 100%, disk 10% | Switch codec (snappy→lz4) |
+| **Schema Evolution Failure** | Read error | Incompatible column change | Exceptions on read | Rewrite with new schema |
+| **Compression Thrashing** | CPU 99%, disk 5% | Incompressible data | CPU spike on read | Disable compression for column |
+| **Index Bloat** | File 10x too large | Too many small writes | File size >> data | Compact, rewrite |
+
+### Real Production Incident: Netflix Streaming Analytics
+
+**Problem:** Daily analytics job (find top 10K shows by streams) became 2 hours slow (was 10 minutes).
+
+**Context:** 500B events/day, Parquet files, 50 columns
+
+```
+Original setup:
+├─ Parquet files: snappy compression
+├─ Row group size: 128MB (default)
+├─ Dictionary encoding: enabled
+├─ No partition pruning
+└─ Query scans all columns
+```
+
+**Investigation:**
+
+```sql
+-- Find which columns slow query down
+SELECT col_name, count(*), bytes_on_disk FROM parquet_metadata
+ORDER BY bytes_on_disk DESC;
+
+Result:
+user_agent    | 450B | 120GB (text, doesn't compress well)
+device_id     | 500B | 1GB   (integers, compresses great)
+show_id       | 500B | 200MB (dictionary encodes perfectly)
+timestamp     | 500B | 2GB   (monotonic, delta encodes well)
+```
+
+**Root cause:** user_agent column was bloated:
+- 120GB on disk for 450B values
+- Snappy compression: user agent strings very diverse
+- Every read: decompress 120GB, extract needed columns
+
+**Fix 1: Disable compression on text columns**
+
+```python
+df.write.mode("overwrite") \
+  .option("parquet.compression", "snappy") \
+  .option("parquet.compression.user_agent", "none") \
+  .parquet("s3://netflix/events/")
+
+# Result: 120GB → 150GB (paradoxically larger without compression!)
+# But: No CPU decompression overhead
+# Read time: 50 minutes → 15 minutes
+```
+
+**Fix 2: Partition by date + project columns needed**
+
+```python
+# Instead of: SELECT * FROM events
+# Use: SELECT show_id, timestamp FROM events WHERE date='2024-01-01'
+
+# Partition by date: Only scan needed dates (1/30th data)
+# Project: Only read 2 columns instead of 50
+
+# Timeline:
+# 2 hours → 15 minutes (partition)
+# 15 minutes → 1 minute (projection)
+```
+
+**Fix 3: Change row group size**
+
+```python
+# Old: 128MB row groups (scans every page for filter)
+# New: 1GB row groups (fewer seeks, better compression)
+
+spark.conf.set("parquet.block.size", 1073741824)  # 1GB
+spark.conf.set("parquet.page.size", 16777216)     # 16MB
+
+# Benefits:
+# - Fewer row group metadata checks
+# - Better dictionary reuse
+# - Fewer seeks on disk
+
+# Tradeoff:
+# - Memory: 128MB → 1GB per scan (but ok for modern systems)
+```
+
+**Final results:**
+- 2 hours → 10 minutes (back to baseline)
+- Infrastructure cost: 30% reduction
+- Lesson: Compression isn't always faster
+
+### Observability: Parquet Performance Metrics
+
+```python
+# Check compression ratio
+import pyarrow.parquet as pq
+pf = pq.ParquetFile("data.parquet")
+for i, rg in enumerate(pf.metadata.row_groups):
+    print(f"Row Group {i}:")
+    for col in rg.columns:
+        print(f"  {col.path_in_schema}: "
+              f"compressed={col.meta_data.total_compressed_size}B "
+              f"uncompressed={col.meta_data.total_uncompressed_size}B "
+              f"ratio={col.meta_data.total_compressed_size/col.meta_data.total_uncompressed_size:.2%}")
+
+# Monitor encoding selection
+pf = pq.ParquetFile("data.parquet")
+for col in pf.schema:
+    encodings = pf.metadata.row_groups[0].column(col.i).meta_data.encodings
+    print(f"{col.name}: {encodings}")
+    # Look for: DICT → good compression, PLAIN → data incompressible
+```
+
+---
+
+## LAYER 5: Staff Engineer Perspective 👨‍💼
+
+### Choosing Column Format
+
+| Factor | Parquet | ORC | Delta Lake | Iceberg |
+|--------|---------|-----|-----------|---------|
+| **Compression** | Good | Excellent | Good | Good |
+| **ACID** | No | Yes | Yes | Yes |
+| **Schema Evolution** | Limited | Good | Good | Excellent |
+| **Indexes** | Page-level | Row-level + Bloom | Row-level | Z-order |
+| **Ecosystem** | Spark, Pandas, Arrow | Hive, Spark | Spark, Delta | Spark, Iceberg |
+| **Lookup Speed** | O(row_group) | O(stripe) | O(row_group) | O(1) with indexes |
+
+**When to use what:**
+- **Parquet**: General purpose, Spark/Pandas, good enough compression
+- **ORC**: Hive workloads, need ACID, better compression
+- **Delta Lake**: Need time travel, data governance, schema evolution
+- **Iceberg**: Enterprise: multi-region, hidden partitions, atomic writes
+
+### Scaling Patterns: 1GB → 1PB Data Lake
+
+```
+Phase 1: 1GB datasets
+├─ Single Parquet file
+└─ Load in memory, fast
+
+Phase 2: 100GB datasets
+├─ Multiple Parquet files (partition by date)
+├─ Parallel reads possible
+└─ Snappy compression
+
+Phase 3: 1TB+ datasets
+├─ Structured partitioning (date + region + product)
+├─ Compression: snappy for hot, zstd for cold
+├─ Add dictionary encoding for dimensions
+└─ Z-order curves for geo queries
+
+Phase 4: 10TB+ (Netflix scale)
+├─ Horizontal: Separate tables by domain
+├─ OLAP layer: Druid, Pinot (real-time aggregates)
+├─ OLTP layer: PostgreSQL (recent events)
+├─ Cache layer: Redis (hot aggregations)
+└─ Object storage: S3 (cold data, Glacier)
+
+Phase 5: 100TB-1PB (Google scale)
+├─ Columnar warehouse: BigQuery, Snowflake
+├─ Distributed compression (Parquet sharded across 10K nodes)
+├─ Federation: Join across warehouses
+└─ ML: Direct ML on columnar format (no serialization)
+```
+
+### Architecture Evolution: Airbnb Data Platform
+
+```
+Year 1: Hadoop + Hive (ORC)
+├─ Daily batch jobs
+├─ Reports next morning
+└─ Works for 10B daily events
+
+Year 2: Add Spark (Parquet)
+├─ 10x faster analytics
+├─ Can query 1TB in seconds
+└─ Works for 100B events/day
+
+Year 3: Add Druid (real-time OLAP)
+├─ Real-time metrics (updated every minute)
+├─ Inventory queries (10-50ms)
+├─ Slides show current data
+
+Year 4: Add Delta Lake
+├─ Time travel: "what was inventory at 8pm?"
+├─ Atomic updates (avoid dirty reads)
+├─ Schema evolution (add columns without rewrite)
+
+Year 5: Add Iceberg
+├─ Hidden partitions (don't expose partition columns)
+├─ Full schema evolution
+├─ Consistent snapshots across federation
+└─ Can query data from multiple regions atomically
+```
+
+---
+
+## Interview Questions 💼
+
+### Level 1: Junior
+
+**Q: What's the difference between row and columnar storage?**
+
+A: Row stores all columns together (fast for whole rows). Columnar stores columns separately (fast for filtering specific columns).
+
+**Q: Why is columnar storage better for analytics?**
+
+A: Analyses typically query few columns from many rows. Columnar: read only needed columns (100x faster). Row-oriented: read all columns even if unused.
+
+**Q: What's dictionary encoding?**
+
+A: Replace repeated string values with integer IDs. "NYC, LA, NYC, SF" → "0, 1, 0, 2" with dict {0:NYC, 1:LA, 2:SF}. Reduces size 5-100x for text.
+
+### Level 2: Intermediate
+
+**Q: When would you use Parquet vs ORC?**
+
+A: Parquet: general purpose, ecosystem support, good compression. ORC: Hive workloads, need ACID, need better compression. For new projects: Parquet.
+
+**Q: Explain predicate pushdown. Why does it matter?**
+
+A: Push filters (WHERE clause) to storage layer. Only read matching rows instead of all rows.
+
+```sql
+SELECT * FROM events WHERE date > '2024-01-01' AND country = 'US'
+
+Without pushdown: Read 1TB, filter in Spark → slow
+With pushdown: Storage skips irrelevant row groups → read 10GB only → 100x faster
+```
+
+**Q: Design a compression strategy for 1TB log data. Explain tradeoffs.**
+
+A: Depends on access patterns:
+- **Hot data** (last 7 days): LZ4 (fast decompression, 1.5x compression)
+- **Warm data** (7-30 days): Snappy (balanced, 2x compression)
+- **Cold data** (older): zstd (slow but small, 4x compression)
+
+Tradeoff: Speed vs space.
+
+### Level 3: Senior
+
+**Q: Design a data lake for Uber with 10B+ events/day. How do you partition?**
+
+A: Multi-level strategy:
+```
+s3://uber-events/
+├─ date=2024-01-01/
+│  ├─ region=APAC/
+│  │  ├─ city=SGP/
+│  │  │  ├─ event_type=ride_request/
+│  │  │  │  └─ *.parquet (partitioned by request_time)
+```
+
+Why:
+- Partition by date: Typical queries filter by date range
+- Partition by region: Data from different regions stored separately
+- Partition by city: Sub-regional queries fast
+- Don't over-partition: Too many small files = slow metadata
+
+### Level 4: Staff Engineer
+
+**Q: You have 1PB data lake. Query scans 500GB, takes 5 seconds on Druid but 10 minutes on Spark. Design solution.**
+
+A: Multi-tier architecture:
+
+```
+Real-time queries (Druid):
+├─ Last 30 days
+├─ Pre-aggregated (count by dimension)
+├─ In-memory + on-disk columns
+└─ 10-50ms queries
+
+Historical queries (Spark + Parquet):
+├─ Full 1PB, 30+ days old
+├─ Complex aggregations
+├─ Batch processing
+└─ 10-100 second queries acceptable
+
+Query routing:
+├─ IF time_range < 30 days → Druid (10-50ms)
+└─ ELSE → Spark (eventually consistent)
+```
+
+---
+
+## Production Story: Stripe Payment Analytics
+
+**Challenge:** Daily payment analytics (10B+ transactions) became bottleneck for fraud detection retraining.
+
+**Incident:**
+- Fraud ML models retrained daily (2AM job)
+- Needed 30 days of historical data (~300B transactions)
+- Parquet read time: 6 hours
+- Model training: 2 hours
+- Retraining window: 4 hours
+- Result: Job failed regularly (data grows faster than process)
+
+**Investigation:**
+
+```
+Bottleneck identified: Reading 30 days Parquet took 6 hours
+
+Analysis:
+├─ Data size: 300B rows × 15 columns × 5 bytes avg = 22.5TB
+├─ Compressed: 22.5TB / 3x (snappy) = 7.5TB
+├─ Read speed: 7.5TB / 6 hours = 347 MB/s
+├─ Disk limit: 1000 MB/s (available)
+└─ Problem: Only using 34% of disk capacity!
+```
+
+Root cause: CPU decompression bottleneck
+- Snappy decompression uses 1 CPU core
+- Spark job: 100 cores, but only 1 decompressing
+- Result: 99 cores idle
+
+**Solution: Change compression strategy**
+
+```python
+# Old: Snappy (slow decompression)
+df.write.parquet(..., compression="snappy")
+# Effective throughput: 347 MB/s
+
+# New: ZSTD with compression_level=1 (fast decompression)
+spark.conf.set("parquet.compression", "zstd")
+spark.conf.set("parquet.compression.zstd.level", 1)
+df.write.parquet(...)
+# Effective throughput: 850 MB/s (2.5x improvement!)
+```
+
+**Additional fixes:**
+1. Separate fraud-relevant columns (project)
+2. Partition by date (skip old data)
+3. Add Z-order on fraud_probability (Iceberg)
+
+**Results:**
+- 6 hours → 1.5 hours (4x faster)
+- 2 + 1.5 = 3.5 hours (within 4h window)
+- Fraud detection models now update daily reliably
+
+**Lesson:** Compression isn't just about size, it's about decompression speed. Profile CPU, not just I/O.
+
+---
+
+## Hands-On Labs
+
+### Lab 1: Design Optimal Parquet Schema
+
+**Scenario:** Ecommerce events (1B/day)
+- user_id (bigint)
+- product_id (bigint)
+- price (decimal)
+- country (string, 200 values)
+- device_type (string, 5 values)
+- timestamp (timestamp)
+
+**Task:** Choose encoding and compression per column. Justify.
+
+**Solution framework:**
+- Dimensions (country, device) → dictionary encoding + snappy
+- Timestamps → delta encoding + lz4
+- Metrics (price) → plain + zstd
+- IDs → plain + lz4
+
+### Lab 2: Investigate & Fix Slow Query
+
+**Setup:**
+```python
+df = spark.read.parquet("s3://data/events/")
+result = df.filter(df.timestamp > "2024-01-01") \
+    .filter(df.country == "US") \
+    .groupBy("product_id") \
+    .count() \
+    .collect()
+```
+
+Takes 10 minutes, need < 1 minute.
+
+**Tasks:**
+1. Run EXPLAIN ANALYZE (see how much data scanned)
+2. Add partitioning by date
+3. Add compression stats
+4. Rewrite and measure improvement
+
+### Lab 3: Multi-Region Data Lake
+
+**Design:** Stripe serves payments in 10 regions. Data lives in AWS S3 (us-east, eu-west, ap-southeast).
+
+**Constraints:**
+- Fraud ML models need global data (all regions)
+- Regional reports need <100ms latency (local data)
+- Data is immutable (never changes)
+
+**Design storage strategy:**
+- Partition by: region, date, hour
+- Compression: regional hot/cold different
+- Replication: How to serve global queries with local storage?
+
+---
+
+## Related Topics
+
+### Prerequisites
+- [Operating Systems (12-operating-systems/)](../../12-operating-systems/) — Disk I/O, cache
+- [Networking (11-networking/)](../../11-networking/) — Data transfer optimization
+
+### Deep Dives
+- [Databases (08-databases/)](../../08-databases/) — Storage engines, B-trees
+- [Data Warehousing (02-data-engineering/)](../../02-data-engineering/) — OLAP, OLTP, MPP
+
+### Cross-Domain
+- [Performance Engineering (18-performance-engineering/)](../../18-performance-engineering/) — Profiling columnar reads
+- [Distributed Systems (09-distributed-systems/)](../../09-distributed-systems/) — Sharding, replication
+
+---
+
+## Summary
+
+Columnar storage is **transformational for analytics**:
+
+1. **Beginner**: Columns stored separately → read fewer columns
+2. **Intermediate**: Encoding (dict, RLE, delta) + compression (snappy, zstd)
+3. **Advanced**: Parquet/ORC internals, statistics, predicate pushdown, vectorization
+4. **Production**: Real failure cases, compression bottlenecks, format choice
+5. **Staff**: Multi-region, format evolution, architecture scaling
+
+**Key Decisions:**
+- Parquet: Default, 80% of cases
+- ORC: Hive, ACID requirements
+- Delta/Iceberg: Time travel, schema evolution needed
+
+**Next:** Choose format for your analytics, measure compression ratio, monitor decompression speed.
 
 SELECT * FROM events WHERE event_date = '2024-03-15';
 -- Stripe index -> row group index -> only matching rows

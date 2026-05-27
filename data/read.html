@@ -435,8 +435,32 @@
       text = text.replace(/^(?!<[hH]|<ul|<ol|<blockquote|<table|<pre|<hr)(.+)$/gm, '<p>$1</p>');
       text = text.replace(/<p>\s*<\/p>/g, '');
       for (let i = 0; i < blocks.length; i++) {
-        const { code } = blocks[i];
-        text = text.replace(`__CODE${i}__`, `<pre><code>${esc(code)}</code></pre>`);
+        const { lang, code } = blocks[i];
+        const highlighted = hl(code, lang);
+        text = text.replace(`__CODE${i}__`, `<pre><code class="lang-${lang}">${highlighted}</code></pre>`);
+      }
+
+      function hl(code, lang) {
+        code = esc(code);
+        if (!lang) return code;
+        lang = lang.toLowerCase().trim();
+
+        code = code.replace(/(&quot;(?:[^&quot;\\\\]|\\\\.)*&quot;|&#039;(?:[^&#039;\\\\]|\\\\.)*&#039;)/g, '<span style="color:#a5d6ff">$1</span>');
+        code = code.replace(/\b(\d+\.?\d*)\b/g, '<span style="color:#79c0ff">$1</span>');
+        code = code.replace(/(\/\/.*$|\/\*[\s\S]*?\*\/|#.*$)/gm, '<span style="color:#8b949e;font-style:italic">$1</span>');
+
+        if (/^(javascript|jsx|js|typescript|tsx)$/.test(lang)) {
+          code = code.replace(/\b(if|else|for|while|return|function|const|let|var|class|new|import|export|default|async|await|try|catch|throw|typeof|instanceof)\b/g, '<span style="color:#ff7b72;font-weight:bold">$1</span>');
+          code = code.replace(/\b(React|useState|useEffect|useContext|useMemo|useCallback|useRef|Promise|Array|Object|String|Number|Boolean|console|undefined|null|true|false)\b/g, '<span style="color:#79c0ff;font-weight:bold">$1</span>');
+        } else if (/^(python|py)$/.test(lang)) {
+          code = code.replace(/\b(if|else|elif|for|while|def|class|import|from|return|try|except|True|False|None|self)\b/g, '<span style="color:#ff7b72;font-weight:bold">$1</span>');
+        } else if (/^(sql)$/.test(lang)) {
+          code = code.replace(/\b(SELECT|FROM|WHERE|INSERT|UPDATE|DELETE|CREATE|DROP|JOIN|ON|GROUP|ORDER|BY|LIMIT|DISTINCT)\b/gi, '<span style="color:#ff7b72;font-weight:bold">$1</span>');
+        } else if (/^(bash|shell)$/.test(lang)) {
+          code = code.replace(/\b(if|then|else|fi|for|while|do|done|function|export|source)\b/g, '<span style="color:#ff7b72;font-weight:bold">$1</span>');
+        }
+
+        return code;
       }
       for (let i = 0; i < diagrams.length; i++) {
         text = text.replace(`__MERMAID${i}__`, `<div class="mermaid">${diagrams[i]}</div>`);

@@ -1000,6 +1000,708 @@ Rotation Types:
 
 ---
 
+# 🏗️ Advanced: Deep Internals & Production Engineering
+
+## HashMap Tree-ification (Java 8+)
+
+### When Lists Become Trees
+
+```
+HashMap Bucket Evolution:
+
+Java 7:
+┌─ Bucket 5 ─────────┐
+│ Entry (hash=5)     │
+│   → next: Entry    │
+│       → next: Entry│  O(n) worst case on collision
+│           → null   │
+└────────────────────┘
+
+Java 8+: After 8 collisions in one bucket
+┌─ Bucket 5 ─────────────────┐
+│ TreeNode (hash=5)           │  O(log n) worst case
+│   /    \                    │
+│  /      \                   │  RED-BLACK tree
+│ TN       TN                 │
+│ / \     / \                 │
+│...  ...  ... ...            │
+└─────────────────────────────┘
+```
+
+**Threshold: When does tree-ification happen?**
+
+```java
+// HashMap source code constants
+static final int TREEIFY_THRESHOLD = 8;      // 8 collisions
+static final int UNTREEIFY_THRESHOLD = 6;    // 6 when shrinking
+static final int MIN_TREEIFY_CAPACITY = 64;  // min table size
+
+// Actual process:
+hash("a") % 16 = 5
+hash("b") % 16 = 5
+...
+hash("h") % 16 = 5   // 8th collision
+hash("i") % 16 = 5   // TREE-IFY THIS BUCKET!
+
+// Benefits:
+// - Reduces worst-case from O(n) to O(log n)
+// - Still O(1) average case
+// - Adds red-black tree overhead for those buckets
+```
+
+**Tree-ification Trace:**
+
+```
+1. Put 8th item with same hash
+2. Check: if (binCount >= TREEIFY_THRESHOLD)
+3. TreeNode.treeify()
+4. Create red-black tree from linked list
+5. Still FIND by hash first, then tree search
+
+Performance:
+- Pathological hash function: [O(n) → O(log n)]
+- Normal hash function: [O(1) → O(1)]
+- No performance loss, just safety
+```
+
+### Why Red-Black Trees?
+
+```
+Properties:
+1. Every node RED or BLACK
+2. Root always BLACK
+3. Every leaf (nil) is BLACK
+4. If node RED → children BLACK
+5. Path to leaf has same # BLACK nodes
+
+Why these rules?
+- Guarantees max height ≈ 2 * log(n)
+- All operations O(log n)
+- Self-balancing on insert/delete
+
+Cost: Rotation operations, color flips
+Benefit: Guaranteed performance
+```
+
+---
+
+## ConcurrentHashMap: Lock-Striping
+
+### Traditional synchronized HashMap Problem
+
+```
+HashMap<String, Integer> map = Collections.synchronizedMap(...);
+
+Thread A                      Thread B
+  lock entire map              waits for lock
+  update bucket 0              ...
+  update bucket 1              ...
+  ...                          still waiting!
+  release lock
+                              finally gets lock
+                              update bucket 15
+
+Result: Single lock on 16 buckets = serialized!
+```
+
+### ConcurrentHashMap Solution: Segment/Bin Locking
+
+```java
+// Java 7 - Segment-based (segments = locked buckets)
+ConcurrentHashMap<String, Integer> map = new ConcurrentHashMap<>(16);
+// Internally: 16 segments, each with its own lock
+
+Thread A                      Thread B
+  lock segment 0              lock segment 8 (different!)
+  update bucket 0             update bucket 15
+  ...                         ...
+  both run SIMULTANEOUSLY!
+
+// Java 8+ - Node-level locking (even finer!)
+// Lock only the specific bucket being modified
+```
+
+**Memory Layout Comparison:**
+
+```
+HashMap (not thread-safe):
+┌─────────────────┐
+│ Entry[] table   │  
+│ size            │
+│ threshold       │
+│ loadFactor      │
+└─────────────────┘
+
+ConcurrentHashMap Java 7 (segment-based):
+┌──────────────────────────┐
+│ Segment[] segments (16)  │  Each segment:
+│                          │  ┌─────────────┐
+│  Segment 0 ──────────────┼─→│ Entry[] tab │
+│  Segment 1               │  │ ReentrantLock
+│  ...                     │  │ count       │
+│  Segment 15              │  └─────────────┘
+└──────────────────────────┘
+
+ConcurrentHashMap Java 8+ (node-level):
+┌──────────────────────────┐
+│ Node[] table (array)     │
+│ For each Node:           │  synchronized on Node
+│  ┌──────────────────────┐│
+│  │ hash, key, value     ││  CAS (Compare-And-Swap)
+│  │ next pointer         ││  for simple ops
+│  │ (implicit lock)      ││
+│  └──────────────────────┘│
+└──────────────────────────┘
+```
+
+**CAS vs Locking:**
+
+```java
+// Traditional Lock (pessimistic):
+synchronized {
+    value++;
+}
+
+// CAS (optimistic):
+do {
+    expect = atomicRef.get();
+    update = expect + 1;
+} while (!atomicRef.compareAndSet(expect, update));
+// Retry if another thread changed it between read and write
+
+// ConcurrentHashMap uses:
+// - CAS for simple operations (get, basic put)
+// - synchronized for complex operations (resize, tree operations)
+```
+
+---
+
+## Memory Layout & Overhead
+
+### Object Size Breakdown
+
+```
+New User object in HashMap:
+
+┌─────────────────────────────────────┐
+│ Object Header (16 bytes)            │
+│ ┌─────────────────────────────────┐ │
+│ │ Mark Word (8 bytes)             │ │
+│ │ - Lock state (2 bits)           │ │
+│ │ - Hash code (31 bits)           │ │
+│ │ - GC age (4 bits)               │ │
+│ │ - Biased lock ID (54 bits opt)  │ │
+│ └─────────────────────────────────┘ │
+│ ┌─────────────────────────────────┐ │
+│ │ Klass Pointer (8 bytes)         │ │
+│ │ - Points to User class metadata │ │
+│ └─────────────────────────────────┘ │
+├─────────────────────────────────────┤
+│ Field Data                          │
+│ ┌─────────────────────────────────┐ │
+│ │ id (8 bytes - long)             │ │
+│ │ name (8 bytes - reference)      │ │
+│ │ email (8 bytes - reference)     │ │
+│ └─────────────────────────────────┘ │
+├─────────────────────────────────────┤
+│ Total: 16 + 24 = 40 bytes           │
+│ Aligned to 8-byte: 40 bytes         │
+└─────────────────────────────────────┘
+
+In HashMap Entry:
+
+┌─────────────────────────────────────┐
+│ Entry/Node Object (32 bytes)        │
+│ - hash (4 bytes - int)              │
+│ - key (8 bytes - reference)         │
+│ - value (8 bytes - reference)       │
+│ - next (8 bytes - reference) [Java7]│
+│ Padding (4 bytes)                   │
+├─────────────────────────────────────┤
+│ User key (40 bytes)                 │
+│ User value (40 bytes)               │
+└─────────────────────────────────────┘
+
+Total overhead per entry:
+- Entry: 32 bytes
+- Key: 40 bytes
+- Value: 40 bytes
+- Reference padding: 16 bytes (worst case)
+Total: ~128 bytes per entry!
+
+With 1,000,000 entries:
+128 MB just for empty HashMap!
+```
+
+### Compression Technique: Compressed OOPs
+
+```
+Default: 64-bit JVM pointers (8 bytes each)
+
+Entry field layout:
+│ hash  │ key ptr │ val ptr │ next ptr │ padding │
+│ 4 B   │ 8 B     │ 8 B     │ 8 B      │ 4 B     │ = 32 B
+
+With Compressed OOPs (-XX:+UseCompressedOops):
+│ hash  │ key ptr │ val ptr │ next ptr │ padding │
+│ 4 B   │ 4 B     │ 4 B     │ 4 B      │ 0 B     │ = 20 B
+
+Savings: 37.5% reduction!
+Works for heaps ≤ 32GB (actually ≤ 64GB with scaling)
+
+Trade-off:
+- Faster dereference (smaller pointers)
+- Less GC pressure (smaller objects)
+- CPU instruction cache better (smaller objects)
+```
+
+---
+
+## Production Incident: HashMap DOS Attack
+
+```
+Timeline: Peak traffic Tuesday 3 PM
+Service: User Cache Retrieval
+Symptom: 100% CPU, 50s response times, normal traffic
+
+Root Cause: Hash Collision Attack
+- Attacker sends user IDs: "1000", "1016", "1032", "1048", ...
+- All hash to same bucket!
+- Before Java 8: O(n) lookup
+- With 1M users: 1M comparisons per lookup!
+
+Cascading Failure:
+1. Single "lookup" uses 100% CPU for 100ms
+2. Thread pool exhausts (waiting on slow lookups)
+3. Queue backs up
+4. Entire system grinds
+
+How Attack Works:
+  hash("1000") % 16 = 8
+  hash("1016") % 16 = 8  (same bucket!)
+  hash("1032") % 16 = 8
+  
+Attack creates: user_id = base + 16*k for k=0,1,2,...
+
+Mitigation:
+1. Java 8: Tree-ification limits to O(log n)
+2. Hash randomization: -XX:+AlwaysPreTouch seeds hashing
+3. jdk.map.althashing.threshold=0 forces random hash
+
+Impact:
+- Java 8 deployment: O(n) → O(log n) = 100x faster
+- Service recovered within minutes
+```
+
+---
+
+## Debugging Walkthroughs
+
+### Finding Memory Leaks in HashMap
+
+```bash
+# Symptom: Memory grows unboundedly despite small active dataset
+
+# Step 1: Get heap dump
+jmap -dump:live,format=b,file=heap.bin <pid>
+
+# Step 2: Analyze in Memory Analyzer Tool (MAT)
+# Load heap.bin
+# Inspect largest objects
+# Look for HashMaps with millions of entries
+
+# Step 3: Check for key reference leaks
+# Example: HashMap key holds reference to itself
+map.put(cycle, cycle);  // Key holds reference back?
+
+# Step 4: Verify values aren't accumulating
+@Override
+public String toString() {
+    return map.values().stream().count() + " entries";
+}
+
+# Step 5: Check remove logic
+if (someCondition) {
+    map.remove(key);  // Is this ever called?
+}
+
+# Fix: Use weak references
+WeakHashMap<String, Value> map = new WeakHashMap<>();
+// Keys garbage collected when no other references exist
+```
+
+### Detecting Contention in ConcurrentHashMap
+
+```java
+// Symptom: Despite multi-threaded code, CPU not scaling linearly
+
+// Step 1: Find contended buckets with JFR (Java Flight Recorder)
+java -XX:+UnlockCommercialFeatures \
+     -XX:+FlightRecorder \
+     -XX:FlightRecorderOptions=defaultrecording=true,dumponexit=true \
+     MyApp
+
+// Step 2: Parse JFR output (look for lock contention)
+// High "monitor enter" times = lock contention
+
+// Step 3: Analyze with async-profiler
+./profiler.sh -d 30 -f flamegraph.html <pid>
+// Look for synchronized() in stack traces
+
+// Step 4: Simulate with simple test
+Map<String, Integer> map = new ConcurrentHashMap<>();
+
+Thread[] threads = new Thread[8];
+for (int t = 0; t < 8; t++) {
+    threads[t] = new Thread(() -> {
+        for (int i = 0; i < 1000000; i++) {
+            map.merge(
+                String.valueOf(i % 16),  // Only 16 unique keys!
+                1,
+                Integer::sum
+            );
+        }
+    });
+}
+
+for (Thread t : threads) t.start();
+for (Thread t : threads) t.join();
+System.out.println(map);
+
+// If all threads hit same 16 buckets:
+// - Low bucket count = high contention
+// - Solution: Increase bucket count
+Map<String, Integer> map = 
+    new ConcurrentHashMap<>(1024);  // More buckets
+```
+
+---
+
+## Interview Questions: Collections Deep Dive
+
+### Beginner Questions
+
+**Q1: Why is HashMap faster than TreeMap for most use cases?**
+```
+A: HashMap = O(1) average, O(n) worst case
+   TreeMap = O(log n) always
+   
+   O(1) < O(log n) when things go well!
+   
+   HashMap uses hashing to jump directly to bucket.
+   TreeMap must walk red-black tree.
+   
+   Only when hash collisions are severe does TreeMap win.
+   Java 8+ tree-ifies to prevent this.
+```
+
+**Q2: What's the difference between ArrayList and LinkedList insertion?**
+```
+A: ArrayList.add(0, item):       O(n) - shift all elements right
+   LinkedList.add(0, item):      O(1) - just change pointers
+   
+   ArrayList.add(item):          O(1) amortized
+   LinkedList.add(item):         O(1) if keeping tail pointer
+   
+   Use ArrayList for random access and appending.
+   Use LinkedList for frequent insertions in middle.
+```
+
+**Q3: What is ConcurrentModificationException?**
+```
+A: Thrown when modifying collection while iterating.
+
+   List<String> list = new ArrayList<>();
+   list.add("a"); list.add("b");
+   
+   for (String s : list) {
+       list.remove(s);  // ❌ Throws CME!
+   }
+   
+   Fix:
+   1. Use Iterator: iter.remove() is safe
+   2. Use concurrent collection: CopyOnWriteArrayList
+   3. Copy before iterating: new ArrayList<>(list)
+   4. Collect changes, apply after iteration
+```
+
+### Intermediate Questions
+
+**Q4: Explain HashMap capacity calculation and resizing**
+```
+A: Capacity: Power of 2 (16, 32, 64...)
+   Load Factor: 0.75 (default)
+   Threshold: capacity * loadFactor = 12 (for capacity=16)
+   
+   On put():
+   if (++size > threshold) {
+       resize();  // Double capacity
+   }
+   
+   Why power of 2?
+   - Hash reduction uses: hash % capacity
+   - For powers of 2: % equals & (capacity - 1)
+   - Bitwise & is faster than modulo!
+   
+   Why 0.75?
+   - 0.5: Too sparse, wastes memory
+   - 0.75: Good trade-off
+   - 1.0: High collision risk
+```
+
+**Q5: What makes a good hash function?**
+```
+A: Requirements:
+   1. Consistent: hashCode(obj) always same for same obj
+   2. Distributed: spreads values across buckets
+   3. Fast: O(1) to compute
+   4. Unique (ideally): Different objects → different hash
+   
+   Bad example:
+   public int hashCode() { return 5; }  // Always same!
+   → All objects go to same bucket
+   → HashMap becomes linked list
+   → get() becomes O(n)
+   
+   Good example (String):
+   s = "hello"
+   h = 0
+   for (char c : s.toCharArray()) {
+       h = h * 31 + c;  // 31 is prime, distributes well
+   }
+```
+
+**Q6: Why must equals() and hashCode() be consistent?**
+```
+A: Contract: if a.equals(b), then a.hashCode() == b.hashCode()
+
+   Violation example:
+   public class User {
+       String name;
+       int id;
+       
+       @Override
+       public boolean equals(Object o) {
+           return id == ((User) o).id;  // Only ID matters
+       }
+       
+       @Override
+       public int hashCode() {
+           return name.hashCode();  // Only name!  WRONG!
+       }
+   }
+   
+   Result:
+   User u1 = new User("alice", 1);
+   User u2 = new User("bob", 1);
+   
+   u1.equals(u2) → true (same ID)
+   u1.hashCode() == u2.hashCode() → false (different names)
+   
+   In HashMap:
+   map.put(u1, "value1");
+   map.get(u2) → null!  (Different buckets!)
+   
+   Fix: Both use same fields
+```
+
+### Senior Questions
+
+**Q7: How does ConcurrentHashMap achieve thread-safety without locking entire map?**
+```
+A: Segment-based locking (Java 7) or node-level locking (Java 8+)
+
+   Java 8 approach:
+   1. Most operations use CAS (Compare-And-Swap)
+      - Non-blocking, just retry on conflict
+      - Cheaper than locking
+   
+   2. Complex operations use synchronized on node
+      - Only that bucket is locked
+      - Other threads can access other buckets
+   
+   3. Resize uses synchronized too
+      - Pauses all operations temporarily
+      - But resizes only one segment
+   
+   Code:
+   public V put(K key, V value) {
+       Node<K,V>[] tab = table;
+       Node<K,V> f; int n, i, fh;
+       
+       // CAS to add new node
+       if ((f = tabAt(tab, i = (n - 1) & hash(key))) == null) {
+           if (casTabAt(tab, i, null, new Node<K,V>(hash, key, value)))
+               break;  // Success
+       }
+       
+       // If exists, lock and update
+       synchronized(f) {
+           // Update in this bucket
+       }
+   }
+```
+
+**Q8: Design a custom HashMap that's thread-safe but not using ConcurrentHashMap**
+```
+A: Simple segment-based approach:
+
+   public class SegmentedHashMap<K, V> {
+       final int segments = 16;
+       final HashMap<K, V>[] maps = new HashMap[segments];
+       final Object[] locks = new Object[segments];
+       
+       public SegmentedHashMap() {
+           for (int i = 0; i < segments; i++) {
+               maps[i] = new HashMap<>();
+               locks[i] = new Object();
+           }
+       }
+       
+       private int segment(K key) {
+           return Math.abs(key.hashCode() % segments);
+       }
+       
+       public V put(K key, V value) {
+           int seg = segment(key);
+           synchronized(locks[seg]) {
+               return maps[seg].put(key, value);
+           }
+       }
+       
+       public V get(K key) {
+           int seg = segment(key);
+           synchronized(locks[seg]) {
+               return maps[seg].get(key);
+           }
+       }
+   }
+   
+   Benefits over synchronized HashMap:
+   - 16 locks instead of 1
+   - 16x better parallel throughput
+   - Still fully thread-safe
+```
+
+**Q9: Explain the fail-fast iterator and how to handle it**
+```
+A: Fail-fast = quickly detect concurrent modification
+
+   Implementation:
+   ArrayList uses modCount field:
+   
+   class ArrayList<E> {
+       protected transient int modCount = 0;
+       
+       public void add(E e) {
+           modCount++;
+           // ... actual add
+       }
+       
+       public Iterator<E> iterator() {
+           return new Itr();
+       }
+       
+       private class Itr implements Iterator<E> {
+           int expectedModCount = modCount;
+           
+           public E next() {
+               if (modCount != expectedModCount)
+                   throw new ConcurrentModificationException();
+               return list.get(nextIndex++);
+           }
+       }
+   }
+   
+   When to use:
+   ✓ Single-threaded code with concurrent collection check
+   ✓ Not replacement for synchronization!
+   
+   Problem:
+   for (String item : list) {
+       if (shouldRemove(item))
+           list.remove(item);  // Throws CME
+   }
+   
+   Solutions:
+   1. Iterator.remove(): 
+      Iterator<String> it = list.iterator();
+      while (it.hasNext()) {
+          if (shouldRemove(it.next())) {
+              it.remove();  // Safe!
+          }
+      }
+   
+   2. CopyOnWriteArrayList:
+      List<String> list = new CopyOnWriteArrayList<>(oldList);
+      // Copies on modification, iterators see snapshot
+   
+   3. Collect changes:
+      List<String> toRemove = new ArrayList<>();
+      for (String s : list) {
+          if (shouldRemove(s)) toRemove.add(s);
+      }
+      list.removeAll(toRemove);
+```
+
+**Q10: Production scenario: Choose between HashMap, TreeMap, LinkedHashMap**
+```
+A: Choice depends on requirements:
+
+   HashMap:
+   - Need: fast lookup (O(1))
+   - Don't care: order
+   - Use: caches, frequency counters, ID→object maps
+   
+   TreeMap:
+   - Need: sorted keys, range queries
+   - Can tolerate: O(log n) lookup
+   - Use: leaderboards (sorted by score), time windows, range API
+   
+   LinkedHashMap:
+   - Need: insertion order OR access order
+   - Use: LRU cache (access-order), reproducible iteration
+   - Example:
+     Map<String, User> cache = 
+         new LinkedHashMap<String, User>(16, 0.75f, true) {
+             protected boolean removeEldestEntry(Map.Entry eldest) {
+                 return size() > MAX_SIZE;  // Auto-evict LRU
+             }
+         };
+   
+   WeakHashMap:
+   - Need: Keys garbage collected when unreferenced
+   - Use: caches that shouldn't prevent GC
+   
+   ConcurrentHashMap:
+   - Need: thread-safe, concurrent reads
+   - Use: shared caches, counters, configuration
+   
+   Example: User service cache
+   Map<Long, User> userCache = 
+       Collections.synchronizedMap(new LinkedHashMap<Long, User>(16, 0.75f, true) {
+           protected boolean removeEldestEntry(Map.Entry eldest) {
+               return size() > 10000;
+           }
+       });
+   
+   Wait! synchronized + LinkedHashMap is wrong!
+   synchronized blocks entire structure during resize.
+   
+   Better: Use Caffeine or Guava LoadingCache
+   LoadingCache<Long, User> cache = 
+       CacheBuilder.newBuilder()
+           .maximumSize(10000)
+           .expireAfterWrite(1, TimeUnit.HOURS)
+           .build(new CacheLoader<Long, User>() {
+               public User load(Long userId) {
+                   return userService.getUser(userId);
+               }
+           });
+```
+
+---
+
 ## ⚠️ Common Pitfalls
 
 | Pitfall | Issue | Fix |

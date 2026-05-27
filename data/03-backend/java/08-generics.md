@@ -906,18 +906,872 @@ public class UserDAO extends AbstractDAO<User, Long> {
 
 ---
 
-## 🧠 Simplest Mental Model
+---
+
+# 🎓 Multi-Level Learning Progression
+
+## Level 1: Beginner (Fresh Graduate Understanding)
+
+Think of generics like a **smart label system**. Instead of a generic box that holds "anything", you label it as "box of strings" or "box of numbers".
+
+**Before Generics = Dangerous:**
+```
+Box box = new Box();
+box.put("hello");
+box.put(123);      // No one stops you!
+String item = (String) box.get(0);  // Crash! It's actually 123
+```
+
+**With Generics = Safe:**
+```
+Box<String> box = new Box<>();
+box.put("hello");
+box.put(123);      // ❌ Compiler says NO before you even run!
+String item = box.get(0);  // 100% safe, no cast
+```
+
+The compiler is your friend — it catches type errors BEFORE deployment.
+
+---
+
+## Level 2: Intermediate (Professional Developer Understanding)
+
+### Compile-Time Type Checking Pipeline
+
+```
+Source Code                 Compilation              Runtime
+│                           │                        │
+List<String> list           │  Type parameters       │
+list.add("hello")  ------>  │  Checked & bound       │
+list.add(123)               │  Errors found HERE     │  Type erasure:
+                            │  (compile fails)       │  Parameters removed
+String s = list.get(0)      │                        │  Bounds remain
+                            │  Type info erased      │  List → ArrayList
+                            │  List<String> becomes  │  becomes ArrayList
+                            └──> ArrayList (raw) ----└──> Pure ArrayList
+```
+
+### Variance Rules (Production Impact)
+
+```java
+// INVARIANT — must be exact type
+List<Number> nums = new ArrayList<Integer>();  // ❌ Compile error!
+
+// COVARIANT — can read (? extends)
+List<? extends Number> producer = new ArrayList<Integer>();
+Number n = producer.get(0);  // Safe to read
+
+// CONTRAVARIANT — can write (? super)
+List<? super Integer> consumer = new ArrayList<Number>();
+consumer.add(42);  // Safe to write
+```
+
+**Production Impact:** Wrong variance = type safety holes OR unnecessarily restrictive APIs.
+
+---
+
+## Level 3: Advanced (Senior Engineer Understanding)
+
+### JVM Bytecode & Type Erasure Mechanics
+
+Type erasure happens in **3 phases**:
+
+```
+Phase 1: Compilation
+         Source: List<String> list = new ArrayList<>();
+         Bytecode: astore_1 (raw type reference)
+
+Phase 2: Erasure
+         Type param <String> → erased to Object
+         Bounds <T extends Comparable> → erased to Comparable
+         
+Phase 3: Bridging
+         For polymorphism with generics:
+         Generate synthetic bridge methods
+```
+
+**Exact Bytecode Changes:**
+
+```java
+// Source:
+public class Box<T> {
+    private T value;
+    public T get() { return value; }
+    public void set(T v) { value = v; }
+}
+
+// Bytecode after erasure:
+public class Box {
+    private Object value;          // T → Object
+    public Object get();            // Returns Object
+    public void set(Object v);      // Accepts Object
+}
+
+// But when you subclass:
+public class StringBox extends Box<String> {
+    public String get() { return (String) super.get(); }  // override
+    public String get();  // ← Compiler adds bridge method
+    public Object get();  // ← This bridges to erased parent
+}
+```
+
+### Memory Layout & Performance
+
+```
+Generic vs Raw Type Memory Overhead:
+
+List<String> list = new ArrayList<>();
+    ↓
+ArrayList object layout:
+┌─────────────────────────────────┐
+│ Object Header (16 bytes)        │
+│   Mark Word (8 bytes)           │
+│   Klass Pointer (8 bytes)       │
+├─────────────────────────────────┤
+│ elementData (Object[])          │
+│ size (int)                      │
+│ modCount (int)                  │
+├─────────────────────────────────┤
+│ NO extra space for <String>!    │  ← Type parameter erased
+│ ALL ArrayList<T> are SAME size  │
+└─────────────────────────────────┘
+
+Performance: No runtime overhead!
+Cost: Lose type info at runtime
+```
+
+### Bridge Method Generation Example
+
+```java
+// Scenario: Polymorphic generic inheritance
+interface Producer<T> {
+    T produce();
+}
+
+class StringProducer implements Producer<String> {
+    @Override
+    public String produce() {        // Concrete
+        return "hello";
+    }
+}
+
+// After compilation & erasure:
+// StringProducer has TWO produce() methods:
+
+1. public String produce() {         // Original
+       return "hello";
+   }
+
+2. public Object produce() {         // Bridge (synthetic)
+       return produce();              // Calls typed version
+   }
+
+// Reason: Calling code may use:
+Producer p = new StringProducer();
+p.produce();  // Needs Object-returning version for polymorphism
+```
+
+### Heap Pollution
+
+```java
+// Dangerous: mixing generics with raw types
+List<String> strings = new ArrayList<>();
+List raw = strings;
+raw.add(123);  // Heap pollution!
+
+// At runtime:
+strings.get(0);  // Returns Integer, not String
+                 // ClassCastException when accessing like String
+
+// Compiler can't catch this because raw types bypass checking
+// Result: runtime crash in production!
+```
+
+---
+
+## Level 4: Production Engineering (Staff Engineer Understanding)
+
+### Debugging Type Erasure Issues
+
+```bash
+# Scenario: ClassCastException in production with generics
+
+# Step 1: Get heap dump
+jmap -dump:live,format=b,file=heap.bin <pid>
+
+# Step 2: Analyze in MAT
+# Search for ClassCastException in exception history
+
+# Step 3: Enable detailed GC logging
+java -Xlog:gc+tags=time,level,tid:file=gc.log ...
+
+# Step 4: Check javac warnings
+javac -Xlint:unchecked MyClass.java
+
+# Output might show:
+# warning: [unchecked] unchecked cast
+#   List<String> list = (List<String>) raw;
+#                                       ^^^
+```
+
+### Production Incident: Type Safety Violation
+
+```
+Timeline: Friday 2 PM
+Service: User API
+Issue: Random ClassCastException on user lookups
+
+Root Cause:
+  Code had: List<User> users = getUserList();
+  Later changed to: List raw = getUsers();  // Someone removed generics!
+  Stored: List<Admin> admins = (List<Admin>) raw;
+  
+  When cached List<User> was reused:
+  ClassCastException when casting User to Admin
+
+Symptoms in Monitoring:
+  - Error rate spike to 15%
+  - No pattern (random users fail)
+  - Only in certain code paths
+  - Heap usage normal (not OOM)
+
+Debug Process:
+  1. Stack trace showed cast failure in serialization
+  2. Checked recent changes → found unsafe cast
+  3. Enabled @SuppressWarnings("unchecked") check
+  4. Found 23 unsafe casts in codebase
+  5. Added strict compiler warnings to CI/CD
+
+Prevention:
+  - Enable: -Xlint:unchecked,rawtypes
+  - Fail build on warnings
+  - Never suppress without justification
+  - Code review must check all casts
+```
+
+### Performance Characteristics
+
+```
+Generic vs Raw Type Operations:
+
+Micro-benchmark: 1M operations
+
+List<Integer> generic = new ArrayList<>();
+List raw = new ArrayList();
+
+generic.get(0);        // ~2ns
+raw.get(0);            // ~2ns (identical!)
+
+Integer i = generic.get(0);   // ~5ns (auto-unbox)
+Object o = raw.get(0);        // ~5ns (no overhead)
+
+Integer i = (Integer) raw.get(0);  // ~7ns (explicit cast)
+
+Findings:
+  ✓ Type parameters: zero runtime cost (erased)
+  ✓ Casts: minimal cost (1-2ns per cast)
+  ✓ Wildcard bounds checking: compile-time only
+  ✓ Memory: identical layout for all List<T> variants
+  
+Result: Use generics liberally — no performance penalty!
+```
+
+### JVM Optimizations for Generics
+
+```
+HotSpot JIT Optimizations:
+
+1. Specialization Analysis
+   List<String> ints = new ArrayList<>();
+   ints.get(0);  // JIT can specialize this path
+
+2. Escape Analysis
+   List<String> local = new ArrayList<>();  // Never escapes
+   JIT: allocate on stack, not heap!
+   
+3. Inlining with Generics
+   list.get(0) → inlined directly
+   No method call overhead at hot path
+
+4. Type Assumption
+   JIT assumes List<String> stays String
+   If violated → deoptimization!
+
+Trade-off: JIT compiles assuming type discipline
+          If code violates it → deoptimization hit
+```
+
+---
+
+## Level 5: Distributed Systems & Architecture (Staff+ Understanding)
+
+### Generics Across Service Boundaries
+
+```
+Microservice Architecture:
+
+Service A (Java)          Service B (Go)          Service C (Node)
+┌──────────────┐         ┌──────────┐           ┌──────────┐
+│List<User>    │         │[]user    │           │User[]    │
+└──────┬───────┘         └────┬─────┘           └────┬─────┘
+       │                      │                      │
+       │ JSON Serialization   │                      │
+       └──────────────────────┼──────────────────────┘
+                              │
+                    [
+                      {id: 1, name: "Alice"},
+                      {id: 2, name: "Bob"}
+                    ]
+
+Challenge:
+  Java generics ← → JSON (no generics)
+  Must serialize <User> as plain JSON
+  Other services don't know about <User> type
+
+Solution: Use TypeReference or TypeToken
+  
+  TypeReference<List<User>> ref = new TypeReference<List<User>>() {};
+  List<User> users = mapper.readValue(json, ref);
+```
+
+### Generic Repository Pattern in Enterprise Systems
+
+```java
+// Base repository interface
+public interface Repository<T, ID> {
+    T save(T entity);
+    Optional<T> findById(ID id);
+    List<T> findAll();
+    void delete(T entity);
+}
+
+// Concrete implementations scale across 100s of entities
+public class UserRepository implements Repository<User, Long> { }
+public class OrderRepository implements Repository<Order, Long> { }
+public class ProductRepository implements Repository<Product, UUID> { }
+
+Architecture Benefits:
+  ✓ Single implementation handles 100+ entities
+  ✓ Type safety across DAO layer
+  ✓ Testability (mock Repository<T, ID>)
+  ✓ Consistency (all repos follow same contract)
+
+Enterprise Impact:
+  - 50k lines → 5k lines of boilerplate
+  - 100% type safety for all queries
+  - Enabling infrastructure (caching, auditing) for all entities
+```
+
+---
+
+# 🔴 Production Failure Scenarios & Debugging
+
+## Scenario 1: Raw Type Contamination
+
+```java
+// Legacy system integration
+
+// New code (safe):
+List<String> names = new ArrayList<>();
+names.add("Alice");
+names.add("Bob");
+
+// Legacy code (unsafe):
+public void processNames(List raw) {
+    raw.add(123);  // Type safety violated!
+}
+
+processNames(names);  // Passes reference
+
+// Result:
+String name = names.get(names.size() - 1);  // ClassCastException!
+```
+
+**Debug Steps:**
+```bash
+# 1. Run with strict checking
+javac -Xlint:unchecked,rawtypes MyClass.java
+
+# Output:
+# MyClass.java:10: warning: [unchecked] unchecked method invocation
+#     processNames(names);
+#     ^
+
+# 2. Add breakpoint in ClassCastException handler
+jdb -attach <process-id>
+
+# 3. Inspect the actual type at runtime
+names.forEach(item -> 
+    System.out.println(item.getClass())
+);
+
+# 4. Check git history for type removal
+git log -p -- MyClass.java | grep "List<"
+```
+
+## Scenario 2: Wildcard Unboundedness
+
+```java
+// Dangerous pattern:
+public void addToList(List<?> list, Object item) {
+    list.add(item);  // ❌ COMPILE ERROR! But why?
+}
+
+// Reason: ? could be List<String>, List<Integer>, etc.
+// If you add Object, it might violate the type!
+
+// Result: Compiler prevents runtime explosion
+
+// Fix: Use type parameter
+public <T> void addToList(List<T> list, T item) {
+    list.add(item);  // ✓ Safe now
+}
+```
+
+---
+
+# 🛠️ Debugging Walkthroughs
+
+## Using Javap for Bytecode Analysis
+
+```bash
+# Compile with generics
+javac Box.java
+
+# Decompile to see erasure:
+javap -c Box.class
+
+# Output excerpt:
+public class Box
+  public T get();  // Note: bytecode shows Object
+    descriptor: ()Ljava/lang/Object;
+    ...
+
+# Full output shows:
+#   0: aload_0
+#   1: getfield  Box.value
+#   4: areturn
+#   (no <T> type information!)
+```
+
+## JShell Interactive Debugging
+
+```java
+jshell> List<String> list = new ArrayList<>();
+jshell> list.add("hello");
+jshell> list.getClass()
+$4 ==> class java.util.ArrayList
+
+// Note: No mention of <String> in class info!
+
+jshell> List raw = list;
+jshell> raw.add(123);
+
+jshell> list.get(0)
+|  Exception java.lang.ClassCastException: class java.lang.Integer cannot be cast to class java.lang.String
+
+jshell> list.forEach(item -> System.out.println(item.getClass()))
+class java.lang.Integer  // ← Shows pollution occurred
+```
+
+---
+
+# ❓ Interview Questions (Comprehensive)
+
+## Beginner Level
+
+**Q1: What's the difference between `List` and `List<String>`?**
+```
+A: List (raw type) has no type checking, any type allowed.
+   List<String> enforces compile-time type safety.
+   
+   List raw = new ArrayList();
+   raw.add("hello");
+   raw.add(123);  // No error!
+   
+   List<String> safe = new ArrayList<>();
+   safe.add("hello");
+   safe.add(123);  // COMPILE ERROR!
+```
+
+**Q2: Why can't you do `new List<String>[10]`?**
+```
+A: Type parameters are erased at runtime.
+   Arrays need runtime type information for ArrayStoreException.
+   
+   Array<String>[] won't work because at runtime:
+   - Array stores just "Array"
+   - Loses <String> info
+   - Can't enforce element type safety
+   
+   Solution: List<String>[] → List<List<String>>
+```
+
+**Q3: What does `<T extends Number>` mean?**
+```
+A: T must be Number or any subclass of Number.
+   
+   NumericBox<Integer> ok;      // Integer extends Number
+   NumericBox<Double> ok;        // Double extends Number
+   NumericBox<String> error;     // String not Number
+   
+   Benefit: Inside the class, can call Number methods on T
+           T.doubleValue(), T.intValue(), etc.
+```
+
+## Intermediate Level
+
+**Q4: Explain PECS (Producer Extends, Consumer Super)**
+```
+A: Mnemonic for wildcard usage:
+
+   Producer Extends: Reading from collection
+   List<? extends T> source;
+   T item = source.get(0);  // Can read as T
+   source.add(item);         // Cannot write (could be subtype)
+   
+   Consumer Super: Writing to collection
+   List<? super T> sink;
+   sink.add(item);           // Can write T or subtype
+   T item = sink.get(0);     // Cannot read specifically (might be supertype)
+   
+   Example: Collections.copy(List<? super T> dest, List<? extends T> src)
+```
+
+**Q5: What's the difference between `List<? extends T>` and `List<T>`?**
+```
+A: List<T>: ONLY exactly T
+   List<Integer> myList = ...;
+   List<? extends Number> nums = myList;  // OK
+   List<Number> nums2 = myList;           // COMPILE ERROR!
+   
+   List<? extends T>: T or any subclass
+   Can read safely (as T or parent)
+   Cannot write (unknown exact type)
+   
+   List<T>: Exact type, can read AND write
+```
+
+**Q6: Describe type erasure and its implications**
+```
+A: Erasure = removal of generic type information at runtime
+
+   List<String> list → ArrayList (no <String> info)
+   
+   Implications:
+   1. Cannot do instanceof List<String> (not reifiable)
+   2. Cannot create new T[] (don't know T at runtime)
+   3. Cannot create new T() (don't know constructor)
+   4. Bridge methods needed for polymorphism
+   5. Heap pollution possible with raw types
+   6. No runtime type checking for generic types
+   
+   Trade-off: Type safety at compile-time, zero runtime cost
+```
+
+## Senior Level
+
+**Q7: How do bridge methods work with generics?**
+```
+A: When generic class/interface is subclassed with concrete type,
+   compiler generates synthetic bridge methods to maintain polymorphism.
+   
+   Example:
+   interface Converter<T, U> { U convert(T t); }
+   
+   class StringToInt implements Converter<String, Integer> {
+       public Integer convert(String s) { return Integer.parseInt(s); }
+   }
+   
+   After erasure, Converter interface expects:
+       Object convert(Object obj)
+   
+   StringToInt needs BOTH methods:
+   1. Integer convert(String) — actual implementation
+   2. Object convert(Object) — bridge, calls #1
+   
+   Compiler generates bridge automatically.
+   
+   Why: Ensures Converter converter = new StringToInt();
+       converter.convert(...) works through bridge
+```
+
+**Q8: Explain type token pattern and when to use it**
+```
+A: Type token = passing Class<T> to capture erased type info
+
+   public <T> T parse(String json, Class<T> type) {
+       return mapper.readValue(json, type);
+   }
+   
+   User user = parse(json, User.class);
+   
+   For complex types, use TypeReference:
+   new TypeReference<List<User>>() { }
+   
+   Why needed: Generics erased → need runtime type capture
+   
+   When to use:
+   - Deserialization (JSON/XML)
+   - Reflection-based framework (JPA, Spring)
+   - Generic factory patterns
+   - Type-safe heterogeneous containers
+```
+
+**Q9: What happens with covariance/contravariance in generics?**
+```
+A: Covariance (? extends T): Can read, not write
+   Supports "reading from a producer"
+   List<? extends Number> nums = new ArrayList<Integer>();
+   Number n = nums.get(0);  // OK
+   nums.add(1);             // ERROR
+   
+   Contravariance (? super T): Can write, not read specifically
+   Supports "writing to a consumer"
+   List<? super Integer> ints = new ArrayList<Number>();
+   ints.add(1);             // OK
+   Integer i = ints.get(0); // ERROR (returns Object)
+   
+   Invariance (T): Can do both
+   List<Integer> only accepts List<Integer>
+   
+   Language choice: Java chose invariance for collections
+                   (safer, but less flexible)
+```
+
+**Q10: Real production scenario: You see `@SuppressWarnings("unchecked")` everywhere. What's wrong?**
+```
+A: Indicates unchecked casts, which bypass type safety.
+
+   Problem: @SuppressWarnings hides real issues
+   
+   Example (BAD):
+   @SuppressWarnings("unchecked")
+   List<User> users = (List<User>) legacyMethod();
+   
+   Problems:
+   - Compiler can't warn if legacyMethod changes
+   - Future developer doesn't know why it's there
+   - Could be hiding heap pollution bugs
+   - Makes codebase fragile
+   
+   Solutions:
+   1. Use TypeReference instead of cast
+   2. Wrap legacy in adapter with proper types
+   3. Gradually remove raw types
+   4. Only suppress with comment explaining WHY
+   
+   @SuppressWarnings("unchecked")  // API returns List, we know it's User
+   List<User> users = (List<User>) legacyMethod();
+```
+
+## Staff-Level Questions
+
+**Q11: You're designing a distributed system API. How do you handle generics across language boundaries?**
+```
+A: Generics don't cross language boundaries (Java-specific feature).
+
+   Design:
+   1. Use JSON Schema / Protocol Buffers for contracts
+   2. In Java: TypeReference for deserialization
+   3. In other languages: no generic equivalent
+   
+   Example: User Service API
+   
+   Java Client:
+   TypeReference<PagedResponse<User>> ref = 
+       new TypeReference<PagedResponse<User>>() {};
+   PagedResponse<User> response = 
+       mapper.readValue(responseBody, ref);
+   
+   Go Client:
+   type PagedResponse struct {
+       Data []User
+       Total int
+   }
+   
+   Lesson: Generics are compile-time only
+           Don't rely on generics for contracts
+           Use schema/spec instead
+```
+
+**Q12: Performance implications: When do generics matter? When don't they?**
+```
+A: Generics have ZERO runtime cost (type erasure).
+
+   Memory: Same for List<T> regardless of T
+   Speed: Identical bytecode paths
+   
+   However:
+   1. Casts add tiny cost
+      obj instanceof T  vs  clazz.isInstance(obj)
+      (List<T>) raw     vs  safe construction
+      
+   2. Type assumptions enable JIT optimizations
+      List<String> list in hot path:
+      JIT assumes String type throughout
+      If violated → deoptimization (expensive)
+      
+   3. Wildcard checking is compile-time only
+      No runtime cost for variance checking
+   
+   Implication: Use generics liberally
+               Enable JIT optimizations
+               Let compiler catch errors
+               
+   When generics DO matter (performance):
+   1. Avoiding unsafe casts → avoid deoptimization
+   2. Helping JIT specialize hot paths
+   3. Enabling escape analysis (local generics)
+```
+
+---
+
+# ⚠️ Edge Cases & Gotchas
+
+## 1. Type Erasure Surprises
+
+```java
+// Gotcha 1: Can't overload based on generic types
+public void process(List<String> strings) { }
+public void process(List<Integer> ints) { }
+// COMPILE ERROR: both erase to process(List)
+
+// Gotcha 2: Can't check generic type at runtime
+List<String> strings = new ArrayList<>();
+strings instanceof List<String>  // COMPILE ERROR!
+strings instanceof List          // OK (raw type)
+
+// Gotcha 3: Can't store generic type info
+T[] array = new T[10];  // COMPILE ERROR
+// Workaround:
+@SuppressWarnings("unchecked")
+T[] array = (T[]) Array.newInstance(componentType, 10);
+
+// Gotcha 4: Static fields can't use type parameters
+static T defaultValue;  // COMPILE ERROR! T not defined for static
+// Reason: static shared across all instances
+```
+
+## 2. Wildcard Capture
+
+```java
+// Problem: Can't capture wildcard type
+List<?> list = new ArrayList<String>();
+? item = list.get(0);  // COMPILE ERROR: ? not a real type
+
+// Solution: Helper method captures type
+public static <T> T getFirst(List<T> list) {
+    return list.isEmpty() ? null : list.get(0);
+}
+
+// Usage:
+List<?> list = new ArrayList<String>();
+Object item = getFirst(list);  // Works!
+```
+
+## 3. Self-Referential Bounds
+
+```java
+// Tricky pattern: self-referential generic
+public interface Comparable<T> {
+    int compareTo(T o);
+}
+
+// Proper use: compare same type
+class User implements Comparable<User> {
+    public int compareTo(User other) { ... }
+}
+
+// Dangerous pattern:
+class BadUser implements Comparable<String> {
+    public int compareTo(String other) { ... }
+}
+// Can create: Comparable<User> bad = new BadUser();
+//             bad.compareTo(new User());  // ClassCastException!
+```
+
+## 4. Reification Gap
+
+```java
+// Erasure means: Can't get T.class at runtime
+
+public class Box<T> {
+    private final Class<T> type;
+    
+    public Box(Class<T> type) {
+        this.type = type;  // Must pass explicitly
+    }
+    
+    public T createNew() throws Exception {
+        return type.getDeclaredConstructor().newInstance();
+    }
+}
+
+// Usage:
+Box<User> box = new Box<>(User.class);
+User user = box.createNew();  // Now we know type!
+```
+
+---
+
+# 📊 Comparison Tables
+
+## Wildcard vs Type Parameter
+
+| Feature | `List<?>` | `<T> List<T>` | `List<T>` |
+|---------|-----------|---------------|-----------|
+| Single-use method | ✅ Cleaner | ⚠️ Verbose | ❌ Class-level |
+| Multiple params | ❌ Can't relate | ✅ Can relate | ✅ Can relate |
+| Return type constraint | ❌ No | ✅ Yes | ✅ Yes |
+| Lower bound | ✅ `? super T` | ❌ No | ❌ No |
+| Variance control | ✅ Yes | ⚠️ Limited | ❌ Invariant |
+
+## Variance Modes
+
+| Mode | Syntax | Can Read | Can Write | Example |
+|------|--------|----------|-----------|---------|
+| **Covariant** | `? extends T` | ✅ as T | ❌ | Producer |
+| **Contravariant** | `? super T` | ❌ (as Object) | ✅ | Consumer |
+| **Invariant** | `T` | ✅ | ✅ | Source and sink |
+
+## Type Bounds Comparison
+
+| Bound | Syntax | Meaning | Use Case |
+|-------|--------|---------|----------|
+| **Unbounded** | `<T>` | Any type | Generic utility |
+| **Upper bound** | `<T extends Comparable>` | T or subclass | Requires methods |
+| **Multiple bounds** | `<T extends A & B & C>` | All constraints | Complex requirements |
+| **Lower bound** | `? super Integer` | Integer or superclass | Consumer wildcard |
+
+---
+
+# 🧠 Simplest Mental Model
 
 ```mermaid
-sequenceDiagram
-    participant Client
-    participant Component
-    participant Result
-    Client->>Component: Request
-    Component->>Component: Process
-    Component-->>Result: Generate
-    Result-->>Client: Response
+graph TD
+    A["Source Code<br/>List&lt;String&gt;"] -->|Compile| B["Type Check<br/>(Prevents errors)"]
+    B -->|✓ Valid| C["Bytecode<br/>List becomes ArrayList<br/>Type info REMOVED"]
+    B -->|✗ Invalid| D["COMPILE ERROR<br/>Fix before running"]
+    C -->|Runtime| E["JVM Executes<br/>No type info<br/>No overhead"]
+    E -->|Performance| F["Same speed as raw List<br/>But type-safe at compile"]
+    
+    style A fill:#4a8bc2
+    style B fill:#3fb950
+    style C fill:#e8912e
+    style D fill:#c73e1d
+    style E fill:#2d5a7b
+    style F fill:#3a7ca5
 ```
+
+### Core Insight
+
+**Generics = Type Safety at Compile Time, Zero Cost at Runtime**
+
+- Compiler does heavy lifting
+- Bytecode is optimized (no runtime checking)
+- Type erasure removes all type parameters
+- You get best of both worlds: safety + performance
 
 ---
 

@@ -30,51 +30,98 @@ The bedrock of all software engineering. This domain covers the essential comput
 
 ### Data Structures & Algorithms
 
-Fundamental data organizations and the algorithms that operate on them. Topics include:
+Fundamental data organizations and the algorithms that operate on them. This is the single most important topic for technical interviews and building efficient software.
 
-- **Arrays & Strings** — contiguous memory, dynamic arrays, string algorithms (KMP, Rabin-Karp, Trie)
-- **Linked Lists** — singly, doubly, circular; pointer manipulation, Floyd's cycle detection
-- **Stacks & Queues** — LIFO/FIFO, monotonic stack, deque, priority queue
-- **Hash Tables** — hash functions, collision resolution (chaining, open addressing), load factor, consistent hashing
-- **Trees** — binary trees, BST, AVL, red-black, B-trees, segment trees, Fenwick trees
-- **Heaps** — binary heap, Fibonacci heap, heap operations, heap sort
-- **Graphs** — representation (adjacency matrix/list), BFS, DFS, topological sort, shortest paths (Dijkstra, Bellman-Ford, Floyd-Warshall), MST (Kruskal, Prim), max flow (Ford-Fulkerson)
-- **Searching & Sorting** — binary search, quicksort, mergesort, heapsort, counting sort, radix sort
-- **Dynamic Programming** — memoization, tabulation, knapSack, LCS, LIS, DP on trees/graphs
-- **Greedy Algorithms** — interval scheduling, Huffman coding, minimum spanning trees
-- **Bit Manipulation** — bitwise operators, XOR tricks, bit masks, population count
+**Linear Data Structures:**
+- **Arrays & Strings** — contiguous memory allocation, dynamic arrays (amortized resizing), string algorithms (KMP pattern matching, Rabin-Karp rolling hash, Trie for prefix search, suffix arrays, Z-algorithm, Manacher's for palindromes)
+- **Linked Lists** — singly and doubly linked, circular lists, sentinel nodes, pointer reversal, Floyd's cycle detection (tortoise and hare), fast and slow pointer patterns, merge sort on linked lists
+- **Stacks & Queues** — LIFO/FIFO semantics, monotonic stack/queue (next greater element), deque (double-ended), priority queue (heap-backed), circular queue, sliding window maximum
+
+**Hash-Based Structures:**
+- **Hash Tables** — hash functions (division, multiplication, cryptographic), collision resolution (separate chaining, open addressing with linear/quadratic probing, double hashing), load factor and rehashing, Robin Hood hashing, Cuckoo hashing, consistent hashing for distributed systems
+- **Bloom Filters** — probabilistic membership test; false-positive possible, false-negative impossible; applications: caching, spell-check, duplicate detection
+
+**Tree Structures:**
+- **Binary Trees** — traversal (inorder, preorder, postorder, level-order), serialization/deserialization, LCA (lowest common ancestor), diameter, max path sum
+- **Binary Search Trees** — O(log n) search/insert/delete; predecessor/successor; self-balancing: AVL (height-balanced, rotations), Red-Black trees (color constraints, O(1) rotations), Treap (randomized), Splay tree
+- **B-Trees & B+ Trees** — multi-way search trees; high fanout reduces height; B+ trees store keys in internal nodes, data in leafs; foundational for database indexes (MySQL InnoDB, PostgreSQL)
+- **N-Tree / TRIE** — prefix tree for strings; compressed trie (radix tree); use cases: autocomplete, IP routing (CIDR), dictionary
+- **Advanced Trees** — Segment tree (range queries + point updates), Fenwick tree / Binary Indexed Tree (prefix sums, O(log n) updates), Sparse table (RMQ, O(1) query), Order-statistic tree, Interval tree
+
+**Heaps:**
+- **Binary Heap** — complete binary tree; min-heap/max-heap; heapify O(n), extract-min O(log n); heap sort O(n log n), in-place
+- **Fibonacci Heap** — amortized O(1) decrease-key; used in Dijkstra's and Prim's algorithms for sparse graphs
+- **Binomial Heap** — mergeable heap; O(log n) merge
+
+**Graph Algorithms:**
+- **Representation** — adjacency matrix (dense, O(1) edge check), adjacency list (sparse, memory efficient), edge list
+- **Traversal** — BFS (shortest path in unweighted graph, level order), DFS (topological sort, connected components, articulation points, bridges, strongly connected components via Tarjan/Kosaraju)
+- **Shortest Paths** — Dijkstra (non-negative weights, O((V+E) log V) with binary heap), Bellman-Ford (negative weights, detects negative cycles, O(VE)), Floyd-Warshall (all-pairs, O(V³), dynamic programming)
+- **Minimum Spanning Tree** — Kruskal (sort edges + Union-Find, O(E log E)), Prim (greedy node expansion, O(E log V) with heap)
+- **Maximum Flow** — Ford-Fulkerson method, Edmonds-Karp (O(VE²)), Dinic (O(EV²) for unit capacities), Push-Relabel; min-cut = max-flow theorem
+- **Advanced** — Eulerian/Hamiltonian paths, matching (bipartite via Hopcroft-Karp, stable marriage via Gale-Shapley), graph coloring, network flow with lower bounds
+
+**Searching & Sorting:**
+- **Searching** — linear search, binary search (and variants: first/last occurrence, rotated array), ternary search, exponential search, interpolation search
+- **Comparison-Based Sorts** — quicksort (O(n²) worst, O(n log n) average; pivot selection; 3-way partition), mergesort (stable, O(n log n), O(n) extra space), heapsort (in-place, O(n log n), not stable), introsort (hybrid: quicksort → heapsort, used in C++ std::sort)
+- **Non-Comparison Sorts** — counting sort (O(n+k) for small integer range), radix sort (O(d·n) for d-digit keys), bucket sort (uniform distribution)
+- **Selection Algorithms** — quickselect (expected O(n)), median of medians (deterministic O(n))
+
+**Dynamic Programming:**
+- **Core Concepts** — optimal substructure, overlapping subproblems; memoization (top-down) vs tabulation (bottom-up); state definition and transition
+- **Classic Problems** — 0/1 knapSack, unbounded knapSack, Longest Common Subsequence (LCS), Longest Increasing Subsequence (LIS, O(n log n) with patience sorting), Edit Distance (Levenshtein), Matrix Chain Multiplication
+- **Advanced DP** — DP on trees (tree DP, rerooting), DP on graphs (shortest paths, DAG DP), DP on bitmasks (Hamiltonian path, traveling salesman), digit DP, probability DP
+- **State Compression** — rolling array (O(1) space for certain problems), bitmask compression
+
+**Greedy Algorithms:**
+- **Core Principle** — make locally optimal choice leading to globally optimal solution; requires matroid structure (exchange property)
+- **Classic Problems** — interval scheduling, Huffman coding (optimal prefix codes), Minimum Spanning Tree, Dijkstra's shortest path, coin change (canonical coin systems), fractional knapSack, job sequencing with deadlines
+
+**Bit Manipulation:**
+- **Operations** — AND, OR, XOR, NOT, left/right shift; isolate lowest set bit (x & -x), clear lowest set bit (x & (x-1)), check if power of two
+- **Common Tricks** — XOR swap, find missing number, detect if bits differ (popcount), bit reversal, subset enumeration, bitset operations (bitset in C++/Java, BitSet in Python)
+- **Applications** — bloom filters, bit flags, compression, cryptography, hash functions, low-level system programming
 
 ### Computational Complexity
 
-- **Big-O Notation** — upper/lower/tight bounds, amortized analysis
-- **P vs NP** — complexity classes, NP-completeness, reductions
-- **Space Complexity** — memory usage analysis, in-place algorithms
-- **Master Theorem** — solving recurrences, divide-and-conquer analysis
+- **Big-O Notation** — asymptotic upper bound (O), lower bound (Ω), tight bound (Θ); worst-case, best-case, average-case analysis
+- **Amortized Analysis** — averaging cost over sequence of operations; aggregate, accounting, and potential methods; examples: dynamic array resizing, splay tree operations
+- **Space Complexity** — memory usage analysis, in-place algorithms (O(1) extra space), auxiliary space vs input space
+- **P vs NP** — P: solvable in polynomial time; NP: verifiable in polynomial time; NP-complete: hardest problems in NP (SAT, TSP, vertex cover, subset sum); NP-hard: at least as hard as NP-complete; reductions (Karp vs Cook reductions)
+- **Complexity Classes** — L, NL, P, NP, PSPACE, EXPTIME; relationships and open questions (P vs NP, most famous open problem in CS)
+- **Master Theorem** — solving recurrences T(n) = aT(n/b) + f(n); three cases based on f(n) vs n^log_b(a); applicable to divide-and-conquer algorithms (merge sort, binary search, Strassen's)
+- **Other Recurrence Methods** — substitution method, recursion tree method, Akra-Bazzi for more complex recurrences
 
 ### Boolean Algebra & Logic
 
-- **Boolean Operators** — AND, OR, NOT, XOR, NAND, NOR; truth tables
-- **Logic Gates** — combinational vs sequential, flip-flops, adders, multiplexers
-- **Karnaugh Maps** — logic minimization, don't-care conditions
-- **Propositional & Predicate Logic** — quantifiers, inference rules, resolution
-- **Digital Logic Design** — half/full adders, ALU, registers, memory cells
+The mathematics of digital circuits and logical reasoning.
+
+- **Boolean Operators** — AND (conjunction), OR (disjunction), NOT (negation), XOR (exclusive or), NAND (universal gate), NOR (universal gate); truth tables and Boolean identities (De Morgan's laws, distributive, associative, commutative, absorption)
+- **Logic Gates** — combinational logic (AND, OR, NOT, XOR, NAND, NOR gates; multiplexers, demultiplexers, decoders, encoders, comparators) vs sequential logic (flip-flops: SR, JK, D, T; latches; registers; counters; finite state machines)
+- **Karnaugh Maps** — graphical method for logic minimization; 2, 3, 4, 5 variable maps; grouping adjacent 1s; don't-care conditions; prime implicants vs essential prime implicants
+- **Propositional Logic** — atomic propositions, logical connectives, well-formed formulas; truth tables; logical equivalence; inference rules (modus ponens, modus tollens, hypothetical syllogism, resolution)
+- **Predicate Logic (First-Order)** — quantifiers (∀ universal, ∃ existential), predicates, functions; variable binding, substitution; Skolemization; Herbrand universe; completeness and undecidability of FOL
+- **Digital Logic Design** — half adder and full adder circuits; ripple carry vs carry look-ahead adders; ALU design; register files, SRAM/DRAM cells; PLA (programmable logic arrays); FPGA basics
 
 ### Automata Theory
 
-- **Finite Automata** — DFA, NFA, epsilon-NFA; subset construction; DFA minimization
-- **Regular Languages** — regular expressions, pumping lemma, Myhill-Nerode
-- **Context-Free Grammars** — CFG, parse trees, Chomsky normal form, CYK algorithm
-- **Pushdown Automata** — PDA, equivalence with CFGs
-- **Turing Machines** — decidability, halting problem, undecidability
-- **Computability** — recursive and recursively enumerable languages, Church-Turing thesis
+The study of abstract machines and the problems they can solve. Foundational for compilers, verification, and complexity.
+
+- **Finite Automata** — DFA (deterministic): δ: Q×Σ→Q; NFA (nondeterministic): δ: Q×Σ→P(Q); epsilon-NFA (ε-transitions); subset construction (NFA → DFA, exponential blowup); DFA minimization (partition refinement, Moore's algorithm); product construction for intersection/union
+- **Regular Languages** — regular expressions (Kleene star, concatenation, union); algebraic laws; pumping lemma for regular languages (proving non-regularity); Myhill-Nerode theorem (right-invariant equivalence relations, minimal DFA); closure properties (union, intersection, complement, difference, reversal, homomorphism)
+- **Context-Free Grammars** — CFG definition (V, Σ, R, S); derivation (leftmost, rightmost), parse trees, ambiguity (inherent vs resolvable); Chomsky Normal Form (CNF: A→BC | a); Greibach Normal Form (GNF: A→aα); elimination of ε-productions, unit productions, useless symbols
+- **Pushdown Automata** — PDA: Q×Σ×Γ → Q×Γ* (finite control, input tape, stack); deterministic vs nondeterministic; equivalence between CFGs and PDAs (LL parsing for top-down, LR parsing for bottom-up); pumping lemma for CFLs
+- **Turing Machines** — TM definition: 7-tuple (Q, Σ, Γ, δ, q0, qaccept, qreject); multitape TMs (equivalent to single tape); nondeterministic TMs; encoding TMs as strings (universal TM); Church-Turing thesis (everything computable is TM-computable)
+- **Decidability & Undecidability** — decidable problems (DFA/NFA/CFG emptiness, equivalence of DFAs); undecidable problems: halting problem (self-referential proof), Post Correspondence Problem, Rice's theorem (any non-trivial semantic property of TMs is undecidable); reductions between undecidable problems
+- **Computability Hierarchy** — recursive languages (decidable), recursively enumerable (recognizable, but may loop on reject), co-RE; the Chomsky hierarchy (regular ⊂ context-free ⊂ context-sensitive ⊂ recursively enumerable)
 
 ### Discrete Mathematics
 
-- **Set Theory** — unions, intersections, cartesian products, power sets
-- **Combinatorics** — permutations, combinations, pigeonhole principle, inclusion-exclusion
-- **Graph Theory** — vertices, edges, paths, cycles, Eulerian/Hamiltonian, coloring
-- **Number Theory** — modular arithmetic, GCD, primes, RSA foundations
-- **Probability** — sample spaces, conditional probability, Bayes theorem, random variables
+- **Set Theory** — set operations (union, intersection, difference, complement, symmetric difference), cartesian products, power sets, cardinality, countable vs uncountable sets; Russell's paradox, ZFC axioms
+- **Combinatorics** — permutations (ordered, with/without repetition), combinations (unordered, Pascal's triangle, binomial theorem), stars and bars, recurrence relations, generating functions; inclusion-exclusion principle, pigeonhole principle (Dirichlet); Ramsey theory, Catalan numbers, Stirling numbers
+- **Graph Theory** — vertices, edges, paths, cycles, connected components, bipartite graphs, complete graphs (Kn); Eulerian path/circuit (all edges exactly once, Euler's theorem), Hamiltonian path/cycle (all vertices exactly once, Dirac/Ore conditions); graph coloring (chromatic number, Four Color Theorem, chromatic polynomial); planar graphs (Euler's formula V - E + F = 2), Kuratowski's theorem
+- **Number Theory** — Euclidean algorithm (GCD), extended Euclidean algorithm (modular inverses), modular arithmetic (congruence classes, Z/nZ), Chinese Remainder Theorem, Euler's totient theorem, Fermat's little theorem; prime number theorem, primality testing (Miller-Rabin, AKS); RSA foundations (trapdoor one-way function, hardness of factoring)
+- **Probability Theory** — sample space, events, probability axioms, conditional probability, law of total probability; Bayes theorem (prior, likelihood, posterior); independence; random variables (discrete, continuous); expectation, variance, covariance, correlation; law of large numbers, central limit theorem; Markov chains (states, transition matrix, stationary distribution, PageRank)
 
 ---
 
@@ -114,11 +161,14 @@ Threads, processes, async/await, coroutines, actors (Akka, Erlang), CSP (Go chan
 
 ### Operating Systems Concepts
 
-- Processes and threads, context switching, scheduling
-- Virtual memory, paging, segmentation
-- File systems, I/O models (blocking, non-blocking, async, io_uring)
-- Inter-process communication (pipes, sockets, shared memory, signals)
-- Synchronization primitives (mutex, semaphore, spinlock, futex)
+- **Processes** — PCB (process control block), process states (new → ready → running → waiting → terminated), context switching (overhead, TLB flush), fork/exec model, copy-on-write, zombie and orphan processes
+- **Threads** — user-level vs kernel-level threads (N:1, 1:1, M:N models), thread pools, thread-local storage, fiber/green threads vs OS threads; concurrency vs parallelism
+- **CPU Scheduling** — preemptive vs non-preemptive; policies: FCFS, SJF (Shortest Job First), Round Robin (time quantum), Priority Scheduling (with/without aging), Multi-level Feedback Queue (MLFQ, used in Linux CFS); Linux: CFS (Completely Fair Scheduler) with red-black tree; real-time scheduling (SCHED_FIFO, SCHED_RR, SCHED_DEADLINE)
+- **Virtual Memory** — page table (single-level, multi-level, inverted, hash), TLB (translation lookaside buffer), page fault handling, demand paging, page replacement (FIFO, LRU, Clock/Second-chance, LFU, NRU); thrashing, working set model
+- **Memory Allocation** — paging (fixed-size frames), segmentation (variable-size), segmented paging; buddy allocator, slab allocator, vmalloc vs kmalloc (Linux)
+- **File Systems** — inode structure, directories (hard links vs symbolic links), ext4 (extents, journaling), XFS (B+tree allocation), Btrfs (copy-on-write, snapshots, checksums), ZFS (pooled storage, RAID-Z); NTFS (MFT), APFS (snapshots, clones, encryption)
+- **I/O Models** — blocking I/O, non-blocking I/O, I/O multiplexing (select, poll, epoll on Linux, kqueue on BSD/macOS, IOCP on Windows), signal-driven I/O, asynchronous I/O (AIO, io_uring); zero-copy (sendfile, splice)
+- **Inter-Process Communication** — pipes (named/unamed), FIFOs, Unix domain sockets, network sockets, shared memory (shmget, mmap), message queues (POSIX, System V), signals; synchronization: mutexes, semaphores, condition variables, barriers, spinlocks, read-write locks, RCU (Read-Copy-Update), futex (fast userspace mutex)
 
 ### Compilers & Interpreters
 
@@ -130,12 +180,14 @@ Threads, processes, async/await, coroutines, actors (Akka, Erlang), CSP (Go chan
 
 ### Memory Management
 
-- Stack vs heap allocation
-- Manual memory management (malloc/free)
-- Garbage collection (mark-sweep, copying, generational, reference counting)
-- RAII, ownership (Rust), ARC (Swift)
-- Memory pools, arena allocators, slab allocators
-- Fragmentation (internal/external), compaction
+- **Stack Allocation** — fast, deterministic, automatic (function call/return); limited size (typically 1-8MB per thread); data must be fixed-size and known at compile time; stack overflow (unbounded recursion)
+- **Heap Allocation** — dynamic, flexible, shared across functions; malloc/free (C), new/delete (C++), GC-managed (Java, Go, Python); performance cost: allocation + deallocation overhead, lock contention in multi-threaded allocators
+- **Manual Memory Management** — explicit allocate/free (malloc, free; new, delete); pointer ownership, double-free, use-after-free, memory leaks (valgrind, AddressSanitizer); smart pointers (C++: unique_ptr, shared_ptr, weak_ptr)
+- **Garbage Collection** — mark-sweep (stop-the-world, fragmentation), mark-compact (defragments, slower), copying (Cheney's algorithm, semispaces), generational (young generation: copy, old generation: mark-sweep/compact), reference counting (Swift, Python; circular reference problem + weak references); GC tuning (Java: G1, ZGC, Shenandoah; Go: non-generational, concurrent)
+- **RAII (Resource Acquisition Is Initialization)** — C++ idiom; constructor acquires resource, destructor releases; exception-safe, scope-bound; applied to: memory (unique_ptr), locks (lock_guard), file handles, sockets
+- **Ownership & Borrowing** — Rust's ownership system: each value has exactly one owner, references (borrowing) with lifetime annotations; no GC, no manual free, compile-time memory safety
+- **Memory Pools & Arenas** — pre-allocate large block, sub-allocate manually; no per-allocation overhead, excellent cache locality; heap arena (glibc malloc arena), pool allocator (boost::pool), slab allocator (Linux kernel for objects of same size), region allocator (games, per-frame allocator)
+- **Fragmentation** — internal (allocated but unused within block) vs external (free gaps between allocations); compaction for external fragmentation (relocate objects, update pointers); tcmalloc/jemalloc reduce fragmentation vs glibc malloc
 
 ---
 

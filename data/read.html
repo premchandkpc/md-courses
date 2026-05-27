@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
   <title>📚 Engineering Knowledge Universe</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     :root {
@@ -173,6 +174,16 @@
     .md th { background: var(--bg3); font-weight: 600; }
     .md tr:nth-child(even) td { background: var(--bg2); }
     .md hr { border: none; border-top: 1px solid var(--border); margin: 20px 0; }
+    .md .mermaid {
+      display: flex;
+      justify-content: center;
+      margin: 20px 0;
+      padding: 10px;
+      background: var(--bg3);
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      overflow-x: auto;
+    }
     .loading { color: var(--fg3); font-style: italic; }
     ::-webkit-scrollbar { width: 6px; }
     ::-webkit-scrollbar-thumb { background: var(--bg3); border-radius: 3px; }
@@ -374,6 +385,11 @@
     function md(text) {
       if (!text) return '<p>Empty</p>';
       const blocks = [];
+      const diagrams = [];
+      text = text.replace(/```mermaid\n([\s\S]*?)```/g, (m, code) => {
+        diagrams.push(code.trim());
+        return `__MERMAID${diagrams.length - 1}__`;
+      });
       text = text.replace(/```(\w*)\n([\s\S]*?)```/g, (m, lang, code) => {
         blocks.push({ lang, code: code.trim() });
         return `__CODE${blocks.length - 1}__`;
@@ -405,6 +421,12 @@
       for (let i = 0; i < blocks.length; i++) {
         const { code } = blocks[i];
         text = text.replace(`__CODE${i}__`, `<pre><code>${esc(code)}</code></pre>`);
+      }
+      for (let i = 0; i < diagrams.length; i++) {
+        text = text.replace(`__MERMAID${i}__`, `<div class="mermaid">${esc(diagrams[i])}</div>`);
+      }
+      if (diagrams.length > 0) {
+        setTimeout(() => window.mermaid && window.mermaid.contentLoaded && window.mermaid.contentLoaded(), 0);
       }
       return text;
     }

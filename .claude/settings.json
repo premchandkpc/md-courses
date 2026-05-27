@@ -4,7 +4,10 @@
       "Bash(find /Users/ramyachowdary/Documents/prem-work/md-courses/data -type f -name \"*.md\" -newer /tmp -mmin -10 2>/dev/null | head -20)",
       "Read(//private/tmp/**)",
       "Bash(python3 /tmp/expand_thin_files.py)",
-      "Bash(python3)"
+      "Bash(python3)",
+      "Bash(node build-reader.js)",
+      "Bash(node server.js)",
+      "Bash(pkill -f \"node server.js\")"
     ]
   }
 }

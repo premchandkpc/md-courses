@@ -134,9 +134,9 @@ function serveFile(res, filePath, contentType) {
   }
 }
 
-function serveJson(res, data) {
+function serveJson(res, data, statusCode = 200) {
   const json = JSON.stringify(data);
-  res.writeHead(200, {
+  res.writeHead(statusCode, {
     'Content-Type': 'application/json',
     'Content-Length': Buffer.byteLength(json),
     'Access-Control-Allow-Origin': '*',

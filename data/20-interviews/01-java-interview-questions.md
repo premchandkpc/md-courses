@@ -6,15 +6,45 @@
 
 ```mermaid
 graph LR
-    A["Input<br/>Layer"] --> B["Hidden<br/>Layers"]
-    B --> C["Hidden<br/>Layers"]
-    C --> D["Output<br/>Layer"]
-    B --> E["Activation<br/>Functions"]
-    E --> B
-    style A fill:#4a8bc2
-    style B fill:#2d5a7b
-    style C fill:#2d5a7b
-    style D fill:#c73e1d
+    JAVA_CORE["Core Java"] --> OOP_J["OOP<br/>(encaps/poly/inher)"]
+    JAVA_CORE --> EXCEP["Exceptions<br/>(checked/unchecked)"]
+    JAVA_CORE --> GENERICS["Generics<br/>(erasure/wildcard)"]
+    JAVA_CORE --> STREAMS["Streams/Lambda<br/>(functional)"]
+    COLLECTIONS["Collections"] --> HASHMAP["HashMap<br/>(bucket → tree)"]
+    COLLECTIONS --> CONC_COLL["ConcurrentHashMap<br/>(segments/CAS)"]
+    COLLECTIONS --> COPY_ON_WRITE["CopyOnWriteArrayList<br/>(snapshot)"]
+    CONC_JAVA["Concurrency"] --> THREAD_POOL["ThreadPoolExecutor<br/>(core/max/queue)"]
+    CONC_JAVA --> LOCKS["ReentrantLock<br/>(AQS)"]
+    CONC_JAVA --> SYNCHRONIZED["synchronized<br/>(biased → light → fat)"]
+    CONC_JAVA --> VOLATILE["volatile<br/>(happens-before)"]
+    JVM_INTERVIEW["JVM"] --> MEMORY_MODEL["Memory Model<br/>(JSR-133)"]
+    JVM_INTERVIEW --> GC_TYPES["GC Types<br/>(G1/ZGC/Shenandoah)"]
+    JVM_INTERVIEW --> CLASSLOADING["Class Loading<br/>(parent delegation)"]
+    SPRING_BOOT["Spring Boot"] --> DEP_INJ["DI / IoC<br/>(@Autowired)"]
+    SPRING_BOOT --> AOP_J["AOP<br/>(@Transactional)"]
+    SPRING_BOOT --> TRANSACTIONAL["Transaction Mgmt<br/>(propagation)"]
+    style JAVA_CORE fill:#4a8bc2
+    style OOP_J fill:#2d5a7b
+    style EXCEP fill:#3a7ca5
+    style GENERICS fill:#e8912e
+    style STREAMS fill:#6f42c1
+    style COLLECTIONS fill:#3fb950
+    style HASHMAP fill:#c73e1d
+    style CONC_COLL fill:#e8912e
+    style COPY_ON_WRITE fill:#3a7ca5
+    style CONC_JAVA fill:#6f42c1
+    style THREAD_POOL fill:#e8912e
+    style LOCKS fill:#3fb950
+    style SYNCHRONIZED fill:#c73e1d
+    style VOLATILE fill:#3a7ca5
+    style JVM_INTERVIEW fill:#c73e1d
+    style MEMORY_MODEL fill:#e8912e
+    style GC_TYPES fill:#3fb950
+    style CLASSLOADING fill:#3a7ca5
+    style SPRING_BOOT fill:#3fb950
+    style DEP_INJ fill:#e8912e
+    style AOP_J fill:#6f42c1
+    style TRANSACTIONAL fill:#c73e1d
 ```
 
 ## Table of Contents

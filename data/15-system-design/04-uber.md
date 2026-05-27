@@ -8,15 +8,38 @@
 
 ```mermaid
 graph LR
-    A["Input<br/>Layer"] --> B["Hidden<br/>Layers"]
-    B --> C["Hidden<br/>Layers"]
-    C --> D["Output<br/>Layer"]
-    B --> E["Activation<br/>Functions"]
-    E --> B
-    style A fill:#4a8bc2
-    style B fill:#2d5a7b
-    style C fill:#2d5a7b
-    style D fill:#c73e1d
+    RIDER["Rider App"] --> GEO["Geospatial<br/>Index (H3/S2)"]
+    RIDER --> REQ_RIDE["Request Ride<br/>(pub/sub)"]
+    GEO --> NEAREST_DRIVER["Find Nearest<br/>Drivers"]
+    NEAREST_DRIVER --> DISPATCH["Dispatch<br/>(two-phase accept)"]
+    DISPATCH --> DRIVER["Driver App<br/>(offer + accept)"]
+    DRIVER --> TRIP_LIFECYCLE["Trip Lifecycle<br/>(en route → arrived)"]
+    PRICING["Pricing Engine"] --> SURGE["Surge Pricing<br/>(supply/demand)"]
+    PRICING --> ETA["ETA Computation<br/>(route + traffic)"]
+    PRICING --> FARE["Fare Calc<br/>(distance + time)"]
+    FORECAST["Supply/Demand"] --> HISTORICAL["Historical ML<br/>(time-of-day)"]
+    FORECAST --> REAL_TIME["Real-time<br/>(live supply)"]
+    STORAGE_U["Storage"] --> TRIP_DB["Trip DB<br/>(MySQL)"]
+    STORAGE_U --> LOCATION_DB["Location Stream<br/>(Cassandra)"]
+    STORAGE_U --> CACHE_U["Cache<br/>(Redis)"]
+    style RIDER fill:#4a8bc2
+    style GEO fill:#2d5a7b
+    style REQ_RIDE fill:#3a7ca5
+    style NEAREST_DRIVER fill:#e8912e
+    style DISPATCH fill:#c73e1d
+    style DRIVER fill:#3fb950
+    style TRIP_LIFECYCLE fill:#3a7ca5
+    style PRICING fill:#6f42c1
+    style SURGE fill:#c73e1d
+    style ETA fill:#e8912e
+    style FARE fill:#3fb950
+    style FORECAST fill:#3fb950
+    style HISTORICAL fill:#e8912e
+    style REAL_TIME fill:#3a7ca5
+    style STORAGE_U fill:#2d5a7b
+    style TRIP_DB fill:#e8912e
+    style LOCATION_DB fill:#c73e1d
+    style CACHE_U fill:#3fb950
 ```
 
 ## Table of Contents

@@ -8,15 +8,27 @@
 
 ```mermaid
 graph LR
-    A["Input<br/>Layer"] --> B["Hidden<br/>Layers"]
-    B --> C["Hidden<br/>Layers"]
-    C --> D["Output<br/>Layer"]
-    B --> E["Activation<br/>Functions"]
-    E --> B
-    style A fill:#4a8bc2
-    style B fill:#2d5a7b
-    style C fill:#2d5a7b
-    style D fill:#c73e1d
+    CLUS["ECS<br/>Cluster"] --> TD["Task Definition<br/>(JSON template)"]
+    TD --> CONT["Container<br/>(Image + Port)"]
+    CONT --> TASK["ECS Task<br/>(Running Container)"]
+    TASK --> FARG["Fargate<br/>(Serverless)"]
+    TASK --> EC2["EC2 Launch<br/>(Self-Managed)"]
+    TASK --> SVC["ECS Service<br/>(Desired Count)"]
+    SVC --> ALB["Application<br/>Load Balancer"]
+    ALB --> AS["Auto Scaling<br/>(Target Tracking)"]
+    SVC --> CW["CloudWatch<br/>(Logs + Metrics)"]
+    TASK --> ENI["awsVPC<br/>(ENI per task)"]
+    style CLUS fill:#4a8bc2
+    style TD fill:#2d5a7b
+    style CONT fill:#3a7ca5
+    style TASK fill:#c73e1d
+    style FARG fill:#3fb950
+    style EC2 fill:#e8912e
+    style SVC fill:#6f42c1
+    style ALB fill:#3a7ca5
+    style AS fill:#e8912e
+    style CW fill:#2d5a7b
+    style ENI fill:#3a7ca5
 ```
 
 ## Table of Contents

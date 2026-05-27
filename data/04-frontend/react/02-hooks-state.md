@@ -597,37 +597,208 @@ function useIntersectionObserver(ref, options = {}) {
 
 ## 12. Rules of Hooks
 
-### Why Order Matters
+### Why Order Matters — The Linked List
 
-React relies on the **order of hook calls** being identical between renders. Each hook call reads from a linked list node in the fiber:
+React relies on the **order of hook calls** being identical between renders. Each hook call reads from a linked list node in the fiber's `memoizedState` property:
 
 ```javascript
-// React internal fiber hook list (simplified)
+// React internal fiber hook list structure
 fiber.memoizedState = {
-  queue: useState0Queue,
+  memoizedState: 'countValue',  // The actual state value for useState
+  baseState: 'countValue',
+  baseQueue: null,
+  queue: {
+    pending: null,
+    dispatch: dispatchSetState.bind(null, fiber),
+    lastRenderedReducer: basicStateReducer,
+    lastRenderedState: 'countValue',
+  },
   next: {
-    queue: useEffect1Queue,
+    memoizedState: cleanupFn | undefined, // For useEffect: cleanup or undefined
+    baseState: null,
+    baseQueue: null,
+    queue: {
+      pending: null,
+      lastRenderedReducer: null,
+      lastRenderedState: null,
+    },
     next: {
-      queue: useRef2Queue,
+      memoizedState: refObject, // For useRef: { current: initialValue }
       next: null
     }
   }
 };
 ```
 
-If you conditionally call a hook:
-```jsx
-// ❌ BREAKS: hook 2 (useEffect) is skipped on first render
-function Broken({ condition }) {
-  const [val, setVal] = useState(0);      // Hook slot 0
-  if (condition) {
-    useEffect(() => {});                   // Hook slot 1 (sometimes)
-  }
-  const ref = useRef(null);                // Hook slot 2 → slot 1 on next render!
+Each hook type stores different data in `memoizedState`:
+
+| Hook | `memoizedState` Contains |
+|---|---|
+| `useState` | The current state value |
+| `useReducer` | The current state value |
+| `useEffect` | The effect object (create fn, destroy fn, deps) |
+| `useRef` | `{ current: initialValue }` |
+| `useMemo` | `[computedValue, deps]` |
+| `useCallback` | `[callback, deps]` |
+| `useLayoutEffect` | Same as useEffect |
+| `useContext` | The current context value |
+| `useDeferredValue` | The deferred value |
+| `useTransition` | `[isPending, startTransition]` |
+| `useSyncExternalStore` | Snapshot value |
+
+### Mount vs Update Phase — Two Code Paths
+
+React has **separate code paths** for the mount and update phases:
+
+```javascript
+// Simplified: mountState vs updateState
+function mountState(initialState) {
+  const hook = mountWorkInProgressHook();  // Create new hook node
+  hook.memoizedState = typeof initialState === 'function'
+    ? initialState()
+    : initialState;
+  hook.queue = { pending: null, dispatch: null };
+  const dispatch = dispatchSetState.bind(null, currentlyRenderingFiber, hook.queue);
+  hook.queue.dispatch = dispatch;
+  return [hook.memoizedState, dispatch];
+}
+
+function updateState(initialState) {
+  const hook = updateWorkInProgressHook(); // Find existing hook node by position
+  const queue = hook.queue;
+  // Process pending updates from the queue
+  const newState = processUpdateQueue(hook, queue, hook.baseState);
+  hook.memoizedState = newState;
+  return [hook.memoizedState, queue.dispatch];
 }
 ```
 
-**Consequence**: On the next render where `condition` changes, React reads slot 1 expecting `useEffect`'s state but gets `useRef`'s state → corrupted data → crashes or infinite loops.
+**Key difference**: `mountState` **creates** a new hook node and appends it to the linked list. `updateState` **reads** the existing hook node at the current position in the linked list. If these get out of sync (conditional hooks), the data at position N is for the wrong hook.
+
+```mermaid
+sequenceDiagram
+    participant C as Component
+    participant R as React
+    participant H as Hook LinkedList
+    participant F as Fiber
+
+    Note over C: FIRST RENDER (Mount)
+    C->>R: Call useState(0)
+    R->>H: mountWorkInProgressHook()
+    H->>H: Create hook[0] node
+    H->>H: Set memoizedState=0
+    C->>R: Call useEffect(fn)
+    R->>H: mountWorkInProgressHook()
+    H->>H: Create hook[1] node
+    H->>H: Set effect details
+    C->>R: Call useRef(null)
+    R->>H: mountWorkInProgressHook()
+    H->>H: Create hook[2] node
+    H->>F: Link hook[0]→hook[1]→hook[2]
+
+    Note over C: SECOND RENDER (Update)
+    C->>R: Call useState(0)
+    R->>H: updateWorkInProgressHook()
+    H->>H: Read hook[0] → memoizedState=0
+    C->>R: Call useEffect(fn)
+    R->>H: updateWorkInProgressHook()
+    H->>H: Read hook[1] → effect
+    C->>R: Call useRef(null)
+    R->>H: updateWorkInProgressHook()
+    H->>H: Read hook[2] → ref
+```
+
+### What Happens With Conditional Hooks — Step by Step
+
+```jsx
+function Broken({ condition }) {
+  const [val, setVal] = useState(0);      // Hook #0 — ALWAYS
+  if (condition) {
+    useEffect(() => {});                   // Hook #1 — SOMETIMES
+  }
+  const ref = useRef(null);                // Hook #2 — ALWAYS on mount, #1 on update!
+}
+```
+
+**Render 1 (condition=true)**:
+- Hook #0: useState(0) → stored at node[0]
+- Hook #1: useEffect(fn) → stored at node[1]
+- Hook #2: useRef(null) → stored at node[2]
+- Linked list: node[0] → node[1] → node[2]
+- **No problem** — all hooks called in order
+
+**Render 2 (condition=false)**:
+- Hook #0: useState(0) → reads node[0] ✅
+- Hook #1: useRef(null) → reads node[1] ❌ **WRONG!** Node[1] contains useEffect data, not useRef data
+- Hook #2: (nothing to read) → node[2] is never consumed
+- **Result**: `ref.current` contains the effect cleanup function instead of `{ current: null }`
+- **Cascade**: If `ref.current.something` is accessed → `TypeError: cleanupFn.something is not a function`
+
+```mermaid
+flowchart LR
+    subgraph "Mount (condition=true)"
+        M0[Node 0: useState] --> M1[Node 1: useEffect]
+        M1 --> M2[Node 2: useRef]
+    end
+    subgraph "Update (condition=false) — BROKEN"
+        U0[Node 0: useState] --> U1[Reads Node 1 as useRef ← WRONG]
+        U1 --> U2[Node 2 unused ← leaked memory]
+    end
+```
+
+**Production impact**: This bug doesn't throw an error — it silently corrupts state. The component renders with wrong values, leading to infinite loops, wrong UI state, or data corruption. The `eslint-plugin-react-hooks` rule catches this at lint time.
+
+### Exhaustive Deps — Why It Matters
+
+The `exhaustive-deps` rule ensures all reactive values are in the dependency array:
+
+```javascript
+function Profile({ userId }) {
+  const [user, setUser] = useState(null);
+
+  // ❌ Lint error: missing userId in deps
+  useEffect(() => {
+    fetchUser(userId).then(setUser);
+  }, []); // userId is missing
+
+  // ✅ Fixed
+  useEffect(() => {
+    fetchUser(userId).then(setUser);
+  }, [userId]);
+}
+```
+
+**Why this is critical**: Without exhaustive deps, you get stale closures. The effect captures the initial value of `userId` and never updates when `userId` changes. This is the #1 source of React bugs in production.
+
+**Internal mechanism**: The lint rule checks that every variable referenced inside the effect callback is also in the deps array. It does this via static analysis (AST traversal), not runtime.
+
+### The Stale Closure — Full Mechanics
+
+```javascript
+function Timer() {
+  const [count, setCount] = useState(0);
+
+  // count here is the value captured during this render
+  useEffect(() => {
+    const id = setInterval(() => {
+      // This closure captures 'count' from the render when this effect was created
+      // If deps is [], it captures count=0 forever
+      setCount(count + 1); // count is always 0
+    }, 1000);
+    return () => clearInterval(id);
+  }, []); // count not in deps → stale closure
+}
+```
+
+**What's happening internally**:
+1. Mount render: `count = 0`, effect created with closure over `count = 0`
+2. effect runs: `setInterval` captures closure where `count = 0`
+3. Every interval tick: `setCount(0 + 1)` → count = 1
+4. Re-render: `count = 1`, but effect doesn't re-run (deps `[]`)
+5. `setInterval` still has old closure: `count` is still 0 → `setCount(0 + 1)` → count = 1
+6. **Count stays 1 forever**
+
+**Fix using functional update**: `setCount(c => c + 1)` — the updater function receives the latest state, bypassing the closure issue.
 
 ### Lint Rules (eslint-plugin-react-hooks)
 

@@ -8,15 +8,28 @@
 
 ```mermaid
 graph LR
-    A["Input<br/>Layer"] --> B["Hidden<br/>Layers"]
-    B --> C["Hidden<br/>Layers"]
-    C --> D["Output<br/>Layer"]
-    B --> E["Activation<br/>Functions"]
-    E --> B
-    style A fill:#4a8bc2
-    style B fill:#2d5a7b
-    style C fill:#2d5a7b
-    style D fill:#c73e1d
+    ANNO["@Annotation<br/>Definition"] --> RET["Retention<br/>(SOURCE/CLASS/RUNTIME)"]
+    ANNO --> TARG["Target<br/>(METHOD/FIELD/TYPE)"]
+    ANNO --> PROC["Annotation<br/>Processor<br/>(javac)"]
+    PROC --> GEN["Code<br/>Generation"]
+    REFL["Reflection<br/>Runtime"] --> CLASS["Class&lt;T&gt;<br/>Object"]
+    CLASS --> FIELD["Field<br/>get/set"]
+    CLASS --> METHOD["Method<br/>invoke"]
+    CLASS --> CTOR["Constructor<br/>newInstance"]
+    FIELD --> VAL["Value<br/>Access"]
+    METHOD --> INVK["Runtime<br/>Invocation"]
+    style ANNO fill:#4a8bc2
+    style RET fill:#2d5a7b
+    style TARG fill:#3a7ca5
+    style PROC fill:#e8912e
+    style GEN fill:#3fb950
+    style REFL fill:#c73e1d
+    style CLASS fill:#6f42c1
+    style FIELD fill:#3a7ca5
+    style METHOD fill:#3a7ca5
+    style CTOR fill:#3a7ca5
+    style VAL fill:#2d5a7b
+    style INVK fill:#c73e1d
 ```
 
 ## Table of Contents

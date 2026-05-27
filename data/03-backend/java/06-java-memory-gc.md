@@ -8,15 +8,24 @@
 
 ```mermaid
 graph LR
-    A["Input<br/>Layer"] --> B["Hidden<br/>Layers"]
-    B --> C["Hidden<br/>Layers"]
-    C --> D["Output<br/>Layer"]
-    B --> E["Activation<br/>Functions"]
-    E --> B
-    style A fill:#4a8bc2
-    style B fill:#2d5a7b
-    style C fill:#2d5a7b
-    style D fill:#c73e1d
+    OBJ["New Object<br/>Eden"] --> S0["Survivor<br/>From"]
+    S0 --> S1["Survivor<br/>To"]
+    S1 --> OLD["Old<br/>Generation"]
+    OLD --> FH["Full GC<br/>(Major)"]
+    OBJ --> YGC["Young GC<br/>(Minor)"]
+    YGC --> S0
+    OLD --> G1["G1 / ZGC<br/>Concurrent"]
+    G1 --> EMPTY["Reclaimed<br/>Memory"]
+    MET["Metaspace"] -.-> FH
+    style OBJ fill:#4a8bc2
+    style S0 fill:#2d5a7b
+    style S1 fill:#3a7ca5
+    style OLD fill:#c73e1d
+    style FH fill:#e8912e
+    style YGC fill:#6f42c1
+    style G1 fill:#3fb950
+    style EMPTY fill:#3fb950
+    style MET fill:#e8912e
 ```
 
 ## Table of Contents

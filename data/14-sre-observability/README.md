@@ -653,6 +653,237 @@ predict_linear(container_memory_working_set_bytes[7d], 86400 * 7) — 7 day fore
 
 ---
 
+## Disaster Recovery
+
+Planning, testing, and automating recovery from catastrophic failures.
+
+### RPO / RTO — The Core Tradeoff
+
+```mermaid
+graph LR
+    T0["Disaster<br/>Strikes"] --> RPO_WIN["RPO Window<br/>(Data Loss)"]
+    RPO_WIN --> RTO_WIN["RTO Window<br/>(Downtime)"]
+    RTO_WIN --> NORM["Normal Ops"]
+    style RPO_WIN fill:#c73e1d
+    style RTO_WIN fill:#e8912e
+```
+
+| Metric | Definition | Target Ranges |
+|--------|-----------|---------------|
+| **RPO** (Recovery Point Objective) | Max acceptable data loss in time | 0 (sync) – 24 hours |
+| **RTO** (Recovery Time Objective) | Max acceptable downtime | < 1 min – 72 hours |
+| **WRT** (Work Recovery Time) | Time to verify resume business | 15 min – 4 hours |
+| **MTD** (Maximum Tolerable Downtime) | RTO + WRT = total outage limit | 4 hours – 7 days |
+
+**RPO/RTO Tradeoff:**
+```text
+                 Cost
+                  ↑
+                  |     Active-Active
+                  |        (RPO=0, RTO=0)
+                  |     Warm Standby
+                  |        (RPO=s, RTO=min)
+                  |     Pilot Light
+                  |        (RPO=min, RTO=min-hr)
+                  |     Backup & Restore
+                  |        (RPO=hr, RTO=hr-day)
+                  +──────────────────→ Reliability
+```
+
+### Backup Strategies
+
+| Strategy | RPO | Restore Time | Storage | Use Case |
+|----------|-----|-------------|---------|----------|
+| **Full** | Snapshot time | Fastest | Largest | Weekly baseline |
+| **Incremental** | Minutes | Slowest (chain) | Smallest | Daily/hourly |
+| **Differential** | Since last full | Medium | Medium | Intermediate |
+| **Transaction Log** | Seconds | Point-in-time | Large | Databases |
+| **Continuous** | Near-zero | Any point | Very large | Critical systems |
+
+**Implementation with Terraform:**
+```hcl
+resource "aws_backup_plan" "critical" {
+  name = "critical-backup"
+
+  rule {
+    rule_name         = "daily-full"
+    target_vault_name = aws_backup_vault.main.name
+    schedule          = "cron(0 3 * * ? *)"
+    lifecycle {
+      cold_storage_after = 7
+      delete_after       = 90
+    }
+  }
+
+  rule {
+    rule_name         = "hourly-transaction"
+    schedule          = "cron(0 * * * ? *)"
+    lifecycle {
+      delete_after = 7
+    }
+  }
+}
+```
+
+**Backup Verification:**
+```yaml
+backup_verification:
+  auto_integrity_check:
+    schedule: "every backup"
+    action: "verify checksum, metadata, encryption status"
+
+  auto_restore_test:
+    schedule: "weekly"
+    action: "restore to test env, run validation queries"
+    validation_queries:
+      - "SELECT COUNT(*) FROM orders"
+      - "SELECT MAX(created_at) FROM orders"
+
+  full_dr_exercise:
+    schedule: "quarterly"
+    action: "simulate region failure, measure actual RTO/RPO"
+```
+
+### DR Scenarios & Response
+
+**AZ Failure:**
+```text
+Impact:  Single AZ in region goes down
+Response:
+  - Multi-AZ services continue (RDS Multi-AZ, spread pods)
+  - ASG replaces instances in remaining AZs
+  - LB removes failed AZ from rotation
+RTO:    Seconds (automatic)
+RPO:    Zero (sync replication within region)
+```
+
+**Region Failure:**
+```text
+Impact:  Entire region unavailable
+Response:
+  - Activate cross-region failover (DNS/GSLB switch)
+  - Promote replica in secondary region to primary
+  - Scale up secondary compute
+RTO:    Minutes–Hours (depends on active-passive vs active-active)
+RPO:    Seconds (async replication lag)
+```
+
+**Data Corruption:**
+```text
+Impact:  Application bug or operator error corrupts data
+Response:
+  - Block writes, isolate affected service
+  - Identify corruption scope (table, time range)
+  - Restore from PIT backup (pre-corruption moment)
+  - Replay transaction logs up to corruption time
+RTO:    Hours (manual investigation + restore)
+RPO:    < 15 min (backup frequency)
+```
+
+**Ransomware Recovery:**
+```text
+Impact:  Encrypted data, ransom demand
+Response:
+  - IMMEDIATELY isolate affected systems (network disconnect)
+  - DO NOT pay ransom
+  - Restore from immutable backups (S3 Object Lock, WORM)
+  - Scan backups before restore
+  - Forensic investigation
+Prevention:
+  - Immutable backup storage (S3 Object Lock, WORM)
+  - Air-gapped backups (separate account, no cross-account delete)
+  - Multi-factor auth on backup systems
+  - Regular restore drills (quarterly minimum)
+```
+
+### DR Patterns Comparison
+
+| Pattern | RTO | RPO | Cost | Architecture |
+|---------|-----|-----|------|-------------|
+| **Backup & Restore** | Hours–Days | Hours | Lowest | Back up data, restore to new infra on failover |
+| **Pilot Light** | Minutes–Hours | Minutes | Low–Med | Core DB running, compute scaled to 1, scale up on failover |
+| **Warm Standby** | Seconds–Minutes | Seconds | Medium | Scaled-down full copy, scale up on failover |
+| **Multi-Region Active-Active** | Near-zero | Near-zero | Highest | All regions serving traffic, instant failover |
+| **Cold Standby** | Hours–Days | Hours | Lowest | Config exists but turned off, no data replica |
+
+### Runbook Automation for DR
+
+```yaml
+# ansible/playbooks/dr-region-failover.yaml
+- name: Region Failover - Warm Standby
+  hosts: localhost
+  vars:
+    failover_region: eu-west-2
+    primary_region: us-east-1
+
+  tasks:
+    - name: Verify primary region health
+      uri:
+        url: "https://{{ primary_endpoint }}/health"
+        status_code: 200
+      register: primary_health
+      ignore_errors: yes
+
+    - name: Promote standby database
+      community.aws.rds_instance:
+        id: "db-standby-{{ failover_region }}"
+        state: present
+        promote: yes
+
+    - name: Update Route53 failover record
+      route53:
+        zone: "example.com"
+        record: "api"
+        type: A
+        value: "{{ failover_lb_dns }}"
+        ttl: 30
+        overwrite: yes
+```
+
+### Chaos Engineering for DR
+
+**AWS FIS — Terminate instances in an AZ:**
+```hcl
+resource "aws_fis_experiment_template" "az_outage" {
+  description = "Simulate AZ failure"
+  role_arn    = aws_iam_role.fis.arn
+
+  action {
+    name      = "kill-instances"
+    action_id = "aws:ec2:stop-instances"
+
+    target {
+      key   = "Instances"
+      resource_arns = data.aws_instances.target_az.arns
+    }
+  }
+
+  stop_condition {
+    source = "aws:cloudwatch:alarm"
+    value  = aws_cloudwatch_metric_alarm.dr_breach.arn
+  }
+}
+```
+
+### DR Production Checklist
+
+```
+□ RPO/RTO defined for every critical service
+□ Backups follow 3-2-1 rule (3 copies, 2 media, 1 off-site)
+□ Backup verification automated (weekly restore tests)
+□ DR plan documented with step-by-step runbooks
+□ Chaos engineering experiments test AZ/region failures
+□ Cross-region failover tested at least quarterly
+□ Immutable backups configured for ransomware protection
+□ Replication lag monitored and alerted
+□ Secrets/credentials rotate correctly on failover
+□ DNS TTLs configured for failover speed (30s or less)
+□ DR plan includes dependencies: CDN, monitoring, CI/CD, auth
+□ Post-DR testing documented: how to confirm recovery is clean
+```
+
+---
+
 ## 📚 Learning Path
 
 ### Phase 1: Fundamentals

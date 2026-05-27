@@ -4,15 +4,39 @@
 
 ```mermaid
 graph LR
-    A["Input<br/>Layer"] --> B["Hidden<br/>Layers"]
-    B --> C["Hidden<br/>Layers"]
-    C --> D["Output<br/>Layer"]
-    B --> E["Activation<br/>Functions"]
-    E --> B
-    style A fill:#4a8bc2
-    style B fill:#2d5a7b
-    style C fill:#2d5a7b
-    style D fill:#c73e1d
+    E2E_STRAT["E2E Testing"] --> BROWSER_UI["Browser UI<br/>(Playwright/Cypress)"]
+    E2E_STRAT --> API_E2E["API Flow<br/>(postman/SuperTest)"]
+    E2E_STRAT --> DB_VERIFY["DB Verify<br/>(assert state)"]
+    BROWSER_UI --> USER_FLOW["User Flow<br/>(login → action)"]
+    BROWSER_UI --> RENDER_CHECK["Render Check<br/>(visual reg)"]
+    API_E2E --> CRUD_FLOW["CRUD: create→read→update→delete"]
+    API_E2E --> AUTH_FLOW["Auth Flow<br/>(token lifecycle)"]
+    CONTRACT_STRAT["Contract Testing"] --> CONSUMER["Consumer<br/>(writes pact)"]
+    CONTRACT_STRAT --> PROVIDER["Provider<br/>(verifies pact)"]
+    CONSUMER --> PACT_FILE["Pact File<br/>(JSON contract)"]
+    PACT_FILE --> PROVIDER_VERIFY["Provider Verifies<br/>(interactions)"]
+    PROVIDER_VERIFY --> DEPLOY_SAFE["→ Safe Deploy<br/>(backward compat)"]
+    HANDLING["Handling Flakiness"] --> WAITS["Smart Waits<br/>(not sleep)"]
+    HANDLING --> RETRIES_E["Retry Logic<br/>(max 3)"]
+    HANDLING --> ISOLATION["Data Isolation<br/>(per test)"]
+    style E2E_STRAT fill:#4a8bc2
+    style BROWSER_UI fill:#2d5a7b
+    style API_E2E fill:#3a7ca5
+    style DB_VERIFY fill:#e8912e
+    style USER_FLOW fill:#3fb950
+    style RENDER_CHECK fill:#e8912e
+    style CRUD_FLOW fill:#6f42c1
+    style AUTH_FLOW fill:#c73e1d
+    style CONTRACT_STRAT fill:#6f42c1
+    style CONSUMER fill:#3fb950
+    style PROVIDER fill:#e8912e
+    style PACT_FILE fill:#3a7ca5
+    style PROVIDER_VERIFY fill:#c73e1d
+    style DEPLOY_SAFE fill:#3fb950
+    style HANDLING fill:#c73e1d
+    style WAITS fill:#e8912e
+    style RETRIES_E fill:#3a7ca5
+    style ISOLATION fill:#3fb950
 ```
 
 ## Table of Contents

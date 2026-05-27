@@ -8,15 +8,25 @@
 
 ```mermaid
 graph LR
-    A["Input<br/>Layer"] --> B["Hidden<br/>Layers"]
-    B --> C["Hidden<br/>Layers"]
-    C --> D["Output<br/>Layer"]
-    B --> E["Activation<br/>Functions"]
-    E --> B
-    style A fill:#4a8bc2
-    style B fill:#2d5a7b
-    style C fill:#2d5a7b
-    style D fill:#c73e1d
+    ENT["@Entity<br/>POJO"] --> EM["EntityManager<br/>(Persistence Context)"]
+    EM --> L1C["L1 Cache<br/>(Session Scope)"]
+    L1C --> DB["Database<br/>(via JDBC)"]
+    L1C --> L2C["L2 Cache<br/>(SessionFactory Scope)"]
+    EM --> JPQL["JPQL / Criteria<br/>Query"]
+    JPQL --> QP["Query Plan<br/>Cache"]
+    QP --> SQL["SQL<br/>Generation"]
+    SQL --> DB
+    ENT --> GEN["ID Generation<br/>(SEQUENCE/TABLE)"]
+    GEN --> DB
+    style ENT fill:#4a8bc2
+    style EM fill:#2d5a7b
+    style L1C fill:#3a7ca5
+    style DB fill:#c73e1d
+    style L2C fill:#6f42c1
+    style JPQL fill:#e8912e
+    style QP fill:#3a7ca5
+    style SQL fill:#e8912e
+    style GEN fill:#3fb950
 ```
 
 ## Table of Contents

@@ -924,17 +924,161 @@ Streaming:     Input rate, Processing rate, Batch duration, Late records
 SQL:           Physical plan, Scan time, Aggregate time, Join time
 ```
 
+**Programmatic Metrics Collection**:
+
+```python
+class SparkMetricsCollector:
+    """Collect and analyze Spark metrics programmatically."""
+
+    def __init__(self, spark):
+        self.spark = spark
+        self.stage_metrics = {}
+
+    def get_stage_info(self, stage_id: int) -> dict:
+        """Extract stage-level metrics from Spark listener."""
+        metrics = {
+            "stage_id": stage_id,
+            "shuffle_read_bytes": self._get_stage_metric(stage_id, "shuffle.read.bytes"),
+            "shuffle_write_bytes": self._get_stage_metric(stage_id, "shuffle.write.bytes"),
+            "shuffle_read_records": self._get_stage_metric(stage_id, "shuffle.read.records"),
+            "shuffle_write_records": self._get_stage_metric(stage_id, "shuffle.write.records"),
+            "spill_memory_bytes": self._get_stage_metric(stage_id, "spill.memory"),
+            "spill_disk_bytes": self._get_stage_metric(stage_id, "spill.disk"),
+            "gc_time_ms": self._get_stage_metric(stage_id, "jvm.gc.time"),
+            "peak_memory_bytes": self._get_stage_metric(stage_id, "peakExecutionMemory"),
+        }
+        self.stage_metrics[stage_id] = metrics
+        return metrics
+
+    def detect_skew(self, stage_id: int) -> dict:
+        """Detect data skew from stage metrics."""
+        m = self.stage_metrics.get(stage_id, {})
+        read_bytes = m.get("shuffle_read_bytes", 0)
+        spill_disk = m.get("spill_disk_bytes", 0)
+        skew_ratio = spill_disk / max(read_bytes, 1)
+
+        return {
+            "stage_id": stage_id,
+            "shuffle_read": f"{read_bytes / (1024**3):.1f}GB",
+            "disk_spill": f"{spill_disk / (1024**3):.1f}GB",
+            "skew_detected": skew_ratio > 0.3,
+            "skew_ratio": skew_ratio,
+            "recommendation": "Enable AQE or use salting" if skew_ratio > 0.3 else "OK"
+        }
+
+    def _get_stage_metric(self, stage_id: int, metric_name: str) -> float:
+        # In production, extract from SparkListener or REST API
+        metric_defaults = {
+            "shuffle.read.bytes": 1e9,
+            "shuffle.write.bytes": 2e9,
+            "shuffle.read.records": 1e6,
+            "shuffle.write.records": 2e6,
+            "spill.memory": 5e8,
+            "spill.disk": 2e8,
+            "jvm.gc.time": 3000,
+            "peakExecutionMemory": 4e9,
+        }
+        return metric_defaults.get(metric_name, 0)
+
+    def summarize_job(self) -> dict:
+        stages = len(self.stage_metrics)
+        total_shuffle_read = sum(
+            m.get("shuffle_read_bytes", 0) for m in self.stage_metrics.values()
+        )
+        total_spill = sum(
+            m.get("spill_disk_bytes", 0) for m in self.stage_metrics.values()
+        )
+        return {
+            "stages": stages,
+            "total_shuffle_read_gb": total_shuffle_read / (1024**3),
+            "total_spill_gb": total_spill / (1024**3),
+            "skew_stages": sum(
+                1 for s in self.stage_metrics
+                if self.detect_skew(s)["skew_detected"]
+            ),
+            "status": "healthy" if total_spill < total_shuffle_read * 0.3 else "warning"
+        }
+
+
+class SparkPrometheusExporter:
+    """Export Spark metrics in Prometheus format."""
+
+    def __init__(self):
+        self.metrics = {}
+
+    def register_gauge(self, name: str, help_text: str, labels: list = None):
+        self.metrics[name] = {
+            "help": help_text,
+            "labels": labels or [],
+            "values": {}
+        }
+
+    def set_metric(self, name: str, value: float, label_values: dict = None):
+        if name in self.metrics:
+            key = str(label_values) if label_values else "default"
+            self.metrics[name]["values"][key] = value
+
+    def render(self) -> str:
+        lines = []
+        for name, config in self.metrics.items():
+            lines.append(f"# HELP spark_{name} {config['help']}")
+            lines.append(f"# TYPE spark_{name} gauge")
+            for key, value in config["values"].items():
+                labels_str = ",".join(
+                    f'{k}="{v}"' for k, v in eval(key).items()
+                ) if key != "default" else ""
+                if labels_str:
+                    lines.append(f"spark_{name}{{{labels_str}}} {value}")
+                else:
+                    lines.append(f"spark_{name} {value}")
+        return "\n".join(lines)
+```
+
 ### Common Issues and Solutions
 
-| Problem | Symptom | Solution |
-|---------|---------|----------|
-| OOM (driver) | `java.lang.OutOfMemoryError: GC overhead limit exceeded` | Increase `spark.driver.memory`, reduce data collected to driver |
-| OOM (executor) | Executor lost, shuffle fetch fails | Increase memory, reduce partitions, enable off-heap |
-| Shuffle fetch failed | Connection refused from executor | Enable external shuffle service |
-| Data skew | Few tasks take much longer than others | AQE skew join, salting, repartition by salt key |
-| Slow broadcast | Task creation time high | Check broadcast threshold, increase `spark.sql.adaptive.coalescePartitions.parallelismFirst` |
-| Straggler tasks | Most tasks complete early, few lag | Speculative execution: `spark.speculation=true` |
-| Too many small files | Output has many tiny Parquet files | Coalesce before write, use `maxRecordsPerFile` |
+| Problem | Symptom | Root Cause | Solution | Prevention |
+|---------|---------|-----------|----------|------------|
+| OOM (driver) | `java.lang.OutOfMemoryError: GC overhead limit exceeded` | `.collect()` on large dataset | Increase `spark.driver.memory`, reduce data collected to driver | Code review `.collect()` calls, set `spark.driver.maxResultSize` |
+| OOM (executor) | Executor lost, shuffle fetch fails | Insufficient memory for shuffle/join | Increase memory, reduce partitions, enable off-heap | Monitor spill metrics, set `spark.memory.fraction=0.8` |
+| Shuffle fetch failed | Connection refused from executor | Executor died with shuffle data | Enable external shuffle service | Always enable `spark.shuffle.service.enabled=true` |
+| Data skew | Few tasks take much longer than others | Uneven partition sizes | AQE skew join, salting, repartition by salt key | Analyze key distribution before joins |
+| Slow broadcast | Task creation time high | Large broadcast table | Check broadcast threshold, increase parallelism | Set `spark.sql.autoBroadcastJoinThreshold` carefully |
+| Straggler tasks | Most tasks complete early, few lag | Heterogeneous nodes or bad partition | Speculative execution: `spark.speculation=true` | Use homogeneous instance types |
+| Too many small files | Output has many tiny Parquet files | Too many partitions at write | Coalesce before write, use `maxRecordsPerFile` | Set target file size (128-256MB) |
+| Connection timeout | Executor heartbeat timeout | Network congestion or slow GC | Increase `spark.network.timeout`, `spark.executor.heartbeatInterval` | Monitor GC time, right-size executors |
+| HDFS write failures | Unable to create file on HDFS | HDFS capacity or permission | Check HDFS space, permissions | Set HDFS quota alerts |
+
+### Failure Runbooks
+
+**Executor OOM Runbook**:
+```
+1. Check Spark UI → Stages → spills (memory vs disk)
+2. If disk spills > memory spills: increase spark.executor.memory
+3. If shuffle read > 10x shuffle write: check for data skew
+4. If GC time > 20% of task time: switch to G1GC
+5. As last resort: enable off-heap memory (spark.memory.offHeap.enabled=true)
+```
+
+**Shuffle Failure Runbook**:
+```
+1. Check external shuffle service is running on all nodes
+2. Verify YARN: yarn.nodemanager.aux-services includes spark_shuffle
+3. Check for executor loss during shuffle (spot instance termination?)
+4. Increase retry: spark.shuffle.io.maxRetries=10, spark.shuffle.io.retryWait=30s
+5. Enable push-based shuffle (Spark 3.2+): spark.shuffle.push.enabled=true
+```
+
+**Data Skew Runbook**:
+```
+1. Identify skewed key: df.groupBy("join_key").count().orderBy("count").show()
+2. First try: AQE skew join (spark.sql.adaptive.optimizeSkewedJoin.enabled=true)
+3. If AQE insufficient: salting
+   - Add random salt to skewed keys: df.withColumn("salt", (rand() * N).cast("int"))
+   - Join on (key, salt) instead of key alone
+   - For range joins, split skewed partition manually
+4. Alternative: broadcast one side if small enough
+5. Check if bucketing can pre-shuffle: df.write.bucketBy(N, "key")
+```
 
 ## Optimized Configuration Template
 
@@ -986,6 +1130,64 @@ spark_config = {
     "spark.hadoop.parquet.enable.summary-metadata": "false",
 }
 ```
+
+## Interview Questions
+
+1. **Explain the full lifecycle of a Spark job from submission to result?**
+   - User code → SparkContext → DAG Scheduler (builds stages) → Task Scheduler (launches tasks)
+   - Stages are determined by shuffle boundaries (wide dependencies)
+   - Tasks are dispatched to executors based on data locality
+   - Results flow back: executor → driver → user
+
+2. **How does Tungsten's whole-stage code generation improve performance?**
+   - Fuses multiple operator chains into a single Java function
+   - Eliminates virtual function calls and iterator overhead
+   - Processes data in tight loops over cache-friendly binary format
+   - Typical speedup: 10-15x over non-codegen execution
+
+3. **Describe the Catalyst optimizer's optimization phases?**
+   - Analysis: resolves column references, types, table names
+   - Logical optimization: predicate pushdown, projection pruning, constant folding
+   - Physical planning: join strategy selection (broadcast, sort-merge, hash)
+   - Code generation: generate optimized Java code via Tungsten
+   - Hundreds of rules applied in each phase
+
+4. **How does AQE (Adaptive Query Execution) help with data skew?**
+   - Monitors shuffle file sizes at runtime
+   - Coalesces small partitions into larger ones (avoiding many tiny tasks)
+   - Splits skewed join partitions into sub-partitions for parallel processing
+   - Converts sort-merge joins to broadcast joins when tables are small enough
+   - All decisions are made dynamically after shuffle writes complete
+
+5. **Explain the memory architecture of Spark. How do execution and storage share memory?**
+   - Reserved (300MB) + User (40%) + Spark (60%) memory regions
+   - Spark memory split: Execution (shuffle, joins) and Storage (cache, broadcasts)
+   - They borrow from each other: storage can be evicted by execution
+   - Off-heap memory bypasses JVM GC for large heaps
+   - Memory pressure → spill to disk → performance degradation → OOM
+
+6. **What causes a shuffle spill and how do you diagnose it?**
+   - Occurs when data doesn't fit in execution memory during sort/aggregation
+   - Spark UI shows spill (memory + disk) metrics per stage
+   - High disk spill relative to memory spill → increase executor memory
+   - Medium spill → indicate of data skew or too few partitions
+   - Prevention: right-size partitions (200 per exec core), increase memory
+
+7. **Compare narrow vs wide dependencies. Why do wide dependencies create stage boundaries?**
+   - Narrow: one parent partition → one child partition (map, filter). No shuffle
+   - Wide: one parent partition → many child partitions (groupBy, join). Requires shuffle
+   - Shuffle = stage boundary because it requires data movement across the network
+   - Narrow ops can be pipelined in a single stage; wide ops require all mappers to complete first
+   - This is why wide operations are the most expensive in Spark
+
+8. **How would you debug a slow Spark job in production?**
+   - Step 1: Check Spark UI→Stages—which stage is slowest?
+   - Step 2: Check task duration distribution (data skew?)
+   - Step 3: Check shuffle metrics (spill, read/write size)
+   - Step 4: Check GC time (>20% = memory issue)
+   - Step 5: Review physical plan (explan("formatted"))
+   - Step 6: Check cluster resource utilization (Dynamic Allocation?)
+   - Step 7: Enable AQE if not already enabled
 
 ---
 

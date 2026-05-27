@@ -4,15 +4,37 @@
 
 ```mermaid
 graph LR
-    A["Input<br/>Layer"] --> B["Hidden<br/>Layers"]
-    B --> C["Hidden<br/>Layers"]
-    C --> D["Output<br/>Layer"]
-    B --> E["Activation<br/>Functions"]
-    E --> B
-    style A fill:#4a8bc2
-    style B fill:#2d5a7b
-    style C fill:#2d5a7b
-    style D fill:#c73e1d
+    PROFILING["Profiling"] --> SAMPLING_PR["Sampling Profiler<br/>(periodic PC)"]
+    PROFILING --> INSTRUMENT_PR["Instrumentation<br/>(function ent/ex)"]
+    SAMPLING_PR --> STACK_SAMP["Stack Samples →<br/>Flame Graph"]
+    SAMPLING_PR --> CPU_SAMP["CPU time →<br/>hotspot functions"]
+    INSTRUMENT_PR --> COUNT_CALLS["Call Counts →<br/>Method Trace"]
+    INSTRUMENT_PR --> ALLOC_PR["Allocation Trace →<br/>Heap Pressure"]
+    TOOLS_PR["Tools"] --> PERF_PR["perf<br/>(Linux PMU)"]
+    TOOLS_PR --> FLAMEGRAPH["FlameGraph<br/>(svg stacks)"]
+    TOOLS_PR --> JFR["JFR / Async Profiler<br/>(JDK flight recorder)"]
+    TOOLS_PR --> PPROF["pprof<br/>(Go profiling)"]
+    TYPES_PR["Profile Types"] --> CPU_PROF["CPU Profile<br/>(on-CPU time)"]
+    TYPES_PR --> HEAP_PROF["Heap Profile<br/>(allocations)"]
+    TYPES_PR --> MUTEX_PROF["Mutex Profile<br/>(contention)"]
+    TYPES_PR --> BLOCK_PROF["Block Profile<br/>(I/O wait)"]
+    style PROFILING fill:#4a8bc2
+    style SAMPLING_PR fill:#2d5a7b
+    style INSTRUMENT_PR fill:#6f42c1
+    style STACK_SAMP fill:#e8912e
+    style CPU_SAMP fill:#c73e1d
+    style COUNT_CALLS fill:#e8912e
+    style ALLOC_PR fill:#3fb950
+    style TOOLS_PR fill:#3fb950
+    style PERF_PR fill:#3a7ca5
+    style FLAMEGRAPH fill:#e8912e
+    style JFR fill:#c73e1d
+    style PPROF fill:#6f42c1
+    style TYPES_PR fill:#3a7ca5
+    style CPU_PROF fill:#e8912e
+    style HEAP_PROF fill:#c73e1d
+    style MUTEX_PROF fill:#6f42c1
+    style BLOCK_PROF fill:#e8912e
 ```
 
 ## Profiling Types

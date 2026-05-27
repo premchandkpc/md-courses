@@ -8,15 +8,28 @@
 
 ```mermaid
 graph LR
-    A["Input<br/>Layer"] --> B["Hidden<br/>Layers"]
-    B --> C["Hidden<br/>Layers"]
-    C --> D["Output<br/>Layer"]
-    B --> E["Activation<br/>Functions"]
-    E --> B
-    style A fill:#4a8bc2
-    style B fill:#2d5a7b
-    style C fill:#2d5a7b
-    style D fill:#c73e1d
+    S3["S3 Bucket"] --> OBJ["Object<br/>(Key + Value + Metadata)"]
+    OBJ --> STD["Standard<br/>(Frequent Access)"]
+    OBJ --> IA["Infrequent Access<br/>(IA / One-Zone IA)"]
+    OBJ --> GLAC["Glacier<br/>(Archive/Deep Archive)"]
+    OBJ --> VER["Versioning<br/>(Preserve/Delete)"]
+    VER --> MKR["Delete Marker"]
+    VER --> PREV["Previous<br/>Versions"]
+    OBJ --> LC["Lifecycle Policy<br/>(Transition/Expire)"]
+    LC --> STD
+    STD --> IA
+    IA --> GLAC
+    OBJ --> ENC["Encryption<br/>(SSE-S3/KMS/C)"]
+    style S3 fill:#4a8bc2
+    style OBJ fill:#2d5a7b
+    style STD fill:#3fb950
+    style IA fill:#e8912e
+    style GLAC fill:#3a7ca5
+    style VER fill:#6f42c1
+    style MKR fill:#c73e1d
+    style PREV fill:#3a7ca5
+    style LC fill:#c73e1d
+    style ENC fill:#e8912e
 ```
 
 ## Table of Contents

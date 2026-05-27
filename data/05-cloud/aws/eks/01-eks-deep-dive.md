@@ -8,15 +8,27 @@
 
 ```mermaid
 graph LR
-    A["Input<br/>Layer"] --> B["Hidden<br/>Layers"]
-    B --> C["Hidden<br/>Layers"]
-    C --> D["Output<br/>Layer"]
-    B --> E["Activation<br/>Functions"]
-    E --> B
-    style A fill:#4a8bc2
-    style B fill:#2d5a7b
-    style C fill:#2d5a7b
-    style D fill:#c73e1d
+    EKS["EKS Control Plane<br/>(Managed API Server)"] --> ETCD["etcd<br/>(Key-Value Store)"]
+    EKS --> NODE["Node Group<br/>(EC2 / Fargate)"]
+    NODE --> POD["Pod<br/>(kubelet)"]
+    POD --> CNI["CNI<br/>(VPC CNI)"]
+    CNI --> ENI["ENI<br/>Per-Pod IP"]
+    POD --> SVC["Kubernetes<br/>Service"]
+    SVC --> ALB["AWS Load<br/>Balancer Controller"]
+    EKS --> IAM["IRSA<br/>(OIDC Provider)"]
+    IAM --> IAMR["IAM Role<br/>per Pod"]
+    NODE --> KARP["Karpenter<br/>(Autoscaling)"]
+    style EKS fill:#4a8bc2
+    style ETCD fill:#2d5a7b
+    style NODE fill:#3a7ca5
+    style POD fill:#c73e1d
+    style CNI fill:#e8912e
+    style ENI fill:#3fb950
+    style SVC fill:#6f42c1
+    style ALB fill:#e8912e
+    style IAM fill:#3a7ca5
+    style IAMR fill:#3fb950
+    style KARP fill:#c73e1d
 ```
 
 ## Table of Contents

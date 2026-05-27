@@ -4,15 +4,33 @@
 
 ```mermaid
 graph LR
-    A["Input<br/>Layer"] --> B["Hidden<br/>Layers"]
-    B --> C["Hidden<br/>Layers"]
-    C --> D["Output<br/>Layer"]
-    B --> E["Activation<br/>Functions"]
-    E --> B
-    style A fill:#4a8bc2
-    style B fill:#2d5a7b
-    style C fill:#2d5a7b
-    style D fill:#c73e1d
+    CFG["Configuration<br/>Tuning"] --> SHARED["shared_buffers<br/>(25% RAM)"]
+    CFG --> EFF_CACHE["effective_cache_size<br/>(75% RAM)"]
+    CFG --> WORK_MEM["work_mem<br/>(sort/join memory)"]
+    CFG --> MAINT_WORK["maintenance_work_mem<br/>(vacuum/index)"]
+    PERF["Performance<br/>Metrics"] --> PG_STAT["pg_stat_activity<br/>(Active Queries)"]
+    PERF --> WAIT["Wait Events<br/>(pg_stat_activity.wait_event)"]
+    PERF --> SLOW["Slow Queries<br/>(pg_stat_statements)"]
+    SLOW --> EXPLAIN["EXPLAIN ANALYZE<br/>(Query Plan)"]
+    EXPLAIN --> INDEX["Index Scan /<br/>Seq Scan"]
+    EXPLAIN --> JOIN["Join Strategy<br/>(Hash/Nested Loop)"]
+    VAC["Vacuum Tuning"] --> AUTOV["autovacuum_naptime<br/>(1min)"]
+    VAC --> SCALE_SC["autovacuum_scale_factor<br/>(0.01)"]
+    style CFG fill:#4a8bc2
+    style SHARED fill:#2d5a7b
+    style EFF_CACHE fill:#3a7ca5
+    style WORK_MEM fill:#e8912e
+    style MAINT_WORK fill:#6f42c1
+    style PERF fill:#c73e1d
+    style PG_STAT fill:#e8912e
+    style WAIT fill:#3fb950
+    style SLOW fill:#3a7ca5
+    style EXPLAIN fill:#c73e1d
+    style INDEX fill:#3fb950
+    style JOIN fill:#e8912e
+    style VAC fill:#e8912e
+    style AUTOV fill:#3a7ca5
+    style SCALE_SC fill:#2d5a7b
 ```
 
 ## Table of Contents
@@ -318,32 +336,84 @@ PostgreSQL tuning is like tuning a race car:
 ## Code Examples
 
 ```python
-# Example implementation
-# [Add language-specific code demonstrating core concept]
-pass
+import psycopg2
+import time
+
+# Query performance diagnostics
+def diagnose_slow_query(conn, query: str):
+    with conn.cursor() as cur:
+        cur.execute("EXPLAIN (ANALYZE, BUFFERS, FORMAT JSON) " + query)
+        plan = cur.fetchone()[0][0]
+
+        scan_type = plan['Plan']['Node Type']
+        total_cost = plan['Plan']['Total Cost']
+        actual_rows = plan['Plan']['Actual Rows']
+        buffers = plan['Plan'].get('Shared Hit Blocks', 0)
+
+        print(f"Scan: {scan_type}, Cost: {total_cost}, Rows: {actual_rows}")
+        if 'Parallel' in scan_type:
+            print("Warning: Parallel scan on low-cardinality table")
+        if buffers == 0 and actual_rows > 0:
+            print("Warning: No shared buffer hits — cache miss")
+
+# Auto-vacuum health check
+def check_vacuum_health(conn):
+    with conn.cursor() as cur:
+        cur.execute("""
+            SELECT relname, n_dead_tup, last_autovacuum,
+                   age(relfrozenxid) as xid_age
+            FROM pg_stat_user_tables
+            WHERE n_dead_tup > 1000 OR age(relfrozenxid) > 1000000
+            ORDER BY n_dead_tup DESC
+        """)
+        for row in cur:
+            if row[2] and (time.time() - row[2].timestamp()) > 86400:
+                print(f"Table {row[0]}: {row[1]} dead tuples, last VACUUM >24h ago")
+
+conn = psycopg2.connect("dbname=prod user=admin host=/var/run/postgresql")
+check_vacuum_health(conn)
+```
+
+```bash
+# Find and kill a blocking session
+BLOCKED=$(psql -Atc "SELECT pid FROM pg_stat_activity \
+  WHERE pid = ANY(pg_blocking_pids(
+    (SELECT pid FROM pg_stat_activity WHERE state = 'active' ORDER BY query_start LIMIT 1)
+  ))" && echo $BLOCKED && test -n "$BLOCKED" && \
+  psql -c "SELECT pg_terminate_backend($BLOCKED);"
 ```
 
 ---
 
 ## Common Failure Modes
 
-**Problem**: [Key issue in production]
+**Problem**: Connection pool exhaustion during traffic spikes
 
-**Root cause**: [Why it happens]
+**Root cause**: `max_connections` set too high (wastes memory per connection) or too low (rejects connections). Each connection consumes ~10MB. Apps that don't use connection pooling open-and-close rapidly, leaving behind `idle in transaction` sessions that hold locks.
 
-**Solution**: [How to fix]
+**Detection**: `pg_stat_activity` shows many `idle in transaction` states. App logs show `FATAL: sorry, too many clients already`. `checkpoints_req >> checkpoints_timed` in `pg_stat_bgwriter`.
+
+**Solution**: Set `max_connections = 100` and use PgBouncer in transaction mode. Kill stuck idle transactions with `pg_terminate_backend()`. Add `idle_in_transaction_session_timeout = '5min'`. Scale read replicas for read traffic.
+
+**Problem**: Query plan regresses after ANALYZE, causing sequential scans on large tables
+
+**Root cause**: Stale or insufficient statistics. `default_statistics_target = 100` may miss correlations. After bulk loads, `autovacuum` may not trigger quickly enough, leaving the planner with outdated row counts.
+
+**Detection**: Same query that used an index scan now does a seq scan. `EXPLAIN (ANALYZE)` shows estimated rows vs actual rows off by 100x+. `pg_stat_user_tables` shows `last_analyze` timestamp is old.
+
+**Solution**: Increase `default_statistics_target = 500` for columns with skewed data. Use `CREATE STATISTICS` on correlated columns. Run `ANALYZE` after bulk loads. For critical queries, use `pg_hint_plan` extension to force index scans.
 
 ---
 
 ## Interview Questions
 
-### Q1: [Core concept question]
+### Q1: How does PostgreSQL handle connection management and what's the recommended approach for high-traffic apps?
 
-**Answer**: [Detailed explanation with trade-offs]
+**Answer**: PostgreSQL uses a one-backend-process-per-connection model (multi-process). Each connection consumes ~10MB of memory. With 1000 connections, that's 10GB before any query work. The recommended approach is PgBouncer in transaction pooling mode — it multiplexes app connections into a smaller pool of Postgres connections. Transaction mode releases the backend after each transaction, so 200 app connections share 50 Postgres connections. For high-traffic apps, also set `idle_in_transaction_session_timeout` and use read replicas to distribute load.
 
-### Q2: [Design/architecture question]
+### Q2: How would you diagnose and fix a sudden PostgreSQL performance degradation in production?
 
-**Answer**: [Best practices and reasoning]
+**Answer**: First check `pg_stat_activity` for long-running queries or blocking sessions. Use `pg_blocking_pids()` to find lock holders. Next check `pg_stat_bgwriter` — if `checkpoints_req >> checkpoints_timed`, increase `max_wal_size`. Check `pg_stat_user_tables` for bloat (high dead tuple count) and trigger a manual VACUUM if needed. Use `EXPLAIN (ANALYZE, BUFFERS)` on the slow query — look for sequential scans on large tables, mismatched row estimates, or Nested Loop joins where Hash Join would be better. Check wait events via `pg_stat_activity` — `LWLock` means buffer contention, `IO` means disk bottleneck. For I/O, check if `effective_io_concurrency` and `random_page_cost` are tuned for SSD.
 
 
 ## Comparison Table

@@ -4,15 +4,28 @@
 
 ```mermaid
 graph LR
-    A["Input<br/>Layer"] --> B["Hidden<br/>Layers"]
-    B --> C["Hidden<br/>Layers"]
-    C --> D["Output<br/>Layer"]
-    B --> E["Activation<br/>Functions"]
-    E --> B
-    style A fill:#4a8bc2
-    style B fill:#2d5a7b
-    style C fill:#2d5a7b
-    style D fill:#c73e1d
+    METRIC["Metrics Server"] --> NODE["kubelet<br/>(cAdvisor)"]
+    NODE --> POD_MET["Pod Metrics<br/>(CPU/Memory)"]
+    PROM["Prometheus<br/>Operator"] --> SCRAPE["ServiceMonitor<br/>(scrape config)"]
+    SCRAPE --> APP["Application<br/>Metrics (/metrics)"]
+    SCRAPE --> KSM["kube-state-metrics<br/>(Resource Metrics)"]
+    PROM --> GRAF["Grafana<br/>(Dashboard)"]
+    PROM --> ALERT["Alertmanager<br/>(PagerDuty/Slack)"]
+    LOKI["Loki<br/>(Log Aggregation)"] --> POD_LOG["Pod Logs<br/>(stdout/stderr)"]
+    TEMPO["Tempo / Jaeger<br/>(Tracing)"] --> TRACE_APP["Instrumented<br/>Application"]
+    style METRIC fill:#4a8bc2
+    style NODE fill:#2d5a7b
+    style POD_MET fill:#3a7ca5
+    style PROM fill:#c73e1d
+    style SCRAPE fill:#e8912e
+    style APP fill:#3fb950
+    style KSM fill:#3a7ca5
+    style GRAF fill:#6f42c1
+    style ALERT fill:#e8912e
+    style LOKI fill:#3fb950
+    style POD_LOG fill:#2d5a7b
+    style TEMPO fill:#6f42c1
+    style TRACE_APP fill:#e8912e
 ```
 
 ## ToC
@@ -369,3 +382,88 @@ K8s observability = hospital monitoring system
 |  Core: Metrics (what is happening) + Logs (what happened) + Traces (where)  |
 |  = full observability. If only one, logs are most useful.                   |
 +------------------------------------------------------------------------------+
+
+
+## Production Failure Modes
+
+### Failure 1: Prometheus Memory Exhaustion from High-Cardinality Metrics
+
+| Aspect | Detail |
+|--------|--------|
+| **Symptoms** | Prometheus OOM killed. Scrape failures. Dashboards show gaps. Alertmanager fires `PrometheusNotificationQueueRunningFull` |
+| **Root Cause** | High-cardinality label values: `user_id`, `request_id`, `session_id`, `pod_name` added as metric labels. A single metric `http_requests_total` with `user_id` label explodes cardinality from 10 to 10M series. Prometheus memory usage scales with series count |
+| **Detection** | `prometheus_tsdb_head_series` > 5M. Prometheus logs: `error creating in-memory series, series limit exceeded`. `/metrics` endpoint for `http_requests_duration_seconds_bucket` shows 100K+ unique label combinations |
+| **Recovery** | Drop high-cardinality labels via relabel_config: `action: labeldrop`, `regex: (user_id|request_id|session_id)`. Increase `storage.tsdb.retention.time`. Add `--storage.tsdb.max-block-duration` |
+| **Prevention** | Set `--storage.tsdb.retention.time=15d`. Use recording rules to aggregate high-cardinality metrics. Configure `sample_limit: 10000` per scrape target. Audit metrics before deploying new application |
+
+### Failure 2: DaemonSet Log Shipper (Fluentd/Vector) Unable to Keep Up
+
+| Aspect | Detail |
+|--------|--------|
+| **Symptoms** | Logs missing from Loki/ELK. Fluentd pod OOM. Node disk fills with buffered logs. Prometheus: `fluentd_output_status_emit_count` flatlines |
+| **Root Cause** | Log volume exceeds shipper throughput. Default buffer configuration is memory-based, fills up under load. Output (Loki/Elasticsearch) cannot accept log writes quickly enough. Kubernetes generates 100MB/s of kubelet/SDN logs that overwhelm the pipeline |
+| **Detection** | `fluentd_output_status_buffer_queue_length` growing. `fluentd_output_status_retry_count` > 0. Prometheus: `loki_distributor_lines_received_total` flat. Elasticsearch: `cluster: health yellow` |
+| **Recovery** | Switch from memory buffer to file buffer: `buffer_type file`, `buffer_path /var/log/fluentd-buffer`. Increase `flush_interval`. Scale log shipper DaemonSet resource limits |
+| **Prevention** | Use file-based buffers (not memory). Set `total_limit_size: 10GB`. Drop unnecessary logs: ignore kubelet, SDN, audit logs. Use log sampling: 1:100 for debug, 1:1 for errors |
+
+### Failure 3: kube-state-metrics Causing API Server Load
+
+| Aspect | Detail |
+|--------|--------|
+| **Symptoms** | API server high CPU. kube-state-metrics OOM. `kubectl` commands slow. Prometheus scrape timeouts |
+| **Root Cause** | kube-state-metrics watches all resources across all namespaces. With 10000+ pods, it generates 100K+ metrics per scrape. Each metric is labeled with resource name/namespace, causing high cardinality |
+| **Detection** | API server metrics: `apiserver_request_total{verb="WATCH"}` high for kube-state-metrics SA. Prometheus: `prometheus_target_scrape_pool_exceeded_sample_limit_total` |
+| **Recovery** | Limit kube-state-metrics to specific resources: `--resources=pods,nodes,deployments`. Use kube-state-metrics sharding for large clusters: `--shard=0 --total-shards=10` |
+| **Prevention** | Deploy kube-state-metrics with resource limits. Use `--metric-labels-allowlist` to reduce label cardinality. Use prometheus-operator ServiceMonitor with `sampleLimit: 50000` |
+
+### Failure 4: Jaeger/Tempo Trace Sampling Overwhelming Storage
+
+| Aspect | Detail |
+|--------|--------|
+| **Symptoms** | Jaeger/Tempo query slow. Storage backend (S3/GCS) costs increase 10x. Trace search can't complete within timeout |
+| **Root Cause** | Head-based sampling captures every trace (100% sampling). High-throughput service (10K req/s) generates 10K traces/s. Each trace has 10+ spans, each span = 1-2KB JSON. Total: 200MB/s write to storage |
+| **Detection** | `tempo_ingester_bytes_received_total` growing rapidly. S3 `ListBucket` costs spike. Jaeger `jaeger_collector_spans_received` > 100K/sec |
+| **Recovery** | Enable probabilistic sampling (1% of traces). Use tail-based sampling: capture traces with errors or high latency regardless of probability |
+| **Prevention** | Start with 1% sampling. Use adaptive sampling (OpenTelemetry Collector): auto-adjusts sampling rate based on traffic. Store only error traces at 100%, success traces at 1% |
+
+### Failure 5: Grafana Dashboard Permissions Inconsistency
+
+| Aspect | Detail |
+|--------|--------|
+| **Symptoms** | Team A can't see their dashboard. Team B sees wrong data source. Dashboard shows "No data" for some users. Organization configuration confusion |
+| **Root Cause** | Grafana uses Organization model by default. Dashboards are organization-scoped. Users from org A assigned dashboard from org B. RBAC misconfiguration |
+| **Detection** | Dashboard JSON export shows `orgId: 1` for org A users. Grafana API: `GET /api/org` returns `id: 2` for affected users |
+| **Recovery** | Switch to Grafana Cloud or Grafana Enterprise with unified RBAC. Use folders for team-level access. Apply `Admin` role to team leads |
+| **Prevention** | Use Grafana 10+ with unified RBAC (not legacy org model). Define teams, assign dashboards to folders, grant folder permissions per team. Test: create test user per team and verify access before rollout |
+
+## Edge Cases
+
+| Scenario | Challenge | Solution |
+|----------|-----------|----------|
+| **Prometheus federation latency** | Cross-cluster metric queries are slow | Use Thanos or Cortex for global view. Avoid Prometheus federation for real-time queries |
+| **Loki query timeout** | LogQL query scanning GBs of logs | Add time range filter. Use structured metadata to reduce scan. Pre-aggregate logs via recording rules |
+| **Alertmanager deduplication** | Same alert from 3 replicas fires 3 times | Use `repeat_interval`. Set `group_wait` and `group_interval`. Ensure `alertmanager-config` has correct `-cluster.listen-address` |
+| **Custom metrics HPA scaling delay** | HPA doesn't react quickly | Reduce `--horizontal-pod-autoscaler-sync-period`. Use KEDA with Prometheus scaler for faster response |
+| **OTel collector bottleneck** | Single OTel collector can't handle all spans | Deploy OTel collector as DaemonSet (agent on each node) + deployment (gateway for cross-service). Use load balancing exporter |
+
+## Interview Questions
+
+### Q1 (Beginner): What are the four golden signals of monitoring and why do they matter?
+
+**Answer**: The four golden signals from Google SRE: (1) Latency — time to service a request (average, p50, p95, p99). (2) Traffic — demand on the system (QPS, req/s, active users). (3) Errors — rate of failed requests (HTTP 5xx, exceptions, business errors). (4) Saturation — how "full" the service is (CPU, memory, disk I/O, queue depth). They matter because each signal covers a different failure mode: latency catches slowdowns, traffic catches load spikes, errors catch application bugs, saturation catches resource exhaustion. Without all four, you miss important failure types.
+
+### Q2 (Mid-Level): How does Prometheus service discovery work in Kubernetes?
+
+**Answer**: Prometheus uses the Kubernetes API to discover scrape targets. It watches for pod/service/endpoint changes via the Kubernetes API server. For pods: annotations `prometheus.io/scrape: "true"` mark targets. prometheus-operator uses CRDs: ServiceMonitor (selects services by labels), PodMonitor (selects pods by labels), ProbeMonitor (for blackbox probing). The operator generates Prometheus configuration: each ServiceMonitor becomes a scrape job with relabeling rules. ServiceMonitor selects services with matching labels, then discovers endpoints (ready pods) via endpoints API. Relabeling adds metadata labels: `__meta_kubernetes_namespace`, `__meta_kubernetes_pod_name`, `__meta_kubernetes_service_name`. These become metric labels for filtering and grouping.
+
+### Q3 (Senior): Design an observability platform for a 2000-service microservice architecture.
+
+**Answer**: Three pillars: metrics, logs, traces. Metrics: Prometheus (per-cluster) -> Thanos/Cortex (global view). 2000 services x 1000 metrics each = 2M active series. Thanos sidecar on each Prometheus, object storage (S3) for long-term retention. Query via Thanos Querier. Logs: Loki (per-cluster) with object storage backend. Structured logging (JSON, not free text). logql for querying. 2000 services x 100MB/s = 200GB/s log volume. Sampling at agent level: 1:100 for debug, 1:1 for errors. Traces: OpenTelemetry Collector (agent on each node) -> Tempo (per region). 1% sampling for success, 100% for errors. OTel Collector with batch processor. Storage: S3 for trace data. Correlation: use `trace_id` in logs, `service` label in metrics. Integration: Grafana as unified dashboard. Prometheus as alert source. Service graph: Tempo service graph shows dependency latency. Cost management: labels with high cardinality (user_id, request_id) are the #1 cost driver. Enforce label policy via OPA.
+
+## Cross-References
+
+- [Prometheus Deep Dive](../../05-cloud/prometheus/01-prometheus.md) — Alerting rules, recording rules, service discovery
+- [CloudWatch Observability](../../05-cloud/aws/cloudwatch/02-cloudwatch-observability.md) — AWS-native monitoring, container insights
+- [Kubernetes Operations](../../05-cloud/aws/eks/02-eks-operations.md) — Node monitoring, cluster autoscaler metrics
+- [Distributed Tracing](../../06-distributed-systems/04-distributed-tracing.md) — W3C trace context, sampling strategies
+- [Stream Processing](../../09-distributed-systems/04-stream-processing.md) — Real-time metrics aggregation, anomaly detection

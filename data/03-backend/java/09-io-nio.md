@@ -8,15 +8,22 @@
 
 ```mermaid
 graph LR
-    A["Input<br/>Layer"] --> B["Hidden<br/>Layers"]
-    B --> C["Hidden<br/>Layers"]
-    C --> D["Output<br/>Layer"]
-    B --> E["Activation<br/>Functions"]
-    E --> B
-    style A fill:#4a8bc2
-    style B fill:#2d5a7b
-    style C fill:#2d5a7b
-    style D fill:#c73e1d
+    IS["InputStream<br/>Read bytes"] --> BR["Buffered<br/>Reader"]
+    BR --> READ["read()<br/>Blocking"]
+    CH["Channel<br/>(FileChannel / SocketChannel)"] --> BUF["ByteBuffer<br/>(Direct / Heap)"]
+    BUF --> SEL["Selector<br/>(Multiplexer)"]
+    SEL --> KEY["SelectionKey<br/>(OP_READ / OP_WRITE)"]
+    KEY --> CB["Callback /<br/>CompletionHandler"]
+    MMF["MappedByteBuffer<br/>(mmap)"] --> CH
+    style IS fill:#4a8bc2
+    style BR fill:#2d5a7b
+    style READ fill:#c73e1d
+    style CH fill:#3a7ca5
+    style BUF fill:#2d5a7b
+    style SEL fill:#6f42c1
+    style KEY fill:#e8912e
+    style CB fill:#3fb950
+    style MMF fill:#e8912e
 ```
 
 ## Table of Contents

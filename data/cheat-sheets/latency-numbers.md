@@ -233,36 +233,101 @@ Max:            Longest request (often outlier)
 ## Code Examples
 
 ```python
-# Example implementation
-# [Add language-specific code demonstrating core concept]
-pass
+import time
+import statistics
+
+# Measure and track latency percentiles
+def measure_latencies(func, n: int = 1000) -> dict:
+    latencies = []
+    for _ in range(n):
+        start = time.perf_counter_ns()
+        func()
+        elapsed = (time.perf_counter_ns() - start) / 1_000_000  # ms
+        latencies.append(elapsed)
+    latencies.sort()
+    return {
+        'p50': latencies[int(n * 0.50)],
+        'p95': latencies[int(n * 0.95)],
+        'p99': latencies[int(n * 0.99)],
+        'p999': latencies[int(n * 0.999)],
+        'mean': statistics.mean(latencies),
+        'max': max(latencies),
+        'min': min(latencies),
+    }
+
+# Latency budget calculator
+class LatencyBudget:
+    def __init__(self, total_ms: float = 100.0):
+        self.total = total_ms
+        self.allocations = {}
+
+    def add(self, component: str, ms: float):
+        self.allocations[component] = ms
+
+    def validate(self) -> bool:
+        used = sum(self.allocations.values())
+        return used <= self.total
+
+    def report(self):
+        for comp, ms in self.allocations.items():
+            pct = (ms / self.total) * 100
+            print(f"{comp:25s} {ms:6.1f}ms ({pct:5.1f}%)")
+
+# Simulate a fan-out request with tail latency analysis
+import concurrent.futures
+def fan_out(services: list[str], timeout_ms: int = 500) -> dict:
+    results = {}
+    with concurrent.futures.ThreadPoolExecutor(max_workers=len(services)) as ex:
+        futures = {ex.submit(mock_call, svc): svc for svc in services}
+        for future in concurrent.futures.as_completed(futures, timeout=timeout_ms/1000):
+            svc = futures[future]
+            try:
+                results[svc] = future.result()
+            except Exception as e:
+                results[svc] = f"TIMEOUT: {e}"
+    return results  # P99 of fan-out = max(p50, ...), not sum
+```
+
+```bash
+# Measure DNS + TCP + TLS handshake latency
+curl -w "DNS: %{time_namelookup}s, TCP: %{time_connect}s, TLS: %{time_appconnect}s, Total: %{time_total}s\n" \
+  -o /dev/null -s https://example.com
+
+# Load test with wrk
+wrk -t8 -c200 -d30s --latency https://api.example.com/health
+
+# Trace network hops
+mtr -r example.com
 ```
 
 ---
 
 ## Common Failure Modes
 
-**Problem**: [Key issue in production]
+**Problem**: Tail latency amplification in fan-out architectures (the "long tail of slow")
 
-**Root cause**: [Why it happens]
+**Root cause**: When a request fans out to N downstream services, the P99 latency of the parent = P99 of the slowest child, not the average. If each of 50 services has 1% chance of being slow (P99 = 500ms), the chance that at least one service is slow = 1 - (0.99^50) ≈ 39.5%. The P99 of the parent can be 10x the median, and this gets exponentially worse with more dependencies.
 
-**Solution**: [How to fix]
+**Detection**: P99 latency is 5-10x P50, increasing linearly with service count. Individual services show healthy P50/P99 but the aggregate endpoint is slow. Tracing shows tail latency requests waiting on a single slow downstream.
+
+**Solution**: Implement timeout hedging — send the same request to 2 replicas and use the first response (within reason for idempotent calls). Set per-downstream timeouts at (0.5 * total_budget) so a single slow service doesn't blow the entire budget. Use circuit breakers to fail fast on degraded services. Use request coalescing (merge concurrent requests to the same downstream). For internal APIs, use retry with backoff but cap at 1 retry. Consider using a separate thread pool with bounded work queues for fan-out.
+
+**Problem**: Coordinated omission — measurement bias making latency look better than reality
+
+**Root cause**: Load testing tools measure latency only of completed requests. When the system is overloaded, requests are queued or dropped by the load balancer. The tool reports latency of only the requests that got through, hiding the queue time. Result: "P99 = 100ms" at 1000 RPS, but actual user experience shows 5-second timeouts.
+
+**Detection**: Compare load test results (which look good) with production monitoring (which shows poor latency). The load tester's completion rate drops but reported latency stays flat. Gap between tool's latency and actual user-experienced latency grows as load increases.
+
+**Solution**: Use coordinated omission-aware tools (e.g., wrk2 with HDR histogram, or Gil Tene's techniques). Measure latency from the client side, including connection setup time. In production, measure actual user-perceived latency (RUM). Use tail at scale (HDR histogram) to track all requests, not just completed ones. Implement load shedding at the edge — actively reject requests when pending queue exceeds limits, so measured latency doesn't hide overload.
 
 ---
 
 ## Interview Questions
 
-### Q1: [Core concept question]
+### Q1: What latency numbers should every engineer know, and how do they inform system design?
 
-**Answer**: [Detailed explanation with trade-offs]
+**Answer**: The critical numbers: L1 cache: 0.5ns, main memory: 100ns, SSD read: 0.1ms, HDD seek: 10ms, intra-DC round trip: 0.5ms, cross-country round trip: 50ms, intercontinental: 150ms. These inform every design decision: sequential disk reads are 100x faster than random (B-trees exploit this). In-memory caches are 1000x faster than disk (hence, cache everything). Network calls within a DC are 100x faster than cross-region. An SSD can do ~10K random IOPS vs HDD's ~100 IOPS. For a 100ms user-facing budget: DB query ~20ms, cache lookup ~2ms, external API < 50ms, serialization < 5ms, network ~20ms. Design for locality — minimize cross-DC calls, batch operations, use caching aggressively, and choose SSD over HDD for any latency-sensitive operation.
 
-### Q2: [Design/architecture question]
+### Q2: How do you troubleshoot a sudden P99 latency spike from 50ms to 2000ms?
 
-**Answer**: [Best practices and reasoning]
-
----
-
-## Related
-
-- [Related domain 1](#)
-- [Related domain 2](#)
+**Answer**: (1) Check if the spike correlates with a deployment, traffic increase, or external dependency. (2) Use percentiles breakout by service — is the spike global or isolated to one endpoint? (3) Check slowest traces — is it a specific DB query, an external API, or GC pause? (4) Check resource saturation: CPU, memory, disk I/O, network bandwidth, connection pool utilization. (5) Check for lock contention: database row locks, distributed locks, mutexes. (6) Check for GC: if Java, get GC logs; if Go, check GC pause times. (7) Look for the "slow one" in a pool — sometimes one slightly degraded node causes coordinated omission for the entire pool. (8) Check for TLS — a certificate rotation causing re-handshake. (9) Use coordinated omission-aware analysis: the spike may have been queueing, not slow processing. (10) If nothing else, CPU profiling (flame graphs) during the spike often reveals the cause.

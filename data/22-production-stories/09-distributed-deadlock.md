@@ -10,15 +10,38 @@
 
 ```mermaid
 graph LR
-    A["Input<br/>Layer"] --> B["Hidden<br/>Layers"]
-    B --> C["Hidden<br/>Layers"]
-    C --> D["Output<br/>Layer"]
-    B --> E["Activation<br/>Functions"]
-    E --> B
-    style A fill:#4a8bc2
-    style B fill:#2d5a7b
-    style C fill:#2d5a7b
-    style D fill:#c73e1d
+    LOCK_VIOLATION["Lock Order<br/>Violation"] --> TX_A["TX A Locks<br/>Account 1"]
+    LOCK_VIOLATION --> TX_B["TX B Locks<br/>Account 2"]
+    TX_A --> TX_A_WAIT["TX A Waits for<br/>Account 2"]
+    TX_B --> TX_B_WAIT["TX B Waits for<br/>Account 1"]
+    TX_A_WAIT --> DEADLOCK["DEADLOCK<br/>(mutual wait)"]
+    TX_B_WAIT --> DEADLOCK
+    DEADLOCK --> TRANSACTION_ROLLBACK["TX Rolled Back<br/>(deadlock detected)"]
+    ROLLBACK_STORM["→ Rollback Storm<br/>(retry cascade)"]
+    SAGA_DEADLOCK["Saga Compensation<br/>Deadlock"] --> SAGA_FAIL["Saga Fails at<br/>Step 3/5"]
+    SAGA_FAIL --> COMPENSATION["Compensation TX<br/>(reverse step 2)"]
+    COMPENSATION --> HELD_LOCK["Held Lock Blocks<br/>Compensation"]
+    HELD_LOCK --> ORPHANED_SAGA["Orphaned Saga<br/>(manual fix)"]
+    OPTIMISTIC_DEAD["Optimistic Lock<br/>Escalation"] --> PHANTOM_READ["Phantom Read<br/>Triggers Row Lock"]
+    PHANTOM_READ --> LOCK_CASCADE["Row → Page →<br/>Table Lock Cascade"]
+    LOCK_CASCADE --> CONTENTION["→ DB Contention<br/>→ Timeout"]
+    style LOCK_VIOLATION fill:#4a8bc2
+    style TX_A fill:#e8912e
+    style TX_B fill:#e8912e
+    style TX_A_WAIT fill:#c73e1d
+    style TX_B_WAIT fill:#c73e1d
+    style DEADLOCK fill:#c73e1d
+    style TRANSACTION_ROLLBACK fill:#c73e1d
+    style ROLLBACK_STORM fill:#c73e1d
+    style SAGA_DEADLOCK fill:#e8912e
+    style SAGA_FAIL fill:#c73e1d
+    style COMPENSATION fill:#c73e1d
+    style HELD_LOCK fill:#c73e1d
+    style ORPHANED_SAGA fill:#c73e1d
+    style OPTIMISTIC_DEAD fill:#e8912e
+    style PHANTOM_READ fill:#e8912e
+    style LOCK_CASCADE fill:#c73e1d
+    style CONTENTION fill:#c73e1d
 ```
 
 ## Table of Contents

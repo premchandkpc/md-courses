@@ -4,15 +4,29 @@
 
 ```mermaid
 graph LR
-    A["Input<br/>Layer"] --> B["Hidden<br/>Layers"]
-    B --> C["Hidden<br/>Layers"]
-    C --> D["Output<br/>Layer"]
-    B --> E["Activation<br/>Functions"]
-    E --> B
-    style A fill:#4a8bc2
-    style B fill:#2d5a7b
-    style C fill:#2d5a7b
-    style D fill:#c73e1d
+    CLI["Client<br/>(redis-cli)" --> CMD["Command<br/>Parser"]
+    CMD --> EV_L["Event Loop<br/>(aeMain / epoll)"]
+    EV_L --> READ_S["Read from<br/>Socket"]
+    READ_S --> PROC["Process Command<br/>(lookupCommand)"]
+    PROC --> EXEC["Execute<br/>Call Handler"]
+    EXEC --> SDS["SDS<br/>(String Storage)"]
+    EXEC --> QUICK["quicklist<br/>(List Encoding)"]
+    EXEC --> ZIPL["ziplist /<br/>hashtable (Hash)"]
+    EXEC --> INT_SET["intset / skiplist<br/>(Set / Sorted Set)"]
+    EXEC --> RDB["RDB Save<br/>(fork + snap)"]
+    EXEC --> AOF["AOF Append<br/>(fsync)"]
+    style CLI fill:#4a8bc2
+    style CMD fill:#2d5a7b
+    style EV_L fill:#3a7ca5
+    style READ_S fill:#e8912e
+    style PROC fill:#c73e1d
+    style EXEC fill:#6f42c1
+    style SDS fill:#3fb950
+    style QUICK fill:#e8912e
+    style ZIPL fill:#e8912e
+    style INT_SET fill:#e8912e
+    style RDB fill:#3a7ca5
+    style AOF fill:#c73e1d
 ```
 
 ## Scope

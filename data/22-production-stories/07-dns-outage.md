@@ -10,15 +10,34 @@
 
 ```mermaid
 graph LR
-    A["Input<br/>Layer"] --> B["Hidden<br/>Layers"]
-    B --> C["Hidden<br/>Layers"]
-    C --> D["Output<br/>Layer"]
-    B --> E["Activation<br/>Functions"]
-    E --> B
-    style A fill:#4a8bc2
-    style B fill:#2d5a7b
-    style C fill:#2d5a7b
-    style D fill:#c73e1d
+    TTL_MISCONFIG["TTL Misconfig"] --> LOW_TTL["TTL=60s<br/>(blue-green deploy)"]
+    LOW_TTL --> POISON_ENTRY["Poisoned Entry<br/>Cached at Resolver"]
+    POISON_ENTRY --> ALL_TRAFFIC_DEAD["All Traffic →<br/>Dead IP"]
+    ALL_TRAFFIC_DEAD --> DNS_OUTAGE["DNS Outage<br/>(regional)"]
+    RESOLVER_STORM["Upstream Resolver<br/>Cache Storm"] --> ISP_RESOLVER["ISP Resolver<br/>Overloaded"]
+    ISP_RESOLVER --> TIMEOUT_DNS["Resolver Timeout<br/>(>5s)"]
+    TIMEOUT_DNS --> SERVFAIL["SERVFAIL →<br/>Resolution Fails"]
+    DNSSEC_FAIL["DNSSEC Failure"] --> KSK_ROLL["KSK Rollover<br/>(root key)"]
+    KSK_ROLL --> VALIDATION_FAIL["Validation Chain<br/>Broken"]
+    VALIDATION_FAIL --> WIDESPREAD_FAIL["Widespread<br/>Resolution Failure"]
+    CNAME_CHAIN["CNAME Chain<br/>Timeouts"] --> DEEP_NESTING["Deep Nesting<br/>(>10 CNAMEs)"]
+    DEEP_NESTING --> LATENCY_DNS["Latency Spikes<br/>(per-resolution)"]
+    style TTL_MISCONFIG fill:#4a8bc2
+    style LOW_TTL fill:#e8912e
+    style POISON_ENTRY fill:#c73e1d
+    style ALL_TRAFFIC_DEAD fill:#c73e1d
+    style DNS_OUTAGE fill:#c73e1d
+    style RESOLVER_STORM fill:#e8912e
+    style ISP_RESOLVER fill:#c73e1d
+    style TIMEOUT_DNS fill:#c73e1d
+    style SERVFAIL fill:#c73e1d
+    style DNSSEC_FAIL fill:#c73e1d
+    style KSK_ROLL fill:#e8912e
+    style VALIDATION_FAIL fill:#c73e1d
+    style WIDESPREAD_FAIL fill:#c73e1d
+    style CNAME_CHAIN fill:#e8912e
+    style DEEP_NESTING fill:#e8912e
+    style LATENCY_DNS fill:#c73e1d
 ```
 
 ## Table of Contents

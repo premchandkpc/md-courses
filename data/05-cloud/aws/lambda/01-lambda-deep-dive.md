@@ -8,15 +8,27 @@
 
 ```mermaid
 graph LR
-    A["Input<br/>Layer"] --> B["Hidden<br/>Layers"]
-    B --> C["Hidden<br/>Layers"]
-    C --> D["Output<br/>Layer"]
-    B --> E["Activation<br/>Functions"]
-    E --> B
-    style A fill:#4a8bc2
-    style B fill:#2d5a7b
-    style C fill:#2d5a7b
-    style D fill:#c73e1d
+    TRIG["Event Source<br/>(S3/SQS/API GW)"] --> FN["Lambda<br/>Function"]
+    FN --> RT["Runtime<br/>(Python/Node/Java)"]
+    FN --> EXEC["Execution<br/>Environment (Sandbox)"]
+    EXEC --> COLD["Cold Start<br/>(Init + Download)"]
+    COLD --> WARM["Warm<br/>(Reused Container)"]
+    EXEC --> LAYER["Lambda<br/>Layer"]
+    EXEC --> EXT["Extension<br/>(Telemetry/Sidecar)"]
+    FN --> IAM["Execution Role<br/>(IAM)"]
+    FN --> VPC["VPC<br/>(ENI per SG)"]
+    FN --> CW["CloudWatch<br/>(Logs + Metrics)"]
+    style TRIG fill:#4a8bc2
+    style FN fill:#2d5a7b
+    style RT fill:#3a7ca5
+    style EXEC fill:#c73e1d
+    style COLD fill:#e8912e
+    style WARM fill:#3fb950
+    style LAYER fill:#6f42c1
+    style EXT fill:#3a7ca5
+    style IAM fill:#e8912e
+    style VPC fill:#3fb950
+    style CW fill:#2d5a7b
 ```
 
 ## Table of Contents

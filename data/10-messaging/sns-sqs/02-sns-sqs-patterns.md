@@ -6,15 +6,35 @@
 
 ```mermaid
 graph LR
-    A["Input<br/>Layer"] --> B["Hidden<br/>Layers"]
-    B --> C["Hidden<br/>Layers"]
-    C --> D["Output<br/>Layer"]
-    B --> E["Activation<br/>Functions"]
-    E --> B
-    style A fill:#4a8bc2
-    style B fill:#2d5a7b
-    style C fill:#2d5a7b
-    style D fill:#c73e1d
+    FANOUT_PAT["Fan-Out<br/>Architecture"] --> SNS_F["SNS Topic<br/>(Event Source)"]
+    SNS_F --> SVC_A["Service A Queue<br/>(SQS Standard)"]
+    SNS_F --> SVC_B["Service B Queue<br/>(SQS Standard)"]
+    SNS_F --> SVC_C["Service C Queue<br/>(SQS Standard)"]
+    SVC_A --> LAMBDA_A["Lambda Consumer"]
+    SVC_B --> LAMBDA_B["Lambda Consumer"]
+    SVC_C --> LAMBDA_C["Lambda Consumer"]
+    FIFO_PAT["Ordered<br/>Processing"] --> FIFO_SNS["SNS FIFO Topic"]
+    FIFO_SNS --> FIFO_SQS["SQS FIFO Queue"]
+    FIFO_SQS --> CONSUMER_F["Sequential<br/>Consumer"]
+    OUTBOX_PAT["Transaction<br/>Outbox"] --> OUTBOX_DB["Write to DB +<br/>Outbox Table"]
+    OUTBOX_DB --> POLL_JOB["PollJob →<br/>Publish to SQS"]
+    POLL_JOB --> FINAL_CONS["Final Consumer"]
+    style FANOUT_PAT fill:#4a8bc2
+    style SNS_F fill:#2d5a7b
+    style SVC_A fill:#3a7ca5
+    style SVC_B fill:#3a7ca5
+    style SVC_C fill:#3a7ca5
+    style LAMBDA_A fill:#e8912e
+    style LAMBDA_B fill:#e8912e
+    style LAMBDA_C fill:#e8912e
+    style FIFO_PAT fill:#c73e1d
+    style FIFO_SNS fill:#6f42c1
+    style FIFO_SQS fill:#6f42c1
+    style CONSUMER_F fill:#3fb950
+    style OUTBOX_PAT fill:#3a7ca5
+    style OUTBOX_DB fill:#e8912e
+    style POLL_JOB fill:#c73e1d
+    style FINAL_CONS fill:#3fb950
 ```
 
 ## 📑 Table of Contents
@@ -257,29 +277,124 @@ def archive_lambda(event, context):
 ## Code Examples
 
 ```python
-# Example implementation
-# [Add language-specific code demonstrating core concept]
-pass
+import boto3
+import json
+import time
+import uuid
+
+sqs = boto3.client('sqs')
+sns = boto3.client('sns')
+dynamodb = boto3.resource('dynamodb')
+
+# Publish with SNS FIFO ordering
+def publish_order_event(order_id: str, event_type: str, payload: dict):
+    sns.publish(
+        TopicArn='arn:aws:sns:us-east-1:123456789012:orders.fifo',
+        Message=json.dumps({'order_id': order_id, **payload}),
+        MessageGroupId=order_id,
+        MessageDeduplicationId=f"{event_type}-{uuid.uuid4()}"
+    )
+
+# SQS consumer with batch failures and idempotency
+def lambda_handler(event, context):
+    idempotency_table = dynamodb.Table('idempotency')
+    failures = []
+    for record in event['Records']:
+        dedup_id = record['messageId']
+        # Idempotency check
+        try:
+            idempotency_table.put_item(
+                Item={'pk': f"MSG#{dedup_id}", 'ttl': int(time.time()) + 86400},
+                ConditionExpression='attribute_not_exists(pk)'
+            )
+        except ClientError:
+            continue  # duplicate — skip
+        try:
+            body = json.loads(record['body'])
+            if 'Message' in body:  # SNS envelope
+                body = json.loads(body['Message'])
+            process_order(body)
+        except ValueError:
+            continue  # poison pill — skip
+        except Exception:
+            if int(record['attributes']['ApproximateReceiveCount']) >= 3:
+                log_poison(record)
+                continue
+            failures.append({'itemIdentifier': record['messageId']})
+    return {'batchItemFailures': failures}
+
+# Long-polling consumer
+def poll_queue(queue_url: str):
+    while True:
+        resp = sqs.receive_message(
+            QueueUrl=queue_url,
+            MaxNumberOfMessages=10,
+            WaitTimeSeconds=20,  # long poll
+            VisibilityTimeout=120,
+            AttributeNames=['ApproximateReceiveCount']
+        )
+        for msg in resp.get('Messages', []):
+            yield msg
+            sqs.delete_message(QueueUrl=queue_url, ReceiptHandle=msg['ReceiptHandle'])
+```
+
+```bash
+# Send message to SQS
+aws sqs send-message --queue-url https://sqs.us-east-1.amazonaws.com/123456789012/orders \
+  --message-body '{"order_id":"123","action":"process"}'
+
+# Purge a DLQ
+aws sqs purge-queue --queue-url https://sqs.us-east-1.amazonaws.com/.../orders-dlq
 ```
 
 ---
 
 ## Common Failure Modes
 
-**Problem**: [Key issue in production]
+**Problem**: SQS message visibility timeout causing duplicate processing
 
-**Root cause**: [Why it happens]
+**Root cause**: A consumer receives a message and starts processing. If processing takes longer than the `VisibilityTimeout`, the message becomes visible again in the queue and another consumer picks it up. Both consumers process the same message, causing duplicate side effects (duplicate charges, duplicate emails). This happens frequently with Lambda consumers when cold starts + processing time exceed the timeout.
 
-**Solution**: [How to fix]
+**Detection**: Monitoring shows `NumberOfMessagesReceived` > `NumberOfMessagesDeleted`. Downstream systems show duplicate records. SQS `ApproximateAgeOfOldestMessage` decreases without corresponding deletes.
+
+**Solution**: Set `VisibilityTimeout` to 6x the max expected processing time (including cold starts). For Lambda, the timeout is managed by the Lambda timeout + reserved concurrency — ensure `VisibilityTimeout` > Lambda timeout + DLQ redrive overhead. Implement idempotent consumers using a DynamoDB idempotency table (store message ID → hash on first process, skip on duplicates). Use `ApproximateReceiveCount` to detect messages that have been redelivered multiple times. For critical paths, use FIFO queues with exactly-once processing and deduplication ID.
+
+**Problem**: SNS fan-out delivery failures to one subscriber affecting other subscribers
+
+**Root cause**: SNS by default uses "best effort" delivery — if one subscriber's SQS queue is throttled or has a misconfigured policy, SNS retries but may eventually drop the message. Other subscribers receive the message successfully, but the failed subscriber has a gap. The most common cause is no SQS queue policy allowing the SNS topic to send messages.
+
+**Detection**: CloudWatch SNS metric `NumberOfNotificationsFailed` for the subscription. SQS queue policy shows missing `sqs:SendMessage` from SNS. Dead-letter queue for the subscription has messages. Missing records in the affected subscriber's data.
+
+**Solution**: Always set a DLQ on each SNS subscription — failed deliveries go to DLQ for replay. Ensure SQS queue policy explicitly allows SNS: `{"Effect": "Allow", "Principal": {"Service": "sns.amazonaws.com"}, "Action": "sqs:SendMessage", "Condition": {"ArnEquals": {"aws:SourceArn": "arn:aws:sns:..."}} }`. Use raw message delivery to avoid SNS envelope overhead. Monitor `NumberOfNotificationsFailed` for each subscription. Set up a redrive process that replays messages from DLQ back to the source queue after the issue is fixed.
 
 ---
 
 ## Interview Questions
 
-### Q1: [Core concept question]
+### Q1: Compare SQS FIFO with standard SQS — when would you use each?
 
-**Answer**: [Detailed explanation with trade-offs]
+**Answer**: **SQS Standard** provides at-least-once delivery (may deliver duplicates), best-effort ordering (messages might arrive out of order), and virtually unlimited throughput. Use for: decoupling microservices, buffering Lambda triggers, fan-out with SNS, batch processing where order doesn't matter (event analytics, log aggregation, notifications). **SQS FIFO** guarantees exactly-once processing (strict deduplication), first-in-first-out delivery (messages consumed in the same order they were sent), and a throughput limit of 300 TPS (3000 with batching). Use for: financial transactions (payments, orders), inventory updates, audit trails, any workflow where message order and deduplication are critical. FIFO can only target SQS (not Lambda, SNS, or HTTP endpoints directly). FIFO requires a `MessageGroupId` for parallelism — messages with different group IDs process concurrently within the same queue.
 
-### Q2: [Design/architecture question]
+### Q2: How would you design a transactional outbox pattern with SQS to guarantee message delivery?
 
-**Answer**: [Best practices and reasoning]
+**Answer**: The transactional outbox ensures that a DB write and a message publication happen atomically. Design: (1) **Single DB transaction**: In your service's database transaction, write to the business table AND insert a row into an `outbox` table. The outbox row contains `aggregate_type`, `aggregate_id`, `event_type`, `payload`, and `processed_at` (NULL initially). (2) **Poller process**: A separate process (Lambda on a timer, or a background thread) queries `outbox WHERE processed_at IS NULL ORDER BY created_at LIMIT 100`. For each row, send to SQS (with idempotency ID). On success, update `processed_at = NOW()`. (3) **Failure handling**: If SQS send fails, the row stays unprocessed and will be retried. The consumer must be idempotent (use message ID or a deduplication key) because the poller may resend on retry. (4) **Garbage collection**: Periodically delete processed outbox rows older than 7 days (could use TTL or a separate cleanup job). This pattern ensures: if the DB write committed, the message will eventually be delivered. No dual-write problem (no 2PC needed). The trade-off: additional storage for the outbox table and latency between commit and message delivery (polling interval).
+
+
+## Edge Cases and Advanced Scenarios
+
+| Scenario | Challenge | Solution |
+|----------|-----------|----------|
+| **Message size > 256KB** | SQS max message size is 256KB | Use S3 as payload store: upload to S3, send S3 reference in SQS message. Consumer downloads from S3 |
+| **FIFO throughput bottleneck** | 300 TPS limit on FIFO queues | Use multiple message group IDs for parallelism. Each group ID allows 300 TPS. Use batch sends (up to 10) for 3000 TPS |
+| **Cross-account access denied** | SQS queue policy misconfigured | Ensure SQS policy has `sqs:SendMessage` with `aws:SourceArn` condition matching the sending service's ARN |
+| **Message duplication** | Producer retries cause duplicate deliveries | Use FIFO with MessageDeduplicationId. For standard queues, implement idempotent consumer with DynamoDB dedup table |
+| **Long poll timeout** | Consumer polling hits Lambda 15-min limit | Use batch size 1-10 with short processing time. Set `ReceiveMessageWaitTimeSeconds` to 20. Use visibility timeout = 6x processing time |
+| **DLQ redrive storm** | Moving messages from DLQ floods consumer | Use `start-message-move-task` with `maxNumberOfMessagesPerSecond` limit. Process DLQ in batches with backoff |
+
+## Cross-References
+
+- [Kafka Production Patterns](../kafka/02-kafka-patterns.md) — Kafka vs SQS+SNS comparison, event sourcing patterns
+- [Kafka Production Operations](../kafka/04-kafka-production-operations.md) — Cluster sizing, client tuning, monitoring
+- [Distributed Transactions](../../09-distributed-systems/02-distributed-transactions.md) — Outbox pattern, Saga orchestration
+- [CloudWatch Observability](../../05-cloud/aws/cloudwatch/02-cloudwatch-observability.md) — SQS metrics, alarm configuration
+- [Microservices Security](../../16-microservices/08-security-identity.md) — OAuth2 tokens, API gateway rate limiting

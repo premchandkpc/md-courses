@@ -10,15 +10,30 @@
 
 ```mermaid
 graph LR
-    A["Input<br/>Layer"] --> B["Hidden<br/>Layers"]
-    B --> C["Hidden<br/>Layers"]
-    C --> D["Output<br/>Layer"]
-    B --> E["Activation<br/>Functions"]
-    E --> B
-    style A fill:#4a8bc2
-    style B fill:#2d5a7b
-    style C fill:#2d5a7b
-    style D fill:#c73e1d
+    INPUT_TOPIC["Input Topic<br/>(Source)"] --> STREAM["KStream&lt;K,V&gt;<br/>(Record Stream)"]
+    INPUT_TOPIC --> TABLE["KTable&lt;K,V&gt;<br/>(Changelog)"]
+    STREAM --> FILTER["filter / mapValues<br/>(Stateless)"]
+    FILTER --> JOIN_SS["join / leftJoin<br/>(Stream-Stream)"]
+    JOIN_SS --> WINDOWED["Windowed By<br/>(JoinWindow)"]
+    STREAM --> GROUP["groupByKey /<br/>groupBy"]
+    GROUP --> AGG_K["aggregate / count /<br/>reduce (Stateful)"]
+    AGG_K --> TABLE
+    TABLE --> JOIN_ST["join / leftJoin<br/>(Stream-Table)"]
+    JOIN_ST --> STREAM
+    STREAM --> THROUGH["through → Repartition<br/>Topic"]
+    THROUGH --> STREAM
+    AGG_K --> OUT["to → Output<br/>Topic"]
+    style INPUT_TOPIC fill:#4a8bc2
+    style STREAM fill:#2d5a7b
+    style TABLE fill:#3a7ca5
+    style FILTER fill:#c73e1d
+    style JOIN_SS fill:#6f42c1
+    style WINDOWED fill:#e8912e
+    style GROUP fill:#e8912e
+    style AGG_K fill:#3fb950
+    style JOIN_ST fill:#6f42c1
+    style THROUGH fill:#e8912e
+    style OUT fill:#3fb950
 ```
 
 ## Table of Contents

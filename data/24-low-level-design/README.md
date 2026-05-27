@@ -10,15 +10,39 @@ Low-level design (LLD) is the **detailed blueprint** of a software component —
 
 ```mermaid
 graph LR
-    A["Input<br/>Layer"] --> B["Hidden<br/>Layers"]
-    B --> C["Hidden<br/>Layers"]
-    C --> D["Output<br/>Layer"]
-    B --> E["Activation<br/>Functions"]
-    E --> B
-    style A fill:#4a8bc2
-    style B fill:#2d5a7b
-    style C fill:#2d5a7b
-    style D fill:#c73e1d
+    OOP["OOP Foundations"] --> ENCAP["Encapsulation<br/>(private state)"]
+    OOP --> INHERIT["Inheritance<br/>(is-a)"]
+    OOP --> POLY["Polymorphism<br/>(interface)"]
+    OOP --> COMPOSITION["Composition<br/>(has-a)"]
+    SOLID["SOLID Principles"] --> SRP["SRP<br/>(single reason to change)"]
+    SOLID --> OCP["OCP<br/>(open/closed)"]
+    SOLID --> LSP["LSP<br/>(substitute)"]
+    SOLID --> ISP["ISP<br/>(small interfaces)"]
+    SOLID --> DIP["DIP<br/>(depend on abstractions)"]
+    DESIGN_PROBLEMS["Design Problems"] --> PARKING_LOT["Parking Lot<br/>(multi-level)"]
+    DESIGN_PROBLEMS --> ELEVATOR["Elevator<br/>(scheduling)"]
+    DESIGN_PROBLEMS --> CHESS["Chess Game<br/>(moves/board)"]
+    DESIGN_PROBLEMS --> SPLITWISE["Splitwise<br/>(expenses)"]
+    DESIGN_PROBLEMS --> FILE_SYS["File System<br/>(hierarchy)"]
+    DESIGN_PROBLEMS --> VENDING_MACHINE["Vending Machine<br/>(state machine)"]
+    style OOP fill:#4a8bc2
+    style ENCAP fill:#2d5a7b
+    style INHERIT fill:#3a7ca5
+    style POLY fill:#e8912e
+    style COMPOSITION fill:#6f42c1
+    style SOLID fill:#3fb950
+    style SRP fill:#e8912e
+    style OCP fill:#c73e1d
+    style LSP fill:#3a7ca5
+    style ISP fill:#6f42c1
+    style DIP fill:#e8912e
+    style DESIGN_PROBLEMS fill:#3fb950
+    style PARKING_LOT fill:#e8912e
+    style ELEVATOR fill:#3a7ca5
+    style CHESS fill:#c73e1d
+    style SPLITWISE fill:#6f42c1
+    style FILE_SYS fill:#3a7ca5
+    style VENDING_MACHINE fill:#e8912e
 ```
 
 ## Table of Contents

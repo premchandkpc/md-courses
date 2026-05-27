@@ -8,15 +8,29 @@
 
 ```mermaid
 graph LR
-    A["Input<br/>Layer"] --> B["Hidden<br/>Layers"]
-    B --> C["Hidden<br/>Layers"]
-    C --> D["Output<br/>Layer"]
-    B --> E["Activation<br/>Functions"]
-    E --> B
-    style A fill:#4a8bc2
-    style B fill:#2d5a7b
-    style C fill:#2d5a7b
-    style D fill:#c73e1d
+    OP["Operator<br/>(controller-runtime)"] --> CRD["Custom Resource<br/>Definition (CRD)"]
+    OP --> RECON["Reconcile Loop<br/>(Reconcile())"]
+    RECON --> WATCH["Watch<br/>(Events on CR)"]
+    WATCH --> RECON
+    ADM["Admission<br/>Controller (Webhook)"] --> MUTATE["Mutating<br/>(Modify Resource)"]
+    ADM --> VALIDATE["Validating<br/>(Reject/Allow)"]
+    ISTIO["Istio<br/>Service Mesh"] --> PROXY["Envoy Proxy<br/>(Sidecar)"]
+    PROXY --> MTLS["mTLS<br/>(Encrypted Mesh)"]
+    PROXY --> TRAFFIC["Traffic Routing<br/>(VirtualService)"]
+    CG["cgroups v2<br/>Unified Hierarchy"] --> POD_QOS["Pod QoS<br/>(Guaranteed/Burstable/BestEffort)"]
+    style OP fill:#4a8bc2
+    style CRD fill:#2d5a7b
+    style RECON fill:#3a7ca5
+    style WATCH fill:#e8912e
+    style ADM fill:#c73e1d
+    style MUTATE fill:#6f42c1
+    style VALIDATE fill:#3fb950
+    style ISTIO fill:#6f42c1
+    style PROXY fill:#e8912e
+    style MTLS fill:#3fb950
+    style TRAFFIC fill:#2d5a7b
+    style CG fill:#3a7ca5
+    style POD_QOS fill:#e8912e
 ```
 
 ## Table of Contents

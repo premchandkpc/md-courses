@@ -8,15 +8,30 @@
 
 ```mermaid
 graph LR
-    A["Input<br/>Layer"] --> B["Hidden<br/>Layers"]
-    B --> C["Hidden<br/>Layers"]
-    C --> D["Output<br/>Layer"]
-    B --> E["Activation<br/>Functions"]
-    E --> B
-    style A fill:#4a8bc2
-    style B fill:#2d5a7b
-    style C fill:#2d5a7b
-    style D fill:#c73e1d
+    CLUS["ElastiCache<br/>Cluster"] --> MSTR["Primary<br/>(Read/Write)"]
+    CLUS --> REPL["Replica 1<br/>(Read Only)"]
+    CLUS --> REPL2["Replica 2<br/>(Read Only)"]
+    MSTR --> AZ1["AZ a"]
+    REPL --> AZ2["AZ b"]
+    REPL2 --> AZ3["AZ c"]
+    CLUS --> SGRP["Shard<br/>(Redis Cluster)"]
+    SGRP --> N1["Node 1<br/>(0-5461 slots)"]
+    SGRP --> N2["Node 2<br/>(5462-10922)"]
+    SGRP --> N3["Node 3<br/>(10923-16383)"]
+    APP["Application"] --> MSTR
+    APP --> REPL
+    style CLUS fill:#4a8bc2
+    style MSTR fill:#2d5a7b
+    style REPL fill:#3a7ca5
+    style REPL2 fill:#3a7ca5
+    style AZ1 fill:#e8912e
+    style AZ2 fill:#e8912e
+    style AZ3 fill:#e8912e
+    style SGRP fill:#c73e1d
+    style N1 fill:#6f42c1
+    style N2 fill:#6f42c1
+    style N3 fill:#6f42c1
+    style APP fill:#3fb950
 ```
 
 ## Table of Contents

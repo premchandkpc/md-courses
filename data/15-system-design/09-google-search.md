@@ -8,15 +8,41 @@
 
 ```mermaid
 graph LR
-    A["Input<br/>Layer"] --> B["Hidden<br/>Layers"]
-    B --> C["Hidden<br/>Layers"]
-    C --> D["Output<br/>Layer"]
-    B --> E["Activation<br/>Functions"]
-    E --> B
-    style A fill:#4a8bc2
-    style B fill:#2d5a7b
-    style C fill:#2d5a7b
-    style D fill:#c73e1d
+    USER_GS["Query"] --> QUERY_PROC["Query Processing<br/>(parsing + intent)"]
+    QUERY_PROC --> SPELL_GS["Spell Correction<br/>(Katz backoff)"]
+    QUERY_PROC --> KNOWLEDGE["Knowledge Graph<br/>(entity lookup)"]
+    QUERY_PROC --> SEARCH_INDEX["Search Index<br/>(inverted index)"]
+    SEARCH_INDEX --> RANK_GS["Ranking Pipeline"]
+    RANK_GS --> PAGERANK["PageRank<br/>(link graph)"]
+    RANK_GS --> RANKBRAIN["RankBrain<br/>(embedding)"]
+    RANK_GS --> BERT["BERT / MUM<br/>(NLP)"]
+    RANK_GS --> REAL_TIME_SIG["Real-time Signals<br/>(freshness)"]
+    RANK_GS --> TOP_K["Top-K Results<br/>(blending)"]
+    CRAWLING["Crawler (Caffeine)"] --> URL_QUEUE["URL Queue<br/>(priority)"]
+    CRAWLING --> POLITENESS["Politeness<br/>(robots.txt)"]
+    CRAWLING --> FRESHNESS["Freshness<br/>(recrawl rate)"]
+    INFRA_GS["Infrastructure"] --> SHARDING["Sharding<br/>(doc ID hash)"]
+    INFRA_GS --> REPLICATION_GS["Replication<br/>(nearline)"]
+    INFRA_GS --> SPANNER["Spanner / Borg<br/>(orchestration)"]
+    style USER_GS fill:#4a8bc2
+    style QUERY_PROC fill:#2d5a7b
+    style SPELL_GS fill:#3a7ca5
+    style KNOWLEDGE fill:#6f42c1
+    style SEARCH_INDEX fill:#e8912e
+    style RANK_GS fill:#c73e1d
+    style PAGERANK fill:#e8912e
+    style RANKBRAIN fill:#6f42c1
+    style BERT fill:#3fb950
+    style REAL_TIME_SIG fill:#c73e1d
+    style TOP_K fill:#3a7ca5
+    style CRAWLING fill:#3fb950
+    style URL_QUEUE fill:#e8912e
+    style POLITENESS fill:#3a7ca5
+    style FRESHNESS fill:#c73e1d
+    style INFRA_GS fill:#2d5a7b
+    style SHARDING fill:#e8912e
+    style REPLICATION_GS fill:#3a7ca5
+    style SPANNER fill:#3fb950
 ```
 
 ## Table of Contents

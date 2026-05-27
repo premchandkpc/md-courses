@@ -4,15 +4,34 @@
 
 ```mermaid
 graph LR
-    A["Input<br/>Layer"] --> B["Hidden<br/>Layers"]
-    B --> C["Hidden<br/>Layers"]
-    C --> D["Output<br/>Layer"]
-    B --> E["Activation<br/>Functions"]
-    E --> B
-    style A fill:#4a8bc2
-    style B fill:#2d5a7b
-    style C fill:#2d5a7b
-    style D fill:#c73e1d
+    APP_I["Application<br/>(read/write)"] --> VFS_I["VFS<br/>(Virtual File System)"]
+    VFS_I --> PAGE_CACHE_I["Page Cache<br/>(Cached I/O)"]
+    PAGE_CACHE_I --> FILE_SYS["File System<br/>(ext4/xfs)"]
+    FILE_SYS --> BLK_LAYER["Block Layer<br/>(blk-mq)"]
+    BLK_LAYER --> I_SCHED["I/O Scheduler<br/>(mq-deadline/BFQ/Kyber)"]
+    I_SCHED --> DRIVER["Block Device<br/>Driver (NVMe)"]
+    DRIVER --> DISK_I["Physical Disk<br/>(SSD/HDD)"]
+    IO_URING["io_uring"] --> SQ["Submission Queue<br/>(SQ)"]
+    IO_URING --> CQ["Completion Queue<br/>(CQ)"]
+    SQ --> SYSCALL_I["sys_io_uring_enter<br/>(Kernel)"]
+    SYSCALL_I --> DRIVER
+    DIO["Direct I/O"] --> FILE_SYS
+    DIO --> DRIVER
+    MMAP["mmap"] --> PAGE_CACHE_I
+    style APP_I fill:#4a8bc2
+    style VFS_I fill:#2d5a7b
+    style PAGE_CACHE_I fill:#3a7ca5
+    style FILE_SYS fill:#e8912e
+    style BLK_LAYER fill:#c73e1d
+    style I_SCHED fill:#6f42c1
+    style DRIVER fill:#3fb950
+    style DISK_I fill:#3a7ca5
+    style IO_URING fill:#c73e1d
+    style SQ fill:#e8912e
+    style CQ fill:#e8912e
+    style SYSCALL_I fill:#2d5a7b
+    style DIO fill:#6f42c1
+    style MMAP fill:#3fb950
 ```
 
 ## Table of Contents

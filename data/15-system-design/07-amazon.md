@@ -8,15 +8,42 @@
 
 ```mermaid
 graph LR
-    A["Input<br/>Layer"] --> B["Hidden<br/>Layers"]
-    B --> C["Hidden<br/>Layers"]
-    C --> D["Output<br/>Layer"]
-    B --> E["Activation<br/>Functions"]
-    E --> B
-    style A fill:#4a8bc2
-    style B fill:#2d5a7b
-    style C fill:#2d5a7b
-    style D fill:#c73e1d
+    CUSTOMER["Customer"] --> FRONTEND["Amazon.com<br/>(Frontend)"]
+    FRONTEND --> SEARCH_A["Search & Browse<br/>(Elasticsearch)"]
+    FRONTEND --> CATALOG["Product Catalog<br/>(DynamoDB)"]
+    FRONTEND --> CART["Shopping Cart<br/>(DynamoDB)"]
+    CART --> ORDER_A["Order Service<br/>(state machine)"]
+    ORDER_A --> PAYMENT_A["Payment<br/>(Stripe-like)"]
+    ORDER_A --> FULFILLMENT["Fulfillment<br/>(FBA/inventory)"]
+    RECOMMEND["Recommendations"] --> COLLAB["Collaborative<br/>Filtering"]
+    RECOMMEND --> ITEM_ITEM["Item-to-Item<br/>Similarity"]
+    RECOMMEND --> PERSONAL["Real-time<br/>Personalization"]
+    SELLER["Seller Marketplace"] --> ONBOARDING["Merchant<br/>Onboarding"]
+    SELLER --> INVENTORY["Inventory Sync<br/>(feed API)"]
+    SELLER --> FBA["Fulfillment by<br/>Amazon (FBA)"]
+    INFRA["Infrastructure"] --> CDN_A["CloudFront CDN"]
+    INFRA --> CACHE_A["ElastiCache<br/>(Redis)"]
+    INFRA --> EVT_DRIVEN["Event-Driven<br/>(SQS/Kinesis)"]
+    style CUSTOMER fill:#4a8bc2
+    style FRONTEND fill:#2d5a7b
+    style SEARCH_A fill:#e8912e
+    style CATALOG fill:#3a7ca5
+    style CART fill:#3fb950
+    style ORDER_A fill:#c73e1d
+    style PAYMENT_A fill:#e8912e
+    style FULFILLMENT fill:#6f42c1
+    style RECOMMEND fill:#6f42c1
+    style COLLAB fill:#e8912e
+    style ITEM_ITEM fill:#3fb950
+    style PERSONAL fill:#3a7ca5
+    style SELLER fill:#e8912e
+    style ONBOARDING fill:#3a7ca5
+    style INVENTORY fill:#c73e1d
+    style FBA fill:#3fb950
+    style INFRA fill:#2d5a7b
+    style CDN_A fill:#3a7ca5
+    style CACHE_A fill:#e8912e
+    style EVT_DRIVEN fill:#3fb950
 ```
 
 ## Table of Contents

@@ -8,15 +8,40 @@
 
 ```mermaid
 graph LR
-    A["Input<br/>Layer"] --> B["Hidden<br/>Layers"]
-    B --> C["Hidden<br/>Layers"]
-    C --> D["Output<br/>Layer"]
-    B --> E["Activation<br/>Functions"]
-    E --> B
-    style A fill:#4a8bc2
-    style B fill:#2d5a7b
-    style C fill:#2d5a7b
-    style D fill:#c73e1d
+    STUDIO["Content Studio"] --> INGEST["Ingest Pipeline<br/>(RAW video)"]
+    INGEST --> TRANSCODE["Transcoding Farm<br/>(per-title encode)"]
+    TRANSCODE --> PACKAGE["Packaging<br/>(DASH/HLS)"]
+    PACKAGE --> CDN_N["Open Connect<br/>(OCA Appliance)"]
+    CDN_N --> ISP["ISP Peering<br/>(IXP/Cache)"]
+    ISP --> USER_N["User Device<br/>(Smart TV/Phone)"]
+    REC["Recommendation"] --> CAND_GEN["Candidate Gen<br/>(two-tower DNN)"]
+    CAND_GEN --> RANK["Ranking<br/>(NN + LR)"]
+    RANK --> BLEND["Blending<br/>(contextual)"]
+    CHAOS["Chaos Engineering"] --> CHAOS_MONKEY["Chaos Monkey<br/>(kill instances)"]
+    CHAOS_MONKEY --> SIMIAN_ARM["Simian Army<br/>(full suite)"]
+    SIMIAN_ARM --> FIT["FIT<br/>(failure injection)"]
+    ABR["Adaptive Bitrate"] --> BBA["BBA 2.0<br/>(buffer-based)"]
+    ABR --> MPC["MPC<br/>(model predictive)"]
+    ABR --> PENSIEVE["Pensieve<br/>(RL-based)"]
+    style STUDIO fill:#4a8bc2
+    style INGEST fill:#2d5a7b
+    style TRANSCODE fill:#c73e1d
+    style PACKAGE fill:#e8912e
+    style CDN_N fill:#6f42c1
+    style ISP fill:#3a7ca5
+    style USER_N fill:#3fb950
+    style REC fill:#c73e1d
+    style CAND_GEN fill:#e8912e
+    style RANK fill:#6f42c1
+    style BLEND fill:#3fb950
+    style CHAOS fill:#3fb950
+    style CHAOS_MONKEY fill:#c73e1d
+    style SIMIAN_ARM fill:#e8912e
+    style FIT fill:#3a7ca5
+    style ABR fill:#2d5a7b
+    style BBA fill:#e8912e
+    style MPC fill:#6f42c1
+    style PENSIEVE fill:#3fb950
 ```
 
 ## Table of Contents

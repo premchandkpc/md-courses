@@ -8,15 +8,26 @@
 
 ```mermaid
 graph LR
-    A["Input<br/>Layer"] --> B["Hidden<br/>Layers"]
-    B --> C["Hidden<br/>Layers"]
-    C --> D["Output<br/>Layer"]
-    B --> E["Activation<br/>Functions"]
-    E --> B
-    style A fill:#4a8bc2
-    style B fill:#2d5a7b
-    style C fill:#2d5a7b
-    style D fill:#c73e1d
+    MAZ["Multi-AZ<br/>Deployment"] --> PRI["Primary<br/>(Synchronous)"]
+    PRI --> STANDBY["Standby<br/>(Sync Replica)"]
+    PRI --> EBS["EBS<br/>(gp3/io2)"]
+    RR["Read Replica<br/>(Async)"] --> PRI
+    RR --> APP["Application<br/>(Read Traffic)"]
+    PRI --> APP2["Application<br/>(Write Traffic)"]
+    RDS_PROXY["RDS Proxy<br/>(Connection Pool)"] --> PRI
+    RDS_PROXY --> RR
+    PRI --> BACKUP["Automated Backup<br/>(S3)"]
+    BACKUP --> PITR["Point-in-Time<br/>Recovery"]
+    style MAZ fill:#4a8bc2
+    style PRI fill:#2d5a7b
+    style STANDBY fill:#3a7ca5
+    style EBS fill:#e8912e
+    style RR fill:#6f42c1
+    style APP fill:#3fb950
+    style APP2 fill:#c73e1d
+    style RDS_PROXY fill:#e8912e
+    style BACKUP fill:#3a7ca5
+    style PITR fill:#3fb950
 ```
 
 ## Table of Contents

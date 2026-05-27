@@ -6,15 +6,28 @@
 
 ```mermaid
 graph LR
-    A["Input<br/>Layer"] --> B["Hidden<br/>Layers"]
-    B --> C["Hidden<br/>Layers"]
-    C --> D["Output<br/>Layer"]
-    B --> E["Activation<br/>Functions"]
-    E --> B
-    style A fill:#4a8bc2
-    style B fill:#2d5a7b
-    style C fill:#2d5a7b
-    style D fill:#c73e1d
+    RAFT["Raft<br/>Consensus"] --> LEADER["Leader<br/>(Handles all writes)"]
+    RAFT --> FOLLOWER["Follower 1<br/>(Log Replication)"]
+    RAFT --> FOLLOWER2["Follower 2<br/>(Log Replication)"]
+    LEADER --> HEARTBEAT["AppendEntries<br/>(Heartbeat)"]
+    FOLLOWER --> VOTE["Vote Request<br/>(Term increased)"]
+    LEADER --> TERM["Term N<br/>(Epoch)"]
+    LEADER --> LOG["Log Entry<br/>(index, term)"]
+    LOG --> COMMIT["Committed<br/>(Majority ack)"]
+    COMMIT --> APPLY["Applied to<br/>State Machine"]
+    GOSSIP["SWIM / Gossip"] --> MEMBERSHIP["Membership<br/>(propagation)"]
+    style RAFT fill:#4a8bc2
+    style LEADER fill:#2d5a7b
+    style FOLLOWER fill:#3a7ca5
+    style FOLLOWER2 fill:#3a7ca5
+    style HEARTBEAT fill:#e8912e
+    style VOTE fill:#6f42c1
+    style TERM fill:#e8912e
+    style LOG fill:#c73e1d
+    style COMMIT fill:#3fb950
+    style APPLY fill:#3fb950
+    style GOSSIP fill:#6f42c1
+    style MEMBERSHIP fill:#e8912e
 ```
 
 ## Table of Contents

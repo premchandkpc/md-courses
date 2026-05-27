@@ -1,23 +1,159 @@
 # 02 — Data Engineering
 
-The discipline of building and maintaining the infrastructure that enables data generation, storage, processing, and analysis at scale. Data engineering is the foundation upon which analytics, machine learning, and business intelligence are built—without reliable data pipelines, every downstream system fails.
+Data engineering is the practice of designing, building, and maintaining systems that collect, store, process, and analyze data at scale. It is the foundation upon which analytics, machine learning, and business intelligence are built—without reliable data pipelines, every downstream system fails.
 
-
+## The Data Engineering Landscape
 
 ```mermaid
-graph LR
-    A["📥 Input"] --> B["🔄 Transform"]
-    B --> C["🧹 Clean"]
-    C --> D["✓ Validate"]
-    D --> E["💾 Store"]
-    E --> F["📤 Output"]
-    style A fill:#4a8bc2
-    style B fill:#2d5a7b
-    style C fill:#2d5a7b
-    style D fill:#1a5d3a
-    style E fill:#2d5a7b
-    style F fill:#c73e1d
+graph TB
+    subgraph "Data Sources"
+        A["Application DBs<br/>(OLTP)"]
+        B["Event Streams<br/>(Kafka)"]
+        C["External APIs"]
+        D["File Uploads<br/>(CSV, JSON)"]
+    end
+
+    subgraph "Ingestion Layer"
+        E["Batch Ingestion<br/>(Sqoop, Airbyte)"]
+        F["Stream Ingestion<br/>(Kafka Connect)"]
+        G["CDC Pipelines<br/>(Debezium)"]
+    end
+
+    subgraph "Storage Layer"
+        H["Data Lake<br/>(S3/Parquet)"]
+        I["Lakehouse<br/>(Delta/Iceberg)"]
+        J["Warehouse<br/>(Snowflake/BQ)"]
+    end
+
+    subgraph "Processing Layer"
+        K["Batch: Spark"]
+        L["Stream: Flink"]
+        M["Orchestration: Airflow"]
+    end
+
+    subgraph "Consumption Layer"
+        N["BI Tools<br/>(Tableau, Looker)"]
+        O["Data Science<br/>(Notebooks, ML)"]
+        P["Operational<br/>(APIs, Apps)"]
+    end
+
+    A --> E
+    B --> F
+    C --> E
+    D --> E
+    E --> H
+    F --> I
+    G --> I
+    H --> K
+    I --> K
+    I --> L
+    J --> K
+    K --> M
+    L --> M
+    M --> N
+    M --> O
+    M --> P
 ```
+
+## Core Concepts
+
+### The Data Pipeline Lifecycle
+
+Every data engineering problem follows the same fundamental lifecycle, regardless of scale:
+
+1. **Ingestion** — Getting data from source systems into your data platform. This may be batch (nightly exports, daily dumps) or streaming (event queues, CDC feeds). The key decisions are: batch vs streaming, schema-on-read vs schema-on-write, and how to handle schema evolution from source systems.
+
+2. **Storage** — Choosing where and how to store data. The modern stack offers a spectrum: data lakes (cheap, flexible, no ACID), lakehouses (cheap + ACID + schema enforcement), and warehouses (expensive, performant, structured). The trend is toward lakehouses that combine the cost benefits of object storage with warehouse-grade reliability.
+
+3. **Processing** — Transforming raw data into usable form. This ranges from simple SQL transformations to complex distributed computations. The processing paradigm (batch, micro-batch, or streaming) depends on latency requirements. The medallion architecture (bronze → silver → gold) is the dominant pattern.
+
+4. **Orchestration** — Managing dependencies, scheduling, retries, and monitoring. Orchestrators like Airflow, Dagster, and Prefect turn individual processing steps into reliable, observable pipelines with SLAs and alerting.
+
+5. **Consumption** — Serving processed data to downstream consumers: BI dashboards, ML models, operational applications, and ad-hoc analytics. The interface varies by consumer — SQL for analysts, feature vectors for ML, APIs for applications.
+
+### Batch vs Stream: The Continuum
+
+The traditional batch-vs-stream binary is misleading. In practice, most architectures use both:
+
+- **Batch** (hours/days latency): Historical reporting, ML training data, backfills. Tools: Spark, dbt, Hive.
+- **Micro-batch** (seconds/minutes): Structured Streaming, Spark Streaming. Good for near-real-time ETL.
+- **True stream** (milliseconds): Flink, Kafka Streams. Required for fraud detection, real-time monitoring.
+- **Lambda architecture**: Batch + stream layers with merging (largely replaced by Kappa architecture).
+- **Kappa architecture**: Single streaming pipeline for all data, with batch treated as replay.
+
+### The Medallion Architecture
+
+```python
+# Bronze → Silver → Gold pattern
+class MedallionPipeline:
+    """The dominant data lakehouse architecture pattern."""
+
+    def __init__(self, spark_session, base_path: str):
+        self.spark = spark_session
+        self.base_path = base_path
+
+    def bronze_layer(self, source_path: str, table_name: str) -> str:
+        """Raw data as-is from source. Append-only, full history."""
+        bronze_path = f"{self.base_path}/bronze/{table_name}"
+        df = self.spark.read.format("parquet").load(source_path)
+        df.write.format("delta") \
+            .mode("append") \
+            .save(bronze_path)
+        print(f"Bronze: {df.count()} records ingested")
+        return bronze_path
+
+    def silver_layer(self, table_name: str) -> str:
+        """Cleaned, validated, deduplicated data."""
+        bronze_path = f"{self.base_path}/bronze/{table_name}"
+        silver_path = f"{self.base_path}/silver/{table_name}"
+        df = self.spark.read.format("delta").load(bronze_path)
+        cleaned = (
+            df
+            .dropDuplicates(["event_id"])
+            .filter("amount IS NOT NULL")
+            .filter("amount > 0")
+            .withColumn("ingestion_date", F.current_date())
+        )
+        cleaned.write.format("delta") \
+            .mode("overwrite") \
+            .option("mergeSchema", "true") \
+            .save(silver_path)
+        print(f"Silver: {cleaned.count()} records after cleaning")
+        return silver_path
+
+    def gold_layer(self, table_name: str) -> str:
+        """Aggregated, business-ready data."""
+        silver_path = f"{self.base_path}/silver/{table_name}"
+        gold_path = f"{self.base_path}/gold/{table_name}"
+        df = self.spark.read.format("delta").load(silver_path)
+        aggregated = (
+            df
+            .groupBy("product_category", F.window("timestamp", "1 day"))
+            .agg(
+                F.sum("amount").alias("revenue"),
+                F.count("event_id").alias("transactions"),
+                F.avg("amount").alias("avg_order_value")
+            )
+            .withColumn("report_date", F.col("window.start"))
+        )
+        aggregated.write.format("delta") \
+            .mode("overwrite") \
+            .save(gold_path)
+        print(f"Gold: {aggregated.count()} aggregated records")
+        return gold_path
+```
+
+## Why Data Engineering Matters
+
+Without data engineering, data science teams spend 60-80% of their time on data preparation rather than modeling. Without data engineering, dashboards show yesterday's data because pipelines broke. Without data engineering, ML models train on stale or incorrect data because no one tracked lineage.
+
+The modern data engineer must understand:
+- **Distributed systems** — how Spark partitions data, how Flink manages state, how Kafka guarantees ordering
+- **Storage internals** — Parquet columnar layout, Delta transaction log, Iceberg manifest files, partition pruning
+- **SQL deeply** — window functions, query optimization, execution plans, join strategies
+- **Cloud infrastructure** — object storage, networking, IAM, auto-scaling, spot instances
+- **Data modeling** — dimensional modeling, Data Vault, lakehouse design, schema evolution
+- **Observability** — monitoring pipeline health, data quality checks, lineage tracking, SLA enforcement
 
 ## Table of Contents
 

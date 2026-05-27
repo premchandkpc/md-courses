@@ -10,15 +10,38 @@
 
 ```mermaid
 graph LR
-    A["Input<br/>Layer"] --> B["Hidden<br/>Layers"]
-    B --> C["Hidden<br/>Layers"]
-    C --> D["Output<br/>Layer"]
-    B --> E["Activation<br/>Functions"]
-    E --> B
-    style A fill:#4a8bc2
-    style B fill:#2d5a7b
-    style C fill:#2d5a7b
-    style D fill:#c73e1d
+    CONN_EXHAUST["Connection<br/>Exhaustion"] --> SYN_FLOOD["SYN Flood /<br/>Flash Crowd"]
+    SYN_FLOOD --> MAXCONN["maxconn Reached<br/>(65536)"]
+    MAXCONN --> NEW_CONN_FAIL["New Connections →<br/>503"]
+    MAXCONN --> HEALTH_CHECK_FAIL["Health Check Fails<br/>(same port)"]
+    HEALTH_CHECK_FAIL --> ALL_BACKENDS_DOWN["ALL Backends<br/>Marked Unhealthy"]
+    STICKY_SESSION["Sticky Session<br/>Drift"] --> INSTANCE_FAIL["Instance Fails<br/>(unhealthy)"]
+    INSTANCE_FAIL --> SESSION_AFFINITY["Client Stuck to<br/>Dead Instance"]
+    SESSION_AFFINITY --> SESSION_LOSS["Session Data<br/>Lost"]
+    CB_CASCADE["Circuit Breaker<br/>Cascade"] --> SLOW_UPSTREAM["One Slow<br/>Upstream"]
+    SLOW_UPSTREAM --> LB_TIMEOUT["LB Timeout<br/>(max_conn)"]
+    LB_TIMEOUT --> ALL_MARKED_UNHEALTHY["All Backends<br/>Marked Unhealthy"]
+    DNS_LB_FAIL["DNS LB Failure"] --> HIGH_TTL["DNS TTL Too High<br/>(600s)"]
+    HIGH_TTL --> FAILOVER_SLOW["Failover Slow<br/>(old IP cached)"]
+    FAILOVER_SLOW --> USERS_DEAD_IP["Users Hit Dead<br/>LB IP"]
+    style CONN_EXHAUST fill:#4a8bc2
+    style SYN_FLOOD fill:#e8912e
+    style MAXCONN fill:#c73e1d
+    style NEW_CONN_FAIL fill:#c73e1d
+    style HEALTH_CHECK_FAIL fill:#c73e1d
+    style ALL_BACKENDS_DOWN fill:#c73e1d
+    style STICKY_SESSION fill:#e8912e
+    style INSTANCE_FAIL fill:#c73e1d
+    style SESSION_AFFINITY fill:#c73e1d
+    style SESSION_LOSS fill:#c73e1d
+    style CB_CASCADE fill:#c73e1d
+    style SLOW_UPSTREAM fill:#e8912e
+    style LB_TIMEOUT fill:#c73e1d
+    style ALL_MARKED_UNHEALTHY fill:#c73e1d
+    style DNS_LB_FAIL fill:#e8912e
+    style HIGH_TTL fill:#e8912e
+    style FAILOVER_SLOW fill:#c73e1d
+    style USERS_DEAD_IP fill:#c73e1d
 ```
 
 ## Table of Contents

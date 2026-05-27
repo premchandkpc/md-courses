@@ -6,15 +6,20 @@ The complete artificial intelligence and machine learning knowledge base—from 
 
 ```mermaid
 graph LR
-    A["Input<br/>Layer"] --> B["Hidden<br/>Layers"]
-    B --> C["Hidden<br/>Layers"]
-    C --> D["Output<br/>Layer"]
-    B --> E["Activation<br/>Functions"]
-    E --> B
+    A["Data<br/>Collection"] --> B["Data<br/>Preprocessing"]
+    B --> C["Feature<br/>Engineering"]
+    C --> D["Model<br/>Training"]
+    D --> E["Model<br/>Evaluation"]
+    E --> F["Model<br/>Deployment"]
+    F --> G["Monitoring<br/>& Feedback"]
+    G -.->|drift detected| C
     style A fill:#4a8bc2
     style B fill:#2d5a7b
-    style C fill:#2d5a7b
+    style C fill:#3a7ca5
     style D fill:#c73e1d
+    style E fill:#e8912e
+    style F fill:#3fb950
+    style G fill:#6f42c1
 ```
 
 ## Table of Contents

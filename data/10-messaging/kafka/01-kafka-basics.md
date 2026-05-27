@@ -8,15 +8,29 @@
 
 ```mermaid
 graph LR
-    A["Input<br/>Layer"] --> B["Hidden<br/>Layers"]
-    B --> C["Hidden<br/>Layers"]
-    C --> D["Output<br/>Layer"]
-    B --> E["Activation<br/>Functions"]
-    E --> B
-    style A fill:#4a8bc2
-    style B fill:#2d5a7b
-    style C fill:#2d5a7b
-    style D fill:#c73e1d
+    PROD["Producer"] --> TOPIC["Topic<br/>(Logical Stream)"]
+    TOPIC --> PART1["Partition 0<br/>Leader (Broker 1)"]
+    TOPIC --> PART2["Partition 1<br/>Leader (Broker 2)"]
+    TOPIC --> PART3["Partition 2<br/>Leader (Broker 3)"]
+    PART1 --> REPLICA1["Replica<br/>(Broker 2 ISR)"]
+    PART1 --> REPLICA2["Replica<br/>(Broker 3 ISR)"]
+    PART2 --> ZK["ZooKeeper /<br/>KRaft Controller"]
+    PART1 --> CONSUMER["Consumer Group<br/>(rebalance)"]
+    CONSUMER --> C1["Consumer 1<br/>(partition 0,1)"]
+    CONSUMER --> C2["Consumer 2<br/>(partition 2)"]
+    PROD --> ACK["acks=all<br/>(min.insync.replicas)"]
+    style PROD fill:#4a8bc2
+    style TOPIC fill:#2d5a7b
+    style PART1 fill:#c73e1d
+    style PART2 fill:#3a7ca5
+    style PART3 fill:#6f42c1
+    style REPLICA1 fill:#e8912e
+    style REPLICA2 fill:#e8912e
+    style ZK fill:#e8912e
+    style CONSUMER fill:#3fb950
+    style C1 fill:#3a7ca5
+    style C2 fill:#3a7ca5
+    style ACK fill:#c73e1d
 ```
 
 ## Table of Contents
@@ -48,12 +62,15 @@ graph LR
 
 ## 🧭 What is Kafka?
 
-```text
-Kafka is a distributed event streaming platform — a committed log.
-
-  Producers → [Broker1│Broker2│Broker3] → Consumers / Streams / Connect
-
-Pull-based, append-only log, ordered within partition, sequential I/O.
+```mermaid
+sequenceDiagram
+    participant Client
+    participant Component
+    participant Result
+    Client->>Component: Request
+    Component->>Component: Process
+    Component-->>Result: Generate
+    Result-->>Client: Response
 ```
 
 ---

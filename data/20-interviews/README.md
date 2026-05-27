@@ -10,15 +10,39 @@ Technical interview preparation is a structured skill — combining deep system 
 
 ```mermaid
 graph LR
-    A["Input<br/>Layer"] --> B["Hidden<br/>Layers"]
-    B --> C["Hidden<br/>Layers"]
-    C --> D["Output<br/>Layer"]
-    B --> E["Activation<br/>Functions"]
-    E --> B
-    style A fill:#4a8bc2
-    style B fill:#2d5a7b
-    style C fill:#2d5a7b
-    style D fill:#c73e1d
+    INTERVIEW_PREP["Interview Prep"] --> PHONE_SCREEN["Phone Screen<br/>(resume + medium)"]
+    INTERVIEW_PREP --> CODING["Coding<br/>(algorithms)"]
+    INTERVIEW_PREP --> SYSTEM_DESIGN["System Design<br/>(architecture)"]
+    INTERVIEW_PREP --> BEHAVIORAL["Behavioral<br/>(STAR method)"]
+    INTERVIEW_PREP --> DOMAIN["Domain<br/>(Java/DS)"]
+    JAVA_TRACK["Java Track"] --> CORE["Core Java<br/>(JVM/collections)"]
+    JAVA_TRACK --> CONC_JAVA["Concurrency<br/>(threads/locks)"]
+    JAVA_TRACK --> SPRING["Spring/Spring Boot<br/>(DI/AOP/Web)"]
+    DS_TRACK["Distributed Systems"] --> CAP["CAP / PACELC"]
+    DS_TRACK --> CONSENSUS["Consensus<br/>(Raft/Paxos)"]
+    DS_TRACK --> REPLICATION_DS["Replication<br/>(leader/follower)"]
+    SYSTEM_DESIGN --> FRAMEWORK["Framework<br/>(req→HLD→DD)"]
+    SYSTEM_DESIGN --> TOP_PROBLEMS["Top Problems<br/>(WhatsApp/Netflix)"]
+    CODING --> PATTERNS_DS["Patterns<br/>(two-pointer/BFS)"]
+    CODING --> LEETCODE["LeetCode Medium<br/>(~150 problems)"]
+    style INTERVIEW_PREP fill:#4a8bc2
+    style PHONE_SCREEN fill:#2d5a7b
+    style CODING fill:#c73e1d
+    style SYSTEM_DESIGN fill:#6f42c1
+    style BEHAVIORAL fill:#3a7ca5
+    style DOMAIN fill:#e8912e
+    style JAVA_TRACK fill:#e8912e
+    style CORE fill:#3a7ca5
+    style CONC_JAVA fill:#3fb950
+    style SPRING fill:#c73e1d
+    style DS_TRACK fill:#6f42c1
+    style CAP fill:#e8912e
+    style CONSENSUS fill:#3fb950
+    style REPLICATION_DS fill:#3a7ca5
+    style FRAMEWORK fill:#e8912e
+    style TOP_PROBLEMS fill:#3fb950
+    style PATTERNS_DS fill:#3a7ca5
+    style LEETCODE fill:#e8912e
 ```
 
 ## Table of Contents

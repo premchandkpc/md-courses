@@ -8,15 +8,28 @@
 
 ```mermaid
 graph LR
-    A["Input<br/>Layer"] --> B["Hidden<br/>Layers"]
-    B --> C["Hidden<br/>Layers"]
-    C --> D["Output<br/>Layer"]
-    B --> E["Activation<br/>Functions"]
-    E --> B
-    style A fill:#4a8bc2
-    style B fill:#2d5a7b
-    style C fill:#2d5a7b
-    style D fill:#c73e1d
+    CONT["Container<br/>Runtime"] --> LIMIT["Resource Limits<br/>(--memory/--cpus)"]
+    CONT --> LOG["Logging Driver<br/>(json-file/splunk)"]
+    CONT --> RESTART["Restart Policy<br/>(always/unless-stopped)"]
+    CONT --> HEALTH["HEALTHCHECK<br/>(Dockerfile)"]
+    LOG --> ROTATE["Log Rotation<br/>(max-size/max-file)"]
+    RESTART --> DEAD["Exited →<br/>Restart"]
+    BUILD["Build Optimizations"] --> M_STAGE["Multi-Stage<br/>Build"]
+    BUILD --> LAYER_CACHE["Layer Cache<br/>(Dockerfile order)"]
+    BUILD --> DISTROLESS["Distroless /<br/>Alpine"]
+    MON["Monitoring<br/>(cAdvisor/Datadog)"] --> CONT
+    style CONT fill:#4a8bc2
+    style LIMIT fill:#2d5a7b
+    style LOG fill:#3a7ca5
+    style RESTART fill:#c73e1d
+    style HEALTH fill:#3fb950
+    style ROTATE fill:#e8912e
+    style DEAD fill:#c73e1d
+    style BUILD fill:#6f42c1
+    style M_STAGE fill:#3fb950
+    style LAYER_CACHE fill:#e8912e
+    style DISTROLESS fill:#3a7ca5
+    style MON fill:#e8912e
 ```
 
 ## Table of Contents
@@ -43,22 +56,15 @@ graph LR
 
 ### Driver Comparison
 
-```text
-Docker logging drivers — where container stdout/stderr goes:
-
-  Container (stdout/stderr)
-       │
-       ▼
-  [Logging Driver]
-       │
-       ├── json-file  ───► /var/lib/docker/containers/*/*-json.log (default)
-       ├── journald   ───► systemd journal
-       ├── syslog     ───► /dev/log → syslog server
-       ├── gelf       ───► Graylog Extended Log Format (UDP/TCP)
-       ├── fluentd    ───► fluentd forwarder
-       ├── awslogs    ───► Amazon CloudWatch Logs
-       ├── gcplogs    ───► Google Cloud Logging
-       └── splunk     ───► Splunk HTTP Event Collector
+```mermaid
+sequenceDiagram
+    participant Client
+    participant Component
+    participant Result
+    Client->>Component: Request
+    Component->>Component: Process
+    Component-->>Result: Generate
+    Result-->>Client: Response
 ```
 
 | Driver | Pros | Cons |

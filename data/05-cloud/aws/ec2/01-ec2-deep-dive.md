@@ -8,15 +8,27 @@
 
 ```mermaid
 graph LR
-    A["Input<br/>Layer"] --> B["Hidden<br/>Layers"]
-    B --> C["Hidden<br/>Layers"]
-    C --> D["Output<br/>Layer"]
-    B --> E["Activation<br/>Functions"]
-    E --> B
-    style A fill:#4a8bc2
-    style B fill:#2d5a7b
-    style C fill:#2d5a7b
-    style D fill:#c73e1d
+    AMI["AMI<br/>(Amazon Machine Image)"] --> INST["EC2<br/>Instance"]
+    INST --> EBS["EBS Volume<br/>(Root + Data)"]
+    INST --> ENI["ENI<br/>(Elastic Network Interface)"]
+    INST --> SG["Security Group<br/>(Stateful Firewall)"]
+    ENI --> VPC["VPC<br/>Subnet"]
+    VPC --> IGW["Internet<br/>Gateway"]
+    INST --> ASG["Auto Scaling<br/>Group"]
+    ASG --> ELB["Load Balancer<br/>(ALB/NLB)"]
+    INST --> IM["Instance Metadata<br/>(169.254.169.254)"]
+    IM --> IAMR["IAM Role<br/>(Instance Profile)"]
+    style AMI fill:#4a8bc2
+    style INST fill:#2d5a7b
+    style EBS fill:#3a7ca5
+    style ENI fill:#e8912e
+    style SG fill:#c73e1d
+    style VPC fill:#6f42c1
+    style IGW fill:#3fb950
+    style ASG fill:#3a7ca5
+    style ELB fill:#e8912e
+    style IM fill:#2d5a7b
+    style IAMR fill:#c73e1d
 ```
 
 ## Table of Contents

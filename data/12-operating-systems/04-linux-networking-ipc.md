@@ -4,15 +4,39 @@
 
 ```mermaid
 graph LR
-    A["Input<br/>Layer"] --> B["Hidden<br/>Layers"]
-    B --> C["Hidden<br/>Layers"]
-    C --> D["Output<br/>Layer"]
-    B --> E["Activation<br/>Functions"]
-    E --> B
-    style A fill:#4a8bc2
-    style B fill:#2d5a7b
-    style C fill:#2d5a7b
-    style D fill:#c73e1d
+    SOCK["Socket API<br/>(Berkeley Sockets)"] --> TCP_STACK["TCP Stack<br/>(struct sock)"]
+    SOCK --> UDP_STACK["UDP Stack"]
+    TCP_STACK --> SK_BUFF["sk_buff<br/>(Packet Buffer)"]
+    SK_BUFF --> RCV_Q["Receive Queue<br/>(backlog)"]
+    SK_BUFF --> SND_Q["Send Queue"]
+    IPC["IPC Mechanisms"] --> PIPE["Pipe / FIFO<br/>(Page-Backed)"]
+    IPC --> UDS["Unix Domain Socket<br/>(abstract / path)"]
+    IPC --> SHMEM["Shared Memory<br/>(shmget/mmap)"]
+    IPC --> MQ["Message Queues<br/>(mqueue)"]
+    IPC --> SIGNAL["Signals<br/>(sigaction)"]
+    IPC --> EVENTFD["eventfd<br/>(userspace event)"]
+    IPC --> FUTEX["futex<br/>(Fast Userspace Mutex)"]
+    EPOLL["epoll"] --> EPOLL_CREATE["epoll_create1()"]
+    EPOLL_CREATE --> EPOLL_CTL["epoll_ctl(EPOLL_CTL_ADD)"]
+    EPOLL_CTL --> EPOLL_WAIT["epoll_wait()<br/>(ready list)"]
+    style SOCK fill:#4a8bc2
+    style TCP_STACK fill:#2d5a7b
+    style UDP_STACK fill:#3a7ca5
+    style SK_BUFF fill:#e8912e
+    style RCV_Q fill:#c73e1d
+    style SND_Q fill:#3a7ca5
+    style IPC fill:#6f42c1
+    style PIPE fill:#3fb950
+    style UDS fill:#e8912e
+    style SHMEM fill:#c73e1d
+    style MQ fill:#3a7ca5
+    style SIGNAL fill:#e8912e
+    style EVENTFD fill:#3fb950
+    style FUTEX fill:#2d5a7b
+    style EPOLL fill:#3fb950
+    style EPOLL_CREATE fill:#e8912e
+    style EPOLL_CTL fill:#6f42c1
+    style EPOLL_WAIT fill:#3a7ca5
 ```
 
 ## Table of Contents

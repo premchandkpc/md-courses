@@ -4,15 +4,27 @@
 
 ```mermaid
 graph LR
-    A["Input<br/>Layer"] --> B["Hidden<br/>Layers"]
-    B --> C["Hidden<br/>Layers"]
-    C --> D["Output<br/>Layer"]
-    B --> E["Activation<br/>Functions"]
-    E --> B
-    style A fill:#4a8bc2
-    style B fill:#2d5a7b
-    style C fill:#2d5a7b
-    style D fill:#c73e1d
+    APP["Go<br/>Application"] --> CPU["CPU Profile<br/>(pprof)"]
+    APP --> MEM["Heap Profile<br/>(pprof)"]
+    APP --> GOR["Goroutine<br/>Profile"]
+    APP --> MUT["Mutex<br/>Profile"]
+    APP --> TR["Execution<br/>Trace"]
+    CPU --> SVG["Flame<br/>Graph"]
+    MEM --> ALLOC["Allocation<br/>Hotspots"]
+    GOR --> STUCK["Stuck<br/>Goroutines"]
+    MUT --> CONT["Lock<br/>Contention"]
+    TR --> EV["Event<br/>Timeline"]
+    style APP fill:#4a8bc2
+    style CPU fill:#c73e1d
+    style MEM fill:#2d5a7b
+    style GOR fill:#3a7ca5
+    style MUT fill:#e8912e
+    style TR fill:#6f42c1
+    style SVG fill:#3fb950
+    style ALLOC fill:#c73e1d
+    style STUCK fill:#e8912e
+    style CONT fill:#c73e1d
+    style EV fill:#3fb950
 ```
 
 ## Table of Contents

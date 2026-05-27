@@ -4,15 +4,32 @@
 
 ```mermaid
 graph LR
-    A["Input<br/>Layer"] --> B["Hidden<br/>Layers"]
-    B --> C["Hidden<br/>Layers"]
-    C --> D["Output<br/>Layer"]
-    B --> E["Activation<br/>Functions"]
-    E --> B
-    style A fill:#4a8bc2
-    style B fill:#2d5a7b
-    style C fill:#2d5a7b
-    style D fill:#c73e1d
+    STR["String<br/>(SDS)"] --> CACHING["Caching<br/>(SET/GET)"]
+    HASH["Hash<br/>(hashtable/ziplist)"] --> OBJ["Object Storage<br/>(HGETALL)"]
+    LIST["List<br/>(quicklist)"] --> QUEUE["Queue / Stack<br/>(LPUSH/BRPOP)"]
+    SET["Set<br/>(intset/hashtable)"] --> MEMB2["Membership<br/>(SISMEMBER)"]
+    ZSET["Sorted Set<br/>(skiplist)"] --> RANK["Leaderboard<br/>(ZRANK/ZRANGE)"]
+    RDB["RDB<br/>(Point-in-Time)"] --> FORK["fork() →<br/>Copy-on-Write"]
+    AOF2["AOF<br/>(Append-Only)"] --> FSYNC["fsync<br/>(always/everysec)"]
+    CLUSTER["Redis<br/>Cluster"] --> SHADING["Hash Slot<br/>(CRC16 % 16384)"]
+    CLUSTER --> REPL2["Replication<br/>(Primary → Replica)"]
+    style STR fill:#4a8bc2
+    style CACHING fill:#3fb950
+    style HASH fill:#2d5a7b
+    style OBJ fill:#e8912e
+    style LIST fill:#3a7ca5
+    style QUEUE fill:#6f42c1
+    style SET fill:#c73e1d
+    style MEMB2 fill:#e8912e
+    style ZSET fill:#6f42c1
+    style RANK fill:#3fb950
+    style RDB fill:#3a7ca5
+    style FORK fill:#e8912e
+    style AOF2 fill:#c73e1d
+    style FSYNC fill:#e8912e
+    style CLUSTER fill:#2d5a7b
+    style SHADING fill:#3fb950
+    style REPL2 fill:#3a7ca5
 ```
 
 ## Table of Contents
@@ -318,29 +335,70 @@ Redis is a toolbox where everything is a key:
 ## Code Examples
 
 ```python
-# Example implementation
-# [Add language-specific code demonstrating core concept]
-pass
+import redis
+import time
+
+r = redis.Redis(host='cluster-endpoint', port=6379, decode_responses=True)
+
+# Distributed rate limiter using sorted sets (sliding window)
+def rate_limit(user_id: str, max_requests: int, window_sec: int = 60) -> bool:
+    key = f"ratelimit:{user_id}"
+    now = time.time()
+    cutoff = now - window_sec
+    pipe = r.pipeline()
+    pipe.zremrangebyscore(key, 0, cutoff)
+    pipe.zadd(key, {str(now): now})
+    pipe.zcard(key)
+    pipe.expire(key, window_sec)
+    _, _, count, _ = pipe.execute()
+    return count <= max_requests
+
+# Session cache with automatic failover
+def get_session(session_id: str) -> dict | None:
+    data = r.get(f"session:{session_id}")
+    if data:
+        r.expire(f"session:{session_id}", 3600)
+        return eval(data)
+    return None
+
+def set_session(session_id: str, data: dict):
+    r.setex(f"session:{session_id}", 3600, str(data))
+
+# Leaderboard with pagination
+def get_top_players(game: str, page: int = 0, page_size: int = 10):
+    start = page * page_size
+    end = start + page_size - 1
+    return r.zrevrange(f"leaderboard:{game}", start, end, withscores=True)
 ```
 
 ---
 
 ## Common Failure Modes
 
-**Problem**: [Key issue in production]
+**Problem**: Cache stampede — thundering herd when cached key expires under high concurrency
 
-**Root cause**: [Why it happens]
+**Root cause**: Multiple concurrent requests find the key expired and all hit the backend database simultaneously. This can saturate the DB connection pool, increase latency by 10x, and cascade to other services.
 
-**Solution**: [How to fix]
+**Detection**: Monitoring shows a spike in DB queries at the same moment Redis keys expire. Application latency graph shows periodic sawtooth pattern at TTL boundaries. Redis `INFO stats` shows high `expired_keys` rate.
+
+**Solution**: Use locking (SET NX) around cache rebuild so only one request recomputes the value. Use early expiration with jitter — set TTL to base + random(0, 0.1 * base) to stagger expiry. For critical data, use a background refresh pattern: proactively recompute before TTL expires.
+
+**Problem**: Memory fragmentation causing OOM kills despite low actual data size
+
+**Root cause**: Redis uses jemalloc. When keys are created and deleted at varying sizes (e.g., storing small strings then overwriting with larger ones), memory becomes fragmented. `used_memory` may show 2GB but `used_memory_rss` shows 4GB. When RSS exceeds `maxmemory`, Redis gets OOM-killed by the kernel.
+
+**Detection**: `INFO memory` shows `mem_fragmentation_ratio > 1.5`. `used_memory` is well below `maxmemory` but the process RSS is near or above it.
+
+**Solution**: Enable `activedefrag yes` with `active-defrag-threshold-lower 10`. Rename keys to use consistent sizes. Prefer hash data type (listpack encoding) over many individual string keys. Restart during low traffic to defragment. If using VMs, ensure transparent huge pages are disabled (`echo never > /sys/kernel/mm/transparent_hugepage/enabled`).
 
 ---
 
 ## Interview Questions
 
-### Q1: [Core concept question]
+### Q1: How does Redis handle eviction and what policy should you choose for a caching use case?
 
-**Answer**: [Detailed explanation with trade-offs]
+**Answer**: Redis applies eviction when memory exceeds `maxmemory`. It uses a combination of lazy (check on every command) and active (sample keys every 100ms) eviction. For caching, `allkeys-lru` is the general-purpose choice — it evicts the least recently used keys across all keys. `allkeys-lfu` is better for workloads with skewed access patterns (some keys accessed much more frequently than others). `volatile-lru` only evicts keys with TTL set, which is useful when some keys should never be evicted. `noeviction` returns errors on writes — use it as a safety net to prevent data loss but monitor closely.
 
-### Q2: [Design/architecture question]
+### Q2: How would you design a Redis deployment for high availability with automatic failover?
 
-**Answer**: [Best practices and reasoning]
+**Answer**: Use Redis Sentinel for HA. Deploy at least 3 Sentinel nodes (odd number for quorum) monitoring a master-replica pair. Sentinels use gossip to agree on master status — if a master is unreachable, a leader election happens (requires majority), and a replica is promoted. Configure the application to connect via Sentinel (not directly to master) so it gets the current master address. For higher scale, use Redis Cluster with 3 masters and 3 replicas — data is sharded across 16384 hash slots, each master replicates to one replica. If a master fails, its replica is promoted. Cluster mode provides both HA and horizontal scaling but has limitations (multi-key operations only within same hash slot).

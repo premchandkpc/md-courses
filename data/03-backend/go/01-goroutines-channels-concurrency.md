@@ -4,15 +4,26 @@
 
 ```mermaid
 graph LR
-    A["Input<br/>Layer"] --> B["Hidden<br/>Layers"]
-    B --> C["Hidden<br/>Layers"]
-    C --> D["Output<br/>Layer"]
-    B --> E["Activation<br/>Functions"]
-    E --> B
-    style A fill:#4a8bc2
-    style B fill:#2d5a7b
-    style C fill:#2d5a7b
-    style D fill:#c73e1d
+    GOR["Goroutine<br/>G"] --> LM["Local<br/>Run Queue"]
+    LM --> P1["P (Processor)<br/>(GOMAXPROCS)"]
+    P1 --> OS1["OS Thread<br/>M₁"]
+    P2["P (Processor)<br/>(GOMAXPROCS)"] --> OS2["OS Thread<br/>M₂"]
+    GL["Global<br/>Run Queue"] -.-> P1
+    GL -.-> P2
+    WK["Work<br/>Stealing"] <--> P1
+    WK <--> P2
+    CH["Channel<br/>(send/recv)"] --> GOR
+    CH --> GOR2["Goroutine<br/>G₂"]
+    style GOR fill:#4a8bc2
+    style LM fill:#2d5a7b
+    style P1 fill:#3a7ca5
+    style P2 fill:#3a7ca5
+    style OS1 fill:#c73e1d
+    style OS2 fill:#c73e1d
+    style GL fill:#e8912e
+    style WK fill:#6f42c1
+    style CH fill:#3fb950
+    style GOR2 fill:#4a8bc2
 ```
 
 ## Table of Contents

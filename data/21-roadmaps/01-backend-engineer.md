@@ -5,16 +5,28 @@
 
 
 ```mermaid
-graph LR
-    A["Input<br/>Layer"] --> B["Hidden<br/>Layers"]
-    B --> C["Hidden<br/>Layers"]
-    C --> D["Output<br/>Layer"]
-    B --> E["Activation<br/>Functions"]
-    E --> B
-    style A fill:#4a8bc2
-    style B fill:#2d5a7b
-    style C fill:#2d5a7b
-    style D fill:#c73e1d
+graph TD
+    P0["Phase 0: Foundation<br/>Python/Java, DSA, SQL, REST, Git"] --> P1["Phase 1: Intermediate<br/>Concurrency, Docker, Redis, Kafka, CI/CD"]
+    P1 --> P2["Phase 2: Advanced<br/>Microservices, DDD, Kafka Streams, K8s"]
+    P2 --> P3["Phase 3: Staff<br/>Distributed Consensus, DB Internals, SRE"]
+    P3 --> P4["Phase 4: Principal<br/>Org Design, Tech Strategy, Platforms"]
+
+    P0 --> T0["Projects: CLI Todo, Blog API, URL Shortener"]
+    P1 --> T1["Projects: Rate-limiter, Chat Server, E-commerce Cart"]
+    P2 --> T2["Projects: Raft KV Store, Event-sourced Order System"]
+    P3 --> T3["Projects: B-tree Engine, eBPF Profiler, Multi-region CDN"]
+    P4 --> T4["Projects: IDP Backstage, Open Source Tool, Migration Lead"]
+
+    style P0 fill:#4a8bc2
+    style P1 fill:#3a7ca5
+    style P2 fill:#2d5a7b
+    style P3 fill:#1e3e5c
+    style P4 fill:#0f1f2e
+    style T0 fill:#4a8bc2
+    style T1 fill:#3a7ca5
+    style T2 fill:#2d5a7b
+    style T3 fill:#1e3e5c
+    style T4 fill:#0f1f2e
 ```
 
 ## Table of Contents
@@ -314,3 +326,78 @@ Markdown Notes       CI/CD Canary Deploy     Multi-region Active-Active   SLO Au
 ---
 
 > **Final note:** This roadmap is a guide, not a checklist. Progression is non-linear — you may revisit earlier phases as you encounter new technologies. The most important success metric is your ability to **design, build, and operate systems that solve real user problems reliably**. Start with Phase 1, build the URL shortener, and iterate. Each project teaches more than reading ten books.
+
+
+## Production Failure Modes
+
+### Failure 1: Learning Plateau — Engineer Stops Growing After Phase 2
+
+| Aspect | Detail |
+|--------|--------|
+| **Symptoms** | Engineer comfortable with CRUD APIs but avoids distributed systems. No progress to Phase 3 for 12+ months. Blames "not enough time" |
+| **Root Cause** | No structured challenge. Company uses monolith, no distributed systems exposure. Engineer lacks motivation for self-study. Imposter syndrome blocks interview attempts |
+| **Detection** | No new topics added to learning plan. 1-on-1 mentions staleness. Code reviews show same patterns as 6 months ago |
+| **Recovery** | Join open source project (Kubernetes, Kafka, gRPC). Shadow SRE rotation. Pair with senior engineer on a distributed system project. Start system design interview prep |
+| **Prevention** | Rotate projects every 6 months. Allocate 20% time for learning. Company tech talks. Annual conference budget. Quarterly skill assessments against this roadmap |
+
+### Failure 2: Shallow Learning — Book-Reading Without Building
+
+| Aspect | Detail |
+|--------|--------|
+| **Symptoms** | Engineer has read all recommended books but can't implement a Raft leader election or design a distributed cache. Interview performance low despite knowledge |
+| **Root Cause** | Consuming content without building. Books give illusion of competence. No project work reinforces concepts |
+| **Detection** | Engineer can explain theory but fails hands-on coding exercise for same concept |
+| **Recovery** | Stop reading new books. Build projects from the roadmap. Build the B-tree engine from Phase 4. Implement a gossip protocol. Set build-first rule: no new reading until last project is complete |
+| **Prevention** | For every book chapter, define a project that implements what was learned. Use the Projects column in each phase as mandatory deliverables |
+
+### Failure 3: Interview Obsession — Learning for Signals Instead of Skills
+
+| Aspect | Detail |
+|--------|--------|
+| **Symptoms** | Engineer optimizes for LeetCode and system design mnemonics. Can't operate production systems. On-call performance poor |
+| **Root Cause** | Job market incentivizes interview performance over engineering skill. Company hiring process rewards memorization |
+| **Detection** | High LeetCode rating but low impact at work. System design answers sound rehearsed. Unable to debug real production incident |
+| **Recovery** | Shift 50% of study time to production-ready skills: observability, incident response, capacity planning. Use real incidents as learning material |
+| **Prevention** | Balance: 50% interview prep, 50% production skills. Phase 4 and 5 topics are not interview-relevant but are career-critical for Staff+ roles |
+
+## Edge Cases
+
+| Scenario | Challenge | Solution |
+|----------|-----------|----------|
+| **Non-traditional background** | No CS degree, no DSA foundation | Start Phase 1. Use Harvard CS50. Supplement with Grokking Algorithms. DSA takes 2x longer, accept it |
+| **Career transition** | Switching from frontend/mobile/QA to backend | Focus on networking and databases first. Build the URL shortener. Don't skip Phase 1 even if experienced |
+| **Returning after break** | Rusty on fundamentals, new tools since last role | Rapid refresh: build the Todo API in 2 days. Docker Compose a 3-tier app. Then proceed to Phase 2 |
+| **Toxic workplace** | No mentorship, production incidents are punished, no learning time | Focus 100% on external learning. Build projects on personal time. Interview aggressively. Roadmap is portable |
+| **Team uses different stack** | Roadmap uses Python/Java, team uses Go/Rust | Core concepts (distributed systems, OS, networking) are language-agnostic. Adapt project implementations to team's language |
+| **Too much choice** | Multiple books and frameworks cause paralysis | Pick one path. Python + Flask for Phase 1. PostgreSQL for DB. Kafka for messaging. Kubernetes for orchestration. Stick with it |
+
+## Interview Questions
+
+### Q1 (Beginner): How does this roadmap differ from doing LeetCode alone?
+
+**Answer**: LeetCode teaches algorithmic thinking but not engineering. This roadmap focuses on systems knowledge, production skills, and architecture decisions — the differentiators for Staff+ roles. In interviews, LeetCode gets you to the offer stage, but systems design and behavioral questions determine level and compensation. This roadmap builds the deep knowledge needed for Senior+ level at any company.
+
+### Q2 (Mid-Level): I'm at Phase 2 and feel stuck. What is the single highest-impact topic to learn next?
+
+**Answer**: Distributed systems fundamentals (CAP, consistency models, Raft, gossip). Understanding these unlocks every Phase 3+ topic. Without distributed systems intuition, microservices, databases, and streaming all feel like magic. Start with DDIA Part II and build the Raft KV store project. This single skill is the biggest differentiator between mid-level and senior engineers.
+
+### Q3 (Senior): How should a senior engineer customize this roadmap for their specific team/company context?
+
+**Answer**: Audit your team's tech stack against each phase. Phase 1-2 topics should be 80% mastered. If your team uses Kafka and you haven't built Phase 2 message queue skills, that's the gap. For Phase 3-4, evaluate which topics your company needs most: stream processing (Flink/kafka streams), observability (OpenTelemetry, tracing), or databases (sharding, CDC). Focus 70% of learning time on the intersection of "important to my company" and "weakest skill." The remaining 30% goes to career growth areas (leadership, mentoring, tech strategy).
+
+### Q4 (Staff Engineer): This roadmap assumes a linear progression. How should a Staff engineer break the rules?
+
+**Answer**: Staff engineers should parallelize phases: you don't need Phase 2 mastery when Phase 4 topics (OS internals, eBPF, production reliability) are more impactful for your role. Skip Phase 1-2 entirely if you already operate at scale. Focus on Phase 4 and 5: SRE principles, organizational design, technology strategy. The biggest Staff growth levers are: leading incident response, designing cross-team architecture, mentoring multiple seniors, and influencing technology decisions org-wide. Books from Phase 5 (Staff Engineer, An Elegant Puzzle, Team Topologies) become primary reading.
+
+### Q5 (Principal): How does this roadmap translate to building an organizational learning program?
+
+**Answer**: Map each phase to career levels: Phase 1 = new grad/junior, Phase 2 = mid-level, Phase 3 = senior, Phase 4 = staff, Phase 5 = principal. Create a learning guild per phase with a designated lead. Each guild runs book clubs, project showcases, and tech talks. Success metrics: % of engineers advancing one phase per year, production incident reduction as engineers complete Phase 3+ topics, and internal promotion rate. The roadmap becomes your company's engineering career framework.
+
+## Cross-References
+
+- [System Design Interview Prep](../03-system-design-prep.md) — Framework, design patterns, database selection guide, 30 practice questions
+- [HTTP Protocols](../../11-networking/02-http-protocols.md) — Phase 1 networking fundamentals deep dive
+- [PostgreSQL Architecture](../../08-databases/02-postgresql-architecture.md) — Phase 2 database internals
+- [Distributed Transactions](../../09-distributed-systems/02-distributed-transactions.md) — Phase 3 distributed systems
+- [Kubernetes Networking](../../07-kubernetes/03-kubernetes-networking.md) — Phase 2-3 container orchestration
+- [Stream Processing](../../09-distributed-systems/04-stream-processing.md) — Phase 3 streaming fundamentals

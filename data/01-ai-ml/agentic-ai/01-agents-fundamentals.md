@@ -928,18 +928,733 @@ class FallbackChain:
         raise Exception(f"All strategies failed: {errors}")
 ```
 
-## 8. Agent Framework Comparison
+## 8. MCP (Model Context Protocol)
 
-| Framework | Architecture | Key Feature | Best For |
-|-----------|-------------|-------------|----------|
-| LangChain | Agent + Tool | Extensive integrations | Quick prototyping |
-| LangGraph | State graph | Cyclic workflows | Complex state machines |
-| AutoGen | Multi-agent | Conversable agents | Multi-agent chats |
-| CrewAI | Crew + Process | Role-based agents | Task delegation |
-| Semantic Kernel | Plugin-based | .NET ecosystem | Enterprise .NET |
-| BabyAGI | Task queue | Autonomous task management | Research |
+### 8.1 Overview
 
-## 9. Exercise Problems
+MCP is an open protocol (Anthropic) that standardizes how AI agents connect to external tools and data sources. It provides a unified interface for tool discovery, authentication, and execution.
+
+```mermaid
+graph TB
+    subgraph "Agent / Host"
+        A["LLM Application"]
+        B["MCP Client"]
+    end
+    subgraph "MCP Protocol"
+        C["MCP Transport<br/>(stdio/SSE)"]
+        D["Capability<br/>Negotiation"]
+    end
+    subgraph "MCP Server"
+        E["Tool Registry"]
+        F["Resource<br/>Manager"]
+        G["Prompt<br/>Templates"]
+    end
+    subgraph "External Systems"
+        H["Databases"]
+        I["APIs"]
+        J["File Systems"]
+        K["Vector Stores"]
+    end
+
+    A --> B
+    B --> C
+    C --> D
+    D --> E
+    D --> F
+    D --> G
+    E --> H
+    E --> I
+    F --> J
+    G --> K
+```
+
+### 8.2 MCP Server Implementation
+
+```python
+# MCP Server (Model Context Protocol)
+class MCPServer:
+    """MCP server that exposes tools and resources to AI agents."""
+
+    def __init__(self, name: str, version: str = "1.0.0"):
+        self.name = name
+        self.version = version
+        self.tools: dict[str, MCPTool] = {}
+        self.resources: dict[str, MCPResource] = {}
+        self.prompts: dict[str, MCPPrompt] = {}
+
+    def register_tool(self, name: str, description: str,
+                       input_schema: dict, handler: callable):
+        self.tools[name] = MCPTool(name, description, input_schema, handler)
+
+    def register_resource(self, uri: str, name: str,
+                           mime_type: str, handler: callable):
+        self.resources[uri] = MCPResource(uri, name, mime_type, handler)
+
+    def register_prompt(self, name: str, description: str,
+                         template: str, arguments: list[dict]):
+        self.prompts[name] = MCPPrompt(name, description, template, arguments)
+
+    def handle_request(self, request: dict) -> dict:
+        method = request.get("method")
+        params = request.get("params", {})
+
+        if method == "tools/list":
+            return {"tools": [t.to_dict() for t in self.tools.values()]}
+        elif method == "tools/call":
+            tool_name = params.get("name")
+            arguments = params.get("arguments", {})
+            tool = self.tools.get(tool_name)
+            if not tool:
+                return {"error": f"Tool '{tool_name}' not found"}
+            try:
+                result = tool.handler(**arguments)
+                return {"content": [{"type": "text", "text": str(result)}]}
+            except Exception as e:
+                return {"error": str(e)}
+        elif method == "resources/list":
+            return {"resources": [r.to_dict() for r in self.resources.values()]}
+        elif method == "resources/read":
+            uri = params.get("uri")
+            resource = self.resources.get(uri)
+            if not resource:
+                return {"error": f"Resource '{uri}' not found"}
+            content = resource.handler()
+            return {"contents": [{"uri": uri, "mimeType": resource.mime_type,
+                                   "text": content}]}
+        elif method == "prompts/list":
+            return {"prompts": [p.to_dict() for p in self.prompts.values()]}
+        else:
+            return {"error": f"Unknown method: {method}"}
+
+    def serve_stdio(self):
+        """Run MCP server over stdin/stdout."""
+        import sys, json
+        for line in sys.stdin:
+            request = json.loads(line.strip())
+            response = self.handle_request(request)
+            print(json.dumps(response), flush=True)
+
+    def serve_sse(self, host: str = "localhost", port: int = 8000):
+        """Run MCP server over SSE (Server-Sent Events)."""
+        from http.server import HTTPServer, BaseHTTPRequestHandler
+
+        class MCPHandler(BaseHTTPRequestHandler):
+            server_instance = self
+
+            def do_POST(self):
+                content_length = int(self.headers["Content-Length"])
+                body = self.rfile.read(content_length)
+                request = json.loads(body)
+                response = self.server_instance.handle_request(request)
+                self.send_response(200)
+                self.send_header("Content-Type", "application/json")
+                self.end_headers()
+                self.wfile.write(json.dumps(response).encode())
+
+        server = HTTPServer((host, port), MCPHandler)
+        print(f"MCP server listening on {host}:{port}")
+        server.serve_forever()
+
+
+@dataclass
+class MCPTool:
+    name: str
+    description: str
+    input_schema: dict
+    handler: callable
+
+    def to_dict(self):
+        return {
+            "name": self.name,
+            "description": self.description,
+            "inputSchema": self.input_schema
+        }
+
+
+@dataclass
+class MCPResource:
+    uri: str
+    name: str
+    mime_type: str
+    handler: callable
+
+    def to_dict(self):
+        return {"uri": self.uri, "name": self.name, "mimeType": self.mime_type}
+
+
+@dataclass
+class MCPPrompt:
+    name: str
+    description: str
+    template: str
+    arguments: list[dict]
+
+    def to_dict(self):
+        return {
+            "name": self.name,
+            "description": self.description,
+            "arguments": self.arguments
+        }
+
+
+# MCP Client (connects to MCP servers)
+class MCPClient:
+    def __init__(self):
+        self.servers: dict[str, MCPServer] = {}
+        self.tool_cache: dict = {}
+
+    def connect_stdio(self, name: str, server: MCPServer):
+        self.servers[name] = server
+
+    def list_tools(self) -> list[dict]:
+        all_tools = []
+        for name, server in self.servers.items():
+            response = server.handle_request({"method": "tools/list"})
+            for tool in response.get("tools", []):
+                tool["server"] = name
+                all_tools.append(tool)
+        return all_tools
+
+    def call_tool(self, server_name: str, tool_name: str,
+                   arguments: dict) -> str:
+        server = self.servers.get(server_name)
+        if not server:
+            return f"Error: Server '{server_name}' not found"
+        response = server.handle_request({
+            "method": "tools/call",
+            "params": {"name": tool_name, "arguments": arguments}
+        })
+        return response.get("content", [{}])[0].get("text", str(response))
+
+
+# Example: Database MCP server
+class DatabaseMCPServer(MCPServer):
+    def __init__(self):
+        super().__init__("database-server")
+        self.register_tool(
+            "query", "Execute SQL query",
+            {
+                "type": "object",
+                "properties": {
+                    "sql": {"type": "string", "description": "SQL query"}
+                },
+                "required": ["sql"]
+            },
+            self.execute_query
+        )
+        self.register_resource(
+            "db://schemas", "Database Schemas", "application/json",
+            lambda: json.dumps({"tables": ["users", "orders", "products"]})
+        )
+
+    def execute_query(self, sql: str) -> str:
+        return f"Query results for: {sql[:50]}..."
+```
+
+## 9. Agent Evaluation and Observability
+
+### 9.1 Evaluation Framework
+
+```python
+class AgentEvaluator:
+    def __init__(self, llm_as_judge=None):
+        self.judge = llm_as_judge
+        self.results = []
+
+    def evaluate_task(self, task: str, agent_output: str,
+                       expected_output: str = None) -> dict:
+        metrics = {
+            "task": task,
+            "output_length": len(agent_output),
+            "contains_error_indicators": self._check_errors(agent_output),
+            "tool_calls": self._count_tool_calls(agent_output),
+        }
+
+        if expected_output:
+            metrics["exact_match"] = agent_output.strip() == expected_output.strip()
+            metrics["rouge_l"] = self._rouge_l(agent_output, expected_output)
+            metrics["semantic_similarity"] = self._semantic_similarity(
+                agent_output, expected_output
+            )
+
+        if self.judge:
+            metrics["judge_score"] = self._judge_evaluation(
+                task, agent_output
+            )
+
+        self.results.append(metrics)
+        return metrics
+
+    def _check_errors(self, text: str) -> bool:
+        error_indicators = ["error:", "exception", "failed", "unable to",
+                           "could not", "timeout", "not found"]
+        return any(indicator in text.lower() for indicator in error_indicators)
+
+    def _count_tool_calls(self, text: str) -> int:
+        return text.count("Action:") + text.count("tool_call")
+
+    def _rouge_l(self, candidate: str, reference: str) -> float:
+        cand_words = candidate.lower().split()
+        ref_words = reference.lower().split()
+        lcs = self._longest_common_subsequence(cand_words, ref_words)
+        precision = lcs / len(cand_words) if cand_words else 0
+        recall = lcs / len(ref_words) if ref_words else 0
+        if precision + recall == 0:
+            return 0
+        return 2 * precision * recall / (precision + recall)
+
+    def _longest_common_subsequence(self, a: list, b: list) -> int:
+        m, n = len(a), len(b)
+        dp = [[0] * (n + 1) for _ in range(m + 1)]
+        for i in range(1, m + 1):
+            for j in range(1, n + 1):
+                if a[i - 1] == b[j - 1]:
+                    dp[i][j] = dp[i - 1][j - 1] + 1
+                else:
+                    dp[i][j] = max(dp[i - 1][j], dp[i][j - 1])
+        return dp[m][n]
+
+    def _semantic_similarity(self, text1: str, text2: str) -> float:
+        set1 = set(text1.lower().split())
+        set2 = set(text2.lower().split())
+        intersection = set1 & set2
+        union = set1 | set2
+        return len(intersection) / len(union) if union else 0
+
+    def _judge_evaluation(self, task: str, output: str) -> float:
+        prompt = f"""Evaluate this agent's response for:
+1. Correctness (1-5)
+2. Completeness (1-5)
+3. Clarity (1-5)
+
+Task: {task}
+Response: {output}
+
+Score (average):"""
+
+        score_text = self.judge(prompt) if self.judge else "4"
+        try:
+            return float(score_text.strip())
+        except (ValueError, TypeError):
+            return 3.0
+
+    def aggregate_metrics(self) -> dict:
+        if not self.results:
+            return {}
+        return {
+            "total_evaluations": len(self.results),
+            "avg_output_length": np.mean([r["output_length"] for r in self.results]),
+            "error_rate": sum(1 for r in self.results if r["contains_error_indicators"]) / len(self.results),
+            "avg_tool_calls": np.mean([r["tool_calls"] for r in self.results]),
+            "avg_judge_score": np.mean([r.get("judge_score", 0) for r in self.results if "judge_score" in r])
+        }
+
+
+class AgentObservability:
+    def __init__(self):
+        self.traces: dict = {}
+        self.metrics: dict = defaultdict(list)
+
+    def start_trace(self, agent_id: str, task: str) -> str:
+        trace_id = f"{agent_id}_{int(time.time())}"
+        self.traces[trace_id] = {
+            "agent_id": agent_id,
+            "task": task,
+            "start_time": time.time(),
+            "steps": [],
+            "status": "running",
+            "total_cost": 0.0
+        }
+        return trace_id
+
+    def record_step(self, trace_id: str, step_type: str,
+                     input_text: str, output_text: str, duration: float,
+                     token_usage: int = 0, cost: float = 0.0):
+        trace = self.traces.get(trace_id)
+        if trace:
+            trace["steps"].append({
+                "type": step_type,
+                "input_length": len(input_text),
+                "output_length": len(output_text),
+                "duration_s": duration,
+                "tokens": token_usage,
+                "cost": cost,
+                "timestamp": time.time()
+            })
+            trace["total_cost"] += cost
+
+    def end_trace(self, trace_id: str, status: str = "completed"):
+        trace = self.traces.get(trace_id)
+        if trace:
+            trace["end_time"] = time.time()
+            trace["status"] = status
+            trace["total_duration"] = trace["end_time"] - trace["start_time"]
+
+            # Record aggregate metrics
+            self.metrics["total_duration"].append(trace["total_duration"])
+            self.metrics["total_cost"].append(trace["total_cost"])
+            self.metrics["step_count"].append(len(trace["steps"]))
+            self.metrics["status"].append(status)
+
+    def get_agent_dashboard(self, agent_id: str = None) -> dict:
+        traces = [t for t in self.traces.values()
+                  if not agent_id or t["agent_id"] == agent_id]
+        if not traces:
+            return {}
+
+        durations = [t["total_duration"] for t in traces if "total_duration" in t]
+        costs = [t["total_cost"] for t in traces]
+        step_counts = [len(t["steps"]) for t in traces]
+        completed = sum(1 for t in traces if t["status"] == "completed")
+
+        return {
+            "total_runs": len(traces),
+            "avg_duration_s": np.mean(durations) if durations else 0,
+            "p95_duration_s": sorted(durations)[int(len(durations) * 0.95)] if len(durations) > 1 else 0,
+            "total_cost": sum(costs),
+            "avg_cost_per_run": np.mean(costs) if costs else 0,
+            "avg_steps_per_run": np.mean(step_counts) if step_counts else 0,
+            "success_rate": completed / len(traces) * 100 if traces else 0,
+            "tokens_used": sum(
+                sum(s["tokens"] for s in t["steps"])
+                for t in traces if "steps" in t
+            )
+        }
+
+    def get_llm_usage_report(self) -> dict:
+        total_tokens = sum(
+            sum(s["tokens"] for s in t["steps"] if "tokens" in s)
+            for t in self.traces.values()
+        )
+        total_cost = sum(t["total_cost"] for t in self.traces.values())
+        return {
+            "total_tokens": total_tokens,
+            "total_cost": total_cost,
+            "cost_per_run": total_cost / len(self.traces) if self.traces else 0
+        }
+```
+
+### 9.2 Production Failure Modes
+
+```python
+class AgentFailureDetector:
+    """Detects and classifies agent failures in production."""
+
+    FAILURE_TYPES = {
+        "hallucination": {
+            "description": "Agent fabricates tool results or facts",
+            "severity": "critical",
+            "detection": [
+                "Confidence score < threshold",
+                "Contradicts known facts",
+                "Refers to non-existent tool outputs"
+            ],
+            "mitigation": [
+                "Add result verification step",
+                "Implement fact-checking against knowledge base",
+                "Require citations from tool outputs",
+                "Use temperature < 0.3 for factual tasks"
+            ]
+        },
+        "tool_misuse": {
+            "description": "Agent selects wrong tool for the task",
+            "severity": "high",
+            "detection": [
+                "Tool call returns error or unexpected result",
+                "Same tool called multiple times with same args",
+                "Tool input doesn't match task requirements"
+            ],
+            "mitigation": [
+                "Improve tool descriptions",
+                "Add input validation before tool execution",
+                "Implement tool selection validation",
+                "Reduce tool count per agent"
+            ]
+        },
+        "infinite_loop": {
+            "description": "Agent repeats same action without progress",
+            "severity": "high",
+            "detection": [
+                "Action history contains repeated patterns",
+                "No progress toward task completion",
+                "Tool call count exceeds threshold"
+            ],
+            "mitigation": [
+                "Set max iterations (hard limit)",
+                "Track action diversity score",
+                "Implement loop detection (duplicate action > N times)",
+                "Add forced progression: require different action each turn"
+            ]
+        },
+        "context_window_overflow": {
+            "description": "Agent exceeds LLM context window",
+            "severity": "medium",
+            "detection": [
+                "Token count approaching limit",
+                "Error from LLM API (context length exceeded)",
+                "Early truncation of conversation history"
+            ],
+            "mitigation": [
+                "Implement sliding window memory",
+                "Summarize older context",
+                "Use models with larger context (128K+ tokens)",
+                "Compress tool outputs before adding to context"
+            ]
+        },
+        "cost_explosion": {
+            "description": "Agent exceeds budget due to excessive LLM calls",
+            "severity": "high",
+            "detection": [
+                "Cost per run exceeds threshold",
+                "Excessive token usage",
+                "Too many retry attempts"
+            ],
+            "mitigation": [
+                "Set per-run token budget",
+                "Implement cost tracking guardrail",
+                "Use smaller models for simple tasks",
+                "Cache common LLM responses"
+            ]
+        }
+    }
+
+    def detect_failure(self, trace: dict) -> list[dict]:
+        failures = []
+
+        # Check for infinite loops
+        if self._detect_loop(trace):
+            failures.append({
+                "type": "infinite_loop",
+                "details": self.FAILURE_TYPES["infinite_loop"]
+            })
+
+        # Check for tool misuse
+        if self._detect_tool_misuse(trace):
+            failures.append({
+                "type": "tool_misuse",
+                "details": self.FAILURE_TYPES["tool_misuse"]
+            })
+
+        # Check for cost explosion
+        if trace.get("total_cost", 0) > 1.0:  # $1 threshold
+            failures.append({
+                "type": "cost_explosion",
+                "details": self.FAILURE_TYPES["cost_explosion"]
+            })
+
+        return failures
+
+    def _detect_loop(self, trace: dict) -> bool:
+        steps = trace.get("steps", [])
+        if len(steps) < 10:
+            return False
+        recent_actions = [s.get("type") for s in steps[-10:] if s.get("type")]
+        from collections import Counter
+        counts = Counter(recent_actions)
+        most_common = counts.most_common(1)
+        return most_common and most_common[0][1] > 5
+
+    def _detect_tool_misuse(self, trace: dict) -> bool:
+        steps = trace.get("steps", [])
+        error_steps = [s for s in steps if "error" in s.get("output", "").lower()]
+        return len(error_steps) > len(steps) * 0.3
+
+    def classify_severity(self, trace: dict) -> str:
+        failures = self.detect_failure(trace)
+        if any(f["details"]["severity"] == "critical" for f in failures):
+            return "critical"
+        elif any(f["details"]["severity"] == "high" for f in failures):
+            return "high"
+        elif failures:
+            return "medium"
+        return "low"
+
+
+class AgentGuardrailManager:
+    def __init__(self):
+        self.guardrails = []
+
+    def add_guardrail(self, name: str, check_fn: callable,
+                       action: str = "block"):
+        self.guardrails.append({
+            "name": name,
+            "check": check_fn,
+            "action": action
+        })
+
+    def check_all(self, input_text: str, output_text: str,
+                   trace: dict = None) -> list[dict]:
+        results = []
+        for guardrail in self.guardrails:
+            try:
+                passed = guardrail["check"](input_text, output_text, trace)
+                if not passed:
+                    results.append({
+                        "guardrail": guardrail["name"],
+                        "action": guardrail["action"],
+                        "passed": False
+                    })
+            except Exception as e:
+                results.append({
+                    "guardrail": guardrail["name"],
+                    "action": guardrail["action"],
+                    "passed": False,
+                    "error": str(e)
+                })
+        return results
+
+
+# Production-ready agent with guardrails and monitoring
+class ProductionAgent:
+    def __init__(self, llm, tools: list, max_steps: int = 20,
+                 max_cost: float = 0.50):
+        self.agent = ReActAgent(llm, tools)
+        self.monitor = AgentObservability()
+        self.guardrails = AgentGuardrailManager()
+        self.failure_detector = AgentFailureDetector()
+        self.max_steps = max_steps
+        self.max_cost = max_cost
+
+        # Default guardrails
+        self.guardrails.add_guardrail(
+            "budget", lambda i, o, t: (t or {}).get("total_cost", 0) < max_cost
+        )
+        self.guardrails.add_guardrail(
+            "max_steps", lambda i, o, t: len((t or {}).get("steps", [])) < max_steps
+        )
+        self.guardrails.add_guardrail(
+            "toxic_output", lambda i, o, t: not self._is_toxic(o)
+        )
+
+    def run(self, task: str) -> dict:
+        trace_id = self.monitor.start_trace("production_agent", task)
+
+        try:
+            result = self.agent.run(task)
+            self.monitor.end_trace(trace_id, "completed")
+
+            # Check for failures
+            trace = self.monitor.traces[trace_id]
+            failures = self.failure_detector.detect_failure(trace)
+            guardrails = self.guardrails.check_all(task, str(result), trace)
+
+            return {
+                "result": result,
+                "trace_id": trace_id,
+                "failures": failures,
+                "guardrails": guardrails,
+                "dashboard": self.monitor.get_agent_dashboard()
+            }
+
+        except Exception as e:
+            self.monitor.end_trace(trace_id, "failed")
+            return {
+                "error": str(e),
+                "trace_id": trace_id,
+                "failures": [{"type": "runtime_error", "message": str(e)}]
+            }
+
+    def _is_toxic(self, text: str) -> bool:
+        toxic_patterns = ["hate", "violence", "abuse"]
+        return any(p in str(text).lower() for p in toxic_patterns)
+```
+
+## 10. Agent Framework Comparison
+
+### 10.1 Detailed Comparison
+
+| Framework | Architecture | State Management | Tool Calling | Best For |
+|-----------|-------------|-----------------|--------------|----------|
+| LangChain | Agent + Tool + Chain | External memory | Function calling + custom | Quick prototyping, PoCs |
+| LangGraph | State graph (nodes + edges) | Built-in graph state | Tool nodes in graph | Complex state machines, workflows |
+| AutoGen | Conversable agents | Agent conversation history | Function calling | Multi-agent conversations |
+| CrewAI | Crew + Process + Agent | Sequential/hierarchical | Role-based tool access | Task delegation, structured teams |
+| Semantic Kernel | Plugin-based pipeline | Semantic memory | Plugin connectors | Enterprise .NET, Microsoft ecosystem |
+| BabyAGI | Task queue + agent loop | Vector store | External tools | Autonomous task management |
+| MCP-based | Client-Server protocol | Per-server state | MCP tools via protocol | Standardized tool access |
+
+### 10.2 Selection Guide
+
+```python
+class AgentFrameworkSelector:
+    def __init__(self):
+        self.frameworks = {
+            "langchain": {
+                "strength": "rapid_prototyping",
+                "complexity": "low",
+                "use_case": "Simple RAG, single-tool agents",
+                "scalability": "medium",
+                "evaluation": "Manual testing"
+            },
+            "langgraph": {
+                "strength": "complex_workflows",
+                "complexity": "high",
+                "use_case": "Multi-step reasoning, human-in-loop",
+                "scalability": "high",
+                "evaluation": "Graph-based testing"
+            },
+            "crewai": {
+                "strength": "role_based_teams",
+                "complexity": "medium",
+                "use_case": "Content generation, research teams",
+                "scalability": "medium",
+                "evaluation": "Task completion metrics"
+            },
+            "autogen": {
+                "strength": "conversational_agents",
+                "complexity": "medium",
+                "use_case": "Coding agents, debate systems",
+                "scalability": "medium",
+                "evaluation": "Conversation metrics"
+            }
+        }
+
+    def recommend(self, requirements: dict) -> str:
+        if requirements.get("state_machine"):
+            return "langgraph"
+        elif requirements.get("role_based"):
+            return "crewai"
+        elif requirements.get("conversation"):
+            return "autogen"
+        elif requirements.get("rapid_prototype"):
+            return "langchain"
+
+        # Scoring based on requirements
+        scores = {}
+        for name, info in self.frameworks.items():
+            score = 0
+            for req, weight in requirements.get("weights", {}).items():
+                if req in info.get("tags", []):
+                    score += weight
+            scores[name] = score
+
+        return max(scores, key=scores.get) if scores else "langchain"
+
+    def deployment_considerations(self, framework: str) -> dict:
+        considerations = {
+            "langchain": {
+                "deployment": "Standard API server",
+                "monitoring": "LangSmith, LangFuse",
+                "scaling": "Horizontal with request queue",
+                "failure_modes": "Context overflow, tool timeout"
+            },
+            "langgraph": {
+                "deployment": "Stateful service + checkpoint store",
+                "monitoring": "LangSmith tracing, custom metrics",
+                "scaling": "Checkpoint persistence + horizontal pods",
+                "failure_modes": "Graph deadlock, state corruption"
+            },
+            "crewai": {
+                "deployment": "Crew as API endpoint",
+                "monitoring": "Step-by-step logging",
+                "scaling": "Parallel crews, task queues",
+                "failure_modes": "Agent miscommunication, cascade failures"
+            }
+        }
+        return considerations.get(framework, {})
+```
+
+## 11. Exercise Problems
 
 **Problem 1**: Implement a ReAct agent with tools for web search, calculator, and database query. Design the prompt format and tool calling mechanism.
 

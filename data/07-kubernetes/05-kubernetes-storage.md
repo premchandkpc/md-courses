@@ -4,15 +4,29 @@
 
 ```mermaid
 graph LR
-    A["Input<br/>Layer"] --> B["Hidden<br/>Layers"]
-    B --> C["Hidden<br/>Layers"]
-    C --> D["Output<br/>Layer"]
-    B --> E["Activation<br/>Functions"]
-    E --> B
-    style A fill:#4a8bc2
-    style B fill:#2d5a7b
-    style C fill:#2d5a7b
-    style D fill:#c73e1d
+    PV["PersistentVolume<br/>(Cluster Resource)"] --> SC["StorageClass<br/>(Provisioner: ebs.csi.aws.com)"]
+    PVC["PersistentVolumeClaim<br/>(Namespace-bound)"] --> PV
+    POD["Pod"] --> PVC
+    CSI["CSI Driver"] --> ATTACH["Controller<br/>Attach/Detach"]
+    CSI --> MOUNT["Node<br/>Mount/Unmount"]
+    ATTACH --> VOL["EBS / EFS /<br/>Cinder Volume"]
+    MOUNT --> POD
+    STATEFUL["StatefulSet"] --> SVC["Headless Service<br/>(DNS: pod-0.svc)"]
+    STATEFUL --> PVC_TMPL["volumeClaimTemplate<br/>(per replica)"]
+    SNAP["VolumeSnapshot"] --> RESTORE["PVC from<br/>Snapshot"]
+    style PV fill:#4a8bc2
+    style SC fill:#2d5a7b
+    style PVC fill:#c73e1d
+    style POD fill:#3a7ca5
+    style CSI fill:#6f42c1
+    style ATTACH fill:#e8912e
+    style MOUNT fill:#3fb950
+    style VOL fill:#3a7ca5
+    style STATEFUL fill:#c73e1d
+    style SVC fill:#e8912e
+    style PVC_TMPL fill:#3fb950
+    style SNAP fill:#6f42c1
+    style RESTORE fill:#3fb950
 ```
 
 ## ToC
@@ -382,6 +396,66 @@ K8s storage = shipping container warehouse
 +------------------------------------------------------------------------------+
 
 
-## Practical Example
+## Interview Questions
 
-See code examples above for practical usage patterns.
+### Beginner Level
+
+**Q1: What is the difference between a PersistentVolume (PV) and a PersistentVolumeClaim (PVC)?**
+
+**Why interviewers ask this**: Tests understanding of storage abstraction in Kubernetes.
+
+**Ideal answer structure**:
+1. **PV** — cluster resource: a storage volume provisioned by admin or dynamically via StorageClass. Has capacity, access modes, reclaim policy.
+2. **PVC** — namespace-scoped request for storage: specifies size, access mode, StorageClass. Kubernetes binds PVC to PV that satisfies requirements.
+3. **Binding**: Kubernetes matches PVC to PV using size (must be >= requested), access modes, StorageClass, and labels (selector). Binding is 1:1 — once bound, the PV is claimed.
+4. **Analogy**: PV = physical server in data center; PVC = "I need a server with 32GB RAM". Admin (or StorageClass) finds/provisions a matching server.
+
+**Common wrong answer**: "PVC is a subset of PV" — no, PVC is a request, PV is the actual resource. They're separate objects that bind.
+
+**Q2**: What are the access modes for a PV and when would you use each?
+
+**Answer**: 1) **ReadWriteOnce (RWO)** — one node can mount read-write. Default for most block storage (EBS, GCE PD). 2) **ReadOnlyMany (ROX)** — many nodes can mount read-only (NFS, ConfigMap). 3) **ReadWriteMany (RWX)** — many nodes can mount read-write (NFS, EFS, GlusterFS). 4) **ReadWriteOncePod (RWOP)** — only one pod (not node) can mount (alpha, CSI only). Choice depends on workload: RWO for databases (single writer), RWX for shared config/files across pods.
+
+### Intermediate Level
+
+**Q3: How does CSI (Container Storage Interface) work in Kubernetes?**
+
+**Answer**: CSI is a standard for exposing storage systems to container workloads. Components: 1) **CSI Controller** (Deployment) — handles create/delete/snapshot operations. 2) **CSI Node** (DaemonSet) — mount/unmount on each node. 3) **Sidecar containers** (external-attacher, external-provisioner, external-resizer, external-snapshotter) — translate Kubernetes API objects to CSI gRPC calls. Flow: PVC → external-provisioner → CreateVolume → PV created. Pod scheduled → external-attacher → ControllerPublishVolume → NodePublishVolume → mount inside pod. CSI replaces the older in-tree volume plugins with a pluggable, vendor-neutral interface.
+
+**Q4**: What is a StorageClass and how does dynamic provisioning work?
+
+**Answer**: StorageClass defines a class of storage with parameters: provisioner (e.g., `ebs.csi.aws.com`, `pd.csi.storage.gke.io`), `parameters` (type: gp3/io2, IOPS, encryption), `reclaimPolicy` (Delete/Retain), `allowVolumeExpansion`, `mountOptions`. When a PVC references a StorageClass (via `storageClassName`), Kubernetes dynamically calls the provisioner to create the volume. No StorageClass = no dynamic provisioning — PVs must be pre-created. Default StorageClass is marked with annotation `storageclass.kubernetes.io/is-default-class: "true"`.
+
+### Senior Level
+
+**Q5: A StatefulSet pod's PVC shows "Pending" and never binds. Walk your debugging process.**
+
+**Why interviewers ask this**: Tests real-world storage troubleshooting skills.
+
+**Answer**: 1) `kubectl describe pvc <pvc>` — check Events for error message. Common causes: a) No StorageClass matching PVC request (check `storageClassName`). b) StorageClass provisioner doesn't exist (CSI driver not deployed). c) Out of capacity — cloud provider quota (EBS volume limit per AZ). d) **Volume limit per node** — EC2 has a max attachable volumes per instance type (e.g., 40 for c5n.18xlarge). e) **Topology constraints** — if using `WaitForFirstConsumer` binding mode, pod must be scheduled first. f) **Cross-AZ** if topology constraints prevent volume creation in pod's AZ. 2) Check CSI driver pod logs: `kubectl logs -n kube-system <csi-controller-pod>`. 3) Check node `kubectl describe node` for `AttachVolume.Limit` errors.
+
+**Q6**: Design a storage solution for a Kafka cluster on Kubernetes. Consider performance, data durability, and rebalancing.
+
+**Answer**: 1) **StatefulSet** with `volumeClaimTemplates`, each broker gets its own PV. 2) **StorageClass**: `gp3` (or local NVMe with `volumeBindingMode: WaitForFirstConsumer`). 3) **Local SSDs** (node-local) for performance — use `local.csi.storage.gke.io` or OpenEBS — but sacrifice durability (node failure = data loss). 4) **Network storage** (EBS/EFS): EBS gp3 (3000 IOPS baseline, burst to 16000) for standard, io2 (50000+ IOPS) for high-throughput. 5) **JBOD** (just a bunch of disks) — mount multiple PVs per broker, stripes across them via `log.dirs`. 6) **Rack-aware replication**: use `topology.kubernetes.io/zone` to spread replicas across AZs. 7) **Rebalancing**: use Cruise Control (LFBacked rebalancing) — on resize, new PVC provisioned, data streamed. Risk: rebalancing network I/O can impact production traffic; rate-limit rebalances.
+
+### Staff/Principal Level
+
+**Q7: Your team's database pods keep getting evicted due to disk pressure. The node has 500GB free. What's happening?**
+
+**Why**: Tests deep understanding of eviction signals and storage internals.
+
+**Answer**: **Eviction is based on inode pressure, not disk space**. Each PV on a network filesystem (EFS/NFS) uses inodes on the node for mount points and dentries. With 500 pods each mounting 5 PVs = 2500 mounts per node. Each mount creates dentries in slab caches — `slabtop` shows `dentry` and `inode_cache`. When slab cache exceeds `eviction-hard` (default 10% of memory), kubelet evicts lowest-priority pods. Fix: 1) Increase `--eviction-hard=memory.available<5%,nodefs.available<5%,nodefs.inodesFree<5%`. 2) Use `local ephemeral volumes` for temporary data. 3) Tune `vm.vfs_cache_pressure` to retain dentries longer. 4) Use `configmap` mounts as `subPath` to reduce dentry count. 5) Reduce mount count by consolidating volumes.
+
+**Q8**: Design a multi-region, disaster-recovery storage strategy for Kubernetes with RPO < 1 minute and RTO < 5 minutes.
+
+**Answer**: 1) **CSI Volume Snapshots** every 60 seconds (RPO=1min). 2) **Replication**: use `VolumeReplication` CRD (via `volsync` or Kasten) for async replication to secondary region. 3) **Cluster recovery**: Velero to back up Kubernetes objects (PVC definitions, but not data — too slow) to S3. 4) **RTO < 5min**: pre-provisioned secondary cluster with warm PVs. On failover, promote snapshot → restore from latest → remap PVC → scale up application. 5) **Service mesh**: use Istio multi-primary, multi-cluster mesh for traffic shift. 6) **Key challenge**: consistent snapshot order across multiple PVs. Use application-level quiesce (pause writes, snapshot all volumes, resume). For databases: use `pg_start_backup()` / `FLUSH TABLES WITH READ LOCK`. 7) **Testing**: run `litmus` chaos experiments for region failure scenarios monthly.
+
+### Tricky Edge Cases
+
+**Q9**: A CSI driver creates a volume in `us-east-1a`, but the pod is scheduled in `us-east-1b`. The pod stays `ContainerCreating` for 5 minutes then fails. Why?
+
+**Answer**: **Topology mismatch**. CSI volumes are zone-specific — an EBS volume in us-east-1a can't be attached to a pod in us-east-1b. The `WaitForFirstConsumer` mode delays volume creation until pod is scheduled, but if the StorageClass has `allowedTopologies: us-east-1a` and the pod schedules on us-east-1b via anti-affinity, the volume can't be created where the pod is. The scheduler should respect volume topology constraints via `volumeBindingMode: WaitForFirstConsumer` — but if the pod has a hard anti-affinity to "zone" that conflicts, it gets stuck. Fix: ensure scheduling constraints match StorageClass zones or use multi-zone storage (EFS, which is regional).
+
+**Q10**: A Deployment has `replicas: 3` with `emptyDir` volumes. Two pods are on the same node. When that node fails, only 1 pod is rescheduled. Why?
+
+**Answer**: `emptyDir` volumes are **ephemeral** — tied to the pod's lifecycle. When a node fails, the kubelet is unreachable, so pods enter `Unknown` state. After `--pod-eviction-timeout` (default 5 minutes), the controller manager evicts them. But `emptyDir` doesn't persist — the replacement pod gets a fresh empty directory. However, the **PodDisruptionBudget** (PDB) might prevent scheduling more than 1 replacement (if `minAvailable: 2` was set). Or: **DaemonSet** with `emptyDir` for logs — when the node comes back, the original pod may still be in `Terminating` state, consuming its UID/port/IP, and the new pod gets a different IP, confusing clients that cache DNS. Fix: use `persistentVolumeClaim` with `ReadWriteMany` for logs that must survive node failures.

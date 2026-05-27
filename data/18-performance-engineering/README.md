@@ -10,15 +10,45 @@ Performance engineering is the systematic practice of **measuring, analyzing, an
 
 ```mermaid
 graph LR
-    A["Input<br/>Layer"] --> B["Hidden<br/>Layers"]
-    B --> C["Hidden<br/>Layers"]
-    C --> D["Output<br/>Layer"]
-    B --> E["Activation<br/>Functions"]
-    E --> B
-    style A fill:#4a8bc2
-    style B fill:#2d5a7b
-    style C fill:#2d5a7b
-    style D fill:#c73e1d
+    PERF_FUND["Performance<br/>Engineering"] --> MEASURE["Measure →<br/>(Latency / Throughput)"]
+    PERF_FUND --> ANALYZE["Analyze →<br/>(Profiling / Tracing)"]
+    PERF_FUND --> OPTIMIZE["Optimize →<br/>(CPU / Mem / I/O)"]
+    CPU_P["CPU Profiling"] --> SAMPLING_P["Sampling<br/>(perf record)"]
+    CPU_P --> INSTRUMENT["Instrumentation<br/>(function trace)"]
+    MEM_P["Memory Profiling"] --> HEAP_P["Heap Analysis<br/>(malloc tracer)"]
+    MEM_P --> GC_P["GC Tracing<br/>(pause time)"]
+    IO_P["I/O Profiling"] --> IO_URING_P["io_uring /<br/>iostat / blktrace"]
+    IO_P --> DISK_P["Disk Latency<br/>(avg / p99)"]
+    NET_P["Network"] --> LATENCY_N["TCP Latency<br/>(packet capture)"]
+    NET_P --> BANDWIDTH["Bandwidth<br/>(throughput)"]
+    JVM_T["JVM Tuning"] --> GC_TUNING["GC Selection<br/>(G1/ZGC/Shenandoah)"]
+    JVM_T --> HEAP_T["Heap Sizing<br/>(Xms/Xmx)"]
+    JVM_T --> JIT_T["JIT Compilation<br/>(C1/C2)"]
+    BENCHMARK["Benchmarking"] --> JMH["JMH Java<br/>(microbenchmark)"]
+    BENCHMARK --> PERF_TEST["Perf Testing<br/>(k6/locust)"]
+    style PERF_FUND fill:#4a8bc2
+    style MEASURE fill:#2d5a7b
+    style ANALYZE fill:#3a7ca5
+    style OPTIMIZE fill:#c73e1d
+    style CPU_P fill:#e8912e
+    style SAMPLING_P fill:#3fb950
+    style INSTRUMENT fill:#6f42c1
+    style MEM_P fill:#3fb950
+    style HEAP_P fill:#e8912e
+    style GC_P fill:#c73e1d
+    style IO_P fill:#6f42c1
+    style IO_URING_P fill:#3a7ca5
+    style DISK_P fill:#e8912e
+    style NET_P fill:#3a7ca5
+    style LATENCY_N fill:#c73e1d
+    style BANDWIDTH fill:#e8912e
+    style JVM_T fill:#2d5a7b
+    style GC_TUNING fill:#e8912e
+    style HEAP_T fill:#c73e1d
+    style JIT_T fill:#3fb950
+    style BENCHMARK fill:#3fb950
+    style JMH fill:#e8912e
+    style PERF_TEST fill:#3a7ca5
 ```
 
 ## Table of Contents

@@ -8,15 +8,35 @@
 
 ```mermaid
 graph LR
-    A["Input<br/>Layer"] --> B["Hidden<br/>Layers"]
-    B --> C["Hidden<br/>Layers"]
-    C --> D["Output<br/>Layer"]
-    B --> E["Activation<br/>Functions"]
-    E --> B
-    style A fill:#4a8bc2
-    style B fill:#2d5a7b
-    style C fill:#2d5a7b
-    style D fill:#c73e1d
+    CREATOR["Creator"] --> UPLOAD_YT["Upload Video<br/>(chunked)"]
+    UPLOAD_YT --> VIDEO_PROC["Video Processing<br/>(transcoding pipeline)"]
+    VIDEO_PROC --> PER_TITLE["Per-Title Encoding<br/>(resolution ladder)"]
+    VIDEO_PROC --> THUMB["Thumbnail Gen<br/>(multiple)"]
+    VIDEO_PROC --> CAPTION["Caption/Audio<br/>Generation"]
+    PER_TITLE --> STORAGE_YT["Video Storage<br/>(GFS/Colossus)"]
+    STORAGE_YT --> CDN_YT["CDN Steering<br/>(Google Global Cache)"]
+    CDN_YT --> USER_YT["User Playback<br/>(DASH/HLS)"]
+    REC_YT["Recommendations"] --> CAND_GEN_YT["Candidate Gen<br/>(collaborative)"]
+    CAND_GEN_YT --> RANK_YT["Ranking<br/>(DNN)"]
+    RANK_YT --> FILTER_YT["Filtering<br/>(watched + NSFW)"]
+    SEARCH_YT["Search"] --> VIDEO_INDEX["Video Index<br/>(inverted index)"]
+    SEARCH_YT --> SPELL_CORR["Spell Correction<br/>(prefix trie)"]
+    style CREATOR fill:#4a8bc2
+    style UPLOAD_YT fill:#c73e1d
+    style VIDEO_PROC fill:#2d5a7b
+    style PER_TITLE fill:#e8912e
+    style THUMB fill:#3a7ca5
+    style CAPTION fill:#6f42c1
+    style STORAGE_YT fill:#3fb950
+    style CDN_YT fill:#3a7ca5
+    style USER_YT fill:#3fb950
+    style REC_YT fill:#6f42c1
+    style CAND_GEN_YT fill:#e8912e
+    style RANK_YT fill:#c73e1d
+    style FILTER_YT fill:#3a7ca5
+    style SEARCH_YT fill:#2d5a7b
+    style VIDEO_INDEX fill:#e8912e
+    style SPELL_CORR fill:#3fb950
 ```
 
 ## Table of Contents

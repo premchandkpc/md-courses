@@ -6,15 +6,31 @@
 
 ```mermaid
 graph LR
-    A["Input<br/>Layer"] --> B["Hidden<br/>Layers"]
-    B --> C["Hidden<br/>Layers"]
-    C --> D["Output<br/>Layer"]
-    B --> E["Activation<br/>Functions"]
-    E --> B
-    style A fill:#4a8bc2
-    style B fill:#2d5a7b
-    style C fill:#2d5a7b
-    style D fill:#c73e1d
+    GFS["GFS / HDFS"] --> MSTR["NameNode /<br/>Master"]
+    GFS --> CHUNK["Chunk Servers<br/>(64MB chunks)"]
+    MSTR --> META["Metadata<br/>(in-memory)"]
+    CHUNK --> REPL_CHUNK["3× Replication<br/>(Rack-Aware)"]
+    CHUNK --> LEASE["Lease<br/>(Write Order)"]
+    S3_ARCH["S3 Object<br/>Storage"] --> BUCKET["Bucket<br/>(Flat Namespace)"]
+    BUCKET --> OBJ_S3["Object<br/>(Key → Value)"]
+    BUCKET --> PART["Partition<br/>(Request Router)"]
+    DYNAMO["DynamoDB"] --> PART_D["Partition<br/>(Hash Key)"]
+    DYNAMO --> GSI["Global Secondary<br/>Index"]
+    DYNAMO --> MERKLE["Merkle Trees<br/>(Anti-Entropy)"]
+    style GFS fill:#4a8bc2
+    style MSTR fill:#2d5a7b
+    style CHUNK fill:#3a7ca5
+    style META fill:#e8912e
+    style REPL_CHUNK fill:#c73e1d
+    style LEASE fill:#e8912e
+    style S3_ARCH fill:#6f42c1
+    style BUCKET fill:#3fb950
+    style OBJ_S3 fill:#3a7ca5
+    style PART fill:#e8912e
+    style DYNAMO fill:#c73e1d
+    style PART_D fill:#e8912e
+    style GSI fill:#3fb950
+    style MERKLE fill:#6f42c1
 ```
 
 ## Table of Contents
@@ -314,29 +330,92 @@ cur.execute("INSERT INTO sensor_data VALUES (NOW(), 'sensor-01', 23.5, 65.2)")
 ## Code Examples
 
 ```python
-# Example implementation
-# [Add language-specific code demonstrating core concept]
-pass
+import hashlib
+import struct
+
+# CRUSH algorithm (simplified) — compute OSD location from object name
+def crush_hash(object_name: str, crush_map: dict) -> int:
+    h = int(hashlib.md5(object_name.encode()).hexdigest()[:8], 16)
+    osds = crush_map['osds']
+    return osds[h % len(osds)]
+
+# Raft-consistent distributed put (CockroachDB-style)
+class RaftGroup:
+    def __init__(self, node_id: int, peers: list):
+        self.node_id = node_id
+        self.peers = peers  # other nodes in Raft group
+        self.log = []
+        self.commit_index = 0
+        self.current_term = 0
+
+    def propose(self, key: str, value: str) -> bool:
+        entry = {'term': self.current_term, 'key': key, 'value': value}
+        self.log.append(entry)
+        # In real Raft, send AppendEntries to peers, wait for quorum
+        acks = sum(1 for p in self.peers if p.receive(entry))
+        if acks >= len(self.peers) // 2:  # majority
+            self.commit_index = len(self.log) - 1
+            return True
+        return False
+
+# DynamoDB-style consistent hashing with virtual nodes
+class ConsistentHashRing:
+    def __init__(self, vnodes_per_node: int = 100):
+        self.ring = {}  # hash → node_id
+        self.vnodes = vnodes_per_node
+
+    def add_node(self, node_id: str):
+        for v in range(self.vnodes):
+            h = hashlib.md5(f"{node_id}:{v}".encode()).hexdigest()
+            self.ring[h] = node_id
+
+    def get_node(self, key: str) -> str:
+        if not self.ring:
+            return None
+        h = hashlib.md5(key.encode()).hexdigest()
+        # Find first node with hash >= key hash (clockwise)
+        for ring_hash in sorted(self.ring.keys()):
+            if ring_hash >= h:
+                return self.ring[ring_hash]
+        return self.ring[sorted(self.ring.keys())[0]]  # wrap around
+
+# Erasure coding (Reed-Solomon simplified)
+def rs_encode(data: bytes, parity_count: int = 3) -> list:
+    # Real RS uses Vandermonde matrix multiplication
+    chunks = [data[i::4] for i in range(4)]  # split into 4 data chunks
+    for _ in range(parity_count):
+        chunks.append(hashlib.sha256(data + str(_).encode()).digest()[:len(chunks[0])])
+    return chunks
 ```
 
 ---
 
 ## Common Failure Modes
 
-**Problem**: [Key issue in production]
+**Problem**: Split-brain in distributed storage using quorum-based consensus
 
-**Root cause**: [Why it happens]
+**Root cause**: Network partition splits the cluster into two groups, each believing it has quorum. If both groups accept writes, data diverges. After partition heals, reconciling the divergent data is difficult or impossible. This is why Raft, Paxos, and Zab require strict majority quorum — only one side can form a majority (N/2 + 1).
 
-**Solution**: [How to fix]
+**Detection**: After network partition resolves, nodes discover conflicting data. Monitoring shows diverging timestamps for the same keys. HDFS NameNode HA with fencing ensures only one active. DynamoDB's last-writer-wins (LWW) silently merges conflicts.
+
+**Solution**: Use consensus protocols with strict quorum (Raft, Paxos). Implement proper fencing for leader election (e.g., HDFS's `zkf` fencing mechanism). For DynamoDB-style AP systems, use last-writer-wins with vector clocks or CRDTs for merge. CockroachDB uses leaseholders with epoch-based leases — if a node can't renew its lease, it steps down. Never use "gossip-only" quorum detection — always have a failure detector with configurable timeout separated by at least one network round-trip.
+
+**Problem**: Read-after-write consistency failure in eventually consistent storage
+
+**Root cause**: In DynamoDB (before Dec 2020) or S3 (before consistency changes), a write to one node is immediately acknowledged, but a subsequent read may hit a different replica that hasn't received the update yet. For overwrite and delete, S3 remained eventually consistent until 2020. This causes issues like "I just uploaded a file and it's not found" or "I updated a config but the next request sees the old value."
+
+**Detection**: Integration tests fail intermittently. CI/CD pipeline that writes then immediately reads fails in <1% of runs. Bug reports of stale data appearing after writes.
+
+**Solution**: Use strongly consistent reads where available (DynamoDB `ConsistentRead: true`, S3 `GetObject` with consistency after Dec 2020 for new PUTs). For overwrites, use conditional writes with version checks. For application-level consistency, write to a transaction log before updating the storage, and have readers read their last-written timestamp. Use read-after-write consistency caches: after writing, invalidate the local cache entry. In Cassandra, use `CL: LOCAL_QUORUM` for both reads and writes to ensure read-your-writes consistency within a DC.
 
 ---
 
 ## Interview Questions
 
-### Q1: [Core concept question]
+### Q1: Compare the consistency models of DynamoDB, S3, and CockroachDB — how do they handle concurrent writes?
 
-**Answer**: [Detailed explanation with trade-offs]
+**Answer**: **DynamoDB** uses last-writer-wins (LWW) with a timestamp — concurrent writes to the same key overwrite each other, with the most recent winning. Strongly consistent reads are available (at half the throughput). **S3** provides read-after-write consistency for new PUTs (objects that didn't exist before) but eventual consistency for overwrite PUTs and DELETEs (unless versioning is used). Concurrent PUTs to the same key: last writer wins. **CockroachDB** provides strict serializability — concurrent writes are serialized through leaseholders using Raft consensus. If two transactions update the same row, one succeeds and the other gets a serialization error (must retry). CockroachDB also detects write-skew anomalies (a form of non-serializable behavior in snapshot isolation). For multi-row transactions, CockroachDB uses a distributed transaction coordinator with parallel commit (fast path). DynamoDB's approach is highest throughput (no coordination), S3's is middle-ground (eventual), CockroachDB's is safest but slowest (consensus per write).
 
-### Q2: [Design/architecture question]
+### Q2: How is erasure coding better than replication in distributed storage?
 
-**Answer**: [Best practices and reasoning]
+**Answer**: Erasure coding (EC) divides data into K data fragments + M parity fragments, storing them across K+M nodes. Any K fragments can reconstruct the data. Compared to 3x replication (200% overhead), EC-6-3 has 50% overhead (9 fragments instead of 6 data = 50%). EC-10-4 has 40% overhead. This means for the same durability, EC uses 60-75% less storage. The trade-offs: EC requires CPU-intensive computation for encoding/decoding (affects read/write latency). EC is slower for small reads (must read multiple fragments and reconstruct). EC is worse for partial reads (must read entire object to reconstruct). Therefore, use EC for cold/warm data (HDFS, Ceph, S3 Glacier) and replication for hot data. HDFS supports both: 3x replication for active data, EC for archived data. LRC (Locally Repairable Codes) further reduce repair bandwidth by creating local parity fragments.

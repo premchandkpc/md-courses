@@ -8,15 +8,37 @@
 
 ```mermaid
 graph LR
-    A["Input<br/>Layer"] --> B["Hidden<br/>Layers"]
-    B --> C["Hidden<br/>Layers"]
-    C --> D["Output<br/>Layer"]
-    B --> E["Activation<br/>Functions"]
-    E --> B
-    style A fill:#4a8bc2
-    style B fill:#2d5a7b
-    style C fill:#2d5a7b
-    style D fill:#c73e1d
+    USER_DC["Client"] --> WS_GATEWAY["WebSocket Gateway<br/>(400K conns/node)"]
+    WS_GATEWAY --> GUILD_SRV["Guild/Server<br/>(membership)"]
+    WS_GATEWAY --> MSG_SYS["Message System<br/>(Cassandra)"]
+    MSG_SYS --> CHANNEL["Channel →<br/>Timeline (ordered)"]
+    MSG_SYS --> SEARCH_DC["Search<br/>(Elasticsearch)"]
+    VOICE["Voice/Video"] --> SFU_DC["SFU<br/>(Selective Forwarding)"]
+    SFU_DC --> WEBRTC["WebRTC<br/>(peer conn)"]
+    SFU_DC --> NOISE_SUPP["Noise Suppression<br/>(RNNoise)"]
+    PRESENCE_DC["Presence"] --> STATUS["Online/Idle/DND<br/>(pub/sub)"]
+    PRESENCE_DC --> TYPING["Typing Indicator<br/>(ephemeral)"]
+    FILE_UPLOAD["File Upload"] --> ATTACHMENT["Attachment<br/>(CDN)"]
+    FILE_UPLOAD --> SCAN["Malware Scan<br/>(ClamAV)"]
+    RATE_LIMIT["Rate Limiting"] --> TOKEN_B["Token Bucket<br/>(per-guild)"]
+    style USER_DC fill:#4a8bc2
+    style WS_GATEWAY fill:#2d5a7b
+    style GUILD_SRV fill:#3a7ca5
+    style MSG_SYS fill:#c73e1d
+    style CHANNEL fill:#e8912e
+    style SEARCH_DC fill:#6f42c1
+    style VOICE fill:#6f42c1
+    style SFU_DC fill:#c73e1d
+    style WEBRTC fill:#e8912e
+    style NOISE_SUPP fill:#3fb950
+    style PRESENCE_DC fill:#3fb950
+    style STATUS fill:#3a7ca5
+    style TYPING fill:#e8912e
+    style FILE_UPLOAD fill:#e8912e
+    style ATTACHMENT fill:#3fb950
+    style SCAN fill:#c73e1d
+    style RATE_LIMIT fill:#3a7ca5
+    style TOKEN_B fill:#e8912e
 ```
 
 ## Table of Contents

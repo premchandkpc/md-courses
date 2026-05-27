@@ -8,15 +8,29 @@
 
 ```mermaid
 graph LR
-    A["Input<br/>Layer"] --> B["Hidden<br/>Layers"]
-    B --> C["Hidden<br/>Layers"]
-    C --> D["Output<br/>Layer"]
-    B --> E["Activation<br/>Functions"]
-    E --> B
-    style A fill:#4a8bc2
-    style B fill:#2d5a7b
-    style C fill:#2d5a7b
-    style D fill:#c73e1d
+    API["API Gateway<br/>(HTTP/REST)"] --> LN["Lambda<br/>Function"]
+    LN --> SNAP["SnapStart<br/>(Lambda Snapshots)"]
+    LN --> STREAM["Response<br/>Streaming"]
+    LN --> EFS["Lambda + EFS<br/>(NFS Mount)"]
+    LN --> SQS["SQS<br/>(Event Source Mapping)"]
+    SQS --> BATCH["Batch Processing<br/>(max concurrency)"]
+    LN --> ASYNC["Async Invoke<br/>(Event Queue)"]
+    ASYNC --> DLQ["Dead-Letter<br/>Queue"]
+    LN --> EXT["Lambda<br/>Extension"]
+    EXT --> TELE["OpenTelemetry<br/>(ADOT)"]
+    LN --> VPC["VPC via<br/>Hyperplane ENI"]
+    style API fill:#4a8bc2
+    style LN fill:#2d5a7b
+    style SNAP fill:#6f42c1
+    style STREAM fill:#3fb950
+    style EFS fill:#3a7ca5
+    style SQS fill:#c73e1d
+    style BATCH fill:#e8912e
+    style ASYNC fill:#e8912e
+    style DLQ fill:#c73e1d
+    style EXT fill:#3a7ca5
+    style TELE fill:#3fb950
+    style VPC fill:#6f42c1
 ```
 
 ## Table of Contents
@@ -45,26 +59,15 @@ graph LR
 
 ## 🧭 The Big Picture
 
-```text
-                     ┌──────────────────────────────┐
-                     │   Lambda Advanced Patterns    │
-                     │   Beyond "hello world"        │
-                     ├──────────────────────────────┤
-                     │  • Enterprise integrations    │
-                     │  • Performance tuning         │
-                     │  • Security patterns          │
-                     │  • Cost optimization          │
-                     └──────────────────────────────┘
-                                │
-          ┌─────────────────────┼─────────────────────┐
-          ▼                     ▼                     ▼
-  ┌──────────────┐     ┌──────────────┐     ┌──────────────┐
-  │ Extensions   │     │ Performance  │     │ Integration  │
-  │ • Telemetry  │     │ • SnapStart  │     │ • API GW     │
-  │ • Secrets    │     │ • Streaming  │     │ • SQS/SNS    │
-  │ • ADOT/X-Ray │     │ • Provisioned│     │ • SFN/Kin    │
-  │              │     │ • VPC tuning │     │ • DDB Streams│
-  └──────────────┘     └──────────────┘     └──────────────┘
+```mermaid
+sequenceDiagram
+    participant Client
+    participant Component
+    participant Result
+    Client->>Component: Request
+    Component->>Component: Process
+    Component-->>Result: Generate
+    Result-->>Client: Response
 ```
 
 ---

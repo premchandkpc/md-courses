@@ -4,15 +4,43 @@
 
 ```mermaid
 graph LR
-    A["Input<br/>Layer"] --> B["Hidden<br/>Layers"]
-    B --> C["Hidden<br/>Layers"]
-    C --> D["Output<br/>Layer"]
-    B --> E["Activation<br/>Functions"]
-    E --> B
-    style A fill:#4a8bc2
-    style B fill:#2d5a7b
-    style C fill:#2d5a7b
-    style D fill:#c73e1d
+    CRYPTO["Cryptography"] --> SYM_CRYPTO["Symmetric<br/>(same key)"]
+    SYM_CRYPTO --> AES_GCM["AES-256-GCM<br/>(AEAD)"]
+    SYM_CRYPTO --> CHACHA["ChaCha20-Poly1305<br/>(AEAD)"]
+    CRYPTO --> ASYM_CRYPTO["Asymmetric<br/>(key pair)"]
+    ASYM_CRYPTO --> RSA_R["RSA<br/>(key exchange/sign)"]
+    ASYM_CRYPTO --> ECDSA_R["ECDSA / Ed25519<br/>(signatures)"]
+    ASYM_CRYPTO --> ECDHE_R["ECDHE<br/>(key agreement)"]
+    CRYPTO --> HASH_R["Hash Functions"]
+    HASH_R --> SHA256["SHA-256<br/>(digest)"]
+    HASH_R --> HMAC["HMAC<br/>(authenticated)"]
+    TLS_13["TLS 1.3"] --> HAND_SHAKE["Handshake<br/>(1-RTT)"]
+    TLS_13 --> PSK_R["0-RTT Resumption<br/>(PSK)"]
+    HAND_SHAKE --> KEY_SCHED["Key Schedule<br/>(HKDF)"]
+    KEY_SCHED --> APP_SEC["Application Data<br/>(AEAD encrypted)"]
+    SECRETS["Secrets Mgmt"] --> VAULT["HashiCorp Vault<br/>(dynamic secrets)"]
+    SECRETS --> HSM["HSM<br/>(hardware-backed)"]
+    SECRETS --> ROTATE["Auto-Rotation<br/>(key lifecycle)"]
+    style CRYPTO fill:#4a8bc2
+    style SYM_CRYPTO fill:#2d5a7b
+    style AES_GCM fill:#3fb950
+    style CHACHA fill:#3a7ca5
+    style ASYM_CRYPTO fill:#6f42c1
+    style RSA_R fill:#e8912e
+    style ECDSA_R fill:#3fb950
+    style ECDHE_R fill:#3a7ca5
+    style HASH_R fill:#c73e1d
+    style SHA256 fill:#e8912e
+    style HMAC fill:#3a7ca5
+    style TLS_13 fill:#3fb950
+    style HAND_SHAKE fill:#2d5a7b
+    style PSK_R fill:#e8912e
+    style KEY_SCHED fill:#c73e1d
+    style APP_SEC fill:#3fb950
+    style SECRETS fill:#e8912e
+    style VAULT fill:#6f42c1
+    style HSM fill:#c73e1d
+    style ROTATE fill:#3fb950
 ```
 
 ## Table of Contents

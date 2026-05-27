@@ -8,15 +8,29 @@
 
 ```mermaid
 graph LR
-    A["Input<br/>Layer"] --> B["Hidden<br/>Layers"]
-    B --> C["Hidden<br/>Layers"]
-    C --> D["Output<br/>Layer"]
-    B --> E["Activation<br/>Functions"]
-    E --> B
-    style A fill:#4a8bc2
-    style B fill:#2d5a7b
-    style C fill:#2d5a7b
-    style D fill:#c73e1d
+    PROD_REQ["Produce<br/>Request"] --> PART_L["Partition Leader"]
+    PART_L --> LOG_SEG["Log Segment<br/>(.log + .index + .timeindex)"]
+    LOG_SEG --> APPEND["Append to<br/>Active Segment"]
+    APPEND --> FLUSH["OS Page Cache<br/>(flush on fsync)"]
+    FLUSH --> DISK["Disk<br/>(Sequential Write)"]
+    PART_L --> ISR["In-Sync<br/>Replicas (ISR)"]
+    ISR --> FOLL1["Follower 1<br/>(fetch offset N)"]
+    ISR --> FOLL2["Follower 2<br/>(fetch offset N)"]
+    FOLL1 --> ACK_LEADER["ACK to Leader<br/>(High Watermark)"]
+    CONSUMER_FETCH["Consumer<br/>Fetch"] --> LOG_SEG["Log Segment<br/>(Zero-Copy)"]
+    LOG_SEG --> SEND_FILE["sendfile()<br/>(Kernel → Socket)"]
+    style PROD_REQ fill:#4a8bc2
+    style PART_L fill:#2d5a7b
+    style LOG_SEG fill:#3a7ca5
+    style APPEND fill:#c73e1d
+    style FLUSH fill:#e8912e
+    style DISK fill:#6f42c1
+    style ISR fill:#e8912e
+    style FOLL1 fill:#3fb950
+    style FOLL2 fill:#3fb950
+    style ACK_LEADER fill:#3fb950
+    style CONSUMER_FETCH fill:#4a8bc2
+    style SEND_FILE fill:#c73e1d
 ```
 
 ## Table of Contents

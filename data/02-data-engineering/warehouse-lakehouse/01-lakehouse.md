@@ -292,6 +292,417 @@ delta_table.vacuum(retentionHours=168, dryRun=True)
 - Default 7 days protects against long-running queries
 - Vacuum is NOT transactional with concurrent reads
 
+### Production Operations for Delta Lake
+
+```python
+class DeltaLakeOperations:
+    """Production operations for Delta Lake tables."""
+
+    def __init__(self, spark, table_path: str):
+        self.spark = spark
+        self.table_path = table_path
+        self.delta_table = DeltaTable.forPath(spark, table_path)
+
+    def optimize_table(self, zorder_cols: list[str] = None,
+                        file_size_target: str = "256mb") -> dict:
+        """Run OPTIMIZE with optional Z-ordering."""
+        if zorder_cols:
+            result = self.spark.sql(
+                f"OPTIMIZE delta.`{self.table_path}` "
+                f"ZORDER BY ({', '.join(zorder_cols)})"
+            )
+        else:
+            result = self.spark.sql(
+                f"OPTIMIZE delta.`{self.table_path}`"
+            )
+        return result.toPandas().to_dict() if result else {"status": "completed"}
+
+    def compact(self, target_file_size_mb: int = 256) -> dict:
+        """Auto-compact small files."""
+        self.spark.conf.set("spark.databricks.delta.autoCompact.enabled", "true")
+        self.spark.conf.set("spark.databricks.delta.autoCompact.maxFileSize",
+                            f"{target_file_size_mb * 1024 * 1024}")
+        return {"target_file_size_mb": target_file_size_mb, "compact_enabled": True}
+
+    def vacuum(self, retention_hours: int = 168, dry_run: bool = True) -> dict:
+        """Remove old files safely."""
+        result = self.delta_table.vacuum(retentionHours=retention_hours, dryRun=dry_run)
+        files_to_delete = [row["path"] for row in result.collect()] if result else []
+        return {
+            "files_to_delete": len(files_to_delete),
+            "retention_hours": retention_hours,
+            "dry_run": dry_run,
+            "status": "dry_run" if dry_run else "deleted"
+        }
+
+    def restore_to_version(self, version: int) -> dict:
+        """Time-travel restore."""
+        try:
+            self.delta_table.restoreToVersion(version)
+            return {"status": "restored", "version": version}
+        except Exception as e:
+            return {"status": "failed", "error": str(e)}
+
+    def describe_history(self) -> list[dict]:
+        """Get table operation history."""
+        return self.delta_table.history().collect()
+
+    def get_metrics(self) -> dict:
+        """Get Delta table metrics."""
+        history = self.describe_history()
+        return {
+            "total_versions": len(history),
+            "last_operation": history[0]["operation"] if history else "N/A",
+            "last_modified": str(history[0]["timestamp"]) if history else "N/A",
+            "total_commits": len([h for h in history if h["operation"] == "WRITE"]),
+            "optimize_count": len([h for h in history if h["operation"] == "OPTIMIZE"]),
+        }
+
+    def clone_table(self, target_path: str, version: int = None) -> dict:
+        """Create shallow/deep clone for testing."""
+        if version:
+            self.spark.sql(
+                f"CREATE OR REPLACE TABLE delta.`{target_path}` "
+                f"SHALLOW CLONE delta.`{self.table_path}` VERSION AS OF {version}"
+            )
+        else:
+            self.spark.sql(
+                f"CREATE OR REPLACE TABLE delta.`{target_path}` "
+                f"SHALLOW CLONE delta.`{self.table_path}`"
+            )
+        return {"source": self.table_path, "clone": target_path, "type": "shallow"}
+```
+
+### Schema Evolution Patterns
+
+```python
+class SchemaEvolution:
+    """Handle schema changes across time."""
+
+    @staticmethod
+    def evolve_delta(spark, table_path: str, new_columns: dict,
+                      evolution_mode: str = "add") -> dict:
+        """Safely evolve Delta Lake schema."""
+        evolution_map = {
+            "add": f"""
+                ALTER TABLE delta.`{table_path}`
+                ADD COLUMNS ({', '.join(f'{k} {v}' for k, v in new_columns.items())})
+            """,
+            "rename": f"""
+                ALTER TABLE delta.`{table_path}`
+                RENAME COLUMN {list(new_columns.keys())[0]}
+                TO {list(new_columns.values())[0]}
+            """,
+            "drop": f"""
+                ALTER TABLE delta.`{table_path}`
+                DROP COLUMN {list(new_columns.keys())[0]}
+            """,
+            "change_type": f"""
+                ALTER TABLE delta.`{table_path}`
+                CHANGE COLUMN {list(new_columns.keys())[0]}
+                TYPE {list(new_columns.values())[0]}
+            """
+        }
+
+        sql = evolution_map.get(evolution_mode)
+        if sql:
+            spark.sql(sql)
+            return {"mode": evolution_mode, "status": "applied"}
+
+        # For complex evolutions, use mergeSchema
+        if evolution_mode == "merge":
+            spark.conf.set("spark.databricks.delta.schema.autoMerge.enabled", "true")
+            return {"mode": "auto_merge", "status": "enabled"}
+        return {"error": f"Unknown evolution mode: {evolution_mode}"}
+
+    @staticmethod
+    def evolve_iceberg(spark, catalog: str, table: str,
+                        new_columns: dict) -> dict:
+        """Safely evolve Iceberg schema."""
+        for col_name, col_type in new_columns.items():
+            spark.sql(f"""
+                ALTER TABLE {catalog}.{table}
+                ADD COLUMN {col_name} {col_type}
+            """)
+        spark.sql(f"""
+            ALTER TABLE {catalog}.{table}
+            SET TBLPROPERTIES ('write.schema-evolution-mode' = 'merge')
+        """)
+        return {"status": "evolved", "new_columns": list(new_columns.keys())}
+
+    @staticmethod
+    def backward_compatible_check(old_schema: set, new_schema: set) -> dict:
+        """Check if schema change is backward compatible."""
+        removed = old_schema - new_schema
+        if removed:
+            return {
+                "compatible": False,
+                "reason": f"Columns removed: {removed}. "
+                          f"Removing columns may break downstream queries."
+            }
+
+        # Adding columns is always backward compatible
+        added = new_schema - old_schema
+        if added:
+            return {
+                "compatible": True,
+                "warning": f"New columns {added} will be NULL for old data."
+            }
+
+        return {"compatible": True}
+
+    @staticmethod
+    def versioned_schema_migration(spark, table_path: str,
+                                     migrations: list[dict]) -> list[dict]:
+        """Apply versioned schema migrations (like Alembic for data)."""
+        results = []
+        for migration in migrations:
+            version = migration["version"]
+            sql = migration["sql"]
+            try:
+                spark.sql(sql)
+                results.append({
+                    "version": version,
+                    "status": "applied",
+                    "sql": sql[:80] + "..."
+                })
+            except Exception as e:
+                results.append({
+                    "version": version,
+                    "status": "failed",
+                    "error": str(e)
+                })
+                break
+        return results
+
+
+# Schema evolution compatibility matrix
+SCHEMA_COMPATIBILITY = {
+    "add_column": {
+        "delta": True,
+        "iceberg": True,
+        "hudi": True,
+        "backward_compatible": True,
+        "forward_compatible": True
+    },
+    "drop_column": {
+        "delta": True,
+        "iceberg": True,
+        "hudi": True,
+        "backward_compatible": False,
+        "forward_compatible": True
+    },
+    "rename_column": {
+        "delta": True,
+        "iceberg": True,
+        "hudi": True,
+        "backward_compatible": False,
+        "forward_compatible": False
+    },
+    "change_type": {
+        "delta": "limited (widening only)",
+        "iceberg": True,
+        "hudi": True,
+        "backward_compatible": "depends on change",
+        "forward_compatible": "depends on change"
+    },
+    "reorder_columns": {
+        "delta": True,
+        "iceberg": True,
+        "hudi": False,
+        "backward_compatible": True,
+        "forward_compatible": True
+    }
+}
+```
+
+### Partition Evolution
+
+```python
+class PartitionManagement:
+    """Manage partition schemes across lakehouse formats."""
+
+    @staticmethod
+    def evolve_iceberg_partitions(spark, catalog: str, table: str,
+                                    new_partition_spec: str) -> dict:
+        """Iceberg supports partition evolution without rewrite."""
+        spark.sql(f"""
+            ALTER TABLE {catalog}.{table}
+            SET PARTITION SPEC ({new_partition_spec})
+        """)
+        return {
+            "format": "iceberg",
+            "table": f"{catalog}.{table}",
+            "new_spec": new_partition_spec,
+            "note": "Old data retains old partition scheme. "
+                    "Queries automatically read both."
+        }
+
+    @staticmethod
+    def delta_requires_rewrite(spark, table_path: str,
+                                new_partition_cols: list[str]) -> dict:
+        """Delta requires full rewrite to change partitioning."""
+        return {
+            "format": "delta",
+            "required_steps": [
+                f"1. Read current data: df = spark.read.format('delta').load('{table_path}')",
+                f"2. Drop existing table or write to new path",
+                f"3. Write with new partition: "
+                f"df.write.format('delta').partitionBy({new_partition_cols}).save('{table_path}_v2')",
+                f"4. Migrate applications to new path"
+            ],
+            "warning": "Partition evolution requires full data rewrite in Delta. "
+                       "Plan for downtime or use dual-writes during migration."
+        }
+
+    @staticmethod
+    def add_partition_to_hudi(spark, table_path: str,
+                               new_partition_col: str) -> dict:
+        """Add new partition column to Hudi table."""
+        return {
+            "format": "hudi",
+            "strategy": "Write data with new partition column. Hudi automatically "
+                       "creates new partition directories.",
+            "old_data": "Remains in existing partition structure."
+        }
+
+    @staticmethod
+    def hidden_partitioning_example(spark) -> str:
+        """Iceberg hidden partitioning — partition transforms applied automatically."""
+        queries = """
+-- Create table with hidden partitioning
+CREATE TABLE events (
+    event_id BIGINT,
+    event_ts TIMESTAMP,
+    amount DOUBLE,
+    user_id STRING
+)
+USING iceberg
+PARTITIONED BY (days(event_ts), bucket(16, user_id))
+
+-- Query without mentioning partition column
+-- Iceberg automatically prunes to matching partitions
+SELECT count(*), days(event_ts) as day
+FROM events
+WHERE event_ts >= '2024-01-01'
+  AND event_ts < '2024-02-01'
+GROUP BY days(event_ts)
+
+-- No need to know partition scheme — Iceberg handles it
+"""
+        return queries
+
+    @staticmethod
+    def recommend_partition_strategy(data_volume_gb: float,
+                                       query_patterns: list[str]) -> dict:
+        """Recommend partition strategy based on data and query patterns."""
+        recommendations = []
+        if data_volume_gb > 1000:
+            recommendations.append("Daily partitioning (dates) + bucketing")
+
+        if any("time_range" in q for q in query_patterns):
+            recommendations.append("Partition by date/hour column")
+        if any("dimension_filter" in q for q in query_patterns):
+            recommendations.append("Consider Z-order or secondary partition")
+
+        return {
+            "data_volume_gb": data_volume_gb,
+            "recommendations": recommendations,
+            "iceberg_hidden_partitioning": "Recommended for multi-engine access",
+            "delta_zorder": "Best for single-engine (Databricks/Spark)"
+        }
+```
+
+### Table Maintenance and Optimization
+
+```python
+class TableMaintenance:
+    """Routine maintenance operations for lakehouse tables."""
+
+    def __init__(self, spark, table_format: str = "delta"):
+        self.spark = spark
+        self.format = table_format
+
+    def run_maintenance(self, table_path: str, operations: list[str] = None) -> dict:
+        """Run standard maintenance operations."""
+        if not operations:
+            operations = ["optimize", "vacuum", "expire_snapshots",
+                         "remove_orphans", "analyze"]
+
+        results = {}
+        for op in operations:
+            method = getattr(self, op, None)
+            if method:
+                try:
+                    results[op] = method(table_path)
+                except Exception as e:
+                    results[op] = {"status": "failed", "error": str(e)}
+        return results
+
+    def optimize(self, table_path: str) -> dict:
+        if self.format == "delta":
+            self.spark.sql(f"OPTIMIZE delta.`{table_path}`")
+        elif self.format == "iceberg":
+            self.spark.sql(
+                f"CALL spark_catalog.system.rewrite_data_files("
+                f"table => '{table_path}', strategy => 'sort', "
+                f"sort_order => 'ts DESC')"
+            )
+        return {"operation": "optimize", "table": table_path}
+
+    def vacuum(self, table_path: str, hours: int = 168) -> dict:
+        if self.format == "delta":
+            DeltaTable.forPath(self.spark, table_path).vacuum(hours)
+        return {"operation": "vacuum", "retention_hours": hours}
+
+    def expire_snapshots(self, table_path: str, older_than_days: int = 7) -> dict:
+        if self.format == "iceberg":
+            cutoff = f"TIMESTAMP '{datetime.now() - timedelta(days=older_than_days)}'"
+            self.spark.sql(
+                f"CALL spark_catalog.system.expire_snapshots("
+                f"table => '{table_path}', older_than => {cutoff})"
+            )
+        return {"operation": "expire_snapshots", "retention_days": older_than_days}
+
+    def remove_orphans(self, table_path: str) -> dict:
+        if self.format == "iceberg":
+            self.spark.sql(
+                f"CALL spark_catalog.system.remove_orphan_files("
+                f"table => '{table_path}')"
+            )
+        return {"operation": "remove_orphans"}
+
+    def analyze(self, table_path: str) -> dict:
+        """Compute table statistics for query optimization."""
+        if self.format == "delta":
+            self.spark.sql(f"ANALYZE TABLE delta.`{table_path}` COMPUTE STATISTICS")
+        elif self.format == "iceberg":
+            self.spark.sql(f"ANALYZE TABLE {table_path} COMPUTE STATISTICS")
+        return {"operation": "analyze", "status": "completed"}
+
+    def auto_maintenance_schedule(self, table_path: str,
+                                    frequency: str = "daily") -> dict:
+        """Suggested maintenance schedule."""
+        schedules = {
+            "daily": ["optimize", "analyze"],
+            "weekly": ["optimize", "vacuum", "analyze"],
+            "monthly": ["optimize", "vacuum", "expire_snapshots",
+                       "remove_orphans", "analyze"]
+        }
+        return {
+            "table": table_path,
+            "frequency": frequency,
+            "operations": schedules.get(frequency, schedules["daily"]),
+            "best_practices": [
+                "Run OPTIMIZE after large writes",
+                "VACUUM with 7-day retention (minimum 168 hours)",
+                "Expire Iceberg snapshots older than 7 days",
+                "ANALYZE table after major data changes",
+                "Run maintenance during low-traffic periods"
+            ]
+        }
+```
+
 ## Apache Iceberg
 
 ### Architecture
@@ -601,6 +1012,185 @@ Migration paths:
   - Hive tables -> Hudi (hoodie.datasource.write.operation)
 ```
 
+## Multi-Engine Architecture
+
+### Architecture Pattern
+
+Modern lakehouses are designed for **multi-engine access** — different engines for different workloads on the same data:
+
+```mermaid
+graph TB
+    subgraph "Data Lake (S3/ADLS/GCS)"
+        A["Parquet / Avro / ORC Files"]
+        B["Delta Transaction Log"]
+        C["Iceberg Metadata"]
+    end
+
+    subgraph "Catalog Layer"
+        D["Hive Metastore"]
+        E["AWS Glue Catalog"]
+        F["Nessie / Polaris"]
+        G["Unity Catalog"]
+    end
+
+    subgraph "Query Engines"
+        H["Spark<br/>Batch ETL, ML"]
+        I["Trino<br/>Ad-hoc SQL, BI"]
+        J["Flink<br/>Stream Processing"]
+        K["Presto<br/>Interactive SQL"]
+        L["Dremio<br/>Data Lake SQL"]
+        M["Athena<br/>Serverless SQL"]
+        N["Snowflake<br/>Iceberg Tables"]
+    end
+
+    subgraph "Workloads"
+        O["ETL / ELT"]
+        P["BI Dashboards"]
+        Q["Ad-hoc Analytics"]
+        R["Stream Processing"]
+        S["ML Training"]
+        T["Data Science"]
+    end
+
+    A --> D
+    B --> D
+    C --> D
+    A --> E
+    B --> F
+    C --> G
+    D --> H
+    D --> I
+    D --> J
+    E --> K
+    E --> M
+    F --> I
+    G --> H
+    G --> I
+    H --> O
+    H --> S
+    I --> P
+    I --> Q
+    J --> R
+    K --> Q
+    L --> P
+    M --> P
+    N --> P
+```
+
+### Engine Selection by Workload
+
+| Engine | Best For | Format Support | Concurrency | Latency |
+|--------|----------|---------------|-------------|---------|
+| Spark SQL | ETL, complex transforms, ML | Delta, Iceberg, Hudi | Low | Minutes |
+| Trino | Interactive SQL, BI dashboards | Delta, Iceberg, Hudi | High | Seconds |
+| Flink SQL | Stream processing, CDC | Delta, Iceberg, Hudi | Medium | Milliseconds |
+| Presto | SQL analytics, ad-hoc | Iceberg, Hudi | High | Seconds |
+| Dremio | Data lake SQL, reflections | Delta, Iceberg, Hudi | High | Seconds |
+| Athena | Serverless queries | Delta (through Glue), Iceberg | High | Seconds |
+| Snowflake | Iceberg tables, warehouse | Iceberg | High | Seconds |
+
+### Concurrent Engine Access Patterns
+
+```python
+class MultiEngineCoordinator:
+    """Coordinate multiple engines accessing the same lakehouse tables."""
+
+    def __init__(self, catalog_type: str = "hive"):
+        self.catalog_type = catalog_type
+        self.active_engines = set()
+
+    def register_engine(self, engine_name: str, format: str):
+        self.active_engines.add((engine_name, format))
+        return self._get_compatibility(engine_name, format)
+
+    def _get_compatibility(self, engine: str, format: str) -> dict:
+        compatibility_matrix = {
+            ("spark", "delta"): "native",
+            ("spark", "iceberg"): "native",
+            ("trino", "delta"): "connector",
+            ("trino", "iceberg"): "native",
+            ("flink", "delta"): "connector",
+            ("flink", "iceberg"): "native",
+            ("athena", "iceberg"): "native",
+            ("athena", "delta"): "glue_catalog",
+            ("snowflake", "iceberg"): "native",
+        }
+        return {
+            "engine": engine,
+            "format": format,
+            "integration": compatibility_matrix.get((engine, format), "limited"),
+            "concurrent_access": self._check_concurrent_access(engine, format)
+        }
+
+    def _check_concurrent_access(self, engine: str, format: str) -> dict:
+        """Check if multiple engines can write to the same table concurrently."""
+        if format == "delta":
+            return {
+                "supported": True,
+                "mechanism": "Optimistic concurrency via transaction log",
+                "warning": "Concurrent writes across different engines may have "
+                          "compatibility issues. Prefer Spark + Trino (read-only)"
+            }
+        elif format == "iceberg":
+            return {
+                "supported": True,
+                "mechanism": "Serializable snapshot isolation via catalog",
+                "warning": "Use REST/Nessie catalog for cross-engine write support"
+            }
+        return {"supported": False}
+
+    def recommend_setup(self, workloads: list[str]) -> dict:
+        """Recommend engine + catalog setup based on workloads."""
+        has_etl = "etl" in workloads
+        has_bi = "bi" in workloads
+        has_streaming = "streaming" in workloads
+        has_ml = "ml" in workloads
+
+        engines = ["spark"]
+        if has_bi:
+            engines.append("trino")
+        if has_streaming:
+            engines.append("flink")
+
+        catalog = "nessie" if len(engines) > 2 else "hive"
+
+        return {
+            "recommended_engines": engines,
+            "table_format": "iceberg",
+            "catalog": catalog,
+            "setup_notes": [
+                f"Use Iceberg format for multi-engine compatibility",
+                f"Deploy {catalog} catalog for cross-engine metadata",
+                f"Use Trino for BI queries to avoid Spark contention",
+                f"Set up Trino's delta-lake connector if Delta format required"
+            ]
+        }
+
+
+# Multi-engine SQL examples
+MULTI_ENGINE_EXAMPLES = """
+-- Spark: Complex ETL
+INSERT INTO db.events
+SELECT user_id, event_type, count(*) as event_count
+FROM db.raw_events
+GROUP BY user_id, event_type;
+
+-- Trino: BI Dashboard (same table)
+SELECT event_type, count(*), avg(event_count)
+FROM db.events
+WHERE ds BETWEEN '2024-01-01' AND '2024-01-31'
+GROUP BY event_type;
+
+-- Flink: Stream enrichment (same table)
+INSERT INTO db.events
+SELECT user_id, event_type, 1 as event_count
+FROM kafka_stream;
+
+-- All three engines read/write the same Iceberg table
+-- via the same catalog with snapshot isolation
+"""
+```
+
 ## Query Engines
 
 ### Trino
@@ -724,6 +1314,55 @@ MERGE dev INTO main IN nessie;
 - Reproducible queries (query by commit hash)
 - Zero-copy branching (metadata only, not data)
 - CI/CD for data (PR → merge to main)
+
+## Interview Questions
+
+1. **What's the difference between Delta Lake's transaction log and Iceberg's metadata layer?**
+   - Delta: JSON-based transaction log in `_delta_log/` directory, each file is a commit
+   - Iceberg: Three-layer hierarchy (metadata → manifests → data files), Avro-based manifests
+   - Delta's log is simpler and easier to inspect; Iceberg's manifest structure enables better partition pruning and multi-engine support
+
+2. **How does time travel work in Delta vs Iceberg?**
+   - Delta: Each JSON commit is a version; readers see the table state at the time of opening the transaction log
+   - Iceberg: Each snapshot is a pointer to a manifest list; atomic swap of current snapshot in catalog
+   - Both support version-based and timestamp-based queries
+   - Vacuum/expire_snapshots removes old versions
+
+3. **Explain the trade-offs between Delta, Iceberg, and Hudi for a new lakehouse?**
+   - Delta: Best for Databricks/Spark-centric teams, simpler to operate, Z-order clustering
+   - Iceberg: Best for multi-engine access (Trino, Flink, Spark), partition evolution, hidden partitioning
+   - Hudi: Best for streaming ingestion with upserts, MOR for write-heavy workloads
+   - Decision factors: engine ecosystem, partition requirements, update patterns
+
+4. **How does manifest-based pruning in Iceberg improve query performance?**
+   - Manifests store min/max statistics for each data file's columns
+   - Queries with WHERE clauses eliminate entire manifest entries (files) without reading them
+   - This reduces scan to only relevant files, unlike Hive partitioning which requires directory listing
+   - Result: faster queries, especially on high-cardinality columns
+
+5. **What happens during a Delta Lake OPTIMIZE operation?**
+   - Small files are compacted into larger files (default target: 256MB)
+   - Z-order: data is reorganized so similar values colocate in the same files
+   - Old files are marked for removal (new JSON commit)
+   - Optimize is idempotent and can be run on table subsets with WHERE clause
+   - Auto-optimize can run continuously for streaming ingestion
+
+6. **Design a multi-engine lakehouse architecture with Spark, Trino, and Flink?**
+   - Choose Iceberg as the table format (best multi-engine support)
+   - Use REST/Nessie catalog for unified metadata across engines
+   - Deploy Trino for BI/analytics queries (high concurrency)
+   - Use Spark for ETL and ML training
+   - Use Flink for streaming ingestion
+   - All engines read/write the same Iceberg tables via the catalog
+   - Snapshot isolation prevents conflicts between batch and streaming writes
+
+7. **How do you handle schema evolution across multiple consumers?**
+   - Adding columns: safe (backward compatible, old data gets NULL)
+   - Removing columns: dangerous for downstream consumers
+   - Renaming columns: break consumers using old name
+   - Best practice: add-only evolution with explicit deprecation periods
+   - Use schema registry for consumer notification
+   - Iceberg's hidden partitioning reduces need for partition schema changes
 
 ---
 

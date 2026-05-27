@@ -6,15 +6,33 @@
 
 ```mermaid
 graph LR
-    A["Input<br/>Layer"] --> B["Hidden<br/>Layers"]
-    B --> C["Hidden<br/>Layers"]
-    C --> D["Output<br/>Layer"]
-    B --> E["Activation<br/>Functions"]
-    E --> B
-    style A fill:#4a8bc2
-    style B fill:#2d5a7b
-    style C fill:#2d5a7b
-    style D fill:#c73e1d
+    PROD_SNS["Producer"] --> SNS["SNS Topic"]
+    SNS --> SQS1["SQS Queue A<br/>(Subscription)"]
+    SNS --> SQS2["SQS Queue B<br/>(Subscription)"]
+    SNS --> LAMBDA1["Lambda<br/>(Subscription)"]
+    SNS --> EMAIL["Email / SMS<br/>(Subscription)"]
+    SQS_STD["SQS Standard"] --> MAX_THR["Unlimited TPS<br/>(At-Least-Once)"]
+    SQS_FIFO["SQS FIFO"] --> ORDER["Strict Ordering<br/>(Exactly-Once)"]
+    SQS_FIFO --> DEDUP["Deduplication<br/>(MessageDeduplicationId)"]
+    SQS_STD --> VISIBILITY["Visibility Timeout<br/>(30s default)"]
+    SQS_STD --> DLQ_SQS["Dead-Letter Queue<br/>(maxReceiveCount)"]
+    LONG_POLL["Long Polling<br/>(WaitTimeSeconds=20)"] --> SQS_STD
+    LONG_POLL --> REDUCED["Reduces Empty<br/>Responses"]
+    style PROD_SNS fill:#4a8bc2
+    style SNS fill:#2d5a7b
+    style SQS1 fill:#3a7ca5
+    style SQS2 fill:#3a7ca5
+    style LAMBDA1 fill:#c73e1d
+    style EMAIL fill:#e8912e
+    style SQS_STD fill:#6f42c1
+    style MAX_THR fill:#3fb950
+    style SQS_FIFO fill:#c73e1d
+    style ORDER fill:#3a7ca5
+    style DEDUP fill:#e8912e
+    style VISIBILITY fill:#3fb950
+    style DLQ_SQS fill:#c73e1d
+    style LONG_POLL fill:#6f42c1
+    style REDUCED fill:#3fb950
 ```
 
 ## 📑 Table of Contents
@@ -44,16 +62,15 @@ graph LR
 
 ## 1. Core Concepts
 
-```text
-┌─────────────────────────────────────────────────────────┐
-│                  AWS Messaging Landscape                 │
-│   ┌──────────────────┐     ┌──────────────────┐         │
-│   │   SNS (Pub/Sub)  │     │   SQS (Queue)    │         │
-│   │   Push-based     │     │   Pull-based     │         │
-│   │   Topic → Subs   │     │   Producers +    │         │
-│   │   At-least-once  │     │   Consumers      │         │
-│   └──────────────────┘     └──────────────────┘         │
-└─────────────────────────────────────────────────────────┘
+```mermaid
+sequenceDiagram
+    participant Client
+    participant Component
+    participant Result
+    Client->>Component: Request
+    Component->>Component: Process
+    Component-->>Result: Generate
+    Result-->>Client: Response
 ```
 
 | Aspect | SQS | SNS |

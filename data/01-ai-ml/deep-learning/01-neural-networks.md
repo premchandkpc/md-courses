@@ -4,15 +4,23 @@
 
 ```mermaid
 graph LR
-    A["Input<br/>Layer"] --> B["Hidden<br/>Layers"]
-    B --> C["Hidden<br/>Layers"]
-    C --> D["Output<br/>Layer"]
-    B --> E["Activation<br/>Functions"]
-    E --> B
-    style A fill:#4a8bc2
-    style B fill:#2d5a7b
-    style C fill:#2d5a7b
-    style D fill:#c73e1d
+    X["Input Vector<br/>x₁, x₂, ..., xₙ"] --> H1["Hidden Layer 1<br/>W₁x + b₁"]
+    H1 --> A1["ReLU / Sigmoid<br/>Activation"]
+    A1 --> H2["Hidden Layer 2<br/>W₂h₁ + b₂"]
+    H2 --> A2["ReLU / Sigmoid<br/>Activation"]
+    A2 --> O["Output Layer<br/>W₃h₂ + b₃"]
+    O --> P["Softmax / Sigmoid<br/>Prediction ŷ"]
+    L["Loss Function<br/>L(y, ŷ)"] -.-> P
+    L -.->|"Backprop<br/>∇W, ∇b"| H2
+    L -.->|"Backprop<br/>∇W, ∇b"| H1
+    style X fill:#4a8bc2
+    style H1 fill:#2d5a7b
+    style A1 fill:#3a7ca5
+    style H2 fill:#2d5a7b
+    style A2 fill:#3a7ca5
+    style O fill:#c73e1d
+    style P fill:#e8912e
+    style L fill:#6f42c1
 ```
 
 ## 1. The Perceptron

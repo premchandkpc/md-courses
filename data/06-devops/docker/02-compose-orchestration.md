@@ -8,15 +8,26 @@
 
 ```mermaid
 graph LR
-    A["Input<br/>Layer"] --> B["Hidden<br/>Layers"]
-    B --> C["Hidden<br/>Layers"]
-    C --> D["Output<br/>Layer"]
-    B --> E["Activation<br/>Functions"]
-    E --> B
-    style A fill:#4a8bc2
-    style B fill:#2d5a7b
-    style C fill:#2d5a7b
-    style D fill:#c73e1d
+    COMPOSE["docker-compose.yml"] --> WEB_SVC["Web Service<br/>(nginx:latest)"]
+    COMPOSE --> APP_SVC["App Service<br/>(FastAPI + uvicorn)"]
+    COMPOSE --> DB_SVC["Database Service<br/>(postgres:16)"]
+    COMPOSE --> REDIS_SVC["Redis Service<br/>(redis:7)"]
+    APP_SVC --> NET["Custom Network<br/>(bridge)"]
+    WEB_SVC --> NET
+    DB_SVC --> NET
+    REDIS_SVC --> NET
+    APP_SVC --> DEP["depends_on<br/>(DB + Redis)"]
+    APP_SVC --> VOL["Named Volume<br/>(pgdata)"]
+    APP_SVC --> HEALTH["healthcheck<br/>(curl -f)"]
+    style COMPOSE fill:#4a8bc2
+    style WEB_SVC fill:#2d5a7b
+    style APP_SVC fill:#c73e1d
+    style DB_SVC fill:#3a7ca5
+    style REDIS_SVC fill:#e8912e
+    style NET fill:#6f42c1
+    style DEP fill:#3fb950
+    style VOL fill:#3a7ca5
+    style HEALTH fill:#e8912e
 ```
 
 ## Table of Contents

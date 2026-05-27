@@ -4,15 +4,21 @@
 
 ```mermaid
 graph LR
-    A["Input<br/>Layer"] --> B["Hidden<br/>Layers"]
-    B --> C["Hidden<br/>Layers"]
-    C --> D["Output<br/>Layer"]
-    B --> E["Activation<br/>Functions"]
-    E --> B
-    style A fill:#4a8bc2
-    style B fill:#2d5a7b
-    style C fill:#2d5a7b
-    style D fill:#c73e1d
+    IN["Input Tokens"] --> EMB["Token Embeddings<br/>+ Positional Encoding"]
+    EMB --> MHA["Multi-Head<br/>Self-Attention"]
+    MHA --> ADD1["Add &<br/>LayerNorm"]
+    ADD1 --> FF["Feed-Forward<br/>Network"]
+    FF --> ADD2["Add &<br/>LayerNorm"]
+    ADD2 --> OUT["Output<br/>Probabilities"]
+    MHA --> ATTN["Attention Scores<br/>Q·Kᵀ / √dₖ"]
+    style IN fill:#4a8bc2
+    style EMB fill:#2d5a7b
+    style MHA fill:#3a7ca5
+    style ATTN fill:#e8912e
+    style ADD1 fill:#6f42c1
+    style FF fill:#2d5a7b
+    style ADD2 fill:#6f42c1
+    style OUT fill:#c73e1d
 ```
 
 ## 1. Attention Mechanism

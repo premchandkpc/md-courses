@@ -10,15 +10,37 @@
 
 ```mermaid
 graph LR
-    A["Input<br/>Layer"] --> B["Hidden<br/>Layers"]
-    B --> C["Hidden<br/>Layers"]
-    C --> D["Output<br/>Layer"]
-    B --> E["Activation<br/>Functions"]
-    E --> B
-    style A fill:#4a8bc2
-    style B fill:#2d5a7b
-    style C fill:#2d5a7b
-    style D fill:#c73e1d
+    BLOCKING["Blocking I/O<br/>(read/write)"] --> KERNEL["Syscall → Kernel<br/>Context Switch"]
+    BLOCKING --> SLEEP["Thread Sleeps<br/>(TASK_INTERRUPTIBLE)"]
+    NONBLOCKING["Non-Blocking I/O<br/>(O_NONBLOCK)"] --> POLL["poll/select/epoll<br/>(Busy Wait)"]
+    POLL --> READY["fd Ready →<br/>read() returns"]
+    AIO["AIO / libaio<br/>(Linux AIO)"] --> IOCB["iocb Submission<br/>(O_DIRECT only)"]
+    AIO --> EVT["Event Completion<br/>(aio_suspend)"]
+    IO_URING["io_uring"] --> SQ["Submission Queue<br/>(SQ)"]
+    IO_URING --> CQ["Completion Queue<br/>(CQ)"]
+    SQ --> SQE["SQE Entries<br/>(IORING_OP_READ/WRITE)"]
+    SQE --> KERN_SQ["Kernel Consumes<br/>sqe→opcode"]
+    KERN_SQ --> CQE["CQE in CQ<br/>(res + user_data)"]
+    ZEROCOPY["Zero-Copy"] --> SENDFILE["sendfile()<br/>(Kernel→Kernel)"]
+    ZEROCOPY --> SPLICE["splice()<br/>(Pipe Splicing)"]
+    style BLOCKING fill:#4a8bc2
+    style KERNEL fill:#2d5a7b
+    style SLEEP fill:#c73e1d
+    style NONBLOCKING fill:#3a7ca5
+    style POLL fill:#e8912e
+    style READY fill:#3fb950
+    style AIO fill:#6f42c1
+    style IOCB fill:#e8912e
+    style EVT fill:#3a7ca5
+    style IO_URING fill:#c73e1d
+    style SQ fill:#3fb950
+    style CQ fill:#3fb950
+    style SQE fill:#e8912e
+    style KERN_SQ fill:#2d5a7b
+    style CQE fill:#3fb950
+    style ZEROCOPY fill:#6f42c1
+    style SENDFILE fill:#e8912e
+    style SPLICE fill:#e8912e
 ```
 
 ## Table of Contents
@@ -1065,7 +1087,69 @@ fd refcount            per-read fget/fput   one-time registration
 
 ---
 
-## 18. Simplest Mental Model
+## Interview Questions
+
+### Beginner Level
+
+**Q1: What's the difference between blocking and non-blocking I/O?**
+
+**Why interviewers ask this**: Tests fundamental understanding of the most common I/O models.
+
+**Ideal answer structure**:
+1. **Blocking**: Thread makes syscall (`read()`) and enters `TASK_INTERRUPTIBLE` sleep until data arrives. Simple but wastes threads (1 thread per connection).
+2. **Non-blocking**: `O_NONBLOCK` — `read()` returns immediately with `EAGAIN` if no data. Requires polling (busy-wait or `select`/`epoll`).
+3. **Cost**: Blocking ties up kernel stack (8KB per thread) and scheduler overhead. Non-blocking trades thread count for complexity.
+
+**Common wrong answer**: "Non-blocking is always better" — for low-concurrency or CPU-bound work, blocking is simpler and equally fast. Non-blocking shines with many concurrent I/O-bound connections.
+
+**Q2**: What is `epoll` and why is it better than `select`?
+
+**Answer**: `epoll` is Linux's I/O event notification facility. It beats `select`/`poll` in three ways: 1) **O(1)** vs **O(n)** — doesn't scan all FDs on each call. 2) **No FD limit** (select maxes at 1024). 3) **Edge-triggered** mode — only notified when state changes, reducing syscalls. Use `epoll_create1` → `epoll_ctl` to register → `epoll_wait` to get events. Internally uses a callback-based wakeup mechanism via `wait_queue_entry_t`.
+
+### Intermediate Level
+
+**Q3: How does `io_uring` work and what makes it faster than `epoll`?**
+
+**Answer**: `io_uring` uses shared ring buffers (Submission Queue + Completion Queue) in mmap'd memory between user and kernel — **zero syscalls per I/O** after setup. Submit `io_uring_sqe` entries to SQ, kernel processes asynchronously, results appear in CQ. Key features: SQPOLL mode (kernel thread polls SQ, no syscalls at all), fixed buffers (registered once), registered files (bypass fd_table lookup), and support for almost all syscalls (read/write/openat/accept/sendmsg). `epoll` still needs `read()`/`write()` syscalls per event. `io_uring` batches submission + completion into single `io_uring_enter` or eliminates it entirely with SQPOLL.
+
+**Q4**: Compare the reactor pattern (epoll) vs proactor pattern (io_uring/IOCP).
+
+**Answer**: **Reactor** (epoll): tell me when I can read/write → I do the read/write. **Proactor** (io_uring): I initiate the read/write → tell me when it's done. Reactor is simpler but requires application-level state machines for each operation. Proactor reduces context switches (kernel handles the data movement) and enables true zero-copy (registered buffers). Proactor is harder to program but gives higher throughput (especially with buffered I/O and vectored operations). Linux's `io_uring` supports both modes via `IOSQE_ASYNC`.
+
+### Senior Level
+
+**Q5: Your database server shows 80% `iowait` and the application is slow. The storage team says the SSDs are only 30% utilized. What's wrong?**
+
+**Why interviewers ask this**: Tests ability to debug I/O bottlenecks beyond utilization numbers.
+
+**Answer**: **IOPS saturation, not bandwidth**. SSDs have separate limits: bandwidth (GB/s) and IOPS (operations/s). 4KB random reads at queue depth 1 can saturate IOPS at <10% bandwidth utilization. Check `/sys/block/sdX/stat` — look at `io_ticks` (actual I/O time) vs weighted `io_ticks`. Use `iostat -xz 1` to see `%util` = time device had at least one outstanding request. Fix: increase queue depth (scsi queue_depth, NVMe `num_queues`), or the application is doing sync I/O (fsync per transaction → sequentializes all I/O).
+
+**Q6**: Design an I/O strategy for a proxy server handling 100K connections with 1ms latency SLA.
+
+**Answer**: 1) **Per-event loop architecture** (NGINX/HAProxy model): one epoll fd per CPU core, each with its own event loop. 2) Use **`accept()` with `EPOLLEXCLUSIVE`** to avoid thundering herd. 3) Use **`splice()`** for zero-copy between sockets (proxy forwards bytes without user-space buffer). 4) **`io_uring`** with fixed buffers and registered files for further optimization. 5) **SO_REUSEPORT** for kernel-level load balancing across processes. 6) Batching: collect 32 events before processing for cache locality.
+
+### Staff/Principal Level
+
+**Q7: Design a storage engine that must handle 1M 4KB random writes/sec with fsync durability on consumer NVMe. How do you avoid the fsync bottleneck?**
+
+**Why**: Tests deep understanding of I/O stack and fsync mechanics at scale.
+
+**Answer**: 1) **Group commit**: batch 1000 writes → one fsync. 2) Use **`io_uring`** with `IORING_SETUP_IOPOLL` to poll completions instead of interrupts. 3) **O_DIRECT** to bypass page cache (avoid double-copy + writeback pressure). 4) **Log-structured**: sequential appends to WAL, fsync the WAL (one sequential fsync), lazily merge to SSTables. 5) **Raw block device** or **SPDK** (user-space NVMe driver via DPDK) for maximum control — no kernel involvement at all. 6) **NVMe write pointers**: use `BLKZEROOUT` + `fallocate` to pre-allocate. Real-world: WAL-based engines like PostgreSQL achieve ~200K txn/s with group commit; SPDK can push beyond 5M IOPS.
+
+**Q8**: Your company's microservices use a mix of epoll (Go), io_uring (Rust), and blocking I/O (Python). The overall fleet shows high latency variance under load. Design a unified observability strategy to diagnose cross-service I/O bottlenecks.
+
+**Answer**: 1) **eBPF-based tracing**: use `bcc` tools — `biolatency` for I/O latency, `fileslower` for slow file ops, `tcpconnlat` for connection latency. 2) **Per-event-loop metrics**: expose epoll_wait duration, io_uring CQ drain rate, average batch size. 3) **Distributed tracing**: OpenTelemetry with `SchedCLFS` context propagation to correlate I/O waits with spans. 4) **Linux `perf` for kernel I/O stack**: `perf top -e block:*`, `perf record -e iommu:*`. 5) **Pressure Stall Information (PSI)**: `/proc/pressure/io` shows `some` (any task stalled) and `full` (all tasks stalled). PSI > 10% full indicates the I/O subsystem is bottleneck.
+
+### Tricky Edge Cases
+
+**Q9**: You call `read(fd, buf, 65536)` and it returns 4096. The file isn't a pipe or socket. What happened?
+
+**Answer**: **Short read despite regular file**. Regular files can return short reads at EOF or with signal interruption. More likely: **O_NONBLOCK** on a regular file (rare but possible) or **kernel read-ahead limit** reached. Also: **fuse filesystem** returning partial data, **network filesystem** (NFS/CIFS) partial read, or **encrypted filesystem** boundary. Fix: wrap `read()` in a loop that accumulates until requested bytes or EOF.
+
+**Q10**: Your application uses O_DIRECT for database files. Performance is terrible despite fast NVMe. Why?
+
+**Answer**: **O_DIRECT has strict alignment requirements**: buffer must be page-aligned (4KB), offset must be sector-aligned (512B), and I/O size must be a multiple of sector size. If these aren't met, the kernel silently falls back to buffered I/O or returns `EINVAL`. Also, O_DIRECT bypasses the page cache entirely — sequential reads that hit the same data benefit from caching. Without it, every read is a disk read. Fix: 1) Use `posix_memalign(&buf, 4096, size)`. 2) Consider `RWF_UNCACHED` (io_uring) instead. 3) Use `fadvise` for sequential access patterns.
+
 
 > **I/O models are like ordering food at a restaurant. Blocking I/O is waiting at the counter for your burger — simple but you can't do anything else. Non-blocking is checking every second: "Is my burger ready?" (wasteful). select/poll is watching the counter for any order to be ready but checking every board (wastes time looking at empty spaces). epoll is a buzzer that goes off only for your order — efficient. io_uring is handing the waiter a written list and picking up all dishes at once from the pickup window — zero back-and-forth. sendfile/splice is cutting out plates entirely — the kitchen hands your burger directly to you. DPDK/XDP is bringing your own stove and cooking yourself — maximum speed, maximum complexity. Every model is about the same fundamental trade: control vs. convenience, throughput vs. latency, thread count vs. complexity.**
 

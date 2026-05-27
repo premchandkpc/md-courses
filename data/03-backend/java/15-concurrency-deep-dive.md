@@ -4,15 +4,26 @@
 
 ```mermaid
 graph LR
-    A["Input<br/>Layer"] --> B["Hidden<br/>Layers"]
-    B --> C["Hidden<br/>Layers"]
-    C --> D["Output<br/>Layer"]
-    B --> E["Activation<br/>Functions"]
-    E --> B
-    style A fill:#4a8bc2
-    style B fill:#2d5a7b
-    style C fill:#2d5a7b
-    style D fill:#c73e1d
+    THR["Thread<br/>(Platform / Virtual)"] --> LOCK["synchronized /<br/>ReentrantLock"]
+    THR --> AQS["AbstractQueuedSynchronizer<br/>(CLH Queue)"]
+    LOCK --> WAIT["wait() / notify()<br/>Condition.await()"]
+    AQS --> SEM["Semaphore /<br/>CountDownLatch"]
+    AQS --> MUT["Mutex /<br/>ReentrantLock"]
+    VAR["volatile<br/>Variable"] --> HB["Happens-Before<br/>(JMM)"]
+    HB --> VIS["Visibility<br/>Guarantee"]
+    AT["AtomicInteger /<br/>AtomicReference"] --> CAS["CAS<br/>(Compare-And-Swap)"]
+    CAS --> HB
+    style THR fill:#4a8bc2
+    style LOCK fill:#c73e1d
+    style AQS fill:#2d5a7b
+    style WAIT fill:#e8912e
+    style SEM fill:#3a7ca5
+    style MUT fill:#3a7ca5
+    style VAR fill:#6f42c1
+    style HB fill:#3fb950
+    style VIS fill:#3fb950
+    style AT fill:#2d5a7b
+    style CAS fill:#e8912e
 ```
 
 ## Table of Contents

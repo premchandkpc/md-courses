@@ -4,15 +4,25 @@
 
 ```mermaid
 graph LR
-    A["Input<br/>Layer"] --> B["Hidden<br/>Layers"]
-    B --> C["Hidden<br/>Layers"]
-    C --> D["Output<br/>Layer"]
-    B --> E["Activation<br/>Functions"]
-    E --> B
-    style A fill:#4a8bc2
-    style B fill:#2d5a7b
-    style C fill:#2d5a7b
-    style D fill:#c73e1d
+    LIST["list<br/>(Dynamic Array)"] --> APPEND["O(1) amortized<br/>append / pop"]
+    LIST --> SLICE["O(k)<br/>slice / insert"]
+    DICT["dict<br/>(Hash Table)"] --> GET["O(1) average<br/>get / set / del"]
+    DICT --> RESIZE["Resize<br/>(~2/3 load factor)"]
+    SET["set<br/>(Hash Set)"] --> MEMB["O(1)<br/>membership"]
+    HEAP["heapq<br/>(Binary Heap)"] --> PUSH["O(log n)<br/>heappush / heappop"]
+    DEQ["deque<br/>(Doubly-Linked)"] --> PLEFT["O(1)<br/>appendleft / popleft"]
+    style LIST fill:#4a8bc2
+    style APPEND fill:#3fb950
+    style SLICE fill:#c73e1d
+    style DICT fill:#2d5a7b
+    style GET fill:#3fb950
+    style RESIZE fill:#e8912e
+    style SET fill:#3a7ca5
+    style MEMB fill:#3fb950
+    style HEAP fill:#6f42c1
+    style PUSH fill:#e8912e
+    style DEQ fill:#3a7ca5
+    style PLEFT fill:#3fb950
 ```
 
 ## Table of Contents

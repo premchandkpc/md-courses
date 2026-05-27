@@ -4,15 +4,21 @@
 
 ```mermaid
 graph LR
-    A["Input<br/>Layer"] --> B["Hidden<br/>Layers"]
-    B --> C["Hidden<br/>Layers"]
-    C --> D["Output<br/>Layer"]
-    B --> E["Activation<br/>Functions"]
-    E --> B
-    style A fill:#4a8bc2
-    style B fill:#2d5a7b
-    style C fill:#2d5a7b
-    style D fill:#c73e1d
+    PT["Pre-Training<br/>(Next Token Prediction)"] --> FT["Fine-Tuning<br/>(Instruction Tuning)"]
+    FT --> RL["RLHF /<br/>DPO Alignment"]
+    RL --> DEP["Model<br/>Deployment"]
+    DEP --> INF["Inference<br/>(Token Generation)"]
+    INF --> PROMPT["Prompt<br/>Processing"]
+    PROMPT --> GEN["Auto-Regressive<br/>Decoding"]
+    GEN --> KV["KV Cache<br/>(Past Keys/Values)"]
+    style PT fill:#4a8bc2
+    style FT fill:#2d5a7b
+    style RL fill:#6f42c1
+    style DEP fill:#3a7ca5
+    style INF fill:#c73e1d
+    style PROMPT fill:#e8912e
+    style GEN fill:#3fb950
+    style KV fill:#2d5a7b
 ```
 
 ## 1. LLM Architecture Taxonomy

@@ -8,15 +8,27 @@
 
 ```mermaid
 graph LR
-    A["Input<br/>Layer"] --> B["Hidden<br/>Layers"]
-    B --> C["Hidden<br/>Layers"]
-    C --> D["Output<br/>Layer"]
-    B --> E["Activation<br/>Functions"]
-    E --> B
-    style A fill:#4a8bc2
-    style B fill:#2d5a7b
-    style C fill:#2d5a7b
-    style D fill:#c73e1d
+    UNIT["Unit Tests<br/>(pytest)"] --> FIXT["Fixtures<br/>(conftest.py)"]
+    UNIT --> MOCK["monkeypatch /<br/>unittest.mock"]
+    INT["Integration Tests"] --> TCON["Testcontainers<br/>(Docker)"]
+    TCON --> DB["PostgreSQL /<br/>Redis"]
+    PROP["Property Tests<br/>(hypothesis)"] --> STRAT["Strategies<br/>(text/integers)"]
+    COV["Coverage<br/>(pytest-cov)"] --> HTML["HTML<br/>Report"]
+    PKG["Packaging<br/>(pyproject.toml)"] --> WHL["Wheel<br/>(pip install)"]
+    PKG --> PYP["PyPI<br/>(twine upload)"]
+    style UNIT fill:#4a8bc2
+    style FIXT fill:#2d5a7b
+    style MOCK fill:#3a7ca5
+    style INT fill:#6f42c1
+    style TCON fill:#e8912e
+    style DB fill:#c73e1d
+    style PROP fill:#3fb950
+    style STRAT fill:#3a7ca5
+    style COV fill:#e8912e
+    style HTML fill:#2d5a7b
+    style PKG fill:#4a8bc2
+    style WHL fill:#3fb950
+    style PYP fill:#c73e1d
 ```
 
 ## 📑 Table of Contents

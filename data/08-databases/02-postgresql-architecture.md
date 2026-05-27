@@ -4,15 +4,32 @@
 
 ```mermaid
 graph LR
-    A["Input<br/>Layer"] --> B["Hidden<br/>Layers"]
-    B --> C["Hidden<br/>Layers"]
-    C --> D["Output<br/>Layer"]
-    B --> E["Activation<br/>Functions"]
-    E --> B
-    style A fill:#4a8bc2
-    style B fill:#2d5a7b
-    style C fill:#2d5a7b
-    style D fill:#c73e1d
+    POST["Postmaster<br/>Daemon"] --> BG["Backend<br/>(per connection)"]
+    POST --> WRITER["Background<br/>Writer"]
+    POST --> WAL_WRITER["WAL Writer"]
+    POST --> CHECKPOINT["Checkpointer"]
+    POST --> AUTOVAC["Auto-Vacuum<br/>Workers"]
+    POST --> ARCHIVER["WAL Archiver"]
+    POST --> STATS["Stats Collector"]
+    BG --> SHARED_BUF["Shared Buffers<br/>(8KB pages)"]
+    SHARED_BUF --> WAL_BUF["WAL Buffer"]
+    SHARED_BUF --> CLOG["Commit Log<br/>(clog)"]
+    BG --> QUERY_PIPELINE["Query Pipeline"]
+    QUERY_PIPELINE --> PARSER
+    QUERY_PIPELINE --> PLANNER
+    QUERY_PIPELINE --> EXECUTOR
+    style POST fill:#4a8bc2
+    style BG fill:#2d5a7b
+    style WRITER fill:#3a7ca5
+    style WAL_WRITER fill:#e8912e
+    style CHECKPOINT fill:#c73e1d
+    style AUTOVAC fill:#6f42c1
+    style ARCHIVER fill:#3fb950
+    style STATS fill:#e8912e
+    style SHARED_BUF fill:#3a7ca5
+    style WAL_BUF fill:#e8912e
+    style CLOG fill:#2d5a7b
+    style QUERY_PIPELINE fill:#c73e1d
 ```
 
 ## Table of Contents
@@ -283,29 +300,101 @@ PostgreSQL is a factory with dedicated workers:
 ## Code Examples
 
 ```python
-# Example implementation
-# [Add language-specific code demonstrating core concept]
-pass
+import psycopg2
+import psutil
+import os
+
+# Monitor backend processes
+def pg_process_overview(conn):
+    with conn.cursor() as cur:
+        cur.execute("""
+            SELECT pid, backend_type, state, wait_event_type,
+                   query_start, backend_start, application_name
+            FROM pg_stat_activity
+            WHERE backend_type = 'client backend'
+            ORDER BY query_start
+        """)
+        for row in cur:
+            proc = psutil.Process(row[0])
+            mem_mb = proc.memory_info().rss / 1024 / 1024
+            cpu_pct = proc.cpu_percent(interval=0.1)
+            print(f"PID={row[0]} Type={row[1]} State={row[2]} "
+                  f"Mem={mem_mb:.0f}MB CPU={cpu_pct:.1f}%")
+
+# Simulate query pipeline stages
+class Parser:
+    def parse(self, sql: str) -> list:
+        tokens = sql.replace("(", " ( ").replace(")", " ) ").split()
+        return tokens  # simplified — real parser uses bison grammar
+
+class Planner:
+    def estimate_cost(self, table: str, filter_col: str) -> dict:
+        return {
+            'seq_scan': 1000 * 1.0,       # seq_page_cost * pages
+            'index_scan': 50 * 4.0 + 10,  # random_page_cost * index_pages
+            'chosen': 'index_scan'
+        }
+
+class Executor:
+    def execute(self, plan: dict) -> list:
+        if plan['chosen'] == 'index_scan':
+            return [{'id': 1, 'email': 'alice@example.com'}]
+        return []
+
+# Memory context exploration
+with conn.cursor() as cur:
+    cur.execute("SELECT name, total_bytes, parent FROM pg_backend_memory_contexts")
+    for row in cur:
+        indent = "  " * (row[2] is not None)
+        print(f"{indent}{row[0]}: {row[1] / 1024:.0f}KB")
 ```
 
 ---
 
 ## Common Failure Modes
 
-**Problem**: [Key issue in production]
+**Problem**: Checkpoint burst — periodic I/O spikes every `checkpoint_timeout` interval
 
-**Root cause**: [Why it happens]
+**Root cause**: The checkpointer process flushes all dirty buffers accumulated since the last checkpoint. If the write rate is high (e.g., 100MB/s), a 15-minute checkpoint flushes 90GB at once, saturating disk I/O and causing query latency spikes. This is the most common cause of "periodic slowdown" in PostgreSQL.
 
-**Solution**: [How to fix]
+**Detection**: I/O utilization graph shows a sawtooth pattern every 15 minutes. `pg_stat_bgwriter` shows `checkpoints_timed` incrementing and `buffers_checkpoint` is large. Application latency graph mirrors the pattern.
+
+**Solution**: Increase `checkpoint_completion_target` to 0.9 to spread writes across the checkpoint window. Increase `max_wal_size` to reduce checkpoint frequency. Enable `wal_compression` to reduce WAL volume. For NVMe, set `dirty_background_ratio` and `dirty_ratio` in the OS to control kernel flushing.
+
+**Problem**: WAL sender falling behind (replication lag) causing data loss risk
+
+**Root cause**: The primary generates WAL faster than a standby can apply it. Common causes: standby with slower hardware, long-running queries on standby blocking WAL replay, network bandwidth saturation, or `wal_keep_size` too small causing replication slot to be removed.
+
+**Detection**: `pg_stat_replication` shows `replay_lag` growing. `pg_wal_lsn_diff()` shows increasing gap. Monitoring alerts on replication lag > some threshold. Standby data is increasingly stale.
+
+**Solution**: Ensure standby hardware matches primary. Set `hot_standby_feedback = on` to prevent query conflicts. Increase `wal_keep_size` or use replication slots with `max_slot_wal_keep_size`. For cross-region replication, use synchronous replication for critical data or accept async lag. Add monitoring with lag alerts at 10s, 60s, and 300s thresholds.
 
 ---
 
 ## Interview Questions
 
-### Q1: [Core concept question]
+### Q1: Why does PostgreSQL use a multi-process model instead of multi-threaded, and what are the implications?
 
-**Answer**: [Detailed explanation with trade-offs]
+**Answer**: PostgreSQL uses fork-based multi-process for isolation: if a backend crashes, it doesn't take down other connections. Shared memory is used for the buffer pool, WAL buffers, and lock manager — processes communicate through this. The trade-off: each connection has its own memory context (~10MB overhead), making 10,000 connections impractical without a pooler. Threaded databases (MySQL, Oracle) use less memory per connection because threads share the same address space, but a crash in any thread can corrupt shared state. PostgreSQL's approach favors stability and isolation over raw connection density.
 
-### Q2: [Design/architecture question]
+### Q2: How does the PostgreSQL query planner choose between a sequential scan and an index scan?
 
-**Answer**: [Best practices and reasoning]
+**Answer**: The planner estimates the cost of each scan method using `seq_page_cost`, `random_page_cost`, `cpu_tuple_cost`, and `cpu_operator_cost`. For a sequential scan, cost = `seq_page_cost × pages + cpu_tuple_cost × tuples + cpu_operator_cost × filter_ops`. For an index scan, cost = `random_page_cost × index_pages + cpu_tuple_cost × expected_tuples + ...`. The planner uses table statistics (reltuples, relpages) and column statistics (most-common-values, histogram bounds, correlation) to estimate selectivity. A seq scan is preferred when the table is small (< 10% of shared_buffers), the query selects a large fraction of rows (> 5-10%), or there's no useful index. The key knob is `random_page_cost` — setting it to 1.1 (NVMe) vs the default 4.0 (HDD) makes the planner correctly choose index scans on SSD systems.
+
+
+## Edge Cases
+
+| Scenario | Challenge | Solution |
+|----------|-----------|----------|
+| **XID wraparound** | Transaction ID counter wraps after 2B transactions, old data becomes visible | Monitor `age(datfrozenxid)` > 1B. Set `autovacuum_freeze_max_age` = 200M. Schedule manual VACUUM FREEZE during maintenance |
+| **Connection pool exhaustion** | 500+ connections overwhelm shared_buffers | Use PgBouncer in transaction mode. Pool size = 2x CPU cores. Set `max_connections` conservatively (200-500) |
+| **Checkpoint storm** | All dirty buffers written at once, I/O spikes, WAL writes stall | Set `max_wal_size` = 2x checkpoint_completion_target. Use `checkpoint_timeout` = 15 min. Monitor `pg_stat_bgwriter` buffers_backend vs buffers_checkpoint ratio |
+| **Replication lag > WAL retention** | Standby can't catch up, requires full rebuild | Set `wal_keep_segments` large enough for max replication lag. Monitor `pg_stat_replication` replay_lag. Use replication slots with `max_slot_wal_keep_size` |
+| **Autovacuum not keeping up** | Table bloat, transaction wraparound risk | Tune `autovacuum_vacuum_scale_factor` = 0.01 for large tables. Set `autovacuum_vacuum_cost_limit` = 2000. Monitor `pg_stat_user_tables.n_dead_tup` ratio |
+
+## Cross-References
+
+- [Database Internals](../../08-databases/01-db-internals.md) — B-tree page structure, MVCC visibility checks, LSM-tree compactions
+- [NoSQL Databases](../05-nosql-databases.md) — Document, wide-column, and KV comparison
+- [Distributed Transactions](../../09-distributed-systems/02-distributed-transactions.md) — 2PC, Saga, Outbox patterns
+- [Redis Caching](../../08-databases/04-redis-caching.md) — Cache-aside, write-through, invalidation strategies

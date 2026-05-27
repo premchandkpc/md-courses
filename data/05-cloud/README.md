@@ -6,15 +6,23 @@ The knowledge base for designing, deploying, and operating infrastructure on pub
 
 ```mermaid
 graph LR
-    A["Input<br/>Layer"] --> B["Hidden<br/>Layers"]
-    B --> C["Hidden<br/>Layers"]
-    C --> D["Output<br/>Layer"]
-    B --> E["Activation<br/>Functions"]
-    E --> B
-    style A fill:#4a8bc2
-    style B fill:#2d5a7b
-    style C fill:#2d5a7b
-    style D fill:#c73e1d
+    COMP["Compute<br/>EC2 / Lambda / ECS"] --> NET["Networking<br/>VPC / ELB / Route53"]
+    COMP --> STOR["Storage<br/>S3 / EBS / EFS"]
+    COMP --> DB["Databases<br/>RDS / DynamoDB"]
+    NET --> SEC["Security<br/>IAM / KMS / WAF"]
+    STOR --> CDN["Content Delivery<br/>CloudFront"]
+    DB --> CACHE["Caching<br/>ElastiCache"]
+    MON["Monitoring<br/>CloudWatch / X-Ray"] -.-> COMP
+    MON -.-> DB
+    MON -.-> NET
+    style COMP fill:#4a8bc2
+    style NET fill:#2d5a7b
+    style STOR fill:#3a7ca5
+    style DB fill:#c73e1d
+    style SEC fill:#e8912e
+    style CDN fill:#6f42c1
+    style CACHE fill:#3fb950
+    style MON fill:#3a7ca5
 ```
 
 ## Table of Contents
@@ -332,6 +340,575 @@ Amazon Web Services dominates public cloud with the widest service catalog. Deep
 - **AWS Well-Architected** — Operational Excellence, Security, Reliability, Performance Efficiency, Cost Optimization, Sustainability
 - **GCP Architecture Framework** — System Design, Security, Privacy & Compliance, Reliability, Cost Optimization, Performance Optimization, Operational Excellence, Data Governance
 - **Azure Well-Architected** — Reliability, Security, Cost Optimization, Operational Excellence, Performance Efficiency
+
+---
+
+## Global & Multi-Region Architecture
+
+Designing workloads that span multiple geographic regions for availability, latency, and data residency.
+
+### Active-Active vs Active-Passive
+
+```mermaid
+graph TB
+    subgraph "Active-Active"
+        A1["Region A<br/>(Active)"] <-->|"Async Replication"| A2["Region B<br/>(Active)"]
+        US1["Users"] -->|"DNS/LB"| A1
+        US1 -->|"DNS/LB"| A2
+    end
+    subgraph "Active-Passive"
+        P1["Region A<br/>(Active)"] -->|"Sync/Async Replication"| P2["Region B<br/>(Passive/Warm)"]
+        US2["Users"] -->|"DNS"| P1
+        US2 -.->|"Failover"| P2
+    end
+```
+
+| Pattern | RTO | RPO | Cost | Complexity |
+|---------|-----|-----|------|------------|
+| Active-Passive (Cold) | Hours | Hours | Low (standby) | Low |
+| Active-Passive (Warm) | Minutes | Minutes | Medium | Medium |
+| Active-Passive (Hot/Pilot Light) | Seconds | Seconds | Medium-High | Medium |
+| Active-Active | Seconds-Near zero | Seconds | High (full running) | High |
+
+### Global Traffic Routing
+
+```
+Anycast:
+  Same IP advertised from multiple regions → BGP routes to nearest
+  Use: AWS Global Accelerator, Cloudflare, Google Cloud LB
+  Pros: No DNS caching issues, sub-second failover
+  Cons: Requires BGP, limited to UDP/TCP
+
+DNS-Based (Geo/Latency Routing):
+  Route53/Cloud DNS returns different IPs based on user origin
+  Use: Weighted, latency-based, geolocation, geoproximity
+  Pros: Simple, no BGP needed
+  Cons: DNS TTL delays failover (30s–5min)
+
+GSLB (Global Server Load Balancing):
+  Dedicated LB appliances that monitor health across regions
+  Use: F5 GTM, Citrix ADC, Cloudflare Load Balancing
+  Combines DNS + health checks + traffic steering
+```
+
+### Geo-Replication Patterns
+
+```text
+Database Geo-Replication:
+
+Active-Passive DB:
+  Primary (us-east-1) → Async replica (eu-west-1)
+  Reads from any region, writes only to primary
+  Failover: promote replica to primary (minutes)
+  Use: RDS Cross-Region Read Replicas, Cloud SQL replicas
+
+Active-Active DB:
+  Multiple regions accept writes
+  Conflict resolution strategy required
+  Use: DynamoDB Global Tables, Cosmos DB Multi-Master, Spanner
+  Tradeoff: Higher latency per write, conflict handling needed
+
+Multi-Region Kafka:
+  MirrorMaker 2.0: cluster-1 → cluster-2
+  Confluent Cluster Linking: direct topic replication
+  Each region has local Kafka for producer writes
+```
+
+### Multi-Region Database Strategies
+
+| Strategy | Technology | Write Location | Consistency | Failover |
+|----------|-----------|----------------|-------------|----------|
+| Single-region with replicas | RDS + Read Replicas | Primary only | Strong in region, eventual cross-region | Promote replica |
+| Global tables | DynamoDB Global Tables | All regions | Last-writer-wins | Instant |
+| Distributed SQL | Spanner, CockroachDB, Yugabyte | All regions | Strong (global clock) | Automatic |
+| Multi-master | Cosmos DB, Cassandra | All regions | Configurable | Automatic |
+| Active-passive | Aurora Global Database | Primary | Replica lag < 1s | 1-min failover |
+
+### Multi-Region Kubernetes
+
+**Cluster API (CAPI):**
+```yaml
+apiVersion: cluster.x-k8s.io/v1beta1
+kind: Cluster
+metadata:
+  name: prod-us-east
+spec:
+  clusterNetwork:
+    pods:
+      cidrBlocks: ["10.128.0.0/16"]
+    services:
+      cidrBlocks: ["10.0.0.0/16"]
+  infrastructureRef:
+    apiVersion: infrastructure.cluster.x-k8s.io/v1beta1
+    kind: AWSCluster
+    name: prod-us-east
+---
+apiVersion: cluster.x-k8s.io/v1beta1
+kind: Cluster
+metadata:
+  name: prod-eu-west
+spec:
+  clusterNetwork:
+    pods:
+      cidrBlocks: ["10.129.0.0/16"]
+    services:
+      cidrBlocks: ["10.1.0.0/16"]
+  infrastructureRef:
+    apiVersion: infrastructure.cluster.x-k8s.io/v1beta1
+    kind: AWSCluster
+    name: prod-eu-west
+```
+
+**Multi-Cluster Service Mesh:**
+- Istio multi-primary: each region has its own control plane
+- Service discovery across clusters via DNS or federation
+- Failover between regions via traffic splitting
+- Submariner for cross-cluster networking (Kiali, ServiceExport)
+
+### CDN Architectures
+
+```mermaid
+graph LR
+    O["Origin<br/>us-east-1"] --> E1["Edge<br/>US West"]
+    O --> E2["Edge<br/>EU"]
+    O --> E3["Edge<br/>APAC"]
+    O --> E4["Edge<br/>South America"]
+    U["User"] -->|"Anycast DNS"| E1
+    U -->|"Anycast DNS"| E2
+    E1 ---|"Cache Hit"| U
+    E1 -.->|"Cache Miss"| O
+```
+
+| Feature | CloudFront | Cloud CDN | Azure Front Door | Fastly |
+|---------|-----------|-----------|------------------|--------|
+| Edge locations | 600+ | 200+ | 190+ | 80+ |
+| Origin shield | Yes | CDN Interconnect | Yes | Yes |
+| Custom scripts | CloudFront Functions, Lambda@Edge | No | Rules engine | VCL, Wasm |
+| WAF integration | AWS WAF | Cloud Armor | Built-in WAF | NGWAF |
+| Real-time logs | Yes | Yes | Yes | Yes |
+| Price model | Pay per request | Pay per request | Flat + overage | Flat + overage |
+
+### Edge Computing Patterns
+
+- **Lambda@Edge / CloudFront Functions**: Run code at edge locations (sub-ms startup)
+- **Cloud Run on GDC**: Run containers at edge for low-latency processing
+- **IoT Edge**: Process device data locally before sending to cloud
+- **CDN Compute**: VCL (Fastly), Wasm (Fastly, Cloudflare), EdgeWorkers (Akamai)
+- **Global Rate Limiting**: Enforce limits at edge before reaching origin
+
+```typescript
+// Edge rate limiting with Cloudflare Workers
+const rateLimiter = new Map<string, { count: number; reset: number }>();
+
+async function handleRequest(request: Request): Promise<Response> {
+  const ip = request.headers.get("CF-Connecting-IP") || "unknown";
+  const now = Math.floor(Date.now() / 1000);
+  const windowKey = `${ip}:${Math.floor(now / 60)}`; // 60s window
+
+  const entry = rateLimiter.get(windowKey) || { count: 0, reset: now + 60 };
+  entry.count++;
+
+  if (entry.count > 100) {
+    return new Response("Rate limit exceeded", { status: 429 });
+  }
+  rateLimiter.set(windowKey, entry);
+  return fetch(request);
+}
+```
+
+### Conflict Resolution
+
+| Strategy | Mechanism | Use Case | Tradeoff |
+|----------|-----------|----------|----------|
+| Last-Writer-Wins (LWW) | Timestamp comparison | DynamoDB, Cassandra, Cosmos DB | Loses concurrent writes |
+| CRDT (Conflict-free Replicated Data Types) | Merge operation (add wins, max wins) | Collaborative editing, counters | Complex, not all data types |
+| Custom Merge | Application-level reconciliation | Custom applications | Developer effort |
+| Vector Clocks | Track causal history | Riak, distributed databases | Overhead, tombstone growth |
+
+**CRDT Example (Counter):**
+```typescript
+class GCounter {
+  private counts: Map<string, number> = new Map();
+
+  increment(replica: string, delta: number = 1): void {
+    this.counts.set(replica, (this.counts.get(replica) || 0) + delta);
+  }
+
+  value(): number {
+    return Array.from(this.counts.values()).reduce((a, b) => a + b, 0);
+  }
+
+  merge(other: GCounter): void {
+    for (const [replica, count] of other.counts) {
+      this.counts.set(replica, Math.max(this.counts.get(replica) || 0, count));
+    }
+  }
+}
+```
+
+**Production Considerations:**
+- Test cross-region latency in CI/CD (don't assume low latency)
+- Chaos engineering for region failover (kill an entire region)
+- Budget for inter-region data transfer costs (egress is expensive)
+- Plan for compliance: data residency (GDPR, CCPA, sovereign clouds)
+- Automate DNS failover testing (shoot the primary)
+
+---
+
+## Disaster Recovery
+
+Strategies and practices for recovering from catastrophic failures — AZ failures, region failures, data corruption, and ransomware.
+
+### RPO / RTO Definitions
+
+```mermaid
+graph LR
+    T0["Disaster<br/>Strikes"] -->|"Data Loss Window"| RPO["RPO<br/>Recovery Point"]
+    RPO -->|"Recovery Time"| RTO["RTO<br/>Recovery Time"]
+    RTO --> NORMAL["Normal<br/>Operations"]
+    style RPO fill:#c73e1d
+    style RTO fill:#e8912e
+```
+
+| Term | Definition | Example |
+|------|-----------|---------|
+| **RPO** (Recovery Point Objective) | Maximum acceptable data loss (how far back in time) | 15 min = lose at most 15 min of data |
+| **RTO** (Recovery Time Objective) | Maximum acceptable downtime | 4 hours = service must be back within 4 hours |
+| **WRT** (Work Recovery Time) | Time to verify, test, and resume business | 1 hour after systems restored |
+| **MTD** (Maximum Tolerable Downtime) | Total outage the business can survive | RTO + WRT |
+
+### RPO/RTO Tradeoffs
+
+```text
+Tighter RPO/RTO → Higher cost and complexity
+
+RPO = 0 (Zero data loss):
+  Requires synchronous replication
+  Limited by distance (speed of light: ~100km per ms round trip)
+  Cost: 2x-3x for dedicated networking, sync replication
+
+RPO = 5 minutes:
+  Async replication, near-zero data loss risk
+  More relaxed distance requirements
+  Cost: Moderate (async replication, monitoring)
+
+RTO = < 1 minute:
+  Active-active or hot standby
+  Full infrastructure running in secondary region
+  Cost: 2x running infrastructure
+
+RTO = 4 hours:
+  Warm standby or pilot light
+  Start/scale resources on failover
+  Cost: 20-40% of primary
+```
+
+### Backup Strategies
+
+| Type | Description | RPO | Storage | Restore Time |
+|------|-------------|-----|---------|-------------|
+| Full | Complete copy of all data | Snapshot time | Large | Fastest |
+| Incremental | Changes since last backup (any type) | Short | Small | Slow (chain) |
+| Differential | Changes since last full backup | Medium | Medium | Medium |
+| Transaction Log | Every database transaction | Near-zero | Very large | Point-in-time |
+| Snapshot | Instant filesystem/volume state | Point-in-time | Medium (COW) | Instant mount |
+
+**3-2-1 Rule:**
+```
+3 copies of data
+2 different media types (disk, tape, cloud)
+1 copy off-site (different region/cloud)
+```
+
+**Backup Implementation (Terraform):**
+```hcl
+# Automated backup with lifecycle
+resource "aws_backup_plan" "production" {
+  name = "production-backup-plan"
+
+  rule {
+    rule_name         = "daily-full"
+    target_vault_name = aws_backup_vault.main.name
+    schedule          = "cron(0 2 * * ? *)"
+    start_window      = 60
+    completion_window = 120
+
+    lifecycle {
+      cold_storage_after = 30
+      delete_after       = 365
+    }
+
+    recovery_point_tags = {
+      Environment = "production"
+    }
+  }
+
+  rule {
+    rule_name         = "hourly-transaction-logs"
+    schedule          = "cron(0 * * * ? *)"
+    target_vault_name = aws_backup_vault.main.name
+  }
+}
+
+resource "aws_backup_selection" "production" {
+  name         = "production-resources"
+  plan_id      = aws_backup_plan.production.id
+  resources    = [
+    "arn:aws:rds:us-east-1:123456789012:db:main-db",
+    "arn:aws:dynamodb:us-east-1:123456789012:table/users",
+    "arn:aws:ec2:us-east-1:123456789012:volume/*",
+  ]
+}
+```
+
+### Backup Verification
+
+```
+TEST YOUR BACKUPS. UNTESTED BACKUPS ARE WISHES.
+
+Verification Levels:
+  Level 1: Automated checksum verification
+    - Verify backup file integrity (SHA256)
+    - Check backup metadata (size, timestamp, encryption)
+
+  Level 2: Automated restore test
+    - Restore to isolated environment (staging)
+    - Run validation queries (SELECT COUNT(*), schema check)
+    - Verify data integrity (checksums, row counts)
+
+  Level 3: Full DR exercise
+    - Simulate region failure
+    - Execute full recovery procedure
+    - Measure actual RTO/RPO against targets
+
+  Schedule:
+    - Level 1: Every backup
+    - Level 2: Weekly for critical services, monthly for all
+    - Level 3: Quarterly for critical, annually for all
+```
+
+### DR Scenarios
+
+**1. AZ Failure**
+```text
+Impact: Single availability zone in a region goes down
+Symptoms: Increased error rate, elevated latency, instance loss
+Response:
+  - Multi-AZ deployments continue serving (RDS Multi-AZ, spread pods)
+  - Auto Scaling replaces instances in remaining AZs
+  - Health check → remove failed AZ from load balancer
+  - RTO: Seconds to minutes (automatic)
+  - RPO: Zero (synchronous replication within region)
+```
+
+**2. Region Failure**
+```text
+Impact: Entire AWS/GCP/Azure region becomes unavailable
+Symptoms: Complete loss of all services in region
+Response:
+  - Activate cross-region failover (DNS, GSLB, Route53)
+  - Promote replica in secondary region to primary
+  - Scale up secondary region to handle full load
+  - Communicate status to users (status page)
+  - RTO: Minutes to hours (depends on warm vs active-active)
+  - RPO: < 1 minute (async replication lag)
+```
+
+**3. Data Corruption**
+```text
+Impact: Application bug or operator error corrupts data
+Symptoms: Incorrect query results, application errors,
+         users report data inconsistencies
+Response:
+  - Stop the corruption: block writes, isolate affected service
+  - Identify scope: what data/time/table is corrupted?
+  - Restore from point-in-time backup (pre-corruption)
+  - Replay transaction logs up to corruption moment
+  - RTO: Hours (manual investigation + restore)
+  - RPO: Depends on backup frequency (target: < 15 min)
+```
+
+**4. Ransomware Recovery**
+```text
+Impact: Encrypted data, deleted backups, ransom demand
+Symptoms: Files with .encrypted extension, ransom note
+Response:
+  - IMMEDIATE: Isolate affected systems (network disconnect)
+  - DO NOT PAY RANSOM (no guarantee of recovery)
+  - Restore from immutable backups (write-once-read-many)
+  - Scan backups before restore to ensure clean
+  - Forensic investigation: how did attacker get in?
+  
+Prevention:
+  - Immutable backup storage (S3 Object Lock, WORM)
+  - Air-gapped backups (separate AWS account, no cross-account access)
+  - Read-only backup vaults (IAM denies delete)
+  - Multi-factor authentication on backup systems
+  - Regular restore drills (at least quarterly)
+  - Network segmentation (backup network isolated from production)
+```
+
+### DR Patterns Comparison
+
+| Pattern | RTO | RPO | Cost | Description |
+|---------|-----|-----|------|-------------|
+| **Backup & Restore** | Hours to days | Hours (last backup) | Lowest | Backup data, restore to new infra |
+| **Pilot Light** | Minutes to hours | Minutes | Low-Medium | Core services running in standby, scale on failover |
+| **Warm Standby** | Seconds to minutes | Seconds | Medium | Scaled-down copy running, scale up on failover |
+| **Multi-Region Active-Active** | Near-zero | Near-zero | Highest | All regions serving traffic, instant failover |
+| **Cold Standby** | Hours to days | Hours | Lowest | Infrastructure configured but off, no data replica |
+
+**Pilot Light Terraform (minimal standby):**
+```hcl
+# Core data layer always running in standby region
+resource "aws_db_instance" "standby" {
+  provider = aws.eu_west
+
+  replicate_source_db = aws_db_instance.primary.arn
+  instance_class      = "db.r5.large"      # same as primary
+  backup_retention_period = 30
+  monitoring_interval     = 5
+
+  # Configuration same as primary
+  vpc_security_group_ids = [aws_security_group.standby_db.id]
+  db_subnet_group_name   = aws_db_subnet_group.standby.name
+}
+
+# Auto Scaling group exists but at min capacity
+resource "aws_autoscaling_group" "app_standby" {
+  provider = aws.eu_west
+
+  name               = "app-standby"
+  min_size           = 1           # minimal footprint
+  max_size           = 20
+  desired_capacity   = 1
+
+  # Same launch template as primary
+  launch_template {
+    id      = aws_launch_template.app.id
+    version = "$Latest"
+  }
+}
+```
+
+### Recovery Testing
+
+```text
+Disaster Recovery Testing Tiers:
+
+Tier 1 — Tabletop Exercise (Quarterly)
+  Team walks through DR scenario
+  No actual infrastructure changes
+  Identifies gaps in procedures and runbooks
+
+Tier 2 — Component Test (Monthly)
+  Test specific components: DB failover, DNS switch, backup restore
+  Automated, measured against RTO/RPO targets
+
+Tier 3 — Full Region Failover (Annually)
+  Actually route all traffic to secondary region
+  Run production for N hours in secondary
+  Fail back to primary
+  Most realistic, most disruptive, most valuable
+
+Game Day Scenarios:
+  - Kill an AZ (use Chaos Mesh, AWS FIS)
+  - Cut cross-region network latency (packet loss injection)
+  - Simulate data corruption (corrupt test database)
+  - Test backup encryption key loss
+  - Test credential rotation during incident
+```
+
+### Runbook Automation
+
+```yaml
+# DR Runbook: Region Failover — Pilot Light → Active
+name: Region Failover - Pilot Light
+trigger: Region health check failure (3/3 probes fail)
+severity: SEV-0
+
+steps:
+  - id: verify
+    description: Verify primary region is truly down
+    command: |
+      aws health describe-events --region us-east-1 --filter "eventTypeCategory=issue"
+    expected: Event with status "open"
+
+  - id: promote-db
+    description: Promote standby database to primary
+    command: |
+      aws rds promote-read-replica \
+        --db-instance-identifier db-standby-eu-west
+    timeout: 120s
+    rollback: "Promote original primary back (if available)"
+
+  - id: scale-up
+    description: Scale application tier in standby region
+    command: |
+      aws autoscaling update-auto-scaling-group \
+        --auto-scaling-group-name app-standby \
+        --min-size 10 --desired-capacity 10
+    timeout: 300s
+    validation: "All instances show InService and pass health checks"
+
+  - id: dns-failover
+    description: Switch DNS to standby region
+    command: |
+      aws route53 change-resource-record-sets \
+        --hosted-zone-id ZONE123 \
+        --change-batch file://dns-failover.json
+    timeout: 60s
+    note: "DNS propagation may take 30-60s depending on TTL"
+
+  - id: verify
+    description: Verify application healthy in standby
+    command: |
+      curl -f https://app.example.com/health
+    timeout: 30s
+```
+
+### Chaos Engineering for DR
+
+**AWS Fault Injection Simulator (FIS) — Kill an entire AZ:**
+```hcl
+resource "aws_fis_experiment_template" "az_failure" {
+  description = "Kill all EC2 instances in us-east-1a"
+  role_arn    = aws_iam_role.fis_role.arn
+
+  action {
+    name      = "az-kill"
+    action_id = "aws:ec2:send-spot-instance-interruptions"
+
+    parameter {
+      key   = "durationBeforeInterruption"
+      value = "2"
+    }
+
+    target {
+      key           = "Instances"
+      resource_tags = {
+        resourceArnFilter = "exact"
+      }
+      resource_arns = data.aws_instances.us_east_1a.arns
+    }
+  }
+
+  stop_condition {
+    source = "aws:cloudwatch:alarm"
+    value  = aws_cloudwatch_metric_alarm.dr_breach.arn
+  }
+}
+```
+
+**Production Considerations:**
+- Automate DR testing with CI/CD pipelines
+- Track RTO/RPO against actuals from each test
+- Document recovery procedure for every critical service
+- Test with real traffic (not synthetic only) — shadow traffic is ideal
+- Ensure secrets/credentials rotate correctly on failover
+- Cross-region networking (VPC peering, Transit Gateway) must be tested
+- Monitor replication lag continuously, alert on threshold breaches
+- DR plan must cover dependencies: DNS, CDN, monitoring, CI/CD, auth
 
 ---
 

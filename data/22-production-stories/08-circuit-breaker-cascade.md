@@ -10,15 +10,33 @@
 
 ```mermaid
 graph LR
-    A["Input<br/>Layer"] --> B["Hidden<br/>Layers"]
-    B --> C["Hidden<br/>Layers"]
-    C --> D["Output<br/>Layer"]
-    B --> E["Activation<br/>Functions"]
-    E --> B
-    style A fill:#4a8bc2
-    style B fill:#2d5a7b
-    style C fill:#2d5a7b
-    style D fill:#c73e1d
+    DB_REPLICA_FAIL["DB Read Replica<br/>Fails"] --> PRODUCT_SVC["Product Service<br/>(reads stale)"]
+    DB_REPLICA_FAIL --> INVENTORY_SVC["Inventory Service<br/>(timeout)"]
+    PRODUCT_SVC --> PRODUCT_TIMEOUT["→ 5s Timeout →<br/>Thread Pool Exhaust"]
+    INVENTORY_SVC --> INVENTORY_TIMEOUT["→ 5s Timeout →<br/>Thread Pool Exhaust"]
+    PRODUCT_TIMEOUT --> API_GATEWAY_CB["API Gateway<br/>Circuit Opens"]
+    INVENTORY_TIMEOUT --> API_GATEWAY_CB
+    API_GATEWAY_CB --> CART_SVC["Cart Service<br/>(calls both fail)"]
+    CART_SVC --> CART_TIMEOUT["→ Cart Threadpool<br/>Exhausted"]
+    CART_TIMEOUT --> ORDER_SVC["Order Service<br/>(cart timeout)"]
+    ORDER_SVC --> CHECKOUT_FAIL["→ Checkout Fail<br/>→ Full Outage"]
+    CACHE_STAMPEDE["Cache Stampede<br/>Secondary"] --> CATALOG_CACHE["Catalog Cache<br/>Expires"]
+    CATALOG_CACHE --> DB_DIRECT["10K Direct DB<br/>Queries"]
+    DB_DIRECT --> DB_OVERLOAD_CASCADE["DB Overload<br/>(secondary cascade)"]
+    style DB_REPLICA_FAIL fill:#4a8bc2
+    style PRODUCT_SVC fill:#e8912e
+    style INVENTORY_SVC fill:#e8912e
+    style PRODUCT_TIMEOUT fill:#c73e1d
+    style INVENTORY_TIMEOUT fill:#c73e1d
+    style API_GATEWAY_CB fill:#c73e1d
+    style CART_SVC fill:#e8912e
+    style CART_TIMEOUT fill:#c73e1d
+    style ORDER_SVC fill:#c73e1d
+    style CHECKOUT_FAIL fill:#c73e1d
+    style CACHE_STAMPEDE fill:#e8912e
+    style CATALOG_CACHE fill:#e8912e
+    style DB_DIRECT fill:#c73e1d
+    style DB_OVERLOAD_CASCADE fill:#c73e1d
 ```
 
 ## Table of Contents

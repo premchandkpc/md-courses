@@ -8,15 +8,41 @@
 
 ```mermaid
 graph LR
-    A["Input<br/>Layer"] --> B["Hidden<br/>Layers"]
-    B --> C["Hidden<br/>Layers"]
-    C --> D["Output<br/>Layer"]
-    B --> E["Activation<br/>Functions"]
-    E --> B
-    style A fill:#4a8bc2
-    style B fill:#2d5a7b
-    style C fill:#2d5a7b
-    style D fill:#c73e1d
+    THREE_PILLARS["Three Pillars<br/>of Observability"] --> METRICS_O["Metrics<br/>(aggregate)"]
+    THREE_PILLARS --> TRACES_O["Traces<br/>(request path)"]
+    THREE_PILLARS --> LOGS_O["Logs<br/>(discrete events)"]
+    METRICS_O --> PROM["Prometheus<br/>(counters/histograms)"]
+    METRICS_O --> RED_M["RED Method<br/>(Rate/Errors/Duration)"]
+    METRICS_O --> USE_M["USE Method<br/>(Util/Sat/Errors)"]
+    TRACES_O --> OTEL["OpenTelemetry<br/>(trace context)"]
+    OTEL --> SPAN["Span → parent_span_id<br/>+ trace_id"]
+    OTEL --> EXPORT["Export to Jaeger /<br/>Tempo / Zipkin"]
+    LOGS_O --> STRUCT_LOG["Structured Logging<br/>(JSON)"]
+    LOGS_O --> CORR_ID["correlation_id →<br/>link logs to traces"]
+    DASHBOARD["SLO Dashboard"] --> LATENCY["p50 / p95 / p99<br/>latency"]
+    DASHBOARD --> ERROR_RATE["Error Rate<br/>(4xx/5xx)"]
+    DASHBOARD --> THROUGHPUT["Throughput<br/>(req/s)"]
+    ALERTS["Alerting"] --> SLI["SLI → SLO →<br/>Burn Rate"]
+    ALERTS --> PAGER["PagerDuty / OpsGenie<br/>(escalation)"]
+    style THREE_PILLARS fill:#4a8bc2
+    style METRICS_O fill:#2d5a7b
+    style TRACES_O fill:#6f42c1
+    style LOGS_O fill:#3a7ca5
+    style PROM fill:#e8912e
+    style RED_M fill:#c73e1d
+    style USE_M fill:#3fb950
+    style OTEL fill:#e8912e
+    style SPAN fill:#3fb950
+    style EXPORT fill:#3a7ca5
+    style STRUCT_LOG fill:#e8912e
+    style CORR_ID fill:#c73e1d
+    style DASHBOARD fill:#3fb950
+    style LATENCY fill:#e8912e
+    style ERROR_RATE fill:#c73e1d
+    style THROUGHPUT fill:#3a7ca5
+    style ALERTS fill:#c73e1d
+    style SLI fill:#e8912e
+    style PAGER fill:#3a7ca5
 ```
 
 ## 📑 Table of Contents

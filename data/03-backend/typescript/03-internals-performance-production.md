@@ -4,15 +4,27 @@
 
 ```mermaid
 graph LR
-    A["Input<br/>Layer"] --> B["Hidden<br/>Layers"]
-    B --> C["Hidden<br/>Layers"]
-    C --> D["Output<br/>Layer"]
-    B --> E["Activation<br/>Functions"]
-    E --> B
-    style A fill:#4a8bc2
-    style B fill:#2d5a7b
-    style C fill:#2d5a7b
-    style D fill:#c73e1d
+    TS["TypeScript<br/>Project"] --> TRAN["Transpile<br/>(tsc / swc / esbuild)"]
+    TRAN --> JS["JavaScript<br/>Output"]
+    TS --> DCL["Declaration<br/>(.d.ts)"]
+    DCL --> INT["IDE IntelliSense<br/>(auto-complete)"]
+    PERF["Performance"] --> INC["--incremental<br/>(tsbuildinfo)"]
+    PERF --> SKIP["skipLibCheck<br/>(skip .d.ts)"]
+    PERF --> ISO["isolatedModules<br/>(esbuild/swc)"]
+    MONO["Monorepo<br/>(Turborepo/Nx)"] --> CACHE["Remote<br/>Caching"]
+    MONO --> DEPG["Dependency<br/>Graph"]
+    style TS fill:#4a8bc2
+    style TRAN fill:#2d5a7b
+    style JS fill:#3fb950
+    style DCL fill:#3a7ca5
+    style INT fill:#3fb950
+    style PERF fill:#c73e1d
+    style INC fill:#e8912e
+    style SKIP fill:#e8912e
+    style ISO fill:#e8912e
+    style MONO fill:#6f42c1
+    style CACHE fill:#3fb950
+    style DEPG fill:#3a7ca5
 ```
 
 ## Table of Contents

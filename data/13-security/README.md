@@ -6,15 +6,41 @@ This directory contains three comprehensive, production-grade deep dives into ap
 
 ```mermaid
 graph LR
-    A["Input<br/>Layer"] --> B["Hidden<br/>Layers"]
-    B --> C["Hidden<br/>Layers"]
-    C --> D["Output<br/>Layer"]
-    B --> E["Activation<br/>Functions"]
-    E --> B
-    style A fill:#4a8bc2
-    style B fill:#2d5a7b
-    style C fill:#2d5a7b
-    style D fill:#c73e1d
+    APP["Application<br/>Security"] --> OWASP["OWASP Top 10<br/>(Vulnerabilities)"]
+    APP --> AUTH["Authentication<br/>(Who you are)"]
+    APP --> AUTHZ["Authorization<br/>(What you can do)"]
+    APP --> CRYPTO["Cryptography<br/>(Encryption)"]
+    CRYPTO --> SYM["Symmetric<br/>(AES/ChaCha20)"]
+    CRYPTO --> ASYM["Asymmetric<br/>(RSA/ECDSA)"]
+    CRYPTO --> HASH["Hash Functions<br/>(SHA/HMAC)"]
+    CRYPTO --> TLS["TLS 1.3<br/>(ECDHE + AEAD)"]
+    CRYPTO --> CERT["X.509 Certs<br/>(PKI Chain)"]
+    CRYPTO --> SECRET["Secrets Mgmt<br/>(Vault/HSM)"]
+    ZT["Zero Trust"] --> ID["Identity →<br/>Never Trust Always Verify"]
+    ZT --> MICRO["Microsegmentation<br/>(BeyondCorp)"]
+    ZT --> JUST["Just-In-Time<br/>Access"]
+    PENTEST["Pen Testing"] --> RECON["Reconnaissance"]
+    PENTEST --> EXPLOIT["Exploitation"]
+    PENTEST --> PIVOT["Pivoting /<br/>Lateral Movement"]
+    style APP fill:#4a8bc2
+    style OWASP fill:#c73e1d
+    style AUTH fill:#e8912e
+    style AUTHZ fill:#e8912e
+    style CRYPTO fill:#2d5a7b
+    style SYM fill:#3a7ca5
+    style ASYM fill:#6f42c1
+    style HASH fill:#e8912e
+    style TLS fill:#3fb950
+    style CERT fill:#e8912e
+    style SECRET fill:#c73e1d
+    style ZT fill:#3fb950
+    style ID fill:#e8912e
+    style MICRO fill:#3a7ca5
+    style JUST fill:#c73e1d
+    style PENTEST fill:#c73e1d
+    style RECON fill:#e8912e
+    style EXPLOIT fill:#3a7ca5
+    style PIVOT fill:#6f42c1
 ```
 
 ## Files

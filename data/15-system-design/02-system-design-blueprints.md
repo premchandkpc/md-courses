@@ -4,15 +4,34 @@
 
 ```mermaid
 graph LR
-    A["Input<br/>Layer"] --> B["Hidden<br/>Layers"]
-    B --> C["Hidden<br/>Layers"]
-    C --> D["Output<br/>Layer"]
-    B --> E["Activation<br/>Functions"]
-    E --> B
-    style A fill:#4a8bc2
-    style B fill:#2d5a7b
-    style C fill:#2d5a7b
-    style D fill:#c73e1d
+    URL_SHORT["URL Shortener"] --> KEY_GEN["Base62 Key Gen<br/>(7 chars = 3.5T)"]
+    KEY_GEN --> REDIRECT["302 Redirect<br/>(analytics)"]
+    KEY_GEN --> CACHE_URL["Cache<br/>(Redis/LRU)"]
+    CHAT_SYS["Chat System"] --> CLIENT_WS["WebSocket<br/>(long-lived)"]
+    CHAT_SYS --> MSG_STORE["Message Store<br/>(Cassandra)"]
+    CHAT_SYS --> PRESENCE["Presence<br/>(Redis pub/sub)"]
+    VIDEO_STREAM["Video Streaming"] --> UPLOAD_PIPELINE["Upload Pipeline<br/>(chunked)"]
+    VIDEO_STREAM --> TRANSCODE_P["Transcode<br/>(multiple bitrates)"]
+    VIDEO_STREAM --> CDN_DELIVERY["CDN Delivery<br/>(HLS/DASH)"]
+    RATE_LIMITER["Rate Limiter"] --> TOKEN_BUCKET["Token Bucket<br/>(Redis)"]
+    RATE_LIMITER --> SLIDING_WIN["Sliding Window<br/>(sorted set)"]
+    RATE_LIMITER --> FIXED_WIN["Fixed Window<br/>(counter)"]
+    style URL_SHORT fill:#4a8bc2
+    style KEY_GEN fill:#e8912e
+    style REDIRECT fill:#3a7ca5
+    style CACHE_URL fill:#3fb950
+    style CHAT_SYS fill:#6f42c1
+    style CLIENT_WS fill:#2d5a7b
+    style MSG_STORE fill:#3a7ca5
+    style PRESENCE fill:#e8912e
+    style VIDEO_STREAM fill:#c73e1d
+    style UPLOAD_PIPELINE fill:#e8912e
+    style TRANSCODE_P fill:#2d5a7b
+    style CDN_DELIVERY fill:#3fb950
+    style RATE_LIMITER fill:#3fb950
+    style TOKEN_BUCKET fill:#e8912e
+    style SLIDING_WIN fill:#6f42c1
+    style FIXED_WIN fill:#3a7ca5
 ```
 
 ## 📋 Table of Contents
@@ -298,29 +317,121 @@ degraded response (stale data).
 ## Code Examples
 
 ```python
-# Example implementation
-# [Add language-specific code demonstrating core concept]
-pass
+import hashlib
+import time
+import redis
+from collections import defaultdict
+
+# ===== URL Shortener =====
+BASE62 = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
+
+class URLShortener:
+    def __init__(self, redis_client):
+        self.r = redis_client
+        self.bloom = None  # Bloom filter for fast negative checks
+
+    def shorten(self, url: str, custom: str = None) -> str:
+        if custom:
+            key = custom
+        else:
+            # Use a distributed ID (Snowflake) then encode
+            key = self._encode(self._snowflake_id())
+        self.r.set(f"url:{key}", url)
+        self.r.setex(f"key:{url}", 86400, key)
+        return key
+
+    def resolve(self, key: str) -> str | None:
+        # Bloom filter first — fast reject for invalid keys
+        if self.bloom and not self.bloom.might_contain(key):
+            return None
+        url = self.r.get(f"url:{key}")
+        if url:
+            self.r.incr(f"stats:{key}")  # click count
+        return url
+
+    def _encode(self, num: int) -> str:
+        if num == 0: return BASE62[0]
+        result = []
+        while num > 0:
+            result.append(BASE62[num % 62])
+            num //= 62
+        return ''.join(reversed(result))
+
+# ===== Rate Limiter: Token Bucket =====
+class TokenBucket:
+    def __init__(self, capacity: int, refill_rate: float):
+        self.capacity = capacity
+        self.refill_rate = refill_rate
+        self.tokens = {}
+        self.last_check = {}
+
+    def allow(self, key: str, cost: int = 1) -> bool:
+        now = time.time()
+        last = self.last_check.get(key, now)
+        elapsed = now - last
+        self.tokens[key] = min(self.capacity,
+                               self.tokens.get(key, self.capacity) + elapsed * self.refill_rate)
+        self.last_check[key] = now
+        if self.tokens[key] >= cost:
+            self.tokens[key] -= cost
+            return True
+        return False
+
+# ===== Chat: Message ordering =====
+class Message:
+    def __init__(self, sender: str, conversation: str, content: str):
+        self.id = f"{int(time.time() * 1000)}-{hashlib.md5(content.encode()).hexdigest()[:6]}"
+        self.sender = sender
+        self.conversation = conversation
+        self.content = content
+        self.status = "sent"
+
+def send_message(msg: Message, presence: dict, gateway) -> Message:
+    store_conversation(msg.conversation, msg)
+    conn = presence.get(msg.sender)
+    if conn:
+        gateway.send(conn, msg)
+        msg.status = "delivered"
+    return msg
+```
+
+```bash
+# Test URL shortener
+curl -X POST -d '{"url":"https://example.com/very/long/path"}' \
+  -H "Content-Type: application/json" https://short.link/shorten
+
+# Rate limiter test
+for i in $(seq 1 120); do curl -s -o /dev/null -w "%{http_code}\n" https://api.example.com/endpoint; done
 ```
 
 ---
 
 ## Common Failure Modes
 
-**Problem**: [Key issue in production]
+**Problem**: Cache inconsistency in URL shortener — user gets 404 for valid short URLs
 
-**Root cause**: [Why it happens]
+**Root cause**: Write-through cache updates the DB before the cache is populated, and a concurrent read misses the cache and reads an empty DB (just before the write commits). Or cache eviction happens before the DB write is replicated to followers. This is known as the "thundering herd on miss" combined with "cache vs DB timing window."
 
-**Solution**: [How to fix]
+**Detection**: Monitoring shows cache hit rate drops while DB read rate increases. P99 latency spikes from 5ms to 100+ms. Support tickets about "broken links" that work on retry.
+
+**Solution**: Use write-around (write to DB, then invalidate cache) instead of write-through. Use lazy population: on cache miss, acquire a distributed lock before reading DB and populating cache — prevents thundering herd. Implement a bloom filter at the edge (CDN/API gateway) that tracks all valid keys — reject invalid keys immediately without touching cache or DB. For the timing window, use read-repair: when the DB read returns empty, double-check the primary DB (or wait for replication lag). Use consistent hashing to avoid hot caches.
+
+**Problem**: Rate limiter drift in distributed mode leading to uneven throttling
+
+**Root cause**: Distributed rate limiters using local counters drift apart. Each node tracks its own count and periodically syncs. Between syncs, a node allows requests based on local counts, but the global rate may exceed the limit by `limit × (sync_interval / window_size)`. During traffic bursts, this drift can allow 2x the intended rate.
+
+**Detection**: Monitoring shows the actual request rate exceeding the configured limit by 20-50%. Tests hitting the API concurrently from different regions see inconsistent throttling — some requests get 200 while others get 429 for the same user.
+
+**Solution**: Use Redis with Lua scripting for atomic rate limit checks — single source of truth. The Lua script increments and checks the count atomically: `local c = redis.call('INCR', key); if c == 1 then redis.call('PEXPIRE', key, window_ms) end; return c <= limit`. For lower latency, use a two-tier approach: local counters (fast path, allows small drift) with periodic reconciliation against Redis. Use consistent hashing so all requests for a given user hit the same node. Or use a sliding window log in Redis (accurate but more memory) instead of fixed window.
 
 ---
 
 ## Interview Questions
 
-### Q1: [Core concept question]
+### Q1: Walk through the design of a URL shortener at scale (100M URLs/month).
 
-**Answer**: [Detailed explanation with trade-offs]
+**Answer**: **Requirements**: Generate a 6-7 character key per URL, redirect to original URL, support custom aliases, and track analytics. Read:write ratio is 100:1. **Key generation**: Use Snowflake IDs (41-bit timestamp, 10-bit node, 12-bit sequence = 4096 IDs/sec per node). Encode with Base62 → 7 chars covers 3.5T URLs. **Storage**: Write to a SQL DB (sharded by key hash) and populate Redis cache. **Read path**: User hits `/abc123`. API gateway routes to a cache instance (consistent hashing). Cache hit → return 301. Cache miss → bloom filter check (fast reject if key doesn't exist). If bloom says possible, query DB → populate cache → return. **Write path**: POST /shorten → validate URL → generate unique ID → check for collision in cache bloom filter → write to DB → populate cache → return short URL. **Scale**: Redis cluster (20 nodes), DB sharded by key hash (10 MySQL instances), bloom filter rebuilt nightly from DB dump. CDN (CloudFront) at edge caches frequently accessed redirects. Analytics pipeline streams click events to a message queue → batch write to a data warehouse.
 
-### Q2: [Design/architecture question]
+### Q2: How would you design a real-time chat system supporting 500M users?
 
-**Answer**: [Best practices and reasoning]
+**Answer**: **1-to-1 chat**: WebSocket connections from clients to a Gateway layer (Elastic Load Balancer routing by user hash). Gateway maintains a connection map (user_id → connection_id). Messages go through a Chat Service that writes to a message DB (Cassandra, keyed by conversation_id + message_id) and checks the Presence Service to see if receiver is online. If online, push via Gateway. If offline, send push notification. **Group chat**: For groups < 256 members, use write fanout — write one message to the group's timeline, then copy to each online member's inbox. For groups > 256, use read fanout — write once to group timeline, members pull (track last_read_id). **Presence**: Redis with heartbeat — each user sets a key with TTL, PUB/SUB notifies friends of status changes. **Ordering**: Use HLC (Hybrid Logical Clock) for causal ordering without vector clocks. **Scaling**: Each component horizontally scales. Gateway is stateless. Chat Service partitions by conversation hash. Message DB uses Cassandra (time-series model). Inbox is Redis sorted sets per user. **Delivery guarantees**: At-least-once with idempotency keys (message UUID). Gap detection: receiver tracks last_message_id and requests missing ones.

@@ -21,34 +21,15 @@
 
 ## 🧭 Architecture Evolution
 
-```text
-Monolith (2000s)
-  ┌─────────────────────────────┐
-  │   Single WAR/JAR            │
-  │  ┌───────────────────────┐ │
-  │  │ UI   │ Logic │  DB   │ │
-  │  └───────────────────────┘ │
-  └─────────────────────────────┘
-              │
-              ▼
-SOA (2010s)
-  ┌────────────┐ ┌────────────┐ ┌────────────┐
-  │ Service A  │ │ Service B  │ │  Service C │
-  │(ESB routes)│ │            │ │            │
-  └────────────┘ └────────────┘ └────────────┘
-         │            │             │
-         └────────────┴─────────────┘
-                    │ ESB
-                    ▼
-Microservices (2015+)
-  ┌──────┐ ┌──────┐ ┌──────┐ ┌──────┐ ┌──────┐
-  │ Auth │ │ User │ │Order │ │Pay   │ │Notif │
-  │  API │ │ Svc  │ │ Svc  │ │ Svc  │ │ Svc  │
-  └──┬───┘ └──┬───┘ └──┬───┘ └──┬───┘ └──┬───┘
-     │        │        │        │        │
-  ┌──┴────────┴────────┴────────┴────────┴──┐
-  │         API Gateway / Service Mesh       │
-  └──────────────────────────────────────────┘
+```mermaid
+sequenceDiagram
+    participant Client
+    participant Component
+    participant Result
+    Client->>Component: Request
+    Component->>Component: Process
+    Component-->>Result: Generate
+    Result-->>Client: Response
 ```
 
 ```mermaid
@@ -621,6 +602,313 @@ data:
       max-items-per-order: 50
       payment-timeout-ms: 5000
 ```
+
+---
+
+## 8. Service Mesh
+
+Dedicated infrastructure layer for service-to-service communication: security, observability, and traffic management offloaded from application code.
+
+### Istio / Linkerd Architecture
+
+```mermaid
+graph TB
+    subgraph "Data Plane"
+        SA["Service A"] -->|"HTTP/gRPC"| P1["Sidecar Proxy<br/>(Envoy/Linkerd-proxy)"]
+        P1 -->|"mTLS<br/>Encrypted"| P2["Sidecar Proxy<br/>(Envoy/Linkerd-proxy)"]
+        P2 --> SB["Service B"]
+    end
+    subgraph "Control Plane"
+        CP["Istiod / Linkerd-controller"]
+        CP -->|"xDS Config<br/>(Discovery)"| P1
+        CP -->|"xDS Config<br/>(Discovery)"| P2
+        CP -->|"Certificate"| CA["Certificate<br/>Authority"]
+        CA -->|"mTLS Certs"| P1
+        CA -->|"mTLS Certs"| P2
+    end
+    style SA fill:#4a8bc2
+    style SB fill:#4a8bc2
+    style P1 fill:#e8912e
+    style P2 fill:#e8912e
+    style CP fill:#6f42c1
+    style CA fill:#3fb950
+```
+
+| Component | Istio | Linkerd |
+|-----------|-------|---------|
+| **Proxy** | Envoy (C++, full-featured) | Linkerd2-proxy (Rust, lightweight) |
+| **Control plane** | Istiod (pilot + citadel + galley merged) | Linkerd-controller (Go) |
+| **Configuration** | Kubernetes CRDs (VirtualService, DestinationRule) | Annotations + ServiceProfiles |
+| **Protocol** | xDS (Envoy discovery API) | Custom gRPC-based |
+| **Performance overhead** | 5-15% latency, 40-80MB/proxy | 2-5% latency, 10-20MB/proxy |
+| **TLS** | mTLS with mutual auth, auto-rotation | mTLS with mutual auth, auto-rotation |
+| **Traffic splitting** | VirtualService weighted routes | ServiceProfiles + TrafficSplit |
+| **Extensibility** | Wasm filters, Lua, Envoy extensions | Limited |
+
+### Sidecar Proxy Lifecycle
+
+```text
+Sidecar Injection Methods:
+  Automatic (Istio):
+    - Mutating Webhook intercepts Pod create
+    - Injects envoy container as sidecar
+    - Reconfigures iptables to route traffic through sidecar
+    - Init container sets up iptables rules
+  
+  Manual (Linkerd):
+    - linkerd inject deployment.yaml
+    - Adds proxy container + annotation flags
+    - No init container needed (uses tproxy/redirect)
+
+Lifecycle:
+  1. Init container: configure iptables (traffic redirection)
+  2. Proxy starts: connect to control plane, fetch config
+  3. Application starts: all traffic routed through proxy
+  4. Proxy health: readiness/liveness probes pass through proxy
+  5. Shutdown: proxy drains connections before termination
+  6. Sidecar container terminates after application
+```
+
+### mTLS in Service Mesh
+
+```yaml
+# Istio PeerAuthentication — enforce mTLS
+apiVersion: security.istio.io/v1beta1
+kind: PeerAuthentication
+metadata:
+  name: default
+  namespace: istio-system
+spec:
+  mtls:
+    mode: STRICT  # STRICT | PERMISSIVE | DISABLE
+---
+# Per-service overrides
+apiVersion: security.istio.io/v1beta1
+kind: PeerAuthentication
+metadata:
+  name: legacy-service
+  namespace: legacy
+spec:
+  mtls:
+    mode: PERMISSIVE  # Accept both mTLS and plaintext
+  portLevelMtls:
+    8080:
+      mode: DISABLE  # Health checks without mTLS
+```
+
+```text
+mTLS Certificate Flow:
+  1. Sidecar proxy connects to control plane (Istiod)
+  2. Control plane's CA verifies service account (Kubernetes SA)
+  3. CA issues SPIFFE-compliant certificate:
+     spiffe://cluster.local/ns/<namespace>/sa/<service-account>
+  4. Certificate: 24h validity, auto-rotated by Istiod
+  5. mTLS handshake: both sides present certs
+  6. Mutual verification completes → encrypted channel
+  7. Certificate rotation: sidecar requests new cert before expiry
+```
+
+### Traffic Splitting & Canary Deployments
+
+```yaml
+# Istio VirtualService: canary traffic split
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: checkout-vs
+spec:
+  hosts:
+  - checkout-service
+  http:
+  - match:
+    - headers:
+        x-canary:
+          exact: "v2"
+    route:
+    - destination:
+        host: checkout-service
+        subset: v2
+      weight: 100
+  - route:
+    - destination:
+        host: checkout-service
+        subset: v1
+      weight: 90
+    - destination:
+        host: checkout-service
+        subset: v2
+      weight: 10
+---
+apiVersion: networking.istio.io/v1beta1
+kind: DestinationRule
+metadata:
+  name: checkout-dr
+spec:
+  host: checkout-service
+  trafficPolicy:
+    connectionPool:
+      tcp:
+        maxConnections: 100
+      http:
+        http1MaxPendingRequests: 10
+        http2MaxRequests: 1000
+    loadBalancer:
+      simple: ROUND_ROBIN
+  subsets:
+  - name: v1
+    labels:
+      version: v1
+  - name: v2
+    labels:
+      version: v2
+```
+
+### Circuit Breaking in Mesh
+
+```yaml
+# Istio circuit breaker configuration
+apiVersion: networking.istio.io/v1beta1
+kind: DestinationRule
+metadata:
+  name: payment-dr
+spec:
+  host: payment-service
+  trafficPolicy:
+    connectionPool:
+      tcp:
+        maxConnections: 50
+        connectTimeout: 5s
+      http:
+        http1MaxPendingRequests: 20
+        http2MaxRequests: 100
+        maxRetries: 3
+    outlierDetection:
+      consecutive5xxErrors: 5
+      interval: 30s
+      baseEjectionTime: 30s
+      maxEjectionPercent: 50
+      minHealthPercent: 50
+```
+
+```text
+Mesh Circuit Breaking Behavior:
+  Normal:     Requests flow to healthy instances
+  Detected:   5 consecutive 5xx responses
+  Ejected:     Instance removed from pool for 30s (base time)
+  Escalation: If ejections continue, baseEjectionTime doubles
+  Limit:      Max 50% of instances ejected
+  Recovery:   Instance auto-returns after ejection time expires
+  Prevention: Connection pool limits prevent resource exhaustion
+```
+
+### Observability with Service Mesh
+
+```text
+What the mesh provides (zero code changes):
+  Metrics (per service + per workload):
+    - Request volume (rate, total)
+    - Error rate (4xx, 5xx, gRPC status codes)
+    - Latency (p50, p95, p99)
+    - TCP byte throughput
+    - Connection pool stats (active, pending, ejected)
+
+  Distributed Tracing:
+    - Envoy generates trace spans (no app instrumentation)
+    - Supports: OpenTelemetry, Jaeger, Zipkin, Datadog
+    - Trace context propagated via headers
+
+  Access Logs:
+    - Envoy access logs: src_ip, dst_ip, method, path, status, duration
+    - Configurable format (JSON, text)
+    - Can be expensive at scale — sample or filter
+
+  Service Graph:
+    - Automatic topology discovery
+    - Shows traffic flow, protocol, error rates
+    - Kiali (Istio), Linkerd-viz (Linkerd), Grafana
+```
+
+**Kiali Service Graph (Istio):**
+```text
+                   ┌─────────┐
+                   │  Checkout │
+                   │   Service │
+                   └────┬─────┘
+                        │ HTTP 200ms
+                        ▼
+                   ┌─────────┐
+              ┌───▶│ Payment │
+              │    │ Service │
+              │    └────┬─────┘
+              │         │ gRPC 50ms
+              │         ▼
+              │    ┌─────────┐
+              │    │ Fraud   │
+              │    │ Service │
+              │    └─────────┘
+              │
+         Errors: Payment → Fraud: 1.2% timeout (threshold: 1%)
+```
+
+### Multi-Cluster Service Mesh
+
+```text
+Istio Multi-Primary (each cluster has own control plane):
+  Cluster 1 (us-east-1)           Cluster 2 (eu-west-1)
+  ┌───────────────────────┐      ┌───────────────────────┐
+  │ Istiod (CA + config)  │      │ Istiod (CA + config)  │
+  │   Service A           │◀────▶│   Service B           │
+  │   East-West Gateway   │──────│   East-West Gateway   │
+  └───────────────────────┘      └───────────────────────┘
+
+  Service Discovery: Istio uses DNS + ServiceEntry
+  Cross-cluster traffic: East-West gateways (mutual TLS)
+  Failover: Locality-aware load balancing (region → zone → anywhere)
+
+Linkerd Multi-Cluster:
+  service mirroring: mirrors services between clusters
+  Cluster A exports service → Cluster B discovers it as
+  <service-name>.<namespace>.svc.cluster-a.local
+  No east-west gateway needed (direct connection)
+  Simpler than Istio, fewer features
+```
+
+### Mesh vs API Gateway
+
+| Capability | Service Mesh (East-West) | API Gateway (North-South) |
+|------------|-------------------------|--------------------------|
+| **Traffic direction** | Service-to-service (internal) | External → internal |
+| **mTLS** | Yes, between all sidecars | At edge (TLS termination) |
+| **Rate limiting** | Per-connection (sidecar) | Per-client (per API key) |
+| **Authentication** | Service identity (SPIFFE) | User auth (OAuth2, JWT) |
+| **Traffic splitting** | Canary, A/B between versions | Version routing to backends |
+| **Request transformation** | Limited (header manipulation) | Full (body transform, protocol conversion) |
+| **Caching** | No | Yes (response caching) |
+| **API management** | No | Yes (API keys, usage plans, documentation) |
+
+**Combined Architecture:**
+```text
+External User
+     │
+     ▼
+API Gateway (Kong/APISIX/AWS API GW)
+     │  Auth → Rate Limit → Transform → Cache
+     ▼
+Service Mesh (Istio/Linkerd)
+     │  mTLS → Retry → Circuit Break → Metrics → Tracing
+     ▼
+Services (Checkout, Payment, Fraud)
+```
+
+**Production Considerations:**
+- Start without mesh; add when you have 20+ services or explicit need (mTLS, advanced traffic management)
+- Mesh adds latency (2-15% depending on implementation)
+- Debugging is harder: two containers per pod (app + proxy)
+- Resource overhead: CPU/memory for sidecars multiply across all pods
+- Upgrade carefully: control plane upgrade must not break data plane
+- Test mTLS rollout: start with PERMISSIVE, then switch to STRICT
+- Monitor sidecar health alongside application health
+- Multi-cluster mesh is advanced — start with single cluster
 
 ---
 

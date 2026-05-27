@@ -8,15 +8,35 @@
 
 ```mermaid
 graph LR
-    A["Input<br/>Layer"] --> B["Hidden<br/>Layers"]
-    B --> C["Hidden<br/>Layers"]
-    C --> D["Output<br/>Layer"]
-    B --> E["Activation<br/>Functions"]
-    E --> B
-    style A fill:#4a8bc2
-    style B fill:#2d5a7b
-    style C fill:#2d5a7b
-    style D fill:#c73e1d
+    CLIENT["WhatsApp Client"] --> WS["WebSocket<br/>Connection (long-lived)"]
+    CLIENT --> REST_R["REST API<br/>(media upload)"]
+    WS --> CONN_MGR["Connection Manager<br/>(multi-region)"]
+    CONN_MGR --> MSG_ROUTER["Message Router<br/>(fan-out)"]
+    MSG_ROUTER --> USER_QUEUE["User Message Queue<br/>(per-recipient)"]
+    MSG_ROUTER --> GROUP_FAN["Group Fan-Out<br/>(fan-out on write)"]
+    USER_QUEUE --> PUSH["Push Notification<br/>(APNs/FCM)"]
+    REST_R --> MEDIA_STORE["Media Store<br/>(Blob + CDN)"]
+    MEDIA_STORE --> MEDIA_CDN["CDN Delivery<br/>(thumbnail + full)"]
+    E2EE["E2E Encryption"] --> SIGNAL_PROTO["Signal Protocol<br/>(X3DH + Double Ratchet)"]
+    SIGNAL_PROTO --> PREKEY["PreKey Bundle<br/>(signed + one-time)"]
+    SIGNAL_PROTO --> RATCHET["Ratchet Step<br/>(per-message key)"]
+    MULTI_DEVICE["Multi-Device"] --> DEVICE_SYNC["Device Sync<br/>(key transparency)"]
+    style CLIENT fill:#4a8bc2
+    style WS fill:#2d5a7b
+    style REST_R fill:#3a7ca5
+    style CONN_MGR fill:#e8912e
+    style MSG_ROUTER fill:#c73e1d
+    style USER_QUEUE fill:#6f42c1
+    style GROUP_FAN fill:#e8912e
+    style PUSH fill:#3a7ca5
+    style MEDIA_STORE fill:#3fb950
+    style MEDIA_CDN fill:#3a7ca5
+    style E2EE fill:#6f42c1
+    style SIGNAL_PROTO fill:#c73e1d
+    style PREKEY fill:#e8912e
+    style RATCHET fill:#3fb950
+    style MULTI_DEVICE fill:#3fb950
+    style DEVICE_SYNC fill:#e8912e
 ```
 
 ## Table of Contents

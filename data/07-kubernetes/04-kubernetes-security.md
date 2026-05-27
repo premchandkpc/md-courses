@@ -4,15 +4,29 @@
 
 ```mermaid
 graph LR
-    A["Input<br/>Layer"] --> B["Hidden<br/>Layers"]
-    B --> C["Hidden<br/>Layers"]
-    C --> D["Output<br/>Layer"]
-    B --> E["Activation<br/>Functions"]
-    E --> B
-    style A fill:#4a8bc2
-    style B fill:#2d5a7b
-    style C fill:#2d5a7b
-    style D fill:#c73e1d
+    RBAC["RBAC<br/>(Role/ClusterRole)"] --> SUBJ["Subject<br/>(User/ServiceAccount)"]
+    SUBJ --> ROLE_B["Role / ClusterRole<br/>(Rules)"]
+    ROLE_B --> BIND["RoleBinding /<br/>ClusterRoleBinding"]
+    PSA["Pod Security<br/>Standards"] --> POL["Policy<br/>(Privileged/Baseline/Restricted)"]
+    POL --> POD["Pod<br/>Admission"]
+    NP["NetworkPolicy"] --> POD_SEL["Pod Selector<br/>(labels)"]
+    NP --> RULE["Ingress / Egress<br/>Rules (CIDR/Port)"]
+    FALCO["Falco<br/>(Runtime Security)"] --> SYSCALL["Syscall<br/>Monitoring"]
+    SECRET["Secrets<br/>(etcd encrypted)"] --> CSI["Secrets Store CSI<br/>(Vault/AWS)"]
+    style RBAC fill:#4a8bc2
+    style SUBJ fill:#2d5a7b
+    style ROLE_B fill:#3a7ca5
+    style BIND fill:#6f42c1
+    style PSA fill:#c73e1d
+    style POL fill:#e8912e
+    style POD fill:#3fb950
+    style NP fill:#e8912e
+    style POD_SEL fill:#3a7ca5
+    style RULE fill:#2d5a7b
+    style FALCO fill:#c73e1d
+    style SYSCALL fill:#e8912e
+    style SECRET fill:#6f42c1
+    style CSI fill:#3fb950
 ```
 
 ## ToC
@@ -381,3 +395,90 @@ K8s security = paranoid apartment building
 ## Practical Example
 
 See code examples above for practical usage patterns.
+
+## Production Failure Modes
+
+### Failure 1: RBAC Wildcard Grants Allow Lateral Movement
+
+| Aspect | Detail |
+|--------|--------|
+| **Symptoms** | Compromised pod can read all secrets in cluster. Attacker escalates from web app to cluster-admin. Security audit reveals `*` verbs on many `ClusterRole` resources |
+| **Root Cause** | Developers granted `cluster-admin` ClusterRole for convenience. CI/CD pipelines have `secrets:*` access across all namespaces. Default service accounts have permissive roles. RBAC not reviewed after initial setup |
+| **Detection** | `kubectl auth can-i --list --as system:serviceaccount:production:web-app` shows `list secrets` across all namespaces. `kubectl get clusterrolebinding -o wide` shows too many subjects bound to `cluster-admin` |
+| **Recovery** | Create per-namespace Roles, not ClusterRoles. Bind only necessary verbs: `get, list, watch` not `create, update, delete, patch`. Use `kubectl auth reconcile` to apply least-privilege roles |
+| **Prevention** | Use least-privilege RBAC: Role (namespaced) over ClusterRole. Use `automountServiceAccountToken: false` for pods that don't need API access. Audit RBAC quarterly with `kubectl audit` or `kube-bench`. Use OPA/Gatekeeper to enforce RBAC policies |
+
+### Failure 2: Pod Security Standards Not Enforced — Privileged Container Escapes
+
+| Aspect | Detail |
+|--------|--------|
+| **Symptoms** | Container runs as root. Host filesystem mounted. Host network access. Compromised container leads to node compromise |
+| **Root Cause** | Pod Security Admission not configured. Pod runs with `securityContext: privileged: true`. HostPath volumes mounted. Containers can escape to host via `/proc` or `/sys` access |
+| **Detection** | `kubectl describe pod` shows `privileged: true`. `kubectl get psp` shows no PodSecurityPolicies. `kubectl get ns --show-labels` shows no `pod-security.kubernetes.io` label |
+| **Recovery** | Apply Pod Security Standards: `kubectl label ns default pod-security.kubernetes.io/enforce=restricted`. Migrate pods to meet restricted standard. Use `kubectl gatekeeper` to enforce policies |
+| **Prevention** | Enable Pod Security Admission in K8s 1.23+. Use Baseline profile as minimum: prevent hostPID, hostNetwork, privileged. Use Restricted profile for production: drop all capabilities, readOnlyRootFilesystem, seccomp=RuntimeDefault. Use OPA/Gatekeeper for custom policies |
+
+### Failure 3: etcd Encryption Not Enabled — Secrets Stored in Plaintext
+
+| Aspect | Detail |
+|--------|--------|
+| **Symptoms** | Snapshot of etcd reveals all Secrets, ConfigMaps, tokens in plaintext. Anyone with etcd backup can extract credentials |
+| **Root Cause** | `--encryption-provider-config` flag not set on kube-apiserver. Default: all data stored in etcd in plaintext. Backup files stored in S3 without encryption |
+| **Detection** | `kubectl get secrets -o yaml` decodes base64 and reveals plaintext. `ETCDCTL_ENDPOINTS` `etcdctl get /registry/secrets/default/my-secret` shows plaintext |
+| **Recovery** | Configure encryption provider: `aesgcm` or `aescbc` or `kms`. Enable encryption at rest. Rewrite all existing secrets: `kubectl get secrets --all-namespaces -o json | kubectl replace -f -` |
+| **Prevention** | Enable etcd encryption at cluster creation. Use KMS provider (AWS KMS, GCP Cloud KMS, Azure Key Vault) for key management. Rotate encryption keys every 90 days. Encrypt etcd backups with separate KMS key |
+
+### Failure 4: Service Mesh mTLS Certificate Rotation Failure
+
+| Aspect | Detail |
+|--------|--------|
+| **Symptoms** | All service-to-service communication fails. `upstream connect error or disconnect/reset before headers` errors. Istio/Linkerd proxy sidecar crashes with TLS errors |
+| **Root Cause** | mTLS certificate expires. cert-manager not configured for auto-renewal. SPIRE/Vault certificate authority not reachable during renewal. Pods started with expired workload certificates |
+| **Detection** | `istioctl proxy-status` shows stale certificate. `openssl s_client -connect service.namespace:443 -showcerts` shows `certificate has expired`. Prometheus: `istio_requests_total{response_code="503", response_flags="UC"}` |
+| **Recovery** | Restart sidecar proxies: `kubectl rollout restart deployment`. Re-issue certificates via cert-manager: `kubectl delete certificate --all -n istio-system`. Trigger SDS reconnection |
+| **Prevention** | Configure cert-manager with short-lived certs (24h) and auto-renewal. Use SPIRE for workload identity: each pod gets unique SPIFFE ID. Monitor cert expiry: `days_until_expiry < 30` alert. Test rotation: terminate certificates manually in staging |
+
+### Failure 5: NetworkPolicy Denies Everything — No Exceptions for Monitoring
+
+| Aspect | Detail |
+|--------|--------|
+| **Symptoms** | Prometheus can't scrape metrics. Fluentd can't send logs. Can't exec into pods. Ingress controller returns 503. Alert: `TargetDown`, `KubeletDown` |
+| **Root Cause** | NetworkPolicy applied with `podSelector: {}` and `policyTypes: [Ingress, Egress]` — denies all traffic. Monitoring/liveness probes blocked. DNS resolution fails. Aggressive default-deny policy without exceptions |
+| **Detection** | `kubectl exec -it pod -- curl -s http://localhost:8080/healthz` times out. Prometheus targets show `DOWN`. CoreDNS shows `connection refused` for services |
+| **Recovery** | Add allow rules: (1) allow ingress from monitoring namespace. (2) allow egress to DNS (port 53 UDP/TCP). (3) allow ingress on health check port from kubelet. (4) allow egress to API server. Remove policy, test each exception incrementally |
+| **Prevention** | Apply policies incrementally: start with allow-all, then add deny rules one by one. Use network policy visualization (Cilium Hubble, Calico Enterprise). Test with `kubectl run netshoot --image=nicolaka/netshoot`. Use `kubectl np-validator` to validate policies before applying |
+
+## Edge Cases
+
+| Scenario | Challenge | Solution |
+|----------|-----------|----------|
+| **Secrets in ConfigMaps** | Base64-encoded passwords in ConfigMaps (not Secrets) | Scan with `trivy config .` or `kubeaudit`. Always use Secrets for sensitive data |
+| **ImagePullSecrets exposure** | Registry credentials accessible via pod spec | Use workload identity (IRSA, Workload Identity Federation) instead of static credentials |
+| **OIDC token size limit** | Large ID tokens exceed kube-apiserver max header size | Use OIDC with request headers for groups; keep ID token claims minimal |
+| **Webhook TLS certificate** | Admission webhook fails, all operations blocked | Deploy webhook without `failurePolicy: Fail`. Use `Ignore` during initial rollout, then switch to `Fail` |
+| **AppArmor/SELinux profile missing** | Pod runs without any MAC restrictions | Use `containerRuntimeDefault` seccomp profile. Enable AppArmor via annotation in K8s < 1.30 |
+
+## Interview Questions
+
+### Q1 (Beginner): What are the main security concerns when deploying containers in Kubernetes?
+
+**Answer**: Five main concerns: (1) Container escape — container breaks out to host via kernel exploits. Mitigation: run as non-root, drop capabilities, seccomp. (2) Secret leakage — API tokens, DB passwords stored in plaintext in etcd. Mitigation: encrypt at rest, use KMS. (3) Network attacks — pod-to-pod communication not isolated. Mitigation: NetworkPolicies. (4) Supply chain — compromised base images with malware. Mitigation: image scanning with Trivy, signed images with Cosign. (5) Excessive permissions — pods with cluster-admin roles. Mitigation: least-privilege RBAC, Pod Security Standards.
+
+### Q2 (Mid-Level): How does Kubernetes RBAC work? Design RBAC for a multi-team cluster.
+
+**Answer**: K8s RBAC uses four resources: (1) Role — set of permissions within a namespace. (2) ClusterRole — set of permissions cluster-wide. (3) RoleBinding — binds Role to user/group/SA within a namespace. (4) ClusterRoleBinding — binds ClusterRole cluster-wide. Multi-team design: per-team namespace. Each team has Role (full access within their namespace) + RoleBinding to team's AD group. Cluster-level access: read-only ClusterRole for monitoring. Admin access to SRE team only via ClusterRoleBinding to SRE AD group. Avoid ClusterRoleBindings for developer teams. Use `kubectl auth can-i` to verify permissions. Example: team-a namespace with Role `team-a-admin` bound to `team-a@company.com` AD group. SRE team with ClusterRole `cluster-admin` bound to `sre@company.com`.
+
+### Q3 (Senior): Design a zero-trust network security model for Kubernetes.
+
+**Answer**: Zero trust means no implicit trust based on network location. Every request must be authenticated, authorized, and encrypted. Implementation: (1) Service mesh (Istio/Linkerd) for mTLS between all pods. Workload identity via SPIFFE certificates. mTLS ensures every request is encrypted and verified. (2) NetworkPolicies: default-deny ingress/egress per namespace. Explicit allow rules for specific traffic. Example: allow traffic from `app=frontend` to `app=backend` on port 8080 only. (3) RBAC: every service account has minimal permissions. (4) Admission control: OPA/Gatekeeper enforces policies: no privileged containers, no host network, required labels. (5) Secret management: External Secrets Operator syncs from Vault/AWS Secrets Manager, never stores in etcd. (6) Audit logging: enabled for API server, Cilium Hubble for network flow logs. (7) Supply chain security: signed images, vulnerability scanning before deployment. Cilium + Hubble is a modern approach: eBPF-based network security with identity-aware policies and flow visibility.
+
+### Q4 (Staff): How would you detect and respond to a container escape in a production cluster?
+
+**Answer**: Detection: (1) Falco rules: "Spawned process outside container", "Write below binary directory", "Shell in container with host network". (2) Audit log: suspicious `exec` into pod, unexpected `create pod` with privileged settings. (3) Cilium Hubble: anomalous network connections from pod to external hosts. (4) Node-level: kernel auditd detects syscall anomalies. Response: (1) Immediately cordon node: `kubectl cordon node`. (2) Drain affected pods: `kubectl drain node --ignore-daemonsets --delete-emptydir-data`. (3) Capture forensic data: container filesystem snapshot, node memory dump (via /proc/kcore), network connections (tcpdump/pcap). (4) Isolate node from cluster network (security group, iptables). (5) Revoke all service account tokens on compromised node. (6) Rotate all secrets the pod had access to (DB passwords, API keys). (7) Analyze: check if lateral movement occurred via same service account in other namespaces. (8) Deploy new node with updated kernel. Prevention: AppArmor profiles, seccomp, `readOnlyRootFilesystem: true`, no privileged containers, `allowPrivilegeEscalation: false`.
+
+## Cross-References
+
+- [Kubernetes Networking](../03-kubernetes-networking.md) — Network policies, Cilium, service mesh
+- [Microservices Security](../../16-microservices/08-security-identity.md) — OAuth2, JWT validation, API gateway
+- [EKS IAM](../../05-cloud/aws/eks/02-eks-operations.md) — IRSA, pod identity, IAM roles for service accounts
+- [Backend Roadmap](../../21-roadmaps/01-backend-engineer.md) — Phase 3 security, Phase 4 OS internals

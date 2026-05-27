@@ -10,15 +10,33 @@
 
 ```mermaid
 graph LR
-    A["Input<br/>Layer"] --> B["Hidden<br/>Layers"]
-    B --> C["Hidden<br/>Layers"]
-    C --> D["Output<br/>Layer"]
-    B --> E["Activation<br/>Functions"]
-    E --> B
-    style A fill:#4a8bc2
-    style B fill:#2d5a7b
-    style C fill:#2d5a7b
-    style D fill:#c73e1d
+    VIR_ADDR["Virtual Address"] --> MMU["MMU / TLB<br/>(Page Walk)"]
+    MMU --> PG_TBL["Page Table<br/>(PGD → PUD → PMD → PTE)"]
+    PG_TBL --> PFN["Physical Frame<br/>Number"]
+    PFN --> PHYS_MEM["Physical<br/>Memory"]
+    ALLOC["Page Allocator<br/>(Buddy System)"] --> ORDER["Order-0 (4KB) →<br/>Order-10 (4MB)"]
+    ALLOC --> FRAG["Fragmentation<br/>(External/Internal)"]
+    SLAB["Slab Allocator"] --> CACHE_KM["kmem_cache<br/>(inode/dentry)"]
+    SLAB --> PARTIAL["Partial/Full/Empy<br/>Slabs"]
+    OOM["OOM Killer"] --> SCORE["badness() score<br/>(oom_score_adj)"]
+    SCORE --> KILLED["Process Killed"]
+    SWAP["Swap / zram"] --> COMPRESS["Compressed RAM<br/>(zswap)"]
+    style VIR_ADDR fill:#4a8bc2
+    style MMU fill:#2d5a7b
+    style PG_TBL fill:#3a7ca5
+    style PFN fill:#e8912e
+    style PHYS_MEM fill:#c73e1d
+    style ALLOC fill:#6f42c1
+    style ORDER fill:#e8912e
+    style FRAG fill:#c73e1d
+    style SLAB fill:#3fb950
+    style CACHE_KM fill:#3a7ca5
+    style PARTIAL fill:#e8912e
+    style OOM fill:#c73e1d
+    style SCORE fill:#e8912e
+    style KILLED fill:#c73e1d
+    style SWAP fill:#3a7ca5
+    style COMPRESS fill:#e8912e
 ```
 
 ## Table of Contents
@@ -1135,6 +1153,71 @@ Cache bandwidth (per core):
 
 ---
 
-## 17. Simplest Mental Model
+## Interview Questions
+
+### Beginner Level
+
+**Q1: What is virtual memory and why do we need it?**
+
+**Why interviewers ask this**: Core OS concept — tests understanding of abstraction layers.
+
+**Ideal answer structure**:
+1. **What**: Each process gets its own virtual address space (0 to 2^48 on x86-64), mapped to physical memory via page tables.
+2. **Why**: Isolation (process A can't see process B's memory), simplification (each process thinks it owns all memory), overcommit (can allocate more virtual than physical RAM exists).
+3. **Mechanism**: MMU translates virtual → physical addresses using page tables. TLB caches recent translations.
+4. **Page sizes**: 4KB standard, 2MB huge pages (for databases), 1GB huge pages (for VMs).
+
+**Common wrong answer**: "Virtual memory is swap space" — no, swap is a separate concept. Virtual memory is about address translation; swap is about backing up physical pages to disk.
+
+**Q2**: Explain the difference between paging and segmentation.
+
+**Answer**: **Paging**: Fixed-size units (4KB pages), no external fragmentation, simple. **Segmentation**: Variable-sized logical segments (code, data, stack), mirrors program structure, leads to external fragmentation. Modern OSes use paging exclusively. x86-64 uses paging with 4-level page tables (9-bit × 4 levels + 12-bit offset = 48-bit VA).
+
+### Intermediate Level
+
+**Q3: Walk through what happens when a process accesses a page that's been swapped out.**
+
+**Answer**: **Page fault sequence**: 1) MMU can't find PTE → raises page fault. 2) Kernel checks fault address region (vm_area_struct). 3) If address is in swap cache, kernel reads page from swap device (SSD/disk). 4) Allocates physical page frame. 5) Reads data from swap, updates PTE. 6) Returns to user mode, re-executes faulting instruction. 7) Page is now in memory (major fault, ~10ms on SSD). Minor faults (PTE valid but not in TLB) take ~1µs.
+
+**Common wrong answer**: "The process crashes with a segfault" — only if the address isn't mapped at all (segfault). If swapped out, OS handles it transparently (page fault handler).
+
+**Q4**: How does the buddy allocator work and why is it used?
+
+**Answer**: **Buddy allocator** manages physical pages. Memory is divided into powers of 2 (order-0 = 4KB through order-10 = 4MB). Allocation: round up to next power of 2, split recursively until correct size. Free: check if buddy (same-order adjacent block) is also free → coalesce into larger block. Why used: fast allocation (O(log n)), minimal external fragmentation, and automatic coalescing. Limitation: internal fragmentation (e.g., 5KB allocation takes 8KB).
+
+### Senior Level
+
+**Q5: You have a 64GB Redis server. Periodically, Redis latency spikes to 200ms. What's happening?**
+
+**Why interviewers ask this**: Tests production debugging combining OS memory knowledge with application behavior.
+
+**Answer**: **THP (Transparent Huge Pages) defragmentation + page fault latency**. THP automatically promotes 4KB pages to 2MB huge pages. During defragmentation, the kernel compacts memory — which moves pages and causes long latency spikes. Redis is sensitive because it's single-threaded and any stall directly impacts p99. Fix: `echo never > /sys/kernel/mm/transparent_hugepage/enabled`. Alternative: use `madvise` mode and manually apply THP only for large allocations. Check `/proc/sys/vm/compact_memory` stats.
+
+**Q6**: Your application shows high `sys` CPU but low `user` CPU. What's happening?
+
+**Answer**: **System call overhead or memory management churn**. High sys CPU means the kernel is doing work for the application. Causes: 1) Frequent context switches (many threads). 2) Excessive system calls (read/write in small buffers). 3) **Page allocation churn** — constant allocation/free of pages. 4) TLB shootdowns (TLB flush broadcast on multi-socket NUMA). 5) Soft interrupts (network RX). Fix: use `perf top` to see kernel functions, `strace -c` for syscall counts, `vmstat 1` for context switch rate.
+
+### Staff/Principal Level
+
+**Q7: Design a memory allocator for a real-time trading system that must never block for more than 10µs. How would you handle allocation without page faults?**
+
+**Why**: Tests deep understanding of kernel memory paths and real-time constraints.
+
+**Answer**: 1) **Pre-fault all memory** at startup using `mlockall(MCL_CURRENT|MCL_FUTURE)` and touch every page (write to force allocation). 2) Use **huge pages** (2MB or 1GB) to reduce TLB misses and page table walks. 3) **Custom allocator**: use `mmap` with `MAP_POPULATE` for large regions, then slab-like pool allocator for small objects. 4) **No on-demand allocation** — pre-allocate all memory pools at startup. 5) Avoid `brk()` (heap) — use `mmap` for all allocations. 6) Use **CPU pinning + per-CPU memory pools** (NUMA-aware) to avoid cross-socket latency. 7) Lock kernel memory in cgroup (`memory.force_empty` + `memory.swappiness=0`). 8) Test with `perf stat -e page-faults,major-faults` to verify zero faults.
+
+**Q8**: Your company runs a Java service that uses 32GB heap on a 64GB machine. The JVM process gets OOM-killed despite the machine having 32GB free. Investigate.
+
+**Answer**: **Overcommit + OOM behavior**. Linux overcommits memory (by default). JVM `-Xmx32g` plus JVM overhead (metaspace, thread stacks, code cache, native memory, GC) can exceed the overcommit limit. Or: **memory cgroup limit** — if the process hits its `memory.max` in cgroup v2, OOM killer triggers. Or: **NUMA node exhaustion** — if a socket's local memory is exhausted and remote memory is slower, but OOM doesn't care. Fix: 1) Set `vm.overcommit_memory = 2` (strict) or calculate actual RSS. 2) Use Native Memory Tracking: `-XX:NativeMemoryTracking=summary`. 3) Check `/proc/<pid>/status | grep VmRSS` vs `VmSize`. 4) Add swap (zram) as safety net. 5) Set `memory.min` in cgroup to protect the JVM.
+
+### Tricky Edge Cases
+
+**Q9: You mmap a 10GB file and read it sequentially. Why does the first access take 100ms but subsequent ones take 10µs?**
+
+**Answer**: **Major page faults vs cached access**. First access: kernel must find/allocate pages, issue disk I/O (page cache miss = major fault ≈ 10ms per 4KB page). Over 10GB, millions of faults accumulate. After reading, pages are cached in the page cache (dirty pages written back lazily). Second read is a minor fault (just PTE lookup + TLB fill). This is why `mmap` + sequential scan can be slower than `pread` with large buffers — `pread` uses the kernel's read-ahead. Fix: Use `madvise(MADV_SEQUENTIAL)` to enable aggressive read-ahead, or `MADV_WILLNEED` to pre-fault.
+
+**Q10**: A Kubernetes pod has `memory.soft_limit_in_bytes` and `memory.limit_in_bytes` set. The pod gets OOM-killed even though it's below the hard limit. Why?
+
+**Answer**: The **OOM killer has a priority mechanism**. Even below `memory.limit_in_bytes`, the OOM reaper can kill processes that are above `memory.soft_limit_in_bytes` when the machine is under global memory pressure. Also: `memory.kmem.limit_in_bytes` for kernel memory (slab caches for socket buffers, dentries) can trigger OOM even if userspace memory is fine. Root containers often have kernel memory at ~5-10% of RAM. Fix: Set `memory.kmem.limit_in_bytes = memory.limit_in_bytes` or disable kmem accounting if on cgroup v1.
+
 
 > **Memory management is like a hotel. Virtual memory is the room numbers (addresses) that every guest believes is their own suite. The MMU is the front desk clerk who translates room numbers to actual rooms. The page table is the registration book. The buddy allocator is the housekeeping that groups small rooms into conference halls (big pages). Swap is the storage closet—when the hotel fills up, luggage goes to the closet (disk) and comes back when space opens. The OOM killer is the bouncer who kicks out the loudest guest when the hotel is totally full. Slab/SLUB is the drawer organizer at the front desk — tiny objects (pens, forms) are kept pre-organized. Everything is about giving each process the illusion of owning the whole hotel while actually sharing the real rooms efficiently.**

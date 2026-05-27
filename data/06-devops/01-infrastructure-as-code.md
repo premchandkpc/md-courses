@@ -8,15 +8,23 @@
 
 ```mermaid
 graph LR
-    A["Input<br/>Layer"] --> B["Hidden<br/>Layers"]
-    B --> C["Hidden<br/>Layers"]
-    C --> D["Output<br/>Layer"]
-    B --> E["Activation<br/>Functions"]
-    E --> B
-    style A fill:#4a8bc2
-    style B fill:#2d5a7b
-    style C fill:#2d5a7b
-    style D fill:#c73e1d
+    HCL["Terraform<br/>HCL Config"] --> INIT["terraform init<br/>(Provider Download)"]
+    INIT --> PLAN["terraform plan<br/>(Execution Plan)"]
+    PLAN --> APPLY["terraform apply<br/>(Create/Update)"]
+    APPLY --> STATE["State File<br/>(terraform.tfstate)"]
+    STATE --> S3_BACK["S3 / DynamoDB<br/>(Remote Backend)"]
+    STATE --> LOCK["State Locking<br/>(DynamoDB)"]
+    MOD["Modules<br/>(Reusable)"] --> HCL
+    VAR["Variables<br/>(terraform.tfvars)"] --> HCL
+    style HCL fill:#4a8bc2
+    style INIT fill:#2d5a7b
+    style PLAN fill:#3a7ca5
+    style APPLY fill:#c73e1d
+    style STATE fill:#e8912e
+    style S3_BACK fill:#6f42c1
+    style LOCK fill:#3fb950
+    style MOD fill:#3a7ca5
+    style VAR fill:#e8912e
 ```
 
 ## Table of Contents

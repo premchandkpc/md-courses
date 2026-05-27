@@ -8,15 +8,40 @@
 
 ```mermaid
 graph LR
-    A["Input<br/>Layer"] --> B["Hidden<br/>Layers"]
-    B --> C["Hidden<br/>Layers"]
-    C --> D["Output<br/>Layer"]
-    B --> E["Activation<br/>Functions"]
-    E --> B
-    style A fill:#4a8bc2
-    style B fill:#2d5a7b
-    style C fill:#2d5a7b
-    style D fill:#c73e1d
+    CLIENT_SD["Service Consumer"] --> REGISTRY["Service Registry<br/>(Eureka/Consul/etcd)"]
+    CLIENT_SD --> CLIENT_DISC["Client-Side Discovery<br/>(LB from registry)"]
+    CLIENT_DISC --> INSTANCE1["Instance A:8080<br/>(healthy)"]
+    CLIENT_DISC --> INSTANCE2["Instance A:8081<br/>(healthy)"]
+    CLIENT_DISC --> INSTANCE3["Instance A:8082<br/>(healthy)"]
+    SERVER_SD["Service Consumer"] --> LB_SD["Load Balancer<br/>(DNS/IP)"]
+    LB_SD --> REGISTRY
+    LB_SD --> INSTANCE1
+    LB_SD --> INSTANCE2
+    LB_SD --> INSTANCE3
+    REGISTRY --> HEARTBEAT["Heartbeat /<br/>Health Check"]
+    HEARTBEAT --> UNHEALTHY["Unhealthy →<br/>Deregister"]
+    SELF_REG["Self-Registration"] --> REG_INST["Instance →<br/>register(ip,port)"]
+    SELF_REG --> GRACEFUL_SHUT["Graceful Shutdown<br/>→ deregister"]
+    K8S_DISC["K8s Discovery"] --> SERVICE["Service (ClusterIP)"]
+    K8S_DISC --> ENDPOINTS["Endpoints<br/>(pod IPs)"]
+    K8S_DISC --> COREDNS["CoreDNS<br/>(SRV records)"]
+    style CLIENT_SD fill:#4a8bc2
+    style REGISTRY fill:#2d5a7b
+    style CLIENT_DISC fill:#3a7ca5
+    style INSTANCE1 fill:#3fb950
+    style INSTANCE2 fill:#3fb950
+    style INSTANCE3 fill:#3fb950
+    style SERVER_SD fill:#c73e1d
+    style LB_SD fill:#e8912e
+    style HEARTBEAT fill:#6f42c1
+    style UNHEALTHY fill:#c73e1d
+    style SELF_REG fill:#6f42c1
+    style REG_INST fill:#e8912e
+    style GRACEFUL_SHUT fill:#3fb950
+    style K8S_DISC fill:#3fb950
+    style SERVICE fill:#e8912e
+    style ENDPOINTS fill:#3a7ca5
+    style COREDNS fill:#2d5a7b
 ```
 
 ## Table of Contents

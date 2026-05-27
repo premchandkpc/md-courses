@@ -10,15 +10,50 @@ Microservices are independently deployable, loosely coupled services each owning
 
 ```mermaid
 graph LR
-    A["Input<br/>Layer"] --> B["Hidden<br/>Layers"]
-    B --> C["Hidden<br/>Layers"]
-    C --> D["Output<br/>Layer"]
-    B --> E["Activation<br/>Functions"]
-    E --> B
-    style A fill:#4a8bc2
-    style B fill:#2d5a7b
-    style C fill:#2d5a7b
-    style D fill:#c73e1d
+    DECOMP["Service<br/>Decomposition"] --> BOUND["Bounded Context<br/>(DDD)"]
+    DECOMP --> TEAM["Team Aligned<br/>(Conway's Law)"]
+    COMM["Inter-Service<br/>Communication"] --> SYNC_M["Synchronous<br/>(gRPC/REST)"]
+    COMM --> ASYNC_M["Asynchronous<br/>(Kafka/RabbitMQ)"]
+    API_GW["API Gateway"] --> ROUTE["Routing /<br/>Aggregation"]
+    API_GW --> AUTH_GW["Auth / Rate<br/>Limiting"]
+    MESH["Service Mesh"] --> SIDECAR["Sidecar Proxy<br/>(Envoy/Linkerd)"]
+    MESH --> TRAFFIC["Traffic Mgmt<br/>(mTLS + retry)"]
+    RESILIENCE["Resilience"] --> C_BREAKER["Circuit Breaker"]
+    RESILIENCE --> BULKHEAD["Bulkhead"]
+    RESILIENCE --> RETRY["Retry +<br/>Backoff"]
+    DATA_MGMT["Data Management"] --> SAGA["Saga Pattern<br/>(orchestrated)"]
+    DATA_MGMT --> CQRS_MS["CQRS / Event<br/>Sourcing"]
+    OBSERV["Observability"] --> METRICS_M["Metrics<br/>(RED/USE)"]
+    OBSERV --> LOGS_M["Logs<br/>(structured)"]
+    OBSERV --> TRACES["Traces<br/>(distributed)"]
+    SEC_MS["Security"] --> OAUTH_MS["OAuth2 / OIDC"]
+    SEC_MS --> ZT_MS["Zero Trust /<br/>mTLS"]
+    style DECOMP fill:#4a8bc2
+    style BOUND fill:#2d5a7b
+    style TEAM fill:#3a7ca5
+    style COMM fill:#6f42c1
+    style SYNC_M fill:#e8912e
+    style ASYNC_M fill:#3fb950
+    style API_GW fill:#c73e1d
+    style ROUTE fill:#e8912e
+    style AUTH_GW fill:#3a7ca5
+    style MESH fill:#3fb950
+    style SIDECAR fill:#e8912e
+    style TRAFFIC fill:#2d5a7b
+    style RESILIENCE fill:#c73e1d
+    style C_BREAKER fill:#e8912e
+    style BULKHEAD fill:#6f42c1
+    style RETRY fill:#3a7ca5
+    style DATA_MGMT fill:#3a7ca5
+    style SAGA fill:#e8912e
+    style CQRS_MS fill:#6f42c1
+    style OBSERV fill:#3fb950
+    style METRICS_M fill:#e8912e
+    style LOGS_M fill:#3a7ca5
+    style TRACES fill:#c73e1d
+    style SEC_MS fill:#e8912e
+    style OAUTH_MS fill:#3a7ca5
+    style ZT_MS fill:#c73e1d
 ```
 
 ## Table of Contents

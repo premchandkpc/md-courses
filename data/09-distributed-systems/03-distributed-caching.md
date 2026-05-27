@@ -8,15 +8,35 @@
 
 ```mermaid
 graph LR
-    A["Input<br/>Layer"] --> B["Hidden<br/>Layers"]
-    B --> C["Hidden<br/>Layers"]
-    C --> D["Output<br/>Layer"]
-    B --> E["Activation<br/>Functions"]
-    E --> B
-    style A fill:#4a8bc2
-    style B fill:#2d5a7b
-    style C fill:#2d5a7b
-    style D fill:#c73e1d
+    APP["Application"] --> CACHE["Distributed<br/>Cache"]
+    CACHE --> HIT["Cache Hit →<br/>Return Data"]
+    CACHE --> MISS["Cache Miss →<br/>Read DB"]
+    MISS --> DB["Database"]
+    DB --> SET["Set Cache<br/>(TTL = 300s)"]
+    WRITE["Write Path"] --> DB_WRITE["Write to DB"]
+    DB_WRITE --> INVAL["Invalidate /<br/>Update Cache"]
+    CONS_HASH["Consistent<br/>Hashing"] --> NODE_A["Node A<br/>(Hash Ring)"]
+    CONS_HASH --> NODE_B["Node B"]
+    CONS_HASH --> NODE_C["Node C"]
+    ADD_NODE["Node Added"] --> REBALANCE["Rebalance<br/>(K/N keys)"]
+    EVICT["Eviction"] --> LRU_C["LRU / LFU /<br/>TTL"]
+    style APP fill:#4a8bc2
+    style CACHE fill:#2d5a7b
+    style HIT fill:#3fb950
+    style MISS fill:#c73e1d
+    style DB fill:#3a7ca5
+    style SET fill:#e8912e
+    style WRITE fill:#6f42c1
+    style DB_WRITE fill:#e8912e
+    style INVAL fill:#c73e1d
+    style CONS_HASH fill:#6f42c1
+    style NODE_A fill:#3a7ca5
+    style NODE_B fill:#3a7ca5
+    style NODE_C fill:#3a7ca5
+    style ADD_NODE fill:#e8912e
+    style REBALANCE fill:#3fb950
+    style EVICT fill:#c73e1d
+    style LRU_C fill:#e8912e
 ```
 
 ## Table of Contents

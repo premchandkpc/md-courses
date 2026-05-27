@@ -4,15 +4,42 @@
 
 ```mermaid
 graph LR
-    A["Input<br/>Layer"] --> B["Hidden<br/>Layers"]
-    B --> C["Hidden<br/>Layers"]
-    C --> D["Output<br/>Layer"]
-    B --> E["Activation<br/>Functions"]
-    E --> B
-    style A fill:#4a8bc2
-    style B fill:#2d5a7b
-    style C fill:#2d5a7b
-    style D fill:#c73e1d
+    GIT_OBJECTS["Git Object Model"] --> BLOB_G["Blob<br/>(file content)"]
+    GIT_OBJECTS --> TREE_G["Tree<br/>(directory listing)"]
+    GIT_OBJECTS --> COMMIT_G["Commit<br/>(snapshot + parent)"]
+    GIT_OBJECTS --> TAG_G["Tag<br/>(annotated ref)"]
+    BLOB_G --> SHA1["SHA-1 Hash<br/>(content-addressable)"]
+    TREE_G --> BLOB_G["blob: file.txt<br/>tree: subdir/"]
+    COMMIT_G --> TREE_G["→ root tree"]
+    COMMIT_G --> PARENT_G["→ parent commit(s)"]
+    STORAGE_G["Storage"] --> OBJECT_DIR[".git/objects/<br/>(loose format)"]
+    STORAGE_G --> PACK_FILES["Pack Files<br/>(delta compression)"]
+    PACK_FILES --> DELTA_COMP["Windowed Delta<br/>(base + delta)"]
+    REFS_G["References"] --> BRANCH_GIT["Branch →<br/>HEAD refs/heads/main"]
+    REFS_G --> TAG_REF["Tag →<br/>refs/tags/v1.0"]
+    REFS_G --> REFLOG["Reflog<br/>(undo history)"]
+    MERGE_G["Merge Strategies"] --> FAST_FORWARD["Fast-Forward"]
+    MERGE_G --> RECURSIVE["Recursive (3-way)"]
+    MERGE_G --> OCTOPUS["Octopus<br/>(>2 parents)"]
+    style GIT_OBJECTS fill:#4a8bc2
+    style BLOB_G fill:#2d5a7b
+    style TREE_G fill:#3a7ca5
+    style COMMIT_G fill:#e8912e
+    style TAG_G fill:#6f42c1
+    style SHA1 fill:#c73e1d
+    style PARENT_G fill:#3fb950
+    style STORAGE_G fill:#c73e1d
+    style OBJECT_DIR fill:#e8912e
+    style PACK_FILES fill:#3fb950
+    style DELTA_COMP fill:#3a7ca5
+    style REFS_G fill:#3fb950
+    style BRANCH_GIT fill:#e8912e
+    style TAG_REF fill:#3a7ca5
+    style REFLOG fill:#c73e1d
+    style MERGE_G fill:#6f42c1
+    style FAST_FORWARD fill:#3fb950
+    style RECURSIVE fill:#e8912e
+    style OCTOPUS fill:#c73e1d
 ```
 
 ## Table of Contents

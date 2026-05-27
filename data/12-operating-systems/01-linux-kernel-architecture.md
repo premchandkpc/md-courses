@@ -10,15 +10,31 @@
 
 ```mermaid
 graph LR
-    A["Input<br/>Layer"] --> B["Hidden<br/>Layers"]
-    B --> C["Hidden<br/>Layers"]
-    C --> D["Output<br/>Layer"]
-    B --> E["Activation<br/>Functions"]
-    E --> B
-    style A fill:#4a8bc2
-    style B fill:#2d5a7b
-    style C fill:#2d5a7b
-    style D fill:#c73e1d
+    USER["User Space<br/>(Applications)"] --> SYSCALL["System Call Interface<br/>(sys_read/sys_write)"]
+    SYSCALL --> VFS["Virtual File System<br/>(VFS)"]
+    VFS --> EXT4["ext4 / XFS /<br/>Btrfs"]
+    VFS --> PAGE_CACHE["Page Cache<br/>(Memory-Mapped Files)"]
+    SYSCALL --> SCHED["CFS / EEVDF<br/>Scheduler"]
+    SCHED --> CPU["CPU Core<br/>(Context Switch)"]
+    SYSCALL --> MM["Memory Manager<br/>(Buddy + Slab)"]
+    MM --> MMU["MMU / TLB<br/>(Page Table)"]
+    SYSCALL --> NET_STACK["Network Stack<br/>(TCP/IP)"]
+    NET_STACK --> NIC["NIC Driver<br/>(NAPI/IRQ)"]
+    VFS --> BLK["Block Layer<br/>(blk-mq)"]
+    BLK --> NVME["NVMe / SATA<br/>Device"]
+    style USER fill:#4a8bc2
+    style SYSCALL fill:#2d5a7b
+    style VFS fill:#3a7ca5
+    style EXT4 fill:#e8912e
+    style PAGE_CACHE fill:#6f42c1
+    style SCHED fill:#c73e1d
+    style CPU fill:#3fb950
+    style MM fill:#e8912e
+    style MMU fill:#3fb950
+    style NET_STACK fill:#6f42c1
+    style NIC fill:#3a7ca5
+    style BLK fill:#c73e1d
+    style NVME fill:#e8912e
 ```
 
 ## Table of Contents

@@ -8,15 +8,31 @@
 
 ```mermaid
 graph LR
-    A["Input<br/>Layer"] --> B["Hidden<br/>Layers"]
-    B --> C["Hidden<br/>Layers"]
-    C --> D["Output<br/>Layer"]
-    B --> E["Activation<br/>Functions"]
-    E --> B
-    style A fill:#4a8bc2
-    style B fill:#2d5a7b
-    style C fill:#2d5a7b
-    style D fill:#c73e1d
+    SLI["Service Level<br/>Indicator (SLI)"] --> SLO["Service Level<br/>Objective (SLO)"]
+    SLO --> EB["Error Budget<br/>(1 - SLO)"]
+    EB --> DEPLOY["Deploy / Release<br/>(Budget Available)"]
+    EB --> FREEZE["Freeze Deployments<br/>(Budget Exhausted)"]
+    CALMS["CALMS<br/>Framework"] --> CULT["Culture<br/>(Collaboration)"]
+    CALMS --> AUTO["Automation"]
+    CALMS --> LEAN["Lean /<br/>Flow"]
+    CALMS --> MEAS["Measurement"]
+    CALMS --> SHARE["Sharing"]
+    INCIDENT["Incident<br/>Management"] --> RESOLVE["Resolve /<br/>Mitigate"]
+    INCIDENT --> BLAME["Blameless<br/>Postmortem"]
+    style SLI fill:#4a8bc2
+    style SLO fill:#2d5a7b
+    style EB fill:#3a7ca5
+    style DEPLOY fill:#3fb950
+    style FREEZE fill:#c73e1d
+    style CALMS fill:#6f42c1
+    style CULT fill:#e8912e
+    style AUTO fill:#3a7ca5
+    style LEAN fill:#e8912e
+    style MEAS fill:#2d5a7b
+    style SHARE fill:#3fb950
+    style INCIDENT fill:#c73e1d
+    style RESOLVE fill:#3fb950
+    style BLAME fill:#e8912e
 ```
 
 ## Table of Contents
@@ -1414,6 +1430,294 @@ Anti-pattern 5: Perfect SLOs
           meaningless metric, no trust.
   Fix: Start with realistic SLOs, measure, improve.
 ```
+
+---
+
+## Platform Engineering
+
+Platform Engineering is the practice of building Internal Developer Platforms (IDPs) that provide self-service capabilities, golden paths, and governance — enabling product teams to move faster while platform teams maintain control over infrastructure.
+
+### Internal Developer Platform (IDP)
+
+```mermaid
+graph TB
+    DEV["Developer"] --> CAT["Service Catalog<br/>(Backstage/Port)"]
+    CAT --> SELF["Self-Service Actions"]
+    SELF --> SCAFF["Scaffold Service<br/>(Cookiecutter template)"]
+    SELF --> INFRA["Provision Infra<br/>(Terraform/Pulumi)"]
+    SELF --> CI_CD["CI/CD Pipeline<br/>(Argo/GitHub Actions)"]
+    SELF --> ENV["Ephemeral Env<br/>(Preview environments)"]
+    SELF --> SEC["Security Scan<br/>(SAST/DAST)"]
+    CAT --> GOV["Governance &<br/>Scorecards"]
+    GOV --> POL["Policy Checks<br/>(OPA/Sentinel)"]
+    GOV --> COST["Cost Controls<br/>(Tags, Budgets)"]
+    GOV --> COMP["Compliance<br/>(PCI/SOC2/HIPAA)"]
+    style DEV fill:#4a8bc2
+    style CAT fill:#6f42c1
+    style SELF fill:#3fb950
+    style GOV fill:#e8912e
+```
+
+### Developer Portals & Platforms
+
+| Feature | Backstage | Port | Humanitec | Cortex |
+|---------|-----------|------|-----------|--------|
+| **Open source** | Yes (CNCF) | No | No | No |
+| **Service catalog** | Yes | Yes | Yes | Yes |
+| **Scorecards** | Yes (plugins) | Yes | Yes | Yes |
+| **Infrastructure provisioning** | Via plugins (Terraform) | Via self-service actions | Yes (native) | Via integrations |
+| **Scorecards** | Custom | Built-in, template-based | Built-in | Built-in |
+| **Backend** | Node.js + PostgreSQL | SaaS (managed) | SaaS + Agent | SaaS + Agent |
+| **Plugins** | 200+ | 50+ | 30+ | 40+ |
+
+**Backstage Software Catalog (YAML):**
+```yaml
+# catalog-info.yaml
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: checkout-service
+  description: Checkout and payment orchestration
+  annotations:
+    backstage.io/techdocs-ref: dir:.
+    github.com/project-slug: org/checkout-service
+    argocd/app-name: checkout-production
+    pagerduty.com/service-id: PXXXXX
+spec:
+  type: service
+  lifecycle: production
+  owner: team-payments
+  system: payment-platform
+  dependsOn:
+    - component:payment-gateway
+    - resource:dynamodb-checkout
+  providesApis:
+    - checkout-api
+
+---
+apiVersion: backstage.io/v1alpha1
+kind: API
+metadata:
+  name: checkout-api
+  description: Checkout REST API
+spec:
+  type: openapi
+  lifecycle: production
+  owner: team-payments
+  definition:
+    $text: https://github.com/org/checkout-service/blob/main/openapi.yaml
+```
+
+### Platform Teams vs Product Teams
+
+```
+Platform Team Responsibilities:
+  - Infrastructure provisioning (K8s, VPCs, databases)
+  - CI/CD pipeline templates
+  - Observability stack (Prometheus, Grafana, Loki)
+  - Security tooling (SAST, dependency scanning)
+  - Secrets management (Vault, External Secrets)
+  - Service mesh and networking
+  - Cost governance and tagging
+  - Compliance and audit support
+
+Product Team Responsibilities:
+  - Application code and business logic
+  - Service ownership (develop, deploy, monitor)
+  - Feature flags and progressive delivery
+  - SLO definition and error budget tracking
+  - On-call for their own services
+  - Capacity planning for their services
+
+Interaction Model:
+  Platform enables, not blocks
+  Product teams self-serve via IDP
+  Platform provides golden paths (not golden handcuffs)
+```
+
+### Golden Paths and Paved Roads
+
+```text
+Golden Path = The recommended, fully supported way to build and deploy
+              a service. Not mandatory, but all tooling, monitoring,
+              support assumes you follow it.
+
+Paved Road = Golden Path + security + compliance + cost controls
+
+What a Golden Path includes:
+  Source:   Repository template (cookiecutter, Backstage scaffolder)
+            with: CI/CD, Dockerfile, health checks, metrics, logging
+
+  Infra:    Terraform/Pulumi module with: deployment, service, HPA,
+            PDB, network policy, IAM, secrets
+
+  CI/CD:    GitHub Actions / GitLab CI pipeline
+            Build → test → security scan → image push → deploy
+
+  Observability:
+            Dashboard template (RED metrics, SLO burn rate)
+            Alert rules and runbooks pre-configured
+            Log aggregation and trace sampling
+
+  On-call:  Runbook template, escalation policy
+            PagerDuty integration
+
+Example Golden Path Metadata:
+  # The platform provides this. Team fills in the values.
+  template:
+    name: go-http-service
+    parameters:
+      service_name: { description: "Service name" }
+      team: { description: "Owning team" }
+      criticality: tier1 | tier2 | tier3
+      database: postgres | dynamodb | none
+---
+```
+
+### Platform Maturity Model
+
+| Level | Name | Characteristics | Adoption |
+|-------|------|-----------------|----------|
+| **0** | Ad Hoc | No platform, every team does their own infra | Manual, slow, inconsistent |
+| **1** | Standardized | Shared IaC modules, CI/CD templates, monitoring stack | 20-40% adoption |
+| **2** | Self-Service | Developer portal, service catalog, golden paths | 40-70% adoption |
+| **3** | Automated Governance | Scorecards, policy as code, cost controls, compliance automation | 70-90% adoption |
+| **4** | Autonomous | Self-healing workloads, auto-remediation, predictive cost optimization | 90%+ adoption |
+
+**Moving through levels:**
+```text
+Level 0 → 1: Create shared modules, CI/CD templates, standardize observability
+Level 1 → 2: Build service catalog, establish golden paths, enable self-service
+Level 2 → 3: Add scorecards, policy enforcement, cost governance
+Level 3 → 4: Auto-remediation, predictive scaling, continuous compliance
+```
+
+### Service Catalogs
+
+```text
+What a Service Catalog entry contains:
+  - Basic info: Name, description, owner, lifecycle (prod/staging/deprecated)
+  - Links: Runbook, dashboard, repository, on-call schedule
+  - Dependencies: Upstream services, databases, queues
+  - SLIs/SLOs: Current performance against targets
+  - Scorecards: Security, reliability, cost, operations scores
+  - Deployment info: CI/CD status, latest version, deployment frequency
+  - API docs: OpenAPI/Swagger specs
+  - Cost: Monthly infrastructure cost by component
+
+Scorecard Example:
+  ┌─────────────────────────────────────────────┐
+  │  Service Readiness Scorecard                 │
+  │  ═══════════════════════════════════════     │
+  │  ■ SLO Defined                      ✓  20%  │
+  │  ■ Dashboard Created                ✓  20%  │
+  │  ■ On-Call Rotation Setup           ✗   0%  │
+  │  ■ Runbook Written                  ✓  20%  │
+  │  ■ Security Scan in CI/CD           ✓  20%  │
+  │  ■ Backup Verified                  ✗   0%  │
+  │  ──────────────────────────               │
+  │  Overall:            80% (Passing)        │
+  └─────────────────────────────────────────────┘
+```
+
+### Self-Service Infrastructure Actions
+
+```typescript
+// Backstage scaffolder action: Scaffold new microservice
+import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
+
+export const createServiceAction = () => createTemplateAction<{
+  serviceName: string;
+  team: string;
+  criticality: 'tier1' | 'tier2' | 'tier3';
+  databaseType: 'postgres' | 'dynamodb' | 'none';
+}>({
+  id: 'platform:create-service',
+  schema: {
+    input: {
+      required: ['serviceName', 'team', 'criticality'],
+      type: 'object',
+      properties: {
+        serviceName: { type: 'string' },
+        team: { type: 'string' },
+        criticality: { type: 'string', enum: ['tier1', 'tier2', 'tier3'] },
+        databaseType: { type: 'string', enum: ['postgres', 'dynamodb', 'none'] },
+      },
+    },
+  },
+  async handler(ctx) {
+    const { serviceName, team, criticality, databaseType } = ctx.input;
+
+    // 1. Clone template repository
+    // 2. Replace template variables
+    // 3. Push to new repository
+    // 4. Create ArgoCD Application
+    // 5. Provision resources (Terraform)
+    // 6. Register in Backstage catalog
+    // 7. Create PagerDuty schedule
+    // 8. Set up monitoring dashboard
+
+    ctx.logger.info(`Created service ${serviceName}`);
+  },
+});
+```
+
+### Scorecards & Governance
+
+```yaml
+# Scorecard definition (Backstage)
+apiVersion: backstage.io/v1alpha1
+kind: Scorecard
+metadata:
+  name: production-readiness
+spec:
+  checks:
+    - id: has-slo
+      name: SLO Defined
+      rules:
+        - property: metadata.annotations['slo/latency-p99']
+          exists: true
+    - id: has-dashboard
+      name: Dashboard Exists
+      rules:
+        - property: metadata.annotations['grafana/dashboard-uid']
+          exists: true
+    - id: has-oncall
+      name: On-Call Rotation Setup
+      rules:
+        - property: metadata.annotations['pagerduty/service-id']
+          exists: true
+    - id: has-runbook
+      name: Runbook Exists
+      rules:
+        - property: metadata.links
+          condition: ANY
+          rules:
+            - property: title
+              matches: "(?i)runbook"
+    - id: has-backup-test
+      name: Backup Verified
+      rules:
+        - property: metadata.annotations['platform/last-backup-test']
+          age: < 90d
+
+  thresholds:
+    - name: production
+      target: 80
+      severity: blocking
+    - name: staging
+      target: 60
+      severity: warning
+```
+
+**Production Considerations:**
+- IDP is a product — treat it with product management practices
+- Measure platform adoption metrics (services using golden path, self-service rate)
+- Platform team should be 1:5 to 1:10 ratio with product teams
+- Don't build everything — compose existing tools (Backstage, Argo, Crossplane)
+- Golden paths should be the easiest path, not the only path
+- Scorecards warn/gate, they don't block — empower teams to fix issues
+- Collect feedback continuously (platform satisfaction surveys)
 
 ---
 

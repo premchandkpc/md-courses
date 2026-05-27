@@ -4,15 +4,32 @@
 
 ```mermaid
 graph LR
-    A["Input<br/>Layer"] --> B["Hidden<br/>Layers"]
-    B --> C["Hidden<br/>Layers"]
-    C --> D["Output<br/>Layer"]
-    B --> E["Activation<br/>Functions"]
-    E --> B
-    style A fill:#4a8bc2
-    style B fill:#2d5a7b
-    style C fill:#2d5a7b
-    style D fill:#c73e1d
+    JMX_EXP["JMX Exporter<br/>(Kafka Broker)"] --> PROM["Prometheus"]
+    PROM --> GRAFANA["Grafana<br/>Dashboard"]
+    PROM --> ALERTS["Alertmanager"]
+    ALERTS --> PAGER["PagerDuty /<br/>Slack"]
+    BURROW["Burrow<br/>(Lag Checker)"] --> LAG["Consumer Lag<br/>(maxlag)"]
+    LAG --> LAG_ALERT["Lag > 1000 →<br/>Alert"]
+    LAG --> LAG_EVAL["Evaluation<br/>(min/max/avg)"]
+    CRUISE["Cruise Control"] --> REBAL["Rebalance<br/>Proposal"]
+    CRUISE --> CLUSTER_CPU["Cluster Load<br/>(CPU/Disk/NW)"]
+    BROKER_MET["Broker Metrics"] --> REQ_TIME["Request Time<br/>(p99)"]
+    BROKER_MET --> ISR_SHRINK["ISR Shrink/Expand"]
+    style JMX_EXP fill:#4a8bc2
+    style PROM fill:#2d5a7b
+    style GRAFANA fill:#3a7ca5
+    style ALERTS fill:#c73e1d
+    style PAGER fill:#e8912e
+    style BURROW fill:#6f42c1
+    style LAG fill:#c73e1d
+    style LAG_ALERT fill:#e8912e
+    style LAG_EVAL fill:#3fb950
+    style CRUISE fill:#3a7ca5
+    style REBAL fill:#e8912e
+    style CLUSTER_CPU fill:#3fb950
+    style BROKER_MET fill:#c73e1d
+    style REQ_TIME fill:#e8912e
+    style ISR_SHRINK fill:#3fb950
 ```
 
 ## Scope

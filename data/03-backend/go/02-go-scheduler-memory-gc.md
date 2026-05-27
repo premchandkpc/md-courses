@@ -4,15 +4,24 @@
 
 ```mermaid
 graph LR
-    A["Input<br/>Layer"] --> B["Hidden<br/>Layers"]
-    B --> C["Hidden<br/>Layers"]
-    C --> D["Output<br/>Layer"]
-    B --> E["Activation<br/>Functions"]
-    E --> B
-    style A fill:#4a8bc2
-    style B fill:#2d5a7b
-    style C fill:#2d5a7b
-    style D fill:#c73e1d
+    OBJ["Object<br/>Allocation"] --> SP["Span<br/>mspan"]
+    SP --> MC["Central<br/>mcache<br/>(per-P)"]
+    MC --> MCENT["mcentral<br/>(per size class)"]
+    MCENT --> HEAP["Heap<br/>mheap"]
+    HEAP --> GC1["GC Phase 1<br/>Mark Setup<br/>(STW)"]
+    GC1 --> GC2["GC Phase 2<br/>Concurrent<br/>Mark"]
+    GC2 --> GC3["GC Phase 3<br/>Mark Termination<br/>(STW)"]
+    GC3 --> GC4["GC Phase 4<br/>Concurrent<br/>Sweep"]
+    GC4 --> SP
+    style OBJ fill:#4a8bc2
+    style SP fill:#2d5a7b
+    style MC fill:#3a7ca5
+    style MCENT fill:#e8912e
+    style HEAP fill:#c73e1d
+    style GC1 fill:#6f42c1
+    style GC2 fill:#3fb950
+    style GC3 fill:#6f42c1
+    style GC4 fill:#3fb950
 ```
 
 ## Table of Contents

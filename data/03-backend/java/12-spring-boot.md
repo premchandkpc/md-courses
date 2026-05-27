@@ -8,15 +8,25 @@
 
 ```mermaid
 graph LR
-    A["Input<br/>Layer"] --> B["Hidden<br/>Layers"]
-    B --> C["Hidden<br/>Layers"]
-    C --> D["Output<br/>Layer"]
-    B --> E["Activation<br/>Functions"]
-    E --> B
-    style A fill:#4a8bc2
-    style B fill:#2d5a7b
-    style C fill:#2d5a7b
-    style D fill:#c73e1d
+    APP["@SpringBootApplication"] --> AC["Auto-Configuration<br/>(Conditional)"]
+    AC --> CTX["ApplicationContext<br/>(IoC Container)"]
+    CTX --> BEAN["Bean<br/>Definition"]
+    BEAN --> DI["Dependency<br/>Injection"]
+    DI --> QUAL["@Primary / @Qualifier<br/>Resolution"]
+    CTX --> WEB["Embedded<br/>Tomcat / Netty"]
+    WEB --> DISP["DispatcherServlet<br/>(Spring MVC)"]
+    DISP --> CTRL["@RestController<br/>Handler"]
+    AC --> CFG["External Config<br/>(application.yml)"]
+    style APP fill:#4a8bc2
+    style AC fill:#2d5a7b
+    style CTX fill:#3a7ca5
+    style BEAN fill:#6f42c1
+    style DI fill:#c73e1d
+    style QUAL fill:#e8912e
+    style WEB fill:#3fb950
+    style DISP fill:#2d5a7b
+    style CTRL fill:#4a8bc2
+    style CFG fill:#e8912e
 ```
 
 ## Table of Contents

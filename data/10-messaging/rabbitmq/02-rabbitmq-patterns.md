@@ -8,15 +8,41 @@
 
 ```mermaid
 graph LR
-    A["Input<br/>Layer"] --> B["Hidden<br/>Layers"]
-    B --> C["Hidden<br/>Layers"]
-    C --> D["Output<br/>Layer"]
-    B --> E["Activation<br/>Functions"]
-    E --> B
-    style A fill:#4a8bc2
-    style B fill:#2d5a7b
-    style C fill:#2d5a7b
-    style D fill:#c73e1d
+    WQ["Work Queues<br/>(Competing Consumers)"] --> TASK["Task Producer"]
+    TASK --> Q["Queue<br/>(Round-Robin)"]
+    Q --> W1["Worker 1<br/>(prefetch=1)"]
+    Q --> W2["Worker 2<br/>(prefetch=1)"]
+    Q --> W3["Worker 3<br/>(prefetch=1)"]
+    PUBSUB["Pub/Sub"] --> FANOUT2["Fanout Exchange"]
+    FANOUT2 --> Q_A["Queue A"]
+    FANOUT2 --> Q_B["Queue B"]
+    ROUTING["Routing"] --> DIRECT2["Direct Exchange"]
+    DIRECT2 --> Q_ERR["error Queue"]
+    DIRECT2 --> Q_WARN["warning Queue"]
+    RPC["RPC Pattern"] --> CLIENT["RPC Client"]
+    CLIENT --> REQ_Q["Request Queue"]
+    REQ_Q --> RPC_SERVER["RPC Server"]
+    RPC_SERVER --> REP_Q["Reply Queue<br/>(correlation_id)"]
+    REP_Q --> CLIENT
+    style WQ fill:#4a8bc2
+    style TASK fill:#2d5a7b
+    style Q fill:#3a7ca5
+    style W1 fill:#c73e1d
+    style W2 fill:#c73e1d
+    style W3 fill:#c73e1d
+    style PUBSUB fill:#3fb950
+    style FANOUT2 fill:#e8912e
+    style Q_A fill:#6f42c1
+    style Q_B fill:#6f42c1
+    style ROUTING fill:#e8912e
+    style DIRECT2 fill:#3a7ca5
+    style Q_ERR fill:#c73e1d
+    style Q_WARN fill:#e8912e
+    style RPC fill:#6f42c1
+    style CLIENT fill:#3fb950
+    style REQ_Q fill:#3a7ca5
+    style RPC_SERVER fill:#c73e1d
+    style REP_Q fill:#3a7ca5
 ```
 
 ## Table of Contents

@@ -4,15 +4,42 @@
 
 ```mermaid
 graph LR
-    A["Input<br/>Layer"] --> B["Hidden<br/>Layers"]
-    B --> C["Hidden<br/>Layers"]
-    C --> D["Output<br/>Layer"]
-    B --> E["Activation<br/>Functions"]
-    E --> B
-    style A fill:#4a8bc2
-    style B fill:#2d5a7b
-    style C fill:#2d5a7b
-    style D fill:#c73e1d
+    STRACE["strace<br/>(Syscall Tracer)"] --> SYSCALLS["syscall table<br/>(NR_read/write)"]
+    STRACE --> TIMING["-T flag →<br/>syscall duration"]
+    PERF["perf<br/>(PMU + SW events)"] --> CYCLES["perf stat →<br/>CPU cycles"]
+    PERF --> RECORD["perf record →<br/>callchain samples"]
+    PERF --> TOP["perf top →<br/>live hotspots"]
+    FTRACE["ftrace"] --> FUNCTION_TR["function_graph<br/>(kernel entry/exit)"]
+    FTRACE --> EVENT_TR["trace_events<br/>(sched/irq)"]
+    BPF["eBPF / bpftrace"] --> KPROBES["kprobes →<br/>dynamic kernel"]
+    BPF --> UPROBES["uprobes →<br/>dynamic userspace"]
+    BPF --> TRACEP["tracepoints →<br/>static probes"]
+    GDB["gdb"] --> BREAKPOINT["breakpoint →<br/>stop + inspect"]
+    GDB --> BACKTRACE["bt → callstack<br/>+ frame info"]
+    /PROC["/proc filesystem"] --> PROC_STATUS["/proc/PID/status<br/>(state + mem)"]
+    /PROC --> PROC_FD["/proc/PID/fd<br/>(open fds)"]
+    /PROC --> PROC_MAPS["/proc/PID/maps<br/>(memory regions)"]
+    style STRACE fill:#4a8bc2
+    style SYSCALLS fill:#2d5a7b
+    style TIMING fill:#3a7ca5
+    style PERF fill:#c73e1d
+    style CYCLES fill:#e8912e
+    style RECORD fill:#6f42c1
+    style TOP fill:#3fb950
+    style FTRACE fill:#3a7ca5
+    style FUNCTION_TR fill:#e8912e
+    style EVENT_TR fill:#3fb950
+    style BPF fill:#6f42c1
+    style KPROBES fill:#e8912e
+    style UPROBES fill:#c73e1d
+    style TRACEP fill:#3fb950
+    style GDB fill:#2d5a7b
+    style BREAKPOINT fill:#e8912e
+    style BACKTRACE fill:#3a7ca5
+    style /PROC fill:#3fb950
+    style PROC_STATUS fill:#e8912e
+    style PROC_FD fill:#3a7ca5
+    style PROC_MAPS fill:#c73e1d
 ```
 
 ## Table of Contents

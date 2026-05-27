@@ -8,15 +8,27 @@
 
 ```mermaid
 graph LR
-    A["Input<br/>Layer"] --> B["Hidden<br/>Layers"]
-    B --> C["Hidden<br/>Layers"]
-    C --> D["Output<br/>Layer"]
-    B --> E["Activation<br/>Functions"]
-    E --> B
-    style A fill:#4a8bc2
-    style B fill:#2d5a7b
-    style C fill:#2d5a7b
-    style D fill:#c73e1d
+    USER["IAM User<br/>(Long-term Creds)"] --> GRP["IAM Group"]
+    GRP --> POL["IAM Policy<br/>(JSON doc)"]
+    ROLE["IAM Role<br/>(Trust Policy)"] --> POL
+    POL --> EFFECT["Effect<br/>(Allow / Deny)"]
+    POL --> ACTION["Action<br/>(s3:GetObject)"]
+    POL --> RESOURCE["Resource<br/>(arn:aws:s3:::bucket/*)"]
+    POL --> COND["Condition<br/>(IpAddress / MFA)"]
+    USER --> ACCESS["Access Key +<br/>Secret Key"]
+    ROLE --> STS["STS<br/>AssumeRole"]
+    STS --> TEMP["Temporary<br/>Credentials"]
+    style USER fill:#4a8bc2
+    style GRP fill:#2d5a7b
+    style POL fill:#3a7ca5
+    style ROLE fill:#c73e1d
+    style EFFECT fill:#3fb950
+    style ACTION fill:#e8912e
+    style RESOURCE fill:#6f42c1
+    style COND fill:#e8912e
+    style ACCESS fill:#2d5a7b
+    style STS fill:#3a7ca5
+    style TEMP fill:#3fb950
 ```
 
 ## Table of Contents

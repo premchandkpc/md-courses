@@ -4,15 +4,29 @@
 
 ```mermaid
 graph LR
-    A["Input<br/>Layer"] --> B["Hidden<br/>Layers"]
-    B --> C["Hidden<br/>Layers"]
-    C --> D["Output<br/>Layer"]
-    B --> E["Activation<br/>Functions"]
-    E --> B
-    style A fill:#4a8bc2
-    style B fill:#2d5a7b
-    style C fill:#2d5a7b
-    style D fill:#c73e1d
+    POD_A["Pod A<br/>10.0.1.2"] --> VETH_A["veth<br/>Pair"]
+    VETH_A --> BRIDGE["CNI Bridge<br/>(cbr0)"]
+    POD_B["Pod B<br/>10.0.1.3"] --> VETH_B["veth<br/>Pair"]
+    VETH_B --> BRIDGE
+    BRIDGE --> ROUTE["Node Routing<br/>Table"]
+    ROUTE --> KUBEPROXY["kube-proxy<br/>(IPVS/iptables)"]
+    KUBEPROXY --> SVC["Service<br/>ClusterIP (10.96.0.1)"]
+    SVC --> POD_A
+    SVC --> POD_B
+    BRIDGE --> OVERLAY["CNI Overlay<br/>(Calico/Flannel)"]
+    OVERLAY --> NODE2["Node 2<br/>(VXLAN Encapsulated)"]
+    NODE2 --> POD_C["Pod C<br/>10.0.2.2"]
+    style POD_A fill:#4a8bc2
+    style VETH_A fill:#2d5a7b
+    style BRIDGE fill:#3a7ca5
+    style POD_B fill:#4a8bc2
+    style VETH_B fill:#2d5a7b
+    style ROUTE fill:#e8912e
+    style KUBEPROXY fill:#c73e1d
+    style SVC fill:#6f42c1
+    style OVERLAY fill:#3fb950
+    style NODE2 fill:#3a7ca5
+    style POD_C fill:#4a8bc2
 ```
 
 ## ToC
@@ -280,29 +294,121 @@ K8s networking = apartment building mail system
 ## Code Examples
 
 ```python
-# Example implementation
-# [Add language-specific code demonstrating core concept]
-pass
+# Simulate kube-proxy iptables DNAT logic
+import random
+
+class KubeProxySimulator:
+    def __init__(self):
+        self.services = {}
+        self.endpoints = {}
+
+    def add_service(self, name: str, cluster_ip: str, port: int):
+        self.services[name] = {'cluster_ip': cluster_ip, 'port': port}
+
+    def add_endpoints(self, service: str, pod_ips: list):
+        self.endpoints[service] = pod_ips
+
+    def dnat(self, service: str) -> str:
+        # iptables random DNAT
+        return random.choice(self.endpoints.get(service, []))
+
+    def iptables_chain(self, service: str) -> str:
+        # Generate pseudo-iptables rules
+        rules = f"*nat\n:KUBE-SVC-{service} - [0:0]\n"
+        for i, ip in enumerate(self.endpoints.get(service, [])):
+            rules += f"-A KUBE-SVC-{service} -m statistic --mode random "
+            rules += f"--probability 0.{1/(len(self.endpoints)-i)} "
+            rules += f"-j DNAT --to-destination {ip}:8080\n"
+        return rules
+
+# CoreDNS mock
+class CoreDNSResolver:
+    def __init__(self):
+        self.records = {}
+
+    def add_record(self, svc: str, namespace: str, cluster_ip: str):
+        fqdn = f"{svc}.{namespace}.svc.cluster.local"
+        self.records[fqdn] = cluster_ip
+
+    def resolve(self, fqdn: str) -> str:
+        return self.records.get(fqdn, "NXDOMAIN")
+
+# Simulate network policy evaluation
+class NetworkPolicyEngine:
+    def __init__(self):
+        self.policies = []
+
+    def add_policy(self, pod_selector: dict, ingress_rules: list):
+        self.policies.append({'pod_selector': pod_selector,
+                              'ingress': ingress_rules})
+
+    def allow_traffic(self, src_pod: dict, dst_pod: dict, port: int) -> bool:
+        for policy in self.policies:
+            if all(dst_pod.get(k) == v for k, v in policy['pod_selector'].items()):
+                for rule in policy['ingress']:
+                    if port in rule.get('ports', [port]):
+                        return True
+        return False  # default deny if any policy applies
+```
+
+```bash
+# Debug pod-to-pod connectivity
+NS=default; SRC_POD=$(kubectl get pod -n $NS -l app=frontend -o name | head -1)
+DST_IP=$(kubectl get pod -n $NS -l app=backend -o jsonpath='{.status.podIP}')
+kubectl exec -n $NS $SRC_POD -- ping -c 3 $DST_IP
+
+# Trace iptables for a service
+SVC_NAME=my-svc
+kubectl get svc $SVC_NAME -o jsonpath='{.spec.clusterIP}'
+iptables-save | grep $SVC_NAME | head -20
 ```
 
 ---
 
 ## Common Failure Modes
 
-**Problem**: [Key issue in production]
+**Problem**: kube-proxy iptables rule explosion causing latency and packet loss
 
-**Root cause**: [Why it happens]
+**Root cause**: Each Service with N endpoints generates O(N) iptables DNAT rules. At 10,000+ services, the total iptables chain length causes rule evaluation to take milliseconds per packet. CONNTRACK table fills up, causing random packet drops. Node CPU usage from netfilter operations spikes, especially during service churn.
 
-**Solution**: [How to fix]
+**Detection**: `iptables-save | wc -l` shows 100K+ rules. `kubectl get svc -A | wc -l` exceeds 5000. Node monitoring shows high `softirq` CPU. Pod-to-pod latency becomes erratic. `conntrack -S` shows high `insert_failed` count.
+
+**Solution**: Switch kube-proxy to IPVS mode (`kube-proxy --proxy-mode=ipvs`) — O(1) hash-based forwarding regardless of endpoint count. Or switch to Cilium with eBPF, which uses a BPF map (hash table) for service lookup — no linear rule scanning. For existing clusters, consolidate services and avoid creating per-pod services.
+
+**Problem**: DNS resolution failures causing pod startup delays and intermittent connection errors
+
+**Root cause**: CoreDNS runs as a deployment. Under load, CoreDNS pods get throttled by `kube-proxy` iptables rules trying to reach themselves (NAT loop). Pods starting up hit DNS before the cache is warm. High QPS from misconfigured `ndots:5` causes excessive DNS queries (every name lookup tries 5 domain suffixes before failing).
+
+**Detection**: Application logs show `Temporary failure in name resolution` or connection timeouts. CoreDNS metrics show high `coredns_dns_requests_total` for NXDOMAIN. Pod startup times are inconsistent (3-10s extra). `kubectl exec` DNS queries from pods exhibit 5-second timeouts.
+
+**Solution**: Set `ndots: 1` or `ndots: 2` in pod DNS config to reduce search domain expansion. Use NodeLocal DNSCache (DaemonSet) to cache DNS locally on each node, bypassing iptables DNAT for DNS traffic. Run CoreDNS with `autopath` plugin. Set `NegativeCache` TTL. Size CoreDNS appropriately — add HPA based on CPU/memory.
 
 ---
 
 ## Interview Questions
 
-### Q1: [Core concept question]
+### Q1: How does a Kubernetes Service forward traffic to pods, and what are the performance implications of each mode?
 
-**Answer**: [Detailed explanation with trade-offs]
+**Answer**: A Service is a virtual IP backed by EndpointSlices, and kube-proxy on each node programs forwarding rules. In **iptables mode**, each endpoint becomes a DNAT rule — random selection uses `statistic --mode random`. For large services (500+ endpoints), rule chains can be thousands of lines, causing non-trivial per-packet latency. In **IPVS mode**, the kernel hash table does O(1) lookup — much faster at scale. In **eBPF mode** (Cilium), BPF maps replace iptables entirely, with the lowest latency and best scalability. The ClusterIP is managed by the node's network stack (not a real device) — `iptables -t nat -L` shows the rules translating ClusterIP:Port to pod IPs.
 
-### Q2: [Design/architecture question]
+### Q2: How would you design cluster networking to support 5000+ services across 200 nodes?
 
-**Answer**: [Best practices and reasoning]
+**Answer**: Avoid iptables mode — use Cilium with eBPF for O(1) service lookup and native XDP for packet forwarding. Use a pod CIDR large enough for projected pod density (e.g., /16 per node or /64 for IPv6). Enable CNI prefix delegation (AWS VPC CNI) or use a non-VPC CNI like Calico with IPIP encapsulation if VPC IPs are limited. Deploy NodeLocal DNSCache to avoid DNS conntrack issues. Use EndpointSlice (enabled by default in 1.21+) to reduce API server load from endpoint updates. Avoid hostPort and use NodePort only for debugging. Consider Gateway API for advanced traffic routing instead of many Ingress resources.
+
+
+## Edge Cases
+
+| Scenario | Challenge | Solution |
+|----------|-----------|----------|
+| **Service mesh sidecar startup race** | App starts before sidecar, fails to connect to other services | Use `holdApplicationUntilProxyStarts` (Istio). Configure init container to wait for sidecar ready. Set `traffic.sidecar.istio.io/includeInboundPorts` |
+| **DNS resolution failures in pods** | CoreDNS overloaded, pod can't resolve service names | Autoscale CoreDNS: `kubectl autoscale deployment coredns --cpu-percent=70 --min=2 --max=10`. Use node-local DNS cache. Set `ndots: 1` in pod dnsConfig |
+| **Network policy blocking kube-dns** | IP range of CoreDNS not included in policy | Add policy: `ipBlock.cidr: <cluster-ip-range>` for DNS. Or label CoreDNS pods and use podSelector. Always test policies with `kubectl run -it --rm debug --image=nicolaka/netshoot` |
+| **MTU mismatch between CNI and underlying network** | Packet fragmentation, performance degradation | Set `mtu: 1460` (Calico) or `vpc-mtu: 1460` (AWS VPC CNI). Match underlying network MTU (AWS 9001, GCP 1460). Test with `ping -M do -s 1472` |
+| **Ingress controller scaling under DDoS** | Ingress pods overwhelmed, control plane also impacted | Use Cloud LB in front of ingress (NLB/ALB). Set HPA on ingress controller. WAF at edge. Rate limiting per IP with `nginx.ingress.kubernetes.io/limit-rps` |
+
+## Cross-References
+
+- [EKS Networking](../../05-cloud/aws/eks/02-eks-operations.md) — AWS VPC CNI, security groups per pod
+- [DNS, CDN & Load Balancing](../../11-networking/03-dns-cdn-loadbalancing.md) — Ingress vs LoadBalancer vs NodePort service comparison
+- [Kubernetes Security](../04-kubernetes-security.md) — Network policies, zero trust, service mesh
+- [Kubernetes Observability](../06-kubernetes-observability.md) — Network monitoring with Cilium Hubble, metrics

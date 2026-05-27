@@ -4,15 +4,32 @@
 
 ```mermaid
 graph LR
-    A["Input<br/>Layer"] --> B["Hidden<br/>Layers"]
-    B --> C["Hidden<br/>Layers"]
-    C --> D["Output<br/>Layer"]
-    B --> E["Activation<br/>Functions"]
-    E --> B
-    style A fill:#4a8bc2
-    style B fill:#2d5a7b
-    style C fill:#2d5a7b
-    style D fill:#c73e1d
+    AUR["Aurora<br/>Architecture"] --> CW["Cluster<br/>Writer"]
+    AUR --> CR["Cluster<br/>Reader 1"]
+    AUR --> CR2["Cluster<br/>Reader 2"]
+    CW --> SD["Shared<br/>Storage (6 copies)"]
+    CR --> SD
+    CR2 --> SD
+    SD --> AZ1["AZ 1"]
+    SD --> AZ2["AZ 2"]
+    SD --> AZ3["AZ 3"]
+    AUR --> GL["Global Database<br/>(Cross-Region)"]
+    BG["Blue/Green<br/>Deployment"] --> OLD["Blue<br/>(Current)"]
+    BG --> NEW["Green<br/>(Staging)"]
+    NEW --> SWITCH["Switch<br/>(30s downtime)"]
+    style AUR fill:#4a8bc2
+    style CW fill:#2d5a7b
+    style CR fill:#3a7ca5
+    style CR2 fill:#3a7ca5
+    style SD fill:#c73e1d
+    style AZ1 fill:#e8912e
+    style AZ2 fill:#e8912e
+    style AZ3 fill:#e8912e
+    style GL fill:#6f42c1
+    style BG fill:#3fb950
+    style OLD fill:#3a7ca5
+    style NEW fill:#6f42c1
+    style SWITCH fill:#e8912e
 ```
 
 ## Table of Contents

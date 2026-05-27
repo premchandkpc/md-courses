@@ -4,15 +4,25 @@
 
 ```mermaid
 graph LR
-    A["Input<br/>Layer"] --> B["Hidden<br/>Layers"]
-    B --> C["Hidden<br/>Layers"]
-    C --> D["Output<br/>Layer"]
-    B --> E["Activation<br/>Functions"]
-    E --> B
-    style A fill:#4a8bc2
-    style B fill:#2d5a7b
-    style C fill:#2d5a7b
-    style D fill:#c73e1d
+    ETCD_TUNE["etcd Tuning<br/>(SSD + defrag)"] --> API_TUNE["API Server<br/>(max-requests-inflight)"]
+    API_TUNE --> SCHED_TUNE["Scheduler Tuning<br/>(percentageOfNodesToScore)"]
+    SCHED_TUNE --> NODE_TUNE["Kubelet Tuning<br/>(maxPods / evictionHard)"]
+    NODE_TUNE --> POD_DENSITY["Pod Density<br/>(requests/limits)"]
+    CNI_TUNE["CNI Tuning<br/>(Calico MTU)"] --> KPROXY_TUNE["kube-proxy<br/>(IPVS mode)"]
+    AUTOSCALE["Cluster Autoscaler"] --> KARPENTER["Karpenter<br/>(Consolidation)"]
+    SCALE["HPA / VPA"] --> POD_DENSITY
+    SCALE --> CA["Cluster<br/>Autoscaler"]
+    style ETCD_TUNE fill:#4a8bc2
+    style API_TUNE fill:#2d5a7b
+    style SCHED_TUNE fill:#3a7ca5
+    style NODE_TUNE fill:#c73e1d
+    style POD_DENSITY fill:#e8912e
+    style CNI_TUNE fill:#6f42c1
+    style KPROXY_TUNE fill:#e8912e
+    style AUTOSCALE fill:#3fb950
+    style KARPENTER fill:#3a7ca5
+    style SCALE fill:#c73e1d
+    style CA fill:#3fb950
 ```
 
 ## Scope

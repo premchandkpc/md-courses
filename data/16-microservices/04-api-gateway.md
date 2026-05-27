@@ -8,15 +8,34 @@
 
 ```mermaid
 graph LR
-    A["Input<br/>Layer"] --> B["Hidden<br/>Layers"]
-    B --> C["Hidden<br/>Layers"]
-    C --> D["Output<br/>Layer"]
-    B --> E["Activation<br/>Functions"]
-    E --> B
-    style A fill:#4a8bc2
-    style B fill:#2d5a7b
-    style C fill:#2d5a7b
-    style D fill:#c73e1d
+    CLIENTS_G["Clients<br/>(Web/Mobile/3rd)"] --> API_GATEWAY["API Gateway"]
+    API_GATEWAY --> AUTH_G["Authentication<br/>(JWT/OAuth)"]
+    API_GATEWAY --> RATE_LIM_G["Rate Limiting<br/>(token bucket)"]
+    API_GATEWAY --> ROUTE_G["Routing<br/>(path → service)"]
+    API_GATEWAY --> AGG_G["Aggregation<br/>(merge responses)"]
+    API_GATEWAY --> TRANSFORM["Transformation<br/>(proto↔json)"]
+    ROUTE_G --> SVC1["Service A<br/>(users)"]
+    ROUTE_G --> SVC2["Service B<br/>(orders)"]
+    ROUTE_G --> SVC3["Service C<br/>(payments)"]
+    GATEWAY_IMPL["Implementations"] --> SPRING_CLOUD["Spring Cloud<br/>Gateway"]
+    GATEWAY_IMPL --> KONG["Kong<br/>(OpenResty)"]
+    GATEWAY_IMPL --> NGINX_AP["NGINX /<br/>Envoy"]
+    GATEWAY_IMPL --> AWS_API["AWS API<br/>Gateway"]
+    style CLIENTS_G fill:#4a8bc2
+    style API_GATEWAY fill:#2d5a7b
+    style AUTH_G fill:#c73e1d
+    style RATE_LIM_G fill:#e8912e
+    style ROUTE_G fill:#3a7ca5
+    style AGG_G fill:#6f42c1
+    style TRANSFORM fill:#3fb950
+    style SVC1 fill:#e8912e
+    style SVC2 fill:#e8912e
+    style SVC3 fill:#e8912e
+    style GATEWAY_IMPL fill:#3fb950
+    style SPRING_CLOUD fill:#e8912e
+    style KONG fill:#6f42c1
+    style NGINX_AP fill:#3a7ca5
+    style AWS_API fill:#2d5a7b
 ```
 
 ## Table of Contents

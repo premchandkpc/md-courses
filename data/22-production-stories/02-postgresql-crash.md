@@ -10,15 +10,34 @@
 
 ```mermaid
 graph LR
-    A["Input<br/>Layer"] --> B["Hidden<br/>Layers"]
-    B --> C["Hidden<br/>Layers"]
-    C --> D["Output<br/>Layer"]
-    B --> E["Activation<br/>Functions"]
-    E --> B
-    style A fill:#4a8bc2
-    style B fill:#2d5a7b
-    style C fill:#2d5a7b
-    style D fill:#c73e1d
+    WRAPAROUND["TXID Wraparound"] --> AUTO_FREEZE["Emergency<br/>Autovacuum"]
+    AUTO_FREEZE --> IO_STORM["I/O Storm<br/>(100% disk)"]
+    IO_STORM --> DB_FREEZE["Database Freezes<br/>(read-only mode)"]
+    BLOAT["Table/Index Bloat"] --> DEAD_TUPLES["Dead Tuples Not<br/>Vacuumed"]
+    DEAD_TUPLES --> QUERY_SLOW["Queries Slow<br/>(seq scan)"]
+    QUERY_SLOW --> CONN_POOL_EXHAUST["Connection Pool<br/>Exhausted"]
+    REPLICATION_LAG["Replication Lag"] --> WRITE_LOAD["Heavy Write Load<br/>→ Replica Behind"]
+    WRITE_LOAD --> READ_INCONSISTENT["→ Stale Reads<br/>(inconsistent)"]
+    WRITE_LOAD --> FAILOVER_SKIP["Failover →<br/>Data Loss Possible"]
+    OOM_PG["OOM Killer"] --> SHARED_BUF["shared_buffers<br/>+ connections"]
+    SHARED_BUF --> EXCEED_RAM["> System RAM"]
+    EXCEED_RAM --> PG_CRASH["PostgreSQL<br/>Crashed"]
+    style WRAPAROUND fill:#4a8bc2
+    style AUTO_FREEZE fill:#c73e1d
+    style IO_STORM fill:#c73e1d
+    style DB_FREEZE fill:#c73e1d
+    style BLOAT fill:#3a7ca5
+    style DEAD_TUPLES fill:#e8912e
+    style QUERY_SLOW fill:#c73e1d
+    style CONN_POOL_EXHAUST fill:#c73e1d
+    style REPLICATION_LAG fill:#e8912e
+    style WRITE_LOAD fill:#3a7ca5
+    style READ_INCONSISTENT fill:#c73e1d
+    style FAILOVER_SKIP fill:#c73e1d
+    style OOM_PG fill:#c73e1d
+    style SHARED_BUF fill:#e8912e
+    style EXCEED_RAM fill:#c73e1d
+    style PG_CRASH fill:#c73e1d
 ```
 
 ## Table of Contents

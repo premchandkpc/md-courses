@@ -8,15 +8,35 @@
 
 ```mermaid
 graph LR
-    A["Input<br/>Layer"] --> B["Hidden<br/>Layers"]
-    B --> C["Hidden<br/>Layers"]
-    C --> D["Output<br/>Layer"]
-    B --> E["Activation<br/>Functions"]
-    E --> B
-    style A fill:#4a8bc2
-    style B fill:#2d5a7b
-    style C fill:#2d5a7b
-    style D fill:#c73e1d
+    CB_STATES["Circuit Breaker<br/>States"] --> CLOSED["CLOSED<br/>(normal operation)"]
+    CLOSED --> OPEN["Threshold exceeded<br/>(failure count/rate)"]
+    OPEN --> HALF_OPEN["OPEN (timeout) →<br/>HALF-OPEN"]
+    HALF_OPEN --> CLOSED["Success →<br/>CLOSED"]
+    HALF_OPEN --> OPEN["Failure →<br/>OPEN again"]
+    RESILIENCE_PATTERNS["Resilience<br/>Patterns"] --> RETRY_CB["Retry with Backoff<br/>(exponential)"]
+    RETRY_CB --> EXP_BACKOFF["1s → 2s → 4s → 8s<br/>+ jitter"]
+    RESILIENCE_PATTERNS --> TIMEOUT["Timeout<br/>(per-call deadline)"]
+    RESILIENCE_PATTERNS --> BULKHEAD_CB["Bulkhead<br/>(isolated thread pool)"]
+    RESILIENCE_PATTERNS --> FALLBACK["Fallback<br/>(degrade gracefully)"]
+    RESILIENCE_PATTERNS --> CACHE_CB["Cache<br/>(stale data OK)"]
+    RESILIENCE4J["Resilience4J"] --> CONFIG["@CircuitBreaker<br/>(sliding window)"]
+    RESILIENCE4J --> RETRY_CONFIG["@Retry<br/>(max 3 attempts)"]
+    RESILIENCE4J --> TIMEOUT_CONFIG["@TimeLimiter<br/>(2s timeout)"]
+    style CB_STATES fill:#4a8bc2
+    style CLOSED fill:#3fb950
+    style OPEN fill:#c73e1d
+    style HALF_OPEN fill:#e8912e
+    style RESILIENCE_PATTERNS fill:#2d5a7b
+    style RETRY_CB fill:#e8912e
+    style EXP_BACKOFF fill:#3a7ca5
+    style TIMEOUT fill:#e8912e
+    style BULKHEAD_CB fill:#6f42c1
+    style FALLBACK fill:#3a7ca5
+    style CACHE_CB fill:#3fb950
+    style RESILIENCE4J fill:#6f42c1
+    style CONFIG fill:#e8912e
+    style RETRY_CONFIG fill:#3fb950
+    style TIMEOUT_CONFIG fill:#c73e1d
 ```
 
 ## Table of Contents

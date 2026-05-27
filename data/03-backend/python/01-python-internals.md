@@ -4,15 +4,25 @@
 
 ```mermaid
 graph LR
-    A["Input<br/>Layer"] --> B["Hidden<br/>Layers"]
-    B --> C["Hidden<br/>Layers"]
-    C --> D["Output<br/>Layer"]
-    B --> E["Activation<br/>Functions"]
-    E --> B
-    style A fill:#4a8bc2
-    style B fill:#2d5a7b
-    style C fill:#2d5a7b
-    style D fill:#c73e1d
+    SRC["Python<br/>Source Code"] --> TOK["Tokenizer<br/>(tokenize)"]
+    TOK --> PAR["Parser<br/>(CST)"]
+    PAR --> AST["Abstract<br/>Syntax Tree"]
+    AST --> COMP["Bytecode<br/>Compiler"]
+    COMP --> CODE["Code Object<br/>(co_code)"]
+    CODE --> VM["CPython<br/>Interpreter"]
+    VM --> DIS["dis<br/>(Bytecode disassembly)"]
+    VM --> LOAD["LOAD_FAST /<br/>LOAD_CONST"]
+    VM --> CALL["CALL_FUNCTION /<br/>BINARY_OP"]
+    style SRC fill:#4a8bc2
+    style TOK fill:#2d5a7b
+    style PAR fill:#3a7ca5
+    style AST fill:#6f42c1
+    style COMP fill:#c73e1d
+    style CODE fill:#e8912e
+    style VM fill:#3fb950
+    style DIS fill:#2d5a7b
+    style LOAD fill:#3a7ca5
+    style CALL fill:#e8912e
 ```
 
 ## CPython Internals

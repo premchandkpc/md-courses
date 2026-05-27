@@ -8,15 +8,37 @@
 
 ```mermaid
 graph LR
-    A["Input<br/>Layer"] --> B["Hidden<br/>Layers"]
-    B --> C["Hidden<br/>Layers"]
-    C --> D["Output<br/>Layer"]
-    B --> E["Activation<br/>Functions"]
-    E --> B
-    style A fill:#4a8bc2
-    style B fill:#2d5a7b
-    style C fill:#2d5a7b
-    style D fill:#c73e1d
+    HOST["Host"] --> MEETING["Create Meeting<br/>(signaling)"]
+    PARTICIPANT["Participant"] --> JOIN["Join Meeting<br/>(invite link)"]
+    JOIN --> SIGNALING["Signaling Server<br/>(room state)"]
+    SIGNALING --> SFU["SFU Media Node<br/>(Selective Forwarding)"]
+    SFU --> VIDEO_STREAM["Video Stream<br/>(H.264/VP9)"]
+    SFU --> AUDIO_STREAM["Audio Stream<br/>(Opus)"]
+    SFU --> SCREEN_SHARE["Screen Share<br/>(H.264)"]
+    SFU --> ADAPTIVE_BITRATE["Adaptive Bitrate<br/>(loss + bandwidth)"]
+    GLOBAL_SCALE["Global Scale"] --> REGION["Regional Media<br/>Cluster"]
+    REGION --> CASCADE["Cascading SFU<br/>(inter-region)"]
+    RELIABILITY["Reliability"] --> PSTN["PSTN Fallback<br/>(phone dial-in)"]
+    RELIABILITY --> GRACEFUL["Graceful Degradation<br/>(video off → audio)"]
+    SECURITY_ZOOM["Security"] --> E2EE_ZOOM["E2E Encryption<br/>(per-participant key)"]
+    style HOST fill:#4a8bc2
+    style MEETING fill:#2d5a7b
+    style PARTICIPANT fill:#3a7ca5
+    style JOIN fill:#3a7ca5
+    style SIGNALING fill:#e8912e
+    style SFU fill:#c73e1d
+    style VIDEO_STREAM fill:#6f42c1
+    style AUDIO_STREAM fill:#3fb950
+    style SCREEN_SHARE fill:#6f42c1
+    style ADAPTIVE_BITRATE fill:#e8912e
+    style GLOBAL_SCALE fill:#3fb950
+    style REGION fill:#e8912e
+    style CASCADE fill:#2d5a7b
+    style RELIABILITY fill:#3fb950
+    style PSTN fill:#e8912e
+    style GRACEFUL fill:#c73e1d
+    style SECURITY_ZOOM fill:#3a7ca5
+    style E2EE_ZOOM fill:#c73e1d
 ```
 
 ## Table of Contents

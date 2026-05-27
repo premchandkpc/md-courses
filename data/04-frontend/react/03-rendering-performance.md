@@ -112,9 +112,122 @@ function MyComponent({ isSpecial }) {
 
 ---
 
+## 2b. Virtual DOM Diffing Algorithm — Deep Dive
+
+React's diff algorithm is the core of reconciliation — it determines what changed between two VDOM trees with O(n) complexity (down from O(n³) by using two key heuristics).
+
+### The Two Fundamental Heuristics
+
+1. **Different element types produce different trees**: If `<div>` becomes `<span>`, React destroys the entire subtree and rebuilds
+2. **Keys identify children across renders**: Stable keys let React match children from the old tree to the new tree
+
+Without these assumptions, the general tree diff problem is O(n³) — three nested loops comparing every node to every other node at every tree level.
+
+### How List Diffing Works (The `reconcileChildrenArray` Algorithm)
+
+When diffing two lists of children, React uses a **double-index** approach:
+
+```javascript
+// Simplified reconcileChildrenArray algorithm
+function reconcileChildrenArray(returnFiber, currentChildren, newChildren) {
+  let oldIdx = 0;      // Index into old children
+  let newIdx = 0;      // Index into new children
+  let oldEnd = currentChildren.length - 1;
+  let newEnd = newChildren.length - 1;
+  let oldFiber = currentChildren[0];
+
+  // Phase 1: Head match — skip identical items from the start
+  while (oldIdx <= oldEnd && newIdx <= newEnd) {
+    if (sameNode(oldFiber, newChildren[newIdx])) {
+      updateNode(oldFiber, newChildren[newIdx]);
+      oldIdx++; newIdx++;
+      oldFiber = currentChildren[oldIdx];
+    } else break;
+  }
+
+  // Phase 2: Tail match — skip identical items from the end
+  // Phase 3: If only new items remain → placement
+  // Phase 4: If only old items remain → deletion
+  // Phase 5: Remaining items → use keyed map for moves
+}
+```
+
+```mermaid
+flowchart TD
+    A[reconcileChildrenArray] --> B[Phase 1: Head match<br/>skip items from start]
+    B --> C[Phase 2: Tail match<br/>skip items from end]
+    C --> D{Old list exhausted?}
+    D -->|Yes| E[Remaining new items → Placements]
+    D -->|No| F{New list exhausted?}
+    F -->|Yes| G[Remaining old items → Deletions]
+    F -->|No| H[Phase 3: Keyed map<br/>Build map of remaining old children by key]
+    H --> I[Phase 4: Process remaining new children<br/>Match by key or index from map]
+    I --> J[Phase 5: Remove unmapped old children]
+```
+
+### Key-Based Matching
+
+When keys are present, React builds a key→fiber map from the remaining old children:
+
+```javascript
+// Keyed map lookup — O(1) per child
+const remainingOldFibers = new Map();
+oldChildren.forEach(child => {
+  remainingOldFibers.set(child.key, child);
+});
+
+// For each new child, look up by key
+newChildren.forEach(newChild => {
+  const oldFiber = remainingOldFibers.get(newChild.key);
+  if (oldFiber) {
+    // Found by key — reuse fiber, mark as moved if position changed
+    remainingOldFibers.delete(newChild.key);
+    if (oldFiber.index !== newIndex) {
+      // Mark as MOVE (placement with different position)
+    }
+  } else {
+    // New key — create new fiber (placement)
+  }
+});
+```
+
+### The O(n²) Trap with Index Keys
+
+When prepending to a list with index keys:
+
+```javascript
+// Initial render: keys [0:A, 1:B, 2:C]
+// After prepend: keys [0:NEW, 1:A, 2:B, 3:C]
+// React runs these phases:
+// Phase 1: key 0 → A vs NEW, different → break (0 matches)
+// Phase 2: key 2 → C vs C, same → matched (1 match)
+// Phase 3-4: remaining [1:A, 2:B] vs [1:A, 2:B, 3:C]
+//   key 1 → A matches A (updated in place)
+//   key 2 → B matches B (updated in place)
+//   key 3 → C not found → placement
+// Result: A updated, B updated, C created — NO DOM reuse!
+```
+
+Every existing item's DOM node gets **updated with new content** instead of simply shifting position. With 1000 items, that's 999 unnecessary DOM mutations.
+
+### Reconciliation Heuristics Summary
+
+| Scenario | React Behavior | Cost |
+|---|---|---|
+| Same type, same key | Update existing instance | O(1) per node |
+| Same type, different key | Unmount old, mount new | O(1) per node |
+| Different type | Destroy subtree, build new | O(subtree size) |
+| Same key, different position | Move (reorder) | O(1) per move |
+| List with stable keys | Keyed reconciliation | O(n) |
+| List with index keys | Position-based (wrong) | O(n) + unnecessary DOM |
+
+**Cross-reference**: This diffing algorithm is analogous to the `git diff` algorithm — both match common prefix/suffix, then use a heuristic for the middle section. See [OS](../../08-operating-systems/) for scheduling algorithm comparisons.
+
+---
+
 ## 3. Fiber Architecture — React 16+
 
-Fiber is a complete rewrite of React's reconciliation engine. Each component instance gets a "fiber node" — a JavaScript object that holds component state, props, and work to be done.
+Fiber is a complete rewrite of React's reconciliation engine. Each component instance gets a "fiber node" — a JavaScript object that holds component state, props, and work to be done. The fiber tree is a **linked list** — not a recursive tree — enabling incremental (interruptible) rendering.
 
 ### Fiber Node Structure (simplified)
 
@@ -183,6 +296,251 @@ root.current = finishedWork;
 ```
 
 **Java analogy**: Double buffering in Swing graphics — you draw on an off-screen buffer, then swap it to visible in one operation.
+
+---
+
+## 3b. Fiber Work Loop — Deep Dive
+
+The work loop processes fiber nodes one at a time, yielding control back to the browser after each unit. This is what makes concurrent rendering possible.
+
+```mermaid
+flowchart TD
+    A[Schedule update] --> B{Any pending work?}
+    B -->|Yes| C[Find next unit of work]
+    C --> D[Begin work on fiber]
+    D --> E{Should yield?<br/>time-slice expired?}
+    E -->|Yes| F[Yield to browser]
+    F --> G{High-pri interrupt?}
+    G -->|Yes| H[Process high-pri first]
+    H --> C
+    G -->|No| C
+    E -->|No| I[Complete work]
+    I --> J{Any remaining work?}
+    J -->|Yes| C
+    J -->|No| K[Commit phase]
+```
+
+```javascript
+// Simplified scheduler work loop — runs inside requestIdleCallback
+function workLoopConcurrent(deadline) {
+  let shouldYield = false;
+  while (nextUnitOfWork && !shouldYield) {
+    nextUnitOfWork = performUnitOfWork(nextUnitOfWork);
+    shouldYield = deadline.timeRemaining() < 5; // 5ms time slice
+  }
+  if (nextUnitOfWork) {
+    // More work remains → schedule continuation
+    scheduleCallback(NormalPriority, workLoopConcurrent);
+  } else {
+    // All work complete → commit
+    commitRoot(root);
+  }
+}
+```
+
+**Cross-reference**: This is the same cooperative multitasking model used in OS kernel schedulers. See [Operating Systems](../../08-operating-systems/) for preemption and time-slicing concepts.
+
+### Lane Priorities (Bitmask System)
+
+React 18 assigns each update a **lane** — a bitmask that encodes priority. Multiple updates can be batched by OR-ing their lanes.
+
+```javascript
+// Internal lane constants (simplified from actual React source)
+const SyncLane =              0b0000000000000000001; // Highest
+const InputContinuousLane =   0b0000000000000000100; // Scroll, hover
+const DefaultLane =           0b0000000000000010000; // Normal setState
+const TransitionShortLane =   0b0000000010000000000; // startTransition (fast)
+const TransitionLongLane =    0b0001000000000000000; // startTransition (slow)
+const IdleLane =              0b0100000000000000000; // Pre-rendering
+const OffscreenLane =         0b1000000000000000000; // Hidden content
+```
+
+```mermaid
+graph LR
+    subgraph "Lane Priority Hierarchy"
+        S[SyncLane] --> I[InputContinuousLane]
+        I --> D[DefaultLane]
+        D --> TS[TransitionShortLane]
+        TS --> TL[TransitionLongLane]
+        TL --> ID[IdleLane]
+    end
+    A[User click → SyncLane] --> P[Process immediately]
+    B[Tab switch → TransitionLane] --> Q[Defer — can be interrupted]
+```
+
+**How lanes work in the scheduler**:
+
+```javascript
+// 1. An update is created with a specific lane
+const update = { lane: SyncLane, action: { type: 'increment' } };
+
+// 2. The lane is merged into the fiber's lane set
+fiber.lanes = fiber.lanes | update.lane;
+
+// 3. Scheduler picks the highest-priority lane among all pending work
+function getHighestPriorityLane(lanes) {
+  // Bit scan: find the rightmost set bit (highest priority)
+  return lanes & -lanes;
+}
+
+// 4. During render, if higher-priority work arrives, current work is interrupted
+function ensureRootIsScheduled(root) {
+  const newLanes = getNextLanes(root);
+  const existingLanes = root.pendingLanes;
+
+  if (newLanes.higherThan(existingLanes)) {
+    // Higher priority work — interrupt current render
+    interruptWork(root);
+    scheduleCallback(newLanes, performConcurrentWorkOnRoot);
+  }
+}
+```
+
+**Java analogy**: Java's `Thread` priorities (1–10) serve the same purpose — the scheduler always runs the highest-priority runnable thread. React's lanes add bitmask batching: multiple updates can be in-flight simultaneously, and the scheduler resolves conflicts at lane granularity.
+
+### Effect List (Commit Phase Input)
+
+During the "complete" phase of each fiber, React builds an effect list — a linked list of fibers that need DOM mutations, refs, or lifecycle methods during commit:
+
+```javascript
+// Effect tags — binary flags OR-ed together
+const Placement =            0b000000000000010; // New DOM node
+const Update =               0b000000000000100; // Updated props/state
+const Deletion =             0b000000000001000; // Remove DOM node
+const PlacementAndUpdate =   0b000000000000110; // Both
+const Passive =              0b000000001000000; // useEffect
+const Ref =                  0b000000010000000; // Ref attachment
+const Visibility =           0b000100000000000; // Suspense visibility
+
+// Effect list traversal during commit
+let nextEffect = finishedWork.firstEffect;
+while (nextEffect) {
+  try {
+    const flags = nextEffect.flags;
+    if (flags & Placement) { commitPlacement(nextEffect); }
+    if (flags & Update) { commitWork(nextEffect); }
+    if (flags & Deletion) { commitDeletion(nextEffect); }
+    if (flags & Passive) { schedulePassiveEffect(nextEffect); }
+    if (flags & Ref) { commitAttachRef(nextEffect); }
+    nextEffect = nextEffect.nextEffect;
+  } catch (error) {
+    captureCommitPhaseError(nextEffect, nextEffect.return, error);
+  }
+}
+```
+
+**Key insight**: The effect list is built during the render phase (interruptible) and consumed during the commit phase (synchronous). This split ensures DOM mutations are never partially applied — either all effects commit, or none do.
+
+---
+
+## 3c. Browser Rendering Pipeline
+
+React's VDOM updates eventually reach the browser's rendering pipeline. Understanding this pipeline is essential for diagnosing layout thrashing, jank, and paint storms.
+
+### The Critical Rendering Path
+
+```mermaid
+flowchart LR
+    A["HTML<br/>Bytes"] -->|Parse| B["DOM<br/>Tree"]
+    B --> C["Render<br/>Tree"]
+    D["CSS<br/>Bytes"] -->|Parse| E["CSSOM<br/>Tree"]
+    E --> C
+    C --> F["Layout<br/>(Reflow)"]
+    F --> G["Paint"]
+    G --> H["Compositing"]
+```
+
+1. **DOM Tree**: HTML parsed into DOM nodes (blocking: `<script>` without `defer`/`async` pauses parsing)
+2. **CSSOM Tree**: CSS parsed into CSS Object Model (render-blocking: all CSS is render-blocking by default)
+3. **Render Tree**: DOM + CSSOM combined — only visible nodes (hidden nodes, `<head>` excluded)
+4. **Layout (Reflow)**: Calculate positions and sizes — most expensive phase
+5. **Paint**: Fill pixels for each node (text, colors, images, borders)
+6. **Compositing**: Layer separation and GPU compositing
+
+### Reflows vs Repaints
+
+| Operation | What Changes | Cost | Triggered By |
+|---|---|---|---|
+| **Reflow** | Layout (position, size) | Highest | DOM mutations, style changes, font load, window resize |
+| **Repaint** | Visual (color, visibility) | Medium | Color change, background change |
+| **Composite only** | Layer position (transform) | Lowest (GPU) | `transform`, `opacity` |
+
+```javascript
+// ❌ Forces reflow — reads layout property after DOM mutation
+el.style.width = '100px';           // Schedules reflow
+const w = el.offsetWidth;           // Forces immediate reflow (layout thrashing)
+
+// ✅ Groups reads before writes
+const w = el.offsetWidth;           // Read
+const h = el.offsetHeight;          // Read
+el.style.width = `${w + 10}px`;     // Write
+el.style.height = `${h + 10}px`;    // Write (batched reflow)
+```
+
+### React's Impact on the Pipeline
+
+```mermaid
+sequenceDiagram
+    participant React as React Commit
+    participant DOM as DOM Mutations
+    participant CSS as CSSOM Recalc
+    participant Layout as Layout (Reflow)
+    participant Paint as Paint
+    participant GPU as GPU Composite
+
+    React->>DOM: Apply DOM mutations (sync)
+    DOM->>CSS: Style recalculation (batch)
+    CSS->>Layout: Forced if offsetWidth/Height read
+    Layout->>Paint: Paint all dirty regions
+    Paint->>GPU: Layer compositing
+    Note over React,GPU: Total frame budget: 16.67ms (60fps)
+```
+
+### Production Scenario: Layout Thrashing from useLayoutEffect
+
+```jsx
+function AnimatedChart() {
+  const containerRef = useRef(null);
+
+  useLayoutEffect(() => {
+    // ❌ Forces multiple reflows per frame
+    for (const bar of bars) {
+      bar.element.style.height = `${bar.value * 2}px`;
+      const offset = bar.element.offsetTop; // Forces reflow!
+    }
+  }, [data]);
+
+  return <div ref={containerRef}>{bars.map(renderBar)}</div>;
+}
+```
+
+**Fix**: Batch reads, then batch writes:
+```jsx
+useLayoutEffect(() => {
+  // Phase 1: Read all measurements
+  const measurements = bars.map(bar => ({
+    element: bar.element,
+    height: bar.value * 2,
+  }));
+
+  // Phase 2: Write all updates (one reflow)
+  measurements.forEach(m => {
+    m.element.style.height = `${m.height}px`;
+  });
+}, [data]);
+```
+
+**Cross-reference**: See [Performance Engineering](../../18-performance-engineering/) for detailed browser rendering pipeline profiling with Chrome DevTools. See [Networking](../../11-networking/) for critical rendering path optimization (CSS/JS delivery).
+
+### Production Optimizations Summary
+
+| Technique | What It Prevents | Cost |
+|---|---|---|
+| `will-change: transform` | Creates compositor layer | GPU memory |
+| `transform` instead of `top/left` | Avoids reflow (composite only) | None |
+| `requestAnimationFrame` batching | Layout thrashing | Slight delay |
+| `contain: layout style paint` | Limits reflow scope | Browser support varies |
+| CSS `content-visibility: auto` | Skips off-screen layout | Newer browsers |
 
 ---
 

@@ -8,15 +8,31 @@
 
 ```mermaid
 graph LR
-    A["Input<br/>Layer"] --> B["Hidden<br/>Layers"]
-    B --> C["Hidden<br/>Layers"]
-    C --> D["Output<br/>Layer"]
-    B --> E["Activation<br/>Functions"]
-    E --> B
-    style A fill:#4a8bc2
-    style B fill:#2d5a7b
+    CAP["CAP Theorem"] --> C["Consistency<br/>(All nodes see same data)"]
+    CAP --> A["Availability<br/>(Every request gets a response)"]
+    CAP --> P["Partition Tolerance<br/>(System continues despite splits)"]
+    C --> CP["CP Systems<br/>(ZooKeeper / etcd)"]
+    A --> AP["AP Systems<br/>(Cassandra / DynamoDB)"]
+    P --> CP
+    P --> AP
+    CA["CA (No Partition)<br/>(Single-site RDBMS)"] --> C
+    CA --> A
+    CONSISTENCY["Consistency Models"] --> LINEAR["Linearizability<br/>(Spanner)"]
+    CONSISTENCY --> SEQUEN["Sequential<br/>(ZooKeeper)"]
+    CONSISTENCY --> CAUSAL["Causal<br/>(Vector Clocks)"]
+    CONSISTENCY --> EVTUAL["Eventual<br/>(DNS / S3)"]
+    style CAP fill:#4a8bc2
     style C fill:#2d5a7b
-    style D fill:#c73e1d
+    style A fill:#3a7ca5
+    style P fill:#c73e1d
+    style CP fill:#6f42c1
+    style AP fill:#3fb950
+    style CA fill:#e8912e
+    style CONSISTENCY fill:#4a8bc2
+    style LINEAR fill:#6f42c1
+    style SEQUEN fill:#3a7ca5
+    style CAUSAL fill:#e8912e
+    style EVTUAL fill:#c73e1d
 ```
 
 ## Table of Contents

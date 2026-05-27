@@ -6,15 +6,37 @@
 
 ```mermaid
 graph LR
-    A["Input<br/>Layer"] --> B["Hidden<br/>Layers"]
-    B --> C["Hidden<br/>Layers"]
-    C --> D["Output<br/>Layer"]
-    B --> E["Activation<br/>Functions"]
-    E --> B
-    style A fill:#4a8bc2
-    style B fill:#2d5a7b
-    style C fill:#2d5a7b
-    style D fill:#c73e1d
+    PREREQS["Prerequisites"] --> OS["Operating Systems<br/>(process/networking)"]
+    PREREQS --> DB["Databases<br/>(ACID/MVCC/B-trees)"]
+    PREREQS --> PROG["Programming<br/>(concurrency/DS)"]
+    CORE_TOPICS["Core Topics"] --> CAP_C["CAP Theorem +<br/>Consistency Models"]
+    CORE_TOPICS --> RAFT_C["Raft Consensus<br/>Algorithm"]
+    CORE_TOPICS --> DIST_CACHE["Distributed<br/>Caching"]
+    CORE_TOPICS --> DIST_TX["Distributed<br/>Transactions"]
+    CORE_TOPICS --> STREAM_PROC["Stream<br/>Processing"]
+    CORE_TOPICS --> DIST_DB["Distributed<br/>Databases"]
+    CORE_TOPICS --> REPL_C["Replication<br/>Strategies"]
+    CORE_TOPICS --> SHARD_C["Partitioning /<br/>Sharding"]
+    ADV["Advanced"] --> GLOBAL_SYS["Global-Scale<br/>Systems"]
+    ADV --> PAPERS["Research Papers<br/>(Paxos/MapReduce/Spanner)"]
+    ADV --> PROJECTS["Implementation<br/>Projects (Raft/DDIA)"]
+    style PREREQS fill:#4a8bc2
+    style OS fill:#2d5a7b
+    style DB fill:#3a7ca5
+    style PROG fill:#e8912e
+    style CORE_TOPICS fill:#c73e1d
+    style CAP_C fill:#e8912e
+    style RAFT_C fill:#3fb950
+    style DIST_CACHE fill:#6f42c1
+    style DIST_TX fill:#3a7ca5
+    style STREAM_PROC fill:#e8912e
+    style DIST_DB fill:#c73e1d
+    style REPL_C fill:#3fb950
+    style SHARD_C fill:#2d5a7b
+    style ADV fill:#3fb950
+    style GLOBAL_SYS fill:#e8912e
+    style PAPERS fill:#6f42c1
+    style PROJECTS fill:#c73e1d
 ```
 
 ## Table of Contents

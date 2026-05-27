@@ -4,15 +4,30 @@
 
 ```mermaid
 graph LR
-    A["Input<br/>Layer"] --> B["Hidden<br/>Layers"]
-    B --> C["Hidden<br/>Layers"]
-    C --> D["Output<br/>Layer"]
-    B --> E["Activation<br/>Functions"]
-    E --> B
-    style A fill:#4a8bc2
-    style B fill:#2d5a7b
-    style C fill:#2d5a7b
-    style D fill:#c73e1d
+    CODE["Code Push<br/>(git push)"] --> BUILD["Build Stage<br/>(compile/lint)"]
+    BUILD --> TEST["Test Stage<br/>(unit/integration)"]
+    TEST --> PACKAGE["Package Stage<br/>(Docker image)"]
+    PACKAGE --> REG["Container Registry<br/>(ECR/Docker Hub)"]
+    REG --> STAGE["Deploy to<br/>Staging"]
+    STAGE --> SMOKE["Smoke Tests<br/>(Canary)"]
+    SMOKE --> PROD["Deploy to<br/>Production"]
+    PROD --> VERIFY["Post-Deploy<br/>Verification"]
+    CI["GitHub Actions /<br/>GitLab CI YAML"] --> JOB["Job<br/>(Runs on Runner)"]
+    JOB --> STEP["Step<br/>(Shell/Action)"]
+    STEP --> CACHE["Cache /<br/>Artifacts"]
+    style CODE fill:#4a8bc2
+    style BUILD fill:#2d5a7b
+    style TEST fill:#3a7ca5
+    style PACKAGE fill:#6f42c1
+    style REG fill:#c73e1d
+    style STAGE fill:#e8912e
+    style SMOKE fill:#3fb950
+    style PROD fill:#c73e1d
+    style VERIFY fill:#3fb950
+    style CI fill:#3a7ca5
+    style JOB fill:#e8912e
+    style STEP fill:#2d5a7b
+    style CACHE fill:#3fb950
 ```
 
 ## Table of Contents

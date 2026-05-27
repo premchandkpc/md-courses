@@ -4,15 +4,48 @@
 
 ```mermaid
 graph LR
-    A["Input<br/>Layer"] --> B["Hidden<br/>Layers"]
-    B --> C["Hidden<br/>Layers"]
-    C --> D["Output<br/>Layer"]
-    B --> E["Activation<br/>Functions"]
-    E --> B
-    style A fill:#4a8bc2
-    style B fill:#2d5a7b
-    style C fill:#2d5a7b
-    style D fill:#c73e1d
+    CPU_OPT["CPU Optimization"] --> ALGO["Algorithm<br/>(O(n) → O(log n))"]
+    CPU_OPT --> LOOP["Loop Opt<br/>(unrolling)"]
+    CPU_OPT --> CACHE_LINE["Cache Line<br/>(locality)"]
+    MEM_OPT["Memory Optimization"] --> ALLOC_OPT["Allocation<br/>(pool/arena)"]
+    MEM_OPT --> STRUCT_PACK["Struct Packing<br/>(padding)"]
+    MEM_OPT --> GC_OPT["GC Pressure<br/>(reduce alloc rate)"]
+    IO_OPT["I/O Optimization"] --> BUFFER_IO["Buffered I/O<br/>(write combine)"]
+    IO_OPT --> ASYNC_IO["Async I/O<br/>(io_uring)"]
+    IO_OPT --> MMAP_IO["mmap<br/>(zero copy)"]
+    CONC_OPT["Concurrency Opt"] --> LOCK_FREE["Lock-Free<br/>(CAS/RCU)"]
+    CONC_OPT --> SHARDING_C["Sharding<br/>(striped lock)"]
+    CONC_OPT --> WORK_STEAL_C["Work Stealing<br/>(load balance)"]
+    DATABASE_OPT["Database Opt"] --> INDEX_OPT["Indexing<br/>(covering index)"]
+    DATABASE_OPT --> QUERY_PLAN["Query Plan<br/>(EXPLAIN ANALYZE)"]
+    DATABASE_OPT --> POOL_C["Connection Pool<br/>(HikariCP)"]
+    NET_OPT["Network Opt"] --> KEEPALIVE["HTTP Keep-Alive<br/>(connection reuse)"]
+    NET_OPT --> COMPRESS["Compression<br/>(gzip/brotli)"]
+    NET_OPT --> CONN_POOL["Connection Pool<br/>(httpclient)"]
+    style CPU_OPT fill:#4a8bc2
+    style ALGO fill:#2d5a7b
+    style LOOP fill:#3a7ca5
+    style CACHE_LINE fill:#e8912e
+    style MEM_OPT fill:#6f42c1
+    style ALLOC_OPT fill:#c73e1d
+    style STRUCT_PACK fill:#e8912e
+    style GC_OPT fill:#3fb950
+    style IO_OPT fill:#c73e1d
+    style BUFFER_IO fill:#e8912e
+    style ASYNC_IO fill:#3fb950
+    style MMAP_IO fill:#6f42c1
+    style CONC_OPT fill:#3fb950
+    style LOCK_FREE fill:#e8912e
+    style SHARDING_C fill:#c73e1d
+    style WORK_STEAL_C fill:#3a7ca5
+    style DATABASE_OPT fill:#2d5a7b
+    style INDEX_OPT fill:#e8912e
+    style QUERY_PLAN fill:#3a7ca5
+    style POOL_C fill:#3fb950
+    style NET_OPT fill:#6f42c1
+    style KEEPALIVE fill:#e8912e
+    style COMPRESS fill:#3a7ca5
+    style CONN_POOL fill:#3fb950
 ```
 
 ## Table of Contents

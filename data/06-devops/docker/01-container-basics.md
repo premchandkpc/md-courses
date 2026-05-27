@@ -8,15 +8,27 @@
 
 ```mermaid
 graph LR
-    A["Input<br/>Layer"] --> B["Hidden<br/>Layers"]
-    B --> C["Hidden<br/>Layers"]
-    C --> D["Output<br/>Layer"]
-    B --> E["Activation<br/>Functions"]
-    E --> B
-    style A fill:#4a8bc2
-    style B fill:#2d5a7b
-    style C fill:#2d5a7b
-    style D fill:#c73e1d
+    DF["Dockerfile"] --> BUILDCMD["docker build<br/>(Image)"]
+    BUILDCMD --> LAYERS["Image Layers<br/>(Read-Only)"]
+    LAYERS --> CONT["docker run<br/>(Container)"]
+    CONT --> RW["Container Layer<br/>(Read-Write)"]
+    CONT --> NAMES["Namespaces<br/>(PID/NET/MNT)"]
+    CONT --> CGROUP["cgroups<br/>(CPU/Memory/IO)"]
+    CONT --> UNPACK["UnionFS<br/>(Overlay2)"]
+    LAYERS --> REGISTRY["docker push<br/>(Registry)"]
+    REGISTRY --> PULL["docker pull<br/>(Remote)"]
+    CONT --> VOL["Volume Mount<br/>(Persistent Data)"]
+    style DF fill:#4a8bc2
+    style BUILDCMD fill:#2d5a7b
+    style LAYERS fill:#3a7ca5
+    style CONT fill:#c73e1d
+    style RW fill:#e8912e
+    style NAMES fill:#6f42c1
+    style CGROUP fill:#3fb950
+    style UNPACK fill:#e8912e
+    style REGISTRY fill:#3a7ca5
+    style PULL fill:#2d5a7b
+    style VOL fill:#e8912e
 ```
 
 ## Table of Contents
@@ -1225,4 +1237,67 @@ Docker is about CONSISTENCY: "Works on my machine" → "Works in my container".
 
 ---
 
-**Next**: [Docker Compose & Orchestration](02-compose-orchestration.md)
+## Interview Questions
+
+### Beginner Level
+
+**Q1: What is the difference between a Docker image and a container?**
+
+**Why interviewers ask this**: Fundamental concept — tests understanding of the build vs runtime split.
+
+**Ideal answer structure**:
+1. **Image**: Read-only template with layers (UnionFS), includes application code, runtime, libraries, and config. Immutable once built.
+2. **Container**: Running instance of an image — adds a thin writable layer on top. Has its own filesystem, network, and process namespace.
+3. **Analogy**: Image = class definition; Container = object instance. Image = recipe book; Container = meal being cooked.
+4. **Lifecycle**: Image can have 0..N containers. `docker build` creates images, `docker run` creates containers.
+
+**Common wrong answer**: "Images are just snapshots of containers" — opposite; images create containers, not the other way around (though `docker commit` can create an image from a container).
+
+**Q2**: How does Docker leverage Linux kernel features for isolation?
+
+**Answer**: Two key kernel features: 1) **Namespaces** — PID (process isolation), NET (own network stack), MNT (filesystem mounts), UTS (hostname), IPC (inter-process communication), USER (UID/GID mapping), CGROUP (resource tracking). 2) **cgroups** — limit CPU, memory, disk I/O, network bandwidth per container. `pids.max` prevents fork bombs. `memory.max` prevents OOM on host. Docker uses `runc` (OCI runtime) which creates these namespaces/cgroups on `docker run`. No hypervisor involved — containers share the host kernel.
+
+### Intermediate Level
+
+**Q3: How does Docker's layered filesystem work with OverlayFS?**
+
+**Answer**: OverlayFS merges multiple directories (layers) into a single view. Docker image layers are read-only (stored under `/var/lib/docker/overlay2/`). On `docker run`, Docker creates a writable container layer on top via `overlay2` mount. When a file is modified, **copy-on-write** (CoW) kicks in: the file is copied from lower layer to the writable layer and then modified. This keeps images small (common base layers shared across containers) and container startup fast (no need to copy entire image). `docker commit` snapshots the writable layer. Layer caching in `docker build` reuses unchanged layers (identified by content hash).
+
+**Q4**: What is multi-stage build and why use it?
+
+**Answer**: Multi-stage builds use multiple `FROM` statements in one Dockerfile. The first stage (builder) has full SDK/compiler (e.g., `FROM golang:1.21-alpine AS builder`). The final stage uses only the runtime (e.g., `FROM alpine:3.19`) and copies just the compiled binary from the builder: `COPY --from=builder /app/binary /app/`. This produces small production images (e.g., 15MB Go binary vs 1GB full SDK image). Without multi-stage, you'd need two Dockerfiles or complex scripts. Also improves security — fewer packages means smaller attack surface.
+
+### Senior Level
+
+**Q5: A Docker container runs fine locally but crashes in production with "exec format error". What's wrong?**
+
+**Why interviewers ask this**: Tests understanding of architecture compatibility and build context.
+
+**Answer**: **Architecture mismatch**: the image was built for `linux/amd64` but production runs on `linux/arm64` (e.g., M1 Mac build → AWS Graviton). Docker Desktop uses QEMU emulation for cross-architecture builds by default. Fix: 1) Use `docker buildx build --platform=linux/amd64,linux/arm64` to build multi-arch images. 2) Use `FROM --platform=$BUILDPLATFORM` in Dockerfile. 3) CI/CD should build for the target platform. Also check: base image architecture (`docker image inspect <image> | jq .Architecture`).
+
+**Q6**: Design a container strategy for a microservice that needs to run scheduled tasks (cron jobs) alongside serving HTTP traffic — both in the same container or separate?
+
+**Answer**: **Separate containers, shared code** — use a single Docker image with different entry points: 1) **Web container**: entry point = web server (e.g., `CMD ["uvicorn", "app.main:app"]`). 2) **Cron container**: entry point = scheduler (e.g., `CMD ["celery", "-A", "app", "beat"]`). 3) **Worker container**: entry point = task consumer (`CMD ["celery", "-A", "app", "worker"]`). Deploy as separate Kubernetes Deployments with a single image but different `command` overrides. Why not same container: process management complexity (supervisord in container), log handling, health checks, scaling independently. Exception: small apps can use `tini` + background jobs in one pod with sidecars.
+
+### Staff/Principal Level
+
+**Q7: You see disk space growing on production Docker hosts despite running the same containers. The image is only 500MB. Where is the space going?**
+
+**Why**: Tests deep knowledge of Docker storage internals.
+
+**Answer**: **Multiple sources**: 1) **Container writable layers** — stopped containers' layers aren't removed (`docker container prune` needed). 2) **Unused images** — dangling (`<none>:<none>`) and unused images from rebuilds. 3) **Build cache** — intermediate layers from `docker build` accumulate. 4) **Volumes** — anonymous volumes (`docker volume prune`). 5) **Container logs** — JSON log files in `/var/lib/docker/containers/<id>/<id>-json.log` grow unbounded unless log rotation configured. 6) **Overlay2 metadata** — `merged/`, `diff/`, `work/` directories. Fix: 1) Enable log rotation: `--log-opt max-size=10m --log-opt max-file=3`. 2) Run `docker system prune -af --volumes` weekly. 3) Use `tmpfs` mounts for ephemeral data. 4) Monitor `/var/lib/docker` with `du -sh /var/lib/docker/*`.
+
+**Q8**: Design a secure container supply chain for a 200-person engineering org. Cover image building, registry, signing, and runtime.
+
+**Answer**: 1) **Build**: Use minimal base images (Distroless, Chainguard). Build with `docker buildx` using `--sbom=true` (Software Bill of Materials) and `--provenance=true` (SLSA provenance attestations). 2) **Registry**: Private registry (Harbor/ECR) with vulnerability scanning (Trivy/Grype) in CI — fail on critical CVEs. Enforce **immutable tags** (image digest-based deployment). 3) **Signing**: `cosign sign` with keyless signing (OIDC via GitHub Actions). Verify at deploy time with `cosign verify`. Use Sigstore for transparency. 4) **Admission control**: Kubernetes with OPA/Gatekeeper or Kyverno — enforce: only signed images from approved registry, no `latest` tags, no privileged containers. 5) **Runtime**: Notary v2 for delegated trust, seccomp (default), AppArmor profiles, read-only root filesystem (`readOnlyRootFilesystem: true`), `securityContext.capabilities.drop: ["ALL"]`.
+
+### Tricky Edge Cases
+
+**Q9**: `docker run` fails with "no space left on device" but `df -h` shows 80% free. What happened?
+
+**Answer**: **Inode exhaustion on overlay2 filesystem**. Docker uses `overlay2` which creates a metadata directory per layer. Thousands of layers + containers can exhaust inodes on the backing filesystem (often XFS/ext4 with limited inodes). Check with `df -i /var/lib/docker`. Fix: 1) Use `docker system prune`. 2) On XFS, increase inode count at mkfs: `mkfs.xfs -i maxpct=10`. 3) Use dedicated disk for `/var/lib/docker`. 4) Switch to overlay2 with `--storage-opt overlay2.override_kernel_check=1` (newer kernels have better inode management).
+
+**Q10**: A container with `USER 1000` tries to read a bind-mounted volume owned by `root`. The host directory has `chmod 755`. Inside the container, the file shows as owned by `nobody` and permission denied. Why?
+
+**Answer**: **UID namespace mapping is not enabled by default**. Inside the container, UID 1000 maps to UID 1000 on the host. The file on the host is owned by root (UID 0), which is `nobody` inside the container (no mapping for root). Even with 755 permissions, the `owner` entry in the directory's permissions is mapped to a different UID. Fix: 1) `chown -R 1000:1000` on the host directory. 2) Use `--userns=host` (default) but match UIDs. 3) Enable **user namespace remapping** (`/etc/docker/daemon.json` `{"userns-remap": "default"}`) — maps UID 0 in container to non-root UID on host, improving security but making bind-mounted volumes' file ownership complex. 4) Use `subPath` mount with correct permissions. 5) Set `securityContext.fsGroup` in Kubernetes to auto-chown the volume.
+

@@ -8,15 +8,30 @@
 
 ```mermaid
 graph LR
-    A["Input<br/>Layer"] --> B["Hidden<br/>Layers"]
-    B --> C["Hidden<br/>Layers"]
-    C --> D["Output<br/>Layer"]
-    B --> E["Activation<br/>Functions"]
-    E --> B
-    style A fill:#4a8bc2
-    style B fill:#2d5a7b
-    style C fill:#2d5a7b
-    style D fill:#c73e1d
+    BRIDGE["Bridge Network<br/>(docker0)"] --> CONT1["Container 1<br/>(veth pair)"]
+    BRIDGE --> CONT2["Container 2<br/>(veth pair)"]
+    BRIDGE --> NAT["iptables MASQUERADE<br/>(Outbound)"]
+    NAT --> ETH0["eth0<br/>(Host)"]
+    HOST["Host Network"] --> CONT3["Container<br/>(--net=host)"]
+    OVERLAY["Overlay Network<br/>(VXLAN)"] --> NODE1["Node 1"]
+    OVERLAY --> NODE2["Node 2"]
+    OVERLAY --> NODE3["Node 3"]
+    MACVLAN["Macvlan"] --> CONT4["Container<br/>(MAC address)"]
+    MACVLAN --> PHYS["Physical<br/>Network"]
+    style BRIDGE fill:#4a8bc2
+    style CONT1 fill:#2d5a7b
+    style CONT2 fill:#2d5a7b
+    style NAT fill:#3a7ca5
+    style ETH0 fill:#c73e1d
+    style HOST fill:#e8912e
+    style CONT3 fill:#e8912e
+    style OVERLAY fill:#6f42c1
+    style NODE1 fill:#3fb950
+    style NODE2 fill:#3fb950
+    style NODE3 fill:#3fb950
+    style MACVLAN fill:#c73e1d
+    style CONT4 fill:#e8912e
+    style PHYS fill:#3a7ca5
 ```
 
 ## Table of Contents

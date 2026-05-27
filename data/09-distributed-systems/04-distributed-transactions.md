@@ -8,15 +8,39 @@
 
 ```mermaid
 graph LR
-    A["Input<br/>Layer"] --> B["Hidden<br/>Layers"]
-    B --> C["Hidden<br/>Layers"]
-    C --> D["Output<br/>Layer"]
-    B --> E["Activation<br/>Functions"]
-    E --> B
-    style A fill:#4a8bc2
-    style B fill:#2d5a7b
-    style C fill:#2d5a7b
-    style D fill:#c73e1d
+    TXN["Distributed<br/>Transaction"] --> 2PC["Two-Phase<br/>Commit (2PC)"]
+    2PC --> PREP["Phase 1: Prepare<br/>(Vote)"]
+    PREP --> YES["All YES →<br/>Commit"]
+    PREP --> NO["Any NO →<br/>Abort"]
+    YES --> CM["Commit<br/>(Phase 2)"]
+    NO --> ABORT["Abort +<br/>Rollback"]
+    2PC --> BLOCK["Blocking Issue<br/>(Coordinator Crash)"]
+    SAGA["Saga<br/>Pattern"] --> CHOREO["Choreography<br/>(Event-Driven)"]
+    SAGA --> ORCHEST["Orchestration<br/>(State Machine)"]
+    CHOREO --> EVT1["Order Created →"]
+    EVT1 --> EVT2["Payment Reserved →"]
+    EVT2 --> EVT3["Inventory Deducted →"]
+    ORCHEST --> COMP_ORCH["Compensating TX<br/>(if any fails)"]
+    OUTBOX["Outbox Pattern"] --> CDC["CDC<br/>(Debezium)"]
+    CDC --> KAFKA["Kafka →<br/>Consumer"]
+    style TXN fill:#4a8bc2
+    style 2PC fill:#2d5a7b
+    style PREP fill:#3a7ca5
+    style YES fill:#3fb950
+    style NO fill:#c73e1d
+    style CM fill:#e8912e
+    style ABORT fill:#c73e1d
+    style BLOCK fill:#c73e1d
+    style SAGA fill:#6f42c1
+    style CHOREO fill:#e8912e
+    style ORCHEST fill:#3fb950
+    style EVT1 fill:#3a7ca5
+    style EVT2 fill:#3a7ca5
+    style EVT3 fill:#3a7ca5
+    style COMP_ORCH fill:#c73e1d
+    style OUTBOX fill:#6f42c1
+    style CDC fill:#e8912e
+    style KAFKA fill:#3fb950
 ```
 
 ## Table of Contents

@@ -8,15 +8,34 @@
 
 ```mermaid
 graph LR
-    A["Input<br/>Layer"] --> B["Hidden<br/>Layers"]
-    B --> C["Hidden<br/>Layers"]
-    C --> D["Output<br/>Layer"]
-    B --> E["Activation<br/>Functions"]
-    E --> B
-    style A fill:#4a8bc2
-    style B fill:#2d5a7b
-    style C fill:#2d5a7b
-    style D fill:#c73e1d
+    PRODUCER["Data Producer<br/>(Source)"] --> INPUT["Input Stream"]
+    INPUT --> PROCESSOR["Stream Processor"]
+    PROCESSOR --> STATE["State Store<br/>(RocksDB)"]
+    PROCESSOR --> TIME["Event Time<br/>(Watermark)"]
+    TIME --> WINDOW1["Tumbling Window<br/>(5 min buckets)"]
+    TIME --> WINDOW2["Sliding Window<br/>(overlap)"]
+    TIME --> WINDOW3["Session Window<br/>(inactivity gap)"]
+    WINDOW1 --> AGG1["Sum / Count<br/>(per window)"]
+    WINDOW2 --> AGG1
+    WINDOW3 --> AGG1
+    PROCESSOR --> JOIN2["Stream-Table<br/>Join (Enrichment)"]
+    PROCESSOR --> OUTPUT["Output Stream<br/>→ Sink"]
+    FAULT["Fault Tolerance"] --> EOS["Exactly-Once<br/>Semantics"]
+    FAULT --> BACK["Backpressure<br/>(Adaptive)"]
+    style PRODUCER fill:#4a8bc2
+    style INPUT fill:#2d5a7b
+    style PROCESSOR fill:#c73e1d
+    style STATE fill:#3a7ca5
+    style TIME fill:#e8912e
+    style WINDOW1 fill:#3fb950
+    style WINDOW2 fill:#3fb950
+    style WINDOW3 fill:#3fb950
+    style AGG1 fill:#6f42c1
+    style JOIN2 fill:#e8912e
+    style OUTPUT fill:#3fb950
+    style FAULT fill:#c73e1d
+    style EOS fill:#e8912e
+    style BACK fill:#3a7ca5
 ```
 
 ## Table of Contents

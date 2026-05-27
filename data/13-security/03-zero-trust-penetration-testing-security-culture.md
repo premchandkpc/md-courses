@@ -4,15 +4,35 @@
 
 ```mermaid
 graph LR
-    A["Input<br/>Layer"] --> B["Hidden<br/>Layers"]
-    B --> C["Hidden<br/>Layers"]
-    C --> D["Output<br/>Layer"]
-    B --> E["Activation<br/>Functions"]
-    E --> B
-    style A fill:#4a8bc2
-    style B fill:#2d5a7b
-    style C fill:#2d5a7b
-    style D fill:#c73e1d
+    ZT_MODEL["Zero Trust"] --> NEVER["Never Trust<br/>Always Verify"]
+    ZT_MODEL --> ID_FIRST["Identity as<br/>Perimeter"]
+    ZT_MODEL --> MICRO_SEG["Microsegmentation<br/>(per-app)"]
+    ZT_MODEL --> JIT["Just-In-Time /<br/>Just-Enough Access"]
+    PENTEST_M["Pen Testing"] --> RECON_M["Reconnaissance<br/>(OSINT/scan)"]
+    PENTEST_M --> VULN_SCAN["Vulnerability<br/>Scanning"]
+    PENTEST_M --> EXPLOIT_M["Exploitation<br/>(weaponize)"]
+    PENTEST_M --> LATERAL["Lateral Movement<br/>(pivot)"]
+    PENTEST_M --> EXFIL["Exfiltration<br/>(data theft)"]
+    SEC_CULTURE["Security Culture"] --> TRAIN["Developer<br/>Training"]
+    SEC_CULTURE --> INCIDENT["Incident Response<br/>(IR plan)"]
+    SEC_CULTURE --> THREAT_MOD["Threat Modeling<br/>(STRIDE)"]
+    SEC_CULTURE --> COMPLIANCE["Compliance<br/>(SOC2/PCI)"]
+    style ZT_MODEL fill:#4a8bc2
+    style NEVER fill:#c73e1d
+    style ID_FIRST fill:#e8912e
+    style MICRO_SEG fill:#3a7ca5
+    style JIT fill:#3fb950
+    style PENTEST_M fill:#c73e1d
+    style RECON_M fill:#e8912e
+    style VULN_SCAN fill:#3a7ca5
+    style EXPLOIT_M fill:#c73e1d
+    style LATERAL fill:#6f42c1
+    style EXFIL fill:#c73e1d
+    style SEC_CULTURE fill:#3fb950
+    style TRAIN fill:#e8912e
+    style INCIDENT fill:#2d5a7b
+    style THREAT_MOD fill:#6f42c1
+    style COMPLIANCE fill:#3a7ca5
 ```
 
 ## Table of Contents

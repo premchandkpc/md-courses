@@ -8,15 +8,25 @@
 
 ```mermaid
 graph LR
-    A["Input<br/>Layer"] --> B["Hidden<br/>Layers"]
-    B --> C["Hidden<br/>Layers"]
-    C --> D["Output<br/>Layer"]
-    B --> E["Activation<br/>Functions"]
-    E --> B
-    style A fill:#4a8bc2
-    style B fill:#2d5a7b
-    style C fill:#2d5a7b
-    style D fill:#c73e1d
+    VT["Virtual Threads<br/>(JEP 444)"] --> STR["Structured<br/>Concurrency (JEP 453)"]
+    VT --> SCOP["Scoped Values<br/>(JEP 446)"]
+    SC["Sequenced<br/>Collections (JEP 431)"] --> PM["Pattern<br/>Matching"]
+    PM --> REC["Record<br/>Patterns"]
+    PM --> SW["Switch<br/>Patterns"]
+    FFM["Foreign Function<br/>& Memory (JEP 454)"] --> PAN["Panama<br/>Vector API"]
+    VT --> PIN["Pinning<br/>Synchronized Block"]
+    PIN --> FIX["Recompile<br/>with jlink"]
+    style VT fill:#4a8bc2
+    style STR fill:#2d5a7b
+    style SCOP fill:#3a7ca5
+    style SC fill:#6f42c1
+    style PM fill:#c73e1d
+    style REC fill:#3fb950
+    style SW fill:#e8912e
+    style FFM fill:#2d5a7b
+    style PAN fill:#e8912e
+    style PIN fill:#c73e1d
+    style FIX fill:#3fb950
 ```
 
 ## Table of Contents

@@ -10,15 +10,38 @@
 
 ```mermaid
 graph LR
-    A["Input<br/>Layer"] --> B["Hidden<br/>Layers"]
-    B --> C["Hidden<br/>Layers"]
-    C --> D["Output<br/>Layer"]
-    B --> E["Activation<br/>Functions"]
-    E --> B
-    style A fill:#4a8bc2
-    style B fill:#2d5a7b
-    style C fill:#2d5a7b
-    style D fill:#c73e1d
+    PROCESS["Process<br/>(task_struct)"] --> FORK_F["fork()<br/>(COW)"]
+    FORK_F --> EXEC_F["execve()<br/>(new program)"]
+    PROCESS --> EXIT_F["exit()<br/>(zombie state)"]
+    EXIT_F --> WAIT_F["wait() →<br/>reaped by parent"]
+    THREAD["Thread<br/>(pthread/NPTL)"] --> CLONE["clone() →<br/>shares VM + fd"]
+    THREAD --> TLS["Thread-Local<br/>Storage (TLS)"]
+    THREAD --> NPTL["NPTL 1:1<br/>(kernel thread)"]
+    GOROUTINE["Goroutine"] --> G_P["G (goroutine)"]
+    G_P --> M_P["M (machine thread)"]
+    G_P --> P_P["P (processor context)"]
+    G_P --> WORK_STEAL["Work Stealing<br/>(run queue)"]
+    FIBER["Fiber / Coroutine"] --> STACKFUL["Stackful Fiber<br/>(swapcontext)"]
+    FIBER --> STACKLESS["Stackless Coroutine<br/>(async/await)"]
+    FIBER --> COOP["Cooperative Scheduling<br/>(yield)"]
+    style PROCESS fill:#4a8bc2
+    style FORK_F fill:#2d5a7b
+    style EXEC_F fill:#3a7ca5
+    style EXIT_F fill:#c73e1d
+    style WAIT_F fill:#e8912e
+    style THREAD fill:#6f42c1
+    style CLONE fill:#e8912e
+    style TLS fill:#3a7ca5
+    style NPTL fill:#3fb950
+    style GOROUTINE fill:#3fb950
+    style G_P fill:#2d5a7b
+    style M_P fill:#3a7ca5
+    style P_P fill:#e8912e
+    style WORK_STEAL fill:#c73e1d
+    style FIBER fill:#6f42c1
+    style STACKFUL fill:#e8912e
+    style STACKLESS fill:#3fb950
+    style COOP fill:#c73e1d
 ```
 
 ## Table of Contents
@@ -1044,6 +1067,96 @@ GOMAXPROCS scaling:
 
 ---
 
-## 18. Simplest Mental Model
+## Interview Questions
+
+### Beginner Level
+
+**Q1: What is the difference between a process and a thread?**
+
+**Why interviewers ask this**: This is the most fundamental OS concurrency question. It tests your understanding of OS primitives and memory isolation.
+
+**Ideal answer structure**:
+1. **Process**: Has its own address space, file descriptors, signal handlers — isolated via virtual memory. Created via `fork()`. Context switch involves TLB flush.
+2. **Thread**: Shares address space with parent process, has own stack and thread-local storage. Created via `clone()` with `CLONE_VM`. Lighter context switch (no TLB flush).
+3. **Key analogy**: Process = house with own address; Thread = room in that house sharing kitchen/bathroom.
+4. **Cost**: Process creation ~10-20µs; Thread creation ~1-2µs.
+
+**Common wrong answer**: "Threads are just lightweight processes" — oversimplified. Threads share address space which introduces synchronization complexity that processes don't have.
+
+**Q2: What happens during a context switch between threads vs processes?**
+
+**Why interviewers ask this**: Tests depth of understanding beyond definitions.
+
+**Ideal answer**: Process context switch saves/restores: registers, program counter, stack pointer, page table (CR3 register), TLB flush. Thread context switch (same process): saves registers, PC, SP — page table stays the same, no TLB flush. This is why thread switches are ~2-5x faster.
+
+### Intermediate Level
+
+**Q3: How does the goroutine G/M/P scheduler work, and how is it different from OS threads?**
+
+**Why interviewers ask this**: Tests understanding of M:N scheduling vs 1:1 threading.
+
+**Ideal answer structure**:
+1. **G (goroutine)**: Lightweight user-space thread with 2KB start stack
+2. **M (machine)**: OS thread that executes goroutines
+3. **P (processor)**: Context that holds the run queue (GOMAXPROCS sets P count)
+4. **Scheduling**: Goroutines run cooperatively — a goroutine blocks at syscalls/channel ops. The scheduler uses work-stealing: if a P's queue is empty, it steals from others.
+5. **vs OS threads**: Goroutines are cheaper (sub-microsecond creation vs 1-2µs), growable stack (2KB initial vs 1MB fixed), and multiplexed onto fewer OS threads.
+
+**Common wrong answer**: "Goroutines are threads" — they're not. They're user-space coroutines scheduled cooperatively.
+
+**Q4**: What is the NPTL 1:1 threading model and what problem does it solve?
+
+**Why**: Tests knowledge of Linux threading evolution.
+
+**Answer**: NPTL (Native POSIX Thread Library) uses 1:1 mapping — each pthread maps to a kernel thread via `clone()`. Replaced the older LinuxThreads which used a separate "manager" thread and had signal/pid issues. NPTL gives true parallelism (SMP-capable), proper signal handling, and POSIX compliance. Each thread appears as a separate PID in `/proc`. The 1:1 model trades lightweightness for simplicity — as opposed to M:N (many user threads on fewer kernel threads) which needs complex user-space scheduling.
+
+### Senior Level
+
+**Q5: Design a thread pool for a high-throughput web server handling 50K concurrent connections. What pool size, queuing strategy, and rejection policy do you use?**
+
+**Why interviewers ask this**: Tests production system design with concurrency.
+
+**Ideal answer structure**:
+1. **Pool size**: Formula: `optimal threads = CPU cores × (1 + wait/service ratio)`. For I/O-bound (wait > service), can have many threads. For CPU-bound, use `core count + 1`.
+2. **Queuing**: Use bounded queue (e.g., 10K) with `SynchronousQueue` for direct handoff, or `LinkedBlockingQueue` for burst absorption.
+3. **Rejection**: Caller-runs policy (back-pressure) or fail-fast with 503.
+4. **Monitoring**: Queue depth, active threads, rejection rate as metrics.
+5. **Tuning**: Start with `core × 2`, use overflow for I/O, monitor p99 latency.
+
+**Q6: A production process is leaking memory. How do you debug it?**
+
+**Answer**: 1) `top` / `htop` to see RES grows. 2) `ps -eo pid,rss,cmd | sort -k2 -rn`. 3) `pmap -x <pid>` to see heap/anonymous segments. 4) Enable `/proc/sys/kernel/numa_balancing` and check NUMA stats. 5) Use `valgrind --tool=memcheck` (dev) or `jemalloc` with profiling (prod). 6) Check for thread-local storage leaks (each new thread = per-thread allocations). 7) For JVM/Go runtimes: use heap profilers (jmap, pprof). Root cause is usually: cached objects never evicted, thread-local accumulators, or reference cycles in GC'd languages.
+
+### Staff/Principal Level
+
+**Q7: Your company is migrating from a monolith using OS threads to a microservice architecture. The new system uses goroutines/async but you see mysterious "connection reset" errors under load. What's happening?**
+
+**Why**: Tests cross-domain debugging — concurrency model + network + OS.
+
+**Answer**: Most likely cause is **file descriptor exhaustion** due to goroutine leaks. Goroutines are cheap (2KB) so developers create millions, but each goroutine needs a socket FD. `ulimit -n` caps FDs at ~1M even with tuning. Symptoms: `too many open files` in syslog, `epoll_wait` returning EMFILE. Fix: 1) Add goroutine lifecycle tracking (tracing with `GODEBUG`). 2) Use connection pools with bounded size. 3) Set `net/http.Transport.MaxConnsPerHost`. 4) Implement `RunawayGoroutine` detector: log if goroutine count > threshold × baseline. 5) Use structured concurrency (Tally/errgroup with context cancellation).
+
+**Q8**: Your finance system uses fork() for transaction isolation but fork() is 10x slower than expected on your 256GB server. Explain why and fix.
+
+**Answer**: **COW page table overhead**. `fork()` marks all pages Copy-on-Write. With 256GB RAM, the page table is enormous (~512MB for 4KB pages on x86) and walking it takes milliseconds. Also, 256GB × 64 bytes metadata = 16GB of kernel memory for struct pages. Fix: 1) Use `vfork()` if exec follows immediately. 2) Use `clone()` with `CLONE_VM` (threads). 3) Pre-warm with `MADV_WILLNEED`. 4) Consider using `posix_spawn()` instead. 5) Long-term: rewrite as microservice with gRPC calls instead of fork-per-request.
+
+### Tricky Edge Cases
+
+**Q9: Two threads increment a shared counter 1M times each. Expected value is 2M but you get 1,999,847. Explain the exact CPU-level sequence that causes this.**
+
+**Answer**: The classic **read-modify-write race**:
+```
+Thread A: LOAD counter (value=42) → register
+Thread B: LOAD counter (value=42) → register  (BEFORE A writes)
+Thread A: ADD 1 → register = 43 → STORE counter (=43)
+Thread B: ADD 1 → register = 43 → STORE counter (=43)
+```
+Count = 43 instead of 44. One increment "lost." The window is tiny — between LOAD and STORE on x86, ~1-2ns. With 2M increments, even 153 lost updates (0.0076%) is plausible.
+
+Fix: Use `__sync_fetch_and_add` (x86 LOCK prefix) or compare-and-swap loop. With C++ `std::atomic`, use `memory_order_relaxed` for this case (no ordering needed, just atomicity).
+
+**Q10: A process calls fork() in a multi-threaded program. The child crashes immediately. Why?**
+
+**Answer**: **fork() in a multi-threaded program is dangerous** — only the calling thread is replicated in the child. If another thread held a lock (e.g., `malloc` arena lock), the child will deadlock on first memory allocation. This is the classic `fork()` vs threads problem. Solution: Use `pthread_atfork()` handlers to acquire all locks before fork and release in child. Better: avoid fork() with threads entirely (use `posix_spawn()` or separate processes).
+
 
 > **Processes are houses: each has its own address, foundation, and walls. They're completely isolated — you can't see into your neighbor's house without explicitly asking (IPC). Threads are rooms in the same house: they share the kitchen (memory), must coordinate who uses what (locking), and if the kitchen catches fire (crash), the whole house burns. Goroutines are people having conversations in a coffee shop: there are only so many seats (kernel threads = M), but everyone can talk to anyone, wait for their turn, and you can have thousands of conversations happening. Fibers are a group of people passing a single talking stick — only one speaks at a time, extremely efficient, no coordination needed, but if someone takes too long (blocking), everyone waits. The hierarchy of cost (process > thread > goroutine > fiber) directly corresponds to the degree of isolation. Less isolation = less overhead = more concurrency.**

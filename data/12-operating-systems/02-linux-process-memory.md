@@ -4,15 +4,32 @@
 
 ```mermaid
 graph LR
-    A["Input<br/>Layer"] --> B["Hidden<br/>Layers"]
-    B --> C["Hidden<br/>Layers"]
-    C --> D["Output<br/>Layer"]
-    B --> E["Activation<br/>Functions"]
-    E --> B
-    style A fill:#4a8bc2
-    style B fill:#2d5a7b
-    style C fill:#2d5a7b
-    style D fill:#c73e1d
+    PROC["Process<br/>(task_struct)"] --> FORK["fork() →<br/>Copy-on-Write"]
+    FORK --> CHILD["Child Process<br/>(new PID)"]
+    PROC --> EXEC["execve() →<br/>New Program"]
+    PROC --> VADDR["Virtual Address<br/>Space"]
+    VADDR --> TEXT[".text<br/>(Code Section)"]
+    VADDR --> DATA[".data / .bss<br/>(Global Variables)"]
+    VADDR --> HEAP["Heap<br/>(brk / mmap)"]
+    VADDR --> STACK["Stack<br/>(local vars)"]
+    HEAP --> MALLOC["malloc() →<br/>mmap (arena)"]
+    MM_PAGE["Page Table"] --> PDE["Page Directory<br/>(4-level / 5-level x86)"]
+    PDE --> PTE["Page Table Entry<br/>(PFN + Flags)"]
+    STACK --> PAGE_FAULT["Page Fault →<br/>Demand Paging"]
+    style PROC fill:#4a8bc2
+    style FORK fill:#2d5a7b
+    style CHILD fill:#3a7ca5
+    style EXEC fill:#e8912e
+    style VADDR fill:#c73e1d
+    style TEXT fill:#3fb950
+    style DATA fill:#e8912e
+    style HEAP fill:#6f42c1
+    style STACK fill:#3a7ca5
+    style MALLOC fill:#e8912e
+    style MM_PAGE fill:#3fb950
+    style PDE fill:#2d5a7b
+    style PTE fill:#c73e1d
+    style PAGE_FAULT fill:#e8912e
 ```
 
 ## Table of Contents

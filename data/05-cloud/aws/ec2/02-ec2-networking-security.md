@@ -4,15 +4,26 @@
 
 ```mermaid
 graph LR
-    A["Input<br/>Layer"] --> B["Hidden<br/>Layers"]
-    B --> C["Hidden<br/>Layers"]
-    C --> D["Output<br/>Layer"]
-    B --> E["Activation<br/>Functions"]
-    E --> B
-    style A fill:#4a8bc2
-    style B fill:#2d5a7b
-    style C fill:#2d5a7b
-    style D fill:#c73e1d
+    VPC["VPC<br/>(10.0.0.0/16)"] --> PUB["Public Subnet<br/>(10.0.1.0/24)"]
+    VPC --> PRIV["Private Subnet<br/>(10.0.2.0/24)"]
+    PUB --> IGW["Internet<br/>Gateway"]
+    PUB --> NAT["NAT Gateway<br/>(Egress)"]
+    NAT --> PRIV
+    PUB --> SG1["Web Security Group<br/>(80/443 inbound)"]
+    PRIV --> SG2["App Security Group<br/>(3306 from SG1)"]
+    PRIV --> NACL["NACL<br/>(Stateless)"]
+    VPC --> VPE["VPC Endpoint<br/>(S3/DynamoDB)"]
+    VPC --> TGW["Transit Gateway<br/>(Cross-VPC)"]
+    style VPC fill:#4a8bc2
+    style PUB fill:#2d5a7b
+    style PRIV fill:#3a7ca5
+    style IGW fill:#c73e1d
+    style NAT fill:#e8912e
+    style SG1 fill:#3fb950
+    style SG2 fill:#6f42c1
+    style NACL fill:#e8912e
+    style VPE fill:#2d5a7b
+    style TGW fill:#3a7ca5
 ```
 
 ## Table of Contents
@@ -241,36 +252,170 @@ Automated AMI pipeline:
 ## Code Examples
 
 ```python
-# Example implementation
-# [Add language-specific code demonstrating core concept]
-pass
+import boto3
+import json
+
+ec2 = boto3.client('ec2')
+ssm = boto3.client('ssm')
+
+# Enforce IMDSv2 on all instances
+def enforce_imdsv2():
+    instances = ec2.describe_instances(
+        Filters=[{'Name': 'metadata-options.http-tokens', 'Values': ['optional']}]
+    )
+    for r in instances['Reservations']:
+        for i in r['Instances']:
+            ec2.modify_instance_metadata_options(
+                InstanceId=i['InstanceId'],
+                HttpTokens='required',
+                HttpPutResponseHopLimit=2
+            )
+
+# Use SSM to run commands instead of SSH
+def ssm_command(instance_id: str, command: str) -> str:
+    resp = ssm.send_command(
+        InstanceIds=[instance_id],
+        DocumentName='AWS-RunShellScript',
+        Parameters={'commands': [command]}
+    )
+    cmd_id = resp['Command']['CommandId']
+    # Poll for completion
+    while True:
+        output = ssm.get_command_invocation(
+            CommandId=cmd_id, InstanceId=instance_id
+        )
+        if output['Status'] in ['Success', 'Failed', 'TimedOut']:
+            return output['StandardOutputContent']
+        time.sleep(1)
+
+# Generate a VPC with public/private/isolated tiers
+def create_vpc_tiers(cidr: str = '10.0.0.0/16'):
+    vpc = ec2.create_vpc(CidrBlock=cidr)
+    vpc_id = vpc['Vpc']['VpcId']
+    ec2.modify_vpc_attribute(VpcId=vpc_id, EnableDnsSupport={'Value': True})
+    ec2.modify_vpc_attribute(VpcId=vpc_id, EnableDnsHostnames={'Value': True})
+
+    tiers = {
+        'public': '10.0.1.0/24',
+        'private': '10.0.2.0/24',
+        'isolated': '10.0.3.0/24'
+    }
+    for name, block in tiers.items():
+        subnet = ec2.create_subnet(VpcId=vpc_id, CidrBlock=block)
+        ec2.create_tags(Resources=[subnet['Subnet']['SubnetId']],
+                        Tags=[{'Key': 'Name', 'Value': f'{name}-subnet'}])
+    igw = ec2.create_internet_gateway()
+    ec2.attach_internet_gateway(InternetGatewayId=igw['InternetGateway']['InternetGatewayId'],
+                                 VpcId=vpc_id)
+    return vpc_id
+```
+
+```bash
+# Check IMDSv2 enforcement across all instances
+aws ec2 describe-instances --query \
+  'Reservations[*].Instances[*].[InstanceId,MetadataOptions.HttpTokens]' \
+  --output table
+
+# Port forwarding via SSM Session Manager
+aws ssm start-session --target i-1234 \
+  --document-name AWS-StartPortForwardingSession \
+  --parameters '{"portNumber":["5432"],"localPortNumber":["15432"]}'
 ```
 
 ---
 
 ## Common Failure Modes
 
-**Problem**: [Key issue in production]
+**Problem**: Security group rules accumulating unused allow rules, increasing blast radius
 
-**Root cause**: [Why it happens]
+**Root cause**: Teams add rules for specific features and never clean up. Over years, a single SG can accumulate 50+ inbound rules allowing 0.0.0.0/0 on ports meant for internal use. Each extra rule increases the risk surface and makes audits harder. Stateful SGs mean opened egress ports remain open indefinitely.
 
-**Solution**: [How to fix]
+**Detection**: AWS Trusted Advisor shows security groups with too many rules. `ec2:DescribeSecurityGroups` reveals rules referencing stale CIDRs or deprecated services. VPC Flow Logs show no traffic matching certain SG rules for 30+ days.
+
+**Solution**: Implement least-privilege SGs — one SG per logical tier (web, app, db). Use automated cleanup with AWS Config managed rules (`ec2-security-group-unused-rule`). Tag SGs with expiration dates. Use VPC Flow Logs + Athena to identify unused rules and remove them. Always specify source IP/CIDR or security group reference — never `0.0.0.0/0` for non-public services.
+
+**Problem**: Instance metadata service (IMDSv1) used by attackers to steal IAM credentials via SSRF
+
+**Root cause**: IMDSv1 allows any process on the instance to GET `http://169.254.169.254/latest/meta-data/iam/security-credentials/role` without authentication. If an application is vulnerable to SSRF (Server-Side Request Forgery), an attacker can make the server fetch its own IAM credentials and exfiltrate them.
+
+**Detection**: CloudTrail events from IMDS-scoped credentials show source IPs not matching the instance's expected network. Access from unusual geographies. GuardDuty finding: `UnauthorizedAccess:IAMUser/InstanceCredentialExfiltration`.
+
+**Solution**: Enforce IMDSv2 across all instances (`HttpTokens=required`). IMDSv2 requires a PUT request with a TTL-limited token before accessing metadata. Set `HttpPutResponseHopLimit=1` to prevent containers from reaching the host's IMDS. Use IAM conditions to deny actions if `aws:SourceIdentity` doesn't match expected patterns. Run vulnerability scanning to detect SSRF-prone code.
 
 ---
 
 ## Interview Questions
 
-### Q1: [Core concept question]
+### Q1: Explain the difference between Security Groups and NACLs, and when you would use each.
 
-**Answer**: [Detailed explanation with trade-offs]
+**Answer**: Security Groups are stateful, operate at the ENI level, and support allow-only rules evaluated as a set. Return traffic is automatically allowed. NACLs are stateless, operate at the subnet level, and support both allow and deny rules evaluated in numerical order (lowest first). Return traffic must be explicitly allowed. Use SGs for micro-segmentation between app tiers (web SG allows 443 from 0.0.0.0/0, app SG allows 8080 from web SG). Use NACLs as a second layer for deny lists — block known bad IPs at the subnet boundary. NACLs also protect against intra-VPC traffic that bypasses SGs (e.g., traffic through NAT Gateway). The most secure pattern is SG-based isolation with NACLs as a defense-in-depth layer.
 
-### Q2: [Design/architecture question]
+### Q2: How would you architect EC2 networking for a multi-AZ application with strict isolation requirements?
 
-**Answer**: [Best practices and reasoning]
+**Answer**: Create one VPC with a /16 CIDR. In each AZ, create three subnets: public (ALB, NAT Gateway, bastion), private (application servers), and isolated (databases, Redis). Route tables: public → IGW, private → NAT GW, isolated → no internet route. Security groups: ALB SG (443 from 0.0.0.0/0), app SG (8080 from ALB SG only), DB SG (5432 from app SG only). Use VPC Endpoints for S3 and DynamoDB (gateway endpoints, free) and for SSM, ECR, CloudWatch (interface endpoints). Use Transit Gateway if connecting to multiple VPCs. Enforce IMDSv2. Use SSM Session Manager instead of SSH (no public IPs needed on app/db instances). Place instances in an Auto Scaling Group across all AZs. Use VPC Flow Logs to audit traffic patterns.
 
----
 
-## Related
+## Edge Cases
 
-- [Related domain 1](#)
-- [Related domain 2](#)
+| Scenario | Challenge | Solution |
+|----------|-----------|----------|
+| **Security group rule limit** | Max 60 inbound + 60 outbound rules per SG | Use prefix lists for IP sets. Split across multiple SGs. Use AWS Firewall Manager for centralized management |
+| **NAT gateway bandwidth** | Single NAT Gateway max 45 Gbps | Use multiple NAT Gateways (one per AZ). Distribute workloads across AZs. Use Gateway VPC Endpoints for S3/DynamoDB to bypass NAT |
+| **VPC peering transitive routing** | VPC peering is non-transitive (A-B-C doesn't connect A-C) | Use Transit Gateway. Or use AWS PrivateLink for hub-and-spoke |
+| **Flow log costs at scale** | 1000+ ENIs generate TBs of flow log data per day | Aggregate to S3, use Athena partitioning. Sample logs at 1:100 for analysis, 1:1 for security. Use custom format with only needed fields |
+| **IPv6 dual-stack complexities** | Some services don't support IPv6 | Prefer IPv4 for general workloads. Use IPv6 only for workloads that need it. Use DNS64 + NAT64 for IPv6-only subnets |
+
+## Cross-References
+
+- [ECS Deployment Patterns](../ecs/02-ecs-deployment-patterns.md) — Security group-driven networking in ECS task definitions
+- [EKS Operations](../eks/02-eks-operations.md) — VPC CNI, security groups for pods
+- [DNS, CDN & Load Balancing](../../../11-networking/03-dns-cdn-loadbalancing.md) — Global load balancing, Route53 integration
+- [CloudWatch Observability](../cloudwatch/02-cloudwatch-observability.md) — VPC flow logs monitoring, network telemetry
+
+## Advanced Troubleshooting
+
+### Diagnosing Network Connectivity Issues
+
+```
+Client → Internet Gateway → Route Table → Subnet → Security Group → NACL → ENI → EC2
+  ↑                                                                                
+  └─────────────── Check: Overlap? ────────────────────────────────┘
+```
+
+**Step-by-step**: (1) Check security group: does the SG allow inbound traffic on the port? (2) Check NACL: does the subnet NACL allow inbound AND outbound traffic? NACLs are stateless — return traffic needs separate rule. (3) Check route table: does the subnet route to an IGW? (4) Check internet gateway: is the IGW attached to the VPC? (5) Check the EC2 firewall (iptables/ufw if running). (6) Check the application: is it listening on 0.0.0.0 (not 127.0.0.1)?
+
+### VPC Reachability Analyzer
+
+AWS VPC Reachability Analyzer builds a graph of all networking components (SGs, NACLs, route tables, TGW attachments, VPC peering) and runs a path analysis between any two endpoints. It identifies which component blocks traffic — e.g., "Security group sg-123: port 443 blocked" or "Route table rtb-abc: no route to destination."
+
+### Common EC2 Networking Commands
+
+| Purpose | Command |
+|---------|---------|
+| Check SG rules | `aws ec2 describe-security-groups --group-ids sg-xxx` |
+| Check NACL rules | `aws ec2 describe-network-acls --network-acl-ids acl-xxx` |
+| Check route table | `aws ec2 describe-route-tables --route-table-ids rtb-xxx` |
+| Test connectivity | `aws ec2 describe-instances --query "Reservations[].Instances[].NetworkInterfaces[].Association.PublicDnsName"` |
+| Reachability analyzer | `aws ec2 create-network-insights-path --source $eni_id --destination $eni_id --protocol TCP --destination-port 443` |
+
+## Interview Questions
+
+### Q1 (Beginner): What is the difference between a security group and a network ACL?
+
+**Answer**: Security groups are stateful, instance-level firewalls. If you allow inbound traffic, the return traffic is automatically allowed. NACLs are stateless, subnet-level firewalls — you must explicitly allow both inbound and outbound traffic. Security groups support allow rules only (no explicit deny). NACLs support both allow and deny rules, evaluated in order (lowest number first). Security groups are evaluated as a whole (all rules apply). NACLs use rule numbers (1-32766) and stop at the first matching rule. Use security groups for most access control, NACLs for subnet-wide deny rules (block known malicious IP ranges).
+
+### Q2 (Mid-Level): How would you design a VPC for a multi-tier application (web, app, DB)?
+
+**Answer**: Three tiers across three subnets: public subnet (web servers, load balancers) with route to IGW. Private app subnet (application servers) with route to NAT Gateway for outbound internet. Private DB subnet (RDS, ElastiCache) with no internet route. Security groups: Web SG → allow HTTP/HTTPS from 0.0.0.0/0. App SG → allow traffic from Web SG only (reference SG by ID). DB SG → allow traffic from App SG only, port 3306/5432. NACLs: deny all inbound/outbound as default, explicitly allow only needed ports. This creates defense-in-depth: even if an attacker penetrates the web tier, they can't reach the DB tier without a security group rule.
+
+### Q3 (Senior): Design a multi-VPC network for a 500-microservice architecture with shared services.
+
+**Answer**: Hub-and-spoke with AWS Transit Gateway: Hub VPC contains shared services (DNS, Active Directory, CI/CD, monitoring, artifact repos). Spoke VPCs per team/environment (dev, staging, prod). Each spoke VPC has its own subnets, route tables, NACLs, and per-service security groups. TGW attachments route traffic between spokes and hub. TGW route tables isolate spokes from each other (spoke A can't reach spoke B unless explicitly routed). For cross-spoke communication: either through hub (TGW) or direct VPC peering (only for high-traffic pairs). Network segmentation: prod spoke VPC has no internet route; all traffic goes through hub's egress VPC with centralized inspection (firewall, IDS/IPS). PrivateLink for service-to-service: each service exposes a NLB + PrivateLink endpoint, other services consume via interface endpoints in their VPC. This prevents VPC peering mesh complexity. Monitoring: VPC flow logs (aggregated to central S3), TGW attachment metrics, Reachability Analyzer for path debugging.
+
+## Cross-References
+
+- [ECS Deployment Patterns](../ecs/02-ecs-deployment-patterns.md) — Security group-driven networking in ECS task definitions
+- [EKS Operations](../eks/02-eks-operations.md) — VPC CNI, security groups for pods
+- [DNS, CDN & Load Balancing](../../../11-networking/03-dns-cdn-loadbalancing.md) — Global load balancing, Route53 integration
+- [CloudWatch Observability](../cloudwatch/02-cloudwatch-observability.md) — VPC flow logs monitoring, network telemetry
+- [IAM Advanced Patterns](../iam/02-iam-advanced-patterns.md) — VPC endpoints, S3 bucket policies with sourceVPC conditions

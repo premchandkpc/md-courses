@@ -10,15 +10,26 @@
 
 ```mermaid
 graph LR
-    A["Input<br/>Layer"] --> B["Hidden<br/>Layers"]
-    B --> C["Hidden<br/>Layers"]
-    C --> D["Output<br/>Layer"]
-    B --> E["Activation<br/>Functions"]
-    E --> B
-    style A fill:#4a8bc2
-    style B fill:#2d5a7b
-    style C fill:#2d5a7b
-    style D fill:#c73e1d
+    CLI_HELLO["ClientHello<br/>(Ciphers + Key Share)"] --> SRV_HELLO["ServerHello<br/>(Cipher + Cert + Sig)"]
+    SRV_HELLO --> AUTH["Client Verifies<br/>Certificate Chain"]
+    AUTH --> KEY_SCH["Key Schedule<br/>(ECDHE → Shared Secret)"]
+    KEY_SCH --> FINISHED["Finished<br/>(Encrypted Handshake)"]
+    FINISHED --> APP_DATA["Application Data<br/>(AEAD Encrypted)"]
+    APP_DATA --> HTTP2_TLS["HTTP/2 or gRPC<br/>Over TLS"]
+    ALPN["ALPN Negotiation<br/>(h2 / grpc-exp)"] --> SRV_HELLO
+    SNI["SNI Extension<br/>(Hostname)"] --> CLI_HELLO
+    0RTT["0-RTT Resumption<br/>(PSK)"] --> CLI_HELLO
+    0RTT --> APP_DATA
+    style CLI_HELLO fill:#4a8bc2
+    style SRV_HELLO fill:#2d5a7b
+    style AUTH fill:#3a7ca5
+    style KEY_SCH fill:#6f42c1
+    style FINISHED fill:#e8912e
+    style APP_DATA fill:#3fb950
+    style HTTP2_TLS fill:#c73e1d
+    style ALPN fill:#e8912e
+    style SNI fill:#3a7ca5
+    style 0RTT fill:#3fb950
 ```
 
 ## Table of Contents

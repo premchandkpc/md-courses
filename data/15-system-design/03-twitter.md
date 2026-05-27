@@ -8,15 +8,34 @@
 
 ```mermaid
 graph LR
-    A["Input<br/>Layer"] --> B["Hidden<br/>Layers"]
-    B --> C["Hidden<br/>Layers"]
-    C --> D["Output<br/>Layer"]
-    B --> E["Activation<br/>Functions"]
-    E --> B
-    style A fill:#4a8bc2
-    style B fill:#2d5a7b
-    style C fill:#2d5a7b
-    style D fill:#c73e1d
+    USER_T["User"] --> POST_T["Post Tweet<br/>(write 5K QPS)"]
+    POST_T --> WRITE_FAN["Fan-out on Write<br/>(push to followers)"]
+    POST_T --> FANOUT_ON_READ["Fan-out on Read<br/>(pull for celebs)"]
+    WRITE_FAN --> TIMELINE_CACHE["Timeline Cache<br/>(Redis per user)"]
+    FANOUT_ON_READ --> TIMELINE_GEN["Merge Timeline<br/>(pull + cache)"]
+    TIMELINE_CACHE --> READ_T["Read Timeline<br/>(100K QPS)"]
+    TIMELINE_GEN --> READ_T
+    POST_T --> TWEET_STORE["Tweet Store<br/>(Cassandra/Manhattan)"]
+    TWEET_STORE --> MEDIA_T["Media Store<br/>(Blob + CDN)"]
+    SEARCH_T["Search"] --> EARLYBIRD["Earlybird<br/>(inverted index)"]
+    SEARCH_T --> TRENDING["Trending Topics<br/>(top-K counters)"]
+    GRAPH_T["Graph Service"] --> FOLLOW["Follow Graph<br/>(FlockDB)"]
+    GRAPH_T --> SOCIAL_RANK["Social Rank<br/>(signals)"]
+    style USER_T fill:#4a8bc2
+    style POST_T fill:#2d5a7b
+    style WRITE_FAN fill:#e8912e
+    style FANOUT_ON_READ fill:#c73e1d
+    style TIMELINE_CACHE fill:#3fb950
+    style TIMELINE_GEN fill:#e8912e
+    style READ_T fill:#3a7ca5
+    style TWEET_STORE fill:#6f42c1
+    style MEDIA_T fill:#3a7ca5
+    style SEARCH_T fill:#3fb950
+    style EARLYBIRD fill:#c73e1d
+    style TRENDING fill:#e8912e
+    style GRAPH_T fill:#6f42c1
+    style FOLLOW fill:#3a7ca5
+    style SOCIAL_RANK fill:#e8912e
 ```
 
 ## Table of Contents

@@ -4,15 +4,25 @@
 
 ```mermaid
 graph LR
-    A["Input<br/>Layer"] --> B["Hidden<br/>Layers"]
-    B --> C["Hidden<br/>Layers"]
-    C --> D["Output<br/>Layer"]
-    B --> E["Activation<br/>Functions"]
-    E --> B
-    style A fill:#4a8bc2
-    style B fill:#2d5a7b
-    style C fill:#2d5a7b
-    style D fill:#c73e1d
+    CLI["HTTP<br/>Request"] --> UVICORN["Uvicorn<br/>(ASGI Server)"]
+    UVICORN --> ASGI["ASGI<br/>Protocol"]
+    ASGI --> FAST["FastAPI<br/>App"]
+    FAST --> ROUT["Router<br/>Path Matching"]
+    ROUT --> DEP["Dependency<br/>Injection"]
+    DEP --> EP["Endpoint<br/>Handler"]
+    EP --> MOD["Pydantic<br/>Model Validation"]
+    EP --> ASYNC["Async DB /<br/>External API"]
+    ASYNC --> RESP["JSON<br/>Response"]
+    style CLI fill:#4a8bc2
+    style UVICORN fill:#2d5a7b
+    style ASGI fill:#3a7ca5
+    style FAST fill:#c73e1d
+    style ROUT fill:#e8912e
+    style DEP fill:#6f42c1
+    style EP fill:#3fb950
+    style MOD fill:#2d5a7b
+    style ASYNC fill:#3a7ca5
+    style RESP fill:#e8912e
 ```
 
 ## ASGI Fundamentals

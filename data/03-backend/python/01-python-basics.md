@@ -8,15 +8,25 @@
 
 ```mermaid
 graph LR
-    A["Input<br/>Layer"] --> B["Hidden<br/>Layers"]
-    B --> C["Hidden<br/>Layers"]
-    C --> D["Output<br/>Layer"]
-    B --> E["Activation<br/>Functions"]
-    E --> B
-    style A fill:#4a8bc2
-    style B fill:#2d5a7b
-    style C fill:#2d5a7b
-    style D fill:#c73e1d
+    SRC["Python<br/>Source (.py)"] --> BYT["Bytecode<br/>Compiler"]
+    BYT --> PYC[".pyc<br/>File"]
+    PYC --> VM["CPython<br/>Virtual Machine"]
+    VM --> EVAL["Evaluation<br/>Loop"]
+    EVAL --> FRAME["Frame<br/>Stack"]
+    FRAME --> OBJ["Object<br/>Allocation"]
+    OBJ --> GC["GC<br/>(Ref Counting + Generational)"]
+    VM --> GIL["GIL<br/>(Global Interpreter Lock)"]
+    GIL --> THR["Thread<br/>Switching"]
+    style SRC fill:#4a8bc2
+    style BYT fill:#2d5a7b
+    style PYC fill:#3a7ca5
+    style VM fill:#c73e1d
+    style EVAL fill:#e8912e
+    style FRAME fill:#6f42c1
+    style OBJ fill:#3a7ca5
+    style GC fill:#3fb950
+    style GIL fill:#c73e1d
+    style THR fill:#e8912e
 ```
 
 ## Table of Contents

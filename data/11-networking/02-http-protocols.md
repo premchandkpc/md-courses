@@ -4,15 +4,34 @@
 
 ```mermaid
 graph LR
-    A["Input<br/>Layer"] --> B["Hidden<br/>Layers"]
-    B --> C["Hidden<br/>Layers"]
-    C --> D["Output<br/>Layer"]
-    B --> E["Activation<br/>Functions"]
-    E --> B
-    style A fill:#4a8bc2
-    style B fill:#2d5a7b
-    style C fill:#2d5a7b
-    style D fill:#c73e1d
+    H1["HTTP/1.1"] --> REQ_RES["Request / Response<br/>(Text-based)"]
+    H1 --> KP["Keep-Alive<br/>(Reuse TCP)"]
+    H1 --> PL["Pipelining<br/>(Head-of-Line)"]
+    H2["HTTP/2"] --> BINARY["Binary Framing<br/>(Streams)"]
+    H2 --> MP["Multiplexing<br/>(No HoL)"]
+    H2 --> HP["HPACK<br/>(Header Compression)"]
+    H2 --> SP["Server Push"]
+    H3["HTTP/3"] --> QUIC["QUIC over UDP<br/>(0-RTT)"]
+    H3 --> NO_HOL["No Head-of-Line<br/>Blocking"]
+    GRPC["gRPC"] --> PROTOBUF["Protocol Buffers<br/>(Binary Serialization)"]
+    GRPC --> STREAM_G["Bidirectional<br/>Streaming"]
+    GRPC --> HTTP2_G["Built on HTTP/2"]
+    style H1 fill:#4a8bc2
+    style REQ_RES fill:#2d5a7b
+    style KP fill:#3a7ca5
+    style PL fill:#c73e1d
+    style H2 fill:#6f42c1
+    style BINARY fill:#e8912e
+    style MP fill:#3fb950
+    style HP fill:#3a7ca5
+    style SP fill:#e8912e
+    style H3 fill:#c73e1d
+    style QUIC fill:#3fb950
+    style NO_HOL fill:#e8912e
+    style GRPC fill:#3a7ca5
+    style PROTOBUF fill:#e8912e
+    style STREAM_G fill:#6f42c1
+    style HTTP2_G fill:#3fb950
 ```
 
 ## 📋 Table of Contents
@@ -293,29 +312,118 @@ retry: 3000
 ## Code Examples
 
 ```python
-# Example implementation
-# [Add language-specific code demonstrating core concept]
-pass
+import http.client
+import json
+import hpack
+import struct
+
+# ===== HTTP/1.1 with pipelining =====
+def http11_pipeline(host: str, paths: list):
+    conn = http.client.HTTPConnection(host)
+    for path in paths:
+        conn.request("GET", path)
+    responses = [conn.getresponse() for _ in paths]
+    return [r.read().decode() for r in responses]
+
+# ===== HTTP/2 frame encoding (simplified) =====
+def h2_headers_frame(stream_id: int, headers: dict) -> bytes:
+    encoder = hpack.Encoder()
+    header_block = encoder.encode([(k, v) for k, v in headers.items()])
+    length = len(header_block)
+    # Frame: Length(3) | Type(1) | Flags(1) | StreamID(4) | Payload
+    frame = struct.pack("!I", length)[1:]  # 3-byte length
+    frame += struct.pack("!B", 0x01)      # type: HEADERS
+    frame += struct.pack("!B", 0x05)      # flags: END_HEADERS | END_STREAM
+    frame += struct.pack("!I", stream_id) # stream ID
+    frame += header_block
+    return frame
+
+# ===== WebSocket frame =====
+def ws_encode_frame(data: bytes, opcode: int = 0x1) -> bytes:
+    frame = bytearray()
+    frame.append(0x80 | opcode)  # FIN + opcode (text)
+    length = len(data)
+    if length < 126:
+        frame.append(length)
+    elif length < 65536:
+        frame.append(126)
+        frame += struct.pack("!H", length)
+    else:
+        frame.append(127)
+        frame += struct.pack("!Q", length)
+    frame += data
+    return bytes(frame)
+
+def ws_decode_frame(data: bytes) -> tuple:
+    b0 = data[0]
+    opcode = b0 & 0x0F
+    fin = (b0 & 0x80) >> 7
+    b1 = data[1]
+    masked = (b1 & 0x80) >> 7
+    length = b1 & 0x7F
+    offset = 2
+    if length == 126:
+        length = struct.unpack("!H", data[2:4])[0]
+        offset = 4
+    elif length == 127:
+        length = struct.unpack("!Q", data[2:10])[0]
+        offset = 10
+    mask = data[offset:offset + 4] if masked else None
+    payload_start = offset + (4 if masked else 0)
+    payload = data[payload_start:payload_start + length]
+    if mask:
+        payload = bytes(b ^ mask[i % 4] for i, b in enumerate(payload))
+    return (opcode, payload, fin)
+
+# ===== SSE stream =====
+def sse_event(event: str, data: str, event_id: str = None):
+    lines = []
+    if event_id:
+        lines.append(f"id: {event_id}")
+    lines.append(f"event: {event}")
+    lines.append(f"data: {data}")
+    return "\n".join(lines) + "\n\n"
+```
+
+```bash
+# Test HTTP/1.1 keep-alive
+curl -v --http1.1 https://example.com/ --next https://example.com/about
+
+# Test HTTP/2
+curl -v --http2 https://example.com/
+
+# WebSocket test with websocat
+websocat wss://echo.websocket.org
 ```
 
 ---
 
 ## Common Failure Modes
 
-**Problem**: [Key issue in production]
+**Problem**: HTTP/2 TCP-level head-of-line (HOL) blocking — one lost packet stalls all streams
 
-**Root cause**: [Why it happens]
+**Root cause**: HTTP/2 multiplexes multiple streams over a single TCP connection. TCP guarantees in-order delivery — when a packet is lost, all subsequent data (across ALL streams) must wait in the receive buffer until the lost packet is retransmitted. A single lost packet on a connection with 100 streams blocks all 100 streams, causing a latency spike for every concurrent request.
 
-**Solution**: [How to fix]
+**Detection**: Monitoring shows P99 latency spikes on HTTP/2 connections during packet loss events. All streams on affected connections slow down simultaneously. Packet loss > 0.1% causes visible degradation.
+
+**Solution**: Upgrade to HTTP/3 (QUIC) — QUIC runs over UDP with per-stream loss detection. A lost packet only blocks its specific stream; other streams continue unaffected. For existing HTTP/2 deployments, use multiple connections per origin (browsers already do this: ~1-6 connections to the same host). Tune TCP congestion control (BBR handles packet loss better than Cubic). Enable TCP tail loss probe (TLP) for faster retransmission. Use CDN edge nodes close to users to minimize packet loss. Monitor `TCPRetransmitRate` and alert when > 0.5%.
+
+**Problem**: WebSocket connection leak — connections not properly closed causing resource exhaustion
+
+**Root cause**: Server-side code never calls `close()` on WebSocket connections, or the close handshake is not completed correctly. Clients disconnect without sending a close frame, and the server's TCP keep-alive eventually detects the dead connection — but this can take hours. Over time, the server accumulates thousands of half-open connections, exhausting file descriptors and memory.
+
+**Detection**: `ss -s` shows many `CLOSE_WAIT` or `FIN_WAIT2` connections. Server's connection count grows over time. `lsof` shows the process has too many open files. New connection attempts fail with `EMFILE` (too many open files).
+
+**Solution**: Implement a WebSocket idle timeout (close connections with no activity for N minutes). Use ping/pong frames to detect dead connections — send a ping every 30s, close if no pong within 10s. Set `tcp_keepalive_time`, `tcp_keepalive_intvl`, and `tcp_keepalive_probes` aggressively. Always handle the `close` event in both client and server code. Use a connection pool with a maximum size and proper eviction. Monitor the connection count and alert on unusual growth. For containerized deployments, set appropriate `ulimit` and monitor open file handles.
 
 ---
 
 ## Interview Questions
 
-### Q1: [Core concept question]
+### Q1: Explain the evolution from HTTP/1.1 to HTTP/2 to HTTP/3 — what problem does each solve?
 
-**Answer**: [Detailed explanation with trade-offs]
+**Answer**: **HTTP/1.1** introduced persistent connections (keep-alive) and pipelining, but suffers from head-of-line blocking at the request level — one slow response blocks subsequent requests on the same connection. Browsers work around this by opening 6+ parallel TCP connections. **HTTP/2** solves request-level HOL by multiplexing streams over a single TCP connection using binary framing. It also adds server push (pre-emptively send resources), HPACK header compression (reduces overhead by ~90%), and stream prioritization. However, HTTP/2 introduces TCP-level HOL — a lost TCP segment blocks ALL streams because TCP delivers in order. **HTTP/3 (QUIC)** solves this by running over UDP with per-stream loss detection and recovery. QUIC also provides 0-RTT connection establishment (re-using cached TLS credentials), connection migration (survives IP address changes), and built-in encryption. Each version improves latency by removing blocking points.
 
-### Q2: [Design/architecture question]
+### Q2: How does gRPC compare to REST for microservice communication?
 
-**Answer**: [Best practices and reasoning]
+**Answer**: gRPC uses HTTP/2 as transport and Protocol Buffers as the serialization format. **Advantages over REST**: (1) Binary protobuf is 3-10x smaller than JSON, making it faster for large payloads. (2) HTTP/2 multiplexing allows many concurrent RPCs over one connection — no connection pool pressure. (3) Strong typing with auto-generated client/server stubs from `.proto` files — eliminates serialization bugs. (4) Four communication patterns: Unary, Server streaming, Client streaming, Bidirectional streaming — REST only does unary request-response. (5) Native support for deadlines/timeouts, cancellation, and metadata propagation. **Disadvantages**: (1) Not directly consumable by browsers — needs gRPC-web proxy. (2) Protobuf is not human-readable for debugging. (3) Less mature tooling for load testing and caching compared to REST. (4) Steeper learning curve. **Choose gRPC** for internal service-to-service communication where performance matters. **Choose REST** for public-facing APIs, browser clients, and simple CRUD operations where developer ergonomics and debuggability are more important.

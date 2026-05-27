@@ -10,15 +10,29 @@
 
 ```mermaid
 graph LR
-    A["Input<br/>Layer"] --> B["Hidden<br/>Layers"]
-    B --> C["Hidden<br/>Layers"]
-    C --> D["Output<br/>Layer"]
-    B --> E["Activation<br/>Functions"]
-    E --> B
-    style A fill:#4a8bc2
-    style B fill:#2d5a7b
-    style C fill:#2d5a7b
-    style D fill:#c73e1d
+    APP["Application Layer<br/>(HTTP/FTP/SSH)"] --> TCP["TCP Layer<br/>(Segments)"]
+    TCP --> IP["IP Layer<br/>(Packets)"]
+    IP --> LINK["Link Layer<br/>(Ethernet Frames)"]
+    HS["3-Way Handshake"] --> SYN["Client → Server<br/>SYN (seq=x)"]
+    SYN --> SYN_ACK["Server → Client<br/>SYN-ACK (seq=y, ack=x+1)"]
+    SYN_ACK --> ACK_TCP["Client → Server<br/>ACK (seq=x+1, ack=y+1)"]
+    ACK_TCP --> EST["ESTABLISHED<br/>(Data Transfer)"]
+    EST --> FIN_WAIT["Connection<br/>Teardown"]
+    CONGEST["Congestion<br/>Control"] --> CWND["cwnd<br/>(Slow Start)"]
+    CONGEST --> CUBIC["CUBIC / BBR<br/>(Loss/AIMD)"]
+    style APP fill:#4a8bc2
+    style TCP fill:#2d5a7b
+    style IP fill:#3a7ca5
+    style LINK fill:#e8912e
+    style HS fill:#c73e1d
+    style SYN fill:#e8912e
+    style SYN_ACK fill:#6f42c1
+    style ACK_TCP fill:#3fb950
+    style EST fill:#3fb950
+    style FIN_WAIT fill:#c73e1d
+    style CONGEST fill:#3a7ca5
+    style CWND fill:#e8912e
+    style CUBIC fill:#c73e1d
 ```
 
 ## Table of Contents

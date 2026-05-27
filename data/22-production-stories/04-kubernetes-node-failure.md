@@ -10,15 +10,39 @@
 
 ```mermaid
 graph LR
-    A["Input<br/>Layer"] --> B["Hidden<br/>Layers"]
-    B --> C["Hidden<br/>Layers"]
-    C --> D["Output<br/>Layer"]
-    B --> E["Activation<br/>Functions"]
-    E --> B
-    style A fill:#4a8bc2
-    style B fill:#2d5a7b
-    style C fill:#2d5a7b
-    style D fill:#c73e1d
+    NODE_DIES["Node Dies"] --> NOT_READY["Condition →<br/>NotReady"]
+    NOT_READY --> PODS_UNREACH["Pods Unreachable<br/>(status Unknown)"]
+    PODS_UNREACH --> SERVICE_DISRUPT["Service Disruption<br/>(endpoints drop)"]
+    NODE_PRESSURE["Node Pressure"] --> MEM_DISK_PRESSURE["Memory/Disk<br/>Pressure"]
+    MEM_DISK_PRESSURE --> POD_EVICTION["Pod Eviction<br/>(kubelet)"]
+    POD_EVICTION --> RESCHEDULE["Reschedule Storm<br/>(scheduler)"]
+    DNS_FAIL["DNS Failure"] --> COREDNS_DOWN["CoreDNS Crash<br/>(OOM/replicas)"]
+    COREDNS_DOWN --> SRV_DISC_BROKEN["Service Discovery<br/>Broken"]
+    SRV_DISC_BROKEN --> ALL_COMM_FAIL["All Inter-Service<br/>Communication Fails"]
+    CNI_FAIL["CNI Failure"] --> CNI_MISCONFIG["CNI Plugin<br/>Misconfig"]
+    CNI_MISCONFIG --> POD_STUCK["Pods Stuck in<br/>ContainerCreating"]
+    APISERVER_OVERLOAD["API Server<br/>Overload"] --> TOO_MANY_INFORMERS["Too Many Informers<br/>(watch storm)"]
+    TOO_MANY_INFORMERS --> LATENCY_SPIKE_K8S["APIServer Latency<br/>(> 10s)"]
+    LATENCY_SPIKE_K8S --> CONTROLLER_FAIL["Controllers Fail<br/>(watch timeout)"]
+    style NODE_DIES fill:#4a8bc2
+    style NOT_READY fill:#c73e1d
+    style PODS_UNREACH fill:#c73e1d
+    style SERVICE_DISRUPT fill:#c73e1d
+    style NODE_PRESSURE fill:#e8912e
+    style MEM_DISK_PRESSURE fill:#e8912e
+    style POD_EVICTION fill:#c73e1d
+    style RESCHEDULE fill:#c73e1d
+    style DNS_FAIL fill:#c73e1d
+    style COREDNS_DOWN fill:#c73e1d
+    style SRV_DISC_BROKEN fill:#c73e1d
+    style ALL_COMM_FAIL fill:#c73e1d
+    style CNI_FAIL fill:#c73e1d
+    style CNI_MISCONFIG fill:#e8912e
+    style POD_STUCK fill:#c73e1d
+    style APISERVER_OVERLOAD fill:#c73e1d
+    style TOO_MANY_INFORMERS fill:#e8912e
+    style LATENCY_SPIKE_K8S fill:#c73e1d
+    style CONTROLLER_FAIL fill:#c73e1d
 ```
 
 ## Table of Contents

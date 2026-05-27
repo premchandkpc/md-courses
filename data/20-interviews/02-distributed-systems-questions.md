@@ -6,15 +6,39 @@
 
 ```mermaid
 graph LR
-    A["Input<br/>Layer"] --> B["Hidden<br/>Layers"]
-    B --> C["Hidden<br/>Layers"]
-    C --> D["Output<br/>Layer"]
-    B --> E["Activation<br/>Functions"]
-    E --> B
-    style A fill:#4a8bc2
-    style B fill:#2d5a7b
-    style C fill:#2d5a7b
-    style D fill:#c73e1d
+    CAP_Q["CAP / PACELC"] --> CP_Q["CP (Spanner)<br/→ strong consistency"]
+    CAP_Q --> AP_Q["AP (Cassandra)<br/→ eventual consistency"]
+    CAP_Q --> CA_Q["CA (single DC)<br/→ no partition assumed"]
+    CONSENSUS_Q["Consensus"] --> RAFT_Q["Raft<br/→ leader + log"]
+    CONSENSUS_Q --> PAXOS_Q["Paxos<br/→ prepare/promise"]
+    REPLICATION_Q["Replication"] --> SYNC_R["Synchronous<br/→ commit after all"]
+    REPLICATION_Q --> ASYNC_R["Asynchronous<br/→ commit after leader"]
+    REPLICATION_Q --> SEMISYNC_R["Semi-Sync<br/→ commit after quorum"]
+    STORAGE_Q["Distributed<br/>Storage"] --> PARTITIONING["Partitioning<br/→ hash/range/geo"]
+    STORAGE_Q --> CONSISTENT_HASH["Consistent Hashing<br/→ vnodes + ring"]
+    STORAGE_Q --> GOSSIP["Gossip Protocol<br/→ membership + failure"]
+    CACHING_Q["Distributed<br/>Caching"] --> CACHE_ASIDE["Cache-Aside<br/→ read/write through"]
+    CACHING_Q --> STAMPEDE["Cache Stampede<br/→ mutex + revalidate"]
+    CACHING_Q --> RESILIENCE_C["Resilience<br/→ degrade gracefully"]
+    style CAP_Q fill:#4a8bc2
+    style CP_Q fill:#c73e1d
+    style AP_Q fill:#e8912e
+    style CA_Q fill:#3a7ca5
+    style CONSENSUS_Q fill:#2d5a7b
+    style RAFT_Q fill:#3fb950
+    style PAXOS_Q fill:#e8912e
+    style REPLICATION_Q fill:#6f42c1
+    style SYNC_R fill:#c73e1d
+    style ASYNC_R fill:#e8912e
+    style SEMISYNC_R fill:#3fb950
+    style STORAGE_Q fill:#3fb950
+    style PARTITIONING fill:#e8912e
+    style CONSISTENT_HASH fill:#3a7ca5
+    style GOSSIP fill:#6f42c1
+    style CACHING_Q fill:#3a7ca5
+    style CACHE_ASIDE fill:#e8912e
+    style STAMPEDE fill:#c73e1d
+    style RESILIENCE_C fill:#3fb950
 ```
 
 ## Table of Contents

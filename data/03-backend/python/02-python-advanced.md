@@ -8,15 +8,24 @@
 
 ```mermaid
 graph LR
-    A["Input<br/>Layer"] --> B["Hidden<br/>Layers"]
-    B --> C["Hidden<br/>Layers"]
-    C --> D["Output<br/>Layer"]
-    B --> E["Activation<br/>Functions"]
-    E --> B
-    style A fill:#4a8bc2
-    style B fill:#2d5a7b
-    style C fill:#2d5a7b
-    style D fill:#c73e1d
+    DEC["@decorator<br/>Wraps Function"] --> WRAP["functools.wraps<br/>(Metadata Preserved)"]
+    DEC --> CLOS["Closure<br/>(__closure__)"]
+    DESCR["Descriptor<br/>Protocol"] --> GATTR["__get__<br/>__set__<br/>__delete__"]
+    DESCR --> PROP["@property<br/>Computed Attributes"]
+    SLOT["__slots__"] --> MEM["Fixed<br/>Memory Layout"]
+    SLOT --> FAST["Faster<br/>Attribute Access"]
+    WR["weakref<br/>Module"] --> GC_NOREF["No Cycle<br/>GC Prevention"]
+    style DEC fill:#4a8bc2
+    style WRAP fill:#2d5a7b
+    style CLOS fill:#3a7ca5
+    style DESCR fill:#c73e1d
+    style GATTR fill:#e8912e
+    style PROP fill:#6f42c1
+    style SLOT fill:#3fb950
+    style MEM fill:#2d5a7b
+    style FAST fill:#3a7ca5
+    style WR fill:#e8912e
+    style GC_NOREF fill:#c73e1d
 ```
 
 ## Table of Contents

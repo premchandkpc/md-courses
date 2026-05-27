@@ -4,15 +4,37 @@
 
 ```mermaid
 graph LR
-    A["Input<br/>Layer"] --> B["Hidden<br/>Layers"]
-    B --> C["Hidden<br/>Layers"]
-    C --> D["Output<br/>Layer"]
-    B --> E["Activation<br/>Functions"]
-    E --> B
-    style A fill:#4a8bc2
-    style B fill:#2d5a7b
-    style C fill:#2d5a7b
-    style D fill:#c73e1d
+    WEB_APP["Web Application"] --> THREATS["Threat Surface"]
+    THREATS --> SQLI["SQL Injection<br/>(input sanitization)"]
+    THREATS --> XSS["XSS<br/>(sanitize output)"]
+    THREATS --> CSRF["CSRF<br/>(anti-forgery token)"]
+    THREATS --> IDOR["IDOR<br/>(access control)"]
+    THREATS --> SSRF["SSRF<br/>(allowlist URLs)"]
+    AUTHENT["Authentication"] --> PWD["Password<br/>(bcrypt/Argon2)"]
+    AUTHENT --> MFA["MFA / 2FA<br/>(TOTP/WebAuthn)"]
+    AUTHENT --> OAUTH["OAuth 2.0 / OIDC<br/>(delegated auth)"]
+    AUTHENT --> SESSION["Session Mgmt<br/>(HTTP-only cookie)"]
+    AUTHENT --> JWT["JWT<br/>(signed tokens)"]
+    AUTHOR["Authorization"] --> RBAC["RBAC<br/>(role-based)"]
+    AUTHOR --> ABAC["ABAC<br/>(attribute-based)"]
+    AUTHOR --> CBAC["CBAC<br/>(claim-based)"]
+    style WEB_APP fill:#4a8bc2
+    style THREATS fill:#c73e1d
+    style SQLI fill:#e8912e
+    style XSS fill:#e8912e
+    style CSRF fill:#e8912e
+    style IDOR fill:#e8912e
+    style SSRF fill:#e8912e
+    style AUTHENT fill:#2d5a7b
+    style PWD fill:#3a7ca5
+    style MFA fill:#3fb950
+    style OAUTH fill:#6f42c1
+    style SESSION fill:#3a7ca5
+    style JWT fill:#e8912e
+    style AUTHOR fill:#3fb950
+    style RBAC fill:#e8912e
+    style ABAC fill:#6f42c1
+    style CBAC fill:#3a7ca5
 ```
 
 ## Table of Contents

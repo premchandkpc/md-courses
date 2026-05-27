@@ -8,15 +8,25 @@
 
 ```mermaid
 graph LR
-    A["Input<br/>Layer"] --> B["Hidden<br/>Layers"]
-    B --> C["Hidden<br/>Layers"]
-    C --> D["Output<br/>Layer"]
-    B --> E["Activation<br/>Functions"]
-    E --> B
-    style A fill:#4a8bc2
-    style B fill:#2d5a7b
-    style C fill:#2d5a7b
-    style D fill:#c73e1d
+    SRC["AWS Resources<br/>EC2 / Lambda / RDS"] --> CW["CloudWatch<br/>Agent / API"]
+    CW --> MET["Metrics<br/>(Resolution: 1s-60s)"]
+    CW --> LOG["Logs<br/>(Log Groups / Streams)"]
+    CW --> EVT["Events<br/>(EventBridge)"]
+    MET --> ALARM["Alarms<br/>(Threshold / Anomaly)"]
+    ALARM --> SNS["SNS<br/>Notification"]
+    ALARM --> ASG["Auto Scaling<br/>Action"]
+    LOG --> FILTER["Metric Filter<br/>(Extract from Logs)"]
+    LOG --> INSIGHTS["Logs Insights<br/>(Query Language)"]
+    style SRC fill:#4a8bc2
+    style CW fill:#2d5a7b
+    style MET fill:#3a7ca5
+    style LOG fill:#c73e1d
+    style EVT fill:#e8912e
+    style ALARM fill:#6f42c1
+    style SNS fill:#3fb950
+    style ASG fill:#e8912e
+    style FILTER fill:#3a7ca5
+    style INSIGHTS fill:#3fb950
 ```
 
 ## Table of Contents

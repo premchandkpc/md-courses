@@ -4,15 +4,46 @@
 
 ```mermaid
 graph LR
-    A["Input<br/>Layer"] --> B["Hidden<br/>Layers"]
-    B --> C["Hidden<br/>Layers"]
-    C --> D["Output<br/>Layer"]
-    B --> E["Activation<br/>Functions"]
-    E --> B
-    style A fill:#4a8bc2
-    style B fill:#2d5a7b
-    style C fill:#2d5a7b
-    style D fill:#c73e1d
+    JVM_MEM["JVM Memory<br/>Model"] --> HEAP["Heap<br/>(Young + Old)"]
+    HEAP --> EDEN["Eden<br/>(new objects)"]
+    HEAP --> S0["Survivor 0<br/>(alive)"]
+    HEAP --> S1["Survivor 1<br/>(alive)"]
+    HEAP --> OLD_GEN["Old Gen<br/>(promoted)"]
+    JVM_MEM --> METASPACE["Metaspace<br/>(class metadata)"]
+    JVM_MEM --> STACK_JVM["Stack<br/>(frames + locals)"]
+    JVM_MEM --> CODE_CACHE["Code Cache<br/>(JIT compiled)"]
+    GC["Garbage<br/>Collectors"] --> G1["G1 GC<br/>(default)"]
+    GC --> ZGC["ZGC<br/>(sub-ms pause)"]
+    GC --> SHENANDOAH["Shenandoah<br/>(concurrent)"]
+    GC --> SERIAL["Serial / Parallel<br/>(young only)"]
+    JIT["JIT<br/>Compilation"] --> C1["C1 (client)<br/>(quick)"]
+    JIT --> C2["C2 (server)<br/>(aggressive)"]
+    JIT --> TIERED["Tiered<br/>(level 0-4)"]
+    TUNING["Tuning<br/>Flags"] --> HEAP_SIZE["-Xms / -Xmx"]
+    TUNING --> GC_FLAG["-XX:+UseZGC"]
+    TUNING --> LOG_GC["-Xlog:gc*"]
+    style JVM_MEM fill:#4a8bc2
+    style HEAP fill:#2d5a7b
+    style EDEN fill:#e8912e
+    style S0 fill:#3a7ca5
+    style S1 fill:#3a7ca5
+    style OLD_GEN fill:#c73e1d
+    style METASPACE fill:#3fb950
+    style STACK_JVM fill:#6f42c1
+    style CODE_CACHE fill:#e8912e
+    style GC fill:#3fb950
+    style G1 fill:#e8912e
+    style ZGC fill:#c73e1d
+    style SHENANDOAH fill:#6f42c1
+    style SERIAL fill:#3a7ca5
+    style JIT fill:#e8912e
+    style C1 fill:#3a7ca5
+    style C2 fill:#c73e1d
+    style TIERED fill:#3fb950
+    style TUNING fill:#6f42c1
+    style HEAP_SIZE fill:#e8912e
+    style GC_FLAG fill:#c73e1d
+    style LOG_GC fill:#3fb950
 ```
 
 ## JVM Memory Model

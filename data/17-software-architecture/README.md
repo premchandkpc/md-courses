@@ -10,15 +10,47 @@ Software architecture is the **high-level structure** of a system — the set of
 
 ```mermaid
 graph LR
-    A["Input<br/>Layer"] --> B["Hidden<br/>Layers"]
-    B --> C["Hidden<br/>Layers"]
-    C --> D["Output<br/>Layer"]
-    B --> E["Activation<br/>Functions"]
-    E --> B
-    style A fill:#4a8bc2
-    style B fill:#2d5a7b
-    style C fill:#2d5a7b
-    style D fill:#c73e1d
+    STYLES["Architecture<br/>Styles"] --> LAYERED["Layered<br/>(N-tier)"]
+    STYLES --> HEXAGONAL["Hexagonal / Clean<br/>(Ports & Adapters)"]
+    STYLES --> MICROKERNEL["Microkernel<br/>(plugin)"]
+    STYLES --> EVENT_DRIVEN["Event-Driven<br/>(pub/sub)"]
+    STYLES --> MICRO_SRV["Microservices<br/>(distributed)"]
+    PATTERNS["Design Patterns"] --> CREATIONAL["Creational<br/>(Factory/Singleton)"]
+    PATTERNS --> STRUCTURAL["Structural<br/>(Adapter/Proxy)"]
+    PATTERNS --> BEHAVIORAL["Behavioral<br/>(Observer/Strategy)"]
+    DDD["Domain-Driven<br/>Design"] --> BOUNDED_CTX["Bounded Context"]
+    DDD --> UBIQ_LANG["Ubiquitous Language"]
+    DDD --> AGGREGATE["Aggregate / Entity /<br/>Value Object"]
+    DDD --> REPOSITORY["Repository /<br/>Domain Service"]
+    QUALITY["Quality<br/>Attributes"] --> SCALABILITY["Scalability"]
+    QUALITY --> MAINTAIN["Maintainability"]
+    QUALITY --> SECURITY_ARCH["Security"]
+    QUALITY --> RELIABILITY_Q["Reliability"]
+    DECISIONS["Architectural<br/>Decisions"] --> ADR["ADR<br/>(Decision Records)"]
+    DECISIONS --> TRADE["Trade-off Analysis"]
+    style STYLES fill:#4a8bc2
+    style LAYERED fill:#2d5a7b
+    style HEXAGONAL fill:#6f42c1
+    style MICROKERNEL fill:#3a7ca5
+    style EVENT_DRIVEN fill:#e8912e
+    style MICRO_SRV fill:#c73e1d
+    style PATTERNS fill:#3fb950
+    style CREATIONAL fill:#e8912e
+    style STRUCTURAL fill:#3a7ca5
+    style BEHAVIORAL fill:#6f42c1
+    style DDD fill:#e8912e
+    style BOUNDED_CTX fill:#c73e1d
+    style UBIQ_LANG fill:#3fb950
+    style AGGREGATE fill:#3a7ca5
+    style REPOSITORY fill:#6f42c1
+    style QUALITY fill:#3fb950
+    style SCALABILITY fill:#e8912e
+    style MAINTAIN fill:#3a7ca5
+    style SECURITY_ARCH fill:#c73e1d
+    style RELIABILITY_Q fill:#3fb950
+    style DECISIONS fill:#2d5a7b
+    style ADR fill:#e8912e
+    style TRADE fill:#3a7ca5
 ```
 
 ## Table of Contents

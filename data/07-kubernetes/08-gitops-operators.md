@@ -4,15 +4,30 @@
 
 ```mermaid
 graph LR
-    A["Input<br/>Layer"] --> B["Hidden<br/>Layers"]
-    B --> C["Hidden<br/>Layers"]
-    C --> D["Output<br/>Layer"]
-    B --> E["Activation<br/>Functions"]
-    E --> B
-    style A fill:#4a8bc2
-    style B fill:#2d5a7b
-    style C fill:#2d5a7b
-    style D fill:#c73e1d
+    GIT["Git Repository<br/>(Desired State)"] --> ARGO["ArgoCD<br/>(Pull-based)"]
+    ARGO --> DIFF["Diff<br/>(Live vs Desired)"]
+    DIFF --> SYNC["Sync<br/>(Apply Manifests)"]
+    SYNC --> CLUSTER["Kubernetes<br/>Cluster"]
+    CLUSTER --> STATUS["Sync Status<br/>(Healthy/OutOfSync)"]
+    ARGO --> APPSET["ApplicationSet<br/>(Generators)"]
+    APPSET --> CLUSTER
+    ROLLOUT["Argo Rollouts"] --> CANARY["Canary /<br/>BlueGreen"]
+    ROLLOUT --> ANALYSIS["Analysis<br/>(Prometheus Metrics)"]
+    HELM["Helm / Kustomize"] --> ARGO
+    OPA["OPA Gatekeeper /<br/>Kyverno"] --> ADMIT["Admission<br/>Controller"]
+    style GIT fill:#4a8bc2
+    style ARGO fill:#2d5a7b
+    style DIFF fill:#3a7ca5
+    style SYNC fill:#c73e1d
+    style CLUSTER fill:#6f42c1
+    style STATUS fill:#3fb950
+    style APPSET fill:#e8912e
+    style ROLLOUT fill:#c73e1d
+    style CANARY fill:#3a7ca5
+    style ANALYSIS fill:#3fb950
+    style HELM fill:#e8912e
+    style OPA fill:#6f42c1
+    style ADMIT fill:#e8912e
 ```
 
 ## Scope

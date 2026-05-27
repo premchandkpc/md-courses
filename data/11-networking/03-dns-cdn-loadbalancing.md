@@ -4,15 +4,36 @@
 
 ```mermaid
 graph LR
-    A["Input<br/>Layer"] --> B["Hidden<br/>Layers"]
-    B --> C["Hidden<br/>Layers"]
-    C --> D["Output<br/>Layer"]
-    B --> E["Activation<br/>Functions"]
-    E --> B
-    style A fill:#4a8bc2
-    style B fill:#2d5a7b
-    style C fill:#2d5a7b
-    style D fill:#c73e1d
+    BROWSER["Browser<br/>(Stub Resolver)"] --> RECURSIVE["Recursive Resolver<br/>(ISP/8.8.8.8)"]
+    RECURSIVE --> ROOT["Root Server<br/>(.)"]
+    ROOT --> TLD["TLD Server<br/>(.com)"]
+    TLD --> AUTH_DNS["Authoritative<br/>(example.com)"]
+    AUTH_DNS --> A_REC["A / AAAA Record<br/>(IP Address)"]
+    CDN["CDN"] --> EDGE["Edge Server<br/>(Cache Content)"]
+    CDN --> ORIGIN["Origin Server<br/>(Source)"]
+    EDGE --> USER_G["User Gets<br/>Cached Content"]
+    LB["Load Balancer"] --> L4["L4 (NLB)<br/>(TCP/UDP Proxy)"]
+    LB --> L7["L7 (ALB)<br/>(HTTP/Termination)"]
+    L7 --> TARGET1["Target Group 1<br/>(EC2 Instance)"]
+    L7 --> TARGET2["Target Group 2<br/>(EC2 Instance)"]
+    DNS_LB["DNS Load<br/>Balancing"] --> RRLB["Round Robin /<br/>Geo / Latency"]
+    style BROWSER fill:#4a8bc2
+    style RECURSIVE fill:#2d5a7b
+    style ROOT fill:#3a7ca5
+    style TLD fill:#e8912e
+    style AUTH_DNS fill:#c73e1d
+    style A_REC fill:#3fb950
+    style CDN fill:#6f42c1
+    style EDGE fill:#3a7ca5
+    style ORIGIN fill:#c73e1d
+    style USER_G fill:#3fb950
+    style LB fill:#4a8bc2
+    style L4 fill:#e8912e
+    style L7 fill:#6f42c1
+    style TARGET1 fill:#3fb950
+    style TARGET2 fill:#3fb950
+    style DNS_LB fill:#e8912e
+    style RRLB fill:#3a7ca5
 ```
 
 ## 📋 Table of Contents
@@ -366,3 +387,95 @@ Client                     L7 LB (TLS termination)         Server
 > - **Load Balancer** = The receptionist in a building with multiple offices. L4 = just forwards mail to the right floor (IP+port). L7 = reads the envelope and directs you to the right department (URL-based routing). Sticky sessions = the receptionist remembers to send you to the same person each time.
 > - **Reverse Proxy** = A security gate that also handles package wrapping (SSL), compresses boxes (gzip), and decides which warehouse gets your order.
 > - **Consistent Hashing** = A VIP list where each attendee is assigned to a specific table. If the table count changes, only some people move — not everyone gets reshuffled.
+
+## Production Failure Modes
+
+### Failure 1: DNS Propagation Delay Causes Partial Outage
+
+| Aspect | Detail |
+|--------|--------|
+| **Symptoms** | Some users can access service, others get old IP (404/connection refused). DNS change made 2 hours ago, some ISPs still resolve old records |
+| **Root Cause** | TTL set too high (24 hours or more). ISP DNS servers don't honor TTL (some Comcast, Telstra resolvers cache for 48h regardless). Users connecting via old records hit decommissioned servers |
+| **Detection** | `dig example.com` shows different IPs from different resolvers. `whatsmydns.net` shows partial propagation. CDN provider shows `OriginError` from stale edge nodes |
+| **Recovery** | Keep old servers running for 2x TTL of the old DNS record. Use low TTL (60s) for planned changes. Use AWS Route53 weight-based routing to gradually shift traffic |
+| **Prevention** | Lower TTL to 60-300 seconds before planned changes. Use Route53 health checks to automatically failover. Set TTL to 60s during migration, restore to 300s after. Use alias records (Route53) which are free and update instantly |
+
+### Failure 2: CDN Cache Poisoning
+
+| Aspect | Detail |
+|--------|--------|
+| **Symptoms** | Users see outdated or incorrect content. CSS/JS files cached with wrong version. CDN serves stale API responses |
+| **Root Cause** | Cache-control headers misconfigured. Origin returns `Cache-Control: max-age=31536000` for dynamic content. CDN caches responses that should not be cached. Query string parameters ignored causing cache collisions |
+| **Detection** | Browser dev tools show `cf-cache-status: HIT` for API responses. Cache-Control header shows `max-age=86400` for user-specific data. Multi-region deployment, one region has stale content |
+| **Recovery** | Purge CDN cache: `curl -X POST "https://api.cloudflare.com/client/v4/zones/ZONEID/purge_cache" -H "Authorization: Bearer TOKEN" -d '{"purge_everything":true}'` |
+| **Prevention** | Set correct Cache-Control headers per content type: `max-age=31536000, immutable` for static assets; `no-cache, no-store` for dynamic API. Use cache-busting with content hashes in filenames. Test with `curl -I` to verify headers |
+
+### Failure 3: Load Balancer Connection Draining Failure
+
+| Aspect | Detail |
+|--------|--------|
+| **Symptoms** | Requests fail during deployment. Download interrupted. WebSocket connections drop. 502 errors during rolling update |
+| **Root Cause** | Connection draining timeout too short. Active connections terminated before completing. Health check target group not configured properly — LB sends traffic to draining instances |
+| **Detection** | LB access logs show 502 responses during deployment. Target group shows "draining" state but connections still flow. Application logs show `connection reset` during shutdown |
+| **Recovery** | Increase `deregistration_delay.timeout_seconds` to 300s. Verify lifecycle hooks on EC2/ECS coordinate with LB. Use `aws elbv2 deregister-targets` before stopping application |
+| **Prevention** | Set connection draining timeout = 2x max request processing time. Use ALB with slow-start mode for new instances. Configure preStop lifecycle hook to gracefully shut down |
+
+### Failure 4: GeoDNS Routing Inaccuracy
+
+| Aspect | Detail |
+|--------|--------|
+| **Symptoms** | Users routed to wrong region (EU users sent to US). Increased latency. Cross-region data transfer costs |
+| **Root Cause** | GeoDNS relies on resolver IP, not client IP. Corporate DNS resolvers may be in different region (EU user using US-based 8.8.8.8). EDNS0 client subnet not supported by all ISPs |
+| **Detection** | `dig +short example.com` returns US IP for EU user. `traceroute` shows path goes through US. Latency is 200ms+ for what should be 30ms |
+| **Recovery** | Add latency-based routing as fallback. Allow users to manually select region in UI. Use anycast IP (Cloudflare, AWS Global Accelerator) for true geo-aware routing |
+| **Prevention** | Use latency-based routing (Route53 Latency Routing) instead of Geo Routing for most cases. For geo-specific needs, combine Geo + Latency routing. Use Global Accelerator for anycast IP |
+
+### Failure 5: TLS Termination at LB Causes Security Headers to Strip
+
+| Aspect | Detail |
+|--------|--------|
+| **Symptoms** | Backend receives plain HTTP. Application can't detect HTTPS. CSP headers use `https://` but LB proxies with `http://`. Redirect loops |
+| **Root Cause** | LB terminates TLS, forwards to backend as HTTP. Backend uses `X-Forwarded-Proto` header to detect HTTPS, but header is missing or not parsed. Application generates `http://` URLs in responses |
+| **Detection** | Browser shows "mixed content" warnings. Server logs show `REQUEST_SCHEME=http` for all requests. Application redirects `http://example.com` to `https://www.example.com` causing redirect chain |
+| **Recovery** | Configure LB to add `X-Forwarded-Proto: https` header. Update application to trust LB (set `Secure` flag on cookies only if X-Forwarded-Proto is https). Use `Strict-Transport-Security` header |
+| **Prevention** | Always terminate TLS at LB, set `X-Forwarded-Proto`, `X-Forwarded-For`, `X-Forwarded-Port` headers. Application parses these headers. Set HSTS header with `max-age=31536000; includeSubDomains`. Use ALB with HTTPS listener only (redirect HTTP to HTTPS) |
+
+## Edge Cases
+
+| Scenario | Challenge | Solution |
+|----------|-----------|----------|
+| **CNAME flattening** | Root domain can't use CNAME (DNS spec) | Use ALIAS record (Route53, Cloudflare, DNSimple). Or use `A` record pointing to LB IP |
+| **DNS resolver hijacking** | ISP redirects NXDOMAIN to ad pages | Use DNS-over-HTTPS (DoH) or DNS-over-TLS (DoT). Validate DNSSEC. Monitor with `dig +dnssec` |
+| **CDN SSL certificate expiration** | 526 Invalid SSL certificate error | Automate renewal with ACME (Let's Encrypt). CDN provider auto-renews if DNS validated. Set monitoring alert 30 days before expiry |
+| **WebSocket through LB** | WS connections dropped by LB idle timeout | Increase LB idle timeout to match WebSocket keepalive. Use TCP listener (NLB) for true WebSocket passthrough |
+| **Sticky sessions (session affinity)** | Uneven load distribution, cache coherency issues | Use external session store (Redis). Avoid sticky sessions for better scaling. Only use for legacy apps that can't externalize session |
+
+## Interview Questions
+
+### Q1 (Beginner): What happens when you type google.com into a browser?
+
+**Answer**: (1) Browser checks local DNS cache. (2) Cache miss → OS resolver queries recursive resolver (ISP or 8.8.8.8). (3) Recursive resolver queries root server → returns TLD server (.com). (4) TLD server returns authoritative DNS server for google.com. (5) Authoritative returns A/AAAA records. (6) Browser opens TCP connection to IP, TLS handshake, sends HTTP GET. (7) If behind CDN, response may come from edge server instead of origin. (8) Browser renders HTML, fetches CSS/JS/images (possibly from CDN). Key optimization points: DNS caching reduces lookup time, CDN reduces latency, HTTP/2 multiplexing reduces connection overhead.
+
+### Q2 (Mid-Level): Compare round-robin, least-connections, and latency-based load balancing algorithms.
+
+**Answer**: Round-robin: distributes requests sequentially across all targets. Simple, works for homogeneous workloads. Fails when request processing time varies — a slow request holds one connection while the others sit idle. Least-connections: sends request to target with fewest active connections. Better for variable request durations. Still doesn't account for processing power differences (16-core vs 4-core). Latency-based: routes to target with lowest response time. Most adaptive but requires constant health check traffic. Use case: round-robin for simple TCP load (NLB), least-connections for HTTP applications (ALB), latency-based for cross-region routing (Route53). In practice, ALB uses a weighted random distribution algorithm that's closer to least-connections.
+
+### Q3 (Senior): Design a global load balancing strategy for a multi-region active-active architecture.
+
+**Answer**: Three layers of load balancing: (1) DNS level (Route53 Latency Routing): user's DNS resolver routes to nearest region based on latency measurements. TTL 60s for quick failover. (2) Anycast IP (Cloudflare/AWS Global Accelerator): traffic enters nearest edge location, routed over AWS global network to closest healthy region. Provides ~15-60% latency improvement over DNS-only. (3) Regional LB (ALB/NLB): within each region, distribute across AZs and instances. Health checks at each layer: DNS health check pings regional LB health endpoint; Global Accelerator health check pings regional endpoint health; Regional LB health check pings instance health. Failover: if us-east-1 is unhealthy, DNS stops returning us-east-1 IPs, all traffic routes to eu-west-2 and ap-southeast-1. Active-active requires each region to handle 100% of traffic (N+1 redundancy). Data replication: multi-region active-active requires cross-region DB replication (or CRDTs). Session affinity: use sticky cookies or stateless sessions (JWT). DR: load shed 50% in surviving region before traffic doubles.
+
+### Q4 (Staff): How does CDN work internally? Design a CDN from scratch.
+
+**Answer**: Core components: (1) Origin Shield: single layer of cache between edge and origin to prevent cache stampede. (2) Edge Nodes: thousands of PoPs worldwide. Each PoP has local cache (SSD + RAM) + parent cache. (3) Routing: anycast IP routes user to nearest PoP. (4) Caching: on cache miss, PoP fetches from origin shield (or origin if shield miss). Cache key = (scheme, host, path, query params). (5) Cache eviction: LRU is standard. Popular CDNs use adaptive replacement cache (ARC): balances recency and frequency. (6) Purging: instant via API (purge by URL, tag, or regex). (7) Prefetch: for known high-traffic events (product launch), warm cache by pre-fetching content. Deep dive — cache behavior for dynamic content: support Edge Workers (Cloudflare Workers, CloudFront Functions) to process requests at edge, assemble HTML from microservices, or A/B test. For video CDN (Netflix): Open Connect Appliances at ISP data centers store entire catalog (100TB+). Adaptive bitrate (HLS/DASH) requires multiple renditions of each video. CDN uses predictive prefetching based on viewing patterns.
+
+### Q5 (Principal): Design a DNS-based service discovery system for a 100,000-node microservice mesh.
+
+**Answer**: Requirements: 100K services, each with 10 instances, 1M DNS queries/sec. SRV record lookup latency < 10ms. Challenges: DNS TTL-based caching leads to stale data. High query rate overwhelms authoritative DNS. Solution: tiered approach. (1) Internal DNS (CoreDNS): deployed as a sidecar per host, caches SRV/A records locally. TTL = 5s for rapidly changing services, 60s for stable services. (2) Service Registry (etcd/Consul): stores all service instances, watches for changes. CoreDNS uses etcd plugin or Consul plugin to resolve queries from registry. (3) DNS-based load balancing: CoreDNS returns healthy instances only, weighted randomly. (4) Client-side caching: each service caches resolved addresses for min 1s, uses circuit breaker on failure. For 100K scale, use hierarchical namespaces: `svc.namespace.cluster.local`. CoreDNS uses zone transfer to sync across nodes. For cross-cluster discovery, use federation via DNS: `svc.namespace.cluster1.region1.consul`. For latency-critical apps, bypass DNS entirely: use sidecar proxy (Envoy) with xDS API from control plane (Istio/Linkerd). DNS becomes fallback only.
+
+## Cross-References
+
+- [HTTP Protocols](../02-http-protocols.md) — TLS handshake details, HTTP/2 multiplexing, HTTP/3 QUIC
+- [Kubernetes Networking](../../07-kubernetes/03-kubernetes-networking.md) — Ingress controllers, service types, DNS in K8s
+- [Distributed Systems](../../09-distributed-systems/01-distributed-systems.md) — Consistent hashing, gossip protocol, failure detection
+- [Backend Roadmap](../../21-roadmaps/01-backend-engineer.md) — Phase 2 networking fundamentals, Phase 3 CDN design
+- [CloudFront Distribution](../../05-cloud/aws/cdn/01-cloudfront.md) — AWS-specific CDN configuration, Lambda@Edge

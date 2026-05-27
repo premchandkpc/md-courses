@@ -8,15 +8,27 @@
 
 ```mermaid
 graph LR
-    A["Input<br/>Layer"] --> B["Hidden<br/>Layers"]
-    B --> C["Hidden<br/>Layers"]
-    C --> D["Output<br/>Layer"]
-    B --> E["Activation<br/>Functions"]
-    E --> B
-    style A fill:#4a8bc2
-    style B fill:#2d5a7b
-    style C fill:#2d5a7b
-    style D fill:#c73e1d
+    CONTROL["Control Node<br/>(Ansible Installed)"] --> INV["Inventory<br/>(hosts.ini)"]
+    CONTROL --> PLAY["Playbook<br/>(site.yml)"]
+    PLAY --> TASK["Task<br/>(Module Execution)"]
+    TASK --> MOD["Module<br/>(copy/template/service)"]
+    MOD --> SSH["SSH / WinRM<br/>(Agentless)"]
+    SSH --> HOST1["Target Host 1"]
+    SSH --> HOST2["Target Host 2"]
+    SSH --> HOST3["Target Host 3"]
+    PLAY --> HANDLER["Handler<br/>(Notify on Change)"]
+    FACT["Facts<br/>(Gathered Info)"] --> TASK
+    style CONTROL fill:#4a8bc2
+    style INV fill:#2d5a7b
+    style PLAY fill:#3a7ca5
+    style TASK fill:#c73e1d
+    style MOD fill:#e8912e
+    style SSH fill:#6f42c1
+    style HOST1 fill:#3fb950
+    style HOST2 fill:#3fb950
+    style HOST3 fill:#3fb950
+    style HANDLER fill:#e8912e
+    style FACT fill:#3a7ca5
 ```
 
 ## Table of Contents

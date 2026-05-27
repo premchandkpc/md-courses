@@ -8,15 +8,33 @@
 
 ```mermaid
 graph LR
-    A["Input<br/>Layer"] --> B["Hidden<br/>Layers"]
-    B --> C["Hidden<br/>Layers"]
-    C --> D["Output<br/>Layer"]
-    B --> E["Activation<br/>Functions"]
-    E --> B
-    style A fill:#4a8bc2
-    style B fill:#2d5a7b
-    style C fill:#2d5a7b
-    style D fill:#c73e1d
+    EVT["S3 Event<br/>Notification"] --> SNS["SNS Topic"]
+    EVT --> SQS["SQS Queue"]
+    EVT --> LAMBDA["Lambda<br/>Function"]
+    ACC["Access Point"] --> S3["S3 Bucket"]
+    ACC --> POL["Access Point<br/>Policy"]
+    MACC["Multi-Region<br/>Access Point"] --> S3_PRI["Primary<br/>Region"]
+    MACC --> S3_SEC["Secondary<br/>Region"]
+    OBJ_LOCK["Object Lock<br/>(WORM)"] --> RET["Retention Period"]
+    OBJ_LOCK --> LEGAL["Legal Hold"]
+    BATCH["Batch Operations"] --> INV["Inventory<br/>Report"]
+    BATCH --> REP["Replication"]
+    style EVT fill:#4a8bc2
+    style SNS fill:#2d5a7b
+    style SQS fill:#3a7ca5
+    style LAMBDA fill:#c73e1d
+    style ACC fill:#e8912e
+    style S3 fill:#6f42c1
+    style POL fill:#3fb950
+    style MACC fill:#3a7ca5
+    style S3_PRI fill:#e8912e
+    style S3_SEC fill:#e8912e
+    style OBJ_LOCK fill:#c73e1d
+    style RET fill:#2d5a7b
+    style LEGAL fill:#3fb950
+    style BATCH fill:#6f42c1
+    style INV fill:#e8912e
+    style REP fill:#3fb950
 ```
 
 ## Table of Contents

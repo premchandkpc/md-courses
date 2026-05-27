@@ -10,15 +10,36 @@
 
 ```mermaid
 graph LR
-    A["Input<br/>Layer"] --> B["Hidden<br/>Layers"]
-    B --> C["Hidden<br/>Layers"]
-    C --> D["Output<br/>Layer"]
-    B --> E["Activation<br/>Functions"]
-    E --> B
-    style A fill:#4a8bc2
-    style B fill:#2d5a7b
-    style C fill:#2d5a7b
-    style D fill:#c73e1d
+    READ_AFTER_WRITE["Read-After-Write<br/>Inconsistency"] --> USER_WRITES["User Writes<br/>(on primary)"]
+    USER_WRITES --> READ_STALE["Reads from<br/>Stale Replica"]
+    READ_STALE --> REPLICA_LAG["Replica Lag<br/>(2s behind)"]
+    REPLICA_LAG --> DUPLICATE_WRITE["→ Duplicate<br/>Write / Order"]
+    TRAFFIC_SPIKE["Traffic Spike<br/>→ Replication Delay"] --> HEAVY_WRITES["Heavy Write<br/>Load"]
+    HEAVY_WRITES --> REPLICA_FALLS_BEHIND["Replicas Fall<br/>Behind"]
+    REPLICA_FALLS_BEHIND --> STALE_ETL["Stale ETL /<br/>DW Inconsistency"]
+    SLOT_ACCUM["Replication Slot<br/>Accumulation"] --> SLOT_NOT_CONSUMED["pg_receivewal<br/>Slot Not Consumed"]
+    SLOT_NOT_CONSUMED --> WAL_GROWS["WAL Accumulation<br/>(disk fills)"]
+    WAL_GROWS --> PRIMARY_CRASH_R["→ Primary Crash"]
+    NET_PARTITION_R["Network Partition"] --> REPLICA_DISCONNECTED["Replica<br/>Disconnected"]
+    REPLICA_DISCONNECTED --> GAP_GROWS["Replication Gap<br/>Grows"]
+    GAP_GROWS --> CATCHUP_STORM["Catch-Up I/O<br/>Storm"]
+    style READ_AFTER_WRITE fill:#4a8bc2
+    style USER_WRITES fill:#e8912e
+    style READ_STALE fill:#c73e1d
+    style REPLICA_LAG fill:#c73e1d
+    style DUPLICATE_WRITE fill:#c73e1d
+    style TRAFFIC_SPIKE fill:#e8912e
+    style HEAVY_WRITES fill:#e8912e
+    style REPLICA_FALLS_BEHIND fill:#c73e1d
+    style STALE_ETL fill:#c73e1d
+    style SLOT_ACCUM fill:#e8912e
+    style SLOT_NOT_CONSUMED fill:#e8912e
+    style WAL_GROWS fill:#c73e1d
+    style PRIMARY_CRASH_R fill:#c73e1d
+    style NET_PARTITION_R fill:#c73e1d
+    style REPLICA_DISCONNECTED fill:#c73e1d
+    style GAP_GROWS fill:#c73e1d
+    style CATCHUP_STORM fill:#c73e1d
 ```
 
 ## Table of Contents

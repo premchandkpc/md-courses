@@ -4,15 +4,32 @@
 
 ```mermaid
 graph LR
-    A["Input<br/>Layer"] --> B["Hidden<br/>Layers"]
-    B --> C["Hidden<br/>Layers"]
-    C --> D["Output<br/>Layer"]
-    B --> E["Activation<br/>Functions"]
-    E --> B
-    style A fill:#4a8bc2
-    style B fill:#2d5a7b
-    style C fill:#2d5a7b
-    style D fill:#c73e1d
+    BTREE["B+Tree<br/>Index Structure"] --> ROOT["Root Node<br/>(Page N)"]
+    BTREE --> INT1["Internal Node<br/>(Page M)"]
+    BTREE --> INT2["Internal Node<br/>(Page O)"]
+    INT1 --> LEAF1["Leaf Node<br/>(key → TID)"]
+    INT2 --> LEAF2["Leaf Node<br/>(key → TID)"]
+    LEAF1 --> LEAF2["Sibling Link<br/>(Next Page Pointer)"]
+    LSM["LSM-Tree<br/>Structure"] --> MEM_TBL["MemTable<br/>(In-Memory)"]
+    MEM_TBL --> SST["SSTable 1<br/>(Disk)"]
+    SST --> SST2["SSTable 2<br/>(Compacted)"]
+    SST2 --> SST3["SSTable 3<br/>(Merged)"]
+    MVCC["MVCC"] --> TXN["Transaction ID<br/>(xmin/xmax)"]
+    TXN --> VIS["Visibility<br/>Check"]
+    style BTREE fill:#4a8bc2
+    style ROOT fill:#2d5a7b
+    style INT1 fill:#3a7ca5
+    style INT2 fill:#3a7ca5
+    style LEAF1 fill:#c73e1d
+    style LEAF2 fill:#c73e1d
+    style LSM fill:#6f42c1
+    style MEM_TBL fill:#3fb950
+    style SST fill:#e8912e
+    style SST2 fill:#e8912e
+    style SST3 fill:#e8912e
+    style MVCC fill:#3a7ca5
+    style TXN fill:#e8912e
+    style VIS fill:#3fb950
 ```
 
 ## Table of Contents
@@ -285,29 +302,107 @@ WAL    = black box recorder for writes
 ## Code Examples
 
 ```python
-# Example implementation
-# [Add language-specific code demonstrating core concept]
-pass
+import struct
+
+# Minimal B+tree node implementation
+class BPlusTreeNode:
+    def __init__(self, is_leaf=False):
+        self.is_leaf = is_leaf
+        self.keys = []
+        self.children = []  # child pointers for internal, values for leaf
+
+class BPlusTree:
+    def __init__(self, order=4):
+        self.order = order
+        self.root = BPlusTreeNode(is_leaf=True)
+
+    def search(self, key):
+        return self._search(self.root, key)
+
+    def _search(self, node, key):
+        i = 0
+        while i < len(node.keys) and key > node.keys[i]:
+            i += 1
+        if node.is_leaf:
+            if i < len(node.keys) and node.keys[i] == key:
+                return node.children[i]
+            return None
+        return self._search(node.children[i], key)
+
+    def insert(self, key, value):
+        self._insert(self.root, key, value)
+
+    def _insert(self, node, key, value):
+        if node.is_leaf:
+            i = 0
+            while i < len(node.keys) and key > node.keys[i]:
+                i += 1
+            node.keys.insert(i, key)
+            node.children.insert(i, value)
+            if len(node.keys) > self.order:
+                self._split(node)
+        else:
+            pass  # recurse to children, handle splits upward
+
+# Buffer pool with CLOCK replacement (PostgreSQL-style)
+class ClockReplacer:
+    def __init__(self, pool_size: int):
+        self.frames = [{'page_id': None, 'ref': False} for _ in range(pool_size)]
+        self.hand = 0
+
+    def evict(self) -> int:
+        while True:
+            if not self.frames[self.hand]['ref']:
+                victim = self.hand
+                self.hand = (self.hand + 1) % len(self.frames)
+                return victim
+            self.frames[self.hand]['ref'] = False
+            self.hand = (self.hand + 1) % len(self.frames)
+
+    def pin(self, frame_id: int):
+        self.frames[frame_id]['ref'] = True
+
+# WAL simulation
+class WriteAheadLog:
+    def __init__(self):
+        self.records = []
+        self.flushed = 0
+
+    def append(self, lsn: int, page_id: int, data: bytes):
+        self.records.append({'lsn': lsn, 'page_id': page_id, 'data': data.hex()})
+
+    def flush(self):
+        self.flushed = len(self.records)
 ```
 
 ---
 
 ## Common Failure Modes
 
-**Problem**: [Key issue in production]
+**Problem**: Index bloat from dead tuples and MVCC overhead
 
-**Root cause**: [Why it happens]
+**Root cause**: In PostgreSQL, UPDATE = INSERT + mark old tuple dead. Dead tuples accumulate in indexes, wasting space and slowing scans. Without regular VACUUM, indexes can grow to 5-10x the actual live data size. The B+tree internal nodes remain pointing to pages that contain mostly dead tuples.
 
-**Solution**: [How to fix]
+**Detection**: `pgstattuple` extension shows `dead_tuple_percent > 20%`. `pg_stat_user_tables` shows `n_dead_tup` growing while `last_autovacuum` is old. Index scan times increase gradually over weeks.
+
+**Solution**: Tune autovacuum: lower `autovacuum_vacuum_scale_factor` (0.01 for busy tables). Use `VACUUM` regularly (not VACUUM FULL, which locks). Set fillfactor to 70-80 for tables with frequent updates. Use REINDEX CONCURRENTLY for online index rebuilds. For extremely write-heavy tables, consider partitioning to keep dead tuple counts manageable per partition.
+
+**Problem**: Transaction ID wraparound causing emergency autovacuum and downtime
+
+**Root cause**: PostgreSQL uses 32-bit transaction IDs (~4 billion). When XID counter approaches the wraparound point (2 billion from 0), PostgreSQL forces emergency VACUUM FREEZE on all tables. This can saturate I/O for hours and block writes.
+
+**Detection**: `SELECT age(relfrozenxid) FROM pg_class` shows values approaching 2 billion. `datfrozenxid` in `pg_database` is old. Warnings in Postgres logs: `database "mydb" must be vacuumed within X transactions`.
+
+**Solution**: Monitor XID age as a critical alert. Tune autovacuum to run aggressively enough to freeze tuples before the emergency threshold. Set `autovacuum_freeze_max_age = 500000000`. For large tables, manually schedule VACUUM FREEZE during maintenance windows. In extreme cases, use `vacuumdb --all --freeze` with multiple jobs.
 
 ---
 
 ## Interview Questions
 
-### Q1: [Core concept question]
+### Q1: How does MVCC work in PostgreSQL versus MySQL InnoDB, and what are the trade-offs?
 
-**Answer**: [Detailed explanation with trade-offs]
+**Answer**: PostgreSQL stores old tuple versions in the same data page (dead tuples). Visibility is determined by comparing XMIN/XMAX in the tuple header against the transaction snapshot. This means no separate undo storage, but creates bloat that VACUUM must clean. InnoDB stores old versions in a separate undo tablespace (rollback segments), keeping the data page clean. This means no VACUUM equivalent, but undo logs grow large under long-running transactions. PostgreSQL's approach is better for read-heavy workloads (no undo lookup overhead), while InnoDB is better for write-heavy workloads (less bloat). PostgreSQL needs VACUUM tuning; InnoDB needs undo tablespace management.
 
-### Q2: [Design/architecture question]
+### Q2: How would you implement ACID transactions across a distributed database?
 
-**Answer**: [Best practices and reasoning]
+**Answer**: Implement a two-phase commit (2PC) protocol or use a consensus-based approach. In 2PC, a coordinator asks all participants to PREPARE (write WAL, make data durable but uncommitted). If all PREPARE succeeds, the coordinator sends COMMIT; otherwise, it sends ABORT. The failure mode is the coordinator crashing after PREPARE but before COMMIT — participants hold locks until recovery. Modern distributed databases like Spanner use TrueTime (clock synchronization) + Paxos for external consistency. CockroachDB uses a combination of Raft for replication and a transaction coordinator with MVCC timestamps. The key trade-off is between consistency guarantees and latency — synchronous replication across multiple datacenters adds significant latency.

@@ -8,15 +8,25 @@
 
 ```mermaid
 graph LR
-    A["Input<br/>Layer"] --> B["Hidden<br/>Layers"]
-    B --> C["Hidden<br/>Layers"]
-    C --> D["Output<br/>Layer"]
-    B --> E["Activation<br/>Functions"]
-    E --> B
-    style A fill:#4a8bc2
-    style B fill:#2d5a7b
-    style C fill:#2d5a7b
-    style D fill:#c73e1d
+    SRC["Data Source<br/>Collection / Array / I/O"] --> STREAM["Stream<br/>(Lazy Pipeline)"]
+    STREAM --> INTER["Intermediate Ops<br/>map / filter / sorted"]
+    INTER --> INTER2["Intermediate Ops<br/>distinct / peek / limit"]
+    INTER2 --> TERM["Terminal Op<br/>collect / forEach / reduce"]
+    TERM --> RES["Result<br/>List / Set / Map / Long"]
+    TERM --> SIDE["Side Effect<br/>(forEach / peek)"]
+    PAR["parallel()"] --> STREAM
+    STREAM --> SEQ["Sequential<br/>Spliterator"]
+    SEQ --> FJ["ForkJoin<br/>Common Pool"]
+    style SRC fill:#4a8bc2
+    style STREAM fill:#2d5a7b
+    style INTER fill:#3a7ca5
+    style INTER2 fill:#3a7ca5
+    style TERM fill:#c73e1d
+    style RES fill:#3fb950
+    style SIDE fill:#e8912e
+    style PAR fill:#6f42c1
+    style SEQ fill:#2d5a7b
+    style FJ fill:#e8912e
 ```
 
 ## Table of Contents

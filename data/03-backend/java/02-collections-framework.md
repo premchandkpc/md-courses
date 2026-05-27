@@ -229,53 +229,56 @@ set.size();           // 2
 
 ### HashSet Internal Flow
 
-```text
-set.add("Apple")
+```mermaid
+sequenceDiagram
+    participant User
+    participant HashSet
+    participant HashTable
+    participant Bucket
+    participant Chain
+    
+    User->>HashSet: set.add("Apple")
+    HashSet->>HashSet: "Apple".hashCode() = 42
+    HashSet->>HashSet: index = (n-1) & hash = 2
+    HashSet->>Bucket: Check bucket[2]
+    Bucket-->>HashSet: null (empty)
+    HashSet->>Bucket: Insert Node("Apple")
+    Bucket->>HashTable: size++
+    HashSet-->>User: true (added)
+    
+    User->>HashSet: set.add("Banana") [hash collision]
+    HashSet->>HashSet: "Banana".hashCode() = 42
+    HashSet->>HashSet: index = (n-1) & hash = 2
+    HashSet->>Bucket: Check bucket[2]
+    Bucket-->>HashSet: Node("Apple") exists
+    HashSet->>HashSet: "Apple".equals("Banana") = false
+    HashSet->>Chain: Add to chain at Node("Apple").next
+    Chain->>HashTable: size++
+    HashSet-->>User: true (added, collision handled)
+```
 
-    │
-    ▼
-┌─────────────────────────┐
-│ "Apple".hashCode()      │
-│ → h = 42 (example)      │
-└────────────┬────────────┘
-             │
-             ▼
-┌─────────────────────────┐
-│ index = (n-1) & hash    │
-│ → bucket 2              │
-└────────────┬────────────┘
-             │
-             ▼
-┌─────────────────────────┐
-│ Check bucket 2:         │
-│   null? → insert new    │
-│   Node(key="Apple",     │
-│        value=PRESENT)   │
-│   size++                │
-│   return true           │
-└─────────────────────────┘
+**HashSet Collision Handling:**
 
-set.add("Banana") where Banana.hashCode() also → bucket 2
-
-    │
-    ▼
-┌─────────────────────────┐
-│ "Banana".hashCode()      │
-│ → index = 2 (collision)  │
-└────────────┬────────────┘
-             │
-             ▼
-┌─────────────────────────┐
-│ Check bucket 2:         │
-│   Node("Apple")         │
-│   Compare keys:         │
-│   "Apple".equals("Banana") │
-│   → false → different   │
-│   → chain: Node("Banana") │
-│   → next of Apple       │
-│   size++                │
-│   return true           │
-└─────────────────────────┘
+```mermaid
+graph TB
+    A["Bucket 2"] --> B["Node: Apple"]
+    B --> C["Node: Banana<br/>(linked via next)"]
+    C --> D["Node: Apricot<br/>(linked via next)"]
+    
+    E["Lookup Apple"] --> F["Hash to bucket 2"]
+    F --> B
+    B -->|equals match| G["Found!"]
+    
+    H["Lookup Banana"] --> I["Hash to bucket 2"]
+    I --> B
+    B -->|equals mismatch| C
+    C -->|equals match| J["Found!"]
+    
+    style B fill:#a5d6ff
+    style C fill:#a5d6ff
+    style D fill:#a5d6ff
+    style G fill:#3fb950
+    style J fill:#3fb950
 ```
 
 ### TreeSet

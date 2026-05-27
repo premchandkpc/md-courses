@@ -4,15 +4,27 @@
 
 ```mermaid
 graph LR
-    A["Input<br/>Layer"] --> B["Hidden<br/>Layers"]
-    B --> C["Hidden<br/>Layers"]
-    C --> D["Output<br/>Layer"]
-    B --> E["Activation<br/>Functions"]
-    E --> B
-    style A fill:#4a8bc2
-    style B fill:#2d5a7b
-    style C fill:#2d5a7b
-    style D fill:#c73e1d
+    APP["Java<br/>Application"] --> JFR["JDK Flight<br/>Recorder"]
+    APP --> ASYNC["async-profiler<br/>(CPU/Wall)"]
+    JFR --> EVT["Events<br/>(GC/Socket/Lock)"]
+    ASYNC --> FLM["Flame Graph<br/>(Hot Methods)"]
+    APP --> JIT["JIT Compiler<br/>(C1/C2)"]
+    JIT --> INL["Inlining /<br/>Intrinsification"]
+    JIT --> BIO["Biased<br/>Optimization"]
+    APP --> GC["GC Logs<br/>(G1/ZGC)"]
+    GC --> PAUSE["Pause Time<br/>Analysis"]
+    APP --> JMH["JMH<br/>Benchmarks"]
+    style APP fill:#4a8bc2
+    style JFR fill:#2d5a7b
+    style ASYNC fill:#c73e1d
+    style EVT fill:#3a7ca5
+    style FLM fill:#e8912e
+    style JIT fill:#6f42c1
+    style INL fill:#3fb950
+    style BIO fill:#3fb950
+    style GC fill:#2d5a7b
+    style PAUSE fill:#e8912e
+    style JMH fill:#3a7ca5
 ```
 
 ## Scope

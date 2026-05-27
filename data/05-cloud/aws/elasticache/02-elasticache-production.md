@@ -4,15 +4,31 @@
 
 ```mermaid
 graph LR
-    A["Input<br/>Layer"] --> B["Hidden<br/>Layers"]
-    B --> C["Hidden<br/>Layers"]
-    C --> D["Output<br/>Layer"]
-    B --> E["Activation<br/>Functions"]
-    E --> B
-    style A fill:#4a8bc2
-    style B fill:#2d5a7b
-    style C fill:#2d5a7b
-    style D fill:#c73e1d
+    CACHE["Caching<br/>Patterns"] --> CA["Cache-Aside<br/>(Lazy Loading)"]
+    CACHE --> WT["Write-Through<br/>(Synchronous)"]
+    CACHE --> WB["Write-Behind<br/>(Async)"]
+    CA --> MISS["Cache Miss<br/>→ Read DB"]
+    MISS --> SET["Set Cache<br/>(TTL)"]
+    WT --> WRITE["Write DB +<br/>Cache Together"]
+    EVICT["Eviction<br/>Policies"] --> LRU["LRU<br/>(Default)"]
+    EVICT --> LFU["LFU /<br/>TinyLFU"]
+    EVICT --> TTL["TTL<br/>(Time-To-Live)"]
+    REDIS["Redis Features"] --> PUBSUB["Pub/Sub<br/>& Streams"]
+    REDIS --> SORTED["Sorted Sets<br/>(Leaderboard)"]
+    style CACHE fill:#4a8bc2
+    style CA fill:#2d5a7b
+    style WT fill:#3a7ca5
+    style WB fill:#6f42c1
+    style MISS fill:#c73e1d
+    style SET fill:#3fb950
+    style WRITE fill:#e8912e
+    style EVICT fill:#3a7ca5
+    style LRU fill:#e8912e
+    style LFU fill:#2d5a7b
+    style TTL fill:#e8912e
+    style REDIS fill:#c73e1d
+    style PUBSUB fill:#3fb950
+    style SORTED fill:#e8912e
 ```
 
 ## Table of Contents

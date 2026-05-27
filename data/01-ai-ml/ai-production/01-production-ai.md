@@ -1,7 +1,1501 @@
 # Production AI: Engineering for Scale
 
-## 1. Inference Infrastructure
-### Inference Pipeline Architecture
+## 1. LLM Serving Architecture
+
+### 1.1 Serving Stack Overview
+
+Modern LLM serving uses a multi-layer architecture:
+
+```mermaid
+graph TB
+    subgraph Client Layer
+        A["Client Apps / APIs"]
+    end
+    subgraph Gateway Layer
+        B["API Gateway<br/>Kong/Envoy"]
+        C["Load Balancer"]
+        D["Auth / Rate Limit"]
+    end
+    subgraph Router Layer
+        E["Request Router"]
+        F["Model Router<br/>(semantic routing)"]
+        G["A/B Splitter"]
+    end
+    subgraph Serving Layer
+        H["vLLM"]
+        I["Triton Inference Server"]
+        J["TensorRT-LLM"]
+        K["TGI"]
+    end
+    subgraph Scheduler Layer
+        L["Scheduler<br/>Continuous Batching"]
+        M["KV Cache Manager"]
+        N["GPU Scheduler"]
+    end
+    subgraph Hardware Layer
+        O["GPU Pool<br/>A100/H100"]
+        P["CPU Pool"]
+        Q["Neuron/Cerebras"]
+    end
+
+    A --> B --> C --> D --> E --> F --> G
+    G --> H
+    G --> I
+    G --> J
+    G --> K
+    H --> L --> M --> N --> O
+    I --> L
+    J --> N
+    K --> L
+```
+
+### 1.2 vLLM Architecture
+
+vLLM is the most widely adopted open-source LLM serving engine, built around **PagedAttention**:
+
+```python
+class vLLMEngine:
+    def __init__(self, model: str, tensor_parallel_size: int = 1,
+                 gpu_memory_utilization: float = 0.9, max_num_batched_tokens: int = 4096):
+        self.model_id = model
+        self.tp_size = tensor_parallel_size
+        self.gpu_mem_util = gpu_memory_utilization
+        self.max_batched_tokens = max_num_batched_tokens
+        self.scheduler = Scheduler(max_num_batched_tokens)
+        self.block_manager = BlockManager(gpu_memory_utilization)
+        self.cache_engine = KVCacheEngine()
+        self.metrics = ServingMetrics()
+
+    def generate(self, prompt: str, sampling_params: dict) -> dict:
+        request_id = str(uuid.uuid4())
+        tokens = self.tokenize(prompt)
+
+        # Phase 1: Prefill
+        prefill_start = time.perf_counter()
+        prefill_blocks = self.block_manager.allocate_blocks(
+            request_id, len(tokens)
+        )
+        kv_cache = self.cache_engine.prefill(tokens, prefill_blocks)
+        prefill_latency = time.perf_counter() - prefill_start
+
+        # Phase 2: Decode (autoregressive)
+        decode_start = time.perf_counter()
+        generated_tokens = []
+        for _ in range(sampling_params.get("max_tokens", 256)):
+            next_token = self.cache_engine.decode(kv_cache, tokens)
+            generated_tokens.append(next_token)
+            tokens = [next_token]
+            kv_cache = self.cache_engine.append_kv_cache(
+                kv_cache, tokens
+            )
+        decode_latency = time.perf_counter() - decode_start
+
+        self.metrics.record_request(
+            request_id, prefill_latency, decode_latency,
+            len(tokens), len(generated_tokens)
+        )
+
+        return {
+            "text": self.detokenize(generated_tokens),
+            "usage": {
+                "prompt_tokens": len(tokens),
+                "completion_tokens": len(generated_tokens),
+                "total_tokens": len(tokens) + len(generated_tokens)
+            },
+            "metrics": {
+                "prefill_latency_ms": prefill_latency * 1000,
+                "decode_latency_ms": decode_latency * 1000,
+                "tokens_per_second": len(generated_tokens) / max(decode_latency, 0.001)
+            }
+        }
+
+
+class Scheduler:
+    def __init__(self, max_num_batched_tokens: int):
+        self.max_batched_tokens = max_num_batched_tokens
+        self.waiting_queue = []
+        self.running_seqs = []
+        self.swapped_seqs = []
+
+    def schedule(self) -> list:
+        batch = []
+        available_tokens = self.max_batched_tokens
+        for seq in reversed(self.running_seqs):
+            if seq.num_tokens <= available_tokens:
+                batch.append(seq)
+                available_tokens -= seq.num_tokens
+        while self.waiting_queue and available_tokens > 0:
+            seq = self.waiting_queue.pop(0)
+            if seq.num_tokens <= available_tokens:
+                batch.append(seq)
+                available_tokens -= seq.num_tokens
+            else:
+                break
+        return batch
+
+
+class ServingMetrics:
+    def __init__(self):
+        self.latencies = []
+        self.throughputs = []
+        self.cache_hit_rates = []
+        self.gpu_utilization = []
+
+    def record_request(self, request_id: str, prefill_ms: float,
+                       decode_ms: float, prompt_tokens: int,
+                       completion_tokens: int):
+        self.latencies.append({
+            "request_id": request_id,
+            "prefill_ms": prefill_ms * 1000,
+            "decode_ms": decode_ms * 1000,
+            "total_latency_ms": (prefill_ms + decode_ms) * 1000,
+            "prompt_tokens": prompt_tokens,
+            "completion_tokens": completion_tokens,
+            "throughput": completion_tokens / max(decode_ms, 0.001)
+        })
+
+    def p50_latency(self) -> float:
+        if not self.latencies:
+            return 0
+        sorted_lats = sorted(l["total_latency_ms"] for l in self.latencies)
+        return sorted_lats[len(sorted_lats) // 2]
+
+    def p99_latency(self) -> float:
+        if not self.latencies:
+            return 0
+        sorted_lats = sorted(l["total_latency_ms"] for l in self.latencies)
+        return sorted_lats[int(len(sorted_lats) * 0.99)]
+```
+
+### 1.3 Triton Inference Server
+
+NVIDIA Triton handles multi-model serving, GPU scheduling, and model concurrency:
+
+```python
+class TritonModelConfig:
+    """Model configuration for Triton Inference Server"""
+
+    def __init__(self, name: str, backend: str = "tensorrt",
+                 max_batch_size: int = 32):
+        self.name = name
+        self.backend = backend
+        self.max_batch_size = max_batch_size
+        self.instance_group = [{"count": 1, "kind": "KIND_GPU"}]
+        self.dynamic_batching = {
+            "preferred_batch_size": [4, 8, 16],
+            "max_queue_delay_microseconds": 500
+        }
+        self.optimization = {
+            "input_preferred_batch_size": [4, 8],
+            "output_preferred_batch_size": [4, 8],
+            "priority": "PRIORITY_MAX"
+        }
+        self.model_warmup = [
+            {
+                "name": "warmup_request",
+                "batch_size": 1,
+                "inputs": {"input": {"dims": [1, 512], "data_type": "TYPE_FP32"}}
+            }
+        ]
+
+    def to_config(self) -> str:
+        return f"""
+name: "{self.name}"
+backend: "{self.backend}"
+max_batch_size: {self.max_batch_size}
+
+instance_group: {self.instance_group}
+
+dynamic_batching: {{
+    preferred_batch_size: {self.dynamic_batching['preferred_batch_size']}
+    max_queue_delay_microseconds: {self.dynamic_batching['max_queue_delay_microseconds']}
+}}
+
+optimization: {{
+    {self.optimization}
+}}
+"""
+
+
+class TritonClient:
+    def __init__(self, url: str = "localhost:8001"):
+        self.url = url
+        self.clients = {}
+
+    def infer(self, model_name: str, input_data: np.ndarray,
+              model_version: str = "1") -> np.ndarray:
+        input_tensor = self._to_triton_tensor(input_data, "input")
+        request = self._create_request(model_name, model_version, [input_tensor])
+        response = self._send_request(request)
+        return self._parse_response(response)
+
+    def _to_triton_tensor(self, data: np.ndarray, name: str) -> dict:
+        return {
+            "name": name,
+            "shape": list(data.shape),
+            "datatype": "FP32",
+            "data": data.flatten().tolist()
+        }
+
+    def _create_request(self, model: str, version: str, inputs: list) -> dict:
+        return {
+            "model_name": model,
+            "model_version": version,
+            "inputs": inputs
+        }
+
+    def _send_request(self, request: dict) -> dict:
+        return {"outputs": request["inputs"]}
+
+    def _parse_response(self, response: dict) -> np.ndarray:
+        return np.array(response["outputs"][0]["data"])
+```
+
+### 1.4 Token Generation Lifecycle
+
+```mermaid
+sequenceDiagram
+    participant Client
+    participant Router
+    participant Scheduler
+    participant GPU
+    participant KVCache
+
+    Client->>Router: POST /generate
+    Router->>Scheduler: Enqueue request
+    Note over Scheduler: Scheduling policy<br/>(FCFS, priority, fair)
+
+    rect rgb(200, 230, 255)
+    Note over Scheduler,GPU: Phase 1: Prefill
+    Scheduler->>GPU: Batch requests
+    GPU->>GPU: Compute all prompt tokens<br/>in parallel
+    GPU->>KVCache: Write KV cache blocks
+    KVCache-->>GPU: Block indices
+    end
+
+    rect rgb(230, 255, 200)
+    Note over Scheduler,GPU: Phase 2: Decode (loop)
+    loop For each new token
+        Scheduler->>GPU: Next token prediction
+        GPU->>KVCache: Read KV cache
+        KVCache-->>GPU: Past key/value tensors
+        GPU->>GPU: Single forward pass
+        GPU->>KVCache: Append new KV entries
+        GPU-->>Scheduler: Token + logprobs
+        Scheduler->>Scheduler: Check stop conditions
+    end
+    end
+
+    Scheduler-->>Router: Generated tokens
+    Router-->>Client: Response stream
+```
+
+**Prefill vs Decode characteristics**:
+
+| Aspect | Prefill | Decode |
+|--------|---------|--------|
+| Computation | Compute-bound (matmul-heavy) | Memory-bound (KV cache reads) |
+| Parallelism | Full prompt processed in parallel | One token at a time |
+| GPU utilization | High (near 100% during compute) | Low (20-40%, bandwidth-limited) |
+| Latency | O(prompt_length) | O(1) per token |
+| KV cache behavior | Write (allocate blocks) | Read + append |
+| Batching efficiency | High (long prompts share compute) | Low (each sequence is independent) |
+| Optimization target | Reduce prefill time | Reduce memory bandwidth |
+
+### 1.5 Continuous Batching (Rolling)
+
+Continuous batching allows the scheduler to add/remove sequences from the running batch dynamically, rather than waiting for all sequences to finish:
+
+```python
+class ContinuousBatchScheduler:
+    def __init__(self, max_batch_size: int = 32, max_tokens_in_batch: int = 4096):
+        self.max_batch_size = max_batch_size
+        self.max_tokens_in_batch = max_tokens_in_batch
+        self.running: list[Sequence] = []
+        self.waiting: list[Sequence] = []
+        self.finished: list[Sequence] = []
+        self.metrics = {
+            "sequences_completed": 0,
+            "total_tokens_generated": 0,
+            "total_prefill_tokens": 0
+        }
+
+    def add_request(self, prompt: str, sampling_params: dict) -> str:
+        seq = Sequence(
+            id=str(uuid.uuid4()),
+            prompt_tokens=tokenize(prompt),
+            sampling_params=sampling_params
+        )
+        self.waiting.append(seq)
+        return seq.id
+
+    def get_next_batch(self) -> list[Sequence]:
+        batch = []
+
+        # 1. Remove finished sequences
+        self.running = [s for s in self.running if not s.finished]
+        self.finished.extend([s for s in self.running if s.finished])
+
+        # 2. Add waiting sequences up to capacity
+        available_slots = self.max_batch_size - len(self.running)
+        for seq in self.waiting[:available_slots]:
+            seq.phase = "prefill"
+            batch.append(seq)
+        self.waiting = self.waiting[available_slots:]
+        self.running.extend(batch)
+
+        # 3. Include running sequences for decode
+        batch.extend(self.running)
+
+        # 4. Check token budget
+        total_tokens = sum(s.total_tokens for s in batch)
+        if total_tokens > self.max_tokens_in_batch:
+            overshoot = total_tokens - self.max_tokens_in_batch
+            prefill_seqs = [s for s in batch if s.phase == "prefill"]
+            while overshoot > 0 and prefill_seqs:
+                seq = prefill_seqs.pop()
+                batch.remove(seq)
+                self.waiting.insert(0, seq)
+                overshoot -= seq.prompt_length
+
+        return batch
+
+    def step(self, batch: list, generated_tokens: list[int]):
+        for seq, token in zip(batch, generated_tokens):
+            seq.tokens.append(token)
+            seq.total_tokens += 1
+            seq.phase = "decode"
+            self.metrics["total_tokens_generated"] += 1
+            if check_stop_condition(seq, token):
+                seq.finished = True
+
+    def get_throughput(self) -> float:
+        return self.metrics["total_tokens_generated"] / max(time.time() - self.start_time, 0.001)
+
+    def get_batch_utilization(self) -> float:
+        return len(self.running) / self.max_batch_size * 100
+
+
+@dataclass
+class Sequence:
+    id: str
+    prompt_tokens: list[int]
+    sampling_params: dict
+    tokens: list[int] = field(default_factory=list)
+    total_tokens: int = 0
+    phase: str = "prefill"
+    finished: bool = False
+
+    @property
+    def prompt_length(self) -> int:
+        return len(self.prompt_tokens)
+
+    @property
+    def num_tokens(self) -> int:
+        return self.total_tokens
+```
+
+## 2. GPU Scheduling and Memory Management
+
+### 2.1 GPU Memory Hierarchy
+
+```mermaid
+graph TB
+    subgraph GPU Memory
+        A["HBM (High Bandwidth Memory)<br/>80GB A100 / 80GB H100<br/>~2TB/s bandwidth"]
+        B["L2 Cache<br/>40MB A100 / 50MB H100"]
+        C["L1 Cache / Shared Memory<br/>192KB per SM"]
+        D["Registers<br/>64K per SM"]
+    end
+    subgraph Model Components
+        E["Model Weights<br/>(FP16: 2 bytes/param)"]
+        F["KV Cache<br/>(per sequence)"]
+        G["Activations<br/>(forward pass)"]
+        H["Scratch Space<br/>(CUDA memory)"]
+        I["Framework Overhead<br/>(PyTorch, CUDA)"]
+    end
+    A --> E
+    A --> F
+    A --> G
+    A --> H
+    A --> I
+    B --> A
+    C --> B
+    D --> C
+```
+
+**Memory breakdown for a 70B model**:
+
+```python
+def calculate_gpu_memory_breakdown(
+    model_size_b: float = 70,
+    dtype_bits: int = 16,
+    max_seq_len: int = 4096,
+    batch_size: int = 32,
+    num_layers: int = 80,
+    num_heads: int = 64,
+    head_dim: int = 128,
+    kv_cache_dtype_bits: int = 8
+) -> dict:
+    weights_bytes = model_size_b * 1e9 * (dtype_bits / 8)
+    kv_cache_bytes = (
+        2  # K + V
+        * num_layers
+        * batch_size
+        * max_seq_len
+        * num_heads
+        * head_dim
+        * (kv_cache_dtype_bits / 8)
+    )
+    activations_bytes = model_size_b * 1e9 * (dtype_bits / 8) * 0.2
+    overhead_bytes = 2 * 1024**3  # 2GB for CUDA context
+
+    total = weights_bytes + kv_cache_bytes + activations_bytes + overhead_bytes
+
+    return {
+        "weights_gb": weights_bytes / (1024**3),
+        "kv_cache_gb": kv_cache_bytes / (1024**3),
+        "activations_gb": activations_bytes / (1024**3),
+        "overhead_gb": overhead_bytes / (1024**3),
+        "total_gb": total / (1024**3),
+        "available_gpu_memory": 80,  # A100-80GB
+        "memory_headroom_percent": (1 - total / (80 * 1024**3)) * 100
+    }
+
+# Example: 70B model with 32 concurrent sequences
+mem = calculate_gpu_memory_breakdown()
+for k, v in mem.items():
+    print(f"{k}: {v:.1f}")
+# weights_gb: 140.0  -- wait, FP16 70B = 140GB > 80GB HBM
+# This is why model parallelism is needed
+```
+
+### 2.2 GPU Scheduling Strategies
+
+```python
+class GPUScheduler:
+    def __init__(self, num_gpus: int = 8, gpu_memory_gb: int = 80):
+        self.num_gpus = num_gpus
+        self.gpu_memory_gb = gpu_memory_gb
+        self.gpu_states = {i: {"available_memory": gpu_memory_gb,
+                               "running_models": [],
+                               "temperature_c": 30,
+                               "power_w": 0} for i in range(num_gpus)}
+        self.scheduling_policy = "best_fit"
+
+    def schedule_model(self, model_name: str, required_memory_gb: float,
+                       num_gpus: int = 1, strategy: str = "tensor_parallel") -> list[int]:
+        if strategy == "tensor_parallel":
+            return self._schedule_tp(model_name, required_memory_gb, num_gpus)
+        elif strategy == "pipeline_parallel":
+            return self._schedule_pp(model_name, required_memory_gb, num_gpus)
+        elif strategy == "data_parallel":
+            return self._schedule_dp(model_name, required_memory_gb, num_gpus)
+
+    def _schedule_tp(self, model_name: str, memory_gb: float, n_gpus: int) -> list[int]:
+        per_gpu_memory = memory_gb / n_gpus
+        if self.scheduling_policy == "best_fit":
+            candidates = sorted(
+                [(gid, state["available_memory"]) for gid, state in self.gpu_states.items()],
+                key=lambda x: abs(x[1] - per_gpu_memory)
+            )
+        else:
+            candidates = sorted(
+                [(gid, state["available_memory"]) for gid, state in self.gpu_states.items()],
+                key=lambda x: x[1], reverse=True
+            )
+
+        selected = []
+        for gid, avail in candidates:
+            if avail >= per_gpu_memory:
+                selected.append(gid)
+                self.gpu_states[gid]["available_memory"] -= per_gpu_memory
+                self.gpu_states[gid]["running_models"].append(model_name)
+            if len(selected) == n_gpus:
+                break
+
+        return selected if len(selected) == n_gpus else []
+
+    def _schedule_pp(self, model_name: str, memory_gb: float, n_gpus: int) -> list[int]:
+        if self.scheduling_policy == "balanced":
+            selected = sorted(
+                range(self.num_gpus),
+                key=lambda gid: self.gpu_states[gid]["available_memory"],
+                reverse=True
+            )[:n_gpus]
+            per_gpu = memory_gb / n_gpus
+            for gid in selected:
+                self.gpu_states[gid]["available_memory"] -= per_gpu
+                self.gpu_states[gid]["running_models"].append(model_name)
+            return selected
+        return []
+
+    def _schedule_dp(self, model_name: str, memory_gb: float, n_gpus: int) -> list[int]:
+        return self._schedule_pp(model_name, memory_gb, n_gpus)
+
+    def evict_model(self, model_name: str):
+        for gid, state in self.gpu_states.items():
+            if model_name in state["running_models"]:
+                state["running_models"].remove(model_name)
+
+    def get_cluster_utilization(self) -> dict:
+        used = sum(self.gpu_memory_gb - s["available_memory"] for s in self.gpu_states.values())
+        total = self.num_gpus * self.gpu_memory_gb
+        return {
+            "utilization_percent": used / total * 100,
+            "gpus_used": sum(1 for s in self.gpu_states.values() if s["running_models"]),
+            "gpus_idle": sum(1 for s in self.gpu_states.values() if not s["running_models"]),
+            "total_memory_gb": total / (1024**3),
+            "used_memory_gb": used / (1024**3)
+        }
+```
+
+### 2.3 KV Cache Internals
+
+The KV cache stores key and value tensors from previous attention computations, avoiding recomputation during autoregressive decoding:
+
+```python
+class KVCacheEngine:
+    def __init__(self, num_layers: int = 80, num_heads: int = 64,
+                 head_dim: int = 128, max_blocks: int = 1024,
+                 block_size: int = 16):
+        self.num_layers = num_layers
+        self.num_heads = num_heads
+        self.head_dim = head_dim
+        self.block_size = block_size
+        self.max_blocks = max_blocks
+
+        # Block table: maps logical blocks to physical blocks
+        self.free_blocks = set(range(max_blocks))
+        self.block_table: dict[str, list[int]] = {}
+
+        # Physical KV cache storage [num_layers, 2, num_blocks, block_size, num_heads, head_dim]
+        self.kv_cache = np.zeros(
+            (num_layers, 2, max_blocks, block_size, num_heads, head_dim),
+            dtype=np.float16
+        )
+
+    def prefill(self, tokens: list[int], request_id: str) -> dict:
+        """Prefill phase: compute KV cache for all prompt tokens."""
+        num_blocks_needed = (len(tokens) + self.block_size - 1) // self.block_size
+        if len(self.free_blocks) < num_blocks_needed:
+            raise OOMError(f"Not enough cache blocks. "
+                           f"Need {num_blocks_needed}, have {len(self.free_blocks)}")
+
+        allocated = []
+        for _ in range(num_blocks_needed):
+            block = self.free_blocks.pop()
+            allocated.append(block)
+
+        self.block_table[request_id] = allocated
+
+        # Simulate KV cache computation
+        for layer in range(self.num_layers):
+            for i, block_idx in enumerate(allocated):
+                start = i * self.block_size
+                end = min(start + self.block_size, len(tokens))
+                seq_len = end - start
+                if seq_len > 0:
+                    self.kv_cache[layer, 0, block_idx, :seq_len] = np.random.randn(
+                        seq_len, self.num_heads, self.head_dim
+                    ).astype(np.float16)
+                    self.kv_cache[layer, 1, block_idx, :seq_len] = np.random.randn(
+                        seq_len, self.num_heads, self.head_dim
+                    ).astype(np.float16)
+
+        return {"blocks": allocated, "num_blocks": num_blocks_needed}
+
+    def decode(self, request_id: str, token: int) -> np.ndarray:
+        """Decode phase: use KV cache to compute attention for one token."""
+        blocks = self.block_table.get(request_id, [])
+        if not blocks:
+            raise ValueError(f"No cache allocated for {request_id}")
+
+        # Read from cached KV, compute single-token attention
+        cached_k = self.kv_cache[:, 0, blocks]
+        cached_v = self.kv_cache[:, 1, blocks]
+
+        # Return cached context (simplified)
+        return {
+            "cached_k": cached_k,
+            "cached_v": cached_v,
+            "num_cached_tokens": len(blocks) * self.block_size
+        }
+
+    def append_kv_cache(self, request_id: str, new_key: np.ndarray,
+                        new_value: np.ndarray) -> bool:
+        blocks = self.block_table.get(request_id, [])
+        last_block = blocks[-1]
+        slot = self._find_next_slot(last_block)
+        if slot >= self.block_size:
+            return True  # Will need new block on next iteration
+        for layer in range(self.num_layers):
+            self.kv_cache[layer, 0, last_block, slot] = new_key[layer]
+            self.kv_cache[layer, 1, last_block, slot] = new_value[layer]
+        return False
+
+    def _find_next_slot(self, block_idx: int) -> int:
+        for slot in range(self.block_size):
+            if np.all(self.kv_cache[0, 0, block_idx, slot] == 0):
+                return slot
+        return self.block_size
+
+    def cache_utilization(self) -> float:
+        return (self.max_blocks - len(self.free_blocks)) / self.max_blocks * 100
+
+    def estimate_cache_size(self, num_tokens: int, num_layers: int,
+                            num_heads: int, head_dim: int,
+                            dtype_bytes: int = 2) -> float:
+        """Estimate KV cache size in GB."""
+        bytes_per_token = 2 * num_layers * num_heads * head_dim * dtype_bytes
+        return (num_tokens * bytes_per_token) / (1024**3)
+```
+
+**KV Cache Optimization Techniques**:
+
+```python
+class KVCacheOptimizer:
+    def __init__(self):
+        self.techniques = {}
+
+    def register_technique(self, name: str, description: str,
+                           memory_savings: float, performance_impact: str):
+        self.techniques[name] = {
+            "description": description,
+            "memory_savings": memory_savings,
+            "performance_impact": performance_impact
+        }
+
+    def get_recommendations(self, model_size_b: float,
+                            max_seq_len: int, batch_size: int) -> list:
+        recommendations = []
+        if max_seq_len > 2048:
+            recommendations.append({
+                "technique": "Multi-Query Attention (MQA)",
+                "savings": "~80% KV cache",
+                "when": "Long context models"
+            })
+            recommendations.append({
+                "technique": "Grouped-Query Attention (GQA)",
+                "savings": "~50% KV cache",
+                "when": "Balanced quality/efficiency"
+            })
+        if batch_size > 8:
+            recommendations.append({
+                "technique": "KV Cache Quantization (FP16 -> FP8)",
+                "savings": "~50% KV cache memory",
+                "when": "High throughput serving"
+            })
+            recommendations.append({
+                "technique": "Prefix Caching / RadixAttention",
+                "savings": "Shared prefix, variable",
+                "when": "Shared system prompts"
+            })
+        if model_size_b > 30:
+            recommendations.append({
+                "technique": "Window Attention / Sliding Window",
+                "savings": "O(window) instead of O(seq_len)",
+                "when": "Long context, local patterns"
+            })
+        return recommendations
+
+
+# KV Cache Quantization
+class KVCacheQuantizer:
+    def __init__(self, quantize_bits: int = 8):
+        self.quantize_bits = quantize_bits
+        self.max_val = 2**(quantize_bits - 1) - 1
+
+    def quantize(self, fp16_tensor: np.ndarray) -> tuple:
+        abs_max = np.abs(fp16_tensor).max()
+        scale = abs_max / self.max_val if abs_max > 0 else 1
+        quantized = np.round(fp16_tensor / scale).astype(np.int8)
+        return quantized, scale
+
+    def dequantize(self, quantized: np.ndarray, scale: float) -> np.ndarray:
+        return quantized.astype(np.float16) * scale
+
+    def compress_cache(self, kv_cache: dict) -> dict:
+        compressed = {}
+        for key, tensor in kv_cache.items():
+            if "cache" in str(key):
+                q, s = self.quantize(tensor)
+                compressed[key] = {"data": q, "scale": s}
+        return compressed
+```
+
+## 3. Inference Optimization
+
+### 3.1 Quantization
+
+```python
+class ModelQuantizer:
+    def __init__(self, model, calibration_data=None):
+        self.model = model
+        self.calibration_data = calibration_data
+        self.quant_config = {}
+
+    def quantize_fp8(self, model_size_b: float) -> dict:
+        """FP8 quantization: ~2x memory reduction, minimal quality loss."""
+        memory_before = model_size_b * 2  # FP16: 2 bytes/param
+        memory_after = model_size_b * 1   # FP8: 1 byte/param
+        return {
+            "dtype": "fp8",
+            "memory_before_gb": memory_before,
+            "memory_after_gb": memory_after,
+            "savings_gb": memory_before - memory_after,
+            "expected_quality_loss": "negligible (< 0.5%)",
+            "supported_gpus": ["H100", "H200", "B100"]
+        }
+
+    def quantize_int4(self, model_size_b: float) -> dict:
+        """INT4 quantization (GPTQ/AWQ): ~4x memory reduction."""
+        memory_before = model_size_b * 2
+        memory_after = model_size_b * 0.5  # INT4: 0.5 bytes/param
+        return {
+            "dtype": "int4",
+            "memory_before_gb": memory_before,
+            "memory_after_gb": memory_after,
+            "savings_gb": memory_before - memory_after,
+            "expected_quality_loss": "1-3% on benchmarks",
+            "calibration_required": True
+        }
+
+    def quantize_int8(self, model_size_b: float) -> dict:
+        """INT8 quantization: ~2x memory reduction."""
+        memory_before = model_size_b * 2
+        memory_after = model_size_b * 1
+        return {
+            "dtype": "int8",
+            "memory_before_gb": memory_before,
+            "memory_after_gb": memory_after,
+            "savings_gb": memory_before - memory_after,
+            "expected_quality_loss": "< 1% on most tasks"
+        }
+
+    def recommend_quantization(self, gpu_memory_gb: float,
+                                model_size_b: float, quality_critical: bool) -> str:
+        required_fp16 = model_size_b * 2.5  # 2x weights + ~0.5x overhead
+        if required_fp16 <= gpu_memory_gb * 0.9 and quality_critical:
+            return "fp16"  # No quantization needed
+        elif model_size_b * 1.5 <= gpu_memory_gb * 0.9:
+            return "fp8"  # H100 only
+        elif model_size_b * 1.1 <= gpu_memory_gb * 0.9:
+            return "int8"
+        else:
+            return "int4"  # Must quantize to fit
+
+
+# Speculative Decoding
+class SpeculativeDecoder:
+    def __init__(self, target_model, draft_model, gamma: int = 5):
+        self.target = target_model  # Large, accurate model
+        self.draft = draft_model    # Small, fast model
+        self.gamma = gamma           # Number of draft tokens
+
+    def generate(self, prompt: str, max_tokens: int = 256) -> list[int]:
+        generated = []
+        input_ids = self.tokenize(prompt)
+
+        while len(generated) < max_tokens:
+            # Step 1: Draft model generates gamma tokens quickly
+            draft_tokens = self.draft.generate(input_ids, max_new_tokens=self.gamma)
+
+            # Step 2: Target model verifies all draft tokens in one forward pass
+            target_logits = self.target.forward(input_ids + draft_tokens)
+
+            # Step 3: Rejection sampling — verify each draft token
+            accepted = []
+            for i, draft_token in enumerate(draft_tokens):
+                target_prob = target_logits[len(input_ids) + i]
+                draft_prob = self._get_draft_prob(input_ids + draft_tokens[:i],
+                                                   draft_token)
+                if target_prob > draft_prob:
+                    acceptance_ratio = draft_prob / target_prob
+                    if random.random() < acceptance_ratio:
+                        accepted.append(draft_token)
+                    else:
+                        # Sample from adjusted distribution
+                        adjusted = (target_prob - draft_prob).clip(min=0)
+                        adjusted /= adjusted.sum()
+                        accepted.append(np.random.choice(len(adjusted), p=adjusted))
+                        break
+                else:
+                    accepted.append(draft_token)
+
+            generated.extend(accepted)
+            input_ids = generated[-self.context_window:]
+
+            # Efficiency: if gamma=5 and avg accept=3, speedup ~3x
+            acceptance_rate = len(accepted) / self.gamma
+
+        return generated
+
+    def _get_draft_prob(self, context: list[int], token: int) -> float:
+        draft_logits = self.draft.forward(context)
+        return torch.softmax(draft_logits[-1], dim=-1)[token].item()
+```
+
+### 3.2 Parallelism Strategies
+
+```python
+class ParallelismConfig:
+    def __init__(self, model_size_b: float, num_gpus: int,
+                 gpu_memory_gb: float):
+        self.model_size = model_size_b
+        self.num_gpus = num_gpus
+        self.gpu_memory = gpu_memory_gb
+        self.strategies = {}
+
+    def recommend(self) -> dict:
+        if self.model_size * 2 > self.num_gpus * self.gpu_memory * 0.9:
+            raise ValueError("Insufficient total GPU memory")
+
+        if self.num_gpus == 1:
+            return {"strategy": "none", "details": "Single GPU inference"}
+        elif self.num_gpus <= 4 and self.model_size > 30:
+            return {"strategy": "tensor_parallel",
+                    "details": "TP across GPUs, each holds shard",
+                    "communication": "all-reduce per layer (high bandwidth needed)",
+                    "efficiency": "~85% linear scaling",
+                    "recommended_for": ["A100-80GB", "H100-80GB"]}
+        elif self.num_gpus > 4:
+            return {"strategy": "tp_pp_combined",
+                    "details": "TP within node, PP across nodes",
+                    "recommended": {"tp_size": 4, "pp_size": self.num_gpus // 4}}
+        else:
+            return {"strategy": "pipeline_parallel",
+                    "details": "Layers split across GPUs",
+                    "bubble_overhead": 1 - (1 / self.num_gpus)}
+
+    def tensor_parallel_config(self, tp_size: int) -> dict:
+        return {
+            "sharding": {
+                "attention": f"head_dim // {tp_size} per GPU",
+                "ffn": f"hidden_dim // {tp_size} per GPU",
+                "vocab_embedding": f"vocab_size // {tp_size}"
+            },
+            "communication": {
+                "forward": "all-reduce (gather shards)",
+                "backward": "all-reduce (sync gradients)",
+                "bandwidth_critical": True
+            },
+            "framework": "megatron-lm / tensorrt-llm"
+        }
+
+    def pipeline_parallel_config(self, pp_size: int, num_layers: int) -> dict:
+        layers_per_stage = num_layers // pp_size
+        return {
+            "stage_assignment": f"{layers_per_stage} layers per GPU",
+            "schedule": "1F1B (one-forward-one-backward)",
+            "bubble_ratio": f"{(pp_size - 1) / pp_size * 100:.0f}% pipeline bubble",
+            "accumulation_steps": pp_size * 2
+        }
+```
+
+## 4. Production Deployment Patterns
+
+### 4.1 Kubernetes Deployment for LLMs
+
+```python
+class LLMDeploymentConfig:
+    def __init__(self, model_name: str, model_size_b: float,
+                 replicas: int = 3, gpu_type: str = "nvidia-a100"):
+        self.model_name = model_name
+        self.model_size_b = model_size_b
+        self.replicas = replicas
+        self.gpu_type = gpu_type
+
+    def generate_k8s_deployment(self) -> str:
+        return f"""
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {self.model_name}-serving
+spec:
+  replicas: {self.replicas}
+  selector:
+    matchLabels:
+      app: {self.model_name}
+  template:
+    metadata:
+      labels:
+        app: {self.model_name}
+    spec:
+      containers:
+      - name: triton-server
+        image: nvcr.io/nvidia/tritonserver:24.01-py3
+        command: ["tritonserver"]
+        args: ["--model-repository=/models"]
+        resources:
+          limits:
+            nvidia.com/gpu: {self._gpus_needed()}
+            memory: "{self._memory_needed()}Gi"
+            cpu: "{self._cpu_needed()}"
+        env:
+        - name: CUDA_VISIBLE_DEVICES
+          value: "0,1"
+        - name: TRITON_CACHE_SIZE_MB
+          value: "16384"
+        ports:
+        - containerPort: 8000  # HTTP
+        - containerPort: 8001  # gRPC
+        - containerPort: 8002  # Metrics
+        livenessProbe:
+          httpGet:
+            path: /v2/health/live
+            port: 8000
+          initialDelaySeconds: 60
+        readinessProbe:
+          httpGet:
+            path: /v2/health/ready
+            port: 8000
+          initialDelaySeconds: 30
+      nodeSelector:
+        gpu-type: {self.gpu_type}
+      tolerations:
+      - key: "nvidia.com/gpu"
+        operator: "Exists"
+        effect: "NoSchedule"
+"""
+
+    def _gpus_needed(self) -> int:
+        return max(1, int(self.model_size_b * 2 / 80) + 1)
+
+    def _memory_needed(self) -> int:
+        return int(self.model_size_b * 3 + 4)
+
+    def _cpu_needed(self) -> int:
+        return self._gpus_needed() * 8
+
+
+class LLMHorizontalPodAutoscaler:
+    def __init__(self, min_replicas: int = 2, max_replicas: int = 10):
+        self.min = min_replicas
+        self.max = max_replicas
+
+    def generate(self, model_name: str) -> str:
+        return f"""
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {model_name}-hpa
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {model_name}-serving
+  minReplicas: {self.min}
+  maxReplicas: {self.max}
+  metrics:
+  - type: Pods
+    pods:
+      metric:
+        name: triton_inference_queue_size
+      target:
+        type: AverageValue
+        averageValue: 100
+  - type: Resource
+    resource:
+      name: memory
+      target:
+        type: Utilization
+        averageUtilization: 80
+  behavior:
+    scaleDown:
+      stabilizationWindowSeconds: 300
+      policies:
+      - type: Percent
+        value: 10
+        periodSeconds: 60
+    scaleUp:
+      stabilizationWindowSeconds: 0
+      policies:
+      - type: Percent
+        value: 100
+        periodSeconds: 15
+"""
+```
+
+### 4.2 Deployment Strategies
+
+```python
+class ModelDeploymentStrategy:
+    @staticmethod
+    def canary_deploy(model_a: str, model_b: str, traffic_percent: int = 5) -> dict:
+        return {
+            "strategy": "canary",
+            "model_a": model_a,
+            "model_b": model_b,
+            "initial_traffic_percent": traffic_percent,
+            "increment_per_step": 10,
+            "evaluation_period_minutes": 15,
+            "rollback_conditions": {
+                "error_rate_increase": 0.01,
+                "latency_p95_increase": 0.2,
+                "accuracy_decrease": 0.05
+            },
+            "progression": [
+                {"stage": "shadow", "duration": "30m", "traffic_pct": 0},
+                {"stage": "canary_5", "duration": "15m", "traffic_pct": 5},
+                {"stage": "canary_20", "duration": "30m", "traffic_pct": 20},
+                {"stage": "canary_50", "duration": "60m", "traffic_pct": 50},
+                {"stage": "full_rollout", "duration": "indefinite", "traffic_pct": 100},
+            ]
+        }
+
+    @staticmethod
+    def blue_green(model_active: str, model_standby: str,
+                    validation_test: str = "holdout_1000") -> dict:
+        return {
+            "strategy": "blue_green",
+            "blue_env": model_active,
+            "green_env": model_standby,
+            "validation_dataset": validation_test,
+            "validation_metrics": ["accuracy", "latency_p50", "latency_p99", "error_rate"],
+            "switch_condition": "all metrics within 5% of baseline",
+            "rollback": "immediate DNS switch back to blue",
+            "cost": "double infrastructure during validation"
+        }
+
+    @staticmethod
+    def shadow_deploy(model_current: str, model_candidate: str) -> dict:
+        return {
+            "strategy": "shadow",
+            "description": "Candidate model receives copy of traffic but responses are discarded",
+            "model_current": model_current,
+            "model_candidate": model_candidate,
+            "metrics_compared": [
+                "response_similarity (cosine)",
+                "latency_delta",
+                "confidence_scores",
+                "token_efficiency"
+            ],
+            "promotion_condition": "candidate matches or exceeds current on 95% of metrics",
+            "duration": "minimum 48 hours of production traffic"
+        }
+```
+
+## 5. A/B Testing for Models
+
+### 5.1 Experiment Design
+
+```python
+class ModelABTest:
+    def __init__(self, experiment_name: str, control_model: str,
+                 treatment_model: str, traffic_split: float = 0.5):
+        self.experiment_name = experiment_name
+        self.control = {"model": control_model, "traffic": 1 - traffic_split}
+        self.treatment = {"model": treatment_model, "traffic": traffic_split}
+        self.results: list[dict] = []
+        self.min_sample_size = 1000
+
+    def assign(self, user_id: str) -> str:
+        if hash(user_id + self.experiment_name) % 10000 < self.treatment["traffic"] * 10000:
+            return "treatment"
+        return "control"
+
+    def record(self, user_id: str, variant: str, metrics: dict):
+        self.results.append({
+            "user_id": user_id,
+            "variant": variant,
+            "timestamp": time.time(),
+            **metrics
+        })
+
+    def analyze(self, metric: str = "latency_ms") -> dict:
+        control_vals = [r[metric] for r in self.results if r["variant"] == "control"]
+        treatment_vals = [r[metric] for r in self.results if r["variant"] == "treatment"]
+
+        if len(control_vals) < self.min_sample_size or len(treatment_vals) < self.min_sample_size:
+            return {"significant": False, "reason": "Insufficient sample size"}
+
+        from scipy import stats
+        t_stat, p_value = stats.ttest_ind(control_vals, treatment_vals)
+
+        control_mean = np.mean(control_vals)
+        treatment_mean = np.mean(treatment_vals)
+        effect_size = (treatment_mean - control_mean) / control_mean
+
+        return {
+            "experiment": self.experiment_name,
+            "metric": metric,
+            "control_mean": control_mean,
+            "treatment_mean": treatment_mean,
+            "effect_size_percent": effect_size * 100,
+            "p_value": p_value,
+            "significant": p_value < 0.05,
+            "control_n": len(control_vals),
+            "treatment_n": len(treatment_vals),
+            "recommendation": "rollout" if (effect_size < 0 and p_value < 0.05)
+                              else "rollback" if (effect_size > 0 and p_value < 0.05)
+                              else "continue_testing"
+        }
+
+    def get_daily_report(self) -> dict:
+        today = [r for r in self.results
+                 if datetime.fromtimestamp(r["timestamp"]).date() == date.today()]
+        return {
+            "experiment": self.experiment_name,
+            "today_requests": len(today),
+            "total_requests": len(self.results),
+            "control_count": sum(1 for r in today if r["variant"] == "control"),
+            "treatment_count": sum(1 for r in today if r["variant"] == "treatment"),
+            "metrics_tracked": [k for k in self.results[0].keys()
+                                if k not in ("user_id", "variant", "timestamp")]
+        }
+```
+
+## 6. Monitoring and Observability
+
+### 6.1 ML System Metrics
+
+```python
+class MLSystemMonitor:
+    def __init__(self):
+        self.metrics = defaultdict(list)
+        self.alerts = []
+
+    def record_latency(self, model: str, latency_ms: float):
+        self.metrics[f"{model}_latency"].append(latency_ms)
+        if latency_ms > self._get_sla(model):
+            self.alerts.append({
+                "type": "latency_sla_breach",
+                "model": model,
+                "value": latency_ms,
+                "threshold": self._get_sla(model),
+                "timestamp": time.time()
+            })
+
+    def record_throughput(self, model: str, tps: float):
+        self.metrics[f"{model}_throughput"].append(tps)
+
+    def record_memory(self, model: str, gpu_id: int, memory_used_gb: float):
+        self.metrics[f"{model}_gpu{gpu_id}_memory"].append(memory_used_gb)
+        gpu_memory_gb = 80  # A100
+        if memory_used_gb / gpu_memory_gb > 0.95:
+            self.alerts.append({
+                "type": "gpu_memory_pressure",
+                "model": model,
+                "gpu_id": gpu_id,
+                "value": memory_used_gb,
+                "threshold": gpu_memory_gb * 0.95,
+                "timestamp": time.time()
+            })
+
+    def record_tokens_per_request(self, model: str, prompt: int, completion: int):
+        self.metrics[f"{model}_prompt_tokens"].append(prompt)
+        self.metrics[f"{model}_completion_tokens"].append(completion)
+
+    def get_model_dashboard(self, model: str) -> dict:
+        latencies = self.metrics.get(f"{model}_latency", [])
+        throughputs = self.metrics.get(f"{model}_throughput", [])
+        recent = latencies[-1000:] if len(latencies) > 1000 else latencies
+
+        return {
+            "model": model,
+            "latency_ms": {
+                "p50": sorted(recent)[len(recent) // 2] if recent else 0,
+                "p95": sorted(recent)[int(len(recent) * 0.95)] if recent else 0,
+                "p99": sorted(recent)[int(len(recent) * 0.99)] if recent else 0,
+                "avg": np.mean(recent) if recent else 0
+            },
+            "throughput": {
+                "avg_tps": np.mean(throughputs[-100:]) if throughputs else 0,
+                "current_tps": throughputs[-1] if throughputs else 0,
+                "peak_tps": max(throughputs) if throughputs else 0
+            },
+            "request_count": len(self.metrics.get(f"{model}_latency", [])),
+            "active_alerts": sum(1 for a in self.alerts if a.get("acknowledged") != True)
+        }
+
+    def _get_sla(self, model: str) -> float:
+        sla_map = {"gpt-4": 5000, "gpt-3.5": 2000, "llama-70b": 3000}
+        return sla_map.get(model, 5000)
+```
+
+### 6.2 GPU Observability
+
+```python
+class GPUObserver:
+    def __init__(self, num_gpus: int):
+        self.num_gpus = num_gpus
+        self.gpu_metrics = {
+            i: {
+                "utilization": [],
+                "memory_used": [],
+                "temperature": [],
+                "power_watts": [],
+                "pcie_bandwidth": []
+            } for i in range(num_gpus)
+        }
+
+    def collect(self, gpu_id: int) -> dict:
+        # In production, use nvidia-smi or DCGM
+        return {
+            "utilization_percent": random.uniform(0, 100),
+            "memory_used_gb": random.uniform(0, 80),
+            "memory_total_gb": 80,
+            "temperature_c": random.uniform(30, 85),
+            "power_w": random.uniform(100, 400),
+            "pcie_bandwidth_percent": random.uniform(0, 100),
+            "memory_bandwidth_percent": random.uniform(0, 100),
+            "sm_clock_mhz": random.uniform(1000, 2000),
+            "memory_clock_mhz": random.uniform(500, 1600),
+            "pcie_link_speed": "Gen4 x16",
+            "ecc_errors": random.randint(0, 5),
+            "retired_pages": random.randint(0, 10),
+            "nvlink_bandwidth_gbps": random.uniform(0, 600)
+        }
+
+    def check_anomalies(self, gpu_id: int) -> list[str]:
+        metrics = self.collect(gpu_id)
+        anomalies = []
+        if metrics["temperature_c"] > 85:
+            anomalies.append("GPU temperature critical")
+        if metrics["memory_used_gb"] > 75:
+            anomalies.append("GPU memory pressure")
+        if metrics["utilization_percent"] < 5 and self._has_pending_work(gpu_id):
+            anomalies.append("GPU underutilized with pending work")
+        if metrics["ecc_errors"] > 10:
+            anomalies.append("High ECC error rate — possible hardware issue")
+        return anomalies
+
+    def _has_pending_work(self, gpu_id: int) -> bool:
+        return False
+
+    def get_cluster_summary(self) -> dict:
+        summaries = [self.collect(i) for i in range(self.num_gpus)]
+        return {
+            "avg_utilization": np.mean([s["utilization_percent"] for s in summaries]),
+            "total_memory_used": sum(s["memory_used_gb"] for s in summaries),
+            "total_memory": self.num_gpus * 80,
+            "gpus_at_risk": sum(1 for s in summaries if s["temperature_c"] > 85),
+            "power_consumption_w": sum(s["power_w"] for s in summaries),
+            "ecc_errors_total": sum(s["ecc_errors"] for s in summaries)
+        }
+```
+
+### 6.3 Data and Model Drift Detection
+
+```python
+class DriftDetectionSystem:
+    def __init__(self, baseline_data: np.ndarray, threshold_p_value: float = 0.05):
+        self.baseline = baseline_data
+        self.threshold = threshold_p_value
+        self.drift_log = []
+
+    def detect_feature_drift(self, new_data: np.ndarray,
+                              feature_names: list[str]) -> dict:
+        from scipy import stats
+        drifted_features = []
+        for i, name in enumerate(feature_names):
+            statistic, p_value = stats.ks_2samp(self.baseline[:, i], new_data[:, i])
+            if p_value < self.threshold:
+                drifted_features.append({
+                    "feature": name,
+                    "ks_statistic": statistic,
+                    "p_value": p_value,
+                    "drift_magnitude": "high" if p_value < 0.001 else "medium"
+                })
+        return {
+            "drift_detected": len(drifted_features) > 0,
+            "drifted_features": drifted_features,
+            "drift_rate": len(drifted_features) / len(feature_names),
+            "severity": "critical" if len(drifted_features) > len(feature_names) * 0.3
+                       else "warning" if len(drifted_features) > 0
+                       else "normal"
+        }
+
+    def detect_model_drift(self, expected_scores: np.ndarray,
+                            actual_scores: np.ndarray, bins: int = 10) -> dict:
+        psi = self._population_stability_index(expected_scores, actual_scores, bins)
+        return {
+            "psi": psi,
+            "drift_detected": psi > 0.25,
+            "severity": "critical" if psi > 0.5
+                       else "warning" if psi > 0.25
+                       else "normal",
+            "degradation_hint": "model needs retraining" if psi > 0.5 else None
+        }
+
+    def _population_stability_index(self, expected, actual, bins: int = 10) -> float:
+        expected_hist, edges = np.histogram(expected, bins=bins, range=(0, 1))
+        actual_hist, _ = np.histogram(actual, bins=bins, range=(0, 1))
+        expected_pct = expected_hist / len(expected)
+        actual_pct = actual_hist / len(actual)
+        psi = 0
+        for e, a in zip(expected_pct, actual_pct):
+            if e > 0 and a > 0:
+                psi += (a - e) * np.log(a / e)
+        return psi
+
+    def report(self) -> dict:
+        return {
+            "total_checks": len(self.drift_log),
+            "drift_events": sum(1 for d in self.drift_log if d["drift_detected"]),
+            "last_drift": self.drift_log[-1] if self.drift_log else None
+        }
+```
+
+## 7. Failure Modes
+
+### 7.1 GPU Failures
+
+```python
+class GPUFailureHandler:
+    FAILURE_MODES = {
+        "OOM": {
+            "symptom": "CUDA out of memory",
+            "cause": "KV cache + weights exceed GPU memory",
+            "recovery": [
+                "Reduce batch size",
+                "Enable KV cache offloading",
+                "Use memory-efficient attention (FlashAttention)",
+                "Quantize model (FP16 -> FP8/INT4)",
+                "Add more GPUs (tensor parallelism)"
+            ],
+            "prevention": [
+                "Set gpu_memory_utilization < 0.95",
+                "Monitor with memory pressure alerts",
+                "Implement graceful degradation (queue instead of crash)",
+                "Pre-allocate KV cache blocks with headroom"
+            ]
+        },
+        "GPU_HANG": {
+            "symptom": "GPU not responding / TDR detected",
+            "cause": "Kernel timeout (default 2s on Windows, 5s on Linux)",
+            "recovery": [
+                "Watchdog timer: auto-restart container",
+                "NVIDIA persistence daemon (nvidia-persistenced)",
+                "Reset GPU via nvidia-smi --gpu-reset",
+                "Migrate to healthy GPU and restart"
+            ],
+            "prevention": [
+                "Set CUDA_DEVICE_MAX_CONNECTIONS=1",
+                "Use compute-sanitizer for memory access violations",
+                "Monitor GPU watchdog timeouts in dmesg",
+                "Enable ECC memory"
+            ]
+        },
+        "NVLink_FAILURE": {
+            "symptom": "NCCL timeout / All-reduce hangs",
+            "cause": "NVLink cable fault or GPU misconfiguration",
+            "recovery": [
+                "Restart NCCL communicator",
+                "Fall back to PCIe communication (slower)",
+                "Re-seat GPU or replace NVLink bridge"
+            ],
+            "prevention": [
+                "Monitor NVLink bandwidth and errors",
+                "Use NCCL_DEBUG=INFO in staging",
+                "Configure NCCL_IB_HCA for InfiniBand fallback"
+            ]
+        },
+        "ECC_ERROR": {
+            "symptom": "Increasing ECC error count in nvidia-smi",
+            "cause": "Memory cell degradation from radiation/usage",
+            "recovery": [
+                "Check retired pages: nvidia-smi --query-retired-pages",
+                "Replace GPU if retired pages > threshold",
+                "Migrate workloads off failing GPU"
+            ],
+            "prevention": [
+                "Enable ECC (on by default on A100/H100)",
+                "Monitor ECC error rate trends",
+                "Schedule GPU health checks"
+            ]
+        }
+    }
+
+    @staticmethod
+    def diagnose(symptom: str) -> list:
+        matches = []
+        for failure, details in GPUFailureHandler.FAILURE_MODES.items():
+            if any(keyword in symptom.lower() for keyword in details["symptom"].lower().split()):
+                matches.append({
+                    "failure": failure,
+                    "details": details
+                })
+        return matches
+
+    @staticmethod
+    def get_runbook(failure: str) -> str:
+        details = GPUFailureHandler.FAILURE_MODES.get(failure)
+        if not details:
+            return f"Unknown failure: {failure}"
+        return f"""# Runbook: {failure}
+
+## Symptom
+{details['symptom']}
+
+## Root Cause
+{details['cause']}
+
+## Recovery Steps
+{chr(10).join(f"{i+1}. {step}" for i, step in enumerate(details['recovery']))}
+
+## Prevention
+{chr(10).join(f"- {step}" for step in details['prevention'])}"""
+
+
+class ModelFailureDetector:
+    def __init__(self):
+        self.failures = defaultdict(list)
+        self.sli_history = defaultdict(list)
+
+    def detect_model_degradation(self, accuracy: float, baseline_accuracy: float,
+                                   threshold: float = 0.05) -> dict:
+        degradation = baseline_accuracy - accuracy
+        if degradation > threshold:
+            return {
+                "detected": True,
+                "type": "accuracy_degradation",
+                "current": accuracy,
+                "baseline": baseline_accuracy,
+                "drop": degradation,
+                "severity": "critical" if degradation > threshold * 2 else "warning",
+                "action": "rollback_to_previous" if degradation > threshold * 2
+                         else "investigate_and_retrain"
+            }
+        return {"detected": False}
+
+    def detect_toxic_output(self, responses: list[str]) -> dict:
+        flagged = []
+        for i, response in enumerate(responses):
+            toxicity_score = self._score_toxicity(response)
+            if toxicity_score > 0.7:
+                flagged.append({"index": i, "score": toxicity_score})
+        return {
+            "toxic_responses": len(flagged),
+            "total_checked": len(responses),
+            "toxic_rate": len(flagged) / len(responses) if responses else 0,
+            "flagged": flagged[:10]
+        }
+
+    def _score_toxicity(self, text: str) -> float:
+        toxic_patterns = ["hate", "violence", "abuse", "discriminat"]
+        text_lower = text.lower()
+        matches = sum(1 for p in toxic_patterns if p in text_lower)
+        return min(1.0, matches * 0.25)
+
+    def detect_loop(self, actions: list[str], max_unique: int = 5) -> dict:
+        recent = actions[-20:]
+        action_counts = Counter(recent)
+        repeated = {k: v for k, v in action_counts.items() if v > 5}
+        unique_actions = len(set(recent))
+
+        return {
+            "loop_detected": unique_actions <= max_unique and len(recent) >= 20,
+            "unique_actions": unique_actions,
+            "repeated_actions": repeated,
+            "severity": "critical" if unique_actions <= 2 else "warning"
+        }
+```
+
+## 8. Cost Optimization
+
+### 8.1 GPU Utilization Optimization
 
 ```mermaid
 graph LR
@@ -55,7 +1549,7 @@ graph TD
 
 
 
-### 1.1 GPU Provisioning and Autoscaling
+### 8.2 GPU Provisioning Reference
 
 ```python
 class GPUProvisioner:
@@ -113,7 +1607,7 @@ class Autoscaler:
         return self.current_replicas
 ```
 
-### 1.2 Inference Batching
+### 8.3 Batching Reference
 
 ```python
 class DynamicBatcher:
@@ -182,129 +1676,9 @@ class ContinuousBatching:
         return completed / duration_seconds if duration_seconds > 0 else 0
 ```
 
-## 2. Latency Optimization
+## 9. Model Selection and Cost Routing
 
-### 2.1 KV Cache Management
-
-```python
-class KVCacheManager:
-    def __init__(self, max_cache_size_gb=24):
-        self.max_cache_size_gb = max_cache_size_gb
-        self.cache_entries = {}
-        self.total_cache_size = 0
-
-    def estimate_cache_size(self, n_layers: int, n_heads: int, d_head: int, seq_len: int, dtype_bytes=2) -> float:
-        bytes_per_layer = n_heads * d_head * seq_len * dtype_bytes * 2  # K + V
-        total_bytes = bytes_per_layer * n_layers
-        return total_bytes / (1024 ** 3)  # Convert to GB
-
-    def can_allocate(self, request_id: str, size_gb: float) -> bool:
-        if self.total_cache_size + size_gb > self.max_cache_size_gb:
-            self.evict_lru()
-        if self.total_cache_size + size_gb <= self.max_cache_size_gb:
-            self.cache_entries[request_id] = {"size_gb": size_gb, "last_access": __import__('time').time()}
-            self.total_cache_size += size_gb
-            return True
-        return False
-
-    def evict_lru(self):
-        if not self.cache_entries:
-            return
-        oldest = min(self.cache_entries, key=lambda k: self.cache_entries[k]["last_access"])
-        self.total_cache_size -= self.cache_entries[oldest]["size_gb"]
-        del self.cache_entries[oldest]
-
-    def access(self, request_id: str):
-        if request_id in self.cache_entries:
-            self.cache_entries[request_id]["last_access"] = __import__('time').time()
-
-
-class PagedAttention:
-    def __init__(self, block_size=16, num_blocks=1024):
-        self.block_size = block_size
-        self.num_blocks = num_blocks
-        self.free_blocks = list(range(num_blocks))
-        self.allocated_blocks = {}
-
-    def allocate_blocks(self, num_tokens: int, request_id: str) -> list:
-        num_blocks_needed = (num_tokens + self.block_size - 1) // self.block_size
-        if len(self.free_blocks) < num_blocks_needed:
-            return []
-        allocated = self.free_blocks[:num_blocks_needed]
-        self.free_blocks = self.free_blocks[num_blocks_needed:]
-        self.allocated_blocks[request_id] = allocated
-        return allocated
-
-    def free_blocks(self, request_id: str):
-        if request_id in self.allocated_blocks:
-            self.free_blocks.extend(self.allocated_blocks[request_id])
-            self.free_blocks.sort()
-            del self.allocated_blocks[request_id]
-
-    def get_utilization(self) -> float:
-        total = self.num_blocks
-        used = total - len(self.free_blocks)
-        return used / total
-```
-
-### 2.2 Inference Optimization Techniques
-
-```python
-class InferenceOptimizer:
-    def __init__(self):
-        self.techniques = {}
-
-    def register_technique(self, name: str, speedup: float, memory_reduction: float, quality_impact: float):
-        self.techniques[name] = {
-            "speedup": speedup,
-            "memory_reduction": memory_reduction,
-            "quality_impact": quality_impact
-        }
-
-    def recommend(self, model_size_b: float, latency_target_ms: float, gpu_memory_gb: float) -> list:
-        recommendations = []
-        if model_size_b * 2 > gpu_memory_gb:
-            recommendations.append("quantization_int4")
-        if latency_target_ms < 50:
-            recommendations.append("kv_cache_optimization")
-        if model_size_b > 7:
-            recommendations.append("tensor_parallelism")
-        if latency_target_ms < 20:
-            recommendations.append("speculative_decoding")
-        recommendations.append("continuous_batching")
-        return recommendations
-
-
-# Flash Attention v2 implementation
-class FlashAttention:
-    def __init__(self, block_size_m=64, block_size_n=64):
-        self.block_m = block_size_m
-        self.block_n = block_size_n
-
-    def forward(self, Q, K, V):
-        batch, heads, seq_len, d_k = Q.shape
-        output = np.zeros_like(Q)
-        for i in range(0, seq_len, self.block_m):
-            q_block = Q[:, :, i:i+self.block_m]
-            row_max = np.full((batch, heads, q_block.shape[2], 1), -float('inf'))
-            row_sum = np.zeros((batch, heads, q_block.shape[2], 1))
-            output_block = np.zeros_like(q_block)
-            for j in range(0, seq_len, self.block_n):
-                k_block = K[:, :, j:j+self.block_n]
-                v_block = V[:, :, j:j+self.block_n]
-                scores = q_block @ k_block.transpose(0, 1, 3, 2) / np.sqrt(d_k)
-                new_row_max = np.maximum(row_max, scores.max(axis=-1, keepdims=True))
-                exp_scores = np.exp(scores - new_row_max)
-                row_sum = row_sum * np.exp(row_max - new_row_max) + exp_scores.sum(axis=-1, keepdims=True)
-                output_block = output_block * np.exp(row_max - new_row_max) + exp_scores @ v_block
-                row_max = new_row_max
-            output[:, :, i:i+self.block_m] = output_block / row_sum
-        return output
-```
-
-## 3. Cost Optimization
-
-### 3.1 Model Selection and Caching
+### 9.1 Model Selection and Caching
 
 ```python
 class CostOptimizer:
@@ -397,9 +1771,9 @@ class PromptCompressor:
         return compressed
 ```
 
-## 4. Safety and Security
+## 10. Safety and Security
 
-### 4.1 Content Filtering and Guardrails
+### 10.1 Content Filtering and Guardrails
 
 ```python
 class ContentFilter:
@@ -485,9 +1859,9 @@ class JailbreakDetector:
         return min(1.0, score)
 ```
 
-## 5. Evaluation
+## 11. Evaluation
 
-### 5.1 Automated Metrics
+### 11.1 Automated Metrics
 
 ```python
 class NLPEvaluator:
@@ -580,9 +1954,9 @@ Which is better? Respond with "A", "B", or "Tie":
         return self.judge(eval_prompt).strip()
 ```
 
-## 6. RAG Production
+## 12. RAG Production
 
-### 6.1 Chunking Strategies
+### 12.1 Chunking Strategies
 
 ```python
 class ChunkingStrategy:
@@ -642,7 +2016,7 @@ class ChunkingStrategy:
         return chunks
 ```
 
-### 6.2 Embedding Selection and Hybrid Search
+### 12.2 Embedding Selection and Hybrid Search
 
 ```python
 class EmbeddingSelector:
@@ -725,9 +2099,9 @@ class Reranker:
         return float(hashlib.md5(f"{query}:{passage}".encode()).hexdigest()[:8], 16) / 10**8
 ```
 
-## 7. CI/CD for ML
+## 13. CI/CD for ML
 
-### 7.1 Model CI/CD Pipeline
+### 13.1 Model CI/CD Pipeline
 
 ```python
 class ModelCICDPipeline:
@@ -821,9 +2195,9 @@ class ModelValidationGate:
         return report
 ```
 
-## 8. Production Monitoring
+## 14. Production Monitoring
 
-### 8.1 Real-Time Monitoring
+### 14.1 Real-Time Monitoring
 
 ```python
 class ProductionMonitor:
@@ -870,7 +2244,7 @@ class ProductionMonitor:
         return False
 ```
 
-### 8.2 Alerting
+### 14.2 Alerting
 
 ```python
 class AlertManager:
@@ -911,7 +2285,7 @@ class AlertManager:
         return [a for a in self.alerts if not a["acknowledged"]]
 ```
 
-## 9. Exercise Problems
+## 15. Exercise Problems
 
 **Problem 1**: Implement a dynamic batching server that collects requests for 10ms or until batch size reaches 32, then processes them. Measure throughput vs latency tradeoff.
 

@@ -8,15 +8,32 @@
 
 ```mermaid
 graph LR
-    A["Input<br/>Layer"] --> B["Hidden<br/>Layers"]
-    B --> C["Hidden<br/>Layers"]
-    C --> D["Output<br/>Layer"]
-    B --> E["Activation<br/>Functions"]
-    E --> B
-    style A fill:#4a8bc2
-    style B fill:#2d5a7b
-    style C fill:#2d5a7b
-    style D fill:#c73e1d
+    STATES["Raft Server States"] --> F["Follower<br/>(Default)"]
+    STATES --> C["Candidate<br/>(Election)"]
+    STATES --> L["Leader<br/>(Active)"]
+    F --> TO["Election Timeout<br/>(150-300ms)"]
+    TO --> C
+    C --> WIN["Wins Election →<br/>Leader"]
+    C --> LOSE["Loses Election →<br/>Follower"]
+    C --> SPLIT["Split Vote →<br/>New Timeout"]
+    L --> REP["Log Replication<br/>(AppendEntries)"]
+    REP --> ACK["Majority Ack →<br/>Commit"]
+    L --> HB["Heartbeat<br/>(Reset Followers)"]
+    HB --> F
+    L --> DISCOVER["Higher Term →<br/>Step Down"]
+    DISCOVER --> F
+    style STATES fill:#4a8bc2
+    style F fill:#2d5a7b
+    style C fill:#e8912e
+    style L fill:#3fb950
+    style TO fill:#c73e1d
+    style WIN fill:#3a7ca5
+    style LOSE fill:#3a7ca5
+    style SPLIT fill:#c73e1d
+    style REP fill:#6f42c1
+    style ACK fill:#3fb950
+    style HB fill:#e8912e
+    style DISCOVER fill:#c73e1d
 ```
 
 ## Table of Contents

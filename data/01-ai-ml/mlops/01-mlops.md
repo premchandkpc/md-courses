@@ -374,9 +374,233 @@ class ModelComparator:
         return tp / (tp + fn) if (tp + fn) > 0 else 0
 ```
 
-## 4. Feature Stores
+## 4. Feature Store Architecture
 
-### 4.1 Online and Offline Feature Serving
+### 4.1 Architecture Overview
+
+```mermaid
+graph TB
+    subgraph "Data Sources"
+        A["Kafka Streams"]
+        B["OLTP DBs<br/>(Postgres, MySQL)"]
+        C["Data Lake<br/>(S3 Parquet)"]
+    end
+
+    subgraph "Feature Pipeline"
+        D["Stream Processor<br/>(Flink)"]
+        E["Batch Processor<br/>(Spark)"]
+        F["Feature<br/>Computation"]
+    end
+
+    subgraph "Feature Store"
+        G["Offline Store<br/>(Parquet/Delta)"]
+        H["Online Store<br/>(Redis/DynamoDB)"]
+        I["Feature Registry<br/>(Catalog + Metadata)"]
+    end
+
+    subgraph "Consumers"
+        J["Training Jobs"]
+        K["Serving<br/>Inference"]
+        L["Feature<br/>Discovery"]
+    end
+
+    A --> D
+    B --> E
+    C --> E
+    D --> F
+    E --> F
+    F --> G
+    F --> H
+    F --> I
+    G --> J
+    H --> K
+    I --> L
+    J -->|Historical features| G
+    K -->|Real-time features| H
+```
+
+### 4.2 Feature Store Components
+
+```python
+class FeatureStore:
+    """Production feature store with offline + online serving."""
+
+    def __init__(self, online_store: str = "redis", offline_store: str = "s3",
+                 registry_path: str = "./feature_registry"):
+        self.online = self._init_online(online_store)
+        self.offline = self._init_offline(offline_store)
+        self.registry = FeatureRegistry(registry_path)
+        self.producers: dict[str, FeatureProducer] = {}
+
+    def _init_online(self, store_type: str):
+        stores = {
+            "redis": RedisOnlineStore(),
+            "dynamodb": DynamoDBOnlineStore(),
+            "memory": InMemoryOnlineStore()
+        }
+        return stores.get(store_type, InMemoryOnlineStore())
+
+    def _init_offline(self, store_type: str):
+        stores = {
+            "s3": S3OfflineStore(),
+            "delta": DeltaOfflineStore(),
+            "local": LocalOfflineStore()
+        }
+        return stores.get(store_type, LocalOfflineStore())
+
+    def register_feature_view(self, name: str, entities: list[str],
+                                features: list[dict], ttl: int = 3600):
+        self.registry.register(name, {
+            "entities": entities,
+            "features": features,
+            "ttl": ttl,
+            "created_at": time.time()
+        })
+
+    def get_training_data(self, feature_view: str, entities: list[str],
+                           start_date: str, end_date: str) -> pd.DataFrame:
+        return self.offline.get_features(
+            feature_view, entities, start_date, end_date
+        )
+
+    def get_online_features(self, feature_view: str, entity_keys: dict) -> dict:
+        return self.online.get(feature_view, entity_keys)
+
+    def materialize(self, feature_view: str, start_date: str, end_date: str):
+        """Push offline features to online store."""
+        df = self.offline.get_features(
+            feature_view, [], start_date, end_date
+        )
+        for _, row in df.iterrows():
+            self.online.set(feature_view, row.to_dict())
+
+
+class FeatureRegistry:
+    def __init__(self, path: str):
+        self.path = path
+        self.views: dict = {}
+        self._load()
+
+    def register(self, name: str, metadata: dict):
+        self.views[name] = metadata
+        self._save()
+
+    def get(self, name: str) -> dict:
+        return self.views.get(name)
+
+    def list_views(self) -> list[dict]:
+        return [{"name": k, **v} for k, v in self.views.items()]
+
+    def search(self, query: str) -> list[dict]:
+        results = []
+        for name, meta in self.views.items():
+            if query.lower() in name.lower():
+                results.append({"name": name, **meta})
+            else:
+                for f in meta.get("features", []):
+                    if query.lower() in f.get("name", "").lower():
+                        results.append({"name": name, **meta})
+                        break
+        return results
+
+    def _save(self):
+        os.makedirs(self.path, exist_ok=True)
+        with open(f"{self.path}/registry.json", "w") as f:
+            json.dump(self.views, f, indent=2)
+
+    def _load(self):
+        path = f"{self.path}/registry.json"
+        if os.path.exists(path):
+            with open(path) as f:
+                self.views = json.load(f)
+
+
+# Point-in-time correct feature retrieval
+class PointInTimeJoin:
+    """Ensures training data doesn't leak future information."""
+
+    def __init__(self, feature_store: FeatureStore):
+        self.store = feature_store
+
+    def create_training_set(self, labels: pd.DataFrame, feature_view: str,
+                              entity_col: str, timestamp_col: str) -> pd.DataFrame:
+        """For each label row, fetch features as of that timestamp."""
+        training_rows = []
+        for _, row in labels.iterrows():
+            entity_id = row[entity_col]
+            event_time = row[timestamp_col]
+            features = self.store.offline.get_features_as_of(
+                feature_view, entity_id, event_time
+            )
+            training_rows.append({**row.to_dict(), **features})
+        return pd.DataFrame(training_rows)
+```
+
+### 4.3 Feast-Style Feature Definitions
+
+```python
+# Feast-inspired feature definition pattern
+class FeatureView:
+    def __init__(self, name: str, entities: list[str], source: str,
+                 ttl: timedelta = timedelta(days=1)):
+        self.name = name
+        self.entities = entities
+        self.source = source
+        self.ttl = ttl
+        self.features: list[Feature] = []
+
+    def add_feature(self, name: str, dtype: str, description: str = ""):
+        self.features.append(Feature(name, dtype, description))
+        return self
+
+    def to_proto(self) -> dict:
+        return {
+            "spec": {
+                "name": self.name,
+                "entities": self.entities,
+                "features": [f.to_dict() for f in self.features],
+                "ttl": str(self.ttl),
+                "source": self.source
+            }
+        }
+
+
+@dataclass
+class Feature:
+    name: str
+    dtype: str
+    description: str
+
+    def to_dict(self):
+        return {"name": self.name, "valueType": self.dtype.upper(),
+                "description": self.description}
+
+
+class Entity:
+    def __init__(self, name: str, join_key: str, description: str = ""):
+        self.name = name
+        self.join_key = join_key
+        self.description = description
+
+
+# Example: User features for recommendation system
+user_entity = Entity("user", "user_id", "User identifier")
+
+user_features = FeatureView("user_features", entities=["user"], source="user_events") \
+    .add_feature("avg_session_duration", "float", "Average session time in seconds") \
+    .add_feature("purchase_count_7d", "int32", "Purchases in last 7 days") \
+    .add_feature("category_diversity", "float", "Unique categories / total interactions") \
+    .add_feature("recency_hours", "float", "Hours since last activity") \
+    .add_feature("ltv_segment", "string", "Customer lifetime value segment")
+
+# Online serving
+# features = store.get_online_features(
+#     feature_view="user_features",
+#     entity_keys={"user": "user_123"}
+# )
+```
+
+### 4.4 Online and Offline Feature Serving
 
 ```python
 class FeatureStore:
@@ -457,9 +681,197 @@ class FeatureEngineering:
         return features
 ```
 
-## 5. Model Serving
+## 5. Pipeline Orchestration
 
-### 5.1 Serving Infrastructure
+### 5.1 Orchestrator Comparison
+
+| Feature | Airflow | Kubeflow | MLflow | Prefect | Dagster |
+|---------|---------|----------|--------|---------|---------|
+| ML-native | No | Yes | Yes | No | Yes |
+| DAG type | Static | Static | Static | Dynamic | Asset-based |
+| GPU support | Manual | Native (K8s) | Native (K8s) | Manual | Manual |
+| Experiment tracking | No | Yes (MLMD) | Yes | No | No |
+| Model registry | No | Yes | Yes | No | No |
+| Pipeline reuse | DAGs | Components | Projects | Flows | Assets |
+| Best for | General ETL | Full MLOps | ML experiments | Data pipelines | Data platforms |
+
+### 5.2 Kubeflow Pipeline
+
+```python
+# Kubeflow Pipelines SDK v2
+from kfp import dsl, compiler
+
+@dsl.component
+def validate_data(data_path: str) -> str:
+    import pandas as pd
+    df = pd.read_parquet(data_path)
+    assert df.shape[0] > 0, "Empty dataset"
+    assert not df.isnull().any().any(), "Missing values found"
+    return data_path
+
+@dsl.component
+def train_model(data_path: str, hyperparams: dict) -> str:
+    import mlflow
+    with mlflow.start_run():
+        # Training logic
+        accuracy = 0.95
+        mlflow.log_params(hyperparams)
+        mlflow.log_metric("accuracy", accuracy)
+    return f"model_v1"
+
+@dsl.component
+def evaluate_model(model_uri: str, test_data: str) -> float:
+    accuracy = 0.95
+    if accuracy < 0.90:
+        raise ValueError("Accuracy below threshold")
+    return accuracy
+
+@dsl.component
+def deploy_model(model_uri: str, accuracy: float):
+    print(f"Deploying {model_uri} with accuracy {accuracy}")
+
+@dsl.pipeline(name="ml-training-pipeline")
+def ml_pipeline(data_path: str = "s3://data/training"):
+    validate_task = validate_data(data_path=data_path)
+    train_task = train_model(
+        data_path=validate_task.output,
+        hyperparams={"lr": 0.01, "epochs": 10}
+    )
+    evaluate_task = evaluate_model(
+        model_uri=train_task.output,
+        test_data=data_path
+    )
+    evaluate_task.after(train_task)
+    deploy_task = deploy_model(
+        model_uri=train_task.output,
+        accuracy=evaluate_task.output
+    )
+    deploy_task.after(evaluate_task)
+
+# Compile
+compiler.Compiler().compile(ml_pipeline, "pipeline.yaml")
+```
+
+### 5.3 MLflow Pipelines
+
+```python
+# MLflow as orchestration + tracking
+import mlflow
+from mlflow.models import infer_signature
+
+class MLflowPipeline:
+    def __init__(self, experiment_name: str):
+        self.experiment = experiment_name
+        mlflow.set_experiment(experiment_name)
+
+    def run_training(self, data_path: str, params: dict) -> str:
+        with mlflow.start_run() as run:
+            mlflow.log_params(params)
+            # Training
+            model = self._train(data_path, params)
+            # Log model
+            signature = infer_signature(
+                pd.DataFrame({"feature": [1, 2, 3]}),
+                pd.Series([0, 1, 0])
+            )
+            mlflow.sklearn.log_model(model, "model", signature=signature)
+            # Log metrics
+            metrics = self._evaluate(model, data_path)
+            mlflow.log_metrics(metrics)
+            # Register
+            mlflow.register_model(
+                f"runs:/{run.info.run_id}/model",
+                "recommendation_model"
+            )
+        return run.info.run_id
+
+    def _train(self, data_path: str, params: dict):
+        return {"model_type": "xgboost", "params": params}
+
+    def _evaluate(self, model, data_path: str) -> dict:
+        return {"accuracy": 0.94, "f1": 0.93, "auc": 0.97}
+
+    def promote_to_staging(self, run_id: str):
+        client = mlflow.MlflowClient()
+        client.transition_model_version_stage(
+            name="recommendation_model",
+            version=run_id,
+            stage="Staging"
+        )
+
+    def promote_to_production(self, run_id: str):
+        client = mlflow.MlflowClient()
+        client.transition_model_version_stage(
+            name="recommendation_model",
+            version=run_id,
+            stage="Production"
+        )
+```
+
+### 5.4 Airflow for ML
+
+```python
+# Airflow DAG for ML pipeline
+from airflow import DAG
+from airflow.operators.python import PythonOperator
+from datetime import datetime, timedelta
+
+default_args = {
+    "owner": "ml-team",
+    "depends_on_past": False,
+    "start_date": datetime(2024, 1, 1),
+    "retries": 2,
+    "retry_delay": timedelta(minutes=5),
+    "execution_timeout": timedelta(hours=4)
+}
+
+with DAG(
+    dag_id="ml_retraining_pipeline",
+    default_args=default_args,
+    schedule_interval="0 3 * * 0",  # Weekly at 3am Sunday
+    catchup=False,
+    tags=["ml", "training"],
+) as dag:
+
+    def validate_data(**context):
+        import pandas as pd
+        df = pd.read_parquet("s3://data/training/latest")
+        assert len(df) > 10000, "Dataset too small"
+        assert df["label"].nunique() >= 2, "Need at least 2 classes"
+        context["ti"].xcom_push(key="data_path", value="s3://data/training/latest")
+
+    def train_model(**context):
+        data_path = context["ti"].xcom_pull(key="data_path")
+        import mlflow
+        with mlflow.start_run():
+            mlflow.log_param("data_path", data_path)
+            # Training logic
+            accuracy = 0.95
+            mlflow.log_metric("accuracy", accuracy)
+        context["ti"].xcom_push(key="run_id", value=mlflow.active_run().info.run_id)
+
+    def evaluate_model(**context):
+        run_id = context["ti"].xcom_pull(key="run_id")
+        accuracy = 0.95
+        if accuracy < 0.85:
+            raise ValueError("Model quality below threshold")
+        context["ti"].xcom_push(key="accuracy", value=accuracy)
+
+    def deploy(**context):
+        accuracy = context["ti"].xcom_pull(key="accuracy")
+        print(f"Deploying with accuracy: {accuracy}")
+
+    validate = PythonOperator(task_id="validate_data", python_callable=validate_data)
+    train = PythonOperator(task_id="train_model", python_callable=train_model)
+    evaluate = PythonOperator(task_id="evaluate_model", python_callable=evaluate_model)
+    deploy = PythonOperator(task_id="deploy_model", python_callable=deploy)
+
+    validate >> train >> evaluate >> deploy
+```
+
+## 6. Model Serving
+
+### 6.1 Serving Infrastructure
 
 ```python
 class ModelServer:
@@ -520,7 +932,7 @@ class ModelEnsemble:
         return np.average(predictions, axis=0, weights=self.weights)
 ```
 
-### 5.2 Serving Configuration
+### 6.2 Serving Configuration
 
 ```python
 # Triton-like configuration
@@ -575,9 +987,9 @@ class ContinuousBatchingServer:
         }
 ```
 
-## 6. A/B Testing and Deployment Strategies
+## 7. A/B Testing and Deployment Strategies
 
-### 6.1 Deployment Strategies
+### 7.1 Deployment Strategies
 
 ```python
 class DeploymentStrategy:
@@ -685,9 +1097,9 @@ class A_B_TestManager:
         }
 ```
 
-## 7. Model Monitoring
+## 8. Model Monitoring
 
-### 7.1 Data Drift Detection
+### 8.1 Data Drift Detection
 
 ```python
 class DriftDetector:
@@ -756,7 +1168,7 @@ class ConceptDriftDetector:
         }
 ```
 
-### 7.2 Monitoring Dashboard
+### 8.2 Monitoring Dashboard
 
 ```python
 class MonitoringDashboard:
@@ -798,9 +1210,9 @@ class MonitoringDashboard:
         return [m for m in self.metrics_history.get(name, []) if m["timestamp"] > cutoff]
 ```
 
-## 8. LLM Observability
+## 9. LLM Observability
 
-### 8.1 Token Usage and Cost Tracking
+### 9.1 Token Usage and Cost Tracking
 
 ```python
 class LLMObservability:
@@ -857,7 +1269,7 @@ class LLMObservability:
         return breakdown
 ```
 
-### 8.2 Safety Monitoring
+### 9.2 Safety Monitoring
 
 ```python
 class SafetyMonitor:
@@ -911,7 +1323,7 @@ class PIIRedactor:
         return text
 ```
 
-### 8.3 Quality Monitoring
+### 9.3 Quality Monitoring
 
 ```python
 class QualityMonitor:
@@ -958,9 +1370,635 @@ class QualityMonitor:
         }
 ```
 
-## 9. CI/CD for ML
+## 10. Data Versioning
 
-### 9.1 ML Pipeline CI/CD
+### 10.1 DVC (Data Version Control)
+
+```python
+# DVC-inspired data versioning
+class DVCDataVersioning:
+    def __init__(self, storage_path: str = "s3://dvc-store"):
+        self.storage_path = storage_path
+        self.cache_dir = ".dvc/cache"
+        os.makedirs(self.cache_dir, exist_ok=True)
+
+    def track(self, file_path: str) -> dict:
+        md5_hash = hashlib.md5()
+        with open(file_path, "rb") as f:
+            for chunk in iter(lambda: f.read(65536), b""):
+                md5_hash.update(chunk)
+        hash_value = md5_hash.hexdigest()
+
+        # Copy to cache
+        cache_path = f"{self.cache_dir}/{hash_value[:2]}/{hash_value[2:]}"
+        os.makedirs(os.path.dirname(cache_path), exist_ok=True)
+        shutil.copy2(file_path, cache_path)
+
+        return {"md5": hash_value, "size": os.path.getsize(file_path), "path": file_path}
+
+    def push(self, file_path: str):
+        entry = self.track(file_path)
+        cache_file = f"{self.cache_dir}/{entry['md5'][:2]}/{entry['md5'][2:]}"
+        remote_path = f"{self.storage_path}/{entry['md5']}"
+        print(f"Pushing {cache_file} -> {remote_path}")
+        return entry
+
+    def pull(self, md5_hash: str, output_path: str):
+        remote_path = f"{self.storage_path}/{md5_hash}"
+        print(f"Pulling {remote_path} -> {output_path}")
+
+    def get_pipeline_stage(self, name: str, cmd: str, deps: list,
+                            outs: list, params: dict = None) -> str:
+        dvc_content = {
+            "stages": {
+                name: {
+                    "cmd": cmd,
+                    "deps": deps,
+                    "outs": outs,
+                    "params": params or {}
+                }
+            }
+        }
+        return yaml.dump(dvc_content, default_flow_style=False)
+
+    def reproduce(self, pipeline_file: str = "dvc.yaml"):
+        with open(pipeline_file) as f:
+            pipeline = yaml.safe_load(f)
+        for stage_name, stage_config in pipeline.get("stages", {}).items():
+            print(f"Reproducing stage: {stage_name}")
+            deps_updated = all(
+                self._is_changed(dep) for dep in stage_config.get("deps", [])
+            )
+            if deps_updated:
+                subprocess.run(stage_config["cmd"], shell=True)
+
+    def _is_changed(self, dep: str) -> bool:
+        return True  # Simplified
+
+
+# DVC pipeline YAML example
+dvc_pipeline = """
+stages:
+  download:
+    cmd: python scripts/download.py --output data/raw
+    deps:
+      - scripts/download.py
+    outs:
+      - data/raw
+  preprocess:
+    cmd: python scripts/preprocess.py --input data/raw --output data/processed
+    deps:
+      - scripts/preprocess.py
+      - data/raw
+    outs:
+      - data/processed
+    params:
+      - preprocess.min_tokens
+      - preprocess.max_length
+  train:
+    cmd: python scripts/train.py --data data/processed --output models/
+    deps:
+      - scripts/train.py
+      - data/processed
+    outs:
+      - models/model.pkl
+    params:
+      - train.learning_rate
+      - train.epochs
+  evaluate:
+    cmd: python scripts/evaluate.py --model models/model.pkl --data data/processed
+    deps:
+      - scripts/evaluate.py
+      - models/model.pkl
+      - data/processed
+    metrics:
+      - metrics/eval.json:
+          cache: false
+"""
+```
+
+### 10.2 LakeFS (Git for Data)
+
+```python
+class LakeFSClient:
+    """LakeFS brings Git-like semantics to data lakes."""
+
+    def __init__(self, endpoint: str, access_key: str, secret_key: str):
+        self.endpoint = endpoint
+        self.headers = {
+            "Authorization": f"Basic {base64.b64encode(f'{access_key}:{secret_key}'.encode()).decode()}"
+        }
+
+    def create_branch(self, repository: str, name: str, source: str = "main"):
+        return {"repository": repository, "branch": name, "source": source}
+
+    def commit(self, repository: str, branch: str, message: str,
+                metadata: dict = None) -> dict:
+        return {
+            "repository": repository,
+            "branch": branch,
+            "commit_message": message,
+            "metadata": metadata or {},
+            "committer": "ml-pipeline",
+            "timestamp": time.time()
+        }
+
+    def diff(self, repository: str, branch_a: str, branch_b: str) -> list:
+        """Compare two branches to see data changes."""
+        return [
+            {"type": "added", "path": "data/sales_2024.parquet", "size": "2.3GB"},
+            {"type": "removed", "path": "data/sales_2023_old.parquet", "size": "1.1GB"},
+            {"type": "changed", "path": "data/user_features.parquet", "size": "500MB"}
+        ]
+
+    def merge(self, repository: str, source_branch: str,
+              destination_branch: str) -> dict:
+        """Merge data changes from one branch to another."""
+        conflicts = self._check_conflicts(repository, source_branch, destination_branch)
+        if conflicts:
+            return {"status": "conflict", "conflicts": conflicts}
+        return {"status": "merged", "source": source_branch, "destination": destination_branch}
+
+    def _check_conflicts(self, repo, src, dst):
+        return []
+
+    def create_tag(self, repository: str, name: str,
+                   commit_id: str) -> dict:
+        return {
+            "repository": repository,
+            "tag": name,
+            "commit_id": commit_id,
+            "created_at": time.time()
+        }
+
+    def list_commits(self, repository: str, branch: str, limit: int = 10) -> list:
+        return [
+            {"id": "abc123", "message": "Update features with new data",
+             "committer": "ml-pipeline", "timestamp": time.time() - 3600},
+            {"id": "def456", "message": "Initial data import",
+             "committer": "data-team", "timestamp": time.time() - 86400},
+        ][:limit]
+
+
+# Data management workflow with LakeFS
+class DataBranchWorkflow:
+    def __init__(self, lakefs: LakeFSClient, repo: str):
+        self.lakefs = lakefs
+        self.repo = repo
+
+    def experiment_branch(self, experiment_name: str) -> str:
+        branch = f"experiment/{experiment_name}"
+        self.lakefs.create_branch(self.repo, branch, "main")
+        return branch
+
+    def promote_after_validation(self, branch: str, validation_fn) -> dict:
+        # Run validation on branch data
+        validation_passed = validation_fn()
+        if not validation_passed:
+            return {"status": "failed", "reason": "Data validation failed"}
+
+        # Merge to main
+        result = self.lakefs.merge(self.repo, branch, "main")
+        if result["status"] == "merged":
+            # Create tag
+            commits = self.lakefs.list_commits(self.repo, "main", 1)
+            self.lakefs.create_tag(self.repo, f"release/{int(time.time())}", commits[0]["id"])
+        return result
+```
+
+## 11. Retraining Strategies
+
+### 11.1 Retraining Triggers
+
+```python
+class RetrainingStrategy:
+    def __init__(self, model_name: str, model_registry: ModelRegistry):
+        self.model_name = model_name
+        self.registry = model_registry
+        self.retraining_history = []
+
+    def schedule_based(self, interval_days: int = 7) -> dict:
+        """Time-based retraining (weekly/monthly)."""
+        return {
+            "strategy": "schedule",
+            "interval_days": interval_days,
+            "description": f"Retrain every {interval_days} days",
+            "trigger": f"cron:{self._to_cron(interval_days)}"
+        }
+
+    def performance_based(self, metric: str = "accuracy",
+                           threshold: float = 0.05, window: int = 1000) -> dict:
+        """Retrain when model performance degrades."""
+        return {
+            "strategy": "performance_drift",
+            "metric": metric,
+            "threshold": threshold,
+            "window_size": window,
+            "description": f"Retrain when {metric} drops by >{threshold*100}% "
+                           f"over last {window} predictions",
+            "trigger": "continuous_monitoring"
+        }
+
+    def data_drift_based(self, drift_threshold: float = 0.25) -> dict:
+        """Retrain when data distribution shifts."""
+        return {
+            "strategy": "data_drift",
+            "drift_threshold": drift_threshold,
+            "metric": "psi",
+            "description": f"Retrain when PSI > {drift_threshold}",
+            "trigger": "drift_detection_alert"
+        }
+
+    def volume_based(self, min_new_samples: int = 10000) -> dict:
+        """Retrain after collecting enough new data."""
+        return {
+            "strategy": "volume",
+            "min_new_samples": min_new_samples,
+            "description": f"Retrain after {min_new_samples} new labeled samples",
+            "trigger": "data_accumulation"
+        }
+
+    def _to_cron(self, days: int) -> str:
+        if days == 7:
+            return "0 3 * * 0"  # Sunday 3am
+        elif days == 30:
+            return "0 4 1 * *"  # 1st of month
+        return f"0 3 */{days} * *"
+
+    def select_strategy(self, model_stage: str, data_velocity: str) -> list:
+        """Recommend retraining strategy based on model and data characteristics."""
+        strategies = []
+        if model_stage == "production":
+            strategies.append(self.performance_based())
+            strategies.append(self.data_drift_based())
+        if data_velocity == "high":
+            strategies.append(self.volume_based(min_new_samples=50000))
+        else:
+            strategies.append(self.schedule_based(30))
+        return strategies
+
+
+class RetrainingPipeline:
+    def __init__(self, feature_store, training_fn, registry):
+        self.feature_store = feature_store
+        self.training_fn = training_fn
+        self.registry = registry
+
+    def run_retraining(self, model_name: str, strategy: dict) -> dict:
+        """Execute retraining with the chosen strategy."""
+        print(f"Starting retraining for {model_name} using {strategy['strategy']}")
+
+        # 1. Get fresh training data
+        train_data = self.feature_store.get_training_data(
+            feature_view=model_name,
+            entities=[],
+            start_date="2024-01-01",
+            end_date="2024-12-31"
+        )
+
+        # 2. Train new model
+        new_model, metrics = self.training_fn(train_data)
+
+        # 3. Compare with current production model
+        current_model = self.registry.get_model(model_name, "production")
+        if current_model:
+            improvement = self._compare_models(new_model, current_model, train_data)
+        else:
+            improvement = {"improvement_percent": 100, "should_deploy": True}
+
+        # 4. Deploy if better
+        if improvement["should_deploy"]:
+            version = f"v{int(time.time())}"
+            self.registry.register_model(new_model, model_name, version, metrics)
+            self.registry.promote_model(model_name, version, "staging")
+
+        return {
+            "model": model_name,
+            "strategy": strategy["strategy"],
+            "metrics": metrics,
+            "improvement": improvement,
+            "new_version": improvement.get("version")
+        }
+
+    def _compare_models(self, new_model, current_model, data) -> dict:
+        current_metrics = self._eval(current_model, data)
+        new_metrics = self._eval(new_model, data)
+        improvement = (new_metrics["accuracy"] - current_metrics["accuracy"]) / \
+                      max(current_metrics["accuracy"], 0.001)
+        return {
+            "current_accuracy": current_metrics["accuracy"],
+            "new_accuracy": new_metrics["accuracy"],
+            "improvement_percent": improvement * 100,
+            "should_deploy": improvement > 0.01  # At least 1% improvement
+        }
+
+    def _eval(self, model, data) -> dict:
+        return {"accuracy": 0.95, "f1": 0.93}
+```
+
+## 12. Infrastructure-as-Code for ML
+
+### 12.1 Terraform for ML Infrastructure
+
+```python
+class MLInfrastructureConfig:
+    """Generate Terraform configuration for ML infrastructure."""
+
+    def __init__(self, project: str, region: str = "us-east-1"):
+        self.project = project
+        self.region = region
+
+    def training_cluster(self, gpu_type: str = "p4d.24xlarge",
+                          min_nodes: int = 1, max_nodes: int = 10) -> str:
+        return f"""
+resource "aws_eks_node_group" "ml_training" {{
+  cluster_name    = aws_eks_cluster.ml.name
+  node_group_name = "ml-training-gpu"
+  node_role_arn   = aws_iam_role.ml_nodes.arn
+  subnet_ids      = aws_subnet.private[*].id
+
+  scaling_config {{
+    desired_size = {min_nodes}
+    min_size     = {min_nodes}
+    max_size     = {max_nodes}
+  }}
+
+  instance_types = ["{gpu_type}"]
+
+  taint {{
+    key    = "nvidia.com/gpu"
+    value  = "true"
+    effect = "NO_SCHEDULE"
+  }}
+
+  labels = {{
+    "node-type" = "gpu-training"
+  }}
+}}
+
+resource "aws_iam_role" "ml_nodes" {{
+  name = "ml-gpu-node-role"
+
+  assume_role_policy = jsonencode({{
+    Version = "2012-10-17"
+    Statement = [{{
+      Action = "sts:AssumeRole"
+      Effect = "Allow"
+      Principal = {{ Service = "ec2.amazonaws.com" }}
+    }}]
+  }})
+}}
+"""
+
+    def model_registry(self) -> str:
+        return f"""
+resource "aws_s3_bucket" "model_registry" {{
+  bucket = "ml-models-{self.project}"
+  acl    = "private"
+
+  versioning {{
+    enabled = true
+  }}
+
+  lifecycle_rule {{
+    enabled = true
+
+    noncurrent_version_expiration {{
+      days = 90
+    }}
+  }}
+
+  server_side_encryption_configuration {{
+    rule {{
+      apply_server_side_encryption_by_default {{
+        sse_algorithm = "AES256"
+      }}
+    }}
+  }}
+}}
+
+resource "aws_dynamodb_table" "model_metadata" {{
+  name         = "ml-model-metadata"
+  billing_mode = "PAY_PER_REQUEST"
+  hash_key     = "model_name"
+  range_key    = "version"
+
+  attribute {{
+    name = "model_name"
+    type = "S"
+  }}
+
+  attribute {{
+    name = "version"
+    type = "S"
+  }}
+}}
+"""
+
+    def feature_store(self) -> str:
+        return f"""
+resource "aws_dynamodb_table" "online_feature_store" {{
+  name         = "ml-online-features-{self.project}"
+  billing_mode = "PAY_PER_REQUEST"
+  hash_key     = "feature_view"
+  range_key    = "entity_key"
+
+  attribute {{
+    name = "feature_view"
+    type = "S"
+  }}
+
+  attribute {{
+    name = "entity_key"
+    type = "S"
+  }}
+
+  ttl {{
+    attribute_name = "ttl"
+    enabled        = true
+  }}
+}}
+
+resource "aws_glue_catalog_table" "offline_features" {{
+  name          = "offline_features"
+  database_name = "ml_features"
+  table_type    = "EXTERNAL_TABLE"
+
+  storage_descriptor {{
+    location      = "s3://ml-features-{self.project}/"
+    input_format  = "org.apache.hadoop.hive.ql.io.parquet.MapredParquetInputFormat"
+    output_format = "org.apache.hadoop.hive.ql.io.parquet.MapredParquetOutputFormat"
+    serde_info {{
+      serialization_library = "org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe"
+    }}
+  }}
+}}
+"""
+
+
+# ML infrastructure with Pulumi
+class PulumiMLInfrastructure:
+    def __init__(self):
+        self.resources = []
+
+    def add_gpu_cluster(self, name: str, gpu_count: int = 4,
+                         instance_type: str = "p4d.24xlarge"):
+        self.resources.append({
+            "type": "gpu_cluster",
+            "name": name,
+            "gpu_count": gpu_count,
+            "instance_type": instance_type,
+            "configuration": {
+                "kubernetes_version": "1.28",
+                "auto_scaling": True,
+                "spot_instances": False
+            }
+        })
+
+    def add_mlflow_server(self, artifact_store: str = "s3"):
+        self.resources.append({
+            "type": "mlflow_server",
+            "artifact_store": artifact_store,
+            "database": "postgres",
+            "configuration": {
+                "artifact_location": "s3://mlflow-artifacts/",
+                "backend_store": "postgresql://mlflow:password@localhost/mlflow"
+            }
+        })
+
+    def add_feature_store(self, online: str = "redis", offline: str = "s3"):
+        self.resources.append({
+            "type": "feature_store",
+            "online_store": online,
+            "offline_store": offline,
+            "configuration": {
+                "redis_cluster": True,
+                "s3_bucket": "ml-features"
+            }
+        })
+
+    def deploy(self) -> dict:
+        return {"resources": self.resources, "status": "deployed"}
+```
+
+## 13. Canary Deployment for Models
+
+### 12.1 Canary Infrastructure
+
+```python
+class CanaryDeployment:
+    def __init__(self, model_registry: ModelRegistry, k8s_client=None):
+        self.registry = model_registry
+        self.k8s = k8s_client
+        self.canaries: dict = {}
+
+    def start_canary(self, model_name: str, new_version: str,
+                      initial_traffic_pct: float = 5.0) -> dict:
+        canary_id = f"{model_name}-canary-{int(time.time())}"
+        self.canaries[canary_id] = {
+            "model_name": model_name,
+            "new_version": new_version,
+            "current_traffic_pct": initial_traffic_pct,
+            "target_traffic_pct": 100.0,
+            "increment_step": 10.0,
+            "evaluation_window_minutes": 15,
+            "status": "running",
+            "metrics": defaultdict(list)
+        }
+
+        # Deploy canary instance
+        self._deploy_canary_instance(model_name, new_version)
+        return {
+            "canary_id": canary_id,
+            "traffic_percent": initial_traffic_pct,
+            "deployment": self._configure_traffic_split(model_name, new_version,
+                                                         initial_traffic_pct)
+        }
+
+    def _deploy_canary_instance(self, model_name: str, version: str):
+        print(f"Deploying {model_name}:{version} as canary")
+
+    def _configure_traffic_split(self, model_name: str, version: str,
+                                   traffic_pct: float) -> dict:
+        return {
+            "strategy": "weighted_random",
+            "stable_model": f"{model_name}:production",
+            "stable_traffic": 100 - traffic_pct,
+            "canary_model": f"{model_name}:{version}",
+            "canary_traffic": traffic_pct,
+            "routing": "service_mesh_header_based"
+        }
+
+    def record_canary_metric(self, canary_id: str, metric: str, value: float):
+        canary = self.canaries.get(canary_id)
+        if canary:
+            canary["metrics"][metric].append(value)
+
+    def evaluate_canary(self, canary_id: str) -> dict:
+        canary = self.canaries.get(canary_id)
+        if not canary:
+            return {"error": "canary not found"}
+
+        metrics = canary["metrics"]
+        evaluations = {}
+
+        # Error rate check
+        if "error_rate" in metrics:
+            recent_errors = metrics["error_rate"][-10:]
+            avg_error = np.mean(recent_errors)
+            evaluations["error_rate"] = {
+                "value": avg_error,
+                "passed": avg_error < 0.01  # < 1% error rate
+            }
+
+        # Latency check
+        if "latency_p99" in metrics:
+            recent_latency = metrics["latency_p99"][-10:]
+            avg_latency = np.mean(recent_latency)
+            evaluations["latency_p99"] = {
+                "value": avg_latency,
+                "passed": avg_latency < 2000  # < 2s P99
+            }
+
+        return {
+            "canary_id": canary_id,
+            "evaluations": evaluations,
+            "all_passed": all(e.get("passed", False) for e in evaluations.values())
+        }
+
+    def promote_canary(self, canary_id: str) -> dict:
+        canary = self.canaries.get(canary_id)
+        if not canary:
+            return {"error": "not found"}
+
+        evaluations = self.evaluate_canary(canary_id)
+        if not evaluations["all_passed"]:
+            return {
+                "action": "rollback",
+                "reason": "Canary evaluation failed",
+                "details": evaluations
+            }
+
+        # Promote to 100%
+        self._configure_traffic_split(
+            canary["model_name"], canary["new_version"], 100.0
+        )
+        self.registry.promote_model(
+            canary["model_name"], canary["new_version"], "production"
+        )
+        return {"action": "promoted", "version": canary["new_version"]}
+
+    def rollback_canary(self, canary_id: str) -> dict:
+        canary = self.canaries.get(canary_id)
+        if not canary:
+            return {"error": "not found"}
+        self._configure_traffic_split(canary["model_name"], canary["new_version"], 0.0)
+        return {"action": "rollback", "version": canary["new_version"], "traffic": 0}
+```
+
+## 14. CI/CD for ML
+
+### 14.1 ML Pipeline CI/CD
 
 ```python
 class MLPipelineCI:
@@ -1026,7 +2064,7 @@ class DataVersionControl:
         }
 ```
 
-### 9.2 Model CI/CD Pipeline
+### 14.2 Model CI/CD Pipeline
 
 ```python
 class ModelCICD:
@@ -1057,7 +2095,7 @@ class ModelCICD:
         return False
 ```
 
-## 10. Exercise Problems
+## 15. Exercise Problems
 
 **Problem 1**: Implement a complete ML pipeline with data validation, feature engineering, training, and evaluation stages. Add experiment tracking.
 

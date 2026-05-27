@@ -4,15 +4,25 @@
 
 ```mermaid
 graph LR
-    A["Input<br/>Layer"] --> B["Hidden<br/>Layers"]
-    B --> C["Hidden<br/>Layers"]
-    C --> D["Output<br/>Layer"]
-    B --> E["Activation<br/>Functions"]
-    E --> B
-    style A fill:#4a8bc2
-    style B fill:#2d5a7b
-    style C fill:#2d5a7b
-    style D fill:#c73e1d
+    REQ["HTTP Request"] --> GW["API Gateway<br/>(Spring Cloud Gateway)"]
+    GW --> LB["Load Balancer<br/>(Ribbon/LB)"]
+    LB --> SVC["Microservice A<br/>(REST/gRPC)"]
+    SVC --> CIR["Circuit Breaker<br/>(Resilience4j)"]
+    CIR --> RET["Retry /<br/>Fallback"]
+    SVC --> CFG["Config Server<br/>(Spring Cloud Config)"]
+    SVC --> DISC["Service Discovery<br/>(Eureka/Consul)"]
+    SVC --> TRACE["Distributed Tracing<br/>(Sleuth/Zipkin)"]
+    TRACE --> OBS["Observability<br/>(Micrometer/Prometheus)"]
+    style REQ fill:#4a8bc2
+    style GW fill:#2d5a7b
+    style LB fill:#3a7ca5
+    style SVC fill:#c73e1d
+    style CIR fill:#e8912e
+    style RET fill:#3fb950
+    style CFG fill:#6f42c1
+    style DISC fill:#3a7ca5
+    style TRACE fill:#6f42c1
+    style OBS fill:#3fb950
 ```
 
 ## Table of Contents
@@ -29,25 +39,15 @@ graph LR
 
 ## Auto-Configuration
 
-```text
-Spring Boot Auto-Configuration Loading:
-┌─────────────────────────────────────────────────────┐
-│  META-INF/spring/org.springframework.boot           │
-│  .autoconfigure.AutoConfiguration.imports           │
-│  ───────────────────────────────────────────        │
-│  org.springframework.boot.autoconfigure.web.       │
-│    servlet.WebMvcAutoConfiguration                  │
-│  org.springframework.boot.autoconfigure.jdbc.      │
-│    DataSourceAutoConfiguration                      │
-│  ...                                                │
-├─────────────────────────────────────────────────────┤
-│  Loading Phase:                                     │
-│  1. Scan imports file → candidate classes          │
-│  2. Evaluate @Conditional* annotations              │
-│  3. Apply ordering (@AutoConfigureOrder,            │
-│     @AutoConfigureBefore, @AutoConfigureAfter)       │
-│  4. Register matching beans                         │
-└─────────────────────────────────────────────────────┘
+```mermaid
+sequenceDiagram
+    participant Client
+    participant Component
+    participant Result
+    Client->>Component: Request
+    Component->>Component: Process
+    Component-->>Result: Generate
+    Result-->>Client: Response
 ```
 
 ```java

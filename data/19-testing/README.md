@@ -10,15 +10,37 @@ Testing is the systematic verification that software behaves as expected. It's n
 
 ```mermaid
 graph LR
-    A["Input<br/>Layer"] --> B["Hidden<br/>Layers"]
-    B --> C["Hidden<br/>Layers"]
-    C --> D["Output<br/>Layer"]
-    B --> E["Activation<br/>Functions"]
-    E --> B
-    style A fill:#4a8bc2
-    style B fill:#2d5a7b
-    style C fill:#2d5a7b
-    style D fill:#c73e1d
+    TEST_PYRAMID["Test Pyramid"] --> UNIT["Unit Tests<br/>(fast, isolated)"]
+    TEST_PYRAMID --> INTEGRATION["Integration Tests<br/>(real DB/API)"]
+    TEST_PYRAMID --> CONTRACT["Contract Tests<br/>(consumer-driven)"]
+    TEST_PYRAMID --> E2E["E2E Tests<br/>(full system)"]
+    UNIT --> MOCK["Mock / Stub /<br/>Fake"]
+    INTEGRATION --> TESTCONTAINERS["Testcontainers<br/>(real services)"]
+    CONTRACT --> PACT["Pact<br/>(CDC framework)"]
+    E2E --> CYPRESS["Cypress / Playwright<br/>(browser)"]
+    PERFORMANCE["Perf Testing"] --> LOAD_TEST["Load Test<br/>(k6/locust)"]
+    PERFORMANCE --> STRESS["Stress Test<br/>(breaking point)"]
+    PERFORMANCE --> CHAOS_TEST["Chaos Engineering<br/>(fault injection)"]
+    PRACTICES["Practices"] --> TDD["TDD<br/>(Red/Green/Refactor)"]
+    PRACTICES --> PROPERTY["Property-Based<br/>(QuickCheck)"]
+    PRACTICES --> MUTATION["Mutation Testing<br/>(pitest)"]
+    style TEST_PYRAMID fill:#4a8bc2
+    style UNIT fill:#3fb950
+    style INTEGRATION fill:#2d5a7b
+    style CONTRACT fill:#e8912e
+    style E2E fill:#c73e1d
+    style MOCK fill:#3a7ca5
+    style TESTCONTAINERS fill:#6f42c1
+    style PACT fill:#e8912e
+    style CYPRESS fill:#3a7ca5
+    style PERFORMANCE fill:#6f42c1
+    style LOAD_TEST fill:#e8912e
+    style STRESS fill:#c73e1d
+    style CHAOS_TEST fill:#3fb950
+    style PRACTICES fill:#3fb950
+    style TDD fill:#e8912e
+    style PROPERTY fill:#6f42c1
+    style MUTATION fill:#c73e1d
 ```
 
 ## Table of Contents

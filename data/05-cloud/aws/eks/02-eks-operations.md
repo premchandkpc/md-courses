@@ -4,15 +4,29 @@
 
 ```mermaid
 graph LR
-    A["Input<br/>Layer"] --> B["Hidden<br/>Layers"]
-    B --> C["Hidden<br/>Layers"]
-    C --> D["Output<br/>Layer"]
-    B --> E["Activation<br/>Functions"]
-    E --> B
-    style A fill:#4a8bc2
-    style B fill:#2d5a7b
-    style C fill:#2d5a7b
-    style D fill:#c73e1d
+    CA["Cluster<br/>Autoscaler"] --> NG["Node Group<br/>(EC2 Auto Scaling)"]
+    KA["Karpenter<br/>(Provisioner)"] --> NP["Node<br/>Pool"]
+    KA --> CONS["Consolidation<br/>(Bin Packing)"]
+    EBS["EBS CSI<br/>Driver"] --> PVC["PersistentVolume<br/>Claim"]
+    EFS["EFS CSI<br/>Driver"] --> PVC
+    ALB["AWS LB<br/>Controller"] --> INGR["Ingress<br/>(ALB)"]
+    ALB --> NLB["NLB<br/>(Service type LB)"]
+    IRSA["IRSA<br/>(OIDC)"] --> POD["Pod<br/>Identity"]
+    POD_ID["EKS Pod<br/>Identity"] --> POD
+    style CA fill:#4a8bc2
+    style NG fill:#2d5a7b
+    style KA fill:#c73e1d
+    style NP fill:#3a7ca5
+    style CONS fill:#e8912e
+    style EBS fill:#6f42c1
+    style EFS fill:#3a7ca5
+    style PVC fill:#3fb950
+    style ALB fill:#e8912e
+    style INGR fill:#2d5a7b
+    style NLB fill:#3a7ca5
+    style IRSA fill:#6f42c1
+    style POD fill:#c73e1d
+    style POD_ID fill:#3fb950
 ```
 
 ## Table of Contents
@@ -288,29 +302,114 @@ EKS BLUEPRINTS  =  Pre-designed factory blueprint. Just build.
 ## Code Examples
 
 ```python
-# Example implementation
-# [Add language-specific code demonstrating core concept]
-pass
+import boto3
+import yaml
+
+eks = boto3.client('eks')
+ec2 = boto3.client('ec2')
+
+# List clusters and node health
+def eks_cluster_health():
+    clusters = eks.list_clusters()['clusters']
+    for name in clusters:
+        desc = eks.describe_cluster(name=name)['cluster']
+        status = desc['status']
+        version = desc['version']
+        endpoints = desc.get('endpoint', 'N/A')
+        print(f"{name}: status={status}, version={version}, endpoint={endpoints}")
+
+# Create a managed node group with launch template
+def create_managed_nodegroup(cluster: str, nodegroup: str, subnet_ids: list):
+    lt = ec2.create_launch_template(
+        LaunchTemplateName=f'{nodegroup}-lt',
+        LaunchTemplateData={
+            'InstanceType': 'm5.large',
+            'BlockDeviceMappings': [{
+                'DeviceName': '/dev/xvda',
+                'Ebs': {'VolumeSize': 100, 'VolumeType': 'gp3'}
+            }],
+            'MetadataOptions': {'HttpTokens': 'required'}
+        }
+    )
+    eks.create_nodegroup(
+        clusterName=cluster, nodegroupName=nodegroup,
+        scalingConfig={'minSize': 2, 'maxSize': 10, 'desiredSize': 3},
+        subnets=subnet_ids, instanceTypes=['m5.large', 'm5a.large'],
+        launchTemplate={'name': lt['LaunchTemplate']['LaunchTemplateName'],
+                        'version': '$Default'},
+        capacityType='ON_DEMAND'
+    )
+
+# Generate IRSA IAM policy
+def irsa_trust_policy(oidc_provider: str, namespace: str, service_account: str) -> dict:
+    return {
+        'Version': '2012-10-17',
+        'Statement': [{
+            'Effect': 'Allow',
+            'Principal': {'Federated': f'arn:aws:iam::123456789012:oidc-provider/{oidc_provider}'},
+            'Action': 'sts:AssumeRoleWithWebIdentity',
+            'Condition': {
+                'StringEquals': {f'{oidc_provider}:sub': f'system:serviceaccount:{namespace}:{service_account}'}
+            }
+        }]
+    }
+```
+
+```bash
+# Drain a node gracefully
+NODE_NAME=$(kubectl get nodes -l nodegroup-type=spot -o name | head -1)
+kubectl drain $NODE_NAME --ignore-daemonsets --delete-emptydir-data
+
+# Upgrade a managed node group
+aws eks update-nodegroup-version --cluster-name prod --nodegroup-name spot-4
 ```
 
 ---
 
 ## Common Failure Modes
 
-**Problem**: [Key issue in production]
+**Problem**: CNI IP exhaustion causing pods stuck in ContainerCreating
 
-**Root cause**: [Why it happens]
+**Root cause**: AWS VPC CNI assigns pod IPs from the VPC subnet. Each EC2 instance has a maximum number of ENIs and IPs per ENI (e.g., m5.large: 3 ENIs × 10 IPv4 = 29 max pods). Once all IPs are consumed, new pods cannot start and remain in `ContainerCreating` with reason `IPAMD: no IPs available`.
 
-**Solution**: [How to fix]
+**Detection**: `kubectl describe pod` shows `Failed to create pod sandbox: IPAMD: Insufficient free IPs`. Node conditions show `PodCIDRNotAvailable`. VPC subnet may have free IPs but the ENI slot count per node is exhausted.
+
+**Solution**: Enable prefix delegation (`AWS_VPC_CNI_PRE_DELEGATION_PREFIX: true`) — assigns /28 prefixes per ENI instead of individual IPs, increasing pod density (c5.large: 29 → 110 pods). Use larger instance types for high-density workloads. Enable custom networking with a separate CIDR for pods. If VPC IPs are scarce, use Calico with IPIP or Cilium with overlay mode (pods get non-VPC IPs).
+
+**Problem**: Karpenter or Cluster Autoscaler failing to scale down due to PDBs and taints
+
+**Root cause**: PodDisruptionBudgets prevent node termination if it would violate availability guarantees. Karpenter consolidation may find a cheaper node but cannot move pods because of permissive PDBs that block eviction. Taints on nodes (e.g., `CriticalAddonsOnly`) prevent Karpenter from scheduling replacement pods.
+
+**Detection**: Karpenter logs show `consolidation failed due to PDB blocking`. Cluster Autoscaler logs show `scale-down blocked: pod PDB minAvailable`. Nodes remain at high count despite low utilization.
+
+**Solution**: Configure PDBs with realistic `minAvailable` or `maxUnavailable` that allow at least one pod to be evicted at a time. Use `cluster-autoscaler.kubernetes.io/safe-to-evict: "true"` annotation on non-critical pods. For Karpenter, set `ttlSecondsAfterEmpty` for graceful empty node removal. Use `karpenter.sh/do-not-evict: "true"` for truly critical workloads.
 
 ---
 
 ## Interview Questions
 
-### Q1: [Core concept question]
+### Q1: Compare EKS Fargate, Managed Node Groups, and Self-Managed Nodes — when would you use each?
 
-**Answer**: [Detailed explanation with trade-offs]
+**Answer**: **Fargate** eliminates node management entirely — no EC2 instances to patch or scale. Use it for security-isolated workloads, spiky/batch jobs, or teams without Kubernetes operations expertise. Limitations: no DaemonSets, no privileged containers, no EBS volumes, limited GPU support. **Managed Node Groups** are best for 90% of production workloads — AWS handles AMI updates, node health replacement, and scaling. Use when you need custom instance types, GPUs, or DaemonSets. **Self-Managed** is for edge cases: custom CNI plugins (non-AWS), custom kernel modules, specialized AMI configurations, or regulatory requirements that demand full OS control.
 
-### Q2: [Design/architecture question]
+### Q2: How would you upgrade an EKS cluster from 1.27 to 1.29 with zero downtime?
 
-**Answer**: [Best practices and reasoning]
+**Answer**: Plan a two-version upgrade (1.27 → 1.28 → 1.29) since EKS only supports sequential upgrades. For each minor version: first upgrade the control plane (AWS handles this, ~15 min). Then upgrade managed node groups — create a new node group with the latest AMI matching the new version, cordon and drain old nodes, then delete the old node group. For self-managed nodes, update the bootstrap script's `--kubelet-extra-args` to the new version and roll the ASG. During the process, ensure at least 2 replicas of each service, PDBs set to `maxUnavailable: 1`, and PodAntiAffinity configured. Test add-on compatibility (CNI, CoreDNS, kube-proxy) before upgrading — upgrade add-ons first. Use a canary cluster before production. Rollback: if control plane upgrade fails in the 24h window, contact AWS support; node group rollback is a redeploy with old AMI.
+
+## Edge Cases and Advanced Scenarios
+
+| Scenario | Challenge | Solution |
+|----------|-----------|----------|
+| **IPv6 EKS clusters** | Pod networking with IPv6-only | EKS supports dual-stack (IPv4 + IPv6) since 1.21. Use IPv6 CIDR for VPC, ENA support required |
+| **GPU node allocation** | GPU pods stuck pending waiting for GPU | Set `resource.limit.nvidia.com/gpu` on pod spec. Use `nodeSelector` for GPU node pools. Install NVIDIA device plugin as DaemonSet |
+| **Bottlerocket SSH access** | No package manager, read-only filesystem | Use `bottlerocket` control container for admin tasks. `aws ssm start-session` for shell access |
+| **EBS volume zone mismatch** | PVC cannot bind because volume is in different AZ | Use `WaitForFirstConsumer` volume binding mode. Deploy pod first (pinned to AZ), then PVC binds to same AZ |
+| **Cluster DNS outage** | CoreDNS becomes unhealthy, cascading DNS failures | Run 2+ CoreDNS replicas, spread across nodes with PodAntiAffinity. Monitor CoreDNS `forward` latency. Use node-local DNS cache |
+
+## Cross-References
+
+- [EC2 Networking & Security](../ec2/02-ec2-networking-security.md) — Nitro system, instance types, ENI limits
+- [ECS Deployment Patterns](../ecs/02-ecs-deployment-patterns.md) — Capacity providers, Fargate comparison
+- [Kubernetes Networking](../../../07-kubernetes/03-kubernetes-networking.md) — CNI plugins, network policies, Ingress
+- [Kubernetes Security](../../../07-kubernetes/04-kubernetes-security.md) — RBAC, Pod Security, OPA Gatekeeper
+- [CloudWatch Observability](../cloudwatch/02-cloudwatch-observability.md) — Container Insights, Prometheus metrics

@@ -10,15 +10,32 @@
 
 ```mermaid
 graph LR
-    A["Input<br/>Layer"] --> B["Hidden<br/>Layers"]
-    B --> C["Hidden<br/>Layers"]
-    C --> D["Output<br/>Layer"]
-    B --> E["Activation<br/>Functions"]
-    E --> B
-    style A fill:#4a8bc2
-    style B fill:#2d5a7b
-    style C fill:#2d5a7b
-    style D fill:#c73e1d
+    CFS["CFS / EEVDF<br/>Scheduler"] --> RUNQ["Run Queue<br/>(Red-Black Tree / vruntime)"]
+    RUNQ --> PICK["Pick Next<br/>(min vruntime)"]
+    PICK --> EXECUTE["Execute on CPU<br/>(time slice)"]
+    EXECUTE --> PREEMPT["Preempted /<br/>Voluntary Yield"]
+    PREEMPT --> RUNQ
+    CLASS["Scheduling<br/>Classes"] --> STOP["Stop Class<br/>(Highest)"]
+    CLASS --> DL["Deadline Class<br/>(SCHED_DEADLINE)"]
+    CLASS --> RT["RT Class<br/>(SCHED_FIFO/RR)"]
+    CLASS --> FAIR["Fair Class<br/>(SCHED_NORMAL/CFS)"]
+    CLASS --> IDLE["Idle Class<br/>(Lowest)"]
+    LOAD_BAL["Load Balance"] --> PULL["Pull Tasks<br/>(Idle CPU)"]
+    LOAD_BAL --> PUSH["Push Tasks<br/>(Overloaded)"]
+    style CFS fill:#4a8bc2
+    style RUNQ fill:#2d5a7b
+    style PICK fill:#3a7ca5
+    style EXECUTE fill:#c73e1d
+    style PREEMPT fill:#e8912e
+    style CLASS fill:#6f42c1
+    style STOP fill:#c73e1d
+    style DL fill:#e8912e
+    style RT fill:#3a7ca5
+    style FAIR fill:#3fb950
+    style IDLE fill:#e8912e
+    style LOAD_BAL fill:#3fb950
+    style PULL fill:#e8912e
+    style PUSH fill:#3a7ca5
 ```
 
 ## Table of Contents

@@ -10,15 +10,38 @@
 
 ```mermaid
 graph LR
-    A["Input<br/>Layer"] --> B["Hidden<br/>Layers"]
-    B --> C["Hidden<br/>Layers"]
-    C --> D["Output<br/>Layer"]
-    B --> E["Activation<br/>Functions"]
-    E --> B
-    style A fill:#4a8bc2
-    style B fill:#2d5a7b
-    style C fill:#2d5a7b
-    style D fill:#c73e1d
+    STAMPEDE_R["Cache Stampede"] --> KEY_EXPIRES["Key Expires<br/>(TTL=0)"]
+    KEY_EXPIRES --> CONCURRENT_HITS["10K Concurrent<br/>Requests Miss"]
+    CONCURRENT_HITS --> DB_OVERLOAD["DB Overload<br/>(100% CPU)"]
+    DB_OVERLOAD --> CASCADE_FAIL["Cascading<br/>Failure"]
+    OOM_REDIS["Redis OOM"] --> NOEVICTION["maxmemory +<br/>noeviction"]
+    NOEVICTION --> WRITES_FAIL["Writes Fail<br/>(OOM error)"]
+    WRITES_FAIL --> APP_ERRORS["App Errors →<br/>Partial Outage"]
+    FORK_OOM["Fork + Save"] --> BGSAVE["BGSAVE →<br/>COW fork"]
+    BGSAVE --> MEM_DOUBLE["Memory Doubles<br/>(copy-on-write)"]
+    MEM_DOUBLE --> OOM_KILLER["OOM Killer<br/>(Redis process)"]
+    HOT_KEY["Hot Key"] --> SINGLE_KEY["Single Key<br/>(100K QPS)"]
+    SINGLE_KEY --> CPU_100["Node CPU 100%"]
+    CPU_100 --> LATENCY_SPIKE["p99 Latency<br/>> 10s"]
+    LATENCY_SPIKE --> TIMEOUT_CASCADE["Timeout →<br/>Client Cascade"]
+    style STAMPEDE_R fill:#4a8bc2
+    style KEY_EXPIRES fill:#e8912e
+    style CONCURRENT_HITS fill:#c73e1d
+    style DB_OVERLOAD fill:#c73e1d
+    style CASCADE_FAIL fill:#c73e1d
+    style OOM_REDIS fill:#c73e1d
+    style NOEVICTION fill:#e8912e
+    style WRITES_FAIL fill:#c73e1d
+    style APP_ERRORS fill:#c73e1d
+    style FORK_OOM fill:#c73e1d
+    style BGSAVE fill:#e8912e
+    style MEM_DOUBLE fill:#c73e1d
+    style OOM_KILLER fill:#c73e1d
+    style HOT_KEY fill:#e8912e
+    style SINGLE_KEY fill:#3a7ca5
+    style CPU_100 fill:#c73e1d
+    style LATENCY_SPIKE fill:#c73e1d
+    style TIMEOUT_CASCADE fill:#c73e1d
 ```
 
 ## Table of Contents

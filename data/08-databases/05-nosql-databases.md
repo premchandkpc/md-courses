@@ -4,15 +4,27 @@
 
 ```mermaid
 graph LR
-    A["Input<br/>Layer"] --> B["Hidden<br/>Layers"]
-    B --> C["Hidden<br/>Layers"]
-    C --> D["Output<br/>Layer"]
-    B --> E["Activation<br/>Functions"]
-    E --> B
-    style A fill:#4a8bc2
-    style B fill:#2d5a7b
-    style C fill:#2d5a7b
-    style D fill:#c73e1d
+    KV["Key-Value<br/>(Redis/Dynamo)"] --> HASH_R["Hash Partition<br/>→ O(1) Lookup"]
+    DOC["Document<br/>(MongoDB)"] --> JSON["BSON Documents<br/>→ Nested Objects"]
+    DOC --> INDEX_2D["2dsphere Index<br/>→ GeoSpatial"]
+    WIDE["Wide-Column<br/>(Cassandra)"] --> RING["Consistent Hashing<br/→ Token Ring"]
+    WIDE --> SSTABLE["SSTable / LSM<br/>→ Write Optimization"]
+    GRAPH["Graph<br/>(Neo4j)"] --> NODES["Nodes + Edges<br/>→ Traversal"]
+    SEARCH["Search<br/>(Elasticsearch)"] --> INV_INDEX["Inverted Index<br/>→ Full-Text Search"]
+    SEARCH --> SHARDING["Shard / Replica<br/>→ Distributed"]
+    style KV fill:#4a8bc2
+    style HASH_R fill:#3fb950
+    style DOC fill:#2d5a7b
+    style JSON fill:#e8912e
+    style INDEX_2D fill:#3a7ca5
+    style WIDE fill:#c73e1d
+    style RING fill:#6f42c1
+    style SSTABLE fill:#e8912e
+    style GRAPH fill:#3fb950
+    style NODES fill:#3a7ca5
+    style SEARCH fill:#6f42c1
+    style INV_INDEX fill:#e8912e
+    style SHARDING fill:#2d5a7b
 ```
 
 ## Table of Contents
@@ -294,29 +306,96 @@ Elasticsearch = Google for your data
 ## Code Examples
 
 ```python
-# Example implementation
-# [Add language-specific code demonstrating core concept]
-pass
+import boto3
+import json
+from cassandra.cluster import Cluster
+from pymongo import MongoClient
+
+# DynamoDB: Transactional order processing with idempotency
+dynamodb = boto3.resource('dynamodb')
+table = dynamodb.Table('orders')
+
+def create_order(order_id: str, customer: str, total: float) -> dict:
+    try:
+        table.put_item(
+            Item={'pk': f'ORDER#{order_id}', 'customer': customer,
+                  'total': total, 'status': 'placed',
+                  'ttl': int(time.time()) + 86400},
+            ConditionExpression='attribute_not_exists(pk)'
+        )
+        return {'status': 'created'}
+    except ClientError as e:
+        if e.response['Error']['Code'] == 'ConditionalCheckFailedException':
+            return {'status': 'duplicate'}
+        raise
+
+# Cassandra: Time-series sensor data with TTL
+cluster = Cluster(['10.0.1.10', '10.0.1.11'])
+session = cluster.connect('sensors')
+session.execute("""
+    INSERT INTO readings (device_id, ts, temperature, humidity)
+    VALUES (%s, %s, %s, %s) USING TTL 7776000
+""", ("sensor-01", datetime.utcnow(), 23.5, 65.2))
+
+# MongoDB: Aggregation pipeline for analytics
+client = MongoClient('mongodb://localhost:27017')
+db = client['analytics']
+pipeline = [
+    {'$match': {'event': 'purchase', 'timestamp': {'$gte': start, '$lt': end}}},
+    {'$group': {'_id': '$product_id', 'total_revenue': {'$sum': '$amount'},
+                 'count': {'$sum': 1}}},
+    {'$sort': {'total_revenue': -1}},
+    {'$limit': 10}
+]
+results = db.events.aggregate(pipeline)
 ```
 
 ---
 
 ## Common Failure Modes
 
-**Problem**: [Key issue in production]
+**Problem**: Hot partition in DynamoDB throttling a subset of requests
 
-**Root cause**: [Why it happens]
+**Root cause**: Uneven access pattern — a single partition key receives disproportionate traffic (e.g., a viral product's SKU gets 90% of reads). DynamoDB splits throughput evenly across partitions, so a hot key throttles even though total table throughput is under-utilized.
 
-**Solution**: [How to fix]
+**Detection**: CloudWatch `WriteThrottleEvents` / `ReadThrottleEvents` for the table. `ConsumedReadCapacityUnits` per partition is uneven. Application sees `ProvisionedThroughputExceededException` for only one item.
+
+**Solution**: Add a random suffix to the partition key to distribute writes (write sharding). For reads, use DynamoDB DAX cache to absorb repeated reads on the same key. Use adaptive capacity (auto-splits partitions) — enable on-demand mode temporarily during traffic spikes. Consider restructuring the data model to avoid single-key hotspots.
+
+**Problem**: Cassandra tombstone overload causing read timeouts
+
+**Root cause**: Frequent deletes or updates create tombstones (markers that a row was deleted). Compaction eventually removes them, but if tombstones accumulate faster than compaction handles them, reads must scan through millions of tombstones, causing timeouts.
+
+**Detection**: `nodetool tablestats` shows high `% tombstones`. Read latency spikes after large delete operations. `org.apache.cassandra.db.filter.TombstoneOverflow` in logs. Queries with `ALLOW FILTERING` hit tombstone limits.
+
+**Solution**: Set `gc_grace_seconds` appropriately (default 10 days). Increase compaction throughput. Use TTL-based expiration instead of explicit DELETE when possible. Batch deletes in small chunks. Monitor `TombstoneScannedHistogram` in latency metrics. For time-series data, use time-windowed compaction strategy.
 
 ---
 
 ## Interview Questions
 
-### Q1: [Core concept question]
+### Q1: How do you choose between DynamoDB, MongoDB, and Cassandra for a new project?
 
-**Answer**: [Detailed explanation with trade-offs]
+**Answer**: **DynamoDB** is best for AWS-native projects requiring single-digit-millisecond latency at any scale, with predictable access patterns and simple key-value or single-table design. Avoid it if you need complex queries, joins, or transactions across many items. **MongoDB** excels when you have flexible/document-shaped data, need ad-hoc queries, aggregations, and secondary indexes. Avoid it if you need strict consistency or very high write throughput. **Cassandra** is ideal for high-volume write-heavy workloads (time-series, IoT, event logging) where availability and partition tolerance matter more than consistency. Avoid it if you need joins, aggregations, or flexible query patterns — Cassandra requires query-driven data modeling.
 
-### Q2: [Design/architecture question]
+### Q2: How does Elasticsearch achieve near-real-time search and what trade-offs does this involve?
 
-**Answer**: [Best practices and reasoning]
+**Answer**: Elasticsearch achieves near-real-time (NRT) search by batching indexed documents into in-memory buffers. A refresh (default 1s) creates a new immutable segment from the buffer, making documents visible to search — but the segment is not yet fsynced to disk. A separate flush (triggered at 30min or 500MB) fsyncs the segment to disk and clears the translog. This design means recent writes can be lost if the node crashes before the flush. The trade-off: lower durability (1s window of potential data loss) in exchange for sub-second search visibility. For write-intensive workloads, increase the refresh interval to 30s for higher indexing throughput.
+
+
+## Edge Cases
+
+| Scenario | Challenge | Solution |
+|----------|-----------|----------|
+| **Cassandra tombstone overload** | Deletes leave tombstones, read queries scan 1000+ tombstones causing timeout | Set `gc_grace_seconds` = 864000. Use TimeWindowCompactionStrategy. Avoid wide-row reads after mass deletes. Monitor `tombstone_scanned` in tracing |
+| **MongoDB wiredTiger cache pressure** | Cache eviction storms cause latency spikes | Set `wiredTigerCacheSizeGB` = 50% of RAM (not default 60%). Monitor `wiredTiger.cache.tracked_dirty_bytes_in_cache`. Add indexes to reduce scanned documents |
+| **DynamoDB hot partition** | One partition gets disproportionate reads | Use write sharding: add random suffix to partition key. Use DAX for cache. Enable auto-scaling with `TargetUtilization=70%` |
+| **Redis memory fragmentation** | High memory usage despite small datasets | Set `activedefrag yes`. Use `jemalloc` allocator. Monitor `mem_fragmentation_ratio` > 1.5. Restart during maintenance |
+| **CockroachDB transaction retries** | Serialization failures under contention | Implement client-side retry with backoff. Use `SELECT FOR UPDATE` to reduce contention. Consider `SNAPSHOT` isolation for read-heavy workloads |
+
+## Cross-References
+
+- [PostgreSQL Architecture](../02-postgresql-architecture.md) — ACID, MVCC, replication comparison
+- [Database Internals](../../08-databases/01-db-internals.md) — LSM-tree vs B-tree storage engines
+- [Distributed Transactions](../../09-distributed-systems/02-distributed-transactions.md) — Consistency models, transaction isolation
+- [Distributed Storage](../../09-distributed-systems/03-distributed-storage.md) — Consistent hashing, quorum, gossip

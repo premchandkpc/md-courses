@@ -4,15 +4,41 @@
 
 ```mermaid
 graph LR
-    A["Input<br/>Layer"] --> B["Hidden<br/>Layers"]
-    B --> C["Hidden<br/>Layers"]
-    C --> D["Output<br/>Layer"]
-    B --> E["Activation<br/>Functions"]
-    E --> B
-    style A fill:#4a8bc2
-    style B fill:#2d5a7b
-    style C fill:#2d5a7b
-    style D fill:#c73e1d
+    REQ["Requirements<br/>Functional + NFR"] --> SCALE["Scalability<br/>(Vertical vs Horizontal)"]
+    SCALE --> LB["Load Balancing<br/>(L4 / L7)"]
+    SCALE --> SHARD["Sharding<br/>(Hash/Range/Geo)"]
+    REQ --> AVAIL["Availability<br/>(HA/FT)"]
+    AVAIL --> REPL["Replication<br/>(Leader/Follower)"]
+    AVAIL --> FAILOVER["Failover<br/>(Active/Passive)"]
+    REQ --> PERF["Performance<br/>(Latency/Thruput)"]
+    PERF --> CACHE["Caching<br/>(CDN/Redis/Memcached)"]
+    PERF --> CDN["CDN<br/>(Edge Caching)"]
+    REQ --> CONSISTENCY["Consistency<br/>Models"]
+    CONSISTENCY --> STRONG["Strong<br/>(Linearizable)"]
+    CONSISTENCY --> EVTUAL["Eventual<br/>(Dynamo/Cassandra)"]
+    CONSISTENCY --> CAUSAL["Causal<br/>(CRDT)"]
+    REQ --> DB_PATTERNS["Database<br/>Patterns"]
+    DB_PATTERNS --> CQRS["CQRS"]
+    DB_PATTERNS --> EVT_SRC["Event Sourcing"]
+    DB_PATTERNS --> SAGA["Saga"]
+    style REQ fill:#4a8bc2
+    style SCALE fill:#2d5a7b
+    style LB fill:#3a7ca5
+    style SHARD fill:#e8912e
+    style AVAIL fill:#c73e1d
+    style REPL fill:#e8912e
+    style FAILOVER fill:#3a7ca5
+    style PERF fill:#6f42c1
+    style CACHE fill:#3fb950
+    style CDN fill:#e8912e
+    style CONSISTENCY fill:#3fb950
+    style STRONG fill:#c73e1d
+    style EVTUAL fill:#3a7ca5
+    style CAUSAL fill:#e8912e
+    style DB_PATTERNS fill:#2d5a7b
+    style CQRS fill:#6f42c1
+    style EVT_SRC fill:#e8912e
+    style SAGA fill:#3fb950
 ```
 
 ## 📋 Table of Contents
@@ -385,6 +411,176 @@ class AccountBalanceProjection:
 - **Outbox Pattern**: Write to event outbox table in same DB transaction as business data. Reliable publisher reads outbox → message broker.
 - **Database-per-service**: Each microservice owns its DB. No sharing.
 - **Shared Database**: Multiple services share same DB. Simpler but couples schema changes.
+
+---
+
+## Global & Multi-Region Architecture
+
+Designing systems that span geographic regions for availability, latency, and data residency.
+
+### Active-Active vs Active-Passive
+
+| Aspect | Active-Passive | Active-Active |
+|--------|---------------|---------------|
+| Write location | Single region | All regions |
+| Read location | All regions (replicas) | All regions |
+| Failover time | Minutes (promote replica) | Instant (no failover needed) |
+| Data loss risk | Replication lag | Conflict resolution needed |
+| Cost | Lower (standby can be scaled down) | Higher (full capacity everywhere) |
+| Complexity | Lower | Higher (conflict handling, CRDTs) |
+| Best for | Compliance, simpler apps | Global low-latency apps |
+
+```text
+Active-Passive Failover Sequence:
+  Normal:     Users → Route53 → us-east-1 (primary) → RDS primary
+              Users → Route53 → eu-west-1 (read replica) → RDS replica (read-only)
+  
+  Failover:   Detect health check failure
+              Promote RDS replica to standalone
+              Update Route53 to point all traffic to eu-west-1
+              Scale up eu-west-1 compute to full capacity
+
+  RTO: 2-10 minutes (DNS TTL + health check + promotion)
+  RPO: < 1 minute (async replication lag)
+```
+
+### Global Traffic Routing Patterns
+
+```
+Anycast Routing:
+  Single IP advertised from multiple locations
+  BGP routes users to nearest healthy location
+  Sub-second failover (BGP convergence)
+  Providers: AWS Global Accelerator, Cloudflare, Google Cloud LB
+  Best for: TCP/UDP, gaming, real-time comms
+
+DNS-Based Routing:
+  Route53/Cloud DNS returns IP based on:
+    - Latency: Lowest latency region
+    - Geolocation: User's physical location
+    - Weighted: Percentage-based traffic split
+    - Failover: Primary → secondary on health check failure
+  DNS TTL limits failover speed (30s – 5 min typical)
+  Best for: HTTP APIs, web apps, static content
+
+GSLB (Global Server Load Balancing):
+  Dedicated appliances monitoring multi-region health
+  Combines DNS + health probes + traffic steering
+  Advanced features: load capacity, proximity, persistence
+  Providers: F5 GTM, Citrix NetScaler, Azure Traffic Manager
+```
+
+### Geo-Replication Strategies
+
+```mermaid
+graph TB
+    subgraph "Active-Passive DB Replication"
+        P["Primary DB<br/>us-east-1<br/>(Read/Write)"] -->|"Async Replication"| R1["Read Replica<br/>eu-west-1<br/>(Read-only)"]
+        P -->|"Async Replication"| R2["Read Replica<br/>ap-southeast-1<br/>(Read-only)"]
+    end
+    subgraph "Active-Active DB Replication"
+        A1["Region A<br/>(Read/Write)"] <-->|"Bi-directional<br/>Replication"| A2["Region B<br/>(Read/Write)"]
+        A1 <--> A3["Region C<br/>(Read/Write)"]
+        A2 <--> A3
+    end
+```
+
+| Database | Active-Passive | Active-Active | Conflict Resolution |
+|----------|---------------|---------------|---------------------|
+| DynamoDB | Global Tables | Yes | Last-writer-wins |
+| Cosmos DB | Multi-region writes | Yes | LWW, Custom, CRDT |
+| Spanner | N/A (always multi-region) | Yes | True time + Paxos |
+| CockroachDB | N/A | Yes | CRDT-based |
+| RDS/Aurora | Cross-region replicas | Not natively | LWW (on failover) |
+| Cassandra | N/A | Yes | LWW, Timestamp |
+
+### Multi-Region Kubernetes
+
+```yaml
+# Cluster API: manage k8s clusters across regions
+apiVersion: cluster.x-k8s.io/v1beta1
+kind: Cluster
+metadata:
+  name: prod-eu-west
+spec:
+  clusterNetwork:
+    pods:
+      cidrBlocks: ["10.1.0.0/16"]
+    services:
+      cidrBlocks: ["10.0.0.0/16"]
+  infrastructureRef:
+    apiVersion: infrastructure.cluster.x-k8s.io/v1beta1
+    kind: AWSCluster
+    name: prod-eu-west
+
+---
+# ApplicationSet: deploy same app to all clusters
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+spec:
+  generators:
+  - clusters:
+      selector:
+        matchLabels:
+          region: production
+  template:
+    spec:
+      source:
+        repoURL: https://github.com/org/infra
+        path: apps/checkout
+      destination:
+        server: '{{ server }}'
+        namespace: checkout
+```
+
+### CDN & Edge Computing
+
+```
+CDN Cache Architecture:
+  Browser → Edge POP (Cache L1) → Regional POP (Cache L2) → Origin
+  
+  Cache HIT: 5-20ms (edge → user)
+  Cache MISS: 50-200ms (edge → origin, depending on region)
+  
+  Cache strategies:
+    - Static assets: Long TTL (1y), invalidate on deploy
+    - API responses: Short TTL (30s), stale-while-revalidate
+    - Dynamic content: No cache / edge compute
+    - Signed URLs/Cookies: Private content delivery
+
+Edge Computing:
+  Lambda@Edge (AWS):   Node.js/Python, 1-5ms startup
+  CloudFront Functions: JS-only, sub-ms startup, 10KB limit
+  Cloudflare Workers:  V8 isolates, 0-5ms cold start
+  Fastly Compute@Edge: Wasm, Rust/Go/JS, 50μs cold start
+  Akamai EdgeWorkers:  V8, JS, sub-ms startup
+```
+
+### Production Considerations for Multi-Region
+
+- **Cross-region latency**: Map realistic latency numbers (see table below)
+- **Data egress costs**: Moving data between regions costs $0.02–$0.12/GB
+- **Consistency guarantees**: Document what each service guarantees
+- **Compliance**: GDPR (data stays in EU), CCPA, sovereign clouds
+- **Failover testing**: Run Game Days that kill an entire region
+- **Observability**: Trace across regions, aggregate logs centrally
+- **Configuration**: Per-region config (feature flags, quotas) via ConfigMaps
+
+| Region Pair | Latency (P99) | Bandwidth Cost |
+|-------------|---------------|----------------|
+| us-east-1 → us-west-2 | ~35ms | $0.02/GB |
+| us-east-1 → eu-west-1 | ~75ms | $0.09/GB |
+| us-east-1 → ap-southeast-1 | ~200ms | $0.12/GB |
+| us-east-1 → sa-east-1 | ~150ms | $0.15/GB |
+
+### Cross-References
+
+| Related File | Connection |
+|-------------|-----------|
+| [Cloud Disaster Recovery](../05-cloud/README.md#disaster-recovery) | RPO/RTO, backup strategies, DR patterns |
+| [SRE Disaster Recovery](../14-sre-observability/README.md#disaster-recovery) | DR testing, chaos engineering, runbooks |
+| [Argo CD Multi-Cluster](../06-devops/ci-cd/02-argo-gitops-deployment-automation.md) | ApplicationSet, multi-cluster GitOps |
+| [Service Mesh Multi-Cluster](../16-microservices/01-architecture-patterns.md) | Multi-cluster mesh, cross-region service discovery |
 
 ---
 

@@ -4,15 +4,28 @@
 
 ```mermaid
 graph LR
-    A["Input<br/>Layer"] --> B["Hidden<br/>Layers"]
-    B --> C["Hidden<br/>Layers"]
-    C --> D["Output<br/>Layer"]
-    B --> E["Activation<br/>Functions"]
-    E --> B
-    style A fill:#4a8bc2
-    style B fill:#2d5a7b
-    style C fill:#2d5a7b
-    style D fill:#c73e1d
+    TS["TypeScript<br/>Source (.ts)"] --> PARS["Parser<br/>(Scanner + Parser)"]
+    PARS --> BIND["Binder<br/>(Symbol Table)"]
+    BIND --> CHK["Type Checker<br/>(Type Inference)"]
+    CHK --> ER["Errors /<br/>Warnings"]
+    TS --> EMIT["Emitter<br/>(.js / .d.ts)"]
+    EMIT --> JS["JavaScript<br/>Output"]
+    TYP["Type System"] --> PRIM["string / number<br/>/ boolean"]
+    TYP --> GEN["Generics<br/>&lt;T&gt;"]
+    TYP --> UNION["Union /<br/>Intersection"]
+    TYP --> MAP["Mapped /<br/>Conditional"]
+    style TS fill:#4a8bc2
+    style PARS fill:#2d5a7b
+    style BIND fill:#3a7ca5
+    style CHK fill:#c73e1d
+    style ER fill:#c73e1d
+    style EMIT fill:#6f42c1
+    style JS fill:#3fb950
+    style TYP fill:#e8912e
+    style PRIM fill:#3a7ca5
+    style GEN fill:#3fb950
+    style UNION fill:#e8912e
+    style MAP fill:#6f42c1
 ```
 
 ## 1. Basic Types vs Literal Types vs Union/Intersection

@@ -5,16 +5,25 @@
 
 
 ```mermaid
-graph LR
-    A["Input<br/>Layer"] --> B["Hidden<br/>Layers"]
-    B --> C["Hidden<br/>Layers"]
-    C --> D["Output<br/>Layer"]
-    B --> E["Activation<br/>Functions"]
-    E --> B
-    style A fill:#4a8bc2
-    style B fill:#2d5a7b
-    style C fill:#2d5a7b
-    style D fill:#c73e1d
+graph TD
+    REQ["Requirements<br/>Functional + Non-Functional"] --> ENT["Core Entities<br/>User, Tweet, Order, Video"]
+    ENT --> API["API Design<br/>REST / gRPC / WebSocket"]
+    API --> DM["Data Model<br/>SQL vs NoSQL vs NewSQL"]
+    DM --> HLD["High-Level Design<br/>Boxes & Arrows"]
+    HLD --> DD["Deep Dive<br/>Cache, Sharding, Leader Election"]
+    DD --> TR["Tradeoffs<br/>CAP, PACELC, Consistency vs Latency"]
+    TR --> SC["Scaling<br/>10x, 100x, 1000x"]
+    SC --> FA["Failure Analysis<br/>Single Point, Cascading, Data Loss"]
+
+    style REQ fill:#4a8bc2
+    style ENT fill:#3a7ca5
+    style API fill:#2d5a7b
+    style DM fill:#1e3e5c
+    style HLD fill:#6f42c1
+    style DD fill:#e8912e
+    style TR fill:#c73e1d
+    style SC fill:#d94a2a
+    style FA fill:#b5321a
 ```
 
 ## Table of Contents
@@ -379,3 +388,96 @@ Week 11-12: Mock interviews with FAANG engineers. Capacity estimation drills. Tr
 ---
 
 > **Next step:** Start with the [System Design Framework](#system-design-framework), practice [Question 1: URL Shortener](#top-30-system-design-questions) using the full 9-step process, then progressively work through the remaining 29 questions ranked by difficulty.
+
+
+## Production Failure Modes
+
+### Failure 1: Over-Engineering the Design — Adding Components the Interviewer Didn't Ask For
+
+| Aspect | Detail |
+|--------|--------|
+| **Symptoms** | Candidate adds Redis cache, Kafka queue, CDN, and multi-region replication to a URL shortener. Interviewer runs out of time before core data model is discussed. Candidate scored low on "Architecture" despite showing depth |
+| **Root Cause** | Fear of missing a feature. Candidate tries to prove breadth instead of depth. No prioritization against requirements |
+| **Detection** | Whiteboard has 15 boxes for a system that needs 5. 70% of time spent on "advanced" features that weren't in requirements |
+| **Recovery** | Strip down to essentials: client → LB → app → DB. Add one component per justified reason (e.g., "read-heavy → add cache"). Ask: "Which part should I deep dive on?" |
+| **Prevention** | Follow the 9-step framework strictly. Don't skip "Requirements" phase. Ask clarifying questions: "Do we need real-time?" "What's the read/write ratio?" "Is latency or consistency more important?" |
+
+### Failure 2: Consistency Model Mismatch — Choosing Strong Consistency When Eventually Consistent Would Be Better
+
+| Aspect | Detail |
+|--------|--------|
+| **Symptoms** | Candidate proposes Spanner/CockroachDB for a social media feed system. Higher latency and cost than needed. Interviewer challenges with "What if I told you 1-second staleness is acceptable?" |
+| **Root Cause** | Defaulting to "correctness" without understanding tradeoffs. Not considering cost implications. Inability to articulate when eventual consistency is acceptable |
+| **Detection** | System design uses Serializable isolation for a read-heavy newsfeed. User experience: 500ms p99 latency vs 10ms with eventual consistency |
+| **Recovery** | Ask: "What's the business impact of stale reads?" For a newsfeed: stale is fine. For a payment system: never. Map consistency to UX impact. Use PACELC to justify choice |
+| **Prevention** | Practice the "Consistency vs Availability Tradeoff Matrix" from this guide for each design. For every component, write down: consistency model, latency impact, failure behavior |
+
+### Failure 3: Missing the Hot Key Problem
+
+| Aspect | Detail |
+|--------|--------|
+| **Symptoms** | Candidate designs a cache layer (Redis) but doesn't account for a single key getting 100x more traffic than others. Interviewer asks: "What happens when a celebrity tweets?" |
+| **Root Cause** | Designing for average load, not skewed distribution. Caching at single layer without local cache for hot keys |
+| **Detection** | Cache hit ratio drops during traffic spikes. One Redis node at 100% CPU while others are idle. Single partition handles 90% of reads |
+| **Recovery** | Add local cache (Guava/Caffeine) on application servers for hot keys — L1 (local LRU) → L2 (Redis) → DB. Use consistent hashing with virtual nodes for distribution |
+| **Prevention** | Always ask: "What's the distribution of access?" Assume Pareto (80/20) rule. Design for hot key mitigation in any cache description. Mention read-through cache with jitter for refresh |
+
+### Failure 4: Estimating Capacity Wrong by 10x
+
+| Aspect | Detail |
+|--------|--------|
+| **Symptoms** | Candidate estimates storage for a photo-sharing app at 10TB. Actual need is 100PB. Back-of-envelope math off by factor of 100 |
+| **Root Cause** | Not verifying units: MB vs GB. Not accounting for replication factor (3x). Not calculating growth over time (5-year projection vs daily). Forgetting metadata storage per object |
+| **Detection** | "How many photos per user?" skipped. "Storage per photo" confused bytes vs bits. Replication factor not included |
+| **Recovery** | Pause and recalculate: (DAU) x (photos per user per day) x (avg photo size) x (replication factor) x (retention days) = total. Convert to PB. Check with interviewer: "Does this seem reasonable?" |
+| **Prevention** | Memorize reference numbers: 1M users = 1 QPS (peak), 1 photo = 2-5 MB, 1 video = 200 MB, 1 tweet = 280 bytes + metadata 2KB. Always double-check power-of-10 conversions |
+
+### Failure 5: Single Point of Failure in Proposed Architecture
+
+| Aspect | Detail |
+|--------|--------|
+| **Symptoms** | Candidate draws one database, one cache, one load balancer — all single nodes. Interviewer asks: "What happens when the DB goes down?" |
+| **Root Cause** | Designing for happy path. No failure mode analysis. Forgetting that production systems fail regularly |
+| **Detection** | Architecture diagram has no redundancy. No replication, no failover, no backups mentioned |
+| **Recovery** | Add read replicas for DB. Multi-AZ deployment. Redis Sentinel/Cluster for cache. Active-passive or active-active LB configuration. Always include disaster recovery region |
+| **Prevention** | After HLD, spend 2 minutes on "failure analysis" — trace each component failure and describe fallback. Mention circuit breaker, bulkhead, graceful degradation |
+
+## Edge Cases
+
+| Scenario | Challenge | Solution |
+|----------|-----------|----------|
+| **Interviewer goes silent** | No feedback, can't tell if direction is correct | Pause and ask: "Does this match what you're looking for?" or "Should I dive deeper into X or move to Y?" |
+| **Time runs out before deep dive** | Framework takes too long on earlier steps | Set time checkpoints: 5min requirements, 15min HLD, 10min deep dive, 5min tradeoffs. Skip API design if time is tight |
+| **Candidate forgets fundamental concept** | Can't explain consistent hashing, but design requires it | Be honest: "I don't have the details memorized, but I know the principle is X and it maps to Y in this design." Partial credit is better than bluffing |
+| **Back-of-envelope numbers questioned** | Interviewer disagrees with your estimate | Say: "Let's both estimate independently and compare." Or: "What number would you use? I'll incorporate that." Shows adaptability |
+| **Follow-up question exposes flaw** | Design has a bug interviewer spotted | Acknowledge: "Good catch. Here's how I'd fix it." Shows you can handle feedback — a key assessment criterion |
+
+## Interview Questions
+
+### Q1 (Beginner): What is the most common mistake candidates make in system design interviews?
+
+**Answer**: Jumping to solutions before understanding requirements. Most candidates start drawing boxes (Redis, Kafka, CDN) before asking: "What's the read/write ratio?" "What's the latency requirement?" "How many users?" This results in over-engineered designs that don't match the problem. The framework (Requirements → Entities → API → Data Model → HLD → Deep Dive → Tradeoffs → Scaling) exists because FAANG interviewers use it to evaluate structured thinking, not just technical knowledge.
+
+### Q2 (Mid-Level): How do you choose between SQL and NoSQL in a system design?
+
+**Answer**: Use the decision tree: (1) Do you need ACID transactions? → Yes → SQL (PostgreSQL). (2) Is your data model hierarchical/nested? → Yes → Document DB (MongoDB). (3) Do you need high write throughput across multiple regions? → Yes → Wide-column (Cassandra, ScyllaDB). (4) Is the workload simple KV lookups? → Yes → KV store (Redis, DynamoDB). (5) Need global distribution with strong consistency? → Yes → NewSQL (CockroachDB, Spanner). SQL strengths: joins, migrations, tooling, ecosystem. NoSQL strengths: horizontal scaling, schema flexibility, high throughput. For most designs, start with SQL and add NoSQL only when justified.
+
+### Q3 (Senior): Walk me through your design for a URL shortener, with capacity estimation.
+
+**Answer**: Requirements: generate short URLs, redirect to original, 100M DAU, 1B URLs total. Estimation: 1 write/sec (peak), 10K reads/sec. Storage: 1B URLs × 500 bytes = 500GB. Cache: 80% of reads hit 20% of URLs = 100M hot URLs × 500 bytes = 50GB Redis. API: POST /shorten (original_url → short_code), GET /{short_code} → redirect. Data model: urls(id, original_url, short_code, created_at, expires_at) with index on short_code. HLD: client → LB → app servers (stateless) → Redis cache → PostgreSQL. Deep dive: short_code generation. Use base62 encoding (7 chars = 62^7 = 3.5T combinations). Generate via distributed ID service (Snowflake → base62). Cache-aside: on write, populate cache. On read, cache hit → redirect, cache miss → query DB → populate cache → redirect. Scaling: read replicas for DB (10K reads > single writer capacity), Redis Cluster for cache (50GB > single node). Failure: cache miss storm → rate limit to DB, circuit breaker on cache. Use Bloom filter to prevent cache stampede for nonexistent short codes.
+
+### Q4 (Staff): Compare the tradeoffs between fan-out on write (Twitter for active users) vs fan-out on read (Twitter for celebrities). When would you use each?
+
+**Answer**: Fan-out on write: pre-compute each user's timeline when a tweet is created. Write amplification: K writes per tweet (where K = followers). For a user with 10M followers, 10M writes per tweet. Fan-out on read: store tweet in a global timeline, each user fetches and merges their timeline on read. For celebrities, fan-out on write is prohibitive (10M writes per tweet). Twitter hybrid: fan-out on write for users with ≤ 5K followers (pre-compute timeline), fan-out on read for users with > 5K followers (pull tweets on read). Additional optimization: cache celebrity tweets in CDN, merge on client side. For a design question, start with fan-out on write (simpler), then mention the celebrity problem and propose the hybrid. Tradeoff: fan-out on write uses more storage but provides faster reads (O(1) timeline fetch). Fan-out on read uses more CPU but provides slower reads (O(followed_users) merge). For a real system, 95% of users have < 5K followers, so 95% fan-out on write is efficient.
+
+### Q5 (Staff/Principal): Design a distributed rate limiter that works across multiple data centers.
+
+**Answer**: Requirements: global rate limit of 1000 req/sec per API key across all DCs. Low latency (< 5ms overhead per request). DR: survive one DC failure. Architecture: each DC has local rate limiter (token bucket in memory) with configuration from centralized config store (etcd). Global rate limit enforced via: (a) Redis Cluster with CRDT counters (each DC writes its count, reads from all DCs), or (b) partitioned counters (each request assigned to a shard, shard tracks count). Deep dive: choose CRDT-based approach. Each DC maintains a counter per key: `dc1_requests:api_key_123 = 450`. On each request: increment local counter, compute sum(all DC counters). If sum > limit, reject. Eventual consistency means a brief period where limit is exceeded (acceptable, treat as safety margin not hard limit). Sync counters every 100ms via gossip. For failover: if one DC is down, other DCs exclude its counter from sum (use lease-based membership). For exact enforcement, use sliding window log with Redis sorted sets, but this adds 2-5ms per request — use for strict limits, token bucket for approximate.
+
+## Cross-References
+
+- [Backend Engineer Roadmap](../01-backend-engineer.md) — Skill progression from foundational to principal-level architecture
+- [HTTP Protocols](../../11-networking/02-http-protocols.md) — Network fundamentals for API design
+- [Distributed Transactions](../../09-distributed-systems/02-distributed-transactions.md) — Saga vs 2PC tradeoffs
+- [Distributed Storage](../../09-distributed-systems/03-distributed-storage.md) — Consistent hashing, quorum, replication
+- [Stream Processing](../../09-distributed-systems/04-stream-processing.md) — Event-time processing, watermarks, exactly-once

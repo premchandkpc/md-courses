@@ -8,15 +8,33 @@
 
 ```mermaid
 graph LR
-    A["Input<br/>Layer"] --> B["Hidden<br/>Layers"]
-    B --> C["Hidden<br/>Layers"]
-    C --> D["Output<br/>Layer"]
-    B --> E["Activation<br/>Functions"]
-    E --> B
-    style A fill:#4a8bc2
-    style B fill:#2d5a7b
-    style C fill:#2d5a7b
-    style D fill:#c73e1d
+    ES["Event Sourcing"] --> CMD["Command →<br/>Domain Event"]
+    CMD --> EVT_STORE["Event Store<br/>(Compacted Topic)"]
+    EVT_STORE --> REBUILD["Replay Events<br/>(Current State)"]
+    CQRS["CQRS"] --> WRITE_SIDE["Command Side<br/>(Write DB)"]
+    CQRS --> READ_SIDE["Query Side<br/>(Read DB)"]
+    OUTBOX["Outbox Pattern"] --> TXN_DB["BEGIN TX →<br/>Write DB + Outbox"]
+    TXN_DB --> CDC_C["CDC (Debezium)<br/→ Kafka"]
+    CDC_C --> CONSUME["Consumer<br/>(Idempotent)"]
+    DLQ["Dead Letter<br/>Queue"] --> RETRY["Retry Topic<br/>(max.retries)"]
+    RETRY --> DLQ_TOPIC["DLQ Topic<br/>(Manual Review)"]
+    TXN["Transactional<br/>Messaging"] --> EOS["Exactly-Once<br/>(transactional.id)"]
+    style ES fill:#4a8bc2
+    style CMD fill:#2d5a7b
+    style EVT_STORE fill:#3a7ca5
+    style REBUILD fill:#c73e1d
+    style CQRS fill:#6f42c1
+    style WRITE_SIDE fill:#e8912e
+    style READ_SIDE fill:#3fb950
+    style OUTBOX fill:#3a7ca5
+    style TXN_DB fill:#e8912e
+    style CDC_C fill:#c73e1d
+    style CONSUME fill:#3fb950
+    style DLQ fill:#c73e1d
+    style RETRY fill:#e8912e
+    style DLQ_TOPIC fill:#c73e1d
+    style TXN fill:#6f42c1
+    style EOS fill:#3fb950
 ```
 
 ## Table of Contents
@@ -319,3 +337,90 @@ sync.group.offsets.enabled: true
 ## Practical Example
 
 See code examples above for practical usage patterns.
+
+## Edge Cases and Advanced Scenarios
+
+| Scenario | Challenge | Solution |
+|----------|-----------|----------|
+| **KTable state store corruption** | RocksDB crashes or disk full | State stores are backed by changelog topics. Delete local RocksDB directory; restart will rebuild from changelog |
+| **Co-partitioning requirement** | Stream-Table join fails with `TopologyException` | Ensure joined topics have same partition count and same key partitioning strategy. Repartition via `repartition()` operator |
+| **Transactional timeout** | Producer transaction exceeds `transaction.timeout.ms` (default 15 min) | Increase timeout for long-running ETL jobs. Use smaller micro-batches |
+| **Consumer group metadata overflow** | 100K+ consumer groups crash coordinator | Increase `group.max.size` (default 20). Use `group.initial.rebalance.delay.ms` to stagger startups |
+| **Compacted topic tombstones** | DELETE produces tombstone, but compaction hasn't run yet | Tombstones survive until `min.compaction.lag.ms` (default 0). Reader sees deleted keys until compaction removes tombstones |
+
+## Cross-References
+
+- [Kafka Production Operations](../04-kafka-production-operations.md) — Cluster sizing, broker tuning, security, DR
+- [SNS & SQS Patterns](../sns-sqs/02-sns-sqs-patterns.md) — Queue comparison guide, exactly-once processing
+- [Distributed Transactions](../../09-distributed-systems/02-distributed-transactions.md) — Outbox, Saga, TCC patterns
+- [CQRS & Event Sourcing](../../16-microservices/07-cqrs-event-sourcing.md) — Command handling, projections, event store
+- [Stream Processing](../../09-distributed-systems/04-stream-processing.md) — Windowing, watermarks, checkpointing
+
+
+## Production Failure Modes
+
+### Failure 1: Consumer Lag Spikes Due to Processing Bottleneck
+
+| Aspect | Detail |
+|--------|--------|
+| **Symptoms** | Consumer lag grows unbounded. Messages processed slower than produced. Kafka retention period hit, messages deleted before consumed |
+| **Root Cause** | Consumer processing time increased (DB slow, external API timeout). Default `max.poll.records` = 500 too high for current processing latency. Processing time exceeds `max.poll.interval.ms` (5 min default), triggering rebalance |
+| **Detection** | `kafka-consumer-groups --describe --group` shows `LAG` increasing. Consumer JMX: `records-lag-max` growing. Grafana: consumer lag dashboard shows upward trend |
+| **Recovery** | Reduce `max.poll.records` to 100. Increase `max.poll.interval.ms` to 10 min. Scale consumer group: add more consumers. Identify slow processing via Zipkin/Jaeger traces |
+| **Prevention** | Set consumer lag alert in Prometheus: `sum(kafka_consumer_lag{group=~".*"}) > 10000`. Use async processing: dispatch to thread pool, commit offsets after completion. Implement `pause()` on partition when lag exceeds threshold |
+
+### Failure 2: Duplicate Messages After Consumer Crash
+
+| Aspect | Detail |
+|--------|--------|
+| **Symptoms** | Data inconsistencies in downstream systems. Duplicate records in database. Idempotency keys missing |
+| **Root Cause** | `enable.auto.commit=true` with `auto.commit.interval.ms=5000`. Consumer processes records, commits offset, then crashes. Records processed but offset not committed. On restart, consumer re-processes from committed offset |
+| **Detection** | DB has duplicate rows with same `event_id`. Idempotency table shows multiple identical keys. Logs: consumer group offset resets to earlier position |
+| **Recovery** | Implement idempotent consumer: upsert into DB with unique event_id. Drop duplicates using `INSERT ... ON CONFLICT DO NOTHING`. Switch to manual offset commit after processing |
+| **Prevention** | Set `enable.auto.commit=false`. Commit offset only after processing and side-effects are complete. Use Kafka transactional producer + consumer for exactly-once. Use idempotency table with TTL |
+
+### Failure 3: Schema Registry Backward-Incompatible Change
+
+| Aspect | Detail |
+|--------|--------|
+| **Symptoms** | Consumers fail to deserialize Avro messages. Schema compatibility check passes but runtime fails. Unknown fields cause deserialization errors |
+| **Root Cause** | `FULL_TRANSITIVE` compatibility required but producer used `BACKWARD`. Added a required field without default. Older consumers don't know about new field and fail |
+| **Detection** | Schema Registry logs: `Schema being registered is incompatible`. Consumer logs: `AvroTypeException`. Kafka cluster: `deserialization-error-count` spikes |
+| **Recovery** | Revert producer to old schema version. Re-register schema with correct compatibility type. Contact all consumer teams to update schemas. Use `FORWARD_TRANSITIVE` to allow consumers to evolve independently |
+| **Prevention** | Always add new fields with defaults in Avro. Use `BACKWARD_TRANSITIVE` for additive-only changes. Test producer changes with consumer contract tests. Version schemas in shared registry with CI validation |
+
+## Interview Questions
+
+### Q1 (Beginner): What is the difference between Kafka topics and partitions?
+
+**Answer**: A topic is a logical category/feed name to which records are published. A partition is a physical, ordered, immutable sequence of records within a topic. Partitions are the unit of parallelism: each partition lives on a single broker, and each consumer in a group reads from one or more partitions. In a 10-partition topic with 3 consumers, partitions are distributed among consumers. Adding more partitions increases throughput but also increases the number of files Kafka manages. Orders within a partition are guaranteed, but across partitions they are not.
+
+### Q2 (Mid-Level): How does the Kafka producer ensure record ordering within a partition?
+
+**Answer**: The producer assigns records to partitions using a partitioner. With a key (default partitioner: hash(key) % num_partitions), all records with the same key go to the same partition. The producer maintains per-partition in-flight requests. With `max.in.flight.requests.per.connection=1` (default 5), records are sent in strict order. With idempotent producer (`enable.idempotence=true`), ordering is guaranteed even with retries because each record has a sequence number and the broker rejects out-of-order sequences. Retries can cause duplicates but not reordering when idempotence is enabled. Without idempotence, a retried batch could be appended after a later batch if the original request succeeded but the broker response was lost.
+
+### Q3 (Senior): Design a Kafka-based event sourcing system for an e-commerce order management system.
+
+**Answer**: Events: OrderCreated, OrderShipped, OrderCancelled, PaymentProcessed. Topics: `orders` (single partition per order_id hash → ensures ordering per order). Producers: order service publishes OrderCreated, payment service publishes PaymentProcessed, shipping service publishes OrderShipped. Consumers: projection service reads events and builds materialized views (current order state in PostgreSQL). Use compacted topic `order-state` as KV store (key=order_id, value=latest state). Handle duplicate events: idempotent projections (upsert by order_id + event_version). Handle out-of-order events: use event_version in the event, discard versions <= current version. For exactly-once, use Kafka Streams with exactly-once semantics and state store for the projection. The state store is backed by a changelog topic for recovery. Use interactive queries for read-side: query the state store directly instead of re-processing all events.
+
+### Q4 (Staff): Compare Kafka Streams, ksqlDB, and Flink for stream processing in an event-driven microservices architecture.
+
+**Answer**: Kafka Streams: embeddable, lightweight, runs in your application. Best for: per-service event processing (projections, enrichment, filtering). Pros: no separate cluster, exactly-once built-in, ROCKsDB state stores, exactly-once exactly. Cons: JVM-only, state store can be memory-intensive, no global event-time semantics across partitions. ksqlDB: SQL interface on top of Kafka Streams. Best for: analysts, simple transformations, joining streams. Pros: low barrier to entry, pull queries (interactive query on materialized state), push queries (continuous queries). Cons: complex joins limited, not for heavy processing logic. Flink: cluster-based, true streaming. Best for: complex event processing, windowed aggregations, large state, exactly-once sinks to external systems. Pros: event-time processing + watermarks, savepoints for upgrades, batch and stream unified API, Python API. Cons: separate cluster to manage, more complex operations. Recommendation: use Kafka Streams for in-service processing, Flink for cross-service analytics and large-state operations. ksqlDB for quick queries and dashboards.
+
+## Edge Cases
+
+| Scenario | Challenge | Solution |
+|----------|-----------|----------|
+| **KTable state store corruption** | RocksDB crashes or disk full | State stores are backed by changelog topics. Delete local RocksDB directory; restart will rebuild from changelog |
+| **Co-partitioning requirement** | Stream-Table join fails with `TopologyException` | Ensure joined topics have same partition count and same key partitioning strategy. Repartition via `repartition()` operator |
+| **Transactional timeout** | Producer transaction exceeds `transaction.timeout.ms` (default 15 min) | Increase timeout for long-running ETL jobs. Use smaller micro-batches |
+| **Consumer group metadata overflow** | 100K+ consumer groups crash coordinator | Increase `group.max.size` (default 20). Use `group.initial.rebalance.delay.ms` to stagger startups |
+| **Compacted topic tombstones** | DELETE produces tombstone, but compaction hasn't run yet | Tombstones survive until `min.compaction.lag.ms` (default 0). Reader sees deleted keys until compaction removes tombstones |
+
+## Cross-References
+
+- [Kafka Production Operations](../04-kafka-production-operations.md) — Cluster sizing, broker tuning, security, DR
+- [SNS & SQS Patterns](../sns-sqs/02-sns-sqs-patterns.md) — Queue comparison guide, exactly-once processing
+- [Distributed Transactions](../../09-distributed-systems/02-distributed-transactions.md) — Outbox, Saga, TCC patterns
+- [CQRS & Event Sourcing](../../16-microservices/07-cqrs-event-sourcing.md) — Command handling, projections, event store
+- [Stream Processing](../../09-distributed-systems/04-stream-processing.md) — Windowing, watermarks, checkpointing

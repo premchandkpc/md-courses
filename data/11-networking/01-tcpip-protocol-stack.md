@@ -4,15 +4,33 @@
 
 ```mermaid
 graph LR
-    A["Input<br/>Layer"] --> B["Hidden<br/>Layers"]
-    B --> C["Hidden<br/>Layers"]
-    C --> D["Output<br/>Layer"]
-    B --> E["Activation<br/>Functions"]
-    E --> B
-    style A fill:#4a8bc2
-    style B fill:#2d5a7b
-    style C fill:#2d5a7b
-    style D fill:#c73e1d
+    APP_L["Application Layer<br/>(HTTP/SSH/DNS)"] --> TRANS_L["Transport Layer<br/>(TCP/UDP)"]
+    TRANS_L --> NET_L["Internet Layer<br/>(IP/ICMP/ARP)"]
+    NET_L --> LINK_L["Link Layer<br/>(Ethernet/WiFi)"]
+    TCP_HDR["TCP Header"] --> SRC_PORT["Source Port (16)"]
+    TCP_HDR --> DST_PORT["Dest Port (16)"]
+    TCP_HDR --> SEQ_NUM["Sequence Number (32)"]
+    TCP_HDR --> ACK_NUM["ACK Number (32)"]
+    TCP_HDR --> FLAGS["Flags: SYN/ACK/FIN/RST"]
+    IP_HDR["IP Header"] --> SRC_IP["Source IP (32)"]
+    IP_HDR --> DST_IP["Dest IP (32)"]
+    IP_HDR --> TTL["TTL (8)"]
+    IP_HDR --> PROTO["Protocol (8)"]
+    style APP_L fill:#4a8bc2
+    style TRANS_L fill:#2d5a7b
+    style NET_L fill:#3a7ca5
+    style LINK_L fill:#e8912e
+    style TCP_HDR fill:#c73e1d
+    style SRC_PORT fill:#e8912e
+    style DST_PORT fill:#e8912e
+    style SEQ_NUM fill:#6f42c1
+    style ACK_NUM fill:#6f42c1
+    style FLAGS fill:#3fb950
+    style IP_HDR fill:#3a7ca5
+    style SRC_IP fill:#e8912e
+    style DST_IP fill:#e8912e
+    style TTL fill:#c73e1d
+    style PROTO fill:#3fb950
 ```
 
 ## 📋 Table of Contents

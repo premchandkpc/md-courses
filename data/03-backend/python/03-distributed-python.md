@@ -4,15 +4,25 @@
 
 ```mermaid
 graph LR
-    A["Input<br/>Layer"] --> B["Hidden<br/>Layers"]
-    B --> C["Hidden<br/>Layers"]
-    C --> D["Output<br/>Layer"]
-    B --> E["Activation<br/>Functions"]
-    E --> B
-    style A fill:#4a8bc2
-    style B fill:#2d5a7b
-    style C fill:#2d5a7b
-    style D fill:#c73e1d
+    WEB["Web App<br/>(Producer)"] --> BROK["Message Broker<br/>(Redis/RabbitMQ)"]
+    BROK --> WK1["Worker 1<br/>(Celery)"]
+    BROK --> WK2["Worker 2<br/>(Celery)"]
+    BROK --> WK3["Worker 3<br/>(Celery)"]
+    WK1 --> RES["Result Backend<br/>(Redis/DB)"]
+    WK2 --> RES
+    WK3 --> RES
+    WEB --> RES
+    RES --> CL["Client<br/>(AsyncResult)"]
+    WEB --> TASK["send_task()<br/>(Celery)"]
+    TASK --> BROK
+    style WEB fill:#4a8bc2
+    style BROK fill:#2d5a7b
+    style WK1 fill:#3a7ca5
+    style WK2 fill:#3a7ca5
+    style WK3 fill:#3a7ca5
+    style RES fill:#c73e1d
+    style CL fill:#e8912e
+    style TASK fill:#6f42c1
 ```
 
 ## Celery Architecture

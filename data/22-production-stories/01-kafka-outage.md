@@ -10,15 +10,34 @@
 
 ```mermaid
 graph LR
-    A["Input<br/>Layer"] --> B["Hidden<br/>Layers"]
-    B --> C["Hidden<br/>Layers"]
-    C --> D["Output<br/>Layer"]
-    B --> E["Activation<br/>Functions"]
-    E --> B
-    style A fill:#4a8bc2
-    style B fill:#2d5a7b
-    style C fill:#2d5a7b
-    style D fill:#c73e1d
+    KAFKA_CLUSTER["Kafka Cluster"] --> BROKER_1["Broker 1<br/>Controller"]
+    BROKER_1 --> ELECTION_STORM["Leader Election Storm<br/>(512 partitions)"]
+    ELECTION_STORM --> CONTROLLER_CRASH["Controller Crash<br/>(high CPU + zk)"]
+    CONTROLLER_CRASH --> CLUSTER_DOWN["Cluster Unavailable"]
+    DATA_LOSS["Data Loss Scenario"] --> ACKS_1["acks=1 Producer<br/>(leader only)"]
+    ACKS_1 --> BROKER_CRASH["Broker Crash →<br/>Unreplicated Data Lost"]
+    CONSUMER_LAG["Consumer Lag"] --> SLOW_CONSUMER["Slow Consumer<br/>(processing > producing)"]
+    SLOW_CONSUMER --> REBALANCE["Rebalance Storm<br/>(stop-the-world)"]
+    SLOW_CONSUMER --> GROUP_STALLED["Consumer Group<br/>Stalled"]
+    HOT_BROKER["Hot Broker"] --> UNEVEN_LOAD["Uneven Partition<br/>Load"]
+    UNEVEN_LOAD --> CPU_SATURATE["CPU / Network<br/>Saturated"]
+    CPU_SATURATE --> REQ_TIMEOUT["Request Timeout<br/>(clients disconnect)"]
+    style KAFKA_CLUSTER fill:#4a8bc2
+    style BROKER_1 fill:#2d5a7b
+    style ELECTION_STORM fill:#c73e1d
+    style CONTROLLER_CRASH fill:#c73e1d
+    style CLUSTER_DOWN fill:#c73e1d
+    style DATA_LOSS fill:#c73e1d
+    style ACKS_1 fill:#e8912e
+    style BROKER_CRASH fill:#c73e1d
+    style CONSUMER_LAG fill:#e8912e
+    style SLOW_CONSUMER fill:#3a7ca5
+    style REBALANCE fill:#c73e1d
+    style GROUP_STALLED fill:#c73e1d
+    style HOT_BROKER fill:#e8912e
+    style UNEVEN_LOAD fill:#3a7ca5
+    style CPU_SATURATE fill:#c73e1d
+    style REQ_TIMEOUT fill:#c73e1d
 ```
 
 ## Table of Contents

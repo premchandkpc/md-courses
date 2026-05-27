@@ -8,15 +8,41 @@
 
 ```mermaid
 graph LR
-    A["Input<br/>Layer"] --> B["Hidden<br/>Layers"]
-    B --> C["Hidden<br/>Layers"]
-    C --> D["Output<br/>Layer"]
-    B --> E["Activation<br/>Functions"]
-    E --> B
-    style A fill:#4a8bc2
-    style B fill:#2d5a7b
-    style C fill:#2d5a7b
-    style D fill:#c73e1d
+    DEV["Developer"] --> GIT_OPS["Git Operations<br/>(clone/push/pull)"]
+    GIT_OPS --> STORAGE_GH["Git Storage<br/>(pack files)"]
+    STORAGE_GH --> DELTA["Delta Compression<br/>(windowed)"]
+    STORAGE_GH --> OBJ_STORE["Object Store<br/>(Gitaly)"]
+    REPO_MODEL["Repository Model"] --> FORK_GH["Fork<br/>(copy-on-write)"]
+    REPO_MODEL --> PR_GH["Pull Request<br/>(merge ref)"]
+    REPO_MODEL --> BRANCH_GH["Branch<br/>(ref pointer)"]
+    COLLAB_GH["Collaboration"] --> ISSUES["Issues<br/>(MySQL)"]
+    COLLAB_GH --> CODE_REVIEW["Code Review<br/>(diff + comments)"]
+    COLLAB_GH --> PROJECTS["Projects<br/>(Kanban)"]
+    CI_CD_GH["CI/CD"] --> ACTIONS["GitHub Actions<br/>(workflow engine)"]
+    ACTIONS --> RUNNER["Runner Pool<br/>(self-hosted/cloud)"]
+    ACTIONS --> CACHE_ARTIFACT["Cache + Artifacts<br/>(blob storage)"]
+    SEARCH_GH["Search"] --> CODE_SEARCH["Code Search<br/>(Elasticsearch)"]
+    SEARCH_GH --> ISSUE_SEARCH["Issue Search<br/>(inverted index)"]
+    style DEV fill:#4a8bc2
+    style GIT_OPS fill:#2d5a7b
+    style STORAGE_GH fill:#3a7ca5
+    style DELTA fill:#e8912e
+    style OBJ_STORE fill:#c73e1d
+    style REPO_MODEL fill:#6f42c1
+    style FORK_GH fill:#3fb950
+    style PR_GH fill:#e8912e
+    style BRANCH_GH fill:#3a7ca5
+    style COLLAB_GH fill:#3fb950
+    style ISSUES fill:#e8912e
+    style CODE_REVIEW fill:#3a7ca5
+    style PROJECTS fill:#6f42c1
+    style CI_CD_GH fill:#c73e1d
+    style ACTIONS fill:#e8912e
+    style RUNNER fill:#2d5a7b
+    style CACHE_ARTIFACT fill:#3fb950
+    style SEARCH_GH fill:#6f42c1
+    style CODE_SEARCH fill:#e8912e
+    style ISSUE_SEARCH fill:#3a7ca5
 ```
 
 ## Table of Contents

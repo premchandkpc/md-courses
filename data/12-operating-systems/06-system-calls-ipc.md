@@ -10,15 +10,37 @@
 
 ```mermaid
 graph LR
-    A["Input<br/>Layer"] --> B["Hidden<br/>Layers"]
-    B --> C["Hidden<br/>Layers"]
-    C --> D["Output<br/>Layer"]
-    B --> E["Activation<br/>Functions"]
-    E --> B
-    style A fill:#4a8bc2
-    style B fill:#2d5a7b
-    style C fill:#2d5a7b
-    style D fill:#c73e1d
+    USR["Userspace"] --> SYSCALL_INS["syscall instruction<br/>(x86: SYSCALL)"]
+    SYSCALL_INS --> SYSCALL_TBL["sys_call_table<br/>(NR index)"]
+    SYSCALL_TBL --> CPU_CTX["→ kernel stack<br/>→ pt_regs"]
+    CPU_CTX --> SERVICE["Syscall Service<br/>Routine"]
+    SERVICE --> RET_USER["→ return to userspace<br/>(SYSRET)"]
+    IPC["IPC Mechanisms"] --> PIPE["pipe()<br/>(ring buffer)"]
+    IPC --> SHM["shmget()<br/>(shared pages)"]
+    IPC --> SEM["semop()<br/>(semaphore)"]
+    IPC --> MSG["msgget()<br/>(message queue)"]
+    IPC --> SOCK_IPC["socketpair()<br/>(UDS)"]
+    IPC --> EVENTFD_IPC["eventfd()<br/>(counter fd)"]
+    IPC --> FUTEX_IPC["futex()<br/>(fast userspace)"]
+    VDSO["vDSO"] --> GETTIMEOFDAY["gettimeofday()<br/>(no syscall)"]
+    VDSO --> CLOCK_GET["clock_gettime()<br/>(no syscall)"]
+    style USR fill:#4a8bc2
+    style SYSCALL_INS fill:#2d5a7b
+    style SYSCALL_TBL fill:#3a7ca5
+    style CPU_CTX fill:#e8912e
+    style SERVICE fill:#c73e1d
+    style RET_USER fill:#3fb950
+    style IPC fill:#6f42c1
+    style PIPE fill:#3fb950
+    style SHM fill:#e8912e
+    style SEM fill:#c73e1d
+    style MSG fill:#3a7ca5
+    style SOCK_IPC fill:#e8912e
+    style EVENTFD_IPC fill:#3fb950
+    style FUTEX_IPC fill:#2d5a7b
+    style VDSO fill:#3fb950
+    style GETTIMEOFDAY fill:#e8912e
+    style CLOCK_GET fill:#3a7ca5
 ```
 
 ## Table of Contents

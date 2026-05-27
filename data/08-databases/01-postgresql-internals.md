@@ -10,15 +10,29 @@
 
 ```mermaid
 graph LR
-    A["Input<br/>Layer"] --> B["Hidden<br/>Layers"]
-    B --> C["Hidden<br/>Layers"]
-    C --> D["Output<br/>Layer"]
-    B --> E["Activation<br/>Functions"]
-    E --> B
-    style A fill:#4a8bc2
-    style B fill:#2d5a7b
-    style C fill:#2d5a7b
-    style D fill:#c73e1d
+    CONN["Client<br/>Connection"] --> POST["Postmaster<br/>(Fork Backend)"]
+    POST --> BG_WORKER["Backend Process<br/>(Backend)"]
+    BG_WORKER --> SH_MEM["Shared Memory<br/>(Shared Buffers / WAL)"]
+    BG_WORKER --> QUERY["Query<br/>Executor"]
+    QUERY --> PARSER["Parser<br/>(Parse Tree)"]
+    PARSER --> PLANNER["Planner<br/>(Query Plan)"]
+    PLANNER --> EXEC["Executor<br/>(Run Plan)"]
+    EXEC --> BUF_MGR["Buffer Manager<br/>(Shared Buffers)"]
+    EXEC --> MVCC["MVCC<br/>(xmin/xmax)"]
+    MVCC --> WAL["WAL<br/>(Write-Ahead Log)"]
+    WAL --> ARCHIVE["WAL Archive<br/>(Continuous Archival)"]
+    style CONN fill:#4a8bc2
+    style POST fill:#2d5a7b
+    style BG_WORKER fill:#3a7ca5
+    style SH_MEM fill:#e8912e
+    style QUERY fill:#c73e1d
+    style PARSER fill:#6f42c1
+    style PLANNER fill:#3fb950
+    style EXEC fill:#c73e1d
+    style BUF_MGR fill:#e8912e
+    style MVCC fill:#3a7ca5
+    style WAL fill:#2d5a7b
+    style ARCHIVE fill:#e8912e
 ```
 
 ## Table of Contents

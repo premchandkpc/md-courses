@@ -8,15 +8,39 @@
 
 ```mermaid
 graph LR
-    A["Input<br/>Layer"] --> B["Hidden<br/>Layers"]
-    B --> C["Hidden<br/>Layers"]
-    C --> D["Output<br/>Layer"]
-    B --> E["Activation<br/>Functions"]
-    E --> B
-    style A fill:#4a8bc2
-    style B fill:#2d5a7b
-    style C fill:#2d5a7b
-    style D fill:#c73e1d
+    MERCHANT["Merchant"] --> API_S["Stripe API<br/>(idempotent)"]
+    API_S --> PAYMENT_INTENT["PaymentIntent<br/>(state machine)"]
+    PAYMENT_INTENT --> AUTH_S["Authorization<br/>(card network)"]
+    AUTH_S --> CAPTURE["Capture<br/>(settle funds)"]
+    CAPTURE --> SUCCESS["Success →<br/>Webhook Event"]
+    IDEMPOTENCY["Idempotency"] --> IDEM_KEY["Idempotency Key<br/>(lock per key)"]
+    IDEM_KEY --> DUPLICATE_CHECK["Check Cache →<br/>Return Stored Result"]
+    FRAUD["Fraud Detection"] --> RADAR["Stripe Radar<br/>(ML + rules)"]
+    RADAR --> BLOCK["Block / Review /<br/>Allow"]
+    PCI["PCI-DSS"] --> TOKENIZE["Tokenization<br/>(no raw PAN)"]
+    PCI --> VAULT["Card Vault<br/>(HSM encrypted)"]
+    PAYMENT_METHODS["Payment Methods"] --> CREDIT["Credit Card<br/>(Visa/MC)"]
+    PAYMENT_METHODS --> WALLET["Digital Wallet<br/>(Apple Pay)"]
+    PAYMENT_METHODS --> BNPL["BNPL<br/>(Affirm/Klarna)"]
+    style MERCHANT fill:#4a8bc2
+    style API_S fill:#2d5a7b
+    style PAYMENT_INTENT fill:#3a7ca5
+    style AUTH_S fill:#c73e1d
+    style CAPTURE fill:#e8912e
+    style SUCCESS fill:#3fb950
+    style IDEMPOTENCY fill:#6f42c1
+    style IDEM_KEY fill:#e8912e
+    style DUPLICATE_CHECK fill:#3fb950
+    style FRAUD fill:#c73e1d
+    style RADAR fill:#e8912e
+    style BLOCK fill:#c73e1d
+    style PCI fill:#3a7ca5
+    style TOKENIZE fill:#3fb950
+    style VAULT fill:#c73e1d
+    style PAYMENT_METHODS fill:#6f42c1
+    style CREDIT fill:#e8912e
+    style WALLET fill:#3a7ca5
+    style BNPL fill:#3fb950
 ```
 
 ## Table of Contents

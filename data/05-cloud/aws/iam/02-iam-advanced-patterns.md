@@ -4,15 +4,30 @@
 
 ```mermaid
 graph LR
-    A["Input<br/>Layer"] --> B["Hidden<br/>Layers"]
-    B --> C["Hidden<br/>Layers"]
-    C --> D["Output<br/>Layer"]
-    B --> E["Activation<br/>Functions"]
-    E --> B
-    style A fill:#4a8bc2
-    style B fill:#2d5a7b
-    style C fill:#2d5a7b
-    style D fill:#c73e1d
+    PB["Permission<br/>Boundary"] --> USER["IAM User<br/>/ Role"]
+    SCP["SCP<br/>(AWS Organizations)"] --> ACC["AWS Account"]
+    ACC --> PB
+    RB["Resource-Based<br/>Policy"] --> S3["S3 Bucket<br/>Policy"]
+    IB["Identity-Based<br/>Policy"] --> USER
+    POL_EVAL["Policy Evaluation<br/>Logic"] --> DENY["Explicit Deny<br/>(Wins)"]
+    POL_EVAL --> ALLOW["Allow<br/>(OR across policies)"]
+    POL_EVAL --> DEFAULT["Default Deny<br/>(Implicit)"]
+    ABAC["ABAC<br/>(Tags)" --> COND_CK["Condition Key<br/>(aws:ResourceTag)"]
+    CROSS["Cross-Account<br/>Role"] --> TRUST["Trust Policy<br/>(Source Account)"]
+    style PB fill:#4a8bc2
+    style USER fill:#2d5a7b
+    style SCP fill:#c73e1d
+    style ACC fill:#3a7ca5
+    style RB fill:#e8912e
+    style S3 fill:#6f42c1
+    style IB fill:#3fb950
+    style POL_EVAL fill:#3a7ca5
+    style DENY fill:#c73e1d
+    style ALLOW fill:#3fb950
+    style DEFAULT fill:#e8912e
+    style ABAC fill:#2d5a7b
+    style CROSS fill:#6f42c1
+    style TRUST fill:#e8912e
 ```
 
 ## Table of Contents
@@ -296,29 +311,114 @@ ROLE                service (RDS, Lambda). Tailored fit.
 ## Code Examples
 
 ```python
-# Example implementation
-# [Add language-specific code demonstrating core concept]
-pass
+import boto3
+import json
+
+iam = boto3.client('iam')
+sts = boto3.client('sts')
+
+# Generate cross-account trust policy
+def cross_account_trust(source_account: str, mfa_required: bool = True) -> dict:
+    policy = {
+        'Version': '2012-10-17',
+        'Statement': [{
+            'Effect': 'Allow',
+            'Principal': {'AWS': f'arn:aws:iam::{source_account}:root'},
+            'Action': 'sts:AssumeRole',
+        }]
+    }
+    if mfa_required:
+        policy['Statement'][0]['Condition'] = {
+            'Bool': {'aws:MultiFactorAuthPresent': 'true'}
+        }
+    return policy
+
+# ABAC policy generator — tag-based access
+def abac_ec2_policy() -> dict:
+    return {
+        'Version': '2012-10-17',
+        'Statement': [
+            {
+                'Effect': 'Allow',
+                'Action': 'ec2:StartInstances',
+                'Resource': 'arn:aws:ec2:*:*:instance/*',
+                'Condition': {
+                    'StringEquals': {
+                        'ec2:ResourceTag/Project': '${aws:PrincipalTag/Project}'
+                    }
+                }
+            },
+            {
+                'Effect': 'Allow',
+                'Action': 'ec2:Describe*',
+                'Resource': '*'
+            }
+        ]
+    }
+
+# Validate policy (simulate evaluation)
+def validate_policy(actions: list, resource: str, policy: dict) -> bool:
+    # Simplified policy simulator logic
+    for statement in policy['Statement']:
+        if statement['Effect'] == 'Allow':
+            target_actions = statement.get('Action', [])
+            if isinstance(target_actions, str):
+                target_actions = [target_actions]
+            if all(action in target_actions for action in actions):
+                if resource.startswith(statement['Resource'].replace('*', '')):
+                    return True
+    return False
+
+# Create an IAM role for EC2 with boundary
+def create_ec2_role(role_name: str, boundary_arn: str = None):
+    trust = {'Version': '2012-10-17',
+             'Statement': [{'Effect': 'Allow',
+               'Principal': {'Service': 'ec2.amazonaws.com'},
+               'Action': 'sts:AssumeRole'}]}
+    kwargs = {'RoleName': role_name, 'AssumeRolePolicyDocument': json.dumps(trust)}
+    if boundary_arn:
+        kwargs['PermissionsBoundary'] = boundary_arn
+    return iam.create_role(**kwargs)
+```
+
+```bash
+# Test cross-account access
+aws sts assume-role --role-arn "arn:aws:iam::TARGET:role/DataReader" \
+  --role-session-name "audit-session" --duration-seconds 3600
+
+# List unused roles (Access Analyzer CLI)
+aws accessanalyzer list-findings --analyzer-arn arn:aws:access-analyzer:... \
+  --query 'findings[?resourceType==`AWS::IAM::Role` && status==`ACTIVE`]'
 ```
 
 ---
 
 ## Common Failure Modes
 
-**Problem**: [Key issue in production]
+**Problem**: Accidental privilege escalation through IAM role chaining
 
-**Root cause**: [Why it happens]
+**Root cause**: IAM Role A can `sts:AssumeRole` into Role B, which has broader permissions. A user with access to Role A can chain to Role B, bypassing the intended restrictions on Role A. This is particularly dangerous when Role A is EC2 instance profile — any code on the instance can chain to a more privileged role.
 
-**Solution**: [How to fix]
+**Detection**: CloudTrail events show `sts:AssumeRole` calls where `sourceIdentity` differs from the original role. Access Analyzer shows unused roles being accessed through chain patterns. Credential report shows roles assumed from unexpected principals.
+
+**Solution**: Don't chain roles — call `sts:AssumeRole` directly on the target role. Set `aws:SourceIdentity` condition to restrict role assumption to specific identities. Use `aws:ViaAWSService` condition key to prevent chaining. Apply permission boundaries on all roles to limit their maximum scope. Monitor CloudTrail for `sts:AssumeRole` chains exceeding 1 hop.
+
+**Problem**: Overly permissive wildcard policies granting unintended access
+
+**Root cause**: `Action: "s3:*"` or `Resource: "*"` in an allow policy grants access to all current and future resources/services. Teams write permissive policies for convenience, creating massive blast radius. A developer role with `Action: "ec2:*"` and `Resource: "*"` can terminate any instance, delete any security group, or modify any VPC.
+
+**Detection**: IAM Access Analyzer Unused Access findings show actions never used. AWS Config rules (`iam-policy-no-statements-with-admin-access`) flag admin-equivalent policies. Policy Summary dashboard shows excessive service coverage.
+
+**Solution**: Use least-privilege - specify exact actions and ARNs. Use `deny` statements to explicitly block dangerous actions like `iam:PassRole` unrestricted. Apply permission boundaries to enforce maximum scope. Use IAM Access Analyzer to generate least-privilege policies from CloudTrail logs. Implement a policy-as-code pipeline that rejects PRs with wildcard resources.
 
 ---
 
 ## Interview Questions
 
-### Q1: [Core concept question]
+### Q1: Explain AWS policy evaluation logic — how does a request get allowed or denied?
 
-**Answer**: [Detailed explanation with trade-offs]
+**Answer**: AWS evaluates policies in a specific order: (1) SCP from AWS Organizations, (2) Resource-based policies, (3) Permission boundaries, (4) Identity-based policies, (5) Session policies. At each layer, if there's an explicit `Deny`, the request is immediately denied. If no `Deny` exists but there's an `Allow` at any layer, the request is allowed. If there's neither deny nor allow, the implicit default-deny kicks in. Explicit deny always wins — even if the identity policy allows it, a SCP with deny blocks it. Permission boundaries set a maximum: even if the identity policy allows action X, the boundary restricts it. Session policies further restrict assumed roles. The key insight: there's no "allow override" — you must not have any applicable deny at any layer, and must have at least one allow.
 
-### Q2: [Design/architecture question]
+### Q2: How do you design IAM for a multi-account AWS Organization with 20+ accounts?
 
-**Answer**: [Best practices and reasoning]
+**Answer**: Use AWS Organizations with a well-structured OU hierarchy (e.g., Security, Infrastructure, Workloads, Sandbox). Apply SCPs at the OU level for guardrails: deny root user actions, restrict regions, block leaving the organization. Use IAM Identity Center (SSO) for centralized user access with Permission Sets — grant access at the account/OU level rather than creating individual IAM users. Use IAM Roles (cross-account) for service-to-service access: central audit account reads CloudTrail from all accounts, central network account manages Transit Gateway. Use Resource-based policies (S3 bucket policies, KMS key policies) for cross-account data access. Use Access Analyzer continuously to detect unintended cross-account access. Automate account provisioning with Control Tower.

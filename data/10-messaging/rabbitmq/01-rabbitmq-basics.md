@@ -8,15 +8,37 @@
 
 ```mermaid
 graph LR
-    A["Input<br/>Layer"] --> B["Hidden<br/>Layers"]
-    B --> C["Hidden<br/>Layers"]
-    C --> D["Output<br/>Layer"]
-    B --> E["Activation<br/>Functions"]
-    E --> B
-    style A fill:#4a8bc2
-    style B fill:#2d5a7b
-    style C fill:#2d5a7b
-    style D fill:#c73e1d
+    PRODUCER["Producer"] --> EXCHANGE["Exchange"]
+    EXCHANGE --> DIRECT["Direct Exchange<br/>(routing_key = queue_name)"]
+    EXCHANGE --> TOPIC_X["Topic Exchange<br/>(routing_key = pattern)"]
+    EXCHANGE --> FANOUT["Fanout Exchange<br/>(broadcast to all)"]
+    DIRECT --> Q1["Queue A<br/>(binding key: error)"]
+    TOPIC_X --> Q2["Queue B<br/>(binding: *.critical)"]
+    FANOUT --> Q3["Queue C"]
+    FANOUT --> Q4["Queue D"]
+    Q1 --> C1["Consumer"]
+    Q2 --> C2["Consumer"]
+    Q3 --> C3["Consumer"]
+    Q4 --> C4["Consumer"]
+    CONF["Publisher<br/>Confirm"] --> EXCHANGE
+    EXCHANGE --> DLQ_X["DLX<br/>(Dead Letter)"]
+    DLQ_X --> DLQ_Q["DLQ"]
+    style PRODUCER fill:#4a8bc2
+    style EXCHANGE fill:#2d5a7b
+    style DIRECT fill:#3a7ca5
+    style TOPIC_X fill:#c73e1d
+    style FANOUT fill:#e8912e
+    style Q1 fill:#6f42c1
+    style Q2 fill:#6f42c1
+    style Q3 fill:#6f42c1
+    style Q4 fill:#6f42c1
+    style C1 fill:#3fb950
+    style C2 fill:#3fb950
+    style C3 fill:#3fb950
+    style C4 fill:#3fb950
+    style CONF fill:#e8912e
+    style DLQ_X fill:#c73e1d
+    style DLQ_Q fill:#c73e1d
 ```
 
 ## Table of Contents

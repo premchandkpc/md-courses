@@ -4,15 +4,39 @@
 
 ```mermaid
 graph LR
-    A["Input<br/>Layer"] --> B["Hidden<br/>Layers"]
-    B --> C["Hidden<br/>Layers"]
-    C --> D["Output<br/>Layer"]
-    B --> E["Activation<br/>Functions"]
-    E --> B
-    style A fill:#4a8bc2
-    style B fill:#2d5a7b
-    style C fill:#2d5a7b
-    style D fill:#c73e1d
+    OAUTH_OIDC["OAuth 2.0 / OIDC"] --> AUTHZ_SRV["Authorization Server<br/>(Keycloak/Okta/Auth0)"]
+    OAUTH_OIDC --> CLIENT_APP["Client App<br/>(code flow)"]
+    OAUTH_OIDC --> RES_SRV["Resource Server<br/>(API)"]
+    AUTHZ_SRV --> ACCESS_TOKEN["Access Token<br/>(JWT)"]
+    AUTHZ_SRV --> REFRESH_TOKEN["Refresh Token<br/>(long-lived)"]
+    AUTHZ_SRV --> ID_TOKEN["ID Token<br/>(user identity)"]
+    ACCESS_TOKEN --> RES_SRV
+    JWT_SEC["JWT Security"] --> SIGNED["Signed (RS256/ES256)<br/>→ verify signature"]
+    JWT_SEC --> EXP["exp + nbf +<br/>issuer check"]
+    JWT_SEC --> KID["kid → JWKS<br/>(key rotation)"]
+    ZT_MS["Zero Trust"] --> MUTUAL_TLS["mTLS<br/>(mutual TLS)"]
+    ZT_MS --> SVC_MESH["Service Mesh<br/>(Envoy mTLS)"]
+    ZT_MS --> SIDECAR_AUTH["Sidecar Enforces<br/>{allow/deny}"]
+    SECRETS_MS["Secrets Mgmt"] --> VAULT_MS["Vault<br/>(dynamic DB creds)"]
+    SECRETS_MS --> ROTATE_MS["Auto-Rotation<br/>(30/90 day)"]
+    style OAUTH_OIDC fill:#4a8bc2
+    style AUTHZ_SRV fill:#2d5a7b
+    style CLIENT_APP fill:#3a7ca5
+    style RES_SRV fill:#e8912e
+    style ACCESS_TOKEN fill:#c73e1d
+    style REFRESH_TOKEN fill:#6f42c1
+    style ID_TOKEN fill:#3fb950
+    style JWT_SEC fill:#3fb950
+    style SIGNED fill:#e8912e
+    style EXP fill:#3a7ca5
+    style KID fill:#c73e1d
+    style ZT_MS fill:#c73e1d
+    style MUTUAL_TLS fill:#e8912e
+    style SVC_MESH fill:#6f42c1
+    style SIDECAR_AUTH fill:#3a7ca5
+    style SECRETS_MS fill:#3fb950
+    style VAULT_MS fill:#e8912e
+    style ROTATE_MS fill:#c73e1d
 ```
 
 ## Table of Contents
@@ -385,3 +409,73 @@ class AuthInterceptor implements ServerInterceptor {
 - **Rate Limiting**: One person = 10 entries/minute. No, you can't bring 100 guests at once.
 - **Argon2id**: A safe that's deliberately heavy and slow — brute-forcers give up.
 - **The Core Principle**: Never trust the hallway. Verify at every door.
+
+
+## Production Failure Modes
+
+### Failure 1: JWT Secret Rotation Causes Widespread 401 Errors
+
+| Aspect | Detail |
+|--------|--------|
+| **Symptoms** | All services return 401 after secret rotation. Users logged out globally. Support flooded with "can't log in" reports |
+| **Root Cause** | JWT signed with old secret, services validate with new secret. No overlap period where both secrets are accepted. Rotation script deployed without staggered rollout |
+| **Detection** | IDP logs show successful token issuance. Service logs show `signature verification failed`. Grafana: `jwt_validation_errors` spikes to 100% of requests |
+| **Recovery** | Add old secret as secondary validation key in all services. Redeploy with `jwt.valid-signing-keys = [new_key, old_key]`. Invalidate only after all services have deployed |
+| **Prevention** | Use JWKS endpoint (IDP serves multiple keys). Implement key overlap: new key active for validation immediately, old key valid for 2x token expiry duration. Automate rotation with Terraform + Vault |
+
+### Failure 2: OAuth Token Leak Through Logs
+
+| Aspect | Detail |
+|--------|--------|
+| **Symptoms** | Token appears in CloudWatch logs, ELK stack, and error reporting tools. Anyone with log access can impersonate the user |
+| **Root Cause** | Application logs request headers for debugging. `Authorization: Bearer <token>` captured verbatim. Log retention policy allows months of access |
+| **Detection** | Search logs for `"Authorization"`. Find JWT tokens in `trace` and `debug` level logs. CloudWatch Logs Insights: `fields @message | filter @message like /Bearer/` |
+| **Recovery** | Rotate all tokens. Add log redaction: replace `Bearer\s+[A-Za-z0-9._-]+` with `Bearer [REDACTED]`. Restrict log access to on-call engineers only |
+| **Prevention** | Never log Authorization header. Use structured logging with PII redaction (Logstash `fingerprint` filter, Fluentd `record_modifier`). Pre-commit hook to detect token patterns in test logs |
+
+### Failure 3: API Gateway Rate Limiting Blocks Legitimate Traffic
+
+| Aspect | Detail |
+|--------|--------|
+| **Symptoms** | 429 Too Many Requests returned for normal usage. Users report "site not working." Customer support sees spike |
+| **Root Cause** | Rate limit calculated per IP but legitimate users share NAT IP (corporate VPN, office network). One heavy user triggers limit for all |
+| **Detection** | API Gateway logs: `rateLimitExceeded` for multiple customer IDs from same IP. Rate limit exceeded for the `X-Forwarded-For` value |
+| **Recovery** | Switch from per-IP to per-api-key rate limiting. Increase limit for known IP ranges. Whitelist corporate IPs temporarily |
+| **Prevention** | Use per-user (API key) rate limiting, not per-IP. Implement token bucket with burst allowance. Return `Retry-After` header. Use sliding window instead of fixed window |
+
+### Failure 4: mTLS Certificate Expiry in Production
+
+| Aspect | Detail |
+|--------|--------|
+| **Symptoms** | Service-to-service communication fails. mTLS handshake fails with `certificate expired`. All east-west traffic blocked |
+| **Root Cause** | Certificate issued 1 year ago, no monitoring. No auto-renewal. Service mesh (Istio/Linkerd) rejects expired cert at protocol level |
+| **Detection** | Service logs: `x509: certificate has expired or is not yet valid`. Prometheus: `istio_requests_total{response_code="503"}` spikes. Grafana: `cert_expiry_days == 0` |
+| **Recovery** | Issue new cert via cert-manager. Restart sidecar proxies to pick up new cert. Verify mTLS handshake with `openssl s_client -connect` |
+| **Prevention** | Use cert-manager with auto-renewal (30 days before expiry). Monitor cert expiry: `cert_expiry_days` metric. Alert at T-45 days. Use short-lived certs (7 days) rotated every 24h |
+
+### Failure 5: RBAC Overly Permissive — Any Service Can Read Any Secret
+
+| Aspect | Detail |
+|--------|--------|
+| **Symptoms** | Compromised service A reads service B's database credentials. Lateral movement possible. No audit log of the access |
+| **Root Cause** | RBAC roles use wildcard: `secrets:*`. No namespace isolation. Default deny not configured. Least privilege principle not followed |
+| **Detection** | Vault audit log: `secret/data/db-credentials-b` read by service A. Kubernetes audit: service A's service account has `list secrets` across all namespaces |
+| **Recovery** | Revoke over-permissive roles. Create per-service roles: `service-a-secrets-reader`, `service-b-secrets-reader`. Test each service independently |
+| **Prevention** | Use Kubernetes RBAC with least privilege: `Role` (namespaced), not `ClusterRole`. Vault policy per service path. Use OPA/Gatekeeper for policy enforcement. Audit RBAC quarterly |
+
+## Edge Cases
+
+| Scenario | Challenge | Solution |
+|----------|-----------|----------|
+| **Token size exceeds header limit** | Large JWTs (>8KB) exceed proxy limits | Store claims in DB, use opaque token reference. Or use token compression (zlib) |
+| **Clock skew in distributed systems** | JWT `nbf`/`exp` validation fails across DCs | Allow 300s clock skew in JWT validation. Use NTP with multiple sources |
+| **OIDC provider down** | Login flow fails entirely | Cache IDP public keys (JWKS). Graceful degradation: allow already-issued tokens to work until their expiry |
+| **Refresh token stolen** | Attacker maintains access after access token expires | Use refresh token rotation: issue new refresh token with each use, invalidate old one. Short refresh token lifetime |
+| **Service mesh cert revocation** | Compromised cert not propagated to all proxies | Use short-lived certs (24h) instead of CRLs. CRLs are slow and complex in mesh environments |
+
+## Cross-References
+
+- [OAuth2 & JWT](../../11-networking/02-http-protocols.md#oauth2--jwt) — Token exchange, introspection, revocation
+- [Kubernetes Security](../../07-kubernetes/04-kubernetes-security.md) — Service mesh mTLS, pod security policies, RBAC
+- [API Gateway](../../11-networking/03-dns-cdn-loadbalancing.md) — Rate limiting at edge, WAF integration
+- [Backend Roadmap](../../21-roadmaps/01-backend-engineer.md) — Phase 3+ security topics for senior engineers

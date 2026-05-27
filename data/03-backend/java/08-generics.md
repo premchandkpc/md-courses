@@ -8,15 +8,22 @@
 
 ```mermaid
 graph LR
-    A["Input<br/>Layer"] --> B["Hidden<br/>Layers"]
-    B --> C["Hidden<br/>Layers"]
-    C --> D["Output<br/>Layer"]
-    B --> E["Activation<br/>Functions"]
-    E --> B
-    style A fill:#4a8bc2
-    style B fill:#2d5a7b
-    style C fill:#2d5a7b
-    style D fill:#c73e1d
+    RAW["Raw Type<br/>List"] --> ERASE["Type Erasure<br/>(Compiler)"]
+    ERASE --> BC["Bytecode<br/>Object / Bounds"]
+    GEN["Generic<br/>List&lt;String&gt;"] --> ERASE
+    GEN --> CHECK["Compile-Time<br/>Type Check"]
+    CHECK --> SAFE["Type Safety<br/>(No ClassCastException)"]
+    WILD["Wildcard<br/>? extends / ? super"] --> BOUND["Bounded<br/>Type Parameter"]
+    BOUND --> INV["Invariance<br/>& Covariance"]
+    style RAW fill:#c73e1d
+    style ERASE fill:#2d5a7b
+    style BC fill:#e8912e
+    style GEN fill:#4a8bc2
+    style CHECK fill:#3a7ca5
+    style SAFE fill:#3fb950
+    style WILD fill:#6f42c1
+    style BOUND fill:#3a7ca5
+    style INV fill:#2d5a7b
 ```
 
 ## Table of Contents
@@ -901,39 +908,15 @@ public class UserDAO extends AbstractDAO<User, Long> {
 
 ## 🧠 Simplest Mental Model
 
-```text
-GENERICS       =  A template for a cookie cutter. You specify the shape
-                  (type) when you use it, not when you make it.
-
-TYPE PARAMETER =  A blank on a form. You fill "String" or "Integer"
-                  when you use the form.
-
-TYPE ERASURE   =  After the form is processed, the blanks are erased.
-                  At runtime, only the raw form exists.
-                  The compiler added invisible casts where needed.
-
-WILDCARD (? extends) = A "read-only" label. "You can look at items
-                       as Numbers, but don't put anything in."
-
-WILDCARD (? super)   = A "write-only" label. "You can put Integers,
-                       but when you read, you only know it's an Object."
-
-PECS           =  Producer Extends, Consumer Super.
-                  If the collection GIVES you items → extends.
-                  If the collection TAKES your items → super.
-
-INVARIANCE     =  A box labeled "Apples" can only hold Apples.
-                  You can't put it where "Fruit" box is expected,
-                  because someone might put an Orange in.
-
-COVARIANCE     =  A read-only box of Apples can be treated as
-                  read-only box of Fruit. You can only look.
-
-CONTRAVARIANCE =  A write-only box of Fruit can accept Apples.
-                  You can only put things in.
-
-BRIDGE METHOD  =  A translator that makes old code (without generics)
-                  work with new code (with generics) seamlessly.
+```mermaid
+sequenceDiagram
+    participant Client
+    participant Component
+    participant Result
+    Client->>Component: Request
+    Component->>Component: Process
+    Component-->>Result: Generate
+    Result-->>Client: Response
 ```
 
 ---

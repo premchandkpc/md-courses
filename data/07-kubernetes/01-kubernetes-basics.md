@@ -8,15 +8,27 @@
 
 ```mermaid
 graph LR
-    A["Input<br/>Layer"] --> B["Hidden<br/>Layers"]
-    B --> C["Hidden<br/>Layers"]
-    C --> D["Output<br/>Layer"]
-    B --> E["Activation<br/>Functions"]
-    E --> B
-    style A fill:#4a8bc2
-    style B fill:#2d5a7b
-    style C fill:#2d5a7b
-    style D fill:#c73e1d
+    API["API Server<br/>(kube-apiserver)"] --> ETCD["etcd<br/>(Cluster State)"]
+    API --> SCHED["Scheduler<br/>(kube-scheduler)"]
+    SCHED --> NODE["Node<br/>(kubelet)"]
+    API --> CM["Controller Manager<br/>(kube-controller-manager)"]
+    CM --> DEPLOY["Deployment<br/>Controller"]
+    CM --> RS["ReplicaSet<br/>Controller"]
+    CM --> ENDP["EndpointSlice<br/>Controller"]
+    NODE --> KUBE_PROXY["kube-proxy<br/>(iptables/IPVS)"]
+    NODE --> POD["Pod<br/>Container(s)"]
+    POD --> KUBELET["kubelet<br/>(CGroup/CRI)"]
+    style API fill:#4a8bc2
+    style ETCD fill:#2d5a7b
+    style SCHED fill:#3a7ca5
+    style NODE fill:#c73e1d
+    style CM fill:#6f42c1
+    style DEPLOY fill:#3fb950
+    style RS fill:#e8912e
+    style ENDP fill:#3a7ca5
+    style KUBE_PROXY fill:#e8912e
+    style POD fill:#3fb950
+    style KUBELET fill:#2d5a7b
 ```
 
 ## Table of Contents
@@ -2402,4 +2414,66 @@ and the control plane makes it happen, continuously reconciling.
 
 ---
 
-**Next**: [Advanced Kubernetes Patterns](02-advanced-k8s.md)
+## Interview Questions
+
+### Beginner Level
+
+**Q1: Explain the architecture of a Kubernetes cluster.**
+
+**Why interviewers ask this**: Fundamental — shows you understand the control plane vs data plane split.
+
+**Ideal answer structure**:
+1. **Control plane**: API Server (front-end, validates/processes requests), etcd (distributed key-value store for cluster state), Scheduler (assigns pods to nodes), Controller Manager (runs controllers: Deployment, ReplicaSet, etc.).
+2. **Data plane / Worker nodes**: kubelet (agent, manages pods via CRI), kube-proxy (network rules via iptables/IPVS/eBPF), container runtime (containerd/CRI-O).
+3. **Flow**: `kubectl apply -f deploy.yaml` → API Server validates → stored in etcd → Controller Manager creates ReplicaSet → Scheduler assigns → kubelet creates pod → container runtime pulls image + starts container.
+
+**Common wrong answer**: "etcd stores all cluster data including pod logs" — etcd only stores Kubernetes object specifications and state; logs are on node filesystem or shipped to external logging.
+
+**Q2**: What is a Pod and why is it the smallest deployable unit instead of a container?
+
+**Answer**: A Pod is a group of one or more containers sharing the same network namespace (same IP, localhost communication), storage volumes, and lifecycle. Why not just a container? 1) **Sidecar pattern**: a main container + helper (log shipper, proxy, config reloader) must share network. 2) **Shared volumes**: containers in a pod can mount the same volumes. 3) **Atomic scheduling**: all containers in a pod land on the same node. 4) **Co-location**: containers that are tightly coupled (e.g., web server + file sync) belong together.
+
+### Intermediate Level
+
+**Q3: How does a Kubernetes Service route traffic to Pods? Walk through the different proxy modes.**
+
+**Answer**: 1) **ClusterIP**: stable virtual IP, round-robin across ready pods. 2) **NodePort**: opens port on every node, forwards to ClusterIP. 3) **LoadBalancer**: provisions cloud LB, forwards to NodePort → ClusterIP → pods. Proxy modes: **iptables** (default, random DNAT rule selection, O(1) per service but linear rule chain updates), **IPVS** (hash table, O(1) for both routing and updates, supports more algorithms), **eBPF** (Cilium, kernel-level, fastest). A Service is essentially a stable endpoint abstraction backed by EndpointSlice objects that kubelet updates via readiness probes.
+
+**Q4**: How does the scheduler decide where to place a pod?
+
+**Answer**: Two-phase algorithm: **Filtering** (predicates): check node resources (CPU/memory), port conflicts, nodeSelector, affinity rules, taints/tolerations, and `NodeConditions` (disk pressure, PID pressure). **Scoring** (priorities): rank remaining nodes by resource fit (LeastRequestedPriority / MostRequestedPriority), inter-pod affinity, and custom scoring plugins. The scheduler uses a **scheduling framework** with plugin-based architecture (queue sort, pre-filter, filter, post-filter, pre-score, score, normalize score, reserve, permit, pre-bind, bind). Default uses predicates + priorities, but can be extended with custom schedulers or schedulable via `spec.schedulerName`.
+
+### Senior Level
+
+**Q5: A pod is in `CrashLoopBackOff`. Walk through your debugging process.**
+
+**Why interviewers ask this**: Tests practical troubleshooting skills.
+
+**Answer**: 1) `kubectl describe pod <pod>` — check Events for image pull errors, OOMKill, liveness probe failures. 2) `kubectl logs <pod> --previous` — check logs of the crashed container. 3) Check resource limits (`resources.requests/limits`) — common OOM or CPU throttling. 4) `kubectl exec -it <pod> -- sh` — if container runs but dies, check internal state. 5) Check ConfigMap/Secret mounting — permission errors cause immediate crash. 6) Liveness probe: if probe command/HTTP check fails, K8s restarts; check probe path and timeout. 7) Init containers failing → check init container logs. 8) Check node health: `kubectl describe node <node>` for conditions.
+
+**Q6**: Design a pod lifecycle for a stateful database in Kubernetes. How do you handle upgrades, scaling, and failures?
+
+**Answer**: Use **StatefulSet** with `volumeClaimTemplates` (unique PVC per replica). **Upgrades**: Rolling update with `podManagementPolicy: OrderedReady` — pods updated one-by-one, each must become Ready before next starts. **Scaling**: StatefulSet creates pods in order (0, 1, 2...) and deletes in reverse. **Failures**: Headless Service for stable DNS names (`pod-0.svc.cluster.local`). Use **readiness probes** (application-level health: DB responding, replica caught up) and **liveness probes** (just TCP check). **Backup**: `VolumeSnapshot` via CSI for point-in-time snapshots. For production: use an Operator (Strimzi for Kafka, Zalando for Postgres) that adds backup, failover, and resharding logic beyond what StatefulSet provides.
+
+### Staff/Principal Level
+
+**Q7: Your cluster has 5000 nodes and 100K pods. kube-apiserver becomes unresponsive during rolling updates. Diagnose.**
+
+**Why**: Tests understanding of K8s scalability limits and control plane performance.
+
+**Answer**: **API Server watch storm**. Each controller and kubelet watches API objects. With 5000 nodes and 100K pods, a rolling update generates 100K+ pod update events — each trigger reconcile loops in every controller. etcd is likely overloaded: watch connections + compaction + MVCC history. Fix: 1) Increase `--max-requests-inflight` (default 400). 2) **API Priority and Fairness** — ensure `system` priority for kubelets (watch starving is common). 3) **Optimistic concurrency**: use `resourceVersion=0` for list-watch to get snapshot + watch. 4) **etcd defrag + compaction**: `--auto-compaction-retention=5m`. 5) **Feature gates**: `APIPriorityAndFairness=true`, `EventedPLEG` to reduce kubelet -> API server chatter. 6) Consider `Konnectivity` service for tunnel-based kubelet traffic. 7) Long-term: split into multiple clusters (federation or Cluster API).
+
+**Q8**: Your organization wants to migrate 200 microservices from EC2 to Kubernetes with zero downtime. Design the migration strategy.
+
+**Answer**: 1) **Phase 1 — Foundation**: Set up multi-tenant cluster with RBAC, network policies, resource quotas, monitoring (Prometheus/Grafana), and pod security standards. 2) **Phase 2 — Lift and Shift**: Migrate stateless services first — wrap in Deployment + Service, use existing RDS/ElastiCache externally. Validate traffic via DNS-based canary (Route53 weight 5% → K8s ingress). 3) **Phase 3 — Stateful**: Migrate stateful services using StatefulSets and Operators. Use `VolumeSnapshot` + `velero` for backup. 4) **Phase 4 — Optimize**: Adopt HPA (horizontal pod autoscaling), cluster-autoscaler, spot instances, service mesh (Istio/Linkerd). 5) **Rollback plan**: Maintain old EC2 ASG with zero desired, scale up on issues. Use traffic mirroring for validation. Key pitfall: DNS propagation delays (set low TTL before cutover). Ensure readiness probes match health check endpoints exactly.
+
+### Tricky Edge Cases
+
+**Q9**: A pod has `restartPolicy: Always` but when it exits with code 0, it restarts anyway. Why?
+
+**Answer**: **Init container or sidecar restart behavior**. If an init container exits 0 but the main container has already started, the pod restarts the main container. Or: **restartPolicy** affects all containers in the pod — if any container exits (even 0), the pod restarts. Also: **ephemeral container** exit doesn't trigger restart. But the real edge case: **pause container** (infrastructure container) must be running for pod to be Ready. If the pause container dies (OOM from kernel memory pressure), the pod restarts despite the application container being healthy.
+
+**Q10**: A NetworkPolicy allows traffic from app-a to app-b on port 8080. Traffic works in some node pairs but not others. Why?
+
+**Answer**: **kube-proxy and NetworkPolicy implementation differences**. If using different CNI plugins or kube-proxy modes on different nodes (e.g., some nodes use iptables, others use eBPF/Cilium), the policy enforcement differs. Also: **NodePort traffic** bypasses NetworkPolicy (it goes directly through kube-proxy, not through the CNI's policy engine). Or: some CNI plugins (Calico) enforce at the node level via iptables, while others (Cilium) enforce at eBPF level — if the policy references `ipBlock` with CIDR that includes some nodes' pod CIDR but not others, traffic intermittently fails.
+

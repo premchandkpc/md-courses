@@ -8,15 +8,29 @@
 
 ```mermaid
 graph LR
-    A["Input<br/>Layer"] --> B["Hidden<br/>Layers"]
-    B --> C["Hidden<br/>Layers"]
-    C --> D["Output<br/>Layer"]
-    B --> E["Activation<br/>Functions"]
-    E --> B
-    style A fill:#4a8bc2
-    style B fill:#2d5a7b
-    style C fill:#2d5a7b
-    style D fill:#c73e1d
+    GIL["GIL<br/>(Global Interpreter Lock)"] --> THR["threading<br/>(I/O-bound)"]
+    GIL --> MP["multiprocessing<br/>(CPU-bound)"]
+    THR --> CTX["Context Switch<br/>(100µs)"]
+    MP --> POOL["Pool<br/>(map/apply)"]
+    ASY["asyncio<br/>(Single Thread)"] --> EVL["Event Loop<br/>(run_until_complete)"]
+    EVL --> CORO["Coroutine<br/>(async def)"]
+    CORO --> AWAIT["await<br/>(yield to loop)"]
+    AWAIT --> TASK["Task<br/>(Future)"]
+    TASK --> FD["I/O<br/>(socket/file)"]
+    FD --> EVL
+    THR --> LOCK["Lock / Semaphore"]
+    style GIL fill:#c73e1d
+    style THR fill:#4a8bc2
+    style MP fill:#3a7ca5
+    style CTX fill:#e8912e
+    style POOL fill:#3fb950
+    style ASY fill:#6f42c1
+    style EVL fill:#2d5a7b
+    style CORO fill:#3fb950
+    style AWAIT fill:#e8912e
+    style TASK fill:#3a7ca5
+    style FD fill:#2d5a7b
+    style LOCK fill:#e8912e
 ```
 
 ## 📑 Table of Contents

@@ -762,3 +762,49 @@ Index bloat:
 ## 17. Simplest Mental Model
 
 > **PostgreSQL is a giant ledger book. Multiple scribes (backend processes) write entries simultaneously, each with their own inkwell (memory). The buffer pool is the open book on the desk — frequently read pages stay on the desk, old pages go back to the shelf (disk). MVCC means nobody crosses out entries — they write a new line and mark the old one as outdated, so a scribe who started reading sees the old entry while a new one writing sees the new one. WAL is a diary: before making any change, a scribe writes in the diary first. If the book is destroyed (crash), you reconstruct from the diary. Vacuum is a clerk who periodically comes by, tears out outdated pages, and compacts the remaining ones. Autovacuum is the same clerk but on a timer — cleaning before the book overflows. Indexes are the tabbed dividers: B-tree is alphabetical tabs, GiST is spatial dividers for maps, GIN is the index at the back of a textbook. Every design choice in PostgreSQL prioritizes data safety and correctness first, then performance — because a mistake in a database loses facts, not just time.**
+
+
+
+## Query Execution Flow: Step-by-Step
+
+```
+1. Parser: "SELECT * FROM users WHERE id=1"
+   ↓
+2. Semantic Analyzer: Validate tables/columns exist
+   ↓
+3. Optimizer: Generate execution plans
+   - Plan A: Full table scan (cost: 1000)
+   - Plan B: Index on id (cost: 10) ← CHOSEN
+   ↓
+4. Planner: Build execution tree
+   - IndexScan(users, id=1)
+   └─ Filter(WHERE condition)
+   ↓
+5. Executor: Run physical operations
+   - Fetch row from index
+   - Apply filter
+   - Return result
+```
+
+### Real Bottleneck Examples
+
+**Missing Index** (1000ms)
+```sql
+-- Slow: full table scan
+SELECT * FROM orders WHERE customer_id = 5;
+-- Fix: CREATE INDEX idx_orders_cust ON orders(customer_id);
+```
+
+**Bad Join Order** (30s)
+```sql
+-- Slow: joins small × large
+SELECT * FROM items i
+JOIN orders o ON i.id = o.item_id
+WHERE o.created > '2024-01-01';
+
+-- Better: filter first, then join
+SELECT * FROM orders o
+WHERE o.created > '2024-01-01'
+JOIN items i ON o.item_id = i.id;
+```
+

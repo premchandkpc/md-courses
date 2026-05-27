@@ -1020,3 +1020,55 @@ def production_profiling_workflow():
 
 production_profiling_workflow()
 ```
+
+
+
+## Profiling Workflow
+
+```
+1. Identify bottleneck
+   - "Login takes 5 seconds, unacceptable"
+   ↓
+2. Profile the code
+   - CPU time: Which functions consume time?
+   - Memory: Where are allocations?
+   - I/O: Which operations block?
+   ↓
+3. Analyze results
+   - login() takes 60% of time
+   - 80% in database query
+   - Database fetches 1000s of rows
+   ↓
+4. Hypothesize fix
+   - Add index on user email column
+   - Paginate results
+   - Cache user objects
+   ↓
+5. Implement & measure
+   - Login now 500ms (10x faster!)
+   ↓
+6. Monitor in production
+   - Track regression
+   - Alert if exceeds threshold
+```
+
+### Real Case: N+1 Query Problem
+
+```javascript
+// SLOW: N+1 queries
+const users = db.query('SELECT * FROM users LIMIT 10');
+for (let user of users) {
+  user.posts = db.query(`SELECT * FROM posts WHERE user_id = ${user.id}`);
+  // This runs 10 queries: 1 for users + 10 for each user's posts
+}
+// Total: 11 queries, 2000ms
+
+// FAST: Single query with join
+const users = db.query(`
+  SELECT u.*, p.* FROM users u
+  LEFT JOIN posts p ON u.id = p.user_id
+  LIMIT 10
+`);
+// Total: 1 query, 50ms (40x faster)
+```
+

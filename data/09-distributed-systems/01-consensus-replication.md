@@ -371,3 +371,45 @@ class HLC:
 ## Simplest Mental Model
 
 **Consensus is a group of servers agreeing on one thing despite failures.** Raft makes this simple: one leader makes all decisions; if it dies, servers run a random-timer election to pick a new one. Paxos does the same with more math. **CRDTs avoid consensus entirely** — operations commute like addition: `1+2+3` is same regardless of order. CAP says: during a network split, you must choose correctness or availability, never both.
+
+
+
+## Replication Stages Explained
+
+### Stage 1: Write to Leader
+```
+Client → Leader: "insert user=alice"
+         Leader writes to WAL (Write-Ahead Log)
+         Returns ack to client
+```
+
+### Stage 2: Replicate to Followers
+```
+Leader → Follower-1: "insert user=alice"
+         ↓
+         Follower-1 writes to WAL
+         Sends ack back
+         ↓
+Leader → Follower-2: "insert user=alice"
+         ↓
+         Follower-2 writes to WAL
+         Sends ack back
+```
+
+### Stage 3: Commit
+```
+Leader checks: "Got acks from N/2+1 replicas?"
+If YES → Marks committed in leader's log
+        Notifies all followers: "this entry committed"
+        Followers apply to state machine
+If NO  → Entry stays in log but not applied
+```
+
+### Failure Scenarios
+
+| Scenario | Replication State | Recovery |
+|----------|------------------|----------|
+| Client crashes | Entry in leader WAL | Retry on reconnect |
+| Leader crashes | Entry in 1 follower | New leader may not have it |
+| 3/5 replicas down | 2/5 can't quorum | Wait for replica recovery |
+

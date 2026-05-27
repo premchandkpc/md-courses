@@ -807,3 +807,48 @@ JWT          =  A passport. The receptionist stamps it when you arrive,
 ---
 
 **Next**: [Circuit Breaker & Resilience](05-circuit-breaker-resilience.md)
+
+
+
+## API Gateway Request Flow
+
+```
+1. Request arrives at gateway
+   ↓
+2. Authentication: Verify JWT token
+   └─ Invalid? → 401 Unauthorized (stop)
+   ↓
+3. Rate limiting: Check quota
+   └─ Exceeded? → 429 Too Many Requests (stop)
+   ↓
+4. Routing: Match URL to service
+   /users/* → user-service:8080
+   /orders/* → order-service:8080
+   ↓
+5. Transform request
+   - Add request ID
+   - Add tracing headers
+   - Compress payload
+   ↓
+6. Call backend service
+   ↓
+7. Transform response
+   - Add security headers
+   - Decompress
+   - Add cache headers
+   ↓
+8. Return to client
+```
+
+### Common Pitfall: Cascading Failures
+```
+Gateway → Service A (slow, timeout in 5s)
+          Service B waits for A (timeout in 3s)
+          Service C waits for B (timeout in 1s)
+
+Fix: Use circuit breaker pattern
+- Service A slow? Open circuit, fail fast
+- Return cached response instead
+- Retry when service recovers
+```
+

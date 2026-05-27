@@ -1135,3 +1135,34 @@ Optimal:          Depends on workload
 ## 19. Simplest Mental Model
 
 > **The scheduler is a librarian who has many books to read (tasks) but only one desk (CPU core). CFS works like a book club rotation — everyone gets the same reading time, but important members (high priority) read slower vruntime clocks. On multi-core, it's multiple librarians who redistribute books when one desk is empty. EEVDF is the same librarian but with sticky notes: each task has a "due by" time and can't be assigned until its turn is fair. The goal is always the same — keep the desks busy, keep the wait short, and make sure nobody starves.**
+
+
+
+## Scheduling Algorithms Compared
+
+### FIFO (First-In-First-Out)
+```
+Timeline:
+Process A (10ms) | Process B (5ms) | Process C (3ms)
+|────────────────|───────|────|
+0               10      15   18
+Avg wait: (0 + 10 + 15) / 3 = 8.3ms
+```
+
+### Round-Robin (RR) - Time Slice = 3ms
+```
+Timeline:
+A(3) | B(3) | C(3) | A(3) | B(2) | C(0)
+Context switches: 5
+Avg wait: Better for interactive systems
+```
+
+### Priority-Based
+```
+High:  [A-high] |        [A-high]
+Medium:         [B-med] [B-med]
+Low:            [C-low]
+Result: High priority tasks get better response time
+Risk: Low priority starvation
+```
+

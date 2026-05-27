@@ -1274,3 +1274,35 @@ stateDiagram-v2
 - [Backend](../../03-backend/) — API design and contracts
 - [Performance Engineering](../../18-performance-engineering/) — Browser rendering
 - [Testing](../../19-testing/) — E2E and component testing
+
+
+
+## Component Composition Patterns
+
+### Pattern 1: Render Props
+```jsx
+// Flexible component reuse via function prop
+<DataFetcher url="/api/users" render={(users) => <UserList users={users} />} />
+```
+
+### Pattern 2: Higher-Order Components
+```jsx
+// Wrap component to add functionality
+const withAuth = (Component) => (props) => 
+  isLoggedIn ? <Component {...props} /> : <Login />;
+
+export default withAuth(Dashboard);
+```
+
+### Pattern 3: Custom Hooks
+```jsx
+// Extract logic into reusable hook
+const useUserData = (userId) => {
+  const [user, setUser] = useState(null);
+  useEffect(() => {
+    fetch(`/api/users/${userId}`).then(setUser);
+  }, [userId]);
+  return user;
+};
+```
+

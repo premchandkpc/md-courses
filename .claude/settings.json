@@ -22,7 +22,11 @@
       "Bash(curl -s 'http://localhost:3000/api/file?path=04-frontend/react/01-components-jsx.md')",
       "Bash(curl -s http://localhost:3000)",
       "Bash(python3 /tmp/add_prod_diagram.py)",
-      "Bash(bash /tmp/validate.sh)"
+      "Bash(bash /tmp/validate.sh)",
+      "Bash(make serve *)",
+      "Bash(curl -s http://localhost:3000/api/stats)",
+      "Bash(curl -s \"http://localhost:3000/api/search?q=react\")",
+      "Bash(curl -s \"http://localhost:3000/api/file?path=01-ai-ml/README.md\")"
     ]
   }
 }

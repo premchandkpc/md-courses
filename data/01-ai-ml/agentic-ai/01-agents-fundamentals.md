@@ -960,3 +960,49 @@ class FallbackChain:
 - [Cloud Platforms](../../05-cloud/) — GPU/TPU infrastructure
 - [Data Engineering](../../02-data-engineering/) — Training data pipelines
 - [Performance Engineering](../../18-performance-engineering/) — Model optimization
+
+
+
+## Real-World Agent Example: Customer Support Bot
+
+```javascript
+// Complete agent implementation for support tickets
+class SupportAgent {
+  constructor(llm) {
+    this.llm = llm;
+    this.tools = {
+      createTicket: (issue) => ({ id: 'TKT-123', status: 'open' }),
+      searchKnowledge: (query) => ([{ article: 'FAQ-1', relevance: 0.95 }]),
+      escalateToHuman: (reason) => ({ assigned: 'support@company.com' })
+    };
+  }
+
+  async handleRequest(userMessage) {
+    // 1. Perception: Parse user request
+    const perception = { input: userMessage, confidence: 0.92 };
+    
+    // 2. Reasoning: LLM decides action
+    const decision = await this.llm.decide({
+      userMessage,
+      availableTools: Object.keys(this.tools),
+      context: 'customer support'
+    });
+    
+    // 3. Action: Execute chosen tool
+    const result = this.tools[decision.tool]?.(decision.args);
+    
+    // 4. Observe: Process result
+    return { response: decision.message, action: result };
+  }
+}
+```
+
+### Common Agent Failure Cases
+
+| Case | Problem | Solution |
+|------|---------|----------|
+| Hallucination | Agent fabricates tool results | Add result verification |
+| Tool misuse | Wrong tool selected | Add tool descriptions |
+| Infinite loops | Agent repeats same action | Track action history |
+| Context loss | Forgets previous steps | Maintain session memory |
+

@@ -12,7 +12,12 @@
       "Bash(pkill -f \"node.*server.js\")",
       "Bash(curl -s http://localhost:3000/api/file?path=01-ai-ml/agentic-ai/01-agents-fundamentals.md)",
       "Bash(curl -s http://localhost:3000/api/files)",
-      "Bash(curl -s 'http://localhost:3000/api/file?path=12-operating-systems/05-process-threads-fibers.md')"
+      "Bash(curl -s 'http://localhost:3000/api/file?path=12-operating-systems/05-process-threads-fibers.md')",
+      "Bash(curl -s 'http://localhost:3000/api/file?path=01-ai-ml/agentic-ai/01-agents-fundamentals.md')",
+      "Bash(python3 /tmp/enhance_agents.py)",
+      "Bash(curl -s 'http://localhost:3000/api/file?path=01-ai-ml/ai-production/01-production-ai.md')",
+      "Bash(python3 /tmp/enhance_production.py)",
+      "Bash(curl -s 'http://localhost:3000/api/file?path=02-data-engineering/orchestration/01-airflow-dagster.md')"
     ]
   }
 }

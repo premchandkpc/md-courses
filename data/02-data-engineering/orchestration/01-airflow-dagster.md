@@ -6,34 +6,47 @@ Apache Airflow is a platform to programmatically author, schedule, and monitor w
 
 ## Airflow Architecture
 
-```
-+-----------------------------------------------------------------+
-|                     Airflow Architecture                         |
-|                                                                 |
-|  +------------+  +------------+  +------------+  +------------+  |
-|  | Webserver  |  | Scheduler  |  | Worker(s)  |  | DAG        |  |
-|  | (Flask/Gnu)|  | (DAG loop) |  | (execute   |  | Processor  |  |
-|  | +--------+ |  | +--------+ |  |  tasks)   |  | (parse    |  |
-|  | | DAGs/  | |  | | DagBag| |  | +--------+ |  |  DAGs)   |  |
-|  | | Tasks/ | |  | | task  | |  | | Tasks  | |  | +--------+ |  |
-|  | | Runs   | |  | | queue | |  | +--------+ |  | | Serial | |  |
-|  | +--------+ |  | +--------+ |  +------------+  | +--------+ |  |
-|  +------------+  +------------+                   +------------+  |
-|        |               |                              |          |
-|        v               v                              v          |
-|  +----------------------------------------------------------+   |
-|  |                 Metadata Database (Postgres/MySQL)        |   |
-|  |  +--------+  +---------+  +---------+  +-----------+     |   |
-|  |  | DAG    |  | Task    |  | Task    |  | Variables |     |   |
-|  |  | Runs   |  | Instances|  | Reschedule| +-----------+     |   |
-|  |  +--------+  +---------+  +---------+                     |   |
-|  +----------------------------------------------------------+   |
-|                                                                 |
-|  +----------------------------------------------------------+   |
-|  |              Message Broker (Redis/RabbitMQ)              |   |
-|  |                  [Celery Executor only]                   |   |
-|  +----------------------------------------------------------+   |
-+-----------------------------------------------------------------+
+```mermaid
+graph TB
+    subgraph UI["🖥️ Web Layer"]
+        WEB["Webserver<br/>Flask UI + REST API"]
+    end
+    
+    subgraph SCHED["⚙️ Control Layer"]
+        PARSER["DAG Processor<br/>Parse DAG files"]
+        SCHEDULER["Scheduler<br/>Create DagRuns<br/>Queue tasks"]
+    end
+    
+    subgraph EXEC["🚀 Execution Layer"]
+        WORKER1["Worker 1<br/>Execute tasks"]
+        WORKER2["Worker 2<br/>Execute tasks"]
+        WORKERN["Worker N<br/>Execute tasks"]
+    end
+    
+    subgraph STORE["💾 Storage & Coordination"]
+        DB["Metadata DB<br/>PostgreSQL/MySQL<br/>DAGs, Runs, Tasks, Variables"]
+        BROKER["Message Broker<br/>Redis/RabbitMQ<br/>Task Queue"]
+    end
+    
+    WEB --> DB
+    PARSER --> DB
+    SCHEDULER --> DB
+    SCHEDULER --> BROKER
+    BROKER --> WORKER1
+    BROKER --> WORKER2
+    BROKER --> WORKERN
+    WORKER1 --> DB
+    WORKER2 --> DB
+    WORKERN --> DB
+    
+    style WEB fill:#4a8bc2
+    style PARSER fill:#2d5a7b
+    style SCHEDULER fill:#c73e1d
+    style WORKER1 fill:#1a5d3a
+    style WORKER2 fill:#1a5d3a
+    style WORKERN fill:#1a5d3a
+    style DB fill:#1a3a52
+    style BROKER fill:#2d5a7b
 ```
 
 ### Components

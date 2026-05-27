@@ -1,6 +1,59 @@
 # Production AI: Engineering for Scale
 
 ## 1. Inference Infrastructure
+### Inference Pipeline Architecture
+
+```mermaid
+graph LR
+    A["📥 Request Queue"] --> B["🎯 Load Balancer"]
+    B --> C["🔀 Router"]
+    C --> D["📊 Dynamic Batcher"]
+    D --> E["🧠 Inference Engine<br/>GPU Cluster"]
+    E --> F["💾 KV Cache<br/>Manager"]
+    F --> E
+    E --> G["🎛️ Output<br/>Processor"]
+    G --> H["📤 Response<br/>Stream"]
+    
+    I["📈 Autoscaler"] -.->|Monitor CPU/GPU| E
+    I -.->|Scale Up/Down| E
+    
+    style A fill:#1a3a52
+    style B fill:#2d5a7b
+    style C fill:#4a8bc2
+    style D fill:#2d5a7b
+    style E fill:#c73e1d
+    style F fill:#4a8bc2
+    style G fill:#2d5a7b
+    style H fill:#1a3a52
+    style I fill:#1a5d3a
+```
+
+### Autoscaling Decision Flow
+
+```mermaid
+graph TD
+    A["📊 Collect Metrics<br/>CPU, GPU, Latency"] --> B{{"CPU > Target?<br/>& Replicas < Max?"}}
+    B -->|Yes| C["⬆️ Scale Up<br/>+1 Instance"]
+    B -->|No| D{{"CPU < 50% Target?<br/>& Replicas > Min?"}}
+    D -->|Yes| E["⬇️ Scale Down<br/>-1 Instance"]
+    D -->|No| F["➡️ Stable<br/>Hold State"]
+    C --> G["✅ Apply Change<br/>Update Load Balancer"]
+    E --> G
+    F --> H["⏱️ Wait<br/>Next Interval"]
+    G --> H
+    H --> A
+    
+    style A fill:#2d5a7b
+    style B fill:#c73e1d
+    style C fill:#1a5d3a
+    style D fill:#c73e1d
+    style E fill:#ff6b35
+    style F fill:#4a8bc2
+    style G fill:#2d5a7b
+    style H fill:#1a3a52
+```
+
+
 
 ### 1.1 GPU Provisioning and Autoscaling
 

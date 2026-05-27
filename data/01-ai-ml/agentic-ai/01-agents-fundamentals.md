@@ -6,35 +6,19 @@
 
 An AI agent repeatedly perceives its environment, reasons about it, and acts upon it.
 
-```
-                    +------------------+
-                    |   Environment    |
-                    +--------+---------+
-                             |
-                    Perception (observe)
-                             |
-                    +--------v---------+
-                    |    Perception    |
-                    |   (parse input,  |
-                    |   gather state)  |
-                    +--------+---------+
-                             |
-                    +--------v---------+
-                    |    Reasoning     |
-                    |   (LLM thinks,   |
-                    |   plans, decides)|
-                    +--------+---------+
-                             |
-                    +--------v---------+
-                    |     Action       |
-                    |  (call tools,    |
-                    |  produce output) |
-                    +--------+---------+
-                             |
-                    +--------v---------+
-                    |    Observe       |
-                    |  (result of act) |
-                    +------------------+
+```mermaid
+graph TD
+    A["🌍 Environment"] -->|Perception<br/>observe state| B["👁️ Perception<br/>parse input<br/>gather state"]
+    B -->|sensor data| C["🧠 Reasoning<br/>LLM thinks<br/>plans, decides"]
+    C -->|decision| D["⚙️ Action<br/>call tools<br/>produce output"]
+    D -->|execute| E["📊 Observe<br/>result of action"]
+    E -->|feedback| A
+    
+    style A fill:#1a3a52
+    style B fill:#2d5a7b
+    style C fill:#4a8bc2
+    style D fill:#2d5a7b
+    style E fill:#1a3a52
 ```
 
 ```python

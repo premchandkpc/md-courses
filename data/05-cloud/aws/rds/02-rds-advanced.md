@@ -23,6 +23,7 @@
 ```text
 Multi-AZ: Writer --sync--> Standby (diff AZ). Single endpoint. Auto-failover 60-120s. No read scaling.
 Read Replicas: Writer --async--> RR (same/cross region). Separate reader endpoint. Up to 15 replicas.
+
 ```
 
 | Feature | Multi-AZ | Read Replicas |
@@ -54,6 +55,7 @@ Fully managed connection pooler: app -> RDS Proxy -> RDS/Aurora.
 ```text
 RDS: EC2 + EBS (block storage, max 16 TB)
 Aurora: Writer + 6 storage copies across 3 AZs (shared storage, max 128 TB)
+
 ```
 
 | | RDS | Aurora |
@@ -210,37 +212,267 @@ RDS Event Notifications via SNS. Categories with namespaces: **DB Instance** (cr
 
 ## Code Examples
 
+### Python with RDS Proxy
+
 ```python
-# Example implementation
-# [Add language-specific code demonstrating core concept]
-pass
+import psycopg2
+from boto3 import client as aws_client
+
+# Connect via RDS Proxy (instead of RDS directly)
+conn = psycopg2.connect(
+    host="my-proxy.proxy-xxx.us-east-1.rds.amazonaws.com",
+    port=5432,
+    database="mydb",
+    user="proxy_user",
+    password="proxy_password"
+)
+
+# Use context manager (auto-close connection)
+with conn.cursor() as cur:
+    cur.execute("SELECT * FROM users WHERE id = %s", (123,))
+    result = cur.fetchone()
+
+conn.close()
+
+```
+
+### Node.js with Connection Pooling
+
+```javascript
+const { Pool } = require('pg');
+
+const pool = new Pool({
+  host: 'my-db.c9akciq32.us-east-1.rds.amazonaws.com',
+  user: 'postgres',
+  password: process.env.DB_PASSWORD,
+  database: 'mydb',
+  max: 20,  // max connections in pool
+  idleTimeoutMillis: 30000,
+  connectionTimeoutMillis: 2000,
+});
+
+pool.query('SELECT * FROM users', (err, res) => {
+  if (err) console.error(err);
+  console.log(res.rows);
+});
+
+```
+
+### Java with Aurora Cluster Endpoints
+
+```java
+String writerEndpoint = "writer.cluster-xxx.us-east-1.rds.amazonaws.com";
+String readerEndpoint = "reader.cluster-xxx.us-east-1.rds.amazonaws.com";
+
+// Write operations
+Connection writeConn = DriverManager.getConnection(
+    "jdbc:postgresql://" + writerEndpoint + ":5432/mydb",
+    "postgres", password);
+
+// Read operations (load-balanced across replicas)
+Connection readConn = DriverManager.getConnection(
+    "jdbc:postgresql://" + readerEndpoint + ":5432/mydb",
+    "postgres", password);
+
+// Application routing
+if (query.startsWith("SELECT")) {
+    executeQuery(readConn, query);  // Route to reader
+} else {
+    executeUpdate(writeConn, query); // Route to writer
+}
+
 ```
 
 ---
 
 ## Common Failure Modes
 
-**Problem**: [Key issue in production]
+### 1. Connection Pool Exhaustion
 
-**Root cause**: [Why it happens]
+**Problem**: Application cannot connect. "Too many connections" error.
 
-**Solution**: [How to fix]
+**Root cause**:
+- Missing RDS Proxy
+- Connection leaks in app code
+- Lambda spike (each creates new connection)
+- Long-running transactions holding connections
+
+**Solution**:
+
+```
+
+Deploy RDS Proxy (reuses connections, multiplexes)
+  - Add RDS Proxy endpoint
+  - Update app connection string
+  - Monitor ACU usage (1 ACU ≈ 2000 connections)
+
+Or fix leaks in app:
+  - Always close() connections
+  - Use connection pools (max 20-50)
+  - Set connection timeout
+  - Monitor with CloudWatch: DatabaseConnections metric
+
+```
+
+### 2. Read Replica Lag During High Write Load
+
+**Problem**: Replica returns stale data. Application sees inconsistency.
+
+**Root cause**:
+- Aurora replica can't keep up with write rate
+- Network throughput bottleneck
+- Replica under-provisioned
+
+**Solution**:
+
+```
+
+Monitor ReplicaLag CloudWatch metric
+  - Expected: 0-100ms
+  - Bad: > 1s
+  
+Fix:
+  - Increase writer instance size (generate writes faster)
+  - Add more replicas (share read load)
+  - Upgrade Aurora to higher tier
+  - Separate read-only workloads to reader endpoint only
+
+```
+
+### 3. Multi-AZ Failover Delays (60-120s)
+
+**Problem**: Downtime during failover. Clients timeout.
+
+**Root cause**:
+- Synchronous replication + network latency
+- DNS TTL not respected by client
+- No connection pooling
+
+**Solution**:
+
+```
+
+Deploy RDS Proxy
+  - Maintains connection pool
+  - Failover transparent to app
+  - Reduces perceived downtime to ~10-15s
+
+Configure client timeouts
+  - Connection timeout: 5s
+  - Read timeout: 30s
+  - Retry with exponential backoff
+
+Monitor failover events
+  - CloudWatch alerts on Enhanced Monitoring
+  - Test failover quarterly (RDS console)
+
+```
+
+### 4. Encryption Key Rotation Issues
+
+**Problem**: Application loses connectivity after KMS key rotation.
+
+**Root cause**:
+- Application role lacks kms:Decrypt on new key
+- KMS key access revoked
+
+**Solution**:
+
+```
+
+IAM policy must allow kms:Decrypt for DB role
+  "Action": ["kms:Decrypt", "kms:DescribeKey"]
+  "Resource": "arn:aws:kms:region:account:key/*"
+
+Monitor key rotation
+  - CloudWatch: EncryptionEnabled metric
+  - Test rotation in staging first
+
+```
 
 ---
 
 ## Interview Questions
 
-### Q1: [Core concept question]
+### Q1: When should you use Aurora vs standard RDS?
 
-**Answer**: [Detailed explanation with trade-offs]
+**Answer**:
 
-### Q2: [Design/architecture question]
+**Use Aurora if:**
+- Production workload (needs HA)
+- Need failover < 30s (Aurora: 30s, RDS Multi-AZ: 60-120s)
+- Scale to millions of reads (up to 15 read replicas)
+- Cost flexible (2x cost of RDS but better reliability)
 
-**Answer**: [Best practices and reasoning]
+**Use RDS Standard if:**
+- Development/staging
+- Small workloads (< 100 connections)
+- Cost-sensitive
+- Managed failover not required
+
+Trade-off: Aurora costs more but provides better reliability, faster failover, automatic repair.
+
+### Q2: RDS Proxy vs app-level connection pool. Which to use?
+
+**Answer**:
+
+**RDS Proxy if:**
+- Lambda (serverless) workload
+- Rapidly scaling applications
+- Connection churn (frequent new connections)
+- Don't want to manage pooling code
+
+**App-level pool if:**
+- Long-lived server processes
+- Stable connection count
+- Fine-grained control needed
+
+**Best practice**: Use both:
+- App has pool (20-50 connections)
+- RDS Proxy multiplexes those connections
+- Isolation + efficiency
+
+### Q3: How would you design for read-heavy workload with consistent data?
+
+**Answer**:
+
+**Option 1: Read from replicas, accept lag**
+
+```
+
+Write → Primary
+Read → Aurora reader endpoint (load-balanced)
+Lag: typically < 100ms
+App tolerates eventual consistency
+
+```
+
+**Option 2: Read from primary, accept cost**
+
+```
+
+All reads go to primary (writer endpoint)
+No lag: consistent reads
+Cost: more expensive (single writer bottleneck)
+Use only for financial transactions, critical data
+
+```
+
+**Option 3: Hybrid**
+
+```
+
+Historical data → read replicas (ok if stale)
+Recent data → primary (must be current)
+Application routes by data age
+Balances cost + consistency
+
+```
 
 ---
 
 ## Related
 
-- [Related domain 1](#)
-- [Related domain 2](#)
+- [Databases internals](../../08-databases/)
+- [Distributed Systems patterns](../../09-distributed-systems/)
+- [Cloud Architecture](../)

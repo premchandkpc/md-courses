@@ -828,3 +828,12 @@ Advanced Python = Python + C + Memory + Concurrency
 │  asyncio + cProfile) WITHOUT leaving the language.    │
 └──────────────────────────────────────────────────────┘
 ```
+
+
+## Practical Example
+
+```python
+# Basic usage
+result = function()
+print(result)
+```

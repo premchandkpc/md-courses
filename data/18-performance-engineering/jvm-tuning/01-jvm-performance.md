@@ -1484,3 +1484,13 @@ class CustomHealthIndicator implements HealthIndicator {
     private boolean checkCache() { return true; }
 }
 ```
+
+
+## Comparison Table
+
+| Aspect | Option A | Option B | Trade-off |
+| ---- | ---- | ---- | ---- |
+| Performance | High | Medium | Speed vs Simplicity |
+| Complexity | High | Low | Features vs Ease of Use |
+| Scalability | Excellent | Good | Horizontal vs Vertical |
+| Cost | High | Low | Features vs Budget |

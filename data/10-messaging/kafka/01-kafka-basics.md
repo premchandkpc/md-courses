@@ -502,3 +502,8 @@ Kafka is a COMMITTED LOG — like a database WAL, shared across services.
   2. 1 consumer group → 1 partition : 1 consumer
   3. More partitions = more throughput ≠ more speed
 ```
+
+
+## Practical Example
+
+See code examples above for practical usage patterns.

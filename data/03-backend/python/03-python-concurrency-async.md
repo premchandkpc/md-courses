@@ -684,3 +684,12 @@ signal.signal(signal.SIGINT, handle_sigint)
 │                                                             │
 └─────────────────────────────────────────────────────────────┘
 ```
+
+
+## Practical Example
+
+```python
+# Basic usage
+result = function()
+print(result)
+```

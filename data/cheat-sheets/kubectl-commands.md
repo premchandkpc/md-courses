@@ -2,6 +2,102 @@
 
 Essential kubectl commands for Kubernetes cluster operations.
 
+## Kubectl Workflow Architecture
+
+```mermaid
+graph TB
+    A["kubectl Command"] --> B["Parse & Validate"]
+    B --> C{"Resource<br/>Type?"}
+    C -->|Pod| D["Pod Operations"]
+    C -->|Deployment| E["Deployment Lifecycle"]
+    C -->|Service| F["Network Exposure"]
+    C -->|Config| G["Configuration Management"]
+    D --> D1["Create/Read/<br/>Update/Delete"]
+    E --> E1["Scale/Rollout/<br/>Update"]
+    F --> F1["Expose/Network<br/>Rules"]
+    G --> G1["ConfigMaps/<br/>Secrets"]
+    D1 --> H["API Server"]
+    E1 --> H
+    F1 --> H
+    G1 --> H
+    H --> I["etcd<br/>Persistent Storage"]
+    H --> J["Controller<br/>Reconciliation"]
+    J --> K["Scheduler"]
+    K --> L["Kubelet<br/>Node Agent"]
+    L --> M["Container<br/>Runtime"]
+    style A fill:#4a8bc2
+    style H fill:#2d5a7b
+    style I fill:#1a5d3a
+    style M fill:#5a2d7b
+```
+
+## Resource Decision Tree
+
+```mermaid
+graph TD
+    A["Need to run<br/>workload?"] -->|Single instance| B["Pod"]
+    A -->|Multiple replicas| C["Deployment"]
+    A -->|Persistent data| D["StatefulSet"]
+    A -->|System-wide task| E["DaemonSet"]
+    A -->|Expose workload| F["Service"]
+    A -->|HTTP routing| G["Ingress"]
+    A -->|Store config| H["ConfigMap"]
+    A -->|Store secrets| I["Secret"]
+    B --> J["kubectl run"]
+    C --> K["kubectl create deployment"]
+    D --> L["kubectl create statefulset"]
+    E --> M["kubectl create daemonset"]
+    F --> N["kubectl expose"]
+    G --> O["kubectl create ingress"]
+    H --> P["kubectl create configmap"]
+    I --> Q["kubectl create secret"]
+    style A fill:#ff7b72
+    style J fill:#79c0ff
+    style K fill:#79c0ff
+    style L fill:#79c0ff
+    style M fill:#79c0ff
+    style N fill:#a5d6ff
+    style O fill:#a5d6ff
+```
+
+## Common Operations Comparison
+
+| Task | Command | When to Use | Output |
+| -------- | -------- | -------- | -------- |
+| View Resources | `kubectl get pods` | Check running pods | Pod list, status |
+| Detailed Info | `kubectl describe pod <name>` | Troubleshoot issues | Full spec + events |
+| Export Config | `kubectl get pod <name> -o yaml` | Version control | Pod manifest YAML |
+| Watch Changes | `kubectl get pods --watch` | Monitor real-time | Live status updates |
+| Filter Results | `kubectl get pods -l app=web` | Find resources | Filtered list |
+| Scale Service | `kubectl scale deploy <name> --replicas=5` | Increase capacity | Deployment scaled |
+| Update Image | `kubectl set image deploy/<name> container=img:v2` | Deploy version | Pods recreated |
+| View Logs | `kubectl logs <pod-name> -f` | Debug behavior | Application logs |
+| Execute Command | `kubectl exec -it <pod> -- bash` | Run in pod | Interactive shell |
+
+## Deployment Workflow with Examples
+
+```mermaid
+sequenceDiagram
+    participant Dev as Developer
+    participant API as API Server
+    participant Sched as Scheduler
+    participant Node as Kubelet
+    participant App as Container
+    
+    Dev->>API: kubectl apply -f deploy.yaml
+    API->>API: Validate manifest
+    API->>API: Store in etcd
+    API->>Sched: New deployment needs pods
+    Sched->>Sched: Find suitable nodes
+    Sched->>API: Bind pods to nodes
+    API->>Node: Pod spec
+    Note over Node: Pull image
+    Node->>App: Start container
+    App->>App: Container runs
+    Node->>API: Report pod status
+    API->>Dev: kubectl get pods<br/>Pod is Running
+```
+
 ## Context & Cluster Management
 
 ```bash

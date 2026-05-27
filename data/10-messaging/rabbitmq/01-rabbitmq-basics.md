@@ -694,3 +694,8 @@ RabbitMQ = POST OFFICE with smart sorting:
 │    ✓ Long-term retention                                          │
 └──────────────────────────────────────────────────────────────────┘
 ```
+
+
+## Practical Example
+
+See code examples above for practical usage patterns.

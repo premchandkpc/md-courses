@@ -408,3 +408,7 @@ Wcubic = C * (t - K)^3 + Wmax
 > - **TCP state machine** = life cycle of a phone call (dial → hello → talk → bye → hang up).
 > - **TCP flow/congestion control** = not sending too many letters at once (window) and slowing when mailbox is full.
 > - **QUIC** = FedEx priority — faster setup, multiple packages without blocking each other, survives address changes mid-delivery.
+
+## Practical Example
+
+See code examples above for practical usage patterns.

@@ -532,3 +532,8 @@ RabbitMQ patterns = routing logic for message flows
 │  1 exchange + N queues + bindings + message headers/properties   │
 └──────────────────────────────────────────────────────────────────┘
 ```
+
+
+## Practical Example
+
+See code examples above for practical usage patterns.

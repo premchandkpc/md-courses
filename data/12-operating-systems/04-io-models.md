@@ -1068,3 +1068,8 @@ fd refcount            per-read fget/fput   one-time registration
 ## 18. Simplest Mental Model
 
 > **I/O models are like ordering food at a restaurant. Blocking I/O is waiting at the counter for your burger — simple but you can't do anything else. Non-blocking is checking every second: "Is my burger ready?" (wasteful). select/poll is watching the counter for any order to be ready but checking every board (wastes time looking at empty spaces). epoll is a buzzer that goes off only for your order — efficient. io_uring is handing the waiter a written list and picking up all dishes at once from the pickup window — zero back-and-forth. sendfile/splice is cutting out plates entirely — the kitchen hands your burger directly to you. DPDK/XDP is bringing your own stove and cooking yourself — maximum speed, maximum complexity. Every model is about the same fundamental trade: control vs. convenience, throughput vs. latency, thread count vs. complexity.**
+
+
+## Practical Example
+
+See code examples above for practical usage patterns.

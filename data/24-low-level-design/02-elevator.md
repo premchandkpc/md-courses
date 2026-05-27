@@ -1,5 +1,16 @@
 # Elevator Control System — Low Level Design
 
+
+## Overview
+
+```mermaid
+graph TB
+    A["Input"] --> B["Process"]
+    B --> C["Output"]
+    style C fill:#3fb950
+```
+
+
 ## Table of Contents
 1. Requirements
 2. System Overview

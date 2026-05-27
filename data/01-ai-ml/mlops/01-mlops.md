@@ -1,5 +1,19 @@
 # MLOps: Machine Learning Operations
 
+
+## Architecture Overview
+
+```mermaid
+graph TB
+    A["Data"] --> B["Preprocessing"]
+    B --> C["Feature Engineering"]
+    C --> D["Training"]
+    D --> E["Validation"]
+    E -->|Failed| C
+    E -->|Success| F["Deployment"]
+    style F fill:#3fb950
+```
+
 ## 1. ML Lifecycle
 
 ### 1.1 The Complete ML Lifecycle

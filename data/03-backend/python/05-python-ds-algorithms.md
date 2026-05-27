@@ -401,3 +401,12 @@ def lis(nums):
 - **Trie**: Autocorrect — follow letters like tree branches.
 - **Segment Tree**: Tournament bracket answering range sums.
 - **Bit ops**: Flipping light switches in parallel.
+
+
+## Practical Example
+
+```python
+# Basic usage
+result = function()
+print(result)
+```

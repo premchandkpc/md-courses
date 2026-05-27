@@ -449,3 +449,8 @@ scheduler.schedule(() -> delayed.complete("delayed"), 1, TimeUnit.SECONDS);
 > - **CompletableFuture**: async pipeline with error recovery
 > - **False sharing**: avoid multiple hot fields on same cache line
 > - **ThreadLocal**: per-thread, but clean up in pools (remove on shutdown)
+
+
+## Practical Example
+
+See code examples above for practical usage patterns.

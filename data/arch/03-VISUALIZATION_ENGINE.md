@@ -500,3 +500,20 @@ class SimulationDataBinding {
 | Animation smoothness | 60fps | requestAnimationFrame, delta-time |
 | Memory (10K nodes) | < 50MB | Object pooling, texture atlas |
 | Initial page load (JS) | < 200KB | Code splitting, dynamic import per backend |
+
+
+## Workflow
+
+```mermaid
+sequenceDiagram
+    actor User
+    box Stage 1
+        participant A as Step A
+    end
+    box Stage 2
+        participant B as Step B
+    end
+    User->>A: Start
+    A->>B: Process
+    B-->>User: Result
+```

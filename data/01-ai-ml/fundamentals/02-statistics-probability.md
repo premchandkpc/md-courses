@@ -1,5 +1,19 @@
 # Statistics and Probability for AI/ML
 
+
+## Architecture Overview
+
+```mermaid
+graph TB
+    A["Data"] --> B["Preprocessing"]
+    B --> C["Feature Engineering"]
+    C --> D["Training"]
+    D --> E["Validation"]
+    E -->|Failed| C
+    E -->|Success| F["Deployment"]
+    style F fill:#3fb950
+```
+
 ## 1. Foundations of Probability
 
 ### 1.1 Basic Axioms

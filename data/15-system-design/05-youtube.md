@@ -847,3 +847,8 @@ CDN:
 **YouTube is like a global TV station where anyone can broadcast, but every video is automatically repackaged into hundreds of versions (different qualities, sizes, formats) and stored in a multi-tier warehouse — hot items on the shelf, old ones in the basement.** When you hit play, the player is a smart waiter who grabs the right-sized package for your internet speed and keeps refilling your plate before you finish (buffering). The recommendation system is like a librarian who watches what you borrow and quietly slides new books onto your desk — with a small random selection to keep you from only ever reading cookbooks (filter bubble prevention).
 
 (End of file - total 584 lines)
+
+
+## Practical Example
+
+See code examples above for practical usage patterns.

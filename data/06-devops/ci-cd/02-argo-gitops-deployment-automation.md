@@ -1,5 +1,19 @@
 # Argo CD & GitOps: Deployment Automation at Scale
 
+
+## Architecture Overview
+
+```mermaid
+graph TB
+    A["Image"] --> B["Registry"]
+    B --> C["Pull"]
+    C --> D["Container"]
+    D --> E["Pod"]
+    E --> F["Node"]
+    style B fill:#ff7b72
+    style F fill:#2d5a7b
+```
+
 ## Table of Contents
 1. NOOB Explanation
 2. GitOps Principles

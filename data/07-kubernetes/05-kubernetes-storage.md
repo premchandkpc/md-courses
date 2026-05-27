@@ -380,3 +380,8 @@ K8s storage = shipping container warehouse
 |  Core: PV = cluster resource. PVC = request matched to PV.                  |
 |  StorageClass = policy for HOW PV is created. CSI = translator layer.       |
 +------------------------------------------------------------------------------+
+
+
+## Practical Example
+
+See code examples above for practical usage patterns.

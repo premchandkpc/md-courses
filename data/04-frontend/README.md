@@ -2,6 +2,46 @@
 
 Building user interfaces and client-side applications. The frontend domain spans the React ecosystem, frameworks (Next.js, Remix, SvelteKit), state management, rendering strategies, performance optimization, testing, and production patterns for web applications.
 
+## Frontend Architecture Stack
+
+```mermaid
+graph TB
+    A["React Core"] --> B["State Management"]
+    A --> C["Hooks & Patterns"]
+    B --> D["Client State"]
+    B --> E["Server State"]
+    B --> F["Global State"]
+    C --> G["Performance"]
+    D --> H["Rendering Strategy"]
+    E --> H
+    F --> H
+    H --> I["CSR - Client Side"]
+    H --> J["SSR - Server Side"]
+    H --> K["Hybrid - Next.js"]
+    I --> L["Bundle & Assets"]
+    J --> L
+    K --> L
+    L --> M["Testing"]
+    M --> N["Unit | Integration | E2E"]
+    N --> O["Production Deploy"]
+    style A fill:#4a8bc2
+    style O fill:#3fb950
+```
+
+## Recommended Learning Sequence
+
+```mermaid
+graph LR
+    A["Fundamentals"] --> B["Components & JSX"]
+    B --> C["Hooks & State"]
+    C --> D["Effects & Lifecycle"]
+    D --> E["Advanced Patterns"]
+    E --> F["Performance"]
+    F --> G["Production Patterns"]
+    style A fill:#ff7b72
+    style G fill:#3fb950
+```
+
 ## Table of Contents
 
 - [React Ecosystem](#react-ecosystem)

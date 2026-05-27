@@ -572,3 +572,8 @@ PostgreSQL's 2PC is coordinator-dependent. If coordinator crashes after PREPARE,
 ## Simplest Mental Model
 
 **Distributed transactions are like a group of people trying to jump simultaneously.** 2PC has a leader who says "on three" followed by "jump" — but if the leader collapses mid-count, everyone freezes in place (blocked). Sagas are like a hiking trip where each leg is independent, but if someone sprains an ankle, you have a pre-planned escape route (compensation) — you can't fully undo the hike but you can get back to base. TCC is like reserving a hotel room (Try) and then checking in (Confirm) — if you don't show up, the reservation expires (Cancel). Pick your poison: strong coupling (2PC), resource reservation (TCC), or eventual compensation (Saga).
+
+
+## Practical Example
+
+See code examples above for practical usage patterns.

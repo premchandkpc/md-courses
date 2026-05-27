@@ -411,3 +411,8 @@ s3.put_bucket_notification_configuration(Bucket='source', NotificationConfigurat
 ```
 
 **Key Numbers**: Max msg 256KB • Retention 14d • VisTimeout 12h • FIFO 300 TPS (3000 batch) • Poll 20s • Delay 900s • Batch 10
+
+
+## Practical Example
+
+See code examples above for practical usage patterns.

@@ -1,5 +1,16 @@
 # System Design Numbers Cheat Sheet
 
+
+## Overview
+
+```mermaid
+graph LR
+    A["Command"] -->|Parse| B["Execute"]
+    B -->|Output| C["Result"]
+    style A fill:#4a8bc2
+```
+
+
 Key quantities and capacity estimates for system design interviews and production planning.
 
 ## Storage Units
@@ -249,3 +260,8 @@ Network bound: 25-100 Gbps
 - **Network bandwidth for 1M QPS**: 100 Mbps (assuming 100 bytes per request)
 - **Servers for 1M QPS**: 100 (at 10k QPS per server)
 - **Database connections**: 100-1000 per server
+
+
+## Practical Example
+
+See code examples above for practical usage patterns.

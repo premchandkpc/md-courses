@@ -732,3 +732,8 @@ Sample findings:
 │                                                                   │
 └──────────────────────────────────────────────────────────────────┘
 ```
+
+
+## Practical Example
+
+See code examples above for practical usage patterns.

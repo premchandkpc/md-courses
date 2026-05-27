@@ -1,5 +1,16 @@
 # Data Governance and Data Quality
 
+
+## Overview
+
+```mermaid
+graph TB
+    A["Input"] --> B["Process"]
+    B --> C["Output"]
+    style C fill:#3fb950
+```
+
+
 ## Data Quality Dimensions
 
 Data quality is measured across multiple dimensions. Each dimension addresses a different aspect of data fitness for use.

@@ -221,3 +221,29 @@ git gc                                      # Garbage collection
 git reflog                                  # Find lost commits
 git log --all --oneline --graph             # Visualize all refs
 ```
+
+
+## Comparison Table
+
+| Aspect | Option A | Option B | Trade-off |
+| ---- | ---- | ---- | ---- |
+| Performance | High | Medium | Speed vs Simplicity |
+| Complexity | High | Low | Features vs Ease of Use |
+| Scalability | Excellent | Good | Horizontal vs Vertical |
+| Cost | High | Low | Features vs Budget |
+
+## Workflow
+
+```mermaid
+sequenceDiagram
+    actor User
+    box Stage 1
+        participant A as Step A
+    end
+    box Stage 2
+        participant B as Step B
+    end
+    User->>A: Start
+    A->>B: Process
+    B-->>User: Result
+```

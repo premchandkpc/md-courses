@@ -545,3 +545,20 @@ ORDER BY c.difficulty
 | Full skill tree render | < 500ms | Materialized view + pagination |
 | Ingestion (file → graph) | < 2s/file | Batch Cypher + async embedding |
 | Graph visualization data | < 1s | Scoped subgraph query + caching |
+
+
+## Workflow
+
+```mermaid
+sequenceDiagram
+    actor User
+    box Stage 1
+        participant A as Step A
+    end
+    box Stage 2
+        participant B as Step B
+    end
+    User->>A: Start
+    A->>B: Process
+    B-->>User: Result
+```

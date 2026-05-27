@@ -442,3 +442,13 @@ public Function<String, String> uppercase() {
 > - **Security**: OAuth2 resource server + JWT decoder + method security with SpEL
 > - **Resilience**: CircuitBreaker + Retry + RateLimiter with fallbacks
 > - **Cloud**: service discovery + load-balanced WebClient + API gateway + distributed tracing
+
+
+## Comparison Table
+
+| Aspect | Option A | Option B | Trade-off |
+| ---- | ---- | ---- | ---- |
+| Performance | High | Medium | Speed vs Simplicity |
+| Complexity | High | Low | Features vs Ease of Use |
+| Scalability | Excellent | Good | Horizontal vs Vertical |
+| Cost | High | Low | Features vs Budget |

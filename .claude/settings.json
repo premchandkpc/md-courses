@@ -26,7 +26,8 @@
       "Bash(make serve *)",
       "Bash(curl -s http://localhost:3000/api/stats)",
       "Bash(curl -s \"http://localhost:3000/api/search?q=react\")",
-      "Bash(curl -s \"http://localhost:3000/api/file?path=01-ai-ml/README.md\")"
+      "Bash(curl -s \"http://localhost:3000/api/file?path=01-ai-ml/README.md\")",
+      "Bash(node /tmp/full-scan.js)"
     ]
   }
 }

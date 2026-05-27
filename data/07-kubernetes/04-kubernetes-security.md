@@ -376,3 +376,8 @@ K8s security = paranoid apartment building
 |                                                                              |
 |  Core: least privilege at every layer. Assume every container compromised.   |
 +------------------------------------------------------------------------------+
+
+
+## Practical Example
+
+See code examples above for practical usage patterns.

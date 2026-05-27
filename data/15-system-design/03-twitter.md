@@ -888,3 +888,8 @@ Storage:
 **Twitter/X is like a global town square with personalized newspapers.** When you post, the town crier (fan-out worker) copies your message onto every follower's newspaper (timeline) — unless you're a celebrity, in which case people walk to your billboard (celebrity timeline) to read. The timeline is a pre-sorted list of 800 most recent postcards in a shoebox (Redis sorted set). Trending topics is like overhearing what everyone in the square is shouting about right now — with filters to ignore the same person shouting the same thing 100 times (abuse prevention).
 
 (End of file - total 583 lines)
+
+
+## Practical Example
+
+See code examples above for practical usage patterns.

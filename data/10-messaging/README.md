@@ -2,6 +2,43 @@
 
 The backbone of event-driven architecture. Covers message brokers, streaming platforms, event-driven patterns, message delivery semantics, idempotency, ordering guarantees, and their practical applications in building decoupled, scalable, and reliable distributed systems.
 
+## Messaging Architecture Overview
+
+```mermaid
+graph TB
+    A["Producer"] -->|Publish Event| B["Message Broker"]
+    B -->|Queue/Topic| C["Kafka"]
+    B -->|Exchange/Queue| D["RabbitMQ"]
+    B -->|SNS/SQS| E["AWS"]
+    C --> F["Partition 1"]
+    C --> G["Partition 2"]
+    D --> H["Consumer 1"]
+    D --> I["Consumer 2"]
+    E --> J["Subscriber A"]
+    E --> K["Subscriber B"]
+    F --> L["Consumer Group"]
+    G --> L
+    H --> M["Process"]
+    I --> M
+    J --> N["Handle Event"]
+    K --> N
+    style B fill:#ff7b72
+    style M fill:#3fb950
+    style N fill:#3fb950
+```
+
+## Message Delivery Patterns
+
+```mermaid
+graph LR
+    A["At Most Once"] --> B["Fire & Forget<br/>No Guarantees"]
+    C["At Least Once"] --> D["Acknowledge<br/>May Duplicate"]
+    E["Exactly Once"] --> F["Deduplication<br/>Idempotent"]
+    style B fill:#ff7b72
+    style D fill:#fad165
+    style F fill:#3fb950
+```
+
 ## Table of Contents
 
 - [Kafka](#kafka)

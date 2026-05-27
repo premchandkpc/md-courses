@@ -1,5 +1,17 @@
 # Advanced TypeScript Types and Patterns
 
+
+## Overview
+
+```mermaid
+graph TB
+    A["Concept"] --> B["Implementation"]
+    B --> C["Optimization"]
+    C --> D["Production"]
+    style D fill:#3fb950
+```
+
+
 ## Table of Contents
 
 1. [1. Branded Types for Type Safety](#1-branded-types-for-type-safety)

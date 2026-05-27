@@ -514,3 +514,8 @@ Software queues per-CPU, hardware queues per-device queue. Mapping sw → hw via
 > - **mmap** = pin the book page to the wall. Read it whenever without asking. But if you write on it, the librarian must re-file it.
 > - **Direct I/O** = grab the book and take it to your own desk. No reading table used. You handle the filing.
 > - **Huge pages** = serving entire chapters on a single placard instead of 512 separate index cards (TLB entries).
+
+
+## Practical Example
+
+See code examples above for practical usage patterns.

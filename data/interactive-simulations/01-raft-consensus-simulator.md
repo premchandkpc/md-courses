@@ -1,5 +1,16 @@
 # Raft Consensus Algorithm — Interactive Simulator
 
+
+## Overview
+
+```mermaid
+graph TB
+    A["Input"] --> B["Process"]
+    B --> C["Output"]
+    style C fill:#3fb950
+```
+
+
 A step-by-step walkthrough of Raft leader election, log replication, and failure recovery.
 
 ## Quick Reference
@@ -456,3 +467,8 @@ Verify: No command is lost (previously committed entries)
 5. **Commit rule**: Safe to commit only when majority replicates
 
 **Real-world**: Used in etcd, Consul, TiDB, Kafka (KIP-500)
+
+
+## Practical Example
+
+See code examples above for practical usage patterns.

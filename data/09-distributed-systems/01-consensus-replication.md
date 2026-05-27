@@ -413,3 +413,8 @@ If NO  → Entry stays in log but not applied
 | Leader crashes | Entry in 1 follower | New leader may not have it |
 | 3/5 replicas down | 2/5 can't quorum | Wait for replica recovery |
 
+
+
+## Practical Example
+
+See code examples above for practical usage patterns.

@@ -996,3 +996,20 @@ Key takeaways:
 ---
 
 **Total lines: 750+**
+
+
+## Workflow
+
+```mermaid
+sequenceDiagram
+    actor User
+    box Stage 1
+        participant A as Step A
+    end
+    box Stage 2
+        participant B as Step B
+    end
+    User->>A: Start
+    A->>B: Process
+    B-->>User: Result
+```

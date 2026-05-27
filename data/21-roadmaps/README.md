@@ -4,6 +4,43 @@ Roadmaps are **structured learning paths** for engineering career progression. T
 
 **Related**: [Backend](backend/README.md) · [Distributed Systems](distributed-systems/README.md) · [Staff Engineer](staff-engineer/README.md) · [System Design](../15-system-design/README.md)
 
+## Career Progression Paths
+
+```mermaid
+graph TB
+    A["Entry Level"] --> B["Junior Engineer"]
+    B --> C["Mid-Level Engineer"]
+    C --> D["Senior Engineer"]
+    D --> E["Staff+ Engineer"]
+    E --> F["Principal/Architect"]
+    
+    B --> G["Backend Track"]
+    B --> H["Frontend Track"]
+    B --> I["Full Stack Track"]
+    B --> J["DevOps/Cloud Track"]
+    B --> K["ML Engineer Track"]
+    
+    C --> L["Team Lead"]
+    D --> M["Architect Role"]
+    D --> N["Manager Track"]
+    
+    style A fill:#ff7b72
+    style F fill:#3fb950
+```
+
+## Skill Development Journey
+
+```mermaid
+graph LR
+    A["Fundamentals<br/>1-2 years"] --> B["Core Competency<br/>2-4 years"]
+    B --> C["Specialization<br/>4-6 years"]
+    C --> D["Leadership<br/>6+ years"]
+    D --> E["Strategic Impact<br/>10+ years"]
+    
+    style A fill:#a5d6ff
+    style E fill:#3fb950
+```
+
 ---
 
 ## Table of Contents

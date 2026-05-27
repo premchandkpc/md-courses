@@ -384,3 +384,8 @@ env.setRestartStrategy(RestartStrategies.exponentialDelayRestart(
 ## Simplest Mental Model
 
 **Stream processing handles an infinite series of events without storing them all.** Kafka Streams turns Kafka topics into living tables — every message is an update to a key-value store. Flink breaks streams into tiny time-based batches (windows) with guaranteed consistency via checkpoints. **Both solve: "process data as it arrives, not later."** Use Kafka Streams when already in Kafka ecosystem; use Flink for complex event-time, large state, or batch + stream unification.
+
+
+## Practical Example
+
+See code examples above for practical usage patterns.

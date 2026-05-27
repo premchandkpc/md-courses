@@ -4,6 +4,47 @@ Software engineering is the **disciplined application of engineering principles*
 
 **Related**: [Software Architecture](../17-software-architecture/README.md) · [Testing](../19-testing/README.md) · [System Design](../15-system-design/README.md) · [Microservices](../16-microservices/README.md)
 
+## Software Development Lifecycle
+
+```mermaid
+graph TB
+    A["Requirement"] --> B["Design"]
+    B --> C["Implementation"]
+    C --> D["Testing"]
+    D --> E["Code Review"]
+    E -->|Approved| F["Merge"]
+    E -->|Changes Needed| C
+    F --> G["Deploy"]
+    G --> H["Monitor"]
+    H -->|Issues| I["Debug & Fix"]
+    I --> C
+    
+    style A fill:#4a8bc2
+    style G fill:#3fb950
+```
+
+## Engineering Pillars
+
+```mermaid
+graph TB
+    A["Software Engineering"] --> B["Clean Code"]
+    A --> C["Testing"]
+    A --> D["Design"]
+    A --> E["Collaboration"]
+    
+    B --> B1["Readability"]
+    B --> B2["Maintainability"]
+    C --> C1["Unit Tests"]
+    C --> C2["Integration Tests"]
+    C --> C3["E2E Tests"]
+    D --> D1["SOLID Principles"]
+    D --> D2["Design Patterns"]
+    E --> E1["Code Review"]
+    E --> E2["Documentation"]
+    
+    style A fill:#ff7b72
+```
+
 ---
 
 ## Table of Contents

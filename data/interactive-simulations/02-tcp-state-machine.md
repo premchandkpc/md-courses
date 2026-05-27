@@ -1,5 +1,16 @@
 # TCP Connection State Machine — Interactive Guide
 
+
+## Overview
+
+```mermaid
+graph TB
+    A["Input"] --> B["Process"]
+    B --> C["Output"]
+    style C fill:#3fb950
+```
+
+
 Visual walkthrough of TCP three-way handshake, data transmission, and connection teardown.
 
 ## The 11 TCP States

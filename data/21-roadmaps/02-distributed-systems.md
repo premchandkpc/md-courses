@@ -494,3 +494,8 @@ Ordered by difficulty, each with ~2–4 weeks of effort:
 ---
 
 > **Next step:** Start with [Topic 2: Raft Consensus Algorithm](#topic-2-raft-consensus-algorithm) and implement the key-value store. Move to [Topic 1](#topic-1-cap-theorem--consistency-models) for the theoretical lens to understand why Raft works. Then proceed linearly through Topics 3–10.
+
+
+## Practical Example
+
+See code examples above for practical usage patterns.

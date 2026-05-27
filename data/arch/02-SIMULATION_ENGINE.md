@@ -1,5 +1,16 @@
 # ⚡ Distributed Systems Simulation Engine — Architecture Blueprint
 
+
+## Overview
+
+```mermaid
+graph TB
+    A["Input"] --> B["Process"]
+    B --> C["Output"]
+    style C fill:#3fb950
+```
+
+
 > **Status:** v0.1 — Foundational  
 > **Owner:** Platform Architecture Team  
 > **Last Updated:** 2026-05-27
@@ -568,3 +579,8 @@ sim-engine replay recording.bin --time-scale 2.0
 ```
 
 The simulation engine runs in a **Web Worker** using compiled WASM (Go → TinyGo → WASM), communicating with the main thread via structured clone serialization at each tick. This keeps the UI responsive while the simulation computes.
+
+
+## Practical Example
+
+See code examples above for practical usage patterns.

@@ -1,5 +1,16 @@
 # Columnar Storage Formats
 
+
+## Overview
+
+```mermaid
+graph TB
+    A["Input"] --> B["Process"]
+    B --> C["Output"]
+    style C fill:#3fb950
+```
+
+
 ## Row vs Columnar Storage
 
 ### Row-Oriented Storage

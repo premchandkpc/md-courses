@@ -1,5 +1,16 @@
 # Circuit Breaker Pattern — Interactive State Machine
 
+
+## Overview
+
+```mermaid
+graph TB
+    A["Input"] --> B["Process"]
+    B --> C["Output"]
+    style C fill:#3fb950
+```
+
+
 Step-by-step walkthrough of circuit breaker states, transitions, and failure recovery.
 
 ## The 3 States
@@ -529,3 +540,13 @@ Common libraries:
 5. **Fail fast**: Return quickly so caller can use fallback
 
 Real-world impact: Netflix estimates circuit breakers prevent ~30% of outages.
+
+
+## Comparison Table
+
+| Aspect | Option A | Option B | Trade-off |
+| ---- | ---- | ---- | ---- |
+| Performance | High | Medium | Speed vs Simplicity |
+| Complexity | High | Low | Features vs Ease of Use |
+| Scalability | Excellent | Good | Horizontal vs Vertical |
+| Cost | High | Low | Features vs Budget |

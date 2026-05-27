@@ -1099,3 +1099,8 @@ log4j.logger.org.apache.flink.runtime.state=DEBUG
 - [Cloud Platforms](../../05-cloud/) — Data warehousing (Redshift, BigQuery)
 - [Backend](../../03-backend/) — Data service APIs
 - [Distributed Systems](../../09-distributed-systems/) — Scale and consistency
+
+
+## Practical Example
+
+See code examples above for practical usage patterns.

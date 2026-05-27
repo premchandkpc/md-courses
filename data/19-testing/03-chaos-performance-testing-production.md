@@ -1,5 +1,18 @@
 # Chaos & Performance Testing for Production Systems
 
+
+## Architecture Overview
+
+```mermaid
+graph LR
+    A["Profile"] --> B["Identify<br/>Hotspots"]
+    B --> C["Optimize"]
+    C --> D["Benchmark"]
+    D -->|Improved| E["Deploy"]
+    D -->|No improvement| B
+    style E fill:#3fb950
+```
+
 ## Table of Contents
 
 1. [Chaos Engineering Fundamentals](#chaos-engineering-fundamentals)

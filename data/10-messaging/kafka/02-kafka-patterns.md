@@ -314,3 +314,8 @@ sync.group.offsets.enabled: true
   Compacted topics → key-value storage.
   Transactions → atomic multi-topic writes.
 ```
+
+
+## Practical Example
+
+See code examples above for practical usage patterns.

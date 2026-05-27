@@ -1073,3 +1073,8 @@ TRANSIENT      =  "Don't take a photo of this field." Like a fingerprint
 ---
 
 **Next**: [Annotations & Reflection](10-annotations-reflection.md) — Meta-programming in Java
+
+
+## Practical Example
+
+See code examples above for practical usage patterns.

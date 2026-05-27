@@ -1726,3 +1726,8 @@ Elasticsearch:
 **Amazon is like a massive digital shopping mall with three layers: the storefront (product catalog + search + recommendations), the checkout counter (cart + order + payment), and the back warehouse (inventory + fulfillment + seller management).** The product catalog is like a giant library card catalog (Elasticsearch) that lets you find any product instantly and narrow down by color, brand, and price. The shopping cart follows you across devices like a personal shopper who remembers what you picked up on your phone and brings it to your desktop. The payment system is a paranoid accountant who checks every transaction for fraud three times before letting it through. When you click "Buy Now," it's like dropping a letter into a pneumatic tube that splits into multiple chutes — one for payment, one for the warehouse (pick the closest one to you), one for the seller's records — all happening in parallel within seconds.
 
 (End of file - total 836 lines)
+
+
+## Practical Example
+
+See code examples above for practical usage patterns.

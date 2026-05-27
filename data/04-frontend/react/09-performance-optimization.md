@@ -437,3 +437,8 @@ Track bundle size per commit with `bundlesize` or `size-limit` in CI.
 - [Backend](../../03-backend/) — API design and contracts
 - [Performance Engineering](../../18-performance-engineering/) — Browser rendering
 - [Testing](../../19-testing/) — E2E and component testing
+
+
+## Practical Example
+
+See code examples above for practical usage patterns.

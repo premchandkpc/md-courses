@@ -531,3 +531,8 @@ nft add rule inet filter input drop
 > - **eBPF** = a tiny inspector you can embed inside the mailbox sorting room itself. It can check every letter before it's even stamped, drop spam before it enters the building.
 > - **Network namespace** = a separate virtual post office for each tenant. They each have their own lo, their own eth, their own routing table.
 > - **veth pair** = a pneumatic tube connecting two post offices. Push a letter in one end, it pops out the other.
+
+
+## Practical Example
+
+See code examples above for practical usage patterns.

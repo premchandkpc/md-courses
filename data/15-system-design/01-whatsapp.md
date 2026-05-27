@@ -641,3 +641,8 @@ Network:
 ## Simplest Mental Model
 
 **WhatsApp is like a post office that never reads your letters.** The post office (server) knows who is home (online/offline), carries the letter to the right address, and knocks (push notification) if nobody answers. But the letters are in sealed armored envelopes (end-to-end encryption) — even the post office can't read them. Large groups are like mailing lists: either each letter is copied for every member (small group fan-out) or members check a bulletin board (large group fan-out).
+
+
+## Practical Example
+
+See code examples above for practical usage patterns.

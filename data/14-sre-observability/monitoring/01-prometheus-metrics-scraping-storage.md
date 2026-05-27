@@ -1,5 +1,16 @@
 # 01 Prometheus: Metrics, Scraping, and Storage
 
+
+## Overview
+
+```mermaid
+graph TB
+    A["Input"] --> B["Process"]
+    B --> C["Output"]
+    style C fill:#3fb950
+```
+
+
 ## Table of Contents
 
 1. [SECTION 1: NOOB EXPLANATION (Analogies)](#section-1-noob-explanation-analogies)

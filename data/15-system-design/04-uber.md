@@ -937,3 +937,8 @@ Cassandra:
 **Uber is like a real-time taxi dispatcher that knows where every driver is, predicts where riders will appear, and adjusts prices like an airline booking system.** The city is divided into a honeycomb of hexagons (H3). When you request a ride, dispatcher finds the nearest free driver in your hex and neighboring cells, sends them a ping, and the first to accept wins — like a game of "who can grab this fare?" Surge pricing is like a thermostat: when too many people want rides in one area but not enough drivers, the price goes up until more drivers arrive or fewer riders request.
 
 (End of file - total 576 lines)
+
+
+## Practical Example
+
+See code examples above for practical usage patterns.

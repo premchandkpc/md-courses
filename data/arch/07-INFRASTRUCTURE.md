@@ -857,3 +857,8 @@ ENTRYPOINT ["/server"]
 | AI Tutor | distroless/python3 | < 100MB |
 | Frontend | nginx:alpine | < 50MB |
 | Content Pipeline | distroless/node | < 80MB |
+
+
+## Practical Example
+
+See code examples above for practical usage patterns.

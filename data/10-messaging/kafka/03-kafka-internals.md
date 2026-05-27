@@ -659,3 +659,8 @@ kafka-features --bootstrap-server localhost:9092 --finalize-migration
 │                                                                   │
 └──────────────────────────────────────────────────────────────────┘
 ```
+
+
+## Practical Example
+
+See code examples above for practical usage patterns.

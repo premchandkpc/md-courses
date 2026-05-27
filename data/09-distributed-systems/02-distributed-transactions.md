@@ -357,3 +357,8 @@ Latency / Scalability:
 ## Simplest Mental Model
 
 **2PC is like asking everyone to promise before telling them to go — if anyone says no, nobody moves.** Everyone waits until they hear the final decision. **Saga is the opposite:** do each step, and if one fails, run cleanup for the ones that succeeded. **Outbox ensures events aren't lost** by writing them in the same DB transaction as the business change. Pick 2PC for strict atomicity; Saga for long-running flows where perfect consistency isn't required.
+
+
+## Practical Example
+
+See code examples above for practical usage patterns.

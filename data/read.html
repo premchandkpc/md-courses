@@ -26,10 +26,11 @@
   --font-mono:'JetBrains Mono','SF Mono','Fira Code',monospace;
   --shadow:0 1px 3px rgba(0,0,0,.3),0 1px 2px rgba(0,0,0,.2);
   --shadow-lg:0 4px 16px rgba(0,0,0,.4);
+  --font-size:15px;
 }
 body{
   font-family:var(--font-display);background:var(--bg);color:var(--fg);
-  height:100vh;overflow:hidden;font-size:15px;line-height:1.7;
+  height:100vh;overflow:hidden;font-size:var(--font-size);line-height:1.7;
   -webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;
 }
 .app{display:flex;height:100vh}
@@ -43,19 +44,20 @@ body{
 .sidebar.collapsed{width:48px}
 .sidebar-header{
   display:flex;align-items:center;justify-content:space-between;
-  padding:14px 14px 12px;flex-shrink:0;
+  padding:14px 14px 12px;flex-shrink:0;gap:6px;
 }
 .sidebar-header h2{
   font-size:13px;font-weight:700;letter-spacing:.04em;
   color:var(--fg2);text-transform:uppercase;
-  white-space:nowrap;overflow:hidden;
+  white-space:nowrap;overflow:hidden;flex:1;
 }
-.collapse-btn{
+.sidebar-toolbar{display:flex;gap:4px}
+.sidebar-btn{
   background:none;border:none;color:var(--fg3);cursor:pointer;
   padding:2px 6px;border-radius:var(--radius-sm);font-size:14px;
-  line-height:1;transition:all .15s;
+  line-height:1;transition:all .15s;flex-shrink:0;
 }
-.collapse-btn:hover{background:var(--bg4);color:var(--fg)}
+.sidebar-btn:hover{background:var(--bg4);color:var(--fg)}
 .sidebar-search{
   padding:0 10px 8px;flex-shrink:0;
 }
@@ -70,6 +72,20 @@ body{
   padding:3px 14px 5px;font-size:11px;color:var(--fg3);
   border-bottom:1px solid var(--border);flex-shrink:0;display:none;
 }
+.recent-label{
+  padding:10px 14px 6px;font-size:10px;font-weight:700;text-transform:uppercase;
+  letter-spacing:.05em;color:var(--fg3);
+}
+.recent-list{
+  padding:0 8px 8px;border-bottom:1px solid var(--border);display:none;
+}
+.recent-list.show{display:block}
+.recent-item{
+  padding:4px 8px;font-size:11px;color:var(--fg2);cursor:pointer;
+  border-radius:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  transition:all .12s;
+}
+.recent-item:hover{background:var(--bg4);color:var(--fg)}
 .tree-scroll{flex:1;overflow-y:auto;padding:6px 0}
 .tree-item{
   display:flex;align-items:center;padding:4px 10px;cursor:pointer;
@@ -83,6 +99,9 @@ body{
 .tree-item.file{padding-left:22px}
 .tree-item.hidden{display:none}
 .tree-item .hl{background:var(--yellow);color:#000;padding:0 2px;border-radius:2px;font-weight:600}
+.tree-item .bookmark-icon{font-size:10px;margin-left:auto;opacity:0;transition:opacity .12s}
+.tree-item:hover .bookmark-icon{opacity:.5}
+.tree-item.bookmarked .bookmark-icon{opacity:1;color:var(--yellow)}
 .tree-toggle{
   cursor:pointer;color:var(--fg3);font-size:9px;width:14px;
   text-align:center;flex-shrink:0;transition:transform .15s;
@@ -91,10 +110,8 @@ body{
 .tree-children{padding-left:14px;display:none}
 .tree-children.open{display:block}
 
-/* ─── Content Header Bar ─── */
+/* ─── Content Header ─── */
 .content{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0;position:relative}
-
-/* Scroll progress bar at top */
 .scroll-progress{
   position:absolute;top:0;left:0;right:0;height:2px;z-index:20;
   background:var(--border);pointer-events:none;
@@ -103,13 +120,16 @@ body{
   height:100%;width:0%;background:linear-gradient(90deg,var(--accent),var(--purple));
   transition:width .1s linear;border-radius:0 1px 1px 0;
 }
-
 .content-header{
   padding:12px 28px;border-bottom:1px solid var(--border);flex-shrink:0;
   background:var(--bg2);position:relative;z-index:10;
+  display:flex;justify-content:space-between;align-items:flex-start;gap:16px;
+  flex-wrap:wrap;
 }
+.header-left{flex:1;min-width:0}
+.header-right{display:flex;gap:12px;flex-wrap:wrap}
 
-/* Domain badge row */
+/* ─── Domain badge ─── */
 .domain-row{
   display:flex;align-items:center;gap:8px;margin-bottom:6px;
 }
@@ -124,7 +144,7 @@ body{
   width:6px;height:6px;border-radius:50%;display:inline-block;
 }
 
-/* Breadcrumb */
+/* ─── Breadcrumb ─── */
 .breadcrumb{
   display:flex;align-items:center;gap:4px;flex-wrap:wrap;
   font-size:11px;color:var(--fg3);font-family:var(--font-mono);
@@ -136,24 +156,23 @@ body{
 .breadcrumb .seg:hover{color:var(--accent);background:var(--bg4)}
 .breadcrumb .sep{color:var(--border-light);font-size:9px;font-weight:700}
 
-/* Title row */
+/* ─── Title ─── */
 .title-row{
   display:flex;align-items:flex-start;justify-content:space-between;gap:12px;
-  margin-top:2px;
+  margin-top:2px;flex-wrap:wrap;width:100%;
 }
 .title-area{min-width:0;flex:1}
 .title-area h1{
   font-size:20px;font-weight:800;letter-spacing:-.02em;line-height:1.3;
-  color:var(--fg);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  color:var(--fg);
 }
 .title-area .subtitle{
   font-size:12px;color:var(--fg3);margin-top:2px;
-  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
 }
 
-/* File stats */
+/* ─── File Stats ─── */
 .file-stats{
-  display:flex;gap:8px;flex-shrink:0;align-items:center;
+  display:flex;gap:8px;flex-shrink:0;align-items:center;flex-wrap:wrap;
 }
 .file-stats .stat{
   display:flex;align-items:center;gap:4px;
@@ -162,10 +181,23 @@ body{
   border:1px solid var(--border);white-space:nowrap;
 }
 
-/* Layer toggles row */
+/* ─── Controls ─── */
+.header-controls{
+  display:flex;gap:8px;align-items:center;flex-wrap:wrap;
+}
+.control-btn{
+  padding:6px 12px;border:1px solid var(--border);border-radius:var(--radius-sm);
+  background:var(--bg3);color:var(--fg2);cursor:pointer;font-size:11px;
+  font-family:var(--font-display);transition:all .12s;
+}
+.control-btn:hover{border-color:var(--border-light);background:var(--bg4);color:var(--fg)}
+.control-btn.active{background:var(--accent);color:#000;border-color:var(--accent);font-weight:600}
+
+/* ─── Layer Toggles ─── */
 .toggles-row{
   display:flex;align-items:center;justify-content:space-between;gap:12px;
   margin-top:8px;padding-top:8px;border-top:1px solid var(--border);
+  flex-wrap:wrap;width:100%;
 }
 .toggles-label{
   font-size:10px;font-weight:600;text-transform:uppercase;
@@ -177,16 +209,9 @@ body{
   background:var(--bg3);color:var(--fg3);cursor:pointer;font-size:10px;
   font-weight:600;letter-spacing:.03em;text-transform:uppercase;
   transition:all .18s cubic-bezier(.4,0,.2,1);font-family:var(--font-display);
-  position:relative;overflow:hidden;
-}
-.layer-btn::before{
-  content:'';position:absolute;inset:0;border-radius:20px;
-  opacity:0;transition:opacity .18s;
 }
 .layer-btn:hover{border-color:var(--border-light);color:var(--fg2);background:var(--bg4)}
 .layer-btn.on{color:#000;font-weight:700;border-color:transparent}
-.layer-btn.on::before{opacity:1}
-.layer-btn.on span{position:relative;z-index:1}
 .layer-btn.l1.on{background:#4a8bc2}
 .layer-btn.l2.on{background:var(--green)}
 .layer-btn.l3.on{background:var(--purple)}
@@ -210,9 +235,8 @@ body{
 .start-screen h1{font-size:30px;font-weight:800;letter-spacing:-.02em}
 .start-screen p{color:var(--fg2);max-width:440px;font-size:15px;line-height:1.6}
 
-/* ═══ TYPOGRAPHIC SCALE ═══ */
-.md{font-size:15px;line-height:1.75;color:var(--fg)}
-
+/* ═══ MARKDOWN STYLING ═══ */
+.md{font-size:var(--font-size);line-height:1.75;color:var(--fg)}
 .md h1{
   font-size:28px;font-weight:800;margin:32px 0 12px;letter-spacing:-.025em;
   padding-bottom:10px;border-bottom:2px solid var(--border);
@@ -225,7 +249,7 @@ body{
 }
 .md h2{
   font-size:20px;font-weight:700;margin:28px 0 10px;letter-spacing:-.015em;
-  padding-left:0;color:var(--fg);
+  color:var(--fg);
 }
 .md h3{
   font-size:17px;font-weight:600;margin:22px 0 8px;color:var(--fg);
@@ -236,29 +260,22 @@ body{
 }
 .md h5{font-size:13px;font-weight:600;margin:12px 0 4px;color:var(--fg2)}
 .md h6{font-size:12px;font-weight:600;margin:10px 0 4px;color:var(--fg3);text-transform:uppercase;letter-spacing:.05em}
-
 .md p{margin:9px 0;color:var(--fg)}
 .md ul,.md ol{margin:8px 0;padding-left:24px}
 .md li{margin:4px 0;line-height:1.7}
 .md li::marker{color:var(--fg3)}
 .md strong{color:#fff;font-weight:600}
 .md em{color:var(--fg2);font-style:italic}
-
-/* ─── Links ─── */
 .md a{
   color:var(--accent);text-decoration:none;cursor:pointer;
   transition:color .12s;font-weight:500;
 }
 .md a:hover{color:var(--accent-hover);text-decoration:underline}
-
-/* ─── Inline Code ─── */
 .md code{
   font-family:var(--font-mono);background:var(--code-bg);padding:2px 7px;
   border-radius:4px;font-size:13px;color:var(--green);
   border:1px solid rgba(52,211,149,.12);
 }
-
-/* ─── Code Blocks ─── */
 .md pre{
   background:var(--code-bg);padding:16px;border-radius:var(--radius);
   overflow-x:auto;margin:14px 0;border:1px solid var(--border);
@@ -282,19 +299,14 @@ body{
 }
 .md pre .copy-btn:hover{background:var(--bg5);color:var(--fg);border-color:var(--border-light)}
 .md pre:hover .copy-btn{opacity:1}
-
-/* ─── Blockquotes ─── */
 .md blockquote{
   border-left:3px solid var(--accent);padding:10px 18px;margin:14px 0;
   background:linear-gradient(135deg,var(--accent) 0%,var(--accent) 3px,var(--bg3) 3px);
   border-radius:0 var(--radius-sm) var(--radius-sm) 0;
-  position:relative;
 }
 .md blockquote p{color:var(--fg2);margin:5px 0;font-size:14px;}
 .md blockquote p:first-child{margin-top:0}
 .md blockquote p:last-child{margin-bottom:0}
-
-/* ─── Tables ─── */
 .md table{
   border-collapse:separate;border-spacing:0;width:100%;
   margin:14px 0;border:1px solid var(--border);border-radius:var(--radius);
@@ -312,14 +324,10 @@ body{
 }
 .md tr:last-child td{border-bottom:none}
 .md tr:nth-child(even) td{background:var(--bg2)}
-
-/* ─── H Rule ─── */
 .md hr{
   border:none;height:1px;background:linear-gradient(90deg,transparent,var(--border),transparent);
   margin:28px 0;
 }
-
-/* ─── Mermaid ─── */
 .md .mermaid-wrap{
   display:flex;justify-content:center;margin:20px 0;
   padding:20px;background:var(--bg3);border-radius:var(--radius);
@@ -332,14 +340,10 @@ body{
   from{opacity:0;transform:translateY(14px)}
   to{opacity:1;transform:translateY(0)}
 }
-
-/* ─── Images ─── */
 .md img{
   max-width:100%;border-radius:var(--radius);
-  border:1px solid var(--border);margin:14px 0;
+  border:1px solid var(--border);margin:14px 0;cursor:zoom-in;
 }
-
-/* ─── Layer Sections ─── */
 .md .layer-section{transition:opacity .3s,max-height .35s cubic-bezier(.4,0,.2,1);overflow:hidden}
 .md .layer-section.hidden-l{opacity:0;max-height:0;margin:0;padding:0}
 .md .layer-label{
@@ -352,56 +356,15 @@ body{
 .md .layer-label.l3{background:var(--purple);color:#fff}
 .md .layer-label.l4{background:var(--orange);color:#000}
 .md .layer-label.l5{background:var(--pink);color:#000}
+.md .anchor-link{
+  opacity:0;margin-left:6px;font-size:14px;color:var(--fg3);
+  text-decoration:none!important;transition:opacity .12s;font-weight:400;
+}
+.md h1:hover .anchor-link,.md h2:hover .anchor-link,.md h3:hover .anchor-link,
+.md h4:hover .anchor-link,.md h5:hover .anchor-link,.md h6:hover .anchor-link{opacity:1}
+.md .anchor-link:hover{color:var(--accent)!important}
 
-/* ─── Comparison Cards ─── */
-.md .comp-row{
-  display:flex;gap:12px;margin:14px 0;flex-wrap:wrap;
-}
-.md .comp-card{
-  flex:1;min-width:170px;padding:16px;border:1px solid var(--border);
-  border-radius:var(--radius);background:var(--bg3);
-  transition:transform .15s,box-shadow .15s;
-}
-.md .comp-card:hover{transform:translateY(-3px);box-shadow:var(--shadow-lg)}
-.md .comp-card h4{margin:0 0 6px;font-size:14px;font-weight:600;text-transform:none;letter-spacing:0;color:var(--fg)}
-.md .comp-card p{font-size:13px;color:var(--fg2);margin:0;line-height:1.5}
-
-/* ─── State Machine Widget ─── */
-.state-machine{margin:16px 0}
-.state-machine svg{width:100%;max-height:280px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius)}
-.sm-controls{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
-.sm-btn{
-  padding:6px 14px;border:1px solid var(--border);border-radius:5px;
-  background:var(--bg3);color:var(--fg);cursor:pointer;font-size:12px;
-  transition:all .12s;font-family:var(--font-display);
-}
-.sm-btn.active{background:var(--accent);color:#000;border-color:var(--accent);font-weight:600}
-.sm-btn.err{border-color:var(--red);color:var(--red)}
-.sm-btn:hover{border-color:var(--border-light)}
-.sm-state{
-  display:inline-block;padding:2px 8px;border-radius:4px;
-  font-size:12px;font-weight:700;
-}
-.sm-state.closed{background:var(--green);color:#000}
-.sm-state.open{background:var(--red);color:#fff}
-.sm-state.half{background:var(--yellow);color:#000}
-
-/* ─── Flow Steps ─── */
-.flow-step{
-  display:flex;align-items:flex-start;gap:12px;padding:10px 12px;
-  margin:6px 0;border:1px solid transparent;border-radius:var(--radius);
-  transition:all .25s;
-}
-.flow-step .step-num{
-  width:26px;height:26px;border-radius:50%;background:var(--bg4);
-  display:flex;align-items:center;justify-content:center;
-  font-size:12px;font-weight:700;flex-shrink:0;color:var(--fg3);
-}
-.flow-step.active{border-color:var(--accent);background:var(--accent);opacity:.08}
-.flow-step.active .step-num{background:var(--accent);color:#000}
-.flow-step.done .step-num{background:var(--green);color:#000}
-
-/* ─── TOC ─── */
+/* ─── TOC Sidebar ─── */
 .toc-sidebar{
   width:210px;background:var(--bg2);border-left:1px solid var(--border);
   padding:12px 0;overflow-y:auto;flex-shrink:0;display:none;
@@ -417,53 +380,7 @@ body{
 .toc-item.h2{padding-left:16px}
 .toc-item.h3{padding-left:26px;font-size:11px;color:var(--fg3)}
 
-/* ─── Scrollbar ─── */
-::-webkit-scrollbar{width:6px;height:6px}
-::-webkit-scrollbar-track{background:transparent}
-::-webkit-scrollbar-thumb{background:var(--bg4);border-radius:3px}
-::-webkit-scrollbar-thumb:hover{background:var(--border-light)}
-
-/* ─── Loading ─── */
-@keyframes pulse{
-  0%,100%{opacity:.4}50%{opacity:.8}
-}
-.loading{animation:pulse 1.5s ease-in-out infinite;color:var(--fg3)}
-
-/* ─── Responsive ─── */
-@media(max-width:900px){
-  .sidebar{width:220px}
-  .toc-sidebar{display:none!important}
-  .content-body{padding:16px 18px 50px}
-  .content-header{padding:12px 18px}
-  .title-area h1{font-size:17px}
-  .file-stats .stat{font-size:9px;padding:2px 6px}
-  .toggles-row{flex-wrap:wrap;gap:6px}
-}
-
-/* ─── Back to Top ─── */
-.back-top{
-  position:fixed;bottom:24px;right:24px;z-index:100;
-  width:40px;height:40px;border-radius:50%;
-  background:var(--bg4);border:1px solid var(--border);
-  color:var(--fg2);cursor:pointer;font-size:16px;
-  display:flex;align-items:center;justify-content:center;
-  opacity:0;transform:translateY(12px);
-  transition:all .2s cubic-bezier(.4,0,.2,1);
-  box-shadow:var(--shadow);
-}
-.back-top.show{opacity:1;transform:translateY(0)}
-.back-top:hover{background:var(--accent);color:#000;border-color:var(--accent);transform:translateY(-2px)}
-
-/* ─── Heading Anchors ─── */
-.md .anchor-link{
-  opacity:0;margin-left:6px;font-size:14px;color:var(--fg3);
-  text-decoration:none!important;transition:opacity .12s;font-weight:400;
-}
-.md h1:hover .anchor-link,.md h2:hover .anchor-link,.md h3:hover .anchor-link,
-.md h4:hover .anchor-link,.md h5:hover .anchor-link,.md h6:hover .anchor-link{opacity:1}
-.md .anchor-link:hover{color:var(--accent)!important}
-
-/* ─── Image Lightbox ─── */
+/* ─── Lightbox ─── */
 .lightbox{
   position:fixed;inset:0;z-index:1000;background:rgba(0,0,0,.85);
   display:flex;align-items:center;justify-content:center;
@@ -478,19 +395,24 @@ body{
 }
 .lightbox .lb-close:hover{opacity:1}
 
-/* ─── Keyboard Shortcuts Panel ─── */
-.kb-toggle{
-  position:fixed;bottom:24px;right:72px;z-index:100;
+/* ─── Floating Controls ─── */
+.floating-controls{
+  position:fixed;bottom:24px;right:24px;z-index:100;
+  display:flex;flex-direction:column;gap:8px;align-items:flex-end;
+}
+.floating-btn{
   width:40px;height:40px;border-radius:50%;
   background:var(--bg4);border:1px solid var(--border);
-  color:var(--fg3);cursor:pointer;font-size:14px;
+  color:var(--fg2);cursor:pointer;font-size:16px;
   display:flex;align-items:center;justify-content:center;
   opacity:0;transform:translateY(12px);
   transition:all .2s cubic-bezier(.4,0,.2,1);
-  box-shadow:var(--shadow);font-family:var(--font-mono);font-weight:600;
+  box-shadow:var(--shadow);
 }
-.kb-toggle.show{opacity:1;transform:translateY(0)}
-.kb-toggle:hover{background:var(--bg5);color:var(--fg);border-color:var(--border-light)}
+.floating-btn.show{opacity:1;transform:translateY(0)}
+.floating-btn:hover{background:var(--accent);color:#000;border-color:var(--accent);transform:translateY(-2px)}
+
+/* ─── Keyboard Panel ─── */
 .kb-panel{
   position:fixed;bottom:72px;right:24px;z-index:100;
   background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);
@@ -503,12 +425,27 @@ body{
 .kb-row .key{font-family:var(--font-mono);font-size:10px;font-weight:600;padding:2px 6px;background:var(--bg4);border:1px solid var(--border);border-radius:3px;color:var(--fg2);white-space:nowrap}
 .kb-row .desc{color:var(--fg2)}
 
-/* ─── Smooth Scroll ─── */
+/* ─── Scrollbar & General ─── */
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--bg4);border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:var(--border-light)}
 .content-body{scroll-behavior:smooth}
 
 @media(prefers-reduced-motion:reduce){
   *,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}
 }
+
+@media(max-width:900px){
+  .sidebar{width:220px}
+  .toc-sidebar{display:none!important}
+  .content-body{padding:16px 18px 50px}
+  .content-header{padding:12px 18px;flex-direction:column}
+  .title-area h1{font-size:17px}
+  .file-stats .stat{font-size:9px;padding:2px 6px}
+  .toggles-row{flex-wrap:wrap;gap:6px}
+}
+
 @media(max-width:640px){
   .sidebar{width:100%;position:fixed;z-index:10;height:100vh}
   .sidebar.collapsed{width:0;border:none}
@@ -523,12 +460,17 @@ body{
   <div class="sidebar" id="sidebar">
     <div class="sidebar-header">
       <h2>Explorer</h2>
-      <button class="collapse-btn" onclick="toggleSidebar()" title="Toggle sidebar">◀</button>
+      <div class="sidebar-toolbar">
+        <button class="sidebar-btn" id="bookmarkToggle" title="Bookmarks">⭐</button>
+        <button class="sidebar-btn" id="collapseSidebar" title="Toggle sidebar">◀</button>
+      </div>
     </div>
     <div class="sidebar-search">
       <input type="text" id="search" placeholder="Search files..." autocomplete="off">
     </div>
     <div class="search-status" id="searchStatus"></div>
+    <div class="recent-label">Recent</div>
+    <div class="recent-list" id="recentList"></div>
     <div class="tree-scroll" id="tree"></div>
   </div>
 
@@ -536,30 +478,40 @@ body{
   <div class="content">
     <div class="scroll-progress" id="scrollProgress"><div class="fill" id="scrollFill"></div></div>
     <div class="content-header">
-      <div class="domain-row" id="domainRow" style="display:none">
-        <span class="domain-badge" id="domainBadge"><span class="dot" style="background:var(--accent)"></span><span id="domainName">domain</span></span>
-      </div>
-      <div class="breadcrumb" id="breadcrumb"></div>
-      <div class="title-row">
-        <div class="title-area">
-          <h1 id="fileTitle"></h1>
-          <div class="subtitle" id="fileSubtitle"></div>
+      <div class="header-left">
+        <div class="domain-row" id="domainRow" style="display:none">
+          <span class="domain-badge" id="domainBadge"><span class="dot"></span><span id="domainName"></span></span>
         </div>
+        <div class="breadcrumb" id="breadcrumb"></div>
+        <div class="title-row">
+          <div class="title-area">
+            <h1 id="fileTitle"></h1>
+            <div class="subtitle" id="fileSubtitle"></div>
+          </div>
+        </div>
+      </div>
+      <div class="header-right">
         <div class="file-stats" id="fileStats" style="display:none">
           <span class="stat">📝 <span id="wordCount">0</span> words</span>
-          <span class="stat">⏱ <span id="readingTime">0</span> min read</span>
+          <span class="stat">⏱ <span id="readingTime">0</span> min</span>
           <span class="stat">📑 <span id="sectionCount">0</span> sections</span>
         </div>
-      </div>
-      <div class="toggles-row">
-        <span class="toggles-label">Focus:</span>
-        <div class="layer-toggles" id="layerToggles">
-          <button class="layer-btn l1 on" data-layer="1"><span>L1 · Beginner</span></button>
-          <button class="layer-btn l2 on" data-layer="2"><span>L2 · Intermediate</span></button>
-          <button class="layer-btn l3 on" data-layer="3"><span>L3 · Advanced</span></button>
-          <button class="layer-btn l4 on" data-layer="4"><span>L4 · Production</span></button>
-          <button class="layer-btn l5 on" data-layer="5"><span>L5 · Staff</span></button>
+        <div class="header-controls">
+          <button class="control-btn" id="zoomOut" title="Decrease font size">A−</button>
+          <button class="control-btn" id="zoomReset" title="Reset font size">A</button>
+          <button class="control-btn" id="zoomIn" title="Increase font size">A+</button>
+          <button class="control-btn" id="fullscreenBtn" title="Fullscreen reading">⛶</button>
         </div>
+      </div>
+    </div>
+    <div class="toggles-row" id="togglesRow" style="display:none;padding:8px 28px;border-bottom:1px solid var(--border)">
+      <span class="toggles-label">Focus:</span>
+      <div class="layer-toggles" id="layerToggles">
+        <button class="layer-btn l1 on" data-layer="1"><span>L1 · Beginner</span></button>
+        <button class="layer-btn l2 on" data-layer="2"><span>L2 · Intermediate</span></button>
+        <button class="layer-btn l3 on" data-layer="3"><span>L3 · Advanced</span></button>
+        <button class="layer-btn l4 on" data-layer="4"><span>L4 · Production</span></button>
+        <button class="layer-btn l5 on" data-layer="5"><span>L5 · Staff</span></button>
       </div>
     </div>
     <div id="start" class="start-screen">
@@ -573,27 +525,53 @@ body{
   </div>
 
   <div class="toc-sidebar" id="tocSidebar"></div>
-  <div class="lightbox" id="lightbox" onclick="closeLightbox()">
-    <button class="lb-close" onclick="closeLightbox()">✕</button>
+  <div class="lightbox" id="lightbox">
+    <button class="lb-close" data-action="closeLightbox">✕</button>
     <img id="lightboxImg" src="" alt="">
   </div>
-  <button class="back-top" id="backTop" onclick="document.getElementById('fileContent').scrollTo({top:0,behavior:'smooth'})" title="Back to top">↑</button>
-  <button class="kb-toggle" id="kbToggle" onclick="toggleKeyboardPanel()" title="Keyboard shortcuts">⌘</button>
+  <div class="floating-controls">
+    <button class="floating-btn" id="backTopBtn" title="Back to top">↑</button>
+    <button class="floating-btn" id="kbToggle" title="Keyboard shortcuts">⌘</button>
+  </div>
   <div class="kb-panel" id="kbPanel">
     <h3>Keyboard Shortcuts</h3>
-    <div class="kb-row"><span class="desc">Search files</span><span class="key">⌘K</span></div>
-    <div class="kb-row"><span class="desc">Toggle sidebar</span><span class="key">⌘B</span></div>
-    <div class="kb-row"><span class="desc">Back to top</span><span class="key">⌘↑</span></div>
-    <div class="kb-row"><span class="desc">Next file</span><span class="key">⌘↓</span></div>
-    <div class="kb-row"><span class="desc">Toggle layers</span><span class="key">1-5</span></div>
-    <div class="kb-row"><span class="desc">Close panel</span><span class="key">Esc</span></div>
+    <div class="kb-row"><span class="desc">Search</span><span class="key">⌘K</span></div>
+    <div class="kb-row"><span class="desc">Sidebar</span><span class="key">⌘B</span></div>
+    <div class="kb-row"><span class="desc">Top</span><span class="key">⌘↑</span></div>
+    <div class="kb-row"><span class="desc">Zoom −</span><span class="key">⌘−</span></div>
+    <div class="kb-row"><span class="desc">Zoom +</span><span class="key">⌘+</span></div>
+    <div class="kb-row"><span class="desc">Fullscreen</span><span class="key">⌘F</span></div>
+    <div class="kb-row"><span class="desc">Layers 1−5</span><span class="key">1−5</span></div>
   </div>
 </div>
 
 <script>
-const API='/api';let treeData=[],flatFiles=[],currentContent='',currentPath='',tocItems=[];
+const CONFIG = {
+  api: '/api',
+  debounceMs: 80,
+  searchHighlightMs: 2000,
+  scrollProgressThreshold: 300,
+  treeDepthPx: 12,
+  zoomStep: 0.1,
+  zoomMin: 0.8,
+  zoomMax: 1.5,
+};
 
-const DOMAIN_ICONS={
+const STATE = {
+  treeData: [],
+  flatFiles: [],
+  currentContent: '',
+  currentPath: '',
+  tocItems: [],
+  searchTimeout: null,
+  zoomLevel: 1.0,
+  activeLayers: new Set(['1', '2', '3', '4', '5']),
+  bookmarks: new Set(),
+  recentFiles: [],
+  isFullscreen: false,
+};
+
+const DOMAIN_ICONS = {
   'ai-ml':'🤖','backend':'⚙️','cloud':'☁️','kubernetes':'☸️','databases':'🗄️',
   'messaging':'📨','sre-observability':'📊','microservices':'🔗','software-architecture':'🏗️',
   'interviews':'💼','production-stories':'🚨','software-engineering':'📐','foundations':'📐',
@@ -603,288 +581,662 @@ const DOMAIN_ICONS={
   'projects':'📦'
 };
 
-mermaid.initialize({
-  startOnLoad:false,theme:'dark',
-  themeVariables:{
-    background:'#18202a',primaryColor:'#60a5fa',primaryBorderColor:'#1e2a3a',
-    primaryTextColor:'#e3eaf0',lineColor:'#94a3b8',tertiaryColor:'#11161e',
-    fontSize:'14px',fontFamily:'Inter,system-ui,sans-serif'
+// ─── Initialization ───
+document.addEventListener('DOMContentLoaded', init);
+
+async function init() {
+  loadPersistentState();
+  attachEventDelegation();
+  mermaid.initialize({
+    startOnLoad: false,
+    theme: 'dark',
+    themeVariables: {
+      background: '#18202a',
+      primaryColor: '#60a5fa',
+      primaryBorderColor: '#1e2a3a',
+      primaryTextColor: '#e3eaf0',
+      lineColor: '#94a3b8',
+      tertiaryColor: '#11161e',
+      fontSize: '14px',
+      fontFamily: 'Inter,system-ui,sans-serif'
+    }
+  });
+  await loadTree();
+  renderTree();
+  renderRecentFiles();
+  attachTreeEvents();
+}
+
+// ─── State Persistence ───
+function loadPersistentState() {
+  const stored = localStorage.getItem('kb-state');
+  if (stored) {
+    try {
+      const data = JSON.parse(stored);
+      STATE.bookmarks = new Set(data.bookmarks || []);
+      STATE.recentFiles = data.recentFiles || [];
+      STATE.zoomLevel = data.zoomLevel || 1.0;
+      STATE.activeLayers = new Set(data.activeLayers || ['1', '2', '3', '4', '5']);
+    } catch (e) {
+      console.error('Failed to load state:', e);
+    }
+  }
+}
+
+function savePersistentState() {
+  const data = {
+    bookmarks: Array.from(STATE.bookmarks),
+    recentFiles: STATE.recentFiles.slice(0, 10),
+    zoomLevel: STATE.zoomLevel,
+    activeLayers: Array.from(STATE.activeLayers),
+  };
+  localStorage.setItem('kb-state', JSON.stringify(data));
+}
+
+// ─── Event Delegation ───
+function attachEventDelegation() {
+  document.addEventListener('click', (e) => {
+    const action = e.target.closest('[data-action]')?.dataset.action;
+    if (!action) return;
+
+    const actionMap = {
+      'closeLightbox': () => closeLightbox(),
+      'toggleBookmark': (el) => toggleBookmark(el.dataset.path),
+      'zoomOut': () => changeZoom(-CONFIG.zoomStep),
+      'zoomIn': () => changeZoom(CONFIG.zoomStep),
+      'zoomReset': () => changeZoom(0),
+      'fullscreen': () => toggleFullscreen(),
+    };
+
+    if (action in actionMap) {
+      actionMap[action](e.target.closest('[data-action]'));
+    }
+  });
+
+  document.addEventListener('keydown', (e) => {
+    const meta = e.metaKey || e.ctrlKey;
+    if (meta && e.key === 'k') { e.preventDefault(); document.getElementById('search').focus(); }
+    if (meta && e.key === 'b') { e.preventDefault(); toggleSidebar(); }
+    if (meta && e.key === 'ArrowUp') { e.preventDefault(); scrollContentToTop(); }
+    if (meta && e.key === '-') { e.preventDefault(); changeZoom(-CONFIG.zoomStep); }
+    if (meta && e.key === '+' || meta && e.key === '=') { e.preventDefault(); changeZoom(CONFIG.zoomStep); }
+    if (meta && e.key === 'f') { e.preventDefault(); toggleFullscreen(); }
+    if (e.key === 'Escape') { closeLightbox(); closeKeyboardPanel(); }
+    if (e.key >= '1' && e.key <= '5') { toggleLayer(e.key); }
+  });
+}
+
+// ─── Tree Loading & Rendering ───
+async function loadTree() {
+  try {
+    const r = await fetch(CONFIG.api + '/tree');
+    const d = await r.json();
+    STATE.treeData = d.tree || [];
+    flattenFiles(STATE.treeData);
+  } catch (e) {
+    console.error('Failed to load tree:', e);
+    document.getElementById('tree').innerHTML = '<div style="padding:14px;color:var(--fg3)">Failed to load</div>';
+  }
+}
+
+function flattenFiles(nodes, prefix = '') {
+  for (const n of nodes) {
+    const p = prefix ? prefix + '/' + n.name : n.name;
+    if (n.type === 'dir') {
+      flattenFiles(n.children || [], p);
+    } else {
+      STATE.flatFiles.push({ path: p, name: n.name });
+    }
+  }
+}
+
+function renderTree() {
+  const html = buildTreeHtml(STATE.treeData);
+  document.getElementById('tree').innerHTML = html;
+}
+
+function buildTreeHtml(nodes, depth = 0) {
+  let h = '';
+  for (const n of nodes) {
+    if (n.type === 'dir') {
+      const icon = DOMAIN_ICONS[n.name] || '📁';
+      h += `<div class="tree-item" style="padding-left:${depth * CONFIG.treeDepthPx}px">
+        <span class="tree-toggle open">▼</span>
+        <span class="icon">${icon}</span>
+        <span>${esc(n.name)}</span>
+      </div>
+      <div class="tree-children open">
+        ${buildTreeHtml(n.children || [], depth + 1)}
+      </div>`;
+    } else {
+      const isBookmarked = STATE.bookmarks.has(n.path);
+      h += `<div class="tree-item file" data-path="${esc(n.path)}" style="padding-left:${depth * CONFIG.treeDepthPx + 12}px">
+        <span class="icon">📄</span>
+        <span>${esc(n.name.replace(/\.md$/, ''))}</span>
+        <span class="bookmark-icon" data-action="toggleBookmark" data-path="${esc(n.path)}">${isBookmarked ? '⭐' : '☆'}</span>
+      </div>`;
+    }
+  }
+  return h;
+}
+
+function attachTreeEvents() {
+  document.querySelectorAll('.tree-toggle').forEach(el => {
+    el.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const ch = el.parentElement.nextElementSibling;
+      if (ch && ch.classList.contains('tree-children')) {
+        ch.classList.toggle('open');
+        el.textContent = ch.classList.contains('open') ? '▼' : '▶';
+      }
+    });
+  });
+
+  document.querySelectorAll('.tree-item.file').forEach(el => {
+    el.addEventListener('click', (e) => {
+      if (e.target.classList.contains('bookmark-icon')) return;
+      const p = el.dataset.path;
+      if (p.endsWith('.html')) {
+        window.open(p, '_blank');
+      } else {
+        loadFile(p);
+      }
+    });
+  });
+}
+
+// ─── Search ───
+const search = document.getElementById('search');
+search.addEventListener('input', () => {
+  clearTimeout(STATE.searchTimeout);
+  STATE.searchTimeout = setTimeout(doSearch, CONFIG.debounceMs);
+});
+search.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter' && STATE.currentContent) {
+    const q = search.value.trim();
+    if (q) scrollToFirstMatch(q);
   }
 });
 
-document.addEventListener('DOMContentLoaded',init);
-async function init(){await loadTree();setupSearch();setupLayers();renderStartScreen()}
+function doSearch() {
+  const q = search.value.toLowerCase().trim();
+  const st = document.getElementById('searchStatus');
 
-async function loadTree(){try{
-  const r=await fetch(API+'/tree'),d=await r.json();treeData=d.tree||[];
-  flattenFiles(treeData);renderTree(treeData)
-}catch{document.getElementById('tree').innerHTML='<div style="padding:14px;color:var(--fg3)">Failed to load</div>'}}
+  document.querySelectorAll('.tree-item').forEach(el => el.classList.remove('hidden'));
+  document.querySelectorAll('.tree-item .hl').forEach(el => el.outerHTML = el.textContent);
 
-function flattenFiles(nodes,prefix=''){
-  for(const n of nodes){const p=prefix?prefix+'/'+n.name:n.name
-    if(n.type==='dir')flattenFiles(n.children||[],p);else flatFiles.push({path:p,name:n.name})}
-}
+  if (!q) {
+    st.style.display = 'none';
+    return;
+  }
 
-function renderTree(nodes,depth=0){
-  let h=''
-  for(const n of nodes)
-    if(n.type==='dir'){
-      const icon=DOMAIN_ICONS[n.name]||'📁'
-      h+=`<div class="tree-item" style="padding-left:${depth*12}px"><span class="tree-toggle">▼</span><span class="icon">${icon}</span><span>${esc(n.name)}</span></div><div class="tree-children open">${renderTree(n.children||[],depth+1)}</div>`
-    } else
-      h+=`<div class="tree-item file" data-path="${esc(n.path)}" style="padding-left:${depth*12+12}px"><span class="icon">📄</span><span>${esc(n.name.replace(/\.md$/,''))}</span></div>`
-  return h
-}
+  const matches = STATE.flatFiles.filter(f => f.path.toLowerCase().includes(q));
+  document.querySelectorAll('.tree-item.file').forEach(el => {
+    const p = el.dataset.path;
+    el.classList.toggle('hidden', !(p && matches.some(m => m.path === p)));
+  });
 
-function attachTreeEvents(){
-  document.querySelectorAll('.tree-toggle').forEach(el=>{
-    el.addEventListener('click',e=>{
-      e.stopPropagation();
-      const ch=el.parentElement.nextElementSibling
-      if(ch&&ch.classList.contains('tree-children')){ch.classList.toggle('open')
-        el.textContent=ch.classList.contains('open')?'▼':'▶'}
-    })
-  })
-  document.querySelectorAll('.tree-item.file').forEach(el=>{
-    el.addEventListener('click',()=>{
-      const p=el.dataset.path
-      if(p.endsWith('.html'))window.open(p,'_blank');else loadFile(p)
-    })
-  })
-}
+  st.textContent = `${matches.length} result${matches.length !== 1 ? 's' : ''}`;
+  st.style.display = matches.length ? 'block' : 'none';
 
-function setupSearch(){
-  const input=document.getElementById('search')
-  input.addEventListener('input',()=>{clearTimeout(window._st);window._st=setTimeout(doSearch,80)})
-  input.addEventListener('keydown',e=>{if(e.key==='Enter'&&currentContent){const q=input.value.trim();if(q)scrollToFirstMatch(q)}})
-}
-
-function doSearch(){
-  const q=document.getElementById('search').value.toLowerCase().trim(),st=document.getElementById('searchStatus')
-  document.querySelectorAll('.tree-item').forEach(el=>el.classList.remove('hidden'))
-  document.querySelectorAll('.tree-item .hl').forEach(el=>el.outerHTML=el.textContent)
-  if(!q){st.style.display='none';return}
-  const matches=flatFiles.filter(f=>f.path.toLowerCase().includes(q))
-  document.querySelectorAll('.tree-item.file').forEach(el=>{const p=el.dataset.path;el.classList.toggle('hidden',!(p&&matches.some(m=>m.path===p)))})
-  st.textContent=`${matches.length} result${matches.length!==1?'s':''}`;st.style.display=matches.length?'block':'none'
-  const ql=q.length
-  document.querySelectorAll('.tree-item.file:not(.hidden)').forEach(el=>{
-    const sp=el.querySelector('span:last-child'),tx=sp.textContent,ix=tx.toLowerCase().indexOf(q)
-    if(ix!==-1)sp.innerHTML=esc(tx.slice(0,ix))+`<span class="hl">${esc(tx.slice(ix,ix+ql))}</span>`+esc(tx.slice(ix+ql))
-  })
-}
-
-function scrollToFirstMatch(q){
-  const body=document.getElementById('fileContent'),walker=document.createTreeWalker(body,NodeFilter.SHOW_TEXT,null,false)
-  let node;while(node=walker.nextNode())
-    if(node.textContent.toLowerCase().includes(q)){
-      node.parentElement.scrollIntoView({behavior:'smooth',block:'center'})
-      node.parentElement.style.background='rgba(251,191,36,.12)'
-      setTimeout(()=>{node.parentElement.style.background=''},2000);return
+  const ql = q.length;
+  document.querySelectorAll('.tree-item.file:not(.hidden)').forEach(el => {
+    const sp = el.querySelector('span:nth-child(2)');
+    const tx = sp.textContent;
+    const ix = tx.toLowerCase().indexOf(q);
+    if (ix !== -1) {
+      sp.innerHTML = esc(tx.slice(0, ix)) + `<span class="hl">${esc(tx.slice(ix, ix + ql))}</span>` + esc(tx.slice(ix + ql));
     }
+  });
 }
 
-function setupLayers(){document.querySelectorAll('.layer-btn').forEach(b=>b.addEventListener('click',()=>{b.classList.toggle('on');applyLayers()}))}
-
-function applyLayers(){
-  const a=new Set();document.querySelectorAll('.layer-btn.on').forEach(b=>a.add(b.dataset.layer))
-  document.querySelectorAll('.layer-section').forEach(el=>{el.classList.toggle('hidden-l',!a.has(el.dataset.layer))})
+function scrollToFirstMatch(q) {
+  const body = document.getElementById('fileContent');
+  const walker = document.createTreeWalker(body, NodeFilter.SHOW_TEXT, null, false);
+  let node;
+  while (node = walker.nextNode()) {
+    if (node.textContent.toLowerCase().includes(q)) {
+      node.parentElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      node.parentElement.style.background = 'rgba(251,191,36,.12)';
+      setTimeout(() => { node.parentElement.style.background = ''; }, CONFIG.searchHighlightMs);
+      return;
+    }
+  }
 }
 
-async function loadFile(path){
-  document.querySelectorAll('.tree-item.active').forEach(el=>el.classList.remove('active'))
-  const el=document.querySelector(`[data-path="${path}"]`);if(el)el.classList.add('active')
-  document.getElementById('start').style.display='none'
-  document.getElementById('fileView').style.display='flex'
-  currentPath=path
-  const name=path.split('/').pop().replace(/\.md$/,'')
-  document.getElementById('fileTitle').textContent=name
+// ─── File Loading ───
+async function loadFile(path) {
+  document.querySelectorAll('.tree-item.active').forEach(el => el.classList.remove('active'));
+  const el = document.querySelector(`[data-path="${path}"]`);
+  if (el) el.classList.add('active');
+
+  document.getElementById('start').style.display = 'none';
+  document.getElementById('fileView').style.display = 'flex';
+  document.getElementById('togglesRow').style.display = 'flex';
+
+  STATE.currentPath = path;
+  addToRecentFiles(path);
+
+  const name = path.split('/').pop().replace(/\.md$/, '');
+  document.getElementById('fileTitle').textContent = name;
+  document.getElementById('fileSubtitle').textContent = path;
 
   // Breadcrumb
-  const segs=path.split('/')
-  let bc=''
-  for(let i=0;i<segs.length;i++){
-    const s=segs[i].replace(/\.md$/,'')
-    if(i===segs.length-1) bc+=`<span class="sep">›</span> <span style="color:var(--fg)">${esc(s)}</span>`
-    else bc+=`${i>0?`<span class="sep">›</span>`:''}<a class="seg" onclick="loadFile('${segs.slice(0,i+1).join('/')}')">${esc(s)}</a>`
+  const segs = path.split('/');
+  let bc = '';
+  for (let i = 0; i < segs.length; i++) {
+    const s = segs[i].replace(/\.md$/, '');
+    if (i === segs.length - 1) {
+      bc += `<span class="sep">›</span> <span style="color:var(--fg)">${esc(s)}</span>`;
+    } else {
+      bc += `${i > 0 ? '<span class="sep">›</span>' : ''}<a class="seg">${esc(s)}</a>`;
+    }
   }
-  document.getElementById('breadcrumb').innerHTML=bc
+  document.getElementById('breadcrumb').innerHTML = bc;
 
   // Domain badge
-  const domainMatch=path.match(/^\d{2}-([^/]+)/)
-  const domainRow=document.getElementById('domainRow')
-  if(domainMatch){
-    domainRow.style.display='flex'
-    const dname=domainMatch[1].replace(/-/g,' ')
-    document.getElementById('domainName').textContent=dname.replace(/\b\w/g,c=>c.toUpperCase())
-  } else {domainRow.style.display='none'}
-
-  // Subtitle
-  document.getElementById('fileSubtitle').textContent=path
-
-  const body=document.getElementById('fileContent')
-  body.innerHTML='<span class="loading" style="color:var(--fg3)">Loading...</span>'
-  try{
-    const r=await fetch(API+'/file?path='+encodeURIComponent(path)),d=await r.json()
-    if(d.error){body.innerHTML=`<p>Error: ${esc(d.error)}</p>`;return}
-    currentContent=d.content||'';renderContent(body,currentContent);buildTOC()
-    computeStats(body)
-  }catch{body.innerHTML='<p>Failed to load</p>'}
-}
-
-function computeStats(container){
-  const text=container.textContent||''
-  const words=text.trim().split(/\s+/).filter(Boolean).length
-  document.getElementById('wordCount').textContent=words.toLocaleString()
-  document.getElementById('readingTime').textContent=Math.max(1,Math.round(words/200))
-  const sections=container.querySelectorAll('h1,h2,h3').length
-  document.getElementById('sectionCount').textContent=sections
-  document.getElementById('fileStats').style.display='flex'
-}
-
-// ─── Lightbox ───
-function openLightbox(src){
-  document.getElementById('lightboxImg').src=src
-  document.getElementById('lightbox').classList.add('open')
-}
-function closeLightbox(){document.getElementById('lightbox').classList.remove('open')}
-document.addEventListener('keydown',e=>{if(e.key==='Escape'&&document.getElementById('lightbox').classList.contains('open'))closeLightbox()})
-
-// ─── Keyboard Shortcuts ───
-function toggleKeyboardPanel(){document.getElementById('kbPanel').classList.toggle('open')}
-document.addEventListener('keydown',e=>{
-  const meta=e.metaKey||e.ctrlKey
-  if(meta&&e.key==='k'){e.preventDefault();document.getElementById('search').focus()}
-  if(meta&&e.key==='b'){e.preventDefault();toggleSidebar()}
-  if(meta&&e.key==='ArrowUp'){e.preventDefault();document.getElementById('fileContent').scrollTo({top:0,behavior:'smooth'})}
-  if(e.key==='Escape'){const p=document.getElementById('kbPanel');if(p.classList.contains('open'))p.classList.remove('open')}
-  if(e.key>='1'&&e.key<='5'){const btn=document.querySelector(`.layer-btn[data-layer="${e.key}"]`);if(btn){btn.classList.toggle('on');applyLayers()}}
-})
-
-function renderContent(container,text){
-  if(!text){container.innerHTML='<p>Empty</p>';return}
-  const blocks=[],diagrams=[]
-
-  text=text.replace(/```mermaid\n([\s\S]*?)```/g,(m,c)=>{diagrams.push(c.trim());return `__MERMAID${diagrams.length-1}__`})
-  text=text.replace(/```(\w*)\n([\s\S]*?)```/g,(m,l,c)=>{blocks.push({lang:l||'',code:c.trim()});return `__CODE${blocks.length-1}__`})
-
-  text=text.replace(/`([^`]+)`/g,'<code>$1</code>')
-  text=text.replace(/\*\*([^*]+)\*\*/g,'<strong>$1</strong>')
-  text=text.replace(/\*([^*]+)\*/g,'<em>$1</em>')
-  text=text.replace(/\[([^\]]+)\]\(([^)]+)\)/g,(m,l,u)=>u.endsWith('.md')?`<a onclick="loadFile('${u}');return false">${l}</a>`:`<a href="${u}" target="_blank">${l}</a>`)
-
-  text=text.replace(/^######\s+(.+)$/gm,(m,t)=>`<h6 id="h6-${slugify(t)}">${t}<a class="anchor-link" href="#h6-${slugify(t)}">#</a></h6>`)
-  text=text.replace(/^#####\s+(.+)$/gm,(m,t)=>`<h5 id="h5-${slugify(t)}">${t}<a class="anchor-link" href="#h5-${slugify(t)}">#</a></h5>`)
-  text=text.replace(/^####\s+(.+)$/gm,(m,t)=>`<h4 id="h4-${slugify(t)}">${t}<a class="anchor-link" href="#h4-${slugify(t)}">#</a></h4>`)
-  text=text.replace(/^###\s+(.+)$/gm,(m,t)=>{const l=detectLayer(t);return l?`</div><div class="layer-section" data-layer="${l}"><h3 id="h3-${slugify(t)}">${t}<a class="anchor-link" href="#h3-${slugify(t)}">#</a></h3>`:`<h3 id="h3-${slugify(t)}">${t}<a class="anchor-link" href="#h3-${slugify(t)}">#</a></h3>`})
-  text=text.replace(/^##\s+(.+)$/gm,(m,t)=>{const l=detectLayer(t);const id=`h2-${slugify(t)}`;return l?`</div><div class="layer-section" data-layer="${l}"><h2 id="${id}"><span class="layer-label l${l}">L${l}</span>${t}<a class="anchor-link" href="#${id}">#</a></h2>`:`<h2 id="${id}">${t}<a class="anchor-link" href="#${id}">#</a></h2>`})
-  text=text.replace(/^#\s+(.+)$/gm,(m,t)=>`<h1 id="h1-${slugify(t)}">${t}</h1>`)
-  text+='</div>'
-
-  text=text.replace(/^\s*[-*+]\s+(.+)$/gm,'<li>$1</li>')
-  text=text.replace(/(<li>.*<\/li>\n?)+/g,'<ul>$&</ul>')
-  text=text.replace(/^\s*\d+\.\s+(.+)$/gm,'<li>$1</li>')
-  text=text.replace(/((?:<li>.*<\/li>\n?)+)/g,m=>m.includes('<ul>')?m:'<ol>'+m+'</ol>')
-
-  text=text.replace(/^>\s+(.+)$/gm,'__BQ__$1\n')
-  text=text.replace(/((__BQ__[^\n]+\n?)+)/g,m=>{
-    const l=m.split('\n').map(x=>x.replace('__BQ__','').trim()).filter(Boolean)
-    return '<blockquote>'+l.map(x=>'<p>'+x+'</p>').join('')+'</blockquote>\n'
-  })
-
-  text=text.replace(/^\|(.+)\|\n\|[\s\-:|\s]+\|\n((?:\|.+\|\n?)*)/gm,m=>{
-    const l=m.trim().split('\n');if(l.length<3)return m
-    const h=l[0].split('|').map(x=>x.trim()).filter(Boolean)
-    const r=l.slice(2).map(x=>x.split('|').map(c=>c.trim()).filter(Boolean))
-    let hh='<table><thead><tr>'+h.map(x=>'<th>'+x+'</th>').join('')+'</tr></thead><tbody>'
-    for(const row of r)hh+='<tr>'+row.map(c=>'<td>'+c+'</td>').join('')+'</tr>'
-    return hh+'</tbody></table>\n'
-  })
-
-  text=text.replace(/^---$/gm,'<hr>')
-  text=text.replace(/^(?!<[hHh]|<ul|<ol|<blockquote|<table|<pre|<hr|<\/div|$)(.+)$/gm,'<p>$1</p>')
-  text=text.replace(/<p>\s*<\/p>/g,'')
-
-  for(let i=0;i<blocks.length;i++){
-    const{lang,code}=blocks[i]
-    text=text.replace(`__CODE${i}__`,`<pre data-lang="${esc(lang||'text')}"><button class="copy-btn" onclick="copyCode(this)">Copy</button><code class="lang-${esc(lang)}">${highlight(code,lang)}</code></pre>`)
+  const domainMatch = path.match(/^\d{2}-([^/]+)/);
+  const domainRow = document.getElementById('domainRow');
+  if (domainMatch) {
+    domainRow.style.display = 'flex';
+    const dname = domainMatch[1].replace(/-/g, ' ');
+    document.getElementById('domainName').textContent = dname.replace(/\b\w/g, c => c.toUpperCase());
+  } else {
+    domainRow.style.display = 'none';
   }
-  for(let i=0;i<diagrams.length;i++)
-    text=text.replace(`__MERMAID${i}__`,`<div class="mermaid-wrap animate-in"><div class="mermaid">${diagrams[i]}</div></div>`)
 
-  container.innerHTML=text;applyLayers()
+  const body = document.getElementById('fileContent');
+  body.innerHTML = '<span class="loading" style="color:var(--fg3)">Loading...</span>';
 
-  // Image click → lightbox
-  container.querySelectorAll('img').forEach(img=>{
-    img.style.cursor='zoom-in'
-    img.addEventListener('click',e=>{e.stopPropagation();openLightbox(img.src)})
-  })
-
-  if(diagrams.length>0)setTimeout(()=>{if(window.mermaid)try{mermaid.run({nodes:container.querySelectorAll('.mermaid')})}catch{}},50)
+  try {
+    const r = await fetch(CONFIG.api + '/file?path=' + encodeURIComponent(path));
+    const d = await r.json();
+    if (d.error) {
+      body.innerHTML = `<p>Error: ${esc(d.error)}</p>`;
+      return;
+    }
+    STATE.currentContent = d.content || '';
+    renderContent(body, STATE.currentContent);
+    buildTOC();
+    computeStats(body);
+    applyZoom();
+  } catch (e) {
+    console.error('Failed to load file:', e);
+    body.innerHTML = '<p>Failed to load file</p>';
+  }
 }
 
-function slugify(t){return t.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')}
-
-function detectLayer(t){const m=t.match(/LAYER\s*(\d)/i);return m?m[1]:null}
-
-function highlight(code,lang){
-  code=esc(code);lang=lang.toLowerCase().trim()
-  code=code.replace(/(&quot;(?:[^&quot;\\]|\\.)*&quot;|&#039;(?:[^&#039;\\]|\\.)*&#039;)/g,'<span style="color:#a5d6ff">$1</span>')
-  code=code.replace(/\b(\d+\.?\d*)\b/g,'<span style="color:#79c0ff">$1</span>')
-  code=code.replace(/(\/\/.*$|\/\*[\s\S]*?\*\/|#.*$)/gm,'<span style="color:#8b949e;font-style:italic">$1</span>')
-
-  const kw=lang==='python'||lang==='py'?'\\b(if|else|elif|for|while|def|class|import|from|return|try|except|True|False|None|self|async|await|yield|with|as|pass|raise|finally|lambda|print)\\b':
-    lang==='java'?'\\b(public|private|protected|class|static|void|if|else|for|while|return|new|import|package|extends|implements|interface|abstract|final|try|catch|throw|throws|synchronized|volatile|transient|this|super|int|long|double|float|boolean|String|var|record|sealed|permits)\\b':
-    lang==='go'?'\\b(func|if|else|for|range|return|var|type|struct|interface|map|chan|go|defer|select|case|switch|break|continue|package|import|const|nil|true|false|make|len|cap|append|error|string|int|bool|byte|rune|float64|uint64)\\b':
-    lang==='sql'?'\\b(SELECT|FROM|WHERE|INSERT|UPDATE|DELETE|CREATE|DROP|JOIN|ON|GROUP|ORDER|BY|LIMIT|DISTINCT|HAVING|UNION|ALTER|TABLE|INDEX|PRIMARY|KEY|FOREIGN|REFERENCES|CASCADE|SET|VALUES|INTO|AND|OR|NOT|NULL|AS|LEFT|RIGHT|INNER|OUTER|FULL)\\b':
-    lang==='yaml'||lang==='yml'?'\\b(true|false|yes|no|null|on|off)\\b':
-    lang==='bash'||lang==='shell'?'\\b(if|then|else|fi|for|while|do|done|function|export|source|return|local|exit|echo|set|unset|read|eval|exec|trap)\\b':
-    lang==='javascript'||lang==='js'||lang==='typescript'||lang==='ts'||lang==='jsx'||lang==='tsx'?'\\b(const|let|var|function|return|if|else|for|while|class|new|import|export|default|async|await|try|catch|throw|typeof|instanceof|from|interface|type|extends|implements|enum|keyof)\\b':null
-  if(kw)code=code.replace(new RegExp(kw,'gi'),'<span style="color:#ff7b72;font-weight:bold">$1</span>')
-  return code
+function addToRecentFiles(path) {
+  STATE.recentFiles = STATE.recentFiles.filter(p => p !== path);
+  STATE.recentFiles.unshift(path);
+  STATE.recentFiles = STATE.recentFiles.slice(0, 10);
+  savePersistentState();
+  renderRecentFiles();
 }
 
-function copyCode(btn){
-  const code=btn.parentElement.querySelector('code').textContent
-  navigator.clipboard.writeText(code).then(()=>{btn.textContent='Copied!';setTimeout(()=>{btn.textContent='Copy'},1500)})
+function renderRecentFiles() {
+  const list = document.getElementById('recentList');
+  if (STATE.recentFiles.length === 0) {
+    list.classList.remove('show');
+    return;
+  }
+  list.classList.add('show');
+  list.innerHTML = STATE.recentFiles.map(path => `
+    <div class="recent-item" data-path="${esc(path)}">${esc(path.split('/').pop().replace(/\.md$/, ''))}</div>
+  `).join('');
+
+  list.querySelectorAll('.recent-item').forEach(el => {
+    el.addEventListener('click', () => loadFile(el.dataset.path));
+  });
 }
 
-function buildTOC(){
-  const sidebar=document.getElementById('tocSidebar')
-  const headings=document.querySelectorAll('#fileContent h1,#fileContent h2,#fileContent h3')
-  if(headings.length<3){sidebar.classList.remove('show');return}
-  sidebar.classList.add('show');tocItems=[]
-  let html='<div style="padding:0 16px 10px;font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--fg3)">On this page</div>'
-  headings.forEach(h=>{
-    const lvl=h.tagName.toLowerCase(),tx=h.textContent.replace(/L\d\s*/i,'')
-    const id='toc-'+tocItems.length;h.id=h.id||id
-    html+=`<div class="toc-item ${lvl}" data-target="${h.id}" onclick="document.getElementById('${h.id}').scrollIntoView({behavior:'smooth',block:'start'});event.stopPropagation()">${esc(tx)}</div>`
-    tocItems.push(h)
-  })
-  sidebar.innerHTML=html
-  const body=document.getElementById('fileContent')
-  body.onscroll=()=>{
-    let active=null;const st=body.scrollTop+100
-    for(const h of tocItems){if(h.offsetTop<=st)active=h;else break}
-    sidebar.querySelectorAll('.toc-item').forEach(el=>el.classList.remove('active'))
-    if(active){const el=sidebar.querySelector(`[data-target="${active.id}"]`);if(el)el.classList.add('active')}
+// ─── Bookmarks ───
+function toggleBookmark(path) {
+  if (STATE.bookmarks.has(path)) {
+    STATE.bookmarks.delete(path);
+  } else {
+    STATE.bookmarks.add(path);
+  }
+  savePersistentState();
+  updateBookmarkUI(path);
+}
+
+function updateBookmarkUI(path) {
+  const items = document.querySelectorAll(`.bookmark-icon[data-path="${path}"]`);
+  const isBookmarked = STATE.bookmarks.has(path);
+  items.forEach(el => {
+    el.textContent = isBookmarked ? '⭐' : '☆';
+  });
+}
+
+// ─── Zoom ───
+function changeZoom(delta) {
+  if (delta === 0) {
+    STATE.zoomLevel = 1.0;
+  } else {
+    STATE.zoomLevel = Math.max(CONFIG.zoomMin, Math.min(CONFIG.zoomMax, STATE.zoomLevel + delta));
+  }
+  applyZoom();
+  savePersistentState();
+}
+
+function applyZoom() {
+  const scale = STATE.zoomLevel;
+  document.documentElement.style.setProperty('--font-size', (15 * scale) + 'px');
+}
+
+// ─── Layers ───
+document.querySelectorAll('.layer-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    btn.classList.toggle('on');
+    applyLayers();
+    savePersistentState();
+  });
+});
+
+function toggleLayer(layer) {
+  const btn = document.querySelector(`.layer-btn[data-layer="${layer}"]`);
+  if (btn) {
+    btn.classList.toggle('on');
+    applyLayers();
+    savePersistentState();
+  }
+}
+
+function applyLayers() {
+  STATE.activeLayers.clear();
+  document.querySelectorAll('.layer-btn.on').forEach(btn => {
+    STATE.activeLayers.add(btn.dataset.layer);
+  });
+  document.querySelectorAll('.layer-section').forEach(el => {
+    el.classList.toggle('hidden-l', !STATE.activeLayers.has(el.dataset.layer));
+  });
+}
+
+// ─── Content Rendering ───
+function computeStats(container) {
+  const text = container.textContent || '';
+  const words = text.trim().split(/\s+/).filter(Boolean).length;
+  document.getElementById('wordCount').textContent = words.toLocaleString();
+  document.getElementById('readingTime').textContent = Math.max(1, Math.round(words / 200));
+  const sections = container.querySelectorAll('h1,h2,h3').length;
+  document.getElementById('sectionCount').textContent = sections;
+  document.getElementById('fileStats').style.display = 'flex';
+}
+
+function renderContent(container, text) {
+  if (!text) {
+    container.innerHTML = '<p>Empty</p>';
+    return;
+  }
+
+  const blocks = [];
+  const diagrams = [];
+
+  // Extract code blocks and diagrams
+  text = text.replace(/```mermaid\n([\s\S]*?)```/g, (m, c) => {
+    diagrams.push(c.trim());
+    return `__MERMAID${diagrams.length - 1}__`;
+  });
+  text = text.replace(/```(\w*)\n([\s\S]*?)```/g, (m, l, c) => {
+    blocks.push({ lang: l || '', code: c.trim() });
+    return `__CODE${blocks.length - 1}__`;
+  });
+
+  // Inline formatting
+  text = text.replace(/`([^`]+)`/g, '<code>$1</code>');
+  text = text.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+  text = text.replace(/\*([^*]+)\*/g, '<em>$1</em>');
+  text = text.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (m, l, u) =>
+    u.endsWith('.md') ? `<a class="md-link">${l}</a>` : `<a href="${u}" target="_blank">${l}</a>`
+  );
+
+  // Headers with anchors
+  text = text.replace(/^######\s+(.+)$/gm, (m, t) => `<h6 id="h6-${slugify(t)}">${t}<a class="anchor-link" href="#h6-${slugify(t)}">#</a></h6>`);
+  text = text.replace(/^#####\s+(.+)$/gm, (m, t) => `<h5 id="h5-${slugify(t)}">${t}<a class="anchor-link" href="#h5-${slugify(t)}">#</a></h5>`);
+  text = text.replace(/^####\s+(.+)$/gm, (m, t) => `<h4 id="h4-${slugify(t)}">${t}<a class="anchor-link" href="#h4-${slugify(t)}">#</a></h4>`);
+  text = text.replace(/^###\s+(.+)$/gm, (m, t) => {
+    const l = detectLayer(t);
+    return l ? `</div><div class="layer-section" data-layer="${l}"><h3 id="h3-${slugify(t)}">${t}<a class="anchor-link" href="#h3-${slugify(t)}">#</a></h3>` : `<h3 id="h3-${slugify(t)}">${t}<a class="anchor-link" href="#h3-${slugify(t)}">#</a></h3>`;
+  });
+  text = text.replace(/^##\s+(.+)$/gm, (m, t) => {
+    const l = detectLayer(t);
+    const id = `h2-${slugify(t)}`;
+    return l ? `</div><div class="layer-section" data-layer="${l}"><h2 id="${id}"><span class="layer-label l${l}">L${l}</span>${t}<a class="anchor-link" href="#${id}">#</a></h2>` : `<h2 id="${id}">${t}<a class="anchor-link" href="#${id}">#</a></h2>`;
+  });
+  text = text.replace(/^#\s+(.+)$/gm, (m, t) => `<h1 id="h1-${slugify(t)}">${t}</h1>`);
+  text += '</div>';
+
+  // Lists
+  text = text.replace(/^\s*[-*+]\s+(.+)$/gm, '<li>$1</li>');
+  text = text.replace(/(<li>.*<\/li>\n?)+/g, '<ul>$&</ul>');
+  text = text.replace(/^\s*\d+\.\s+(.+)$/gm, '<li>$1</li>');
+  text = text.replace(/((?:<li>.*<\/li>\n?)+)/g, m => m.includes('<ul>') ? m : '<ol>' + m + '</ol>');
+
+  // Blockquotes
+  text = text.replace(/^>\s+(.+)$/gm, '__BQ__$1\n');
+  text = text.replace(/((__BQ__[^\n]+\n?)+)/g, m => {
+    const l = m.split('\n').map(x => x.replace('__BQ__', '').trim()).filter(Boolean);
+    return '<blockquote>' + l.map(x => '<p>' + x + '</p>').join('') + '</blockquote>\n';
+  });
+
+  // Tables
+  text = text.replace(/^\|(.+)\|\n\|[\s\-:|\s]+\|\n((?:\|.+\|\n?)*)/gm, m => {
+    const l = m.trim().split('\n');
+    if (l.length < 3) return m;
+    const h = l[0].split('|').map(x => x.trim()).filter(Boolean);
+    const r = l.slice(2).map(x => x.split('|').map(c => c.trim()).filter(Boolean));
+    let hh = '<table><thead><tr>' + h.map(x => '<th>' + x + '</th>').join('') + '</tr></thead><tbody>';
+    for (const row of r) hh += '<tr>' + row.map(c => '<td>' + c + '</td>').join('') + '</tr>';
+    return hh + '</tbody></table>\n';
+  });
+
+  // HR & paragraphs
+  text = text.replace(/^---$/gm, '<hr>');
+  text = text.replace(/^(?!<[hHh]|<ul|<ol|<blockquote|<table|<pre|<hr|<\/div|$)(.+)$/gm, '<p>$1</p>');
+  text = text.replace(/<p>\s*<\/p>/g, '');
+
+  // Insert code blocks and diagrams
+  for (let i = 0; i < blocks.length; i++) {
+    const { lang, code } = blocks[i];
+    text = text.replace(`__CODE${i}__`, `<pre data-lang="${esc(lang || 'text')}"><button class="copy-btn" data-action="copyCode">Copy</button><code class="lang-${esc(lang)}">${highlight(code, lang)}</code></pre>`);
+  }
+  for (let i = 0; i < diagrams.length; i++) {
+    text = text.replace(`__MERMAID${i}__`, `<div class="mermaid-wrap animate-in"><div class="mermaid">${diagrams[i]}</div></div>`);
+  }
+
+  container.innerHTML = text;
+  applyLayers();
+
+  // Image lightbox
+  container.querySelectorAll('img').forEach(img => {
+    img.addEventListener('click', (e) => {
+      e.stopPropagation();
+      openLightbox(img.src);
+    });
+  });
+
+  // MD link handler
+  container.querySelectorAll('.md-link').forEach(el => {
+    el.addEventListener('click', (e) => {
+      const parent = e.target;
+      const href = parent.textContent.toLowerCase().replace(/\s+/g, '-');
+      const fullPath = STATE.currentPath.replace(/[^/]+$/, '') + href + '.md';
+      loadFile(fullPath);
+    });
+  });
+
+  // Code copy handler
+  container.querySelectorAll('.copy-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      const code = btn.parentElement.querySelector('code').textContent;
+      navigator.clipboard.writeText(code).then(() => {
+        btn.textContent = 'Copied!';
+        setTimeout(() => { btn.textContent = 'Copy'; }, 1500);
+      });
+    });
+  });
+
+  if (diagrams.length > 0) {
+    setTimeout(() => {
+      if (window.mermaid) {
+        try {
+          mermaid.run({ nodes: container.querySelectorAll('.mermaid') });
+        } catch (e) {
+          console.error('Mermaid render failed:', e);
+        }
+      }
+    }, 50);
+  }
+}
+
+function slugify(t) {
+  return t.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+}
+
+function detectLayer(t) {
+  const m = t.match(/LAYER\s*(\d)/i);
+  return m ? m[1] : null;
+}
+
+function highlight(code, lang) {
+  code = esc(code);
+  lang = (lang || '').toLowerCase().trim();
+
+  code = code.replace(/(&quot;(?:[^&quot;\\]|\\.)*&quot;|&#039;(?:[^&#039;\\]|\\.)*&#039;)/g, '<span style="color:#a5d6ff">$1</span>');
+  code = code.replace(/\b(\d+\.?\d*)\b/g, '<span style="color:#79c0ff">$1</span>');
+  code = code.replace(/(\/\/.*$|\/\*[\s\S]*?\*\/|#.*$)/gm, '<span style="color:#8b949e;font-style:italic">$1</span>');
+
+  const kw = lang === 'python' || lang === 'py' ? '\\b(if|else|elif|for|while|def|class|import|from|return|try|except|True|False|None|self|async|await|yield|with|as|pass|raise|finally|lambda|print)\\b' :
+    lang === 'java' ? '\\b(public|private|protected|class|static|void|if|else|for|while|return|new|import|package|extends|implements|interface|abstract|final|try|catch|throw|throws|synchronized|volatile|transient|this|super|int|long|double|float|boolean|String|var|record|sealed|permits)\\b' :
+    lang === 'go' ? '\\b(func|if|else|for|range|return|var|type|struct|interface|map|chan|go|defer|select|case|switch|break|continue|package|import|const|nil|true|false|make|len|cap|append|error|string|int|bool|byte|rune|float64|uint64)\\b' :
+    lang === 'sql' ? '\\b(SELECT|FROM|WHERE|INSERT|UPDATE|DELETE|CREATE|DROP|JOIN|ON|GROUP|ORDER|BY|LIMIT|DISTINCT|HAVING|UNION|ALTER|TABLE|INDEX|PRIMARY|KEY|FOREIGN|REFERENCES|CASCADE|SET|VALUES|INTO|AND|OR|NOT|NULL|AS|LEFT|RIGHT|INNER|OUTER|FULL)\\b' :
+    lang === 'yaml' || lang === 'yml' ? '\\b(true|false|yes|no|null|on|off)\\b' :
+    lang === 'bash' || lang === 'shell' ? '\\b(if|then|else|fi|for|while|do|done|function|export|source|return|local|exit|echo|set|unset|read|eval|exec|trap)\\b' :
+    lang === 'javascript' || lang === 'js' || lang === 'typescript' || lang === 'ts' || lang === 'jsx' || lang === 'tsx' ? '\\b(const|let|var|function|return|if|else|for|while|class|new|import|export|default|async|await|try|catch|throw|typeof|instanceof|from|interface|type|extends|implements|enum|keyof)\\b' : null;
+
+  if (kw) {
+    code = code.replace(new RegExp(kw, 'gi'), '<span style="color:#ff7b72;font-weight:bold">$1</span>');
+  }
+
+  return code;
+}
+
+// ─── TOC ───
+function buildTOC() {
+  const sidebar = document.getElementById('tocSidebar');
+  const headings = document.querySelectorAll('#fileContent h1,#fileContent h2,#fileContent h3');
+
+  if (headings.length < 3) {
+    sidebar.classList.remove('show');
+    return;
+  }
+
+  sidebar.classList.add('show');
+  STATE.tocItems = [];
+
+  let html = '<div style="padding:0 16px 10px;font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--fg3)">On this page</div>';
+
+  headings.forEach(h => {
+    const lvl = h.tagName.toLowerCase();
+    const tx = h.textContent.replace(/L\d\s*/i, '');
+    const id = 'toc-' + STATE.tocItems.length;
+    h.id = h.id || id;
+
+    html += `<div class="toc-item ${lvl}" data-target="${h.id}">${esc(tx)}</div>`;
+    STATE.tocItems.push(h);
+  });
+
+  sidebar.innerHTML = html;
+
+  // Scroll tracking
+  const body = document.getElementById('fileContent');
+  body.addEventListener('scroll', () => {
+    let active = null;
+    const st = body.scrollTop + 100;
+
+    for (const h of STATE.tocItems) {
+      if (h.offsetTop <= st) active = h;
+      else break;
+    }
+
+    sidebar.querySelectorAll('.toc-item').forEach(el => el.classList.remove('active'));
+    if (active) {
+      const el = sidebar.querySelector(`[data-target="${active.id}"]`);
+      if (el) el.classList.add('active');
+    }
+
     // Scroll progress
-    const max=body.scrollHeight-body.clientHeight
-    document.getElementById('scrollFill').style.width=max>0?(body.scrollTop/max*100)+'%':'0%'
-    // Back to top
-    document.getElementById('backTop').classList.toggle('show',body.scrollTop>300)
-  }
+    const max = body.scrollHeight - body.clientHeight;
+    document.getElementById('scrollFill').style.width = max > 0 ? (body.scrollTop / max * 100) + '%' : '0%';
+
+    // Back to top visibility
+    document.getElementById('backTopBtn').classList.toggle('show', body.scrollTop > CONFIG.scrollProgressThreshold);
+  }, { passive: true);
 }
 
-function toggleSidebar(){
-  const s=document.getElementById('sidebar');s.classList.toggle('collapsed')
-  document.querySelector('.collapse-btn').textContent=s.classList.contains('collapsed')?'▶':'◀'
-  setTimeout(()=>{try{mermaid.run({nodes:document.querySelectorAll('.mermaid')})}catch{}},100)
+// ─── UI Controls ───
+function toggleSidebar() {
+  const s = document.getElementById('sidebar');
+  s.classList.toggle('collapsed');
+  document.getElementById('collapseSidebar').textContent = s.classList.contains('collapsed') ? '▶' : '◀';
+  setTimeout(() => {
+    if (window.mermaid) {
+      try {
+        mermaid.run({ nodes: document.querySelectorAll('.mermaid') });
+      } catch (e) {
+        console.error('Mermaid rerender failed:', e);
+      }
+    }
+  }, 100);
 }
 
-function renderStartScreen(){document.getElementById('tree').innerHTML=renderTree(treeData);attachTreeEvents()}
+function toggleFullscreen() {
+  STATE.isFullscreen = !STATE.isFullscreen;
+  document.body.style.overflow = STATE.isFullscreen ? 'hidden' : 'auto';
+  const header = document.querySelector('.content-header');
+  const toggles = document.getElementById('togglesRow');
+  header.style.display = STATE.isFullscreen ? 'none' : 'flex';
+  toggles.style.display = STATE.isFullscreen ? 'none' : 'flex';
+}
 
-function esc(s){const m={'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'};return(s||'').replace(/[&<>"']/g,x=>m[x])}
+function scrollContentToTop() {
+  document.getElementById('fileContent').scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function openLightbox(src) {
+  document.getElementById('lightboxImg').src = src;
+  document.getElementById('lightbox').classList.add('open');
+}
+
+function closeLightbox() {
+  document.getElementById('lightbox').classList.remove('open');
+}
+
+function toggleKeyboardPanel() {
+  document.getElementById('kbPanel').classList.toggle('open');
+}
+
+function closeKeyboardPanel() {
+  document.getElementById('kbPanel').classList.remove('open');
+}
+
+// ─── Utilities ───
+function esc(s) {
+  const m = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
+  return (s || '').replace(/[&<>"']/g, x => m[x]);
+}
+
+// Event listeners for floating buttons
+document.getElementById('backTopBtn').addEventListener('click', scrollContentToTop);
+document.getElementById('kbToggle').addEventListener('click', toggleKeyboardPanel);
+document.getElementById('collapseSidebar').addEventListener('click', toggleSidebar);
+document.getElementById('fullscreenBtn').addEventListener('click', toggleFullscreen);
+document.getElementById('zoomOut').addEventListener('click', () => changeZoom(-CONFIG.zoomStep));
+document.getElementById('zoomReset').addEventListener('click', () => changeZoom(0));
+document.getElementById('zoomIn').addEventListener('click', () => changeZoom(CONFIG.zoomStep));
+document.getElementById('lightbox').addEventListener('click', closeLightbox);
 </script>
 </body>
 </html>

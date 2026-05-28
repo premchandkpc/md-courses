@@ -80,7 +80,7 @@ graph TB
 | `36-production-failures` | Hydration mismatch, memory leaks, traces | Senior | 2 |
 | `37-debugging-playbook` | DevTools, profiling, crash analysis | Senior | 1 |
 | `38-scaling-react-apps` | Multi-team, CI/CD, budgets, deployment | Staff | 2 |
-| `39-visual-simulations` | Interactive HTML simulators | All | 1 |
+| `39-visual-simulations` | Interactive HTML simulators | All | 4 |
 | `40-interview-prep` | FAANG questions, system design, coding | All | 1 |
 | `40-projects` | ChatGPT, YouTube, Figma, Slack clones | All | 2 |
 
@@ -136,9 +136,12 @@ graph TB
 
 ## Interactive Simulators
 
-Explore React's reconciliation algorithm visually:
-[Fiber Tree Visualizer](/04-frontend/react/39-visual-simulations/fiber-reconciliation.html)
-— step through beginWork/completeWork/commit phases on sample trees
+| Simulator | Description | Live |
+|---|---|---|
+| **Fiber Reconciliation** | Step through beginWork → completeWork → commit phases on 3 sample trees. Particle effects + phase badges + progress bar | [▶ Open](/04-frontend/react/39-visual-simulations/fiber-reconciliation.html) |
+| **Virtual DOM Diff** | Watch React compare before/after trees with animated INSERT/UPDATE/REMOVE/MOVE operations. 5 demo scenarios + particle bursts | [▶ Open](/04-frontend/react/39-visual-simulations/vdom-diff.html) |
+| **Re-render Tree** | Click buttons to trigger state updates — see exactly which components re-render and which are skipped by `React.memo`. Hover tooltips + dependency tracking | [▶ Open](/04-frontend/react/39-visual-simulations/rerender-tree.html) |
+| **State Batching** | Compare React 18 auto-batching vs legacy mode. Queue updates, flush them, watch state values change. Timeline bars + animated queue | [▶ Open](/04-frontend/react/39-visual-simulations/state-batching.html) |
 
 ## Every File Contains
 

@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>React Re-render Tree Visualizer</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:system-ui,-apple-system,sans-serif;background:#0d1117;color:#e6edf3;padding:24px;max-width:1100px;margin:0 auto}
+h1{font-size:22px;color:#58a6ff;margin-bottom:2px;display:flex;align-items:center;gap:10px}
+h1 small{font-size:13px;color:#8b949e;font-weight:400}
+.sub{color:#8b949e;font-size:13px;margin-bottom:16px}
+
+/* Legend */
+.legend{display:flex;gap:14px;margin-bottom:14px;flex-wrap:wrap;font-size:11px}
+.legend span{display:flex;align-items:center;gap:5px}
+.dot{width:10px;height:10px;border-radius:50%;display:inline-block}
+.dot.rerender{background:#d29922;box-shadow:0 0 8px #d2992266}
+.dot.norender{background:#30363d}
+.dot.memo{background:#3fb950;box-shadow:0 0 8px #3fb95066}
+
+/* Controls */
+.controls{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0;align-items:center}
+.btn{padding:8px 16px;border:1px solid #30363d;border-radius:6px;background:#1c2128;color:#e6edf3;cursor:pointer;font-size:12px;transition:all .15s;font-family:inherit}
+.btn:hover{border-color:#8b949e;background:#21262d}
+.btn.primary{background:#58a6ff;color:#000;border-color:#58a6ff;font-weight:600}
+.btn.primary:hover{background:#79b8ff}
+.btn.warn{background:#d29922;color:#000;border-color:#d29922;font-weight:600}
+.btn.warn:hover{background:#e3a93d}
+
+/* Stats bar */
+.stats{display:flex;gap:20px;padding:10px 16px;background:#161b22;border-radius:8px;border:1px solid #30363d;margin:10px 0}
+.stat{text-align:center}
+.stat .num{font-size:20px;font-weight:700;font-variant-numeric:tabular-nums}
+.stat .num.rerender{color:#d29922}
+.stat .num.memo{color:#3fb950}
+.stat .label{font-size:10px;color:#8b949e;text-transform:uppercase}
+
+/* Component tree */
+.tree-container{background:#161b22;border:1px solid #30363d;border-radius:10px;padding:20px;margin:10px 0;min-height:400px;position:relative;overflow:hidden}
+.tree-container::before{content:'COMPONENT TREE';position:absolute;top:8px;right:12px;font-size:9px;color:#30363d;letter-spacing:.1em}
+
+.comp{display:inline-flex;flex-direction:column;align-items:center;margin:4px 6px;position:relative}
+.comp-card{padding:10px 18px;border-radius:8px;border:2px solid #30363d;background:#0d1117;font-size:12px;font-weight:600;cursor:pointer;transition:all .35s cubic-bezier(.4,0,.2,1);text-align:center;min-width:80px;position:relative}
+.comp-card .comp-sub{font-size:9px;color:#8b949e;font-weight:400;margin-top:2px}
+.comp-card.rerender{border-color:#d29922;background:#3a2a1a;animation:flashRerender .5s ease-out}
+.comp-card.memo-skip{border-color:#3fb950;background:#1a3a2c;opacity:.7}
+.comp-card.unstable{border-color:#f85149;cursor:not-allowed}
+.comp-card .badge{position:absolute;top:-8px;right:-8px;font-size:8px;padding:2px 5px;border-radius:4px;background:#1c2128;border:1px solid #30363d;color:#8b949e}
+.comp-card .badge.memo{background:#1a3a2c;border-color:#3fb950;color:#3fb950}
+.comp-card .badge.count{background:#3a2a1a;border-color:#d29922;color:#d29922}
+@keyframes flashRerender{
+  0%{box-shadow:0 0 0 transparent;border-color:#d29922}
+  30%{box-shadow:0 0 30px #d2992266;border-color:#f0b429;transform:scale(1.04)}
+  100%{box-shadow:0 0 0 transparent;border-color:#d29922;transform:scale(1)}
+}
+
+.comp-children{display:flex;gap:8px;padding-top:8px;position:relative;flex-wrap:wrap;justify-content:center}
+.comp-children::before{content:'';position:absolute;top:0;left:50%;width:50%;height:1px;background:#30363d;transform:translateX(-50%)}
+
+/* Click target for interaction */
+.interaction-area{background:#0d1117;border:1px solid #30363d;border-radius:8px;padding:12px 16px;margin:10px 0;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.interaction-area .label{font-size:11px;color:#8b949e;text-transform:uppercase;letter-spacing:.05em}
+.interaction-btn{padding:10px 20px;border:1px solid #30363d;border-radius:6px;background:#1c2128;color:#e6edf3;cursor:pointer;font-size:14px;transition:all .12s;font-family:inherit}
+.interaction-btn:hover{background:#21262d;border-color:#8b949e}
+.interaction-btn:active{transform:scale(.96)}
+.interaction-btn.count-click{background:#3a2a1a;border-color:#d29922;font-weight:600}
+.interaction-btn.count-click .click-num{display:inline-block;margin-left:6px;font-size:10px;background:#d29922;color:#000;padding:1px 6px;border-radius:3px}
+
+/* Log */
+.log{background:#0d1117;border:1px solid #30363d;border-radius:8px;padding:12px;max-height:140px;overflow-y:auto;font-family:'JetBrains Mono',monospace;font-size:11px;line-height:1.6;margin-top:10px}
+.log .l{color:#8b949e;padding:2px 0;border-bottom:1px solid #1c2128}
+.log .l:last-child{border-bottom:none}
+.log .l .ln{color:#30363d;margin-right:6px}
+.log .l.rerender{color:#d29922}
+.log .l.skipped{color:#3fb950}
+.log .l.info{color:#58a6ff}
+.log .l.warn{color:#f85149}
+
+/* Tooltip */
+.tooltip{display:none;position:absolute;background:#1c2128;border:1px solid #30363d;border-radius:6px;padding:8px 12px;font-size:11px;z-index:100;min-width:160px;box-shadow:0 4px 12px #00000066}
+.tooltip.visible{display:block}
+.tooltip .tt-row{display:flex;justify-content:space-between;gap:12px;padding:2px 0}
+.tooltip .tt-key{color:#8b949e}
+.tooltip .tt-val{color:#e6edf3}
+</style>
+</head>
+<body>
+
+<h1>⚛ Component Re-render Visualizer
+  <small>See which components re-render on state change</small>
+</h1>
+<div class="sub">Click buttons to trigger state updates — watch React's reconciliation in action</div>
+
+<div class="legend">
+  <span><span class="dot rerender"></span> Re-rendered</span>
+  <span><span class="dot norender"></span> Not re-rendered</span>
+  <span><span class="dot memo"></span> Skipped (React.memo)</span>
+</div>
+
+<div class="controls">
+  <button class="btn primary" onclick="triggerUpdate()">🔄 Trigger State Update</button>
+  <button class="btn warn" onclick="toggleMemo()">🧠 Toggle React.memo</button>
+  <button class="btn" onclick="resetRenderCounts()">↺ Reset Counts</button>
+  <span style="margin-left:auto;font-size:11px;color:#8b949e" id="memoStatus">React.memo: OFF</span>
+</div>
+
+<div class="stats">
+  <div class="stat"><div class="num rerender" id="statRerender">0</div><div class="label">Re-renders</div></div>
+  <div class="stat"><div class="num memo" id="statSkipped">0</div><div class="label">Skipped (memo)</div></div>
+  <div class="stat"><div class="num" id="statTotal" style="color:#8b949e">0</div><div class="label">Total updates</div></div>
+</div>
+
+<div class="interaction-area">
+  <span class="label">Simulate user interactions:</span>
+  <button class="interaction-btn count-click" id="clickBtn" onclick="simulateClick()">🖱️ Click Button <span class="click-num" id="clickCount">0</span></button>
+  <button class="interaction-btn" onclick="simulateInput()">⌨️ Type in Input</button>
+  <button class="interaction-btn" onclick="simulateTheme()">🎨 Toggle Theme</button>
+</div>
+
+<div class="tree-container" id="treeContainer">
+  <div id="componentTree"></div>
+</div>
+
+<div class="tooltip" id="tooltip"></div>
+
+<div class="log" id="log"></div>
+
+<script>
+// ====== Component tree definition ======
+// Tree mirrors a realistic React app structure
+const compDefs = {
+  root: { type: 'App', children: ['header', 'sidebar', 'content', 'footer'], deps: ['theme'] },
+  header: { type: 'Header', children: ['logo', 'nav', 'userMenu'], deps: ['theme'] },
+  logo: { type: 'Logo', children: [], deps: [] },
+  nav: { type: 'Navigation', children: ['navItem1', 'navItem2', 'navItem3'], deps: ['currentPath'] },
+  navItem1: { type: 'NavLink', children: [], deps: ['currentPath'], props: { to: '/home' } },
+  navItem2: { type: 'NavLink', children: [], deps: ['currentPath'], props: { to: '/about' } },
+  navItem3: { type: 'NavLink', children: [], deps: ['currentPath'], props: { to: '/settings' } },
+  userMenu: { type: 'UserMenu', children: ['avatar', 'userDropdown'], deps: ['user'] },
+  avatar: { type: 'Avatar', children: [], deps: ['user'] },
+  userDropdown: { type: 'Dropdown', children: [], deps: ['user'] },
+  sidebar: { type: 'Sidebar', children: ['searchBox', 'filterList'], deps: ['theme'] },
+  searchBox: { type: 'SearchBox', children: [], deps: ['searchQuery'] },
+  filterList: { type: 'FilterList', children: ['filter1', 'filter2', 'filter3'], deps: ['filters'] },
+  filter1: { type: 'FilterChip', children: [], deps: ['filters'], props: { label: 'Active' } },
+  filter2: { type: 'FilterChip', children: [], deps: ['filters'], props: { label: 'Pending' } },
+  filter3: { type: 'FilterChip', children: [], deps: ['filters'], props: { label: 'Archived' } },
+  content: { type: 'MainContent', children: ['dataTable', 'pagination'], deps: ['data', 'theme'] },
+  dataTable: { type: 'DataTable', children: ['tableHeader', 'tableRow1', 'tableRow2', 'tableRow3'], deps: ['data'] },
+  tableHeader: { type: 'TableHeader', children: [], deps: [], props: { columns: 4 } },
+  tableRow1: { type: 'TableRow', children: [], deps: ['data'], props: { id: 1 }, memo: true },
+  tableRow2: { type: 'TableRow', children: [], deps: ['data'], props: { id: 2 }, memo: true },
+  tableRow3: { type: 'TableRow', children: [], deps: ['data'], props: { id: 3 }, memo: true },
+  pagination: { type: 'Pagination', children: ['pageBtn1', 'pageBtn2', 'pageBtn3'], deps: ['page'] },
+  pageBtn1: { type: 'PageButton', children: [], deps: ['page'], props: { n: 1 } },
+  pageBtn2: { type: 'PageButton', children: [], deps: ['page'], props: { n: 2 } },
+  pageBtn3: { type: 'PageButton', children: [], deps: ['page'], props: { n: 3 } },
+  footer: { type: 'Footer', children: ['footerLinks', 'copyright'], deps: ['theme'] },
+  footerLinks: { type: 'FooterLinks', children: [], deps: [] },
+  copyright: { type: 'Copyright', children: [], deps: [] }
+};
+
+// ====== State ======
+let state = {
+  theme: 'light',
+  currentPath: '/home',
+  user: { name: 'Alice', role: 'admin' },
+  searchQuery: '',
+  filters: ['active'],
+  data: { items: 42, loading: false },
+  page: 1,
+  clickCount: 0
+};
+
+let renderCounts = {};
+let totalRenders = 0;
+let totalSkipped = 0;
+let memoEnabled = false;
+let updateId = 0;
+let animationsActive = new Set();
+let tooltipVisible = null;
+
+Object.keys(compDefs).forEach(k => { renderCounts[k] = 0; });
+
+// ====== Dependency tracking ======
+function getAffectedComps(changedKeys) {
+  const affected = new Set();
+  for (const [id, def] of Object.entries(compDefs)) {
+    if (def.deps.some(d => changedKeys.includes(d))) affected.add(id);
+    // Also affect children of affected
+  }
+  // Add children of affected comps
+  const expand = (id) => {
+    const def = compDefs[id];
+    if (!def) return;
+    def.children.forEach(c => {
+      if (!affected.has(c)) {
+        affected.add(c);
+        expand(c);
+      }
+    });
+  };
+  affected.forEach(expand);
+  return affected;
+}
+
+// ====== Render ======
+function renderTree() {
+  const container = document.getElementById('componentTree');
+  const html = buildCompHTML('root', 0);
+  container.innerHTML = html;
+  
+  // Update stats
+  const rerenderCount = Object.values(renderCounts).reduce((a, b) => a + b, 0);
+  document.getElementById('statRerender').textContent = rerenderCount;
+  document.getElementById('statSkipped').textContent = totalSkipped;
+  document.getElementById('statTotal').textContent = totalRenders;
+  
+  // Hover tooltips
+  document.querySelectorAll('.comp-card').forEach(el => {
+    el.addEventListener('mouseenter', (e) => showTooltip(e, el.dataset.compId));
+    el.addEventListener('mouseleave', () => hideTooltip());
+  });
+}
+
+function buildCompHTML(id, depth) {
+  const def = compDefs[id];
+  if (!def) return '';
+  const rc = renderCounts[id] || 0;
+  const isActive = animationsActive.has(id);
+  const isMemo = def.memo && memoEnabled;
+  const wasSkipped = isMemo && !animationsActive.has(id);
+  
+  let cls = 'comp-card';
+  if (isActive) cls += ' rerender';
+  else if (wasSkipped) cls += ' memo-skip';
+  
+  let badges = '';
+  if (def.memo) badges += `<span class="badge memo">memo</span>`;
+  if (rc > 0) badges += `<span class="badge count">${rc}</span>`;
+  
+  const sub = def.props ? Object.values(def.props).join(', ') : '';
+  
+  const kids = def.children.map(c => buildCompHTML(c, depth + 1)).join('');
+  const padLeft = depth * 20;
+  
+  return `<div class="comp" style="padding-left:${padLeft}px">
+    <div class="${cls}" data-comp-id="${id}">
+      ${badges}
+      &lt;${def.type}&gt;
+      ${sub ? `<div class="comp-sub">${sub}</div>` : ''}
+    </div>
+    ${kids ? `<div class="comp-children">${kids}</div>` : ''}
+  </div>`;
+}
+
+// ====== Simulate interactions ======
+function triggerUpdate(changedKeys = ['currentPath']) {
+  updateId++;
+  totalRenders++;
+  
+  const affected = getAffectedComps(changedKeys);
+  
+  // Animate affected components
+  affected.forEach(id => { animationsActive.add(id); renderCounts[id]++; });
+  
+  // Count skipped (memo components that were NOT affected)
+  if (memoEnabled) {
+    for (const [id, def] of Object.entries(compDefs)) {
+      if (def.memo && !affected.has(id)) {
+        totalSkipped++;
+        addLog(`&lt;${def.type}&gt; skipped via React.memo`, 'skipped');
+      }
+    }
+  }
+  
+  renderTree();
+  addLog(`State updated: ${changedKeys.join(', ')} → ${affected.size} components re-rendered`, 'rerender');
+  
+  // Clear animations after delay
+  setTimeout(() => {
+    animationsActive.clear();
+    renderTree();
+  }, 800);
+}
+
+function simulateClick() {
+  state.clickCount++;
+  document.getElementById('clickCount').textContent = state.clickCount;
+  triggerUpdate(['currentPath']);
+}
+
+function simulateInput() {
+  state.searchQuery = 'hello';
+  triggerUpdate(['searchQuery']);
+}
+
+function simulateTheme() {
+  state.theme = state.theme === 'light' ? 'dark' : 'light';
+  triggerUpdate(['theme']);
+}
+
+function toggleMemo() {
+  memoEnabled = !memoEnabled;
+  document.getElementById('memoStatus').textContent = `React.memo: ${memoEnabled ? 'ON ✅' : 'OFF'}`;
+  addLog(`React.memo ${memoEnabled ? 'enabled' : 'disabled'}`, 'info');
+  resetRenderCounts();
+}
+
+function resetRenderCounts() {
+  Object.keys(renderCounts).forEach(k => renderCounts[k] = 0);
+  totalRenders = 0;
+  totalSkipped = 0;
+  animationsActive.clear();
+  renderTree();
+  addLog('Render counts reset', 'info');
+}
+
+// ====== Tooltip ======
+function showTooltip(e, id) {
+  const def = compDefs[id];
+  if (!def) return;
+  const tt = document.getElementById('tooltip');
+  tt.className = 'tooltip visible';
+  tt.innerHTML = `
+    <div style="font-weight:600;margin-bottom:4px;color:#58a6ff">&lt;${def.type}&gt;</div>
+    <div class="tt-row"><span class="tt-key">ID</span><span class="tt-val">${id}</span></div>
+    <div class="tt-row"><span class="tt-key">Children</span><span class="tt-val">${def.children.length}</span></div>
+    <div class="tt-row"><span class="tt-key">Dependencies</span><span class="tt-val">${def.deps.join(', ') || 'none'}</span></div>
+    <div class="tt-row"><span class="tt-key">Re-renders</span><span class="tt-val">${renderCounts[id]}</span></div>
+    ${def.memo ? `<div class="tt-row"><span class="tt-key">Memo</span><span class="tt-val" style="color:#3fb950">enabled</span></div>` : ''}
+  `;
+  const rect = e.target.getBoundingClientRect();
+  tt.style.left = Math.min(rect.right + 12, window.innerWidth - 180) + 'px';
+  tt.style.top = Math.min(rect.top, window.innerHeight - 120) + 'px';
+}
+
+function hideTooltip() {
+  document.getElementById('tooltip').className = 'tooltip';
+}
+
+// ====== Log ======
+function addLog(msg, type = 'info') {
+  const el = document.getElementById('log');
+  const entry = document.createElement('div');
+  entry.className = `l ${type}`;
+  entry.innerHTML = `<span class="ln">▸</span> ${msg}`;
+  el.appendChild(entry);
+  el.scrollTop = el.scrollHeight;
+  if (el.children.length > 50) el.removeChild(el.firstChild);
+}
+
+// ====== Init ======
+addLog('Component tree mounted — click buttons to trigger re-renders', 'info');
+addLog('Toggle React.memo to see how it prevents unnecessary renders', 'info');
+renderTree();
+</script>
+
+<script>
+// Hash navigation
+(function(){
+  function scrollToHash(){
+    var h = window.location.hash;
+    if(h && h.length > 1){
+      var el = document.getElementById(h.substring(1));
+      if(el) setTimeout(function(){ el.scrollIntoView({behavior:'smooth', block:'start'}); }, 200);
+    }
+  }
+  window.addEventListener('hashchange', scrollToHash);
+  window.addEventListener('load', scrollToHash);
+})();
+</script>
+</body>
+</html>

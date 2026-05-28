@@ -2,531 +2,405 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>React Fiber Reconciliation Visualizer</title>
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>React Fiber Reconciliation Visualizer — Enhanced</title>
 <style>
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  body { font-family: 'Inter', -apple-system, system-ui, sans-serif; background: #0d1117; color: #e6edf3; display: flex; flex-direction: column; height: 100vh; }
-  
-  /* Header */
-  header { background: #161b22; border-bottom: 1px solid #30363d; padding: 12px 20px; display: flex; align-items: center; gap: 16px; flex-shrink: 0; }
-  header h1 { font-size: 16px; font-weight: 600; color: #58a6ff; }
-  header .subtitle { font-size: 12px; color: #8b949e; }
-  
-  /* Controls */
-  .controls { background: #161b22; border-bottom: 1px solid #30363d; padding: 10px 20px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; flex-shrink: 0; }
-  .controls button { background: #21262d; border: 1px solid #30363d; color: #c9d1d9; padding: 6px 14px; border-radius: 6px; cursor: pointer; font-size: 13px; transition: background .15s; }
-  .controls button:hover { background: #30363d; }
-  .controls button.primary { background: #238636; border-color: #2ea043; color: #fff; }
-  .controls button.primary:hover { background: #2ea043; }
-  .controls button.danger { background: #8b1a1a; border-color: #bd2c2c; color: #fff; }
-  .controls label { font-size: 12px; color: #8b949e; display: flex; align-items: center; gap: 6px; }
-  .controls select { background: #21262d; border: 1px solid #30363d; color: #c9d1d9; padding: 4px 8px; border-radius: 4px; font-size: 12px; }
-  .badge { font-size: 11px; background: #1f2937; padding: 2px 8px; border-radius: 10px; color: #8b949e; margin-left: auto; }
-  
-  /* Main layout */
-  .main { display: flex; flex: 1; overflow: hidden; }
-  
-  /* Tree canvas */
-  .canvas { flex: 1; position: relative; overflow: auto; background: #0d1117; background-image: radial-gradient(circle, #161b22 1px, transparent 1px); background-size: 24px 24px; }
-  .canvas svg { width: 100%; height: 100%; min-width: 800px; min-height: 600px; }
-  
-  /* Info panel */
-  .panel { width: 320px; background: #161b22; border-left: 1px solid #30363d; display: flex; flex-direction: column; flex-shrink: 0; }
-  .panel h3 { font-size: 13px; font-weight: 600; padding: 12px 16px; border-bottom: 1px solid #30363d; color: #58a6ff; }
-  .panel-content { padding: 12px 16px; font-size: 13px; line-height: 1.6; overflow-y: auto; flex: 1; }
-  .panel-content .prop { display: flex; justify-content: space-between; padding: 3px 0; border-bottom: 1px solid #21262d; font-family: 'JetBrains Mono', monospace; font-size: 12px; }
-  .panel-content .prop .key { color: #8b949e; }
-  .panel-content .prop .val { color: #7ee787; }
-  .panel-content .explain { background: #1c2333; border-left: 3px solid #58a6ff; padding: 8px 12px; margin: 8px 0; border-radius: 0 6px 6px 0; font-size: 12px; color: #8b949e; }
-  .step-log { margin-top: 8px; max-height: 200px; overflow-y: auto; }
-  .step-log .entry { padding: 3px 0; font-size: 11px; font-family: 'JetBrains Mono', monospace; border-bottom: 1px solid #1c2128; }
-  .step-log .entry .step-num { color: #8b949e; }
-  .step-log .entry.begin { color: #58a6ff; }
-  .step-log .entry.complete { color: #3fb950; }
-  .step-log .entry.skip { color: #8b949e; }
-  
-  /* Fiber node SVG */
-  .node-rect { cursor: pointer; transition: stroke-width .15s; }
-  .node-rect:hover { stroke-width: 3; }
-  
-  /* Phase indicators */
-  .phase-begin { color: #58a6ff; }
-  .phase-complete { color: #3fb950; }
-  
-  /* Status bar */
-  .status { background: #0d1117; border-top: 1px solid #30363d; padding: 6px 20px; font-size: 11px; color: #8b949e; font-family: 'JetBrains Mono', monospace; display: flex; gap: 20px; flex-shrink: 0; }
-  .status span { display: flex; align-items: center; gap: 4px; }
-  .dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
-  .dot.begin { background: #58a6ff; }
-  .dot.complete { background: #3fb950; }
-  .dot.idle { background: #8b949e; }
-  
-  /* Responsive */
-  @media (max-width: 768px) { .panel { width: 240px; } }
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:system-ui,-apple-system,sans-serif;background:#0d1117;color:#e6edf3;display:flex;flex-direction:column;height:100vh;overflow:hidden}
+header{background:#161b22;border-bottom:1px solid #30363d;padding:10px 20px;display:flex;align-items:center;gap:14px;flex-shrink:0}
+header h1{font-size:17px;font-weight:600;color:#58a6ff;display:flex;align-items:center;gap:8px}
+header .subtitle{font-size:12px;color:#8b949e}
+
+.controls{background:#161b22;border-bottom:1px solid #30363d;padding:8px 20px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;flex-shrink:0}
+.ctrl-btn{background:#21262d;border:1px solid #30363d;color:#c9d1d9;padding:5px 12px;border-radius:6px;cursor:pointer;font-size:12px;transition:all .15s;font-family:inherit}
+.ctrl-btn:hover{background:#30363d;border-color:#8b949e}
+.ctrl-btn:disabled{opacity:.4;cursor:default}
+.ctrl-btn.primary{background:#238636;border-color:#2ea043;color:#fff}
+.ctrl-btn.primary:hover{background:#2ea043}
+.ctrl-btn.danger{background:#8b1a1a;border-color:#bd2c2c;color:#fff}
+.ctrl-btn.danger:hover{background:#bd2c2c}
+.ctrl-btn.warn{background:#d29922;border-color:#d29922;color:#000}
+.ctrl-btn.warn:hover{background:#e3a93d}
+.ctrl-label{font-size:11px;color:#8b949e;display:flex;align-items:center;gap:5px}
+.ctrl-label select{background:#21262d;border:1px solid #30363d;color:#c9d1d9;padding:3px 6px;border-radius:4px;font-size:11px;font-family:inherit}
+.badge{font-size:10px;background:#1c2128;padding:2px 8px;border-radius:8px;color:#8b949e;margin-left:auto}
+
+.main{display:flex;flex:1;overflow:hidden}
+.canvas{flex:1;position:relative;overflow:auto;background:#0d1117;background-image:radial-gradient(circle,#161b22 1px,transparent 1px);background-size:24px 24px}
+.canvas svg{width:100%;height:100%;min-width:900px;min-height:650px}
+
+/* Phase colors */
+.phase-begin{color:#58a6ff}.phase-complete{color:#3fb950}.phase-commit{color:#f0883e}
+
+/* SVG nodes */
+.node-group{cursor:pointer}
+.node-bg{transition:all .4s cubic-bezier(.4,0,.2,1)}
+.node-bg.begin{filter:drop-shadow(0 0 12px #58a6ff66)}
+.node-bg.complete{filter:drop-shadow(0 0 12px #3fb95066)}
+.node-bg.commit{filter:drop-shadow(0 0 20px #f0883e88)}
+.node-text{pointer-events:none}
+
+/* Pulse ring animation */
+@keyframes pulseRing{0%{opacity:1;r:0}100%{opacity:0;r:40}}
+.pulse-circle{animation:pulseRing .8s ease-out}
+
+/* Mini progress bar */
+.progress-bar{position:absolute;bottom:0;left:0;height:3px;background:#238636;transition:width .3s cubic-bezier(.4,0,.2,1);border-radius:0 3px 0 0;z-index:10}
+
+/* Panel */
+.panel{width:320px;background:#161b22;border-left:1px solid #30363d;display:flex;flex-direction:column;flex-shrink:0}
+.panel h3{font-size:12px;font-weight:600;padding:10px 14px;border-bottom:1px solid #30363d;color:#58a6ff;display:flex;align-items:center;gap:6px}
+.panel-content{padding:10px 14px;font-size:12px;line-height:1.6;overflow-y:auto;flex:1}
+.prop{display:flex;justify-content:space-between;padding:2px 0;border-bottom:1px solid #21262d;font-family:'JetBrains Mono',monospace;font-size:11px}
+.prop .key{color:#8b949e}.prop .val{color:#7ee787}
+.explain{background:#1c2333;border-left:3px solid #58a6ff;padding:6px 10px;margin:6px 0;border-radius:0 6px 6px 0;font-size:11px;color:#8b949e}
+#stepLog{max-height:220px;overflow-y:auto}
+#stepLog .entry{padding:2px 0;font-size:10px;font-family:'JetBrains Mono',monospace;border-bottom:1px solid #1c2128}
+#stepLog .entry .sn{color:#30363d;margin-right:4px}
+#stepLog .entry.begin{color:#58a6ff}#stepLog .entry.complete{color:#3fb950}#stepLog .entry.commit{color:#f0883e}
+
+/* Stats bar */
+.status-bar{background:#0d1117;border-top:1px solid #30363d;padding:4px 20px;font-size:10px;color:#8b949e;font-family:'JetBrains Mono',monospace;display:flex;gap:16px;flex-shrink:0;align-items:center}
+.status-bar .dot{width:7px;height:7px;border-radius:50%;display:inline-block;margin-right:4px}
+.status-bar .dot.idle{background:#8b949e}.dot.begin{background:#58a6ff}.dot.complete{background:#3fb950}.dot.commit{background:#f0883e}
+
+/* Particle canvas overlay */
+#particleCanvas{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:9999}
 </style>
 </head>
 <body>
 
+<canvas id="particleCanvas"></canvas>
+<div class="progress-bar" id="progressBar" style="width:0%"></div>
+
 <header>
-  <h1>⚛ Fiber Reconciliation Visualizer</h1>
+  <h1>⚛ Fiber Reconciliation</h1>
   <span class="subtitle">Step through React's render+commit phases</span>
 </header>
 
 <div class="controls">
-  <button class="primary" id="btnPlay">▶ Play</button>
-  <button id="btnStep">⏭ Step</button>
-  <button id="btnReset">↺ Reset</button>
-  <span style="color:#30363d;width:1px;height:20px;background:#30363d;margin:0 4px;"></span>
-  <label>Speed: <select id="speedSelect">
-    <option value="2000">Slow</option>
-    <option value="1000" selected>Normal</option>
-    <option value="400">Fast</option>
-    <option value="1">Instant</option>
-  </select></label>
-  <label>Demo: <select id="demoSelect">
-    <option value="simple">Simple Tree</option>
-    <option value="list">List w/ Keys</option>
-    <option value="nested">Nested + Suspense</option>
-  </select></label>
-  <span class="badge" id="stepBadge">Step 0 / 0</span>
+  <button class="ctrl-btn primary" id="btnPlay">▶ Play</button>
+  <button class="ctrl-btn" id="btnStep">⏭ Step</button>
+  <button class="ctrl-btn" id="btnReset">↺ Reset</button>
+  <span style="color:#30363d;width:1px;height:18px;background:#30363d;margin:0 4px"></span>
+  <span class="ctrl-label">Speed <select id="speedSelect"><option value="2000">Slow</option><option value="1000" selected>Normal</option><option value="400">Fast</option><option value="1">Instant</option></select></span>
+  <span class="ctrl-label">Demo <select id="demoSelect"><option value="simple">Simple Tree</option><option value="list">List w/ Keys</option><option value="nested">Nested + Suspense</option></select></span>
+  <span class="badge" id="stepBadge">0 / 0</span>
 </div>
 
 <div class="main">
   <div class="canvas" id="canvas">
     <svg id="svg" viewBox="0 0 1000 700"></svg>
   </div>
-  <div class="panel" id="panel">
-    <h3>📋 Fiber Info</h3>
+  <div class="panel">
+    <h3>📋 Fiber Node</h3>
     <div class="panel-content" id="panelContent">
-      <div class="explain">Click a fiber node to inspect its properties</div>
-      <div class="step-log" id="stepLog"></div>
+      <div class="explain">Click a fiber node to inspect</div>
+      <div id="stepLog"></div>
     </div>
   </div>
 </div>
 
-<div class="status">
-  <span>Phase: <span id="phaseDisplay">Idle</span></span>
+<div class="status-bar">
+  <span>Phase: <span id="phaseDisplay" style="color:#8b949e">Idle</span></span>
   <span>Nodes: <span id="nodeCount">0</span></span>
   <span>Depth: <span id="treeDepth">0</span></span>
   <span>Re-renders: <span id="renderCount">0</span></span>
 </div>
 
 <script>
-// ====== Fiber Tree Definitions ======
+// ====== Particle engine ======
+const pCanvas = document.getElementById('particleCanvas');
+const pCtx = pCanvas.getContext('2d');
+pCanvas.width = window.innerWidth;
+pCanvas.height = window.innerHeight;
+const particles = [];
+function spawnParticles(x, y, color, n = 16) {
+  for (let i = 0; i < n; i++) {
+    const a = Math.random() * Math.PI * 2, s = 1 + Math.random() * 4;
+    particles.push({ x, y, vx: Math.cos(a) * s, vy: Math.sin(a) * s - 1, life: 1, decay: 0.008 + Math.random() * 0.02, size: 2 + Math.random() * 4, color });
+  }
+}
+function animParticles() {
+  pCtx.clearRect(0, 0, pCanvas.width, pCanvas.height);
+  for (let i = particles.length - 1; i >= 0; i--) {
+    const p = particles[i];
+    p.x += p.vx; p.y += p.vy; p.vy += 0.06; p.life -= p.decay;
+    if (p.life <= 0) { particles.splice(i, 1); continue; }
+    pCtx.globalAlpha = p.life;
+    pCtx.fillStyle = p.color;
+    pCtx.beginPath(); pCtx.arc(p.x, p.y, p.size * p.life, 0, Math.PI * 2); pCtx.fill();
+  }
+  pCtx.globalAlpha = 1;
+  requestAnimationFrame(animParticles);
+}
+animParticles();
+window.addEventListener('resize', () => { pCanvas.width = window.innerWidth; pCanvas.height = window.innerHeight; });
+
+// ====== Demos ======
 const DEMOS = {
   simple: {
     name: 'Simple Tree',
-    // 1 root, 2 children, 1 grandchild
-    generateSteps: () => {
-      const steps = [];
-      // Mock reconciliation: beginWork on each node, then completeWork
-      const tree = [
-        { id: 'root', tag: 'HostRoot', type: 'Root', depth: 0, children: ['a', 'b'] },
-        { id: 'a', tag: 'FunctionComponent', type: 'Header', depth: 1, children: ['a1'] },
-        { id: 'a1', tag: 'HostComponent', type: 'div', depth: 2, children: [] },
-        { id: 'b', tag: 'FunctionComponent', type: 'Footer', depth: 1, children: [] },
-      ];
-      
-      // Simulate DFS traversal
-      steps.push({ type: 'begin', nodeId: 'root', msg: 'beginWork on Root' });
-      steps.push({ type: 'begin', nodeId: 'a', msg: 'beginWork on Header' });
-      steps.push({ type: 'begin', nodeId: 'a1', msg: 'beginWork on <div>' });
-      steps.push({ type: 'complete', nodeId: 'a1', msg: 'completeWork <div> → no children' });
-      steps.push({ type: 'complete', nodeId: 'a', msg: 'completeWork Header → children done' });
-      steps.push({ type: 'begin', nodeId: 'b', msg: 'beginWork on Footer' });
-      steps.push({ type: 'complete', nodeId: 'b', msg: 'completeWork Footer → leaf' });
-      steps.push({ type: 'complete', nodeId: 'root', msg: 'completeWork Root → commit' });
-      steps.push({ type: 'commit', nodeId: 'root', msg: '⚡ Commit phase: mutations applied to DOM' });
-      return { tree, steps };
-    }
+    tree: [
+      { id:'root', tag:'HostRoot', type:'Root', depth:0, children:['a','b'] },
+      { id:'a', tag:'FunctionComponent', type:'Header', depth:1, children:['a1'] },
+      { id:'a1', tag:'HostComponent', type:'div', depth:2, children:[] },
+      { id:'b', tag:'FunctionComponent', type:'Footer', depth:1, children:[] },
+    ],
+    steps: [
+      { type:'begin', nodeId:'root', msg:'beginWork on Root' },
+      { type:'begin', nodeId:'a', msg:'beginWork on <Header>' },
+      { type:'begin', nodeId:'a1', msg:'beginWork on <div>' },
+      { type:'complete', nodeId:'a1', msg:'completeWork <div> — leaf, no children' },
+      { type:'complete', nodeId:'a', msg:'completeWork <Header> — children done' },
+      { type:'begin', nodeId:'b', msg:'beginWork on <Footer>' },
+      { type:'complete', nodeId:'b', msg:'completeWork <Footer> — leaf' },
+      { type:'complete', nodeId:'root', msg:'completeWork Root — all children done' },
+      { type:'commit', nodeId:'root', msg:'⚡ Commit phase — DOM mutations applied' },
+    ]
   },
-  
   list: {
     name: 'List w/ Keys',
-    generateSteps: () => {
-      const tree = [
-        { id: 'root', tag: 'HostRoot', type: 'Root', depth: 0, children: ['list'] },
-        { id: 'list', tag: 'FunctionComponent', type: 'List', depth: 1, children: ['item1', 'item2', 'item3'] },
-        { id: 'item1', tag: 'HostComponent', type: 'li', depth: 2, children: [], key: '1' },
-        { id: 'item2', tag: 'HostComponent', type: 'li', depth: 2, children: [], key: '2' },
-        { id: 'item3', tag: 'HostComponent', type: 'li', depth: 2, children: [], key: '3' },
-      ];
-      const steps = [
-        { type: 'begin', nodeId: 'root', msg: 'beginWork Root' },
-        { type: 'begin', nodeId: 'list', msg: 'beginWork List → reconcile children[3]' },
-        { type: 'begin', nodeId: 'item1', msg: 'beginWork li key="1" → reuse' },
-        { type: 'complete', nodeId: 'item1', msg: 'completeWork li key="1"' },
-        { type: 'begin', nodeId: 'item2', msg: 'beginWork li key="2" → moved' },
-        { type: 'complete', nodeId: 'item2', msg: 'completeWork li key="2"' },
-        { type: 'begin', nodeId: 'item3', msg: 'beginWork li key="3" → new' },
-        { type: 'complete', nodeId: 'item3', msg: 'completeWork li key="3"' },
-        { type: 'complete', nodeId: 'list', msg: 'completeWork List' },
-        { type: 'complete', nodeId: 'root', msg: 'completeWork Root' },
-        { type: 'commit', nodeId: 'root', msg: '⚡ Commit: DOM mutations (move + insert)' },
-      ];
-      return { tree, steps };
-    }
+    tree: [
+      { id:'root', tag:'HostRoot', type:'Root', depth:0, children:['list'] },
+      { id:'list', tag:'FunctionComponent', type:'List', depth:1, children:['i1','i2','i3'] },
+      { id:'i1', tag:'HostComponent', type:'li', depth:2, children:[], key:'a' },
+      { id:'i2', tag:'HostComponent', type:'li', depth:2, children:[], key:'b' },
+      { id:'i3', tag:'HostComponent', type:'li', depth:2, children:[], key:'c' },
+    ],
+    steps: [
+      { type:'begin', nodeId:'root', msg:'beginWork Root' },
+      { type:'begin', nodeId:'list', msg:'beginWork List — reconcile 3 children' },
+      { type:'begin', nodeId:'i1', msg:'beginWork li key="a" — reuse' },
+      { type:'complete', nodeId:'i1', msg:'completeWork li key="a"' },
+      { type:'begin', nodeId:'i2', msg:'beginWork li key="b" — reuse' },
+      { type:'complete', nodeId:'i2', msg:'completeWork li key="b"' },
+      { type:'begin', nodeId:'i3', msg:'beginWork li key="c" — new insert' },
+      { type:'complete', nodeId:'i3', msg:'completeWork li key="c"' },
+      { type:'complete', nodeId:'list', msg:'completeWork List' },
+      { type:'complete', nodeId:'root', msg:'completeWork Root' },
+      { type:'commit', nodeId:'root', msg:'⚡ Commit phase: DOM mutations (insert + update)' },
+    ]
   },
-
   nested: {
     name: 'Nested + Suspense',
-    generateSteps: () => {
-      const tree = [
-        { id: 'root', tag: 'HostRoot', type: 'Root', depth: 0, children: ['shell'] },
-        { id: 'shell', tag: 'FunctionComponent', type: 'Shell', depth: 1, children: ['nav', 'main'] },
-        { id: 'nav', tag: 'FunctionComponent', type: 'Nav', depth: 2, children: [] },
-        { id: 'main', tag: 'FunctionComponent', type: 'MainContent', depth: 2, children: ['susp', 'footer'] },
-        { id: 'susp', tag: 'SuspenseComponent', type: 'Suspense', depth: 3, children: ['profile'], fallback: 'Loading...' },
-        { id: 'profile', tag: 'FunctionComponent', type: 'UserProfile', depth: 4, children: [] },
-        { id: 'footer', tag: 'HostComponent', type: 'footer', depth: 3, children: [] },
-      ];
-      const steps = [
-        { type: 'begin', nodeId: 'root', msg: 'beginWork Root' },
-        { type: 'begin', nodeId: 'shell', msg: 'beginWork Shell' },
-        { type: 'begin', nodeId: 'nav', msg: 'beginWork Nav → bailout (no changes)' },
-        { type: 'complete', nodeId: 'nav', msg: 'completeWork Nav (bailout)' },
-        { type: 'begin', nodeId: 'main', msg: 'beginWork MainContent' },
-        { type: 'begin', nodeId: 'susp', msg: 'beginWork Suspense → data pending ⏳' },
-        { type: 'complete', nodeId: 'susp', msg: 'completeWork Suspense → show fallback' },
-        { type: 'begin', nodeId: 'footer', msg: 'beginWork <footer>' },
-        { type: 'complete', nodeId: 'footer', msg: 'completeWork <footer>' },
-        { type: 'complete', nodeId: 'main', msg: 'completeWork MainContent' },
-        { type: 'complete', nodeId: 'shell', msg: 'completeWork Shell' },
-        { type: 'complete', nodeId: 'root', msg: 'completeWork Root' },
-        { type: 'commit', nodeId: 'root', msg: '⚡ Commit phase: DOM mutations + passive effects' },
-      ];
-      return { tree, steps };
-    }
+    tree: [
+      { id:'root', tag:'HostRoot', type:'Root', depth:0, children:['shell'] },
+      { id:'shell', tag:'FunctionComponent', type:'Shell', depth:1, children:['nav','main'] },
+      { id:'nav', tag:'FunctionComponent', type:'Nav', depth:2, children:[] },
+      { id:'main', tag:'FunctionComponent', type:'MainContent', depth:2, children:['susp','foot'] },
+      { id:'susp', tag:'SuspenseComponent', type:'Suspense', depth:3, children:['profile'] },
+      { id:'profile', tag:'FunctionComponent', type:'UserProfile', depth:4, children:[] },
+      { id:'foot', tag:'HostComponent', type:'footer', depth:3, children:[] },
+    ],
+    steps: [
+      { type:'begin', nodeId:'root', msg:'beginWork Root' },
+      { type:'begin', nodeId:'shell', msg:'beginWork Shell' },
+      { type:'begin', nodeId:'nav', msg:'beginWork Nav — bailout (no new props)' },
+      { type:'complete', nodeId:'nav', msg:'completeWork Nav (bailout)' },
+      { type:'begin', nodeId:'main', msg:'beginWork MainContent' },
+      { type:'begin', nodeId:'susp', msg:'beginWork Suspense — data pending ⏳' },
+      { type:'complete', nodeId:'susp', msg:'completeWork Suspense → show fallback' },
+      { type:'begin', nodeId:'foot', msg:'beginWork <footer>' },
+      { type:'complete', nodeId:'foot', msg:'completeWork <footer>' },
+      { type:'complete', nodeId:'main', msg:'completeWork MainContent' },
+      { type:'complete', nodeId:'shell', msg:'completeWork Shell' },
+      { type:'complete', nodeId:'root', msg:'completeWork Root' },
+      { type:'commit', nodeId:'root', msg:'⚡ Commit phase: DOM + passive effects' },
+    ]
   }
 };
 
-// ====== State ======
-let currentStep = -1;
-let currentDemo = 'simple';
-let steps = [];
-let tree = [];
-let isPlaying = false;
-let playTimer = null;
-let renderCountVal = 0;
+// ====== STATE ======
+let stepIdx = -1, steps = [], tree = [], timer = null, isPlaying = false, renderCountVal = 0;
+let positions = {};
 
-// ====== SVG rendering ======
 const COLORS = {
-  HostRoot: '#8b5cf6',
-  HostComponent: '#3fb950',
-  FunctionComponent: '#58a6ff',
-  SuspenseComponent: '#d29922',
-  ClassComponent: '#f0883e',
-  // Phase colors
-  'phase-idle': '#21262d',
-  'phase-begin': '#58a6ff',
-  'phase-complete': '#3fb950',
-  'phase-commit': '#f0883e',
+  HostRoot:'#8b5cf6', HostComponent:'#3fb950', FunctionComponent:'#58a6ff',
+  SuspenseComponent:'#d29922', ClassComponent:'#f0883e'
 };
 
-function getNodeColor(node) {
-  return COLORS[node.tag] || '#8b949e';
-}
-
-function layoutTree(tree) {
-  // Simple top-down layout
-  const grouped = {};
-  tree.forEach(n => { grouped[n.id] = n; });
-  
-  const positions = {};
-  const xSpacing = 160;
-  const ySpacing = 100;
-  const startX = 500;
-  const startY = 50;
-  
-  function layoutNode(id, x, y, leftBound) {
-    const node = grouped[id];
-    if (!node) return leftBound;
-    
-    positions[id] = { x, y };
-    
-    if (node.children.length === 0) {
-      return x + xSpacing;
-    }
-    
-    let childX = x - (node.children.length - 1) * xSpacing / 2;
-    let maxX = x;
-    
-    node.children.forEach(childId => {
-      const childNode = grouped[childId];
-      if (childNode) {
-        maxX = Math.max(maxX, layoutNode(childId, childX, y + ySpacing, childX));
-        childX += xSpacing;
-      }
-    });
-    
-    return maxX;
+// ====== Layout ======
+function layoutTree() {
+  const map = {}; tree.forEach(n => { map[n.id] = n; });
+  const pos = {};
+  function walk(id, x, y, left) {
+    const n = map[id]; if (!n) return left;
+    pos[id] = { x, y, phase: 'idle', tag: n.tag, type: n.type, key: n.key || null };
+    if (!n.children.length) return x + 150;
+    let cx = x - (n.children.length - 1) * 75, mx = x;
+    n.children.forEach(c => { mx = Math.max(mx, walk(c, cx, y + 90, cx)); cx += 150; });
+    return mx;
   }
-  
-  layoutNode('root', 500, 60, 500);
-  
-  // Assign phase state
-  tree.forEach(n => {
-    positions[n.id].phase = 'idle';
-    positions[n.id].tag = n.tag;
-    positions[n.id].type = n.type;
-    positions[n.id].key = n.key || null;
-  });
-  
-  return positions;
+  walk('root', 500, 70, 500);
+  tree.forEach(n => { if (pos[n.id]) { pos[n.id].phase = 'idle'; } });
+  return pos;
 }
 
-function renderTree(positions, activeIds = {}) {
-  const svg = document.getElementById('svg');
-  const grouped = {};
-  tree.forEach(n => { grouped[n.id] = n; });
-  
+// ====== Render SVG ======
+function renderSVG(activeIds = {}) {
+  const map = {}; tree.forEach(n => { map[n.id] = n; });
   let html = '';
-  
-  // Draw edges first
-  tree.forEach(node => {
-    if (!node.children) return;
-    node.children.forEach(childId => {
-      const p = positions[node.id];
-      const cp = positions[childId];
-      if (!p || !cp) return;
-      
-      const isActive = activeIds[node.id] || activeIds[childId];
-      const edgeColor = isActive ? '#58a6ff' : '#30363d';
-      const edgeWidth = isActive ? 2.5 : 1;
-      
-      html += `<line x1="${p.x}" y1="${p.y + 14}" x2="${cp.x}" y2="${cp.y - 14}" stroke="${edgeColor}" stroke-width="${edgeWidth}" opacity="0.6"/>`;
+  // Edges
+  tree.forEach(n => {
+    if (!n.children) return;
+    n.children.forEach(cid => {
+      const p = positions[n.id], cp = positions[cid];
+      if (!p||!cp) return;
+      const active = activeIds[n.id]||activeIds[cid];
+      html += `<line x1="${p.x}" y1="${p.y+16}" x2="${cp.x}" y2="${cp.y-16}" stroke="${active?'#58a6ff':'#30363d'}" stroke-width="${active?2.5:1}" opacity="${active?.6:.35}" stroke-linecap="round"/>`;
     });
   });
-  
-  // Draw nodes
-  tree.forEach(node => {
-    const p = positions[node.id];
-    if (!p) return;
+  // Nodes
+  tree.forEach(n => {
+    const p = positions[n.id]; if (!p) return;
+    const c = COLORS[n.tag]||'#8b949e';
+    const ph = p.phase||'idle';
+    const active = activeIds[n.id];
+    const w = 130, h = 44, rx = 8, x = p.x - w/2, y = p.y - h/2;
+    const phColor = ph === 'begin' ? '#58a6ff' : ph === 'complete' ? '#3fb950' : ph === 'commit' ? '#f0883e' : 'transparent';
     
-    const color = getNodeColor(node);
-    const phase = p.phase || 'idle';
-    const phaseColor = COLORS[`phase-${phase}`] || '#21262d';
-    const isActive = activeIds[node.id];
-    const strokeW = isActive ? 3 : 1.5;
-    const fillOpacity = phase === 'complete' ? 0.3 : (phase === 'commit' ? 0.4 : 0.15);
-    
-    const nodeWidth = 130;
-    const nodeHeight = 44;
-    const rx = 8;
-    const x = p.x - nodeWidth / 2;
-    const y = p.y - nodeHeight / 2;
-    
-    html += `<g class="node-group" data-id="${node.id}" style="cursor:pointer">`;
-    // Phase indicator ring
-    if (isActive) {
-      html += `<rect x="${x - 3}" y="${y - 3}" width="${nodeWidth + 6}" height="${nodeHeight + 6}" rx="${rx + 2}" fill="none" stroke="${phaseColor}" stroke-width="2" stroke-dasharray="4,3" opacity="0.7"/>`;
+    html += `<g class="node-group" data-id="${n.id}">`;
+    // Pulse ring for active
+    if (active && ph !== 'idle') {
+      html += `<circle cx="${p.x}" cy="${p.y}" r="0" fill="none" stroke="${phColor}" stroke-width="2" opacity="0"><animate attributeName="r" values="0;45" dur=".8s" fill="freeze"/><animate attributeName="opacity" values=".6;0" dur=".8s" fill="freeze"/></circle>`;
     }
-    // Background
-    html += `<rect class="node-rect" x="${x}" y="${y}" width="${nodeWidth}" height="${nodeHeight}" rx="${rx}" fill="${color}" fill-opacity="${fillOpacity}" stroke="${isActive ? phaseColor : color}" stroke-width="${strokeW}"/>`;
-    // Label
-    html += `<text x="${p.x}" y="${p.y - 4}" text-anchor="middle" fill="${isActive ? '#fff' : '#e6edf3'}" font-size="12" font-weight="600">${node.type}</text>`;
-    html += `<text x="${p.x}" y="${p.y + 12}" text-anchor="middle" fill="#8b949e" font-size="10">${node.tag}${node.key ? ` key="${node.key}"` : ''}</text>`;
+    // Node rect
+    html += `<rect class="node-bg" x="${x}" y="${y}" width="${w}" height="${h}" rx="${rx}" fill="${c}" fill-opacity="${active?.2:.12}" stroke="${active?phColor:c}" stroke-width="${active?3:1.5}" stroke-linejoin="round"/>`;
     // Phase badge
-    if (phase !== 'idle') {
-      html += `<rect x="${p.x + nodeWidth / 2 - 46}" y="${y - 14}" width="44" height="14" rx="4" fill="${phaseColor}" opacity="0.8"/>`;
-      html += `<text x="${p.x + nodeWidth / 2 - 24}" y="${y - 4}" text-anchor="middle" fill="#fff" font-size="9" font-weight="600">${phase.toUpperCase()}</text>`;
+    if (ph !== 'idle') {
+      html += `<rect x="${p.x + w/2 - 48}" y="${y - 16}" width="46" height="16" rx="4" fill="${phColor}" opacity=".85"/>`;
+      html += `<text x="${p.x + w/2 - 25}" y="${y - 5}" text-anchor="middle" fill="#000" font-size="9" font-weight="700" font-family="system-ui">${ph.toUpperCase()}</text>`;
     }
+    // Labels
+    html += `<text class="node-text" x="${p.x}" y="${p.y - 3}" text-anchor="middle" fill="${active?'#fff':'#e6edf3'}" font-size="12" font-weight="600" font-family="system-ui">${n.type}</text>`;
+    html += `<text class="node-text" x="${p.x}" y="${p.y + 13}" text-anchor="middle" fill="#8b949e" font-size="9" font-family="system-ui">${n.tag}${n.key ? ' key='+n.key : ''}</text>`;
     html += `</g>`;
   });
-  
-  svg.innerHTML = html;
+  document.getElementById('svg').innerHTML = html;
   
   // Click handlers
   document.querySelectorAll('.node-group').forEach(g => {
     g.addEventListener('click', () => {
       const id = g.dataset.id;
       const node = tree.find(n => n.id === id);
-      const pos = positions[id];
-      if (node && pos) showNodeInfo(node, pos);
+      const p = positions[id];
+      if (node && p) showNodeInfo(node, p);
     });
   });
-  
   updateStatus();
 }
 
 function showNodeInfo(node, pos) {
-  const content = document.getElementById('panelContent');
-  let html = `<div class="explain">Fiber node details — click any node</div>`;
-  html += `<div class="prop"><span class="key">id</span><span class="val">${node.id}</span></div>`;
-  html += `<div class="prop"><span class="key">type</span><span class="val">${node.type}</span></div>`;
-  html += `<div class="prop"><span class="key">tag</span><span class="val">${node.tag}</span></div>`;
-  html += `<div class="prop"><span class="key">depth</span><span class="val">${node.depth}</span></div>`;
-  if (node.key) html += `<div class="prop"><span class="key">key</span><span class="val">"${node.key}"</span></div>`;
-  html += `<div class="prop"><span class="key">children</span><span class="val">${node.children.length}</span></div>`;
-  html += `<div class="prop"><span class="key">phase</span><span class="val">${pos.phase}</span></div>`;
-  
-  // Explanation based on tag
-  const explanations = {
-    HostRoot: 'Entry point. Holds the fiber root and pending work lanes.',
-    HostComponent: 'Represents a DOM element (div, span, etc.). Minimal reconciliation.',
-    FunctionComponent: 'Your component function. May re-render if hooks triggered.',
-    SuspenseComponent: 'Shows fallback while waiting for async data. Children mount when ready.',
-    ClassComponent: 'Legacy. Has lifecycle methods and state instance.',
-  };
-  if (explanations[node.tag]) {
-    html += `<div class="explain" style="margin-top:8px">${explanations[node.tag]}</div>`;
-  }
-  
-  html += `<h4 style="font-size:12px;margin:12px 0 4px;color:#8b949e">Step Log</h4>`;
-  html += `<div class="step-log" id="stepLog">`;
-  
-  content.innerHTML = html;
+  const c = document.getElementById('panelContent');
+  let h = `<div class="prop"><span class="key">id</span><span class="val">${node.id}</span></div>`;
+  h += `<div class="prop"><span class="key">type</span><span class="val">${node.type}</span></div>`;
+  h += `<div class="prop"><span class="key">tag</span><span class="val">${node.tag}</span></div>`;
+  h += `<div class="prop"><span class="key">depth</span><span class="val">${node.depth}</span></div>`;
+  if (node.key) h += `<div class="prop"><span class="key">key</span><span class="val">"${node.key}"</span></div>`;
+  h += `<div class="prop"><span class="key">children</span><span class="val">${node.children.length}</span></div>`;
+  h += `<div class="prop"><span class="key">phase</span><span class="val" style="color:${pos.phase==='begin'?'#58a6ff':pos.phase==='complete'?'#3fb950':pos.phase==='commit'?'#f0883e':'#8b949e'}">${pos.phase}</span></div>`;
+  const exps = { HostRoot:'Entry point — holds fiber root + pending lanes.', HostComponent:'DOM element (div, span). Minimal reconciliation.', FunctionComponent:'Your component. May re-render if hooks trigger.', SuspenseComponent:'Shows fallback while async data loads.', ClassComponent:'Legacy. Lifecycle methods + state instance.' };
+  if (exps[node.tag]) h += `<div class="explain">${exps[node.tag]}</div>`;
+  c.innerHTML = h + `<div id="stepLog"></div>`;
 }
 
 function updateStatus() {
   document.getElementById('nodeCount').textContent = tree.length;
-  const maxDepth = Math.max(...tree.map(n => n.depth));
-  document.getElementById('treeDepth').textContent = maxDepth;
+  document.getElementById('treeDepth').textContent = Math.max(...tree.map(n=>n.depth));
   document.getElementById('renderCount').textContent = renderCountVal;
-  
-  const activeNum = steps.slice(0, currentStep + 1).filter(s => s.type === 'begin' || s.type === 'complete' || s.type === 'commit').length;
-  const total = steps.filter(s => s.type === 'begin' || s.type === 'complete' || s.type === 'commit').length;
-  document.getElementById('stepBadge').textContent = `Step ${activeNum} / ${total}`;
-  
-  // Phase
-  const lastStep = steps[currentStep];
-  const phase = lastStep ? lastStep.type : 'idle';
-  const phaseDisplay = document.getElementById('phaseDisplay');
-  phaseDisplay.textContent = phase === 'commit' ? 'Commit Phase' : (phase === 'idle' ? 'Idle' : 'Render Phase');
-  phaseDisplay.style.color = COLORS[`phase-${phase === 'begin' ? 'begin' : phase === 'complete' ? 'complete' : phase === 'commit' ? 'commit' : 'idle'}`];
+  const a = steps.slice(0, stepIdx+1).filter(s => s.type==='begin'||s.type==='complete'||s.type==='commit').length;
+  const t = steps.filter(s => s.type==='begin'||s.type==='complete'||s.type==='commit').length;
+  document.getElementById('stepBadge').textContent = `Step ${a}/${t}`;
+  const ls = steps[stepIdx];
+  const ph = ls ? ls.type : 'idle';
+  const d = document.getElementById('phaseDisplay');
+  const labels = { begin:'Render Phase', complete:'Render Phase', commit:'⚡ Commit Phase', idle:'Idle' };
+  const colors = { begin:'#58a6ff', complete:'#3fb950', commit:'#f0883e', idle:'#8b949e' };
+  d.textContent = labels[ph] || 'Idle';
+  d.style.color = colors[ph] || '#8b949e';
+  // Progress bar
+  const pct = steps.length > 0 ? ((stepIdx+1) / steps.length * 100) : 0;
+  document.getElementById('progressBar').style.width = pct + '%';
 }
 
+// ====== Load & Step ======
 function loadDemo(name) {
-  currentDemo = name;
-  currentStep = -1;
-  isPlaying = false;
-  if (playTimer) { clearInterval(playTimer); playTimer = null; }
+  stepIdx = -1; isPlaying = false;
+  if (timer) { clearInterval(timer); timer = null; }
   document.getElementById('btnPlay').textContent = '▶ Play';
-  
-  const demo = DEMOS[name];
-  if (!demo) return;
-  const result = demo.generateSteps();
-  tree = result.tree;
-  steps = result.steps;
-  renderCountVal = 0;
-  
-  const positions = layoutTree(tree);
-  renderTree(positions);
-  
-  const stepLog = document.getElementById('stepLog');
-  if (stepLog) stepLog.innerHTML = '';
-  
-  const content = document.getElementById('panelContent');
-  content.innerHTML = `<div class="explain">${demo.name} loaded. Click "Step" or "Play" to walk through reconciliation.</div><div class="step-log" id="stepLog"></div>`;
-  
-  document.getElementById('stepBadge').textContent = `Step 0 / ${steps.filter(s => s.type === 'begin' || s.type === 'complete' || s.type === 'commit').length}`;
-  document.getElementById('phaseDisplay').textContent = 'Idle';
-  document.getElementById('phaseDisplay').style.color = '#8b949e';
+  const d = DEMOS[name]; tree = d.tree; steps = d.steps; renderCountVal = 0;
+  positions = layoutTree();
+  renderSVG();
+  document.getElementById('panelContent').innerHTML =
+    `<div class="explain">${d.name} loaded. Click Step or Play to walk through.</div><div id="stepLog"></div>`;
+  document.getElementById('progressBar').style.width = '0%';
 }
 
 function stepForward() {
-  if (currentStep >= steps.length - 1) {
-    if (isPlaying) {
-      isPlaying = false;
-      document.getElementById('btnPlay').textContent = '▶ Play';
-      if (playTimer) { clearInterval(playTimer); playTimer = null; }
-    }
+  if (stepIdx >= steps.length - 1) {
+    if (isPlaying) { isPlaying = false; document.getElementById('btnPlay').textContent = '▶ Play'; if (timer) { clearInterval(timer); timer = null; } }
     return;
   }
+  stepIdx++;
+  const s = steps[stepIdx];
+  // Reset all phases
+  tree.forEach(n => { if (positions[n.id]) positions[n.id].phase = 'idle'; });
   
-  currentStep++;
-  const step = steps[currentStep];
-  const positions = layoutTree(tree);
-  
-  // Update phases based on steps up to current
   const activeIds = {};
-  const idleIds = {};
-  tree.forEach(n => { idleIds[n.id] = true; });
-  
-  for (let i = 0; i <= currentStep; i++) {
-    const s = steps[i];
-    if (positions[s.nodeId]) {
-      if (s.type === 'begin') positions[s.nodeId].phase = 'begin';
-      else if (s.type === 'complete') positions[s.nodeId].phase = 'complete';
-      else if (s.type === 'commit') {
-        tree.forEach(n => { if (positions[n.id]) positions[n.id].phase = 'commit'; });
-      }
-    }
-    if (positions[s.nodeId]) {
-      activeIds[s.nodeId] = true;
-      delete idleIds[s.nodeId];
+  for (let i = 0; i <= stepIdx; i++) {
+    const st = steps[i];
+    if (positions[st.nodeId]) {
+      if (st.type === 'begin') positions[st.nodeId].phase = 'begin';
+      else if (st.type === 'complete') positions[st.nodeId].phase = 'complete';
+      else if (st.type === 'commit') tree.forEach(n => { if (positions[n.id]) positions[n.id].phase = 'commit'; });
+      activeIds[st.nodeId] = true;
     }
   }
   
-  if (step.type === 'commit') renderCountVal++;
+  if (s.type === 'commit') renderCountVal++;
+  renderSVG(activeIds);
   
-  renderTree(positions, activeIds);
+  // Log
+  const log = document.getElementById('stepLog');
+  const entry = document.createElement('div');
+  entry.className = `entry ${s.type}`;
+  entry.innerHTML = `<span class="sn">#${stepIdx+1}</span>${s.msg}`;
+  log.appendChild(entry);
+  log.scrollTop = log.scrollHeight;
   
-  // Step log
-  const stepLog = document.getElementById('stepLog');
-  if (stepLog) {
-    const entry = document.createElement('div');
-    entry.className = `entry ${step.type}`;
-    entry.innerHTML = `<span class="step-num">#${currentStep}</span> ${step.msg}`;
-    stepLog.appendChild(entry);
-    stepLog.scrollTop = stepLog.scrollHeight;
+  // Particles on phase change
+  const svgEl = document.getElementById('svg');
+  const rect = svgEl.getBoundingClientRect();
+  const colors = { begin:'#58a6ff', complete:'#3fb950', commit:'#f0883e' };
+  if (colors[s.type]) spawnParticles(rect.left + rect.width/2, rect.top + rect.height/2, colors[s.type], 10);
+  
+  // Auto-stop
+  if (stepIdx >= steps.length - 1) {
+    if (isPlaying) { isPlaying = false; document.getElementById('btnPlay').textContent = '▶ Play'; if (timer) { clearInterval(timer); timer = null; } }
   }
-  
-  document.getElementById('stepBadge').textContent = `Step ${currentStep + 1} / ${steps.filter(s => s.type === 'begin' || s.type === 'complete' || s.type === 'commit').length}`;
-  
-  const phaseDisplay = document.getElementById('phaseDisplay');
-  if (step.type === 'commit') {
-    phaseDisplay.textContent = 'Commit Phase';
-    phaseDisplay.style.color = COLORS['phase-commit'];
-  } else {
-    phaseDisplay.textContent = 'Render Phase';
-    phaseDisplay.style.color = COLORS[`phase-${step.type}`];
+}
+
+function togglePlay() {
+  if (stepIdx >= steps.length - 1) { resetDemo(); setTimeout(() => togglePlay(), 100); return; }
+  isPlaying = !isPlaying;
+  document.getElementById('btnPlay').textContent = isPlaying ? '⏸ Pause' : '▶ Play';
+  if (isPlaying) {
+    stepForward();
+    const spd = parseInt(document.getElementById('speedSelect').value);
+    timer = setInterval(() => {
+      if (stepIdx < steps.length - 1) stepForward();
+      else { isPlaying = false; document.getElementById('btnPlay').textContent = '▶ Play'; clearInterval(timer); timer = null; }
+    }, spd);
   }
-  
-  // Auto-stop on last step
-  if (currentStep >= steps.length - 1 && isPlaying) {
-    isPlaying = false;
-    document.getElementById('btnPlay').textContent = '▶ Play';
-    if (playTimer) { clearInterval(playTimer); playTimer = null; }
-    phaseDisplay.textContent = 'Completed';
-    phaseDisplay.style.color = '#3fb950';
-  }
+  else { if (timer) { clearInterval(timer); timer = null; } }
 }
 
 function resetDemo() {
   isPlaying = false;
-  if (playTimer) { clearInterval(playTimer); playTimer = null; }
+  if (timer) { clearInterval(timer); timer = null; }
   document.getElementById('btnPlay').textContent = '▶ Play';
-  loadDemo(currentDemo);
-}
-
-function togglePlay() {
-  if (currentStep >= steps.length - 1) {
-    resetDemo();
-    setTimeout(() => togglePlay(), 50);
-    return;
-  }
-  
-  isPlaying = !isPlaying;
-  document.getElementById('btnPlay').textContent = isPlaying ? '⏸ Pause' : '▶ Play';
-  
-  if (isPlaying) {
-    const speed = parseInt(document.getElementById('speedSelect').value);
-    stepForward();
-    playTimer = setInterval(() => {
-      if (currentStep < steps.length - 1) {
-        stepForward();
-      } else {
-        isPlaying = false;
-        document.getElementById('btnPlay').textContent = '▶ Play';
-        clearInterval(playTimer);
-        playTimer = null;
-      }
-    }, speed);
-  } else {
-    if (playTimer) { clearInterval(playTimer); playTimer = null; }
-  }
+  loadDemo(document.getElementById('demoSelect').value);
 }
 
 // ====== Init ======
@@ -534,14 +408,10 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('btnStep').addEventListener('click', stepForward);
   document.getElementById('btnPlay').addEventListener('click', togglePlay);
   document.getElementById('btnReset').addEventListener('click', resetDemo);
-  document.getElementById('demoSelect').addEventListener('change', (e) => loadDemo(e.target.value));
+  document.getElementById('demoSelect').addEventListener('change', e => loadDemo(e.target.value));
   document.getElementById('speedSelect').addEventListener('change', () => {
-    if (isPlaying) {
-      clearInterval(playTimer);
-      playTimer = setInterval(stepForward, parseInt(document.getElementById('speedSelect').value));
-    }
+    if (isPlaying) { clearInterval(timer); timer = setInterval(stepForward, parseInt(document.getElementById('speedSelect').value)); }
   });
-  
   loadDemo('simple');
 });
 </script>

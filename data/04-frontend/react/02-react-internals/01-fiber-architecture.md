@@ -24,6 +24,8 @@ graph LR
     style B1 fill:#3fb950
 ```
 
+> 🎮 **Interactive**: [Fiber Reconciliation Visualizer](/04-frontend/react/39-visual-simulations/fiber-reconciliation.html) — step through beginWork/completeWork/commit phases
+
 ## INTERNALS
 
 ### Fiber Node Structure

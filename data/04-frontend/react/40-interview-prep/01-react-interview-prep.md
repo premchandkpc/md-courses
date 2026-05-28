@@ -1,5 +1,7 @@
 # React Interview Preparation
 
+> 🎮 **Interactive Simulators**: [Fiber Reconciliation](/04-frontend/react/39-visual-simulations/fiber-reconciliation.html) · [VDOM Diff](/04-frontend/react/39-visual-simulations/vdom-diff.html) · [Re-render Tree](/04-frontend/react/39-visual-simulations/rerender-tree.html) · [State Batching](/04-frontend/react/39-visual-simulations/state-batching.html) — use these to practice explaining React internals live
+
 ## WHAT
 
 Systematic interview prep covering React fundamentals through Staff Engineer-level system design.

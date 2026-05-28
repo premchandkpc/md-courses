@@ -1,5 +1,7 @@
 # React Scheduler & Lane System
 
+> 🎮 **Interactive**: [State Batching Visualizer](/04-frontend/react/39-visual-simulations/state-batching.html) — compare React 18 auto-batching vs legacy mode
+
 ## WHAT
 The Scheduler coordinates **when** work happens. Lanes define **what priority** that work has. Together they enable React's cooperative scheduling — rendering in 5ms chunks, yielding to the browser between chunks.
 

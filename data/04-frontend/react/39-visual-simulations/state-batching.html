@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>React State Update Batching Visualizer</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:system-ui,-apple-system,sans-serif;background:#0d1117;color:#e6edf3;padding:24px;max-width:1000px;margin:0 auto}
+h1{font-size:22px;color:#58a6ff;margin-bottom:2px}
+h1 small{font-size:13px;color:#8b949e;font-weight:400;display:block;margin-top:2px}
+.sub{color:#8b949e;font-size:13px;margin-bottom:16px}
+
+.legend{display:flex;gap:14px;margin-bottom:14px;flex-wrap:wrap;font-size:11px}
+.legend span{display:flex;align-items:center;gap:5px}
+.dot{width:10px;height:10px;border-radius:50%;display:inline-block}
+.dot.queued{background:#58a6ff;box-shadow:0 0 8px #58a6ff66}
+.dot.batched{background:#d29922;box-shadow:0 0 8px #d2992266}
+.dot.flushed{background:#3fb950;box-shadow:0 0 8px #3fb95066}
+
+/* Main display */
+.display-area{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:12px 0}
+@media(max-width:700px){.display-area{grid-template-columns:1fr}}
+
+.panel{background:#161b22;border:1px solid #30363d;border-radius:10px;padding:16px}
+.panel h3{font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:#8b949e;margin-bottom:10px}
+.panel h3 .count{float:right;font-size:10px;color:#8b949e}
+
+/* Update queue */
+.queue{display:flex;flex-direction:column;gap:4px;min-height:80px}
+.queue-item{padding:8px 12px;border-radius:6px;font-size:12px;font-family:'JetBrains Mono',monospace;border:1px solid #30363d;background:#0d1117;display:flex;align-items:center;gap:8px;transition:all .3s cubic-bezier(.4,0,.2,1)}
+.queue-item .q-icon{font-size:14px}
+.queue-item .q-detail{font-size:10px;color:#8b949e}
+.queue-item.queued{border-color:#58a6ff;background:#1a3a5c;animation:slideIn .3s ease-out}
+.queue-item.batched{border-color:#d29922;background:#3a2a1a}
+.queue-item.flushed{border-color:#3fb950;background:#1a3a2c;opacity:.6;animation:fadeDone .4s forwards}
+@keyframes slideIn{0%{opacity:0;transform:translateX(-20px)}100%{opacity:1;transform:translateX(0)}}
+@keyframes fadeDone{0%{opacity:1}100%{opacity:.4}}
+
+/* State values */
+.state-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.state-row{padding:6px 10px;border-radius:4px;background:#0d1117;border:1px solid #1c2128;display:flex;justify-content:space-between;font-family:'JetBrains Mono',monospace;font-size:12px}
+.state-row .sk{color:#8b949e}
+.state-row .sv{color:#7ee787;transition:all .3s}
+.state-row .sv.changed{color:#d29922;animation:pulseVal .3s ease-out 2}
+@keyframes pulseVal{0%{transform:scale(1)}50%{transform:scale(1.15)}100%{transform:scale(1)}}
+
+/* Timeline */
+.timeline{background:#0d1117;border:1px solid #30363d;border-radius:8px;padding:16px;margin:12px 0;position:relative;overflow-x:auto}
+.timeline::before{content:'BATCHING TIMELINE';position:absolute;top:6px;right:10px;font-size:9px;color:#30363d;letter-spacing:.1em}
+.tl-track{display:flex;gap:2px;align-items:flex-end;height:120px;padding:20px 0 10px;position:relative}
+.tl-bar-group{display:flex;flex-direction:column;align-items:center;gap:2px;flex:1;min-width:40px}
+.tl-bar{width:24px;border-radius:4px 4px 0 0;transition:height .4s cubic-bezier(.4,0,.2,1),background .3s;min-height:4px;position:relative}
+.tl-bar .tl-label{position:absolute;top:-20px;left:50%;transform:translateX(-50%);font-size:8px;color:#8b949e;white-space:nowrap}
+.tl-bar.queued{background:#58a6ff}
+.tl-bar.batched{background:#d29922}
+.tl-bar.flushed{background:#3fb950}
+.tl-bar.pending{background:#30363d;height:8px!important}
+.tl-axis{display:flex;justify-content:space-between;margin-top:4px;font-size:9px;color:#8b949e}
+
+/* Controls */
+.controls{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0;align-items:center}
+.btn{padding:8px 16px;border:1px solid #30363d;border-radius:6px;background:#1c2128;color:#e6edf3;cursor:pointer;font-size:12px;transition:all .15s;font-family:inherit}
+.btn:hover{border-color:#8b949e;background:#21262d}
+.btn:disabled{opacity:.4;cursor:default}
+.btn.primary{background:#58a6ff;color:#000;border-color:#58a6ff;font-weight:600}
+.btn.primary:hover{background:#79b8ff}
+.btn.success{background:#3fb950;color:#000;border-color:#3fb950;font-weight:600}
+.btn.success:hover{background:#56d36e}
+.btn.danger{background:#f85149;color:#fff;border-color:#f85149;font-weight:600}
+
+.batch-mode{display:flex;align-items:center;gap:10px;margin-left:auto;font-size:11px;color:#8b949e}
+.batch-mode select{background:#1c2128;border:1px solid #30363d;color:#e6edf3;padding:4px 8px;border-radius:4px;font-size:11px;font-family:inherit}
+
+/* Log */
+.log{background:#0d1117;border:1px solid #30363d;border-radius:8px;padding:10px 14px;max-height:130px;overflow-y:auto;font-family:'JetBrains Mono',monospace;font-size:11px;line-height:1.6;margin-top:10px}
+.log .l{color:#8b949e;padding:2px 0;border-bottom:1px solid #1c2128}
+.log .l:last-child{border-bottom:none}
+.log .l.queued{color:#58a6ff}
+.log .l.batched{color:#d29922}
+.log .l.flushed{color:#3fb950}
+</style>
+</head>
+<body>
+
+<h1>⚡ React State Update Batching
+  <small>How React groups multiple setState calls into a single render</small>
+</h1>
+
+<div class="legend">
+  <span><span class="dot queued"></span> Queued</span>
+  <span><span class="dot batched"></span> Batched</span>
+  <span><span class="dot flushed"></span> Rendered</span>
+</div>
+
+<div class="controls">
+  <button class="btn primary" onclick="batchUpdates(3)">📦 Batch 3 Updates</button>
+  <button class="btn primary" onclick="batchUpdates(5)">📦 Batch 5 Updates</button>
+  <button class="btn primary" onclick="batchUpdates(8)">📦 Batch 8 Updates</button>
+  <button class="btn success" onclick="flushBatch()">▶ Flush Batch</button>
+  <button class="btn" onclick="autoPlay()">🎬 Auto Play</button>
+  <button class="btn danger" onclick="resetSim()">↺ Reset</button>
+  <div class="batch-mode">
+    <span>Mode</span>
+    <select id="batchMode">
+      <option value="async">Async (React 18+)</option>
+      <option value="legacy">Legacy (React 17)</option>
+    </select>
+  </div>
+</div>
+
+<div class="display-area">
+  <div class="panel">
+    <h3>Update Queue <span class="count" id="queueCount">0 pending</span></h3>
+    <div class="queue" id="updateQueue">
+      <div style="font-size:12px;color:#30363d;text-align:center;padding:20px">No pending updates</div>
+    </div>
+  </div>
+  <div class="panel">
+    <h3>State Values</h3>
+    <div class="state-grid" id="stateGrid"></div>
+  </div>
+</div>
+
+<div class="timeline">
+  <div class="tl-track" id="tlTrack"></div>
+  <div class="tl-axis">
+    <span>setState #1</span>
+    <span>setState #2</span>
+    <span>setState #3</span>
+    <span>batch flush</span>
+    <span>render + commit</span>
+  </div>
+</div>
+
+<div class="log" id="log"></div>
+
+<script>
+// ====== State ======
+const state = {
+  count: 0,
+  text: 'hello',
+  items: [],
+  loading: false,
+  theme: 'light',
+  user: { name: 'Alice', age: 30 }
+};
+
+const stateKeys = Object.keys(state);
+const prevState = {};
+stateKeys.forEach(k => { prevState[k] = JSON.stringify(state[k]); });
+
+let updateQueue = [];
+let batchId = 0;
+let isBatched = false;
+let autoTimer = null;
+let isAutoPlaying = false;
+let timelineData = [];
+
+// ====== Render state grid ======
+function renderState() {
+  const grid = document.getElementById('stateGrid');
+  let html = '';
+  stateKeys.forEach(k => {
+    const val = JSON.stringify(state[k]);
+    const changed = prevState[k] !== val;
+    prevState[k] = val;
+    html += `<div class="state-row"><span class="sk">${k}</span><span class="sv ${changed ? 'changed' : ''}">${val}</span></div>`;
+  });
+  grid.innerHTML = html;
+}
+
+// ====== Queue management ======
+function enqueueUpdate(key, value, desc) {
+  const id = ++batchId;
+  updateQueue.push({ id, key, value, desc, state: 'queued', time: Date.now() });
+  timelineData.push({ id, key, value, state: 'queued', time: Date.now() });
+  renderQueue();
+  addLog(`📥 setState: ${key} = ${JSON.stringify(value)} (queued)`, 'queued');
+}
+
+function batchUpdates(count) {
+  const updates = [
+    { key: 'count', value: state.count + 1, desc: 'count++' },
+    { key: 'text', value: 'hello world', desc: 'update text' },
+    { key: 'loading', value: true, desc: 'loading=true' },
+    { key: 'theme', value: state.theme === 'light' ? 'dark' : 'light', desc: 'toggle theme' },
+    { key: 'items', value: [...state.items, `item-${state.items.length + 1}`], desc: 'add item' },
+    { key: 'count', value: state.count + 2, desc: 'count+=2' },
+    { key: 'loading', value: false, desc: 'loading=false' },
+    { key: 'user', value: { ...state.user, name: 'Bob' }, desc: 'update user' }
+  ];
+  
+  const mode = document.getElementById('batchMode').value;
+  
+  if (mode === 'async') {
+    // React 18+ auto-batching: all queued, then flushed once
+    for (let i = 0; i < count; i++) {
+      const u = updates[i % updates.length];
+      enqueueUpdate(u.key, u.value, u.desc);
+    }
+    isBatched = true;
+    markBatched();
+    addLog(`🔗 ${count} updates batched together (React 18+)`, 'batched');
+  } else {
+    // Legacy: each setState triggers immediate render
+    for (let i = 0; i < count; i++) {
+      const u = updates[i % updates.length];
+      enqueueUpdate(u.key, u.value, u.desc);
+      flushSingle(i);
+    }
+  }
+}
+
+function markBatched() {
+  updateQueue.forEach(u => {
+    if (u.state === 'queued') u.state = 'batched';
+  });
+  timelineData.forEach(t => {
+    if (t.state === 'queued') t.state = 'batched';
+  });
+  renderQueue();
+  renderTimeline();
+}
+
+function flushSingle(idx) {
+  if (idx >= updateQueue.length) return;
+  const u = updateQueue[idx];
+  u.state = 'flushed';
+  state[u.key] = u.value;
+  const tl = timelineData.find(t => t.id === u.id);
+  if (tl) tl.state = 'flushed';
+  
+  renderState();
+  renderQueue();
+  renderTimeline();
+  addLog(`✅ ${u.desc || u.key} = ${JSON.stringify(u.value)} (rendered)`, 'flushed');
+}
+
+function flushBatch() {
+  if (updateQueue.length === 0) return;
+  if (isBatched) {
+    // Apply all batched updates at once (React batching behavior)
+    const vals = {};
+    updateQueue.forEach(u => { vals[u.key] = u.value; });
+    Object.entries(vals).forEach(([k, v]) => { state[k] = v; });
+    updateQueue.forEach(u => u.state = 'flushed');
+    timelineData.forEach(t => t.state = 'flushed');
+    isBatched = false;
+    
+    renderState();
+    renderQueue();
+    renderTimeline();
+    addLog(`⚡ Batch flushed — ${updateQueue.length} updates in one render`, 'flushed');
+    updateQueue = [];
+    renderQueue();
+  } else {
+    // Flush one at a time
+    updateQueue.forEach((u, i) => {
+      setTimeout(() => flushSingle(i), i * 150);
+    });
+    updateQueue = [];
+  }
+  document.getElementById('queueCount').textContent = `${updateQueue.length} pending`;
+}
+
+// ====== Render functions ======
+function renderQueue() {
+  const el = document.getElementById('updateQueue');
+  if (updateQueue.length === 0) {
+    el.innerHTML = '<div style="font-size:12px;color:#30363d;text-align:center;padding:20px">No pending updates</div>';
+    document.getElementById('queueCount').textContent = '0 pending';
+    return;
+  }
+  const icons = { queued: '📥', batched: '🔗', flushed: '✅' };
+  const html = updateQueue.map(u => `
+    <div class="queue-item ${u.state}">
+      <span class="q-icon">${icons[u.state] || '📥'}</span>
+      <span>${u.desc || u.key}</span>
+      <span class="q-detail">${u.state.toUpperCase()}</span>
+    </div>
+  `).join('');
+  el.innerHTML = html;
+  document.getElementById('queueCount').textContent = `${updateQueue.length} pending`;
+}
+
+function renderTimeline() {
+  const track = document.getElementById('tlTrack');
+  
+  // Group by state
+  const queued = timelineData.filter(t => t.state === 'queued').length;
+  const batched = timelineData.filter(t => t.state === 'batched').length;
+  const flushed = timelineData.filter(t => t.state === 'flushed').length;
+  
+  // Show bars for each batch
+  const groups = [
+    { label: 'Queued', count: queued, state: 'queued' },
+    { label: 'Batched', count: batched, state: 'batched' },
+    { label: 'Flushed', count: flushed, state: 'flushed' },
+  ];
+  
+  let html = '';
+  groups.forEach(g => {
+    const height = Math.max(8, g.count * 18);
+    html += `<div class="tl-bar-group">
+      <div class="tl-bar ${g.state}" style="height:${height}px">
+        <span class="tl-label">${g.label} (${g.count})</span>
+      </div>
+    </div>`;
+  });
+  
+  // Add pending bars for remaining
+  const remaining = Math.max(0, 5 - groups.filter(g => g.count > 0).length);
+  for (let i = 0; i < remaining; i++) {
+    html += `<div class="tl-bar-group">
+      <div class="tl-bar pending" style="height:8px">
+        <span class="tl-label">—</span>
+      </div>
+    </div>`;
+  }
+  
+  track.innerHTML = html;
+}
+
+// ====== Auto play ======
+function autoPlay() {
+  if (isAutoPlaying) {
+    clearInterval(autoTimer);
+    autoTimer = null;
+    isAutoPlaying = false;
+    return;
+  }
+  
+  isAutoPlaying = true;
+  resetSim();
+  
+  let step = 0;
+  autoTimer = setInterval(() => {
+    if (step === 0) { batchUpdates(4); step++; }
+    else if (step === 1) { flushBatch(); step++; }
+    else if (step === 2) { batchUpdates(3); step++; }
+    else if (step === 3) { flushBatch(); step = 0; clearInterval(autoTimer); isAutoPlaying = false; }
+  }, 1500);
+}
+
+function resetSim() {
+  if (autoTimer) { clearInterval(autoTimer); autoTimer = null; isAutoPlaying = false; }
+  stateKeys.forEach(k => {
+    if (k === 'count') state[k] = 0;
+    else if (k === 'text') state[k] = 'hello';
+    else if (k === 'items') state[k] = [];
+    else if (k === 'loading') state[k] = false;
+    else if (k === 'theme') state[k] = 'light';
+    else if (k === 'user') state[k] = { name: 'Alice', age: 30 };
+  });
+  updateQueue = [];
+  timelineData = [];
+  batchId = 0;
+  isBatched = false;
+  stateKeys.forEach(k => { prevState[k] = JSON.stringify(state[k]); });
+  renderState();
+  renderQueue();
+  renderTimeline();
+  document.getElementById('log').innerHTML = '';
+  addLog('🔄 Simulation reset', 'queued');
+}
+
+// ====== Log ======
+function addLog(msg, type = 'queued') {
+  const el = document.getElementById('log');
+  const entry = document.createElement('div');
+  entry.className = `l ${type}`;
+  entry.innerHTML = msg;
+  el.appendChild(entry);
+  el.scrollTop = el.scrollHeight;
+  if (el.children.length > 30) el.removeChild(el.firstChild);
+}
+
+// ====== Init ======
+renderState();
+addLog('Ready — click "Batch N Updates" then "Flush Batch"', 'queued');
+addLog('Compare Async (React 18) vs Legacy (React 17) modes', 'queued');
+</script>
+
+<script>
+// Hash navigation
+(function(){
+  function scrollToHash(){
+    var h = window.location.hash;
+    if(h && h.length > 1){
+      var el = document.getElementById(h.substring(1));
+      if(el) setTimeout(function(){ el.scrollIntoView({behavior:'smooth', block:'start'}); }, 200);
+    }
+  }
+  window.addEventListener('hashchange', scrollToHash);
+  window.addEventListener('load', scrollToHash);
+})();
+</script>
+</body>
+</html>

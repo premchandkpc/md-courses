@@ -1,5 +1,7 @@
 # React Render Optimization — Profiling & Debugging
 
+> 🎮 **Interactive**: [Re-render Tree Visualizer](/04-frontend/react/39-visual-simulations/rerender-tree.html) — see which components re-render on state change, toggle `React.memo` live
+
 ## WHAT
 
 Understanding **why** React re-renders and **how to stop unnecessary ones** — from `React.memo` to the Profiler API to compiler-driven optimizations.

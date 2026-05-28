@@ -850,3 +850,105 @@ kafka-topics.sh \
 - [Consensus Raft](/09-distributed-systems/02-consensus-raft.md)
 - [Distributed Transactions](/09-distributed-systems/02-distributed-transactions.md)
 - [Distributed Caching](/09-distributed-systems/03-distributed-caching.md)
+
+---
+
+## Interactive Component: Java Thread Lifecycle
+
+<div style="padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>.state-machine-title{color:#00d4ff;font-family:monospace;font-size:14px;font-weight:bold;margin-bottom:16px}.state-demo{text-align:center}.state-display{font-size:18px;font-family:monospace;padding:16px;border-radius:4px;margin:16px 0;color:#0b0e14;font-weight:bold;min-height:50px;display:flex;align-items:center;justify-content:center;border:2px solid currentColor}.state-new{background:#9333ea;border-color:#7e22ce}.state-runnable{background:#34d399;border-color:#22c55e}.state-running{background:#00d4ff;border-color:#0099cc;color:#0b0e14}.state-waiting{background:#fbbf24;border-color:#f59e0b}.state-terminated{background:#ef4444;border-color:#dc2626}.state-buttons{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:16px}.state-button{padding:8px 16px;border:1px solid #00d4ff;background:#1e3a5f;color:#00d4ff;border-radius:4px;cursor:pointer;font-family:monospace;font-size:12px;transition:all 0.2s}.state-button:hover{background:#2a5a8f;box-shadow:0 0 8px #00d4ff}</style>
+  <div class="state-machine-title">Java Thread Lifecycle State Machine</div>
+  <div class="state-demo">
+    <div class="state-display state-new" id="state-display">NEW</div>
+    <div class="state-buttons">
+      <button class="state-button" onclick="setState('NEW', javaStateMap)">New (created)</button>
+      <button class="state-button" onclick="setState('RUNNABLE', javaStateMap)">Runnable (start())</button>
+      <button class="state-button" onclick="setState('RUNNING', javaStateMap)">Running (scheduler)</button>
+      <button class="state-button" onclick="setState('WAITING', javaStateMap)">Waiting (lock/wait)</button>
+      <button class="state-button" onclick="setState('TERMINATED', javaStateMap)">Terminated (done)</button>
+    </div>
+  </div>
+  <script>
+    const javaStateMap = {
+      'NEW': { label: 'NEW', class: 'state-new' },
+      'RUNNABLE': { label: 'RUNNABLE', class: 'state-runnable' },
+      'RUNNING': { label: 'RUNNING', class: 'state-running' },
+      'WAITING': { label: 'WAITING', class: 'state-waiting' },
+      'TERMINATED': { label: 'TERMINATED', class: 'state-terminated' }
+    };
+    function setState(state, sm) {
+      const display = document.getElementById('state-display');
+      const info = sm[state];
+      display.textContent = info.label;
+      display.className = 'state-display ' + info.class;
+    }
+  </script>
+</div>
+
+
+---
+
+## Interactive Component: Java Heap Memory Observability
+
+<div style="padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>.obs-title{color:#00d4ff;font-family:monospace;font-size:14px;font-weight:bold;margin-bottom:16px}.obs-grid{display:grid;grid-template-columns:repeat(auto-fit, minmax(150px, 1fr));gap:12px}.obs-card{padding:12px;background:#1a2332;border:1px solid #1e3a5f;border-radius:4px;display:flex;flex-direction:column;align-items:center;transition:all 0.3s}.obs-card:hover{border-color:#00d4ff;box-shadow:0 0 8px rgba(0, 212, 255, 0.3)}.obs-label{color:#a3aab8;font-family:monospace;font-size:11px;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px}.obs-value{font-family:monospace;font-size:20px;font-weight:bold;margin-bottom:4px;letter-spacing:0.5px}.obs-unit{color:#a3aab8;font-family:monospace;font-size:10px;text-transform:uppercase}.metric-healthy{color:#34d399}.metric-warning{color:#fbbf24}.metric-critical{color:#ef4444}</style>
+  <div class="obs-title">JVM Heap Memory Metrics</div>
+  <div class="obs-grid">
+    <div class="obs-card">
+      <div class="obs-label">Heap Used</div>
+      <div class="obs-value metric-warning">712</div>
+      <div class="obs-unit">MB</div>
+    </div>
+    <div class="obs-card">
+      <div class="obs-label">Heap Max</div>
+      <div class="obs-value metric-healthy">1024</div>
+      <div class="obs-unit">MB</div>
+    </div>
+    <div class="obs-card">
+      <div class="obs-label">GC Pause</div>
+      <div class="obs-value metric-healthy">85</div>
+      <div class="obs-unit">ms</div>
+    </div>
+    <div class="obs-card">
+      <div class="obs-label">Eden Usage</div>
+      <div class="obs-value metric-healthy">45</div>
+      <div class="obs-unit">%</div>
+    </div>
+  </div>
+</div>
+
+
+---
+
+## Interactive Component: Exception Cascade Simulator
+
+<div style="padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>.cascade-title{color:#00d4ff;font-family:monospace;font-size:14px;font-weight:bold;margin-bottom:16px}.cascade-stages{display:flex;flex-direction:column;gap:12px;margin-bottom:16px}.cascade-stage{display:flex;align-items:center;gap:12px}.cascade-label{color:#e3eaf0;font-family:monospace;font-size:12px;min-width:120px}.cascade-indicator{width:24px;height:24px;border-radius:4px;background:#34d399;border:2px solid #22c55e;transition:all 0.3s}.cascade-indicator.failing{background:#ef4444;border-color:#dc2626;box-shadow:0 0 12px #ef4444;animation:cascade-fail 0.6s ease-out}@keyframes cascade-fail{0%{transform:scale(1);opacity:1}100%{transform:scale(1.2);opacity:0.8}}.cascade-controls{display:flex;gap:8px;flex-wrap:wrap}.cascade-button{padding:8px 16px;border:1px solid #00d4ff;background:#1e3a5f;color:#00d4ff;border-radius:4px;cursor:pointer;font-family:monospace;font-size:12px;transition:all 0.2s}.cascade-button:hover{background:#2a5a8f;box-shadow:0 0 8px #00d4ff}</style>
+  <div class="cascade-title">Exception Stack Unwinding Cascade</div>
+  <div class="cascade-stages">
+    <div class="cascade-stage"><span class="cascade-label">Method A</span><div class="cascade-indicator" data-stage="a"></div></div>
+    <div class="cascade-stage"><span class="cascade-label">Method B (try)</span><div class="cascade-indicator" data-stage="b"></div></div>
+    <div class="cascade-stage"><span class="cascade-label">Method C (finally)</span><div class="cascade-indicator" data-stage="c"></div></div>
+    <div class="cascade-stage"><span class="cascade-label">Stack Unwound</span><div class="cascade-indicator" data-stage="d"></div></div>
+  </div>
+  <div class="cascade-controls">
+    <button class="cascade-button" onclick="throwException()">Throw Exception</button>
+    <button class="cascade-button" onclick="resetException()">Reset</button>
+  </div>
+  <script>
+    function throwException() {
+      const stages = ['a', 'b', 'c', 'd'];
+      let delay = 0;
+      stages.forEach((id) => {
+        setTimeout(() => {
+          document.querySelector('[data-stage="'+id+'"]').classList.add('failing');
+        }, delay);
+        delay += 300;
+      });
+    }
+    function resetException() {
+      document.querySelectorAll('[data-stage]').forEach(s => s.classList.remove('failing'));
+    }
+  </script>
+</div>
+

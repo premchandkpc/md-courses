@@ -1094,3 +1094,135 @@ Python is a BLUEPRINT INTERPRETER:
 - [Apache Spark](/02-data-engineering/processing/01-apache-spark.md)
 - [Apache Flink](/02-data-engineering/processing/02-apache-flink.md)
 - [Columnar Storage](/02-data-engineering/storage-formats/01-columnar-storage.md)
+
+---
+
+## Interactive Component: Python Coroutine State Machine
+
+<div style="padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>.state-machine-title{color:#00d4ff;font-family:monospace;font-size:14px;font-weight:bold;margin-bottom:16px}.state-demo{text-align:center}.state-display{font-size:18px;font-family:monospace;padding:16px;border-radius:4px;margin:16px 0;color:#0b0e14;font-weight:bold;min-height:50px;display:flex;align-items:center;justify-content:center;border:2px solid currentColor}.state-created{background:#9333ea;border-color:#7e22ce}.state-suspended{background:#fbbf24;border-color:#f59e0b}.state-running{background:#00d4ff;border-color:#0099cc;color:#0b0e14}.state-done{background:#34d399;border-color:#22c55e}.state-buttons{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:16px}.state-button{padding:8px 16px;border:1px solid #00d4ff;background:#1e3a5f;color:#00d4ff;border-radius:4px;cursor:pointer;font-family:monospace;font-size:12px;transition:all 0.2s}.state-button:hover{background:#2a5a8f;box-shadow:0 0 8px #00d4ff}</style>
+  <div class="state-machine-title">Python Async/Await Coroutine States</div>
+  <div class="state-demo">
+    <div class="state-display state-created" id="state-display">CREATED</div>
+    <div class="state-buttons">
+      <button class="state-button" onclick="setState('CREATED', pyAsyncStateMap)">Created (def async)</button>
+      <button class="state-button" onclick="setState('SUSPENDED', pyAsyncStateMap)">Suspended (await)</button>
+      <button class="state-button" onclick="setState('RUNNING', pyAsyncStateMap)">Running (resumed)</button>
+      <button class="state-button" onclick="setState('DONE', pyAsyncStateMap)">Done (completed)</button>
+    </div>
+  </div>
+  <script>
+    const pyAsyncStateMap = {
+      'CREATED': { label: 'CREATED', class: 'state-created' },
+      'SUSPENDED': { label: 'SUSPENDED', class: 'state-suspended' },
+      'RUNNING': { label: 'RUNNING', class: 'state-running' },
+      'DONE': { label: 'DONE', class: 'state-done' }
+    };
+    function setState(state, sm) {
+      const display = document.getElementById('state-display');
+      const info = sm[state];
+      display.textContent = info.label;
+      display.className = 'state-display ' + info.class;
+    }
+  </script>
+</div>
+
+
+---
+
+## Interactive Component: Python Thread State Machine
+
+<div style="padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>.state-machine-title{color:#00d4ff;font-family:monospace;font-size:14px;font-weight:bold;margin-bottom:16px}.state-demo{text-align:center}.state-display{font-size:18px;font-family:monospace;padding:16px;border-radius:4px;margin:16px 0;color:#0b0e14;font-weight:bold;min-height:50px;display:flex;align-items:center;justify-content:center;border:2px solid currentColor}.state-start{background:#9333ea;border-color:#7e22ce}.state-active{background:#34d399;border-color:#22c55e}.state-running{background:#00d4ff;border-color:#0099cc;color:#0b0e14}.state-blocked{background:#fbbf24;border-color:#f59e0b}.state-stopped{background:#ef4444;border-color:#dc2626}.state-buttons{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:16px}.state-button{padding:8px 16px;border:1px solid #00d4ff;background:#1e3a5f;color:#00d4ff;border-radius:4px;cursor:pointer;font-family:monospace;font-size:12px;transition:all 0.2s}.state-button:hover{background:#2a5a8f;box-shadow:0 0 8px #00d4ff}</style>
+  <div class="state-machine-title">Python Thread State Machine</div>
+  <div class="state-demo">
+    <div class="state-display state-start" id="state-display">START</div>
+    <div class="state-buttons">
+      <button class="state-button" onclick="setState('START', pyThreadStateMap)">Start (created)</button>
+      <button class="state-button" onclick="setState('ACTIVE', pyThreadStateMap)">Active (queued)</button>
+      <button class="state-button" onclick="setState('RUNNING', pyThreadStateMap)">Running (GIL owned)</button>
+      <button class="state-button" onclick="setState('BLOCKED', pyThreadStateMap)">Blocked (I/O)</button>
+      <button class="state-button" onclick="setState('STOPPED', pyThreadStateMap)">Stopped (done)</button>
+    </div>
+  </div>
+  <script>
+    const pyThreadStateMap = {
+      'START': { label: 'START', class: 'state-start' },
+      'ACTIVE': { label: 'ACTIVE', class: 'state-active' },
+      'RUNNING': { label: 'RUNNING', class: 'state-running' },
+      'BLOCKED': { label: 'BLOCKED', class: 'state-blocked' },
+      'STOPPED': { label: 'STOPPED', class: 'state-stopped' }
+    };
+    function setState(state, sm) {
+      const display = document.getElementById('state-display');
+      const info = sm[state];
+      display.textContent = info.label;
+      display.className = 'state-display ' + info.class;
+    }
+  </script>
+</div>
+
+
+---
+
+## Interactive Component: Python GIL Contention Metrics
+
+<div style="padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>.obs-title{color:#00d4ff;font-family:monospace;font-size:14px;font-weight:bold;margin-bottom:16px}.obs-grid{display:grid;grid-template-columns:repeat(auto-fit, minmax(150px, 1fr));gap:12px}.obs-card{padding:12px;background:#1a2332;border:1px solid #1e3a5f;border-radius:4px;display:flex;flex-direction:column;align-items:center;transition:all 0.3s}.obs-card:hover{border-color:#00d4ff;box-shadow:0 0 8px rgba(0, 212, 255, 0.3)}.obs-label{color:#a3aab8;font-family:monospace;font-size:11px;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px}.obs-value{font-family:monospace;font-size:20px;font-weight:bold;margin-bottom:4px;letter-spacing:0.5px}.obs-unit{color:#a3aab8;font-family:monospace;font-size:10px;text-transform:uppercase}.metric-healthy{color:#34d399}.metric-warning{color:#fbbf24}.metric-critical{color:#ef4444}</style>
+  <div class="obs-title">Python GIL Contention Observability</div>
+  <div class="obs-grid">
+    <div class="obs-card">
+      <div class="obs-label">Active Threads</div>
+      <div class="obs-value metric-healthy">8</div>
+      <div class="obs-unit">threads</div>
+    </div>
+    <div class="obs-card">
+      <div class="obs-label">GIL Contention</div>
+      <div class="obs-value metric-warning">67</div>
+      <div class="obs-unit">%</div>
+    </div>
+    <div class="obs-card">
+      <div class="obs-label">Lock Wait Time</div>
+      <div class="obs-value metric-critical">245</div>
+      <div class="obs-unit">ms</div>
+    </div>
+    <div class="obs-card">
+      <div class="obs-label">Switch Events</div>
+      <div class="obs-value metric-warning">1,892</div>
+      <div class="obs-unit">count</div>
+    </div>
+  </div>
+</div>
+
+
+---
+
+## Interactive Component: Python Memory Observability
+
+<div style="padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>.obs-title{color:#00d4ff;font-family:monospace;font-size:14px;font-weight:bold;margin-bottom:16px}.obs-grid{display:grid;grid-template-columns:repeat(auto-fit, minmax(150px, 1fr));gap:12px}.obs-card{padding:12px;background:#1a2332;border:1px solid #1e3a5f;border-radius:4px;display:flex;flex-direction:column;align-items:center;transition:all 0.3s}.obs-card:hover{border-color:#00d4ff;box-shadow:0 0 8px rgba(0, 212, 255, 0.3)}.obs-label{color:#a3aab8;font-family:monospace;font-size:11px;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px}.obs-value{font-family:monospace;font-size:20px;font-weight:bold;margin-bottom:4px;letter-spacing:0.5px}.obs-unit{color:#a3aab8;font-family:monospace;font-size:10px;text-transform:uppercase}.metric-healthy{color:#34d399}.metric-warning{color:#fbbf24}.metric-critical{color:#ef4444}</style>
+  <div class="obs-title">Python Memory Profiling</div>
+  <div class="obs-grid">
+    <div class="obs-card">
+      <div class="obs-label">RSS (Resident)</div>
+      <div class="obs-value metric-warning">342</div>
+      <div class="obs-unit">MB</div>
+    </div>
+    <div class="obs-card">
+      <div class="obs-label">VMS (Virtual)</div>
+      <div class="obs-value metric-healthy">458</div>
+      <div class="obs-unit">MB</div>
+    </div>
+    <div class="obs-card">
+      <div class="obs-label">Objects Tracked</div>
+      <div class="obs-value metric-healthy">127K</div>
+      <div class="obs-unit">count</div>
+    </div>
+    <div class="obs-card">
+      <div class="obs-label">RefCount Cycles</div>
+      <div class="obs-value metric-healthy">89</div>
+      <div class="obs-unit">runs</div>
+    </div>
+  </div>
+</div>
+

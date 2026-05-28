@@ -356,7 +356,7 @@ Command Query Responsibility Segregation. Separate read and write models.
 
 ### Transactional Outbox
 
-(Early covered in [Distributed Systems — Transactional Outbox](../09-distributed-systems/#transactional-outbox))
+(Early covered in [Distributed Systems — Transactional Outbox](/09-distributed-systems/#transactional-outbox))
 
 Ensures DB write + message publish atomic: write to outbox table in same transaction → relay outbox → publish to broker → delete.
 
@@ -449,19 +449,19 @@ Ensures DB write + message publish atomic: write to outbox table in same transac
 
 | Domain | Connection |
 |--------|-----------|
-| [01 — AI/ML](../01-ai-ml/) | Event streams for ML feature computation, streaming inference, event-driven AI pipelines |
-| [02 — Data Engineering](../02-data-engineering/) | Kafka is the backbone of data engineering; streaming ETL, CDC, data pipeline triggers |
-| [03 — Backend](../03-backend/) | Microservice async communication, event-driven backend services, task queues |
-| [05 — Cloud](../05-cloud/) | SQS/SNS (AWS), Pub/Sub (GCP), Azure Service Bus; managed messaging services on cloud |
-| [06 — DevOps](../06-devops/) | CI/CD event triggers, pipeline notification, deployment events via messaging |
-| [08 — Databases](../08-databases/) | CDC (Debezium streaming DB changes), transactional outbox, database event triggers |
-| [09 — Distributed Systems](../09-distributed-systems/) | Distributed log as replicated state machine, partitioned processing, exactly-once semantics |
+| [01 — AI/ML](/01-ai-ml/) | Event streams for ML feature computation, streaming inference, event-driven AI pipelines |
+| [02 — Data Engineering](/02-data-engineering/) | Kafka is the backbone of data engineering; streaming ETL, CDC, data pipeline triggers |
+| [03 — Backend](/03-backend/) | Microservice async communication, event-driven backend services, task queues |
+| [05 — Cloud](/05-cloud/) | SQS/SNS (AWS), Pub/Sub (GCP), Azure Service Bus; managed messaging services on cloud |
+| [06 — DevOps](/06-devops/) | CI/CD event triggers, pipeline notification, deployment events via messaging |
+| [08 — Databases](/08-databases/) | CDC (Debezium streaming DB changes), transactional outbox, database event triggers |
+| [09 — Distributed Systems](/09-distributed-systems/) | Distributed log as replicated state machine, partitioned processing, exactly-once semantics |
 
 ## Related
 
-- [Cap Consistency](09-distributed-systems/01-cap-consistency.md)
-- [Consensus Replication](09-distributed-systems/01-consensus-replication.md)
-- [Consensus Raft](09-distributed-systems/02-consensus-raft.md)
-- [Distributed Transactions](09-distributed-systems/02-distributed-transactions.md)
-- [Distributed Caching](09-distributed-systems/03-distributed-caching.md)
-- [Distributed Storage](09-distributed-systems/03-distributed-storage.md)
+- [Cap Consistency](/09-distributed-systems/01-cap-consistency.md)
+- [Consensus Replication](/09-distributed-systems/01-consensus-replication.md)
+- [Consensus Raft](/09-distributed-systems/02-consensus-raft.md)
+- [Distributed Transactions](/09-distributed-systems/02-distributed-transactions.md)
+- [Distributed Caching](/09-distributed-systems/03-distributed-caching.md)
+- [Distributed Storage](/09-distributed-systems/03-distributed-storage.md)

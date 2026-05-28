@@ -5,7 +5,7 @@
 
 Software engineering is the **disciplined application of engineering principles** to software development. It covers coding practices, design principles, collaboration patterns, and the professional skills needed to build maintainable systems.
 
-**Related**: [Software Architecture](../17-software-architecture/README.md) · [Testing](../19-testing/README.md) · [System Design](../15-system-design/README.md) · [Microservices](../16-microservices/README.md)
+**Related**: [Software Architecture](/17-software-architecture/README.md) · [Testing](/19-testing/README.md) · [System Design](/15-system-design/README.md) · [Microservices](/16-microservices/README.md)
 
 ## Software Development Lifecycle
 
@@ -787,12 +787,12 @@ Apply tiny refactorings every time you touch a file:
 
 | Domain | Connection |
 |--------|-----------|
-| [Software Architecture](../17-software-architecture/README.md) | High-level design, architecture evaluation |
-| [Testing](../19-testing/README.md) | TDD, code quality, testability |
-| [System Design](../15-system-design/README.md) | Design docs, tradeoffs, evaluation |
-| [Microservices](../16-microservices/README.md) | Team topology, Conway's Law |
-| [Interviews](../20-interviews/README.md) | LLD, OOP, clean code during interviews |
-| [Low-Level Design](../24-low-level-design/README.md) | OOP, SOLID, design problems |
+| [Software Architecture](/17-software-architecture/README.md) | High-level design, architecture evaluation |
+| [Testing](/19-testing/README.md) | TDD, code quality, testability |
+| [System Design](/15-system-design/README.md) | Design docs, tradeoffs, evaluation |
+| [Microservices](/16-microservices/README.md) | Team topology, Conway's Law |
+| [Interviews](/20-interviews/README.md) | LLD, OOP, clean code during interviews |
+| [Low-Level Design](/24-low-level-design/README.md) | OOP, SOLID, design problems |
 
 ---
 
@@ -822,4 +822,4 @@ The Best Engineers:
 
 ---
 
-**Next**: [Software Architecture](../17-software-architecture/README.md) · [Testing](../19-testing/README.md)
+**Next**: [Software Architecture](/17-software-architecture/README.md) · [Testing](/19-testing/README.md)

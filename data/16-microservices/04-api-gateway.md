@@ -1,6 +1,6 @@
 # 🚪 API Gateway — Complete Deep Dive
 
-**Related**: [Service Discovery](03-service-discovery.md) · [Circuit Breaker](05-circuit-breaker-resilience.md) · [Load Balancers](../loadbalancer.md)
+**Related**: [Service Discovery](/16-microservices/03-service-discovery.md) · [Circuit Breaker](/16-microservices/05-circuit-breaker-resilience.md) · [Load Balancers](/11-networking/load-balancing/loadbalancer.md)
 
 ---
 
@@ -1014,7 +1014,7 @@ JWT          =  A passport. The receptionist stamps it when you arrive,
 
 ---
 
-**Next**: [Circuit Breaker & Resilience](05-circuit-breaker-resilience.md)
+**Next**: [Circuit Breaker & Resilience](/16-microservices/05-circuit-breaker-resilience.md)
 
 
 ## API Gateway Request Flow
@@ -1061,9 +1061,9 @@ Fix: Use circuit breaker pattern
 
 ## Related
 
-- [Cap Consistency](09-distributed-systems/01-cap-consistency.md)
-- [Consensus Replication](09-distributed-systems/01-consensus-replication.md)
-- [Consensus Raft](09-distributed-systems/02-consensus-raft.md)
-- [Distributed Transactions](09-distributed-systems/02-distributed-transactions.md)
-- [Distributed Caching](09-distributed-systems/03-distributed-caching.md)
-- [Distributed Storage](09-distributed-systems/03-distributed-storage.md)
+- [Cap Consistency](/09-distributed-systems/01-cap-consistency.md)
+- [Consensus Replication](/09-distributed-systems/01-consensus-replication.md)
+- [Consensus Raft](/09-distributed-systems/02-consensus-raft.md)
+- [Distributed Transactions](/09-distributed-systems/02-distributed-transactions.md)
+- [Distributed Caching](/09-distributed-systems/03-distributed-caching.md)
+- [Distributed Storage](/09-distributed-systems/03-distributed-storage.md)

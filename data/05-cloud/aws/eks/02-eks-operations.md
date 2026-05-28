@@ -431,11 +431,11 @@ aws eks update-nodegroup-version --cluster-name prod --nodegroup-name spot-4
 ## Cross-References
 
 
-- [EC2 Networking & Security](../ec2/02-ec2-networking-security.md) — Nitro system, instance types, ENI limits
-- [ECS Deployment Patterns](../ecs/02-ecs-deployment-patterns.md) — Capacity providers, Fargate comparison
-- [Kubernetes Networking](../../../07-kubernetes/03-kubernetes-networking.md) — CNI plugins, network policies, Ingress
-- [Kubernetes Security](../../../07-kubernetes/04-kubernetes-security.md) — RBAC, Pod Security, OPA Gatekeeper
-- [CloudWatch Observability](../cloudwatch/02-cloudwatch-observability.md) — Container Insights, Prometheus metrics
+- [EC2 Networking & Security](/05-cloud/aws/ec2/02-ec2-networking-security.md) — Nitro system, instance types, ENI limits
+- [ECS Deployment Patterns](/05-cloud/aws/ecs/02-ecs-deployment-patterns.md) — Capacity providers, Fargate comparison
+- [Kubernetes Networking](/07-kubernetes/03-kubernetes-networking.md) — CNI plugins, network policies, Ingress
+- [Kubernetes Security](/07-kubernetes/04-kubernetes-security.md) — RBAC, Pod Security, OPA Gatekeeper
+- [CloudWatch Observability](/05-cloud/aws/cloudwatch/02-cloudwatch-observability.md) — Container Insights, Prometheus metrics
 
 
 ## Observability

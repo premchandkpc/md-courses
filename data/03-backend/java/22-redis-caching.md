@@ -30,7 +30,7 @@ graph TB
     style CLUSTER fill:#e8912e
 ```
 
-**Related**: [Collections Framework](02-collections-framework.md) · [Spring Boot](12-spring-boot.md) · [Performance Tuning](19-performance-tuning.md)
+**Related**: [Collections Framework](/03-backend/java/02-collections-framework.md) · [Spring Boot](/03-backend/java/12-spring-boot.md) · [Performance Tuning](/03-backend/java/19-performance-tuning.md)
 
 ---
 
@@ -869,13 +869,13 @@ SessionCallback<List<Object>> result = redisTemplate.executePipelined(
 
 ---
 
-**Next**: [Distributed Systems Patterns](23-distributed-systems.md) — Consensus, CAP theorem, eventual consistency
+**Next**: [Distributed Systems Patterns](/03-backend/java/23-distributed-systems.md) — Consensus, CAP theorem, eventual consistency
 
 ## Related
 
-- [Jvm Performance](18-performance-engineering/jvm-tuning/01-jvm-performance.md)
-- [Cap Consistency](09-distributed-systems/01-cap-consistency.md)
-- [Consensus Replication](09-distributed-systems/01-consensus-replication.md)
-- [Consensus Raft](09-distributed-systems/02-consensus-raft.md)
-- [Distributed Transactions](09-distributed-systems/02-distributed-transactions.md)
-- [Distributed Caching](09-distributed-systems/03-distributed-caching.md)
+- [Jvm Performance](/18-performance-engineering/jvm-tuning/01-jvm-performance.md)
+- [Cap Consistency](/09-distributed-systems/01-cap-consistency.md)
+- [Consensus Replication](/09-distributed-systems/01-consensus-replication.md)
+- [Consensus Raft](/09-distributed-systems/02-consensus-raft.md)
+- [Distributed Transactions](/09-distributed-systems/02-distributed-transactions.md)
+- [Distributed Caching](/09-distributed-systems/03-distributed-caching.md)

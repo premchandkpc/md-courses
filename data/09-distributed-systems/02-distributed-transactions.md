@@ -495,17 +495,17 @@ See code examples above for practical usage patterns.
 ## Cross-References
 
 
-- [Distributed Storage](../03-distributed-storage.md) — Consistent hashing, quorum replication, gossip
-- [Stream Processing](../04-stream-processing.md) — Event-time processing, exactly-once, watermarks
-- [PostgreSQL Architecture](../../08-databases/02-postgresql-architecture.md) — MVCC, isolation levels, deadlock detection
-- [Database Internals](../../08-databases/01-db-internals.md) — B-tree concurrency, WAL, ARIES recovery
-- [Backend Roadmap](../../21-roadmaps/01-backend-engineer.md) — Phase 3 distributed systems, Phase 4 consistency models
+- [Distributed Storage](/09-distributed-systems/03-distributed-storage.md) — Consistent hashing, quorum replication, gossip
+- [Stream Processing](/09-distributed-systems/04-stream-processing.md) — Event-time processing, exactly-once, watermarks
+- [PostgreSQL Architecture](/08-databases/02-postgresql-architecture.md) — MVCC, isolation levels, deadlock detection
+- [Database Internals](/08-databases/01-relational-database-internals.md) — B-tree concurrency, WAL, ARIES recovery
+- [Backend Roadmap](/21-roadmaps/01-backend-engineer.md) — Phase 3 distributed systems, Phase 4 consistency models
 
 ## Related
 
-- [Postgresql Internals](08-databases/01-postgresql-internals.md)
-- [Relational Database Internals](08-databases/01-relational-database-internals.md)
-- [Postgresql Architecture](08-databases/02-postgresql-architecture.md)
-- [Redis Internals](08-databases/02-redis-internals.md)
-- [Postgresql Troubleshooting Tuning](08-databases/03-postgresql-troubleshooting-tuning.md)
-- [Redis Deep Dive](08-databases/04-redis-deep-dive.md)
+- [Postgresql Internals](/08-databases/01-postgresql-internals.md)
+- [Relational Database Internals](/08-databases/01-relational-database-internals.md)
+- [Postgresql Architecture](/08-databases/02-postgresql-architecture.md)
+- [Redis Internals](/08-databases/02-redis-internals.md)
+- [Postgresql Troubleshooting Tuning](/08-databases/03-postgresql-troubleshooting-tuning.md)
+- [Redis Deep Dive](/08-databases/04-redis-deep-dive.md)

@@ -309,7 +309,7 @@ Every existing item's DOM node gets **updated with new content** instead of simp
 | List with stable keys | Keyed reconciliation | O(n) |
 | List with index keys | Position-based (wrong) | O(n) + unnecessary DOM |
 
-**Cross-reference**: This diffing algorithm is analogous to the `git diff` algorithm — both match common prefix/suffix, then use a heuristic for the middle section. See [OS](../../08-operating-systems/) for scheduling algorithm comparisons.
+**Cross-reference**: This diffing algorithm is analogous to the `git diff` algorithm — both match common prefix/suffix, then use a heuristic for the middle section. See [OS](/08-operating-systems/) for scheduling algorithm comparisons.
 
 ---
 
@@ -431,7 +431,7 @@ function workLoopConcurrent(deadline) {
 }
 ```
 
-**Cross-reference**: This is the same cooperative multitasking model used in OS kernel schedulers. See [Operating Systems](../../08-operating-systems/) for preemption and time-slicing concepts.
+**Cross-reference**: This is the same cooperative multitasking model used in OS kernel schedulers. See [Operating Systems](/08-operating-systems/) for preemption and time-slicing concepts.
 
 ### Lane Priorities (Bitmask System)
 
@@ -630,7 +630,7 @@ useLayoutEffect(() => {
 }, [data]);
 ```
 
-**Cross-reference**: See [Performance Engineering](../../18-performance-engineering/) for detailed browser rendering pipeline profiling with Chrome DevTools. See [Networking](../../11-networking/) for critical rendering path optimization (CSS/JS delivery).
+**Cross-reference**: See [Performance Engineering](/18-performance-engineering/) for detailed browser rendering pipeline profiling with Chrome DevTools. See [Networking](/11-networking/) for critical rendering path optimization (CSS/JS delivery).
 
 ### Production Optimizations Summary
 
@@ -1722,8 +1722,8 @@ graph TD
 ## Related
 
 
-- [Networking](../../11-networking/) — HTTP, performance, optimization
-- [Security](../../13-security/) — CORS, authentication, XSS prevention
-- [Backend](../../03-backend/) — API design and contracts
-- [Performance Engineering](../../18-performance-engineering/) — Browser rendering
-- [Testing](../../19-testing/) — E2E and component testing
+- [Networking](/11-networking/) — HTTP, performance, optimization
+- [Security](/13-security/) — CORS, authentication, XSS prevention
+- [Backend](/03-backend/) — API design and contracts
+- [Performance Engineering](/18-performance-engineering/) — Browser rendering
+- [Testing](/19-testing/) — E2E and component testing

@@ -5,7 +5,7 @@
 
 Microservices are independently deployable, loosely coupled services each owning a specific business capability. They enable **polyglot persistence**, **independent scaling**, and **team autonomy** — at the cost of distributed systems complexity.
 
-**Related**: [System Design](../15-system-design/README.md) · [Distributed Systems](../09-distributed-systems/README.md) · [Software Architecture](../17-software-architecture/README.md) · [Kubernetes](../07-kubernetes/README.md)
+**Related**: [System Design](/15-system-design/README.md) · [Distributed Systems](/09-distributed-systems/README.md) · [Software Architecture](/17-software-architecture/README.md) · [Kubernetes](/07-kubernetes/README.md)
 
 ---
 
@@ -646,13 +646,13 @@ Each team:
 
 | Domain | Connection |
 |--------|-----------|
-| [System Design](../15-system-design/README.md) | Architecture decisions, tradeoff analysis |
-| [Software Architecture](../17-software-architecture/README.md) | DDD, bounded context, patterns |
-| [Kubernetes](../07-kubernetes/README.md) | Container orchestration, service mesh |
-| [Distributed Systems](../09-distributed-systems/README.md) | CAP, consistency, RPC, consensus |
-| [SRE & Observability](../14-sre-observability/README.md) | Monitoring, tracing, incident response |
-| [Testing](../19-testing/README.md) | Contract testing, chaos engineering |
-| [Security](../13-security/README.md) | mTLS, OAuth2, secrets management |
+| [System Design](/15-system-design/README.md) | Architecture decisions, tradeoff analysis |
+| [Software Architecture](/17-software-architecture/README.md) | DDD, bounded context, patterns |
+| [Kubernetes](/07-kubernetes/README.md) | Container orchestration, service mesh |
+| [Distributed Systems](/09-distributed-systems/README.md) | CAP, consistency, RPC, consensus |
+| [SRE & Observability](/14-sre-observability/README.md) | Monitoring, tracing, incident response |
+| [Testing](/19-testing/README.md) | Contract testing, chaos engineering |
+| [Security](/13-security/README.md) | mTLS, OAuth2, secrets management |
 
 ---
 
@@ -677,13 +677,13 @@ Emergency Protocol (Saga)        → Distributed recovery plan
 
 ---
 
-**Next**: [Software Architecture](../17-software-architecture/README.md) · [System Design](../15-system-design/README.md)
+**Next**: [Software Architecture](/17-software-architecture/README.md) · [System Design](/15-system-design/README.md)
 
 ## Related
 
-- [Cap Consistency](09-distributed-systems/01-cap-consistency.md)
-- [Consensus Replication](09-distributed-systems/01-consensus-replication.md)
-- [Consensus Raft](09-distributed-systems/02-consensus-raft.md)
-- [Distributed Transactions](09-distributed-systems/02-distributed-transactions.md)
-- [Distributed Caching](09-distributed-systems/03-distributed-caching.md)
-- [Distributed Storage](09-distributed-systems/03-distributed-storage.md)
+- [Cap Consistency](/09-distributed-systems/01-cap-consistency.md)
+- [Consensus Replication](/09-distributed-systems/01-consensus-replication.md)
+- [Consensus Raft](/09-distributed-systems/02-consensus-raft.md)
+- [Distributed Transactions](/09-distributed-systems/02-distributed-transactions.md)
+- [Distributed Caching](/09-distributed-systems/03-distributed-caching.md)
+- [Distributed Storage](/09-distributed-systems/03-distributed-storage.md)

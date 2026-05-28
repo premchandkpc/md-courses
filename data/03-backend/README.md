@@ -246,16 +246,16 @@ High-performance RPC using HTTP/2 and Protocol Buffers. Default for microservice
 
 | Domain | Connection |
 |--------|-----------|
-| [00 — Foundations](../00-foundations/) | Data structures, algorithms, complexity analysis are daily tools for backend engineers |
-| [01 — AI/ML](../01-ai-ml/) | Model serving infrastructure, embedding-based features, AI-powered API features |
-| [02 — Data Engineering](../02-data-engineering/) | Backend services often feed/read from data pipelines; CDC patterns, event-driven ETL |
-| [04 — Frontend](../04-frontend/) | Backend APIs consumed by frontend; BFF pattern, SSR hydration, real-time WebSocket |
-| [05 — Cloud](../05-cloud/) | Compute (EC2, GKE, ECS), managed DBs (RDS, Cloud SQL), load balancers, auto-scaling |
-| [06 — DevOps](../06-devops/) | CI/CD for backend services, Docker image building, infrastructure as code |
-| [08 — Databases](../08-databases/) | Every backend service connects to a database; query design, connection management, migrations |
-| [09 — Distributed Systems](../09-distributed-systems/) | Microservice communication, consistency, distributed transactions, consensus for coordination |
-| [10 — Messaging](../10-messaging/) | Async integration of services, event-driven patterns, message queues for decoupling |
-| [11 — Networking](../11-networking/) | HTTP/gRPC protocol details, TCP tuning, DNS resolution, TLS termination |
+| [00 — Foundations](/00-foundations/) | Data structures, algorithms, complexity analysis are daily tools for backend engineers |
+| [01 — AI/ML](/01-ai-ml/) | Model serving infrastructure, embedding-based features, AI-powered API features |
+| [02 — Data Engineering](/02-data-engineering/) | Backend services often feed/read from data pipelines; CDC patterns, event-driven ETL |
+| [04 — Frontend](/04-frontend/) | Backend APIs consumed by frontend; BFF pattern, SSR hydration, real-time WebSocket |
+| [05 — Cloud](/05-cloud/) | Compute (EC2, GKE, ECS), managed DBs (RDS, Cloud SQL), load balancers, auto-scaling |
+| [06 — DevOps](/06-devops/) | CI/CD for backend services, Docker image building, infrastructure as code |
+| [08 — Databases](/08-databases/) | Every backend service connects to a database; query design, connection management, migrations |
+| [09 — Distributed Systems](/09-distributed-systems/) | Microservice communication, consistency, distributed transactions, consensus for coordination |
+| [10 — Messaging](/10-messaging/) | Async integration of services, event-driven patterns, message queues for decoupling |
+| [11 — Networking](/11-networking/) | HTTP/gRPC protocol details, TCP tuning, DNS resolution, TLS termination |
 
 ## Language Comparison
 

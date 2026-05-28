@@ -2,7 +2,7 @@
 
 Testing is the systematic verification that software behaves as expected. It's not a phase — it's a **continuous practice** embedded in development, from unit tests through production chaos experiments.
 
-**Related**: [Software Engineering](../25-software-engineering/README.md) · [Microservices](../16-microservices/README.md) · [SRE & Observability](../14-sre-observability/README.md) · [CI/CD](../06-devops/README.md)
+**Related**: [Software Engineering](/25-software-engineering/README.md) · [Microservices](/16-microservices/README.md) · [SRE & Observability](/14-sre-observability/README.md) · [CI/CD](/06-devops/README.md)
 
 ---
 
@@ -716,12 +716,12 @@ If Score > 90%: Great coverage, hard to kill remaining mutants
 
 | Domain | Connection |
 |--------|-----------|
-| [Software Engineering](../25-software-engineering/README.md) | TDD, clean code, refactoring |
-| [Microservices](../16-microservices/README.md) | Contract testing, service-level testing |
-| [CI/CD](../06-devops/README.md) | Test automation in pipeline |
-| [SRE & Observability](../14-sre-observability/README.md) | Canary testing, chaos engineering |
-| [Performance Engineering](../18-performance-engineering/README.md) | Load testing, benchmarks |
-| [Security](../13-security/README.md) | Security testing, SAST, DAST |
+| [Software Engineering](/25-software-engineering/README.md) | TDD, clean code, refactoring |
+| [Microservices](/16-microservices/README.md) | Contract testing, service-level testing |
+| [CI/CD](/06-devops/README.md) | Test automation in pipeline |
+| [SRE & Observability](/14-sre-observability/README.md) | Canary testing, chaos engineering |
+| [Performance Engineering](/18-performance-engineering/README.md) | Load testing, benchmarks |
+| [Security](/13-security/README.md) | Security testing, SAST, DAST |
 
 ---
 
@@ -749,13 +749,13 @@ Design Tool:
 
 ---
 
-**Next**: [Interview Preparation](../20-interviews/README.md) · [Software Engineering](../25-software-engineering/README.md)
+**Next**: [Interview Preparation](/20-interviews/README.md) · [Software Engineering](/25-software-engineering/README.md)
 
 ## Related
 
-- [Infrastructure As Code](06-devops/01-infrastructure-as-code.md)
-- [Configuration Management](06-devops/02-configuration-management.md)
-- [Devops Sre Practices](06-devops/03-devops-sre-practices.md)
-- [Terraform Infrastructure As Code Config Management](06-devops/03-terraform-infrastructure-as-code-config-management.md)
-- [Readme](06-devops/README.md)
-- [Github Actions Gitlab Ci Pipeline Design](06-devops/ci-cd/01-github-actions-gitlab-ci-pipeline-design.md)
+- [Infrastructure As Code](/06-devops/01-infrastructure-as-code.md)
+- [Configuration Management](/06-devops/02-configuration-management.md)
+- [Devops Sre Practices](/06-devops/03-devops-sre-practices.md)
+- [Terraform Infrastructure As Code Config Management](/06-devops/03-terraform-infrastructure-as-code-config-management.md)
+- [Readme](/06-devops/README.md)
+- [Github Actions Gitlab Ci Pipeline Design](/06-devops/ci-cd/01-github-actions-gitlab-ci-pipeline-design.md)

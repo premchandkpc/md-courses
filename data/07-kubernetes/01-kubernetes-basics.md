@@ -3,7 +3,7 @@
 
 > **Run the live simulator**: [kubernetes-scheduling.html](/07-kubernetes/kubernetes-scheduling.html) — add pods, watch the scheduler score and bind them to nodes interactively.
 
-**Related**: [Advanced K8s Patterns](02-advanced-k8s.md) · [Docker Container Basics](../docker/01-container-basics.md) · [K8s Docs](https://kubernetes.io/docs)
+**Related**: [Advanced K8s Patterns](/07-kubernetes/02-advanced-k8s.md) · [Docker Container Basics](/06-devops/docker/01-container-basics.md) · [K8s Docs](https://kubernetes.io/docs)
 
 ---
 
@@ -2823,12 +2823,12 @@ and the control plane makes it happen, continuously reconciling.
 
 ## Related
 
-- [Readme](05-cloud/README.md)
-- [Cloudwatch Deep Dive](05-cloud/aws/cloudwatch/01-cloudwatch-deep-dive.md)
-- [Cloudwatch Observability](05-cloud/aws/cloudwatch/02-cloudwatch-observability.md)
-- [Ec2 Deep Dive](05-cloud/aws/ec2/01-ec2-deep-dive.md)
-- [Ec2 Networking Security](05-cloud/aws/ec2/02-ec2-networking-security.md)
-- [Ecs Deep Dive](05-cloud/aws/ecs/01-ecs-deep-dive.md)
+- [Readme](/05-cloud/README.md)
+- [Cloudwatch Deep Dive](/05-cloud/aws/cloudwatch/01-cloudwatch-deep-dive.md)
+- [Cloudwatch Observability](/05-cloud/aws/cloudwatch/02-cloudwatch-observability.md)
+- [Ec2 Deep Dive](/05-cloud/aws/ec2/01-ec2-deep-dive.md)
+- [Ec2 Networking Security](/05-cloud/aws/ec2/02-ec2-networking-security.md)
+- [Ecs Deep Dive](/05-cloud/aws/ecs/01-ecs-deep-dive.md)
 
 ## Runtime Flow: Pod Scheduling
 

@@ -422,20 +422,20 @@ Ensures durability without flushing data pages on each commit. Central to Postgr
 
 | Domain | Connection |
 |--------|-----------|
-| [00 — Foundations](../00-foundations/) | B+tree, sorting, searching algorithms are database internals; discrete math for relational algebra |
-| [01 — AI/ML](../01-ai-ml/) | Vector databases (pgvector, Milvus), feature stores, embedding storage for RAG |
-| [02 — Data Engineering](../02-data-engineering/) | Warehouse (Snowflake, BigQuery), lakehouse (Delta/Iceberg), ETL from operational databases, CDC |
-| [03 — Backend](../03-backend/) | Database connection management, ORM patterns, query design, data access layers |
-| [05 — Cloud](../05-cloud/) | Managed databases (RDS, Cloud SQL, Azure SQL), NoSQL (DynamoDB, Firestore, Cosmos DB), ElastiCache |
-| [07 — Kubernetes](../07-kubernetes/) | Running databases on K8s (stateful operators), CSI storage, database at scale on K8s |
-| [09 — Distributed Systems](../09-distributed-systems/) | Consensus (Raft, Paxos) in distributed databases, CAP theorem, consistency models |
-| [10 — Messaging](../10-messaging/) | CDC (Debezium, Kafka Connect), database event streaming, transactional outbox pattern |
+| [00 — Foundations](/00-foundations/) | B+tree, sorting, searching algorithms are database internals; discrete math for relational algebra |
+| [01 — AI/ML](/01-ai-ml/) | Vector databases (pgvector, Milvus), feature stores, embedding storage for RAG |
+| [02 — Data Engineering](/02-data-engineering/) | Warehouse (Snowflake, BigQuery), lakehouse (Delta/Iceberg), ETL from operational databases, CDC |
+| [03 — Backend](/03-backend/) | Database connection management, ORM patterns, query design, data access layers |
+| [05 — Cloud](/05-cloud/) | Managed databases (RDS, Cloud SQL, Azure SQL), NoSQL (DynamoDB, Firestore, Cosmos DB), ElastiCache |
+| [07 — Kubernetes](/07-kubernetes/) | Running databases on K8s (stateful operators), CSI storage, database at scale on K8s |
+| [09 — Distributed Systems](/09-distributed-systems/) | Consensus (Raft, Paxos) in distributed databases, CAP theorem, consistency models |
+| [10 — Messaging](/10-messaging/) | CDC (Debezium, Kafka Connect), database event streaming, transactional outbox pattern |
 
 ## Related
 
-- [Cap Consistency](09-distributed-systems/01-cap-consistency.md)
-- [Consensus Replication](09-distributed-systems/01-consensus-replication.md)
-- [Consensus Raft](09-distributed-systems/02-consensus-raft.md)
-- [Distributed Transactions](09-distributed-systems/02-distributed-transactions.md)
-- [Distributed Caching](09-distributed-systems/03-distributed-caching.md)
-- [Distributed Storage](09-distributed-systems/03-distributed-storage.md)
+- [Cap Consistency](/09-distributed-systems/01-cap-consistency.md)
+- [Consensus Replication](/09-distributed-systems/01-consensus-replication.md)
+- [Consensus Raft](/09-distributed-systems/02-consensus-raft.md)
+- [Distributed Transactions](/09-distributed-systems/02-distributed-transactions.md)
+- [Distributed Caching](/09-distributed-systems/03-distributed-caching.md)
+- [Distributed Storage](/09-distributed-systems/03-distributed-storage.md)

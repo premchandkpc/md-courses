@@ -2,7 +2,7 @@
 
 > **Scope**: PostgreSQL process architecture, shared memory, connection lifecycle, shared buffers and buffer manager, MVCC, WAL, query processing (parser/planner/executor), vacuum/autovacuum, indexing (B-tree/GiST/GIN/BRIN/Bloom), replication (streaming/logical), backup/PITR — complete internal architecture of the world's most advanced open-source database.
 
-> **Related**: [01-linux-kernel-architecture.md](../os/01-linux-kernel-architecture.md), [03-memory-management.md](../os/03-memory-management.md), [04-io-models.md](../os/04-io-models.md)
+> **Related**: [01-linux-kernel-architecture.md](/12-operating-systems/01-linux-kernel-architecture.md), [03-memory-management.md](/12-operating-systems/03-memory-management.md), [04-io-models.md](/12-operating-systems/04-io-models.md)
 
 ---
 
@@ -1211,9 +1211,9 @@ flowchart LR
 
 ## Related
 
-- [Cap Consistency](09-distributed-systems/01-cap-consistency.md)
-- [Consensus Replication](09-distributed-systems/01-consensus-replication.md)
-- [Consensus Raft](09-distributed-systems/02-consensus-raft.md)
-- [Distributed Transactions](09-distributed-systems/02-distributed-transactions.md)
-- [Distributed Caching](09-distributed-systems/03-distributed-caching.md)
-- [Distributed Storage](09-distributed-systems/03-distributed-storage.md)
+- [Cap Consistency](/09-distributed-systems/01-cap-consistency.md)
+- [Consensus Replication](/09-distributed-systems/01-consensus-replication.md)
+- [Consensus Raft](/09-distributed-systems/02-consensus-raft.md)
+- [Distributed Transactions](/09-distributed-systems/02-distributed-transactions.md)
+- [Distributed Caching](/09-distributed-systems/03-distributed-caching.md)
+- [Distributed Storage](/09-distributed-systems/03-distributed-storage.md)

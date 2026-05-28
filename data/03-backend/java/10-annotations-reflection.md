@@ -1,6 +1,6 @@
 # @ Java Annotations & Reflection — Complete Deep Dive
 
-**Related**: [JVM Architecture](05-jvm-architecture.md) · [Generics](08-generics.md) · [Java 8+ Features](11-java-8-features.md) · [Spring Boot](12-spring-boot.md)
+**Related**: [JVM Architecture](/03-backend/java/05-jvm-architecture.md) · [Generics](/03-backend/java/08-generics.md) · [Java 8+ Features](/03-backend/java/11-java-8-features.md) · [Spring Boot](/03-backend/java/12-spring-boot.md)
 
 ---
 
@@ -980,13 +980,13 @@ PROCESSOR         you write @LogExecution, and a program generates
 
 ---
 
-**Next**: [Java 8+ Features](11-java-8-features.md) — Language and API improvements over versions
+**Next**: [Java 8+ Features](/03-backend/java/11-java-8-features.md) — Language and API improvements over versions
 
 ## Related
 
-- [Jvm Performance](18-performance-engineering/jvm-tuning/01-jvm-performance.md)
-- [Cap Consistency](09-distributed-systems/01-cap-consistency.md)
-- [Consensus Replication](09-distributed-systems/01-consensus-replication.md)
-- [Consensus Raft](09-distributed-systems/02-consensus-raft.md)
-- [Distributed Transactions](09-distributed-systems/02-distributed-transactions.md)
-- [Distributed Caching](09-distributed-systems/03-distributed-caching.md)
+- [Jvm Performance](/18-performance-engineering/jvm-tuning/01-jvm-performance.md)
+- [Cap Consistency](/09-distributed-systems/01-cap-consistency.md)
+- [Consensus Replication](/09-distributed-systems/01-consensus-replication.md)
+- [Consensus Raft](/09-distributed-systems/02-consensus-raft.md)
+- [Distributed Transactions](/09-distributed-systems/02-distributed-transactions.md)
+- [Distributed Caching](/09-distributed-systems/03-distributed-caching.md)

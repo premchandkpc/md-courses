@@ -2,7 +2,7 @@
 
 Production stories are **real-world incidents** that teach us how systems fail and how they recover. Each story documents symptoms, root cause, investigation process, mitigation, and permanent fix.
 
-**Related**: [SRE & Observability](../14-sre-observability/README.md) · [Databases](../08-databases/README.md) · [Kubernetes](../07-kubernetes/README.md) · [Distributed Systems](../09-distributed-systems/README.md)
+**Related**: [SRE & Observability](/14-sre-observability/README.md) · [Databases](/08-databases/README.md) · [Kubernetes](/07-kubernetes/README.md) · [Distributed Systems](/09-distributed-systems/README.md)
 
 ---
 
@@ -505,14 +505,14 @@ What was done to mitigate and resolve.
 
 | Domain | Connection |
 |--------|-----------|
-| [SRE & Observability](../14-sre-observability/README.md) | Incident detection, monitoring, alerting |
-| [Databases](../08-databases/README.md) | Connection pools, replication, performance |
-| [Distributed Systems](../09-distributed-systems/README.md) | Consensus failures, partition handling |
-| [Kubernetes](../07-kubernetes/README.md) | Node failures, pod evictions, OOM |
-| [Cloud Computing](../05-cloud/README.md) | Cloud provider outages, service limits |
-| [Security](../13-security/README.md) | Breaches, vulnerabilities, secret leaks |
-| [Networking](../11-networking/README.md) | DNS, load balancers, MTU, packet loss |
-| [Performance Engineering](../18-performance-engineering/README.md) | Memory leaks, GC pauses, connection pool tuning |
+| [SRE & Observability](/14-sre-observability/README.md) | Incident detection, monitoring, alerting |
+| [Databases](/08-databases/README.md) | Connection pools, replication, performance |
+| [Distributed Systems](/09-distributed-systems/README.md) | Consensus failures, partition handling |
+| [Kubernetes](/07-kubernetes/README.md) | Node failures, pod evictions, OOM |
+| [Cloud Computing](/05-cloud/README.md) | Cloud provider outages, service limits |
+| [Security](/13-security/README.md) | Breaches, vulnerabilities, secret leaks |
+| [Networking](/11-networking/README.md) | DNS, load balancers, MTU, packet loss |
+| [Performance Engineering](/18-performance-engineering/README.md) | Memory leaks, GC pauses, connection pool tuning |
 
 ---
 
@@ -537,14 +537,14 @@ The Three Questions After Every Incident:
 
 ---
 
-**Next**: [Project Architectures](../23-projects/README.md) · [SRE & Observability](../14-sre-observability/README.md)
+**Next**: [Project Architectures](/23-projects/README.md) · [SRE & Observability](/14-sre-observability/README.md)
 
 ---
 
 ## Related
 
-- [Databases](../../08-databases/) — Outages, corruption, performance
-- [Distributed Systems](../../09-distributed-systems/) — Consensus, cascade failures
-- [Kubernetes](../../07-kubernetes/) — Cluster failures
-- [Networking](../../11-networking/) — DNS, TCP issues
-- [SRE](../../14-sre-observability/) — Incident response
+- [Databases](/08-databases/) — Outages, corruption, performance
+- [Distributed Systems](/09-distributed-systems/) — Consensus, cascade failures
+- [Kubernetes](/07-kubernetes/) — Cluster failures
+- [Networking](/11-networking/) — DNS, TCP issues
+- [SRE](/14-sre-observability/) — Incident response

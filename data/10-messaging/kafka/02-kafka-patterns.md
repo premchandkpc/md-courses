@@ -3,7 +3,7 @@
 
 > **Run the live simulator**: [kafka-replication.html](/10-messaging/kafka/kafka-replication.html) — produce messages, kill leaders, watch ISR management in real-time.
 
-**Related**: [Kafka Basics](01-kafka-basics.md) · [Distributed Transactions & Saga](../microservices/06-distributed-transactions-saga.md) · [CQRS & Event Sourcing](../microservices/07-cqrs-event-sourcing.md)
+**Related**: [Kafka Basics](/10-messaging/kafka/01-kafka-basics.md) · [Distributed Transactions & Saga](/16-microservices/06-distributed-transactions-saga.md) · [CQRS & Event Sourcing](/16-microservices/07-observability-monitoring.md)
 
 ---
 
@@ -545,11 +545,11 @@ See code examples above for practical usage patterns.
 ## Cross-References
 
 
-- [Kafka Production Operations](../04-kafka-production-operations.md) — Cluster sizing, broker tuning, security, DR
-- [SNS & SQS Patterns](../sns-sqs/02-sns-sqs-patterns.md) — Queue comparison guide, exactly-once processing
-- [Distributed Transactions](../../09-distributed-systems/02-distributed-transactions.md) — Outbox, Saga, TCC patterns
-- [CQRS & Event Sourcing](../../16-microservices/07-cqrs-event-sourcing.md) — Command handling, projections, event store
-- [Stream Processing](../../09-distributed-systems/04-stream-processing.md) — Windowing, watermarks, checkpointing
+- [Kafka Production Operations](/10-messaging/kafka/04-kafka-production-operations.md) — Cluster sizing, broker tuning, security, DR
+- [SNS & SQS Patterns](/10-messaging/sns-sqs/02-sns-sqs-patterns.md) — Queue comparison guide, exactly-once processing
+- [Distributed Transactions](/09-distributed-systems/02-distributed-transactions.md) — Outbox, Saga, TCC patterns
+- [CQRS & Event Sourcing](/16-microservices/07-observability-monitoring.md) — Command handling, projections, event store
+- [Stream Processing](/09-distributed-systems/04-stream-processing.md) — Windowing, watermarks, checkpointing
 
 
 ## Production Failure Modes
@@ -625,8 +625,8 @@ See code examples above for practical usage patterns.
 ## Cross-References
 
 
-- [Kafka Production Operations](../04-kafka-production-operations.md) — Cluster sizing, broker tuning, security, DR
-- [SNS & SQS Patterns](../sns-sqs/02-sns-sqs-patterns.md) — Queue comparison guide, exactly-once processing
-- [Distributed Transactions](../../09-distributed-systems/02-distributed-transactions.md) — Outbox, Saga, TCC patterns
-- [CQRS & Event Sourcing](../../16-microservices/07-cqrs-event-sourcing.md) — Command handling, projections, event store
-- [Stream Processing](../../09-distributed-systems/04-stream-processing.md) — Windowing, watermarks, checkpointing
+- [Kafka Production Operations](/10-messaging/kafka/04-kafka-production-operations.md) — Cluster sizing, broker tuning, security, DR
+- [SNS & SQS Patterns](/10-messaging/sns-sqs/02-sns-sqs-patterns.md) — Queue comparison guide, exactly-once processing
+- [Distributed Transactions](/09-distributed-systems/02-distributed-transactions.md) — Outbox, Saga, TCC patterns
+- [CQRS & Event Sourcing](/16-microservices/07-observability-monitoring.md) — Command handling, projections, event store
+- [Stream Processing](/09-distributed-systems/04-stream-processing.md) — Windowing, watermarks, checkpointing

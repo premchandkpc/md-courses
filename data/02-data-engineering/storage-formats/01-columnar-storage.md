@@ -914,20 +914,20 @@ Takes 10 minutes, need < 1 minute.
 ### Prerequisites
 
 
-- [Operating Systems (12-operating-systems/)](../../12-operating-systems/) — Disk I/O, cache
-- [Networking (11-networking/)](../../11-networking/) — Data transfer optimization
+- [Operating Systems (12-operating-systems/)](/12-operating-systems/) — Disk I/O, cache
+- [Networking (11-networking/)](/11-networking/) — Data transfer optimization
 
 ### Deep Dives
 
 
-- [Databases (08-databases/)](../../08-databases/) — Storage engines, B-trees
-- [Data Warehousing (02-data-engineering/)](../../02-data-engineering/) — OLAP, OLTP, MPP
+- [Databases (08-databases/)](/08-databases/) — Storage engines, B-trees
+- [Data Warehousing (02-data-engineering/)](/02-data-engineering/) — OLAP, OLTP, MPP
 
 ### Cross-Domain
 
 
-- [Performance Engineering (18-performance-engineering/)](../../18-performance-engineering/) — Profiling columnar reads
-- [Distributed Systems (09-distributed-systems/)](../../09-distributed-systems/) — Sharding, replication
+- [Performance Engineering (18-performance-engineering/)](/18-performance-engineering/) — Profiling columnar reads
+- [Distributed Systems (09-distributed-systems/)](/09-distributed-systems/) — Sharding, replication
 
 ---
 
@@ -1319,8 +1319,8 @@ Data Lake:
 ## Related
 
 
-- [Databases](../../08-databases/) — Data storage and querying
-- [Messaging](../../10-messaging/) — Event streaming (Kafka)
-- [Cloud Platforms](../../05-cloud/) — Data warehousing (Redshift, BigQuery)
-- [Backend](../../03-backend/) — Data service APIs
-- [Distributed Systems](../../09-distributed-systems/) — Scale and consistency
+- [Databases](/08-databases/) — Data storage and querying
+- [Messaging](/10-messaging/) — Event streaming (Kafka)
+- [Cloud Platforms](/05-cloud/) — Data warehousing (Redshift, BigQuery)
+- [Backend](/03-backend/) — Data service APIs
+- [Distributed Systems](/09-distributed-systems/) — Scale and consistency

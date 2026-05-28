@@ -1,6 +1,6 @@
 # 🔍 Service Discovery — Complete Deep Dive
 
-**Related**: [API Gateway](04-api-gateway.md) · [Circuit Breaker](05-circuit-breaker-resilience.md) · [Kubernetes](../k8s.md)
+**Related**: [API Gateway](/16-microservices/04-api-gateway.md) · [Circuit Breaker](/16-microservices/05-circuit-breaker-resilience.md) · [Kubernetes](/07-kubernetes/README.md)
 
 ---
 
@@ -896,13 +896,13 @@ DNS               "user-service" and it works. Like calling "Pizza"
 
 ---
 
-**Next**: [API Gateway](04-api-gateway.md)
+**Next**: [API Gateway](/16-microservices/04-api-gateway.md)
 
 ## Related
 
-- [Cap Consistency](09-distributed-systems/01-cap-consistency.md)
-- [Consensus Replication](09-distributed-systems/01-consensus-replication.md)
-- [Consensus Raft](09-distributed-systems/02-consensus-raft.md)
-- [Distributed Transactions](09-distributed-systems/02-distributed-transactions.md)
-- [Distributed Caching](09-distributed-systems/03-distributed-caching.md)
-- [Distributed Storage](09-distributed-systems/03-distributed-storage.md)
+- [Cap Consistency](/09-distributed-systems/01-cap-consistency.md)
+- [Consensus Replication](/09-distributed-systems/01-consensus-replication.md)
+- [Consensus Raft](/09-distributed-systems/02-consensus-raft.md)
+- [Distributed Transactions](/09-distributed-systems/02-distributed-transactions.md)
+- [Distributed Caching](/09-distributed-systems/03-distributed-caching.md)
+- [Distributed Storage](/09-distributed-systems/03-distributed-storage.md)

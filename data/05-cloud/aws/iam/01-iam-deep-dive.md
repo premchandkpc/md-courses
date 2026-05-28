@@ -1,6 +1,6 @@
 # 🔑 AWS IAM — Complete Deep Dive
 
-**Related**: [S3](../s3/01-s3-deep-dive.md) · [EC2](../ec2/01-ec2-deep-dive.md) · [Lambda](../lambda/01-lambda-deep-dive.md) · [CloudWatch](../cloudwatch/01-cloudwatch-deep-dive.md)
+**Related**: [S3](/05-cloud/aws/s3/01-s3-deep-dive.md) · [EC2](/05-cloud/aws/ec2/01-ec2-deep-dive.md) · [Lambda](/05-cloud/aws/lambda/01-lambda-deep-dive.md) · [CloudWatch](/05-cloud/aws/cloudwatch/01-cloudwatch-deep-dive.md)
 
 ---
 
@@ -968,4 +968,4 @@ PRIVILEGE         house key, safe key, and mail key too.
 
 ---
 
-**Next**: [ECS Deep Dive](../ecs/01-ecs-deep-dive.md) — Container orchestration
+**Next**: [ECS Deep Dive](/05-cloud/aws/ecs/01-ecs-deep-dive.md) — Container orchestration

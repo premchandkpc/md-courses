@@ -1,6 +1,6 @@
 # 📦 Amazon S3 — Complete Deep Dive
 
-**Related**: [EC2](../ec2/01-ec2-deep-dive.md) · [CloudWatch](../cloudwatch/01-cloudwatch-deep-dive.md) · [IAM](../iam/01-iam-deep-dive.md)
+**Related**: [EC2](/05-cloud/aws/ec2/01-ec2-deep-dive.md) · [CloudWatch](/05-cloud/aws/cloudwatch/01-cloudwatch-deep-dive.md) · [IAM](/05-cloud/aws/iam/01-iam-deep-dive.md)
 
 ---
 
@@ -910,4 +910,4 @@ CRR              =  Automatic box duplication to another
 
 ---
 
-**Next**: [EC2 Deep Dive](../ec2/01-ec2-deep-dive.md) — Virtual servers in the cloud
+**Next**: [EC2 Deep Dive](/05-cloud/aws/ec2/01-ec2-deep-dive.md) — Virtual servers in the cloud

@@ -2,7 +2,7 @@
 
 > **Scope**: Requirements (200M subscribers, 100PB+ content, 1000+ device types, adaptive streaming), content pipeline (transcoding, packaging, DRM), CDN (Open Connect, peering), personalization (recommendation pipeline, two-tower DNN, candidate generation/ranking/blending), adaptive streaming algorithms (BBA, MPC, Pensieve), chaos engineering (Chaos Monkey, Simian Army, CAP, FIT), failure analysis.
 >
-> **Related**: [01-whatsapp.md](./01-whatsapp.md)
+> **Related**: [01-whatsapp.md](/15-system-design/01-whatsapp.md)
 
 
 ```mermaid
@@ -624,9 +624,9 @@ Data Pipeline:
 
 ## Related
 
-- [Cap Consistency](09-distributed-systems/01-cap-consistency.md)
-- [Consensus Replication](09-distributed-systems/01-consensus-replication.md)
-- [Consensus Raft](09-distributed-systems/02-consensus-raft.md)
-- [Distributed Transactions](09-distributed-systems/02-distributed-transactions.md)
-- [Distributed Caching](09-distributed-systems/03-distributed-caching.md)
-- [Distributed Storage](09-distributed-systems/03-distributed-storage.md)
+- [Cap Consistency](/09-distributed-systems/01-cap-consistency.md)
+- [Consensus Replication](/09-distributed-systems/01-consensus-replication.md)
+- [Consensus Raft](/09-distributed-systems/02-consensus-raft.md)
+- [Distributed Transactions](/09-distributed-systems/02-distributed-transactions.md)
+- [Distributed Caching](/09-distributed-systems/03-distributed-caching.md)
+- [Distributed Storage](/09-distributed-systems/03-distributed-storage.md)

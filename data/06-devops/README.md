@@ -373,16 +373,16 @@ Integrating security into the DevOps lifecycle—shifting left, automating secur
 
 | Domain | Connection |
 |--------|-----------|
-| [01 — AI/ML](../01-ai-ml/) | MLOps pipelines, model CI/CD, infrastructure for training/inference |
-| [02 — Data Engineering](../02-data-engineering/) | Data pipeline CI/CD, IaC for data infrastructure, Airflow on K8s |
-| [03 — Backend](../03-backend/) | Backend CI/CD, containerized deployment, environment parity |
-| [05 — Cloud](../05-cloud/) | IaC targets (AWS/GCP/Azure), cloud CI/CD services (CodePipeline, Cloud Build), managed build services |
-| [07 — Kubernetes](../07-kubernetes/) | Container orchestration, GitOps (ArgoCD), Helm, K8s-native CI (Tekton), K8s IaC |
-| [08 — Databases](../08-databases/) | Database migration CI/CD, IaC for database instances, backup automation |
-| [09 — Distributed Systems](../09-distributed-systems/) | Distributed CI/CD systems, deployment at scale, consensus for coordination |
-| [10 — Messaging](../10-messaging/) | Event-driven CI/CD triggers, pipeline notification systems |
-| [11 — Networking](../11-networking/) | Network IaC, TLS automation, DNS automation in pipelines |
-| [14 — SRE/Observability](../14-sre-observability/) | Monitoring infrastructure, observability pipeline, alerting systems |
+| [01 — AI/ML](/01-ai-ml/) | MLOps pipelines, model CI/CD, infrastructure for training/inference |
+| [02 — Data Engineering](/02-data-engineering/) | Data pipeline CI/CD, IaC for data infrastructure, Airflow on K8s |
+| [03 — Backend](/03-backend/) | Backend CI/CD, containerized deployment, environment parity |
+| [05 — Cloud](/05-cloud/) | IaC targets (AWS/GCP/Azure), cloud CI/CD services (CodePipeline, Cloud Build), managed build services |
+| [07 — Kubernetes](/07-kubernetes/) | Container orchestration, GitOps (ArgoCD), Helm, K8s-native CI (Tekton), K8s IaC |
+| [08 — Databases](/08-databases/) | Database migration CI/CD, IaC for database instances, backup automation |
+| [09 — Distributed Systems](/09-distributed-systems/) | Distributed CI/CD systems, deployment at scale, consensus for coordination |
+| [10 — Messaging](/10-messaging/) | Event-driven CI/CD triggers, pipeline notification systems |
+| [11 — Networking](/11-networking/) | Network IaC, TLS automation, DNS automation in pipelines |
+| [14 — SRE/Observability](/14-sre-observability/) | Monitoring infrastructure, observability pipeline, alerting systems |
 
 ## DevOps Pipeline Stages
 
@@ -424,9 +424,9 @@ graph LR
 
 ## Related
 
-- [Kubernetes Basics](07-kubernetes/01-kubernetes-basics.md)
-- [Advanced K8S](07-kubernetes/02-advanced-k8s.md)
-- [Kubernetes Networking](07-kubernetes/03-kubernetes-networking.md)
-- [Kubernetes Security](07-kubernetes/04-kubernetes-security.md)
-- [Kubernetes Storage](07-kubernetes/05-kubernetes-storage.md)
-- [Kubernetes Observability](07-kubernetes/06-kubernetes-observability.md)
+- [Kubernetes Basics](/07-kubernetes/01-kubernetes-basics.md)
+- [Advanced K8S](/07-kubernetes/02-advanced-k8s.md)
+- [Kubernetes Networking](/07-kubernetes/03-kubernetes-networking.md)
+- [Kubernetes Security](/07-kubernetes/04-kubernetes-security.md)
+- [Kubernetes Storage](/07-kubernetes/05-kubernetes-storage.md)
+- [Kubernetes Observability](/07-kubernetes/06-kubernetes-observability.md)

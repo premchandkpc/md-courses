@@ -1,6 +1,6 @@
 # 🏗️ Complete Design Patterns + Architectures + Real-Time Examples
 
-**Related**: [Microservices Architecture](MICROSERVICES_SYSTEM_DESIGN.md#2-microservice-architecture--deep-dive) · [Load Balancers](loadbalancer.md) · [Kubernetes](k8s.md)
+**Related**: [Microservices Architecture](/16-microservices/README.md#2-microservice-architecture--deep-dive) · [Load Balancers](/11-networking/load-balancing/loadbalancer.md) · [Kubernetes](/07-kubernetes/README.md)
 
 ---
 

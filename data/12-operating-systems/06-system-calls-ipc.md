@@ -2,7 +2,7 @@
 
 > **Scope**: Syscall mechanism (syscall instruction, table, arguments, vDSO), all IPC mechanisms (pipe, socket, shared memory, message queues, signals, eventfd, futex, seccomp, landlock), error handling patterns, strace vs bpftrace tracing, complete coverage of Linux inter-process communication.
 
-> **Related**: [01-linux-kernel-architecture.md](01-linux-kernel-architecture.md), [04-io-models.md](04-io-models.md), [05-process-threads-fibers.md](05-process-threads-fibers.md)
+> **Related**: [01-linux-kernel-architecture.md](/12-operating-systems/01-linux-kernel-architecture.md), [04-io-models.md](/12-operating-systems/04-io-models.md), [05-process-threads-fibers.md](/12-operating-systems/05-process-threads-fibers.md)
 
 ---
 
@@ -1387,9 +1387,9 @@ futex(FUTEX_WAIT):         ~200ns (uncontended, returns immediately)
 
 ## Related
 
-- [Tcp Ip Deep Dive](11-networking/01-tcp-ip-deep-dive.md)
-- [Tcpip Protocol Stack](11-networking/01-tcpip-protocol-stack.md)
-- [Http Protocols](11-networking/02-http-protocols.md)
-- [Tls Http Grpc](11-networking/02-tls-http-grpc.md)
-- [Dns Cdn Loadbalancing](11-networking/03-dns-cdn-loadbalancing.md)
-- [Readme](11-networking/README.md)
+- [Tcp Ip Deep Dive](/11-networking/01-tcp-ip-deep-dive.md)
+- [Tcpip Protocol Stack](/11-networking/01-tcpip-protocol-stack.md)
+- [Http Protocols](/11-networking/02-http-protocols.md)
+- [Tls Http Grpc](/11-networking/02-tls-http-grpc.md)
+- [Dns Cdn Loadbalancing](/11-networking/03-dns-cdn-loadbalancing.md)
+- [Readme](/11-networking/README.md)

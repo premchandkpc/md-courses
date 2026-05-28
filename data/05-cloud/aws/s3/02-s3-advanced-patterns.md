@@ -1,6 +1,6 @@
 # 🪣 S3 Advanced Patterns — Complete Deep Dive
 
-**Related**: [S3 Basics](01-s3-deep-dive.md) · [IAM](../iam/01-iam-deep-dive.md) · [CloudWatch](../cloudwatch/02-cloudwatch-observability.md) · [Lambda](../lambda/01-lambda-deep-dive.md)
+**Related**: [S3 Basics](/05-cloud/aws/s3/01-s3-deep-dive.md) · [IAM](/05-cloud/aws/iam/01-iam-deep-dive.md) · [CloudWatch](/05-cloud/aws/cloudwatch/02-cloudwatch-observability.md) · [Lambda](/05-cloud/aws/lambda/01-lambda-deep-dive.md)
 
 ---
 
@@ -1303,4 +1303,4 @@ CROSS-ACCOUNT ACCESS    = You own the warehouse. You give a
 
 ---
 
-**Next**: [Lambda Advanced Patterns](../lambda/02-lambda-advanced-patterns.md)
+**Next**: [Lambda Advanced Patterns](/05-cloud/aws/lambda/02-lambda-advanced-patterns.md)

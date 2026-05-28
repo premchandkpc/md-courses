@@ -1,6 +1,6 @@
 # 🏗️ Design Patterns in Java — Complete Deep Dive
 
-**Related**: [OOP Concepts](01-oop-concepts.md) · [Collections Framework](02-collections-framework.md) · [Spring Boot](12-spring-boot.md) · [Hibernate/JPA](13-hibernate-jpa.md)
+**Related**: [OOP Concepts](/03-backend/java/01-oop-concepts.md) · [Collections Framework](/03-backend/java/02-collections-framework.md) · [Spring Boot](/03-backend/java/12-spring-boot.md) · [Hibernate/JPA](/03-backend/java/13-hibernate-jpa.md)
 
 ---
 
@@ -1261,7 +1261,7 @@ RESPONSIBILITY    then Level 3. If one can't solve it, it passes up.
 
 ---
 
-**Next**: [Index](index.md) — Back to main index
+**Next**: [Index](/index.md) — Back to main index
 
 
 ## Comparison Table
@@ -1325,9 +1325,9 @@ String result = strategies.get(strategyName).apply(input);
 
 ## Related
 
-- [Jvm Performance](18-performance-engineering/jvm-tuning/01-jvm-performance.md)
-- [Cap Consistency](09-distributed-systems/01-cap-consistency.md)
-- [Consensus Replication](09-distributed-systems/01-consensus-replication.md)
-- [Consensus Raft](09-distributed-systems/02-consensus-raft.md)
-- [Distributed Transactions](09-distributed-systems/02-distributed-transactions.md)
-- [Distributed Caching](09-distributed-systems/03-distributed-caching.md)
+- [Jvm Performance](/18-performance-engineering/jvm-tuning/01-jvm-performance.md)
+- [Cap Consistency](/09-distributed-systems/01-cap-consistency.md)
+- [Consensus Replication](/09-distributed-systems/01-consensus-replication.md)
+- [Consensus Raft](/09-distributed-systems/02-consensus-raft.md)
+- [Distributed Transactions](/09-distributed-systems/02-distributed-transactions.md)
+- [Distributed Caching](/09-distributed-systems/03-distributed-caching.md)

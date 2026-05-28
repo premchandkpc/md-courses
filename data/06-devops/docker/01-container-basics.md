@@ -1,6 +1,6 @@
 # 🐳 Docker — Complete Deep Dive
 
-**Related**: [Docker Compose & Orchestration](02-compose-orchestration.md) · [Kubernetes Basics](../kubernetes/01-kubernetes-basics.md) · [Docker Docs](https://docs.docker.com)
+**Related**: [Docker Compose & Orchestration](/06-devops/docker/02-compose-orchestration.md) · [Kubernetes Basics](/07-kubernetes/01-kubernetes-basics.md) · [Docker Docs](https://docs.docker.com)
 
 ---
 

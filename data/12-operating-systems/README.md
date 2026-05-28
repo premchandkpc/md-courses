@@ -5,7 +5,7 @@
 
 The OS is the **resource manager** between hardware and applications. It virtualizes CPU, memory, storage, and devices into clean abstractions (processes, virtual memory, files, sockets).
 
-**Related**: [Linux Internals](../os/linux.md) · [Networking](../11-networking/README.md) · [Performance Engineering](../18-performance-engineering/README.md) · [Distributed Systems](../09-distributed-systems/README.md)
+**Related**: [Linux Internals](/12-operating-systems/README.md) · [Networking](/11-networking/README.md) · [Performance Engineering](/18-performance-engineering/README.md) · [Distributed Systems](/09-distributed-systems/README.md)
 
 ---
 
@@ -536,14 +536,14 @@ Application → libc wrapper → syscall instruction → sys_call_table → hand
 
 | Domain | Connection |
 |--------|-----------|
-| [Networking](../11-networking/README.md) | Network stack, sockets, DPDK, XDP, eBPF |
-| [Performance Engineering](../18-performance-engineering/README.md) | CPU profiling, memory analysis, I/O tuning |
-| [Distributed Systems](../09-distributed-systems/README.md) | IPC semantics, RPC, distributed consistency |
-| [Containers & Kubernetes](../07-kubernetes/README.md) | Namespaces, cgroups, container runtime |
-| [Cloud Computing](../05-cloud/README.md) | Cloud VMs, bare metal, OS tuning in cloud |
-| [Security](../13-security/README.md) | Kernel hardening, seccomp, capabilities, SELinux |
-| [Database Internals](../08-databases/README.md) | Buffer pool, page cache, fsync, O_DIRECT, AIO |
-| [SRE & Observability](../14-sre-observability/README.md) | System metrics, eBPF-based monitoring |
+| [Networking](/11-networking/README.md) | Network stack, sockets, DPDK, XDP, eBPF |
+| [Performance Engineering](/18-performance-engineering/README.md) | CPU profiling, memory analysis, I/O tuning |
+| [Distributed Systems](/09-distributed-systems/README.md) | IPC semantics, RPC, distributed consistency |
+| [Containers & Kubernetes](/07-kubernetes/README.md) | Namespaces, cgroups, container runtime |
+| [Cloud Computing](/05-cloud/README.md) | Cloud VMs, bare metal, OS tuning in cloud |
+| [Security](/13-security/README.md) | Kernel hardening, seccomp, capabilities, SELinux |
+| [Database Internals](/08-databases/README.md) | Buffer pool, page cache, fsync, O_DIRECT, AIO |
+| [SRE & Observability](/14-sre-observability/README.md) | System metrics, eBPF-based monitoring |
 
 ---
 
@@ -562,13 +562,13 @@ Everything else (IPC, file systems, networking) is these four roles extending th
 
 ---
 
-**Next**: [Security Engineering](../13-security/README.md) · [Performance Engineering](../18-performance-engineering/README.md)
+**Next**: [Security Engineering](/13-security/README.md) · [Performance Engineering](/18-performance-engineering/README.md)
 
 ## Related
 
-- [Tcp Ip Deep Dive](11-networking/01-tcp-ip-deep-dive.md)
-- [Tcpip Protocol Stack](11-networking/01-tcpip-protocol-stack.md)
-- [Http Protocols](11-networking/02-http-protocols.md)
-- [Tls Http Grpc](11-networking/02-tls-http-grpc.md)
-- [Dns Cdn Loadbalancing](11-networking/03-dns-cdn-loadbalancing.md)
-- [Readme](11-networking/README.md)
+- [Tcp Ip Deep Dive](/11-networking/01-tcp-ip-deep-dive.md)
+- [Tcpip Protocol Stack](/11-networking/01-tcpip-protocol-stack.md)
+- [Http Protocols](/11-networking/02-http-protocols.md)
+- [Tls Http Grpc](/11-networking/02-tls-http-grpc.md)
+- [Dns Cdn Loadbalancing](/11-networking/03-dns-cdn-loadbalancing.md)
+- [Readme](/11-networking/README.md)

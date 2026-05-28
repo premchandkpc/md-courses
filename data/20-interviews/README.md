@@ -2,7 +2,7 @@
 
 Technical interview preparation is a structured skill — combining deep system design knowledge, algorithmic proficiency, behavioral storytelling, and domain-specific expertise (Java, distributed systems).
 
-**Related**: [System Design](../15-system-design/README.md) · [Distributed Systems](../09-distributed-systems/README.md) · [Java](java/README.md) · [Coding](coding/README.md)
+**Related**: [System Design](/15-system-design/README.md) · [Distributed Systems](/09-distributed-systems/README.md) · [Java](/05-cloud/README.md) · [Coding](/05-cloud/README.md)
 
 ---
 
@@ -501,12 +501,12 @@ After:
 
 | Domain | Connection |
 |--------|-----------|
-| [System Design](../15-system-design/README.md) | Design problems, case studies |
-| [Distributed Systems](../09-distributed-systems/README.md) | Consensus, replication, papers |
-| [Java](java/README.md) | Java interview questions, JVM |
-| [Coding](coding/README.md) | LeetCode patterns, practice problems |
-| [Behavioral](behavioral/README.md) | STAR stories, leadership principles |
-| [Low-Level Design](../24-low-level-design/README.md) | OOP design, class/sequence diagrams |
+| [System Design](/15-system-design/README.md) | Design problems, case studies |
+| [Distributed Systems](/09-distributed-systems/README.md) | Consensus, replication, papers |
+| [Java](/05-cloud/README.md) | Java interview questions, JVM |
+| [Coding](/05-cloud/README.md) | LeetCode patterns, practice problems |
+| [Behavioral](/05-cloud/README.md) | STAR stories, leadership principles |
+| [Low-Level Design](/24-low-level-design/README.md) | OOP design, class/sequence diagrams |
 
 ---
 
@@ -535,4 +535,4 @@ The Best Preparation:
 
 ---
 
-**Next**: [Roadmaps](../21-roadmaps/README.md) · [Low-Level Design](../24-low-level-design/README.md)
+**Next**: [Roadmaps](/21-roadmaps/README.md) · [Low-Level Design](/24-low-level-design/README.md)

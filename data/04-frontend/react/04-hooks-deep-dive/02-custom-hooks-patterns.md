@@ -1523,23 +1523,23 @@ function useControllableState({ value, defaultValue, onChange }) {
 ### Prerequisites
 
 
-- [React Fundamentals (01-jsx-vdom.md)](./01-jsx-vdom.md) — JSX and Virtual DOM
-- [State Management (02-state-management.md)](./02-state-management.md) — useState, useReducer basics
+- [React Fundamentals (01-jsx-vdom.md)](/04-frontend/react/01-core-fundamentals/01-components-jsx.md) — JSX and Virtual DOM
+- [State Management (02-state-management.md)](/04-frontend/react/05-state-management/01-state-management.md) — useState, useReducer basics
 
 ### Related Patterns
 
 
-- [Component Architecture (03-component-patterns.md)](./03-component-patterns.md) — HOC vs Hooks vs Render Props
-- [Performance Optimization (07-performance-optimization.md)](./07-performance-optimization.md) — useMemo, useCallback, React.memo
+- [Component Architecture (03-component-patterns.md)](/04-frontend/react/06-component-architecture/01-component-patterns.md) — HOC vs Hooks vs Render Props
+- [Performance Optimization (07-performance-optimization.md)](/04-frontend/react/09-performance/01-performance-optimization.md) — useMemo, useCallback, React.memo
 
 ### Cross-Domain
 
 
-- [Testing (19-testing/)](../../19-testing/) — Testing hooks with renderHook
-- [Performance Engineering (18-performance-engineering/)](../../18-performance-engineering/) — Profiling React apps
-- [Backend API Design (03-backend/)](../../03-backend/) — API contracts for useAsync
-- [Security (13-security/)](../../13-security/) — XSS in custom hooks, data sanitization
-- [Networking (11-networking/)](../../11-networking/) — HTTP, caching, request deduplication
+- [Testing (19-testing/)](/19-testing/) — Testing hooks with renderHook
+- [Performance Engineering (18-performance-engineering/)](/18-performance-engineering/) — Profiling React apps
+- [Backend API Design (03-backend/)](/03-backend/) — API contracts for useAsync
+- [Security (13-security/)](/13-security/) — XSS in custom hooks, data sanitization
+- [Networking (11-networking/)](/11-networking/) — HTTP, caching, request deduplication
 
 ---
 

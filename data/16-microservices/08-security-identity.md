@@ -519,16 +519,16 @@ class AuthInterceptor implements ServerInterceptor {
 ## Cross-References
 
 
-- [OAuth2 & JWT](../../11-networking/02-http-protocols.md#oauth2--jwt) — Token exchange, introspection, revocation
-- [Kubernetes Security](../../07-kubernetes/04-kubernetes-security.md) — Service mesh mTLS, pod security policies, RBAC
-- [API Gateway](../../11-networking/03-dns-cdn-loadbalancing.md) — Rate limiting at edge, WAF integration
-- [Backend Roadmap](../../21-roadmaps/01-backend-engineer.md) — Phase 3+ security topics for senior engineers
+- [OAuth2 & JWT](/11-networking/02-http-protocols.md#oauth2--jwt) — Token exchange, introspection, revocation
+- [Kubernetes Security](/07-kubernetes/04-kubernetes-security.md) — Service mesh mTLS, pod security policies, RBAC
+- [API Gateway](/11-networking/03-dns-cdn-loadbalancing.md) — Rate limiting at edge, WAF integration
+- [Backend Roadmap](/21-roadmaps/01-backend-engineer.md) — Phase 3+ security topics for senior engineers
 
 ## Related
 
-- [Cap Consistency](09-distributed-systems/01-cap-consistency.md)
-- [Consensus Replication](09-distributed-systems/01-consensus-replication.md)
-- [Consensus Raft](09-distributed-systems/02-consensus-raft.md)
-- [Distributed Transactions](09-distributed-systems/02-distributed-transactions.md)
-- [Distributed Caching](09-distributed-systems/03-distributed-caching.md)
-- [Distributed Storage](09-distributed-systems/03-distributed-storage.md)
+- [Cap Consistency](/09-distributed-systems/01-cap-consistency.md)
+- [Consensus Replication](/09-distributed-systems/01-consensus-replication.md)
+- [Consensus Raft](/09-distributed-systems/02-consensus-raft.md)
+- [Distributed Transactions](/09-distributed-systems/02-distributed-transactions.md)
+- [Distributed Caching](/09-distributed-systems/03-distributed-caching.md)
+- [Distributed Storage](/09-distributed-systems/03-distributed-storage.md)

@@ -2,7 +2,7 @@
 
 > **Scope**: TLS 1.3 handshake (1-RTT, 0-RTT, PSK, HRR), key schedule, cipher suites, certificate chain, ALPN/SNI, session resumption, HTTP/1.1 keep-alive/pipelining, HTTP/2 binary framing/multiplexing/HPACK/flow control/HOL blocking, HTTP/3 QUIC, gRPC protobuf/streaming/flow control/retry/hedging — complete coverage of the modern application security and transport layer.
 
-> **Related**: [01-tcp-ip-deep-dive.md](01-tcp-ip-deep-dive.md), [04-io-models.md](../os/04-io-models.md)
+> **Related**: [01-tcp-ip-deep-dive.md](/11-networking/01-tcp-ip-deep-dive.md), [04-io-models.md](/12-operating-systems/04-io-models.md)
 
 ---
 
@@ -1528,9 +1528,9 @@ OpenSSL speed comparison:
 
 ## Related
 
-- [Linux Kernel Architecture](12-operating-systems/01-linux-kernel-architecture.md)
-- [Cpu Scheduling](12-operating-systems/02-cpu-scheduling.md)
-- [Linux Process Memory](12-operating-systems/02-linux-process-memory.md)
-- [Linux Io Storage](12-operating-systems/03-linux-io-storage.md)
-- [Memory Management](12-operating-systems/03-memory-management.md)
-- [Io Models](12-operating-systems/04-io-models.md)
+- [Linux Kernel Architecture](/12-operating-systems/01-linux-kernel-architecture.md)
+- [Cpu Scheduling](/12-operating-systems/02-cpu-scheduling.md)
+- [Linux Process Memory](/12-operating-systems/02-linux-process-memory.md)
+- [Linux Io Storage](/12-operating-systems/03-linux-io-storage.md)
+- [Memory Management](/12-operating-systems/03-memory-management.md)
+- [Io Models](/12-operating-systems/04-io-models.md)

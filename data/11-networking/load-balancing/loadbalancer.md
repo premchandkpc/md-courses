@@ -32,7 +32,7 @@ traffic distributed
 high availability ✅
 ```
 
-**Related**: [Microservices & System Design](MICROSERVICES_SYSTEM_DESIGN.md#5-load-balancing) · [Kubernetes](k8s.md) · [Protocols](protocols.md)
+**Related**: [Microservices & System Design](/16-microservices/README.md#5-load-balancing) · [Kubernetes](/07-kubernetes/README.md) · [Protocols](/11-networking/01-tcpip-protocol-stack.md)
 
 ---
 

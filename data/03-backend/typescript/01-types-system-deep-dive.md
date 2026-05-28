@@ -1952,9 +1952,9 @@ TypeScript type system:
 
 ## Related
 
-- [Readme](04-frontend/README.md)
-- [Components Jsx](04-frontend/react/01-components-jsx.md)
-- [Hooks State](04-frontend/react/02-hooks-state.md)
-- [Rendering Performance](04-frontend/react/03-rendering-performance.md)
-- [State Management](04-frontend/react/04-state-management.md)
-- [Routing Data Fetching](04-frontend/react/05-routing-data-fetching.md)
+- [Readme](/04-frontend/README.md)
+- [Components Jsx](/04-frontend/react/01-core-fundamentals/01-components-jsx.md)
+- [Hooks State](/04-frontend/react/04-hooks-deep-dive/01-hooks-state.md)
+- [Rendering Performance](/04-frontend/react/03-rendering-pipeline/01-rendering-performance.md)
+- [State Management](/04-frontend/react/05-state-management/01-state-management.md)
+- [Routing Data Fetching](/04-frontend/react/07-routing/01-routing-data-fetching.md)

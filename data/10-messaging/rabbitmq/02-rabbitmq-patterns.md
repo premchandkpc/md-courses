@@ -1,6 +1,6 @@
 # 🐇 RabbitMQ Patterns — Complete Deep Dive
 
-**Related**: [RabbitMQ Basics](01-rabbitmq-basics.md) · [Enterprise Integration Patterns](https://www.enterpriseintegrationpatterns.com/) · [SNS & SQS Patterns](../sns-sqs/02-sns-sqs-patterns.md)
+**Related**: [RabbitMQ Basics](/10-messaging/rabbitmq/01-rabbitmq-basics.md) · [Enterprise Integration Patterns](https://www.enterpriseintegrationpatterns.com/) · [SNS & SQS Patterns](/10-messaging/sns-sqs/02-sns-sqs-patterns.md)
 
 ---
 

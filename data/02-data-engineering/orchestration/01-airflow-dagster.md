@@ -1278,8 +1278,8 @@ ALTER TABLE task_instance PARTITION BY RANGE (start_date);
 ## Related
 
 
-- [Databases](../../08-databases/) — Data storage and querying
-- [Messaging](../../10-messaging/) — Event streaming (Kafka)
-- [Cloud Platforms](../../05-cloud/) — Data warehousing (Redshift, BigQuery)
-- [Backend](../../03-backend/) — Data service APIs
-- [Distributed Systems](../../09-distributed-systems/) — Scale and consistency
+- [Databases](/08-databases/) — Data storage and querying
+- [Messaging](/10-messaging/) — Event streaming (Kafka)
+- [Cloud Platforms](/05-cloud/) — Data warehousing (Redshift, BigQuery)
+- [Backend](/03-backend/) — Data service APIs
+- [Distributed Systems](/09-distributed-systems/) — Scale and consistency

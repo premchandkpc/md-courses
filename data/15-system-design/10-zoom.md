@@ -2,7 +2,7 @@
 
 > **Scope**: Requirements (300M+ daily meeting participants, global real-time media), architecture (SFU vs MCU comparison), meeting lifecycle (create, join, leave, record), media pipeline (WebRTC, codec selection H.264/VP9/AV1, adaptive bitrate), signaling (join requests, room state, participant events), scaling (global media server network, cascading SFUs), reliability (PSTN fallback, graceful degradation), security (E2EE, encryption key management), failure analysis.
 >
-> **Related**: [08-discord.md](./08-discord.md) | [05-youtube.md](./05-youtube.md)
+> **Related**: [08-discord.md](/15-system-design/08-discord.md) | [05-youtube.md](/15-system-design/05-youtube.md)
 
 
 ```mermaid
@@ -1287,9 +1287,9 @@ Server Infrastructure (estimated):
 
 ## Related
 
-- [Cap Consistency](09-distributed-systems/01-cap-consistency.md)
-- [Consensus Replication](09-distributed-systems/01-consensus-replication.md)
-- [Consensus Raft](09-distributed-systems/02-consensus-raft.md)
-- [Distributed Transactions](09-distributed-systems/02-distributed-transactions.md)
-- [Distributed Caching](09-distributed-systems/03-distributed-caching.md)
-- [Distributed Storage](09-distributed-systems/03-distributed-storage.md)
+- [Cap Consistency](/09-distributed-systems/01-cap-consistency.md)
+- [Consensus Replication](/09-distributed-systems/01-consensus-replication.md)
+- [Consensus Raft](/09-distributed-systems/02-consensus-raft.md)
+- [Distributed Transactions](/09-distributed-systems/02-distributed-transactions.md)
+- [Distributed Caching](/09-distributed-systems/03-distributed-caching.md)
+- [Distributed Storage](/09-distributed-systems/03-distributed-storage.md)

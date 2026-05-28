@@ -414,10 +414,10 @@ with conn.cursor() as cur:
 ## Cross-References
 
 
-- [Database Internals](../../08-databases/01-db-internals.md) — B-tree page structure, MVCC visibility checks, LSM-tree compactions
-- [NoSQL Databases](../05-nosql-databases.md) — Document, wide-column, and KV comparison
-- [Distributed Transactions](../../09-distributed-systems/02-distributed-transactions.md) — 2PC, Saga, Outbox patterns
-- [Redis Caching](../../08-databases/04-redis-caching.md) — Cache-aside, write-through, invalidation strategies
+- [Database Internals](/08-databases/01-relational-database-internals.md) — B-tree page structure, MVCC visibility checks, LSM-tree compactions
+- [NoSQL Databases](/08-databases/05-nosql-databases.md) — Document, wide-column, and KV comparison
+- [Distributed Transactions](/09-distributed-systems/02-distributed-transactions.md) — 2PC, Saga, Outbox patterns
+- [Redis Caching](/08-databases/04-redis-deep-dive.md) — Cache-aside, write-through, invalidation strategies
 
 
 ## Observability
@@ -523,9 +523,9 @@ flowchart LR
 
 ## Related
 
-- [Cap Consistency](09-distributed-systems/01-cap-consistency.md)
-- [Consensus Replication](09-distributed-systems/01-consensus-replication.md)
-- [Consensus Raft](09-distributed-systems/02-consensus-raft.md)
-- [Distributed Transactions](09-distributed-systems/02-distributed-transactions.md)
-- [Distributed Caching](09-distributed-systems/03-distributed-caching.md)
-- [Distributed Storage](09-distributed-systems/03-distributed-storage.md)
+- [Cap Consistency](/09-distributed-systems/01-cap-consistency.md)
+- [Consensus Replication](/09-distributed-systems/01-consensus-replication.md)
+- [Consensus Raft](/09-distributed-systems/02-consensus-raft.md)
+- [Distributed Transactions](/09-distributed-systems/02-distributed-transactions.md)
+- [Distributed Caching](/09-distributed-systems/03-distributed-caching.md)
+- [Distributed Storage](/09-distributed-systems/03-distributed-storage.md)

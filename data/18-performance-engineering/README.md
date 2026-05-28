@@ -2,7 +2,7 @@
 
 Performance engineering is the systematic practice of **measuring, analyzing, and optimizing** system performance. It's about understanding where time goes and systematically reducing it.
 
-**Related**: [Operating Systems](../12-operating-systems/README.md) · [Databases](../08-databases/README.md) · [SRE & Observability](../14-sre-observability/README.md) · [System Design](../15-system-design/README.md)
+**Related**: [Operating Systems](/12-operating-systems/README.md) · [Databases](/08-databases/README.md) · [SRE & Observability](/14-sre-observability/README.md) · [System Design](/15-system-design/README.md)
 
 ---
 
@@ -864,12 +864,12 @@ net.ipv4.tcp_tw_reuse = 1
 
 | Domain | Connection |
 |--------|-----------|
-| [Operating Systems](../12-operating-systems/README.md) | Scheduler, memory management, I/O models |
-| [Databases](../08-databases/README.md) | Query optimization, indexing, buffer pool |
-| [SRE & Observability](../14-sre-observability/README.md) | Metrics, dashboards, alerting on perf |
-| [System Design](../15-system-design/README.md) | Latency requirements, capacity estimation |
-| [Software Architecture](../17-software-architecture/README.md) | Performance architecture tactics |
-| [Networking](../11-networking/README.md) | TCP tuning, kernel bypass, Zero-Copy |
+| [Operating Systems](/12-operating-systems/README.md) | Scheduler, memory management, I/O models |
+| [Databases](/08-databases/README.md) | Query optimization, indexing, buffer pool |
+| [SRE & Observability](/14-sre-observability/README.md) | Metrics, dashboards, alerting on perf |
+| [System Design](/15-system-design/README.md) | Latency requirements, capacity estimation |
+| [Software Architecture](/17-software-architecture/README.md) | Performance architecture tactics |
+| [Networking](/11-networking/README.md) | TCP tuning, kernel bypass, Zero-Copy |
 
 ---
 
@@ -901,13 +901,13 @@ Optimization = Fixing the most impactful constriction
 
 ---
 
-**Next**: [Testing](../19-testing/README.md) · [SRE & Observability](../14-sre-observability/README.md)
+**Next**: [Testing](/19-testing/README.md) · [SRE & Observability](/14-sre-observability/README.md)
 
 ## Related
 
-- [Linux Kernel Architecture](12-operating-systems/01-linux-kernel-architecture.md)
-- [Cpu Scheduling](12-operating-systems/02-cpu-scheduling.md)
-- [Linux Process Memory](12-operating-systems/02-linux-process-memory.md)
-- [Linux Io Storage](12-operating-systems/03-linux-io-storage.md)
-- [Memory Management](12-operating-systems/03-memory-management.md)
-- [Io Models](12-operating-systems/04-io-models.md)
+- [Linux Kernel Architecture](/12-operating-systems/01-linux-kernel-architecture.md)
+- [Cpu Scheduling](/12-operating-systems/02-cpu-scheduling.md)
+- [Linux Process Memory](/12-operating-systems/02-linux-process-memory.md)
+- [Linux Io Storage](/12-operating-systems/03-linux-io-storage.md)
+- [Memory Management](/12-operating-systems/03-memory-management.md)
+- [Io Models](/12-operating-systems/04-io-models.md)

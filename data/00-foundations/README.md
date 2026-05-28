@@ -257,14 +257,14 @@ Study resources: CLRS (Introduction to Algorithms), SICP, Structure and Interpre
 
 | Domain | Connection |
 |--------|-----------|
-| [01 — AI/ML](../01-ai-ml/) | Linear algebra, probability, optimization underpin all ML; algorithmic thinking critical for model design |
-| [08 — Databases](../08-databases/) | B-trees, hash indexes, sorting algorithms are database internals; complexity analysis drives query optimization |
-| [09 — Distributed Systems](../09-distributed-systems/) | Consensus algorithms, distributed computing theory build on automata and complexity foundations |
-| [11 — Networking](../11-networking/) | Packet flow, TCP congestion control, routing algorithms apply queueing theory and graph algorithms |
-| [12 — Operating Systems](../12-operating-systems/) | OS concepts (processes, memory, scheduling) are applied foundations; directly extends architecture topics |
-| [17 — Software Architecture](../17-software-architecture/) | Design patterns, architectural styles, and system decomposition are applied OOP and modularity principles |
-| [18 — Performance Engineering](../18-performance-engineering/) | Complexity analysis, memory hierarchy, cache behavior, algorithmic optimization all rooted here |
-| [24 — Low Level Design](../24-low-level-design/) | LLD applies OOP, design patterns, and data structure selection to real-world component design |
+| [01 — AI/ML](/01-ai-ml/) | Linear algebra, probability, optimization underpin all ML; algorithmic thinking critical for model design |
+| [08 — Databases](/08-databases/) | B-trees, hash indexes, sorting algorithms are database internals; complexity analysis drives query optimization |
+| [09 — Distributed Systems](/09-distributed-systems/) | Consensus algorithms, distributed computing theory build on automata and complexity foundations |
+| [11 — Networking](/11-networking/) | Packet flow, TCP congestion control, routing algorithms apply queueing theory and graph algorithms |
+| [12 — Operating Systems](/12-operating-systems/) | OS concepts (processes, memory, scheduling) are applied foundations; directly extends architecture topics |
+| [17 — Software Architecture](/17-software-architecture/) | Design patterns, architectural styles, and system decomposition are applied OOP and modularity principles |
+| [18 — Performance Engineering](/18-performance-engineering/) | Complexity analysis, memory hierarchy, cache behavior, algorithmic optimization all rooted here |
+| [24 — Low Level Design](/24-low-level-design/) | LLD applies OOP, design patterns, and data structure selection to real-world component design |
 
 ## Domain Map: From Theory to Practice
 

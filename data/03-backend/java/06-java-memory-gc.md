@@ -3,7 +3,7 @@
 
 > **Run the live simulator**: [gc-visualizer.html](/03-backend/java/gc-visualizer.html) — allocate objects, trigger Young/Full GC pauses, and watch objects promote across heap generations.
 
-**Related**: [JVM Architecture](05-jvm-architecture.md) · [Multithreading](04-multithreading.md) · [Collections](02-collections-framework.md)
+**Related**: [JVM Architecture](/03-backend/java/05-jvm-architecture.md) · [Multithreading](/03-backend/java/04-multithreading.md) · [Collections](/03-backend/java/02-collections-framework.md)
 
 ---
 
@@ -932,7 +932,7 @@ HAPPENS-BEFORE  =  If I text you "I put the keys on the table" before
 
 ---
 
-**Next**: [Streams & Lambda](07-streams-lambda.md) — Functional programming in Java
+**Next**: [Streams & Lambda](/03-backend/java/07-streams-lambda.md) — Functional programming in Java
 
 ## Observability
 
@@ -1771,12 +1771,12 @@ Result:
 
 ## Related
 
-- [Jvm Performance](18-performance-engineering/jvm-tuning/01-jvm-performance.md)
-- [Cap Consistency](09-distributed-systems/01-cap-consistency.md)
-- [Consensus Replication](09-distributed-systems/01-consensus-replication.md)
-- [Consensus Raft](09-distributed-systems/02-consensus-raft.md)
-- [Distributed Transactions](09-distributed-systems/02-distributed-transactions.md)
-- [Distributed Caching](09-distributed-systems/03-distributed-caching.md)
+- [Jvm Performance](/18-performance-engineering/jvm-tuning/01-jvm-performance.md)
+- [Cap Consistency](/09-distributed-systems/01-cap-consistency.md)
+- [Consensus Replication](/09-distributed-systems/01-consensus-replication.md)
+- [Consensus Raft](/09-distributed-systems/02-consensus-raft.md)
+- [Distributed Transactions](/09-distributed-systems/02-distributed-transactions.md)
+- [Distributed Caching](/09-distributed-systems/03-distributed-caching.md)
 
 ## Runtime Flow: G1GC Pause (Young Collection)
 

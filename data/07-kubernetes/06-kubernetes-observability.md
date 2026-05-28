@@ -491,17 +491,17 @@ K8s observability = hospital monitoring system
 ## Cross-References
 
 
-- [Prometheus Deep Dive](../../05-cloud/prometheus/01-prometheus.md) — Alerting rules, recording rules, service discovery
-- [CloudWatch Observability](../../05-cloud/aws/cloudwatch/02-cloudwatch-observability.md) — AWS-native monitoring, container insights
-- [Kubernetes Operations](../../05-cloud/aws/eks/02-eks-operations.md) — Node monitoring, cluster autoscaler metrics
-- [Distributed Tracing](../../06-distributed-systems/04-distributed-tracing.md) — W3C trace context, sampling strategies
-- [Stream Processing](../../09-distributed-systems/04-stream-processing.md) — Real-time metrics aggregation, anomaly detection
+- [Prometheus Deep Dive](/05-cloud/prometheus/01-prometheus.md) — Alerting rules, recording rules, service discovery
+- [CloudWatch Observability](/05-cloud/aws/cloudwatch/02-cloudwatch-observability.md) — AWS-native monitoring, container insights
+- [Kubernetes Operations](/05-cloud/aws/eks/02-eks-operations.md) — Node monitoring, cluster autoscaler metrics
+- [Distributed Tracing](/06-distributed-systems/04-distributed-tracing.md) — W3C trace context, sampling strategies
+- [Stream Processing](/09-distributed-systems/04-stream-processing.md) — Real-time metrics aggregation, anomaly detection
 
 ## Related
 
-- [Readme](05-cloud/README.md)
-- [Cloudwatch Deep Dive](05-cloud/aws/cloudwatch/01-cloudwatch-deep-dive.md)
-- [Cloudwatch Observability](05-cloud/aws/cloudwatch/02-cloudwatch-observability.md)
-- [Ec2 Deep Dive](05-cloud/aws/ec2/01-ec2-deep-dive.md)
-- [Ec2 Networking Security](05-cloud/aws/ec2/02-ec2-networking-security.md)
-- [Ecs Deep Dive](05-cloud/aws/ecs/01-ecs-deep-dive.md)
+- [Readme](/05-cloud/README.md)
+- [Cloudwatch Deep Dive](/05-cloud/aws/cloudwatch/01-cloudwatch-deep-dive.md)
+- [Cloudwatch Observability](/05-cloud/aws/cloudwatch/02-cloudwatch-observability.md)
+- [Ec2 Deep Dive](/05-cloud/aws/ec2/01-ec2-deep-dive.md)
+- [Ec2 Networking Security](/05-cloud/aws/ec2/02-ec2-networking-security.md)
+- [Ecs Deep Dive](/05-cloud/aws/ecs/01-ecs-deep-dive.md)

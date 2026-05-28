@@ -2,7 +2,7 @@
 
 Site Reliability Engineering applies **software engineering to operations**. Observability is the ability to understand system internals from external outputs — answering **why** something is happening, not just **what**.
 
-**Related**: [Monitoring & Alerting](../monitoring/README.md) · [Distributed Systems](../09-distributed-systems/README.md) · [Kubernetes](../07-kubernetes/README.md) · [Performance Engineering](../18-performance-engineering/README.md)
+**Related**: [Monitoring & Alerting](/05-cloud/README.md) · [Distributed Systems](/09-distributed-systems/README.md) · [Kubernetes](/07-kubernetes/README.md) · [Performance Engineering](/18-performance-engineering/README.md)
 
 ---
 
@@ -916,13 +916,13 @@ resource "aws_fis_experiment_template" "az_outage" {
 
 | Domain | Connection |
 |--------|-----------|
-| [Kubernetes](../07-kubernetes/README.md) | kube-state-metrics, cAdvisor, node exporter, HPA |
-| [Distributed Systems](../09-distributed-systems/README.md) | Distributed tracing, consensus monitoring |
-| [Performance Engineering](../18-performance-engineering/README.md) | Profiling, latency analysis, benchmarking |
-| [Microservices](../16-microservices/README.md) | Service-level dashboards, RED method |
-| [Cloud Computing](../05-cloud/README.md) | Managed observability (CloudWatch, Stackdriver) |
-| [DevOps](../06-devops/README.md) | CI/CD observability, deployment metrics |
-| [Security](../13-security/README.md) | SIEM, security monitoring, audit logging |
+| [Kubernetes](/07-kubernetes/README.md) | kube-state-metrics, cAdvisor, node exporter, HPA |
+| [Distributed Systems](/09-distributed-systems/README.md) | Distributed tracing, consensus monitoring |
+| [Performance Engineering](/18-performance-engineering/README.md) | Profiling, latency analysis, benchmarking |
+| [Microservices](/16-microservices/README.md) | Service-level dashboards, RED method |
+| [Cloud Computing](/05-cloud/README.md) | Managed observability (CloudWatch, Stackdriver) |
+| [DevOps](/06-devops/README.md) | CI/CD observability, deployment metrics |
+| [Security](/13-security/README.md) | SIEM, security monitoring, audit logging |
 
 ---
 
@@ -946,13 +946,13 @@ SRE = Fleet Manager
 
 ---
 
-**Next**: [System Design](../15-system-design/README.md) · [Performance Engineering](../18-performance-engineering/README.md)
+**Next**: [System Design](/15-system-design/README.md) · [Performance Engineering](/18-performance-engineering/README.md)
 
 ## Related
 
-- [Readme](18-performance-engineering/README.md)
-- [Jvm Performance](18-performance-engineering/jvm-tuning/01-jvm-performance.md)
-- [Optimization Patterns](18-performance-engineering/optimization/01-optimization-patterns.md)
-- [Profiling Deep Dive](18-performance-engineering/profiling/01-profiling-deep-dive.md)
-- [Kubernetes Basics](07-kubernetes/01-kubernetes-basics.md)
-- [Advanced K8S](07-kubernetes/02-advanced-k8s.md)
+- [Readme](/18-performance-engineering/README.md)
+- [Jvm Performance](/18-performance-engineering/jvm-tuning/01-jvm-performance.md)
+- [Optimization Patterns](/18-performance-engineering/optimization/01-optimization-patterns.md)
+- [Profiling Deep Dive](/18-performance-engineering/profiling/01-profiling-deep-dive.md)
+- [Kubernetes Basics](/07-kubernetes/01-kubernetes-basics.md)
+- [Advanced K8S](/07-kubernetes/02-advanced-k8s.md)

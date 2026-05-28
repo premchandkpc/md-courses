@@ -647,9 +647,9 @@ See code examples above for practical usage patterns.
 
 ## Related
 
-- [Postgresql Internals](08-databases/01-postgresql-internals.md)
-- [Relational Database Internals](08-databases/01-relational-database-internals.md)
-- [Postgresql Architecture](08-databases/02-postgresql-architecture.md)
-- [Redis Internals](08-databases/02-redis-internals.md)
-- [Postgresql Troubleshooting Tuning](08-databases/03-postgresql-troubleshooting-tuning.md)
-- [Redis Deep Dive](08-databases/04-redis-deep-dive.md)
+- [Postgresql Internals](/08-databases/01-postgresql-internals.md)
+- [Relational Database Internals](/08-databases/01-relational-database-internals.md)
+- [Postgresql Architecture](/08-databases/02-postgresql-architecture.md)
+- [Redis Internals](/08-databases/02-redis-internals.md)
+- [Postgresql Troubleshooting Tuning](/08-databases/03-postgresql-troubleshooting-tuning.md)
+- [Redis Deep Dive](/08-databases/04-redis-deep-dive.md)

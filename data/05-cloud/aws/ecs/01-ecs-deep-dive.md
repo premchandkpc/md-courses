@@ -1,6 +1,6 @@
 # 🐳 Amazon ECS — Complete Deep Dive
 
-**Related**: [EKS](../eks/01-eks-deep-dive.md) · [EC2](../ec2/01-ec2-deep-dive.md) · [IAM](../iam/01-iam-deep-dive.md) · [CloudWatch](../cloudwatch/01-cloudwatch-deep-dive.md)
+**Related**: [EKS](/05-cloud/aws/eks/01-eks-deep-dive.md) · [EC2](/05-cloud/aws/ec2/01-ec2-deep-dive.md) · [IAM](/05-cloud/aws/iam/01-iam-deep-dive.md) · [CloudWatch](/05-cloud/aws/cloudwatch/01-cloudwatch-deep-dive.md)
 
 ---
 
@@ -648,4 +648,4 @@ ECS ANYWHERE     =  Extending the parking lot to your own
 
 ---
 
-**Next**: [EKS Deep Dive](../eks/01-eks-deep-dive.md) — Kubernetes on AWS
+**Next**: [EKS Deep Dive](/05-cloud/aws/eks/01-eks-deep-dive.md) — Kubernetes on AWS

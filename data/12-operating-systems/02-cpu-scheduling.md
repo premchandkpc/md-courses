@@ -2,7 +2,7 @@
 
 > **Scope**: Complete coverage of Linux CPU scheduling — CFS/EEVDF internals, O(1) scheduler design, EDF/SCHED_DEADLINE, real-time scheduling (FIFO/RR/priority inversion/protocols), multi-core load balancing, context switch costs, CPU affinity, scheduling latency and PREEMPT_RT, cgroup cpu controller, and scheduler debugging.
 
-> **Related**: [01-linux-kernel-architecture.md](01-linux-kernel-architecture.md), [03-memory-management.md](03-memory-management.md), [05-process-threads-fibers.md](05-process-threads-fibers.md)
+> **Related**: [01-linux-kernel-architecture.md](/12-operating-systems/01-linux-kernel-architecture.md), [03-memory-management.md](/12-operating-systems/03-memory-management.md), [05-process-threads-fibers.md](/12-operating-systems/05-process-threads-fibers.md)
 
 ---
 
@@ -1323,9 +1323,9 @@ Risk: Low priority starvation
 
 ## Related
 
-- [Tcp Ip Deep Dive](11-networking/01-tcp-ip-deep-dive.md)
-- [Tcpip Protocol Stack](11-networking/01-tcpip-protocol-stack.md)
-- [Http Protocols](11-networking/02-http-protocols.md)
-- [Tls Http Grpc](11-networking/02-tls-http-grpc.md)
-- [Dns Cdn Loadbalancing](11-networking/03-dns-cdn-loadbalancing.md)
-- [Readme](11-networking/README.md)
+- [Tcp Ip Deep Dive](/11-networking/01-tcp-ip-deep-dive.md)
+- [Tcpip Protocol Stack](/11-networking/01-tcpip-protocol-stack.md)
+- [Http Protocols](/11-networking/02-http-protocols.md)
+- [Tls Http Grpc](/11-networking/02-tls-http-grpc.md)
+- [Dns Cdn Loadbalancing](/11-networking/03-dns-cdn-loadbalancing.md)
+- [Readme](/11-networking/README.md)

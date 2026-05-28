@@ -1210,20 +1210,20 @@ Choose best approach and implement.
 ### Prerequisites
 
 
-- [Operating Systems (12-operating-systems/)](../../12-operating-systems/) — Disk I/O, memory
-- [Networking (11-networking/)](../../11-networking/) — Client-server communication
+- [Operating Systems (12-operating-systems/)](/12-operating-systems/) — Disk I/O, memory
+- [Networking (11-networking/)](/11-networking/) — Client-server communication
 
 ### Deep Dives
 
 
-- [Databases (08-databases/)](../../08-databases/) — PostgreSQL internals, MVCC, WAL
-- [Performance Engineering (18-performance-engineering/)](../../18-performance-engineering/) — Profiling, benchmarking
+- [Databases (08-databases/)](/08-databases/) — PostgreSQL internals, MVCC, WAL
+- [Performance Engineering (18-performance-engineering/)](/18-performance-engineering/) — Profiling, benchmarking
 
 ### Related Patterns
 
 
-- [Distributed Systems (09-distributed-systems/)](../../09-distributed-systems/) — Sharding, replication, consistency
-- [Backend API Design (03-backend/)](../../03-backend/) — Database layer design
+- [Distributed Systems (09-distributed-systems/)](/09-distributed-systems/) — Sharding, replication, consistency
+- [Backend API Design (03-backend/)](/03-backend/) — Database layer design
 
 ---
 

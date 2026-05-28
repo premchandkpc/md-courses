@@ -2,7 +2,7 @@
 
 Roadmaps are **structured learning paths** for engineering career progression. They cover everything from junior backend engineer through staff+ architect, with specialized tracks for distributed systems, system design, and cloud-native engineering.
 
-**Related**: [Backend](backend/README.md) · [Distributed Systems](distributed-systems/README.md) · [Staff Engineer](staff-engineer/README.md) · [System Design](../15-system-design/README.md)
+**Related**: [Backend](/03-backend/README.md) · [Distributed Systems](/09-distributed-systems/README.md) · [Staff Engineer](/05-cloud/README.md) · [System Design](/15-system-design/README.md)
 
 ## Career Progression Paths
 
@@ -683,13 +683,13 @@ Hands-on: Killercoda, Play with Kubernetes, Katacoda
 
 | Domain | Connection |
 |--------|-----------|
-| [System Design](../15-system-design/README.md) | Core interview prep topic |
-| [Distributed Systems](../09-distributed-systems/README.md) | Deep dives path |
-| [Backend](backend/README.md) | Backend progression details |
-| [Staff Engineer](staff-engineer/README.md) | Staff+ path specifics |
-| [Interviews](../20-interviews/README.md) | Interview preparation strategy |
-| [Software Engineering](../25-software-engineering/README.md) | Engineering fundamentals |
-| [Cloud Computing](../05-cloud/README.md) | Cloud native path |
+| [System Design](/15-system-design/README.md) | Core interview prep topic |
+| [Distributed Systems](/09-distributed-systems/README.md) | Deep dives path |
+| [Backend](/03-backend/README.md) | Backend progression details |
+| [Staff Engineer](/05-cloud/README.md) | Staff+ path specifics |
+| [Interviews](/20-interviews/README.md) | Interview preparation strategy |
+| [Software Engineering](/25-software-engineering/README.md) | Engineering fundamentals |
+| [Cloud Computing](/05-cloud/README.md) | Cloud native path |
 
 ---
 
@@ -715,4 +715,4 @@ Key Insight:
 
 ---
 
-**Next**: [Production Stories](../22-production-stories/README.md) · [Interviews](../20-interviews/README.md)
+**Next**: [Production Stories](/22-production-stories/README.md) · [Interviews](/20-interviews/README.md)

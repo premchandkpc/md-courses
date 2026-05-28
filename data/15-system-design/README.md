@@ -2,7 +2,7 @@
 
 System design is the art of **architecting scalable, reliable, and maintainable systems**. It bridges engineering tradeoffs — consistency vs availability, latency vs throughput, cost vs performance — into coherent blueprints.
 
-**Related**: [Distributed Systems](../09-distributed-systems/README.md) · [Microservices](../16-microservices/README.md) · [Software Architecture](../17-software-architecture/README.md) · [Performance Engineering](../18-performance-engineering/README.md)
+**Related**: [Distributed Systems](/09-distributed-systems/README.md) · [Microservices](/16-microservices/README.md) · [Software Architecture](/17-software-architecture/README.md) · [Performance Engineering](/18-performance-engineering/README.md)
 
 ---
 
@@ -552,13 +552,13 @@ Stateful vs Stateless      → Simplicity vs scalability
 
 | Domain | Connection |
 |--------|-----------|
-| [Distributed Systems](../09-distributed-systems/README.md) | CAP, consensus, replication, partitioning |
-| [Microservices](../16-microservices/README.md) | Decomposition patterns, service mesh, saga |
-| [Software Architecture](../17-software-architecture/README.md) | Architecture styles, patterns, ADRs |
-| [Databases](../08-databases/README.md) | Indexing, sharding, replication, transactions |
-| [Performance Engineering](../18-performance-engineering/README.md) | Latency, throughput, benchmarking |
-| [Cloud Computing](../05-cloud/README.md) | Cloud-native design, managed services, cost |
-| [Networking](../11-networking/README.md) | Load balancing, CDN, protocols |
+| [Distributed Systems](/09-distributed-systems/README.md) | CAP, consensus, replication, partitioning |
+| [Microservices](/16-microservices/README.md) | Decomposition patterns, service mesh, saga |
+| [Software Architecture](/17-software-architecture/README.md) | Architecture styles, patterns, ADRs |
+| [Databases](/08-databases/README.md) | Indexing, sharding, replication, transactions |
+| [Performance Engineering](/18-performance-engineering/README.md) | Latency, throughput, benchmarking |
+| [Cloud Computing](/05-cloud/README.md) | Cloud-native design, managed services, cost |
+| [Networking](/11-networking/README.md) | Load balancing, CDN, protocols |
 
 ---
 
@@ -585,13 +585,13 @@ Consensus         → "City council votes"
 
 ---
 
-**Next**: [Microservices](../16-microservices/README.md) · [Software Architecture](../17-software-architecture/README.md)
+**Next**: [Microservices](/16-microservices/README.md) · [Software Architecture](/17-software-architecture/README.md)
 
 ## Related
 
-- [Cap Consistency](09-distributed-systems/01-cap-consistency.md)
-- [Consensus Replication](09-distributed-systems/01-consensus-replication.md)
-- [Consensus Raft](09-distributed-systems/02-consensus-raft.md)
-- [Distributed Transactions](09-distributed-systems/02-distributed-transactions.md)
-- [Distributed Caching](09-distributed-systems/03-distributed-caching.md)
-- [Distributed Storage](09-distributed-systems/03-distributed-storage.md)
+- [Cap Consistency](/09-distributed-systems/01-cap-consistency.md)
+- [Consensus Replication](/09-distributed-systems/01-consensus-replication.md)
+- [Consensus Raft](/09-distributed-systems/02-consensus-raft.md)
+- [Distributed Transactions](/09-distributed-systems/02-distributed-transactions.md)
+- [Distributed Caching](/09-distributed-systems/03-distributed-caching.md)
+- [Distributed Storage](/09-distributed-systems/03-distributed-storage.md)

@@ -5,7 +5,7 @@
 
 > **Scope**: Ethernet framing, IP packet structure and fragmentation, TCP segment format, TCP state machine, 3-way handshake, TIME-WAIT, flow control, congestion control (CUBIC, BBR, Reno, Vegas), Nagle/keepalive/retransmission, NIC offloading (TSO/GRO/RSS), socket buffers, Linux network stack tuning — the complete TCP/IP stack from wire to application.
 
-> **Related**: [02-tls-http-grpc.md](02-tls-http-grpc.md), [03-memory-management.md](03-memory-management.md), [04-io-models.md](../os/04-io-models.md)
+> **Related**: [02-tls-http-grpc.md](/11-networking/02-tls-http-grpc.md), [03-memory-management.md](/12-operating-systems/03-memory-management.md), [04-io-models.md](/12-operating-systems/04-io-models.md)
 
 ---
 
@@ -1376,12 +1376,12 @@ To exceed single-core throughput:
 
 ## Related
 
-- [Linux Kernel Architecture](12-operating-systems/01-linux-kernel-architecture.md)
-- [Cpu Scheduling](12-operating-systems/02-cpu-scheduling.md)
-- [Linux Process Memory](12-operating-systems/02-linux-process-memory.md)
-- [Linux Io Storage](12-operating-systems/03-linux-io-storage.md)
-- [Memory Management](12-operating-systems/03-memory-management.md)
-- [Io Models](12-operating-systems/04-io-models.md)
+- [Linux Kernel Architecture](/12-operating-systems/01-linux-kernel-architecture.md)
+- [Cpu Scheduling](/12-operating-systems/02-cpu-scheduling.md)
+- [Linux Process Memory](/12-operating-systems/02-linux-process-memory.md)
+- [Linux Io Storage](/12-operating-systems/03-linux-io-storage.md)
+- [Memory Management](/12-operating-systems/03-memory-management.md)
+- [Io Models](/12-operating-systems/04-io-models.md)
 
 ## Debugging Walkthrough: tcpdump Packet Capture
 

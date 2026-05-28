@@ -1,6 +1,6 @@
 # ⚡ AWS Lambda — Complete Deep Dive
 
-**Related**: [API Gateway](../api-gateway/01-api-gateway.md) · [S3](../s3/01-s3-deep-dive.md) · [CloudWatch](../cloudwatch/01-cloudwatch-deep-dive.md) · [DynamoDB](../dynamodb/01-dynamodb-deep-dive.md)
+**Related**: [API Gateway](/api-gateway/01-api-gateway.md) · [S3](/05-cloud/aws/s3/01-s3-deep-dive.md) · [CloudWatch](/05-cloud/aws/cloudwatch/01-cloudwatch-deep-dive.md) · [DynamoDB](/dynamodb/01-dynamodb-deep-dive.md)
 
 ---
 

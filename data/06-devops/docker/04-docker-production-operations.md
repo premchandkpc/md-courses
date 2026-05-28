@@ -1,6 +1,6 @@
 # 🏭 Docker Production Operations — Complete Deep Dive
 
-**Related**: [Docker Basics](01-container-basics.md) · [Compose & Orchestration](02-compose-orchestration.md) · [Networking & Security](03-docker-networking-security.md) · [Kubernetes Operations](../kubernetes/06-kubernetes-observability.md)
+**Related**: [Docker Basics](/06-devops/docker/01-container-basics.md) · [Compose & Orchestration](/06-devops/docker/02-compose-orchestration.md) · [Networking & Security](/06-devops/docker/03-docker-networking-security.md) · [Kubernetes Operations](/07-kubernetes/06-kubernetes-observability.md)
 
 ---
 

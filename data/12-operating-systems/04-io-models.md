@@ -2,7 +2,7 @@
 
 > **Scope**: I/O models from blocking through io_uring: blocking/non-blocking I/O, select/poll/epoll multiplexing, AIO/libaio, io_uring (SQ/CQ rings, fixed buffers, registered files, polled I/O), sendfile/splice/zero-copy, kernel bypass (DPDK/XDP/AF_XDP), disk I/O schedulers (mq-deadline/BFQ/Kyber), blk-mq multi-queue block layer, VFS cache hierarchy, and async runtime patterns (reactor vs proactor, libuv, Boost.Asio).
 
-> **Related**: [01-linux-kernel-architecture.md](01-linux-kernel-architecture.md), [03-memory-management.md](03-memory-management.md), [06-system-calls-ipc.md](06-system-calls-ipc.md)
+> **Related**: [01-linux-kernel-architecture.md](/12-operating-systems/01-linux-kernel-architecture.md), [03-memory-management.md](/12-operating-systems/03-memory-management.md), [06-system-calls-ipc.md](/12-operating-systems/06-system-calls-ipc.md)
 
 ---
 
@@ -1220,9 +1220,9 @@ See code examples above for practical usage patterns.
 
 ## Related
 
-- [Tcp Ip Deep Dive](11-networking/01-tcp-ip-deep-dive.md)
-- [Tcpip Protocol Stack](11-networking/01-tcpip-protocol-stack.md)
-- [Http Protocols](11-networking/02-http-protocols.md)
-- [Tls Http Grpc](11-networking/02-tls-http-grpc.md)
-- [Dns Cdn Loadbalancing](11-networking/03-dns-cdn-loadbalancing.md)
-- [Readme](11-networking/README.md)
+- [Tcp Ip Deep Dive](/11-networking/01-tcp-ip-deep-dive.md)
+- [Tcpip Protocol Stack](/11-networking/01-tcpip-protocol-stack.md)
+- [Http Protocols](/11-networking/02-http-protocols.md)
+- [Tls Http Grpc](/11-networking/02-tls-http-grpc.md)
+- [Dns Cdn Loadbalancing](/11-networking/03-dns-cdn-loadbalancing.md)
+- [Readme](/11-networking/README.md)

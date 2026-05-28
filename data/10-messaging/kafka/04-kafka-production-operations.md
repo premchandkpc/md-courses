@@ -514,8 +514,8 @@ Purgatory (delayed operations: acks, fetch requests waiting for data)
 ## Cross-References
 
 
-- [Kafka Production Patterns](../02-kafka-patterns.md) — Event sourcing, CQRS, outbox pattern, stream processing
-- [Kafka Streams DSL](../06-kafka-streams-dsl.md) — KTable, KStream, state stores, exactly-once
-- [SNS & SQS Patterns](../sns-sqs/02-sns-sqs-patterns.md) — Queue comparison, fan-out, FIFO ordering
-- [Distributed Systems](../../../09-distributed-systems/02-distributed-transactions.md) — 2PC, Saga, outbox pattern
-- [Stream Processing](../../../09-distributed-systems/04-stream-processing.md) — Flink, watermarks, state management
+- [Kafka Production Patterns](/10-messaging/kafka/02-kafka-patterns.md) — Event sourcing, CQRS, outbox pattern, stream processing
+- [Kafka Streams DSL](/10-messaging/kafka/06-kafka-streams-dsl.md) — KTable, KStream, state stores, exactly-once
+- [SNS & SQS Patterns](/10-messaging/sns-sqs/02-sns-sqs-patterns.md) — Queue comparison, fan-out, FIFO ordering
+- [Distributed Systems](/09-distributed-systems/02-distributed-transactions.md) — 2PC, Saga, outbox pattern
+- [Stream Processing](/09-distributed-systems/04-stream-processing.md) — Flink, watermarks, state management

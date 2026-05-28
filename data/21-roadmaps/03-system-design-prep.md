@@ -525,8 +525,8 @@ Week 11-12: Mock interviews with FAANG engineers. Capacity estimation drills. Tr
 
 ## Cross-References
 
-- [Backend Engineer Roadmap](../01-backend-engineer.md) — Skill progression from foundational to principal-level architecture
-- [HTTP Protocols](../../11-networking/02-http-protocols.md) — Network fundamentals for API design
-- [Distributed Transactions](../../09-distributed-systems/02-distributed-transactions.md) — Saga vs 2PC tradeoffs
-- [Distributed Storage](../../09-distributed-systems/03-distributed-storage.md) — Consistent hashing, quorum, replication
-- [Stream Processing](../../09-distributed-systems/04-stream-processing.md) — Event-time processing, watermarks, exactly-once
+- [Backend Engineer Roadmap](/21-roadmaps/01-backend-engineer.md) — Skill progression from foundational to principal-level architecture
+- [HTTP Protocols](/11-networking/02-http-protocols.md) — Network fundamentals for API design
+- [Distributed Transactions](/09-distributed-systems/02-distributed-transactions.md) — Saga vs 2PC tradeoffs
+- [Distributed Storage](/09-distributed-systems/03-distributed-storage.md) — Consistent hashing, quorum, replication
+- [Stream Processing](/09-distributed-systems/04-stream-processing.md) — Event-time processing, watermarks, exactly-once

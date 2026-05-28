@@ -391,10 +391,10 @@ aws ssm start-session --target i-1234 \
 ## Cross-References
 
 
-- [ECS Deployment Patterns](../ecs/02-ecs-deployment-patterns.md) — Security group-driven networking in ECS task definitions
-- [EKS Operations](../eks/02-eks-operations.md) — VPC CNI, security groups for pods
-- [DNS, CDN & Load Balancing](../../../11-networking/03-dns-cdn-loadbalancing.md) — Global load balancing, Route53 integration
-- [CloudWatch Observability](../cloudwatch/02-cloudwatch-observability.md) — VPC flow logs monitoring, network telemetry
+- [ECS Deployment Patterns](/05-cloud/aws/ecs/02-ecs-deployment-patterns.md) — Security group-driven networking in ECS task definitions
+- [EKS Operations](/05-cloud/aws/eks/02-eks-operations.md) — VPC CNI, security groups for pods
+- [DNS, CDN & Load Balancing](/11-networking/03-dns-cdn-loadbalancing.md) — Global load balancing, Route53 integration
+- [CloudWatch Observability](/05-cloud/aws/cloudwatch/02-cloudwatch-observability.md) — VPC flow logs monitoring, network telemetry
 
 ## Advanced Troubleshooting
 
@@ -447,8 +447,8 @@ AWS VPC Reachability Analyzer builds a graph of all networking components (SGs, 
 ## Cross-References
 
 
-- [ECS Deployment Patterns](../ecs/02-ecs-deployment-patterns.md) — Security group-driven networking in ECS task definitions
-- [EKS Operations](../eks/02-eks-operations.md) — VPC CNI, security groups for pods
-- [DNS, CDN & Load Balancing](../../../11-networking/03-dns-cdn-loadbalancing.md) — Global load balancing, Route53 integration
-- [CloudWatch Observability](../cloudwatch/02-cloudwatch-observability.md) — VPC flow logs monitoring, network telemetry
-- [IAM Advanced Patterns](../iam/02-iam-advanced-patterns.md) — VPC endpoints, S3 bucket policies with sourceVPC conditions
+- [ECS Deployment Patterns](/05-cloud/aws/ecs/02-ecs-deployment-patterns.md) — Security group-driven networking in ECS task definitions
+- [EKS Operations](/05-cloud/aws/eks/02-eks-operations.md) — VPC CNI, security groups for pods
+- [DNS, CDN & Load Balancing](/11-networking/03-dns-cdn-loadbalancing.md) — Global load balancing, Route53 integration
+- [CloudWatch Observability](/05-cloud/aws/cloudwatch/02-cloudwatch-observability.md) — VPC flow logs monitoring, network telemetry
+- [IAM Advanced Patterns](/05-cloud/aws/iam/02-iam-advanced-patterns.md) — VPC endpoints, S3 bucket policies with sourceVPC conditions

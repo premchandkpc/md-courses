@@ -517,17 +517,17 @@ Client                     L7 LB (TLS termination)         Server
 ## Cross-References
 
 
-- [HTTP Protocols](../02-http-protocols.md) — TLS handshake details, HTTP/2 multiplexing, HTTP/3 QUIC
-- [Kubernetes Networking](../../07-kubernetes/03-kubernetes-networking.md) — Ingress controllers, service types, DNS in K8s
-- [Distributed Systems](../../09-distributed-systems/01-distributed-systems.md) — Consistent hashing, gossip protocol, failure detection
-- [Backend Roadmap](../../21-roadmaps/01-backend-engineer.md) — Phase 2 networking fundamentals, Phase 3 CDN design
-- [CloudFront Distribution](../../05-cloud/aws/cdn/01-cloudfront.md) — AWS-specific CDN configuration, Lambda@Edge
+- [HTTP Protocols](/11-networking/02-http-protocols.md) — TLS handshake details, HTTP/2 multiplexing, HTTP/3 QUIC
+- [Kubernetes Networking](/07-kubernetes/03-kubernetes-networking.md) — Ingress controllers, service types, DNS in K8s
+- [Distributed Systems](/09-distributed-systems/README.md) — Consistent hashing, gossip protocol, failure detection
+- [Backend Roadmap](/21-roadmaps/01-backend-engineer.md) — Phase 2 networking fundamentals, Phase 3 CDN design
+- [CloudFront Distribution](/05-cloud/aws/cdn/01-cloudfront.md) — AWS-specific CDN configuration, Lambda@Edge
 
 ## Related
 
-- [Linux Kernel Architecture](12-operating-systems/01-linux-kernel-architecture.md)
-- [Cpu Scheduling](12-operating-systems/02-cpu-scheduling.md)
-- [Linux Process Memory](12-operating-systems/02-linux-process-memory.md)
-- [Linux Io Storage](12-operating-systems/03-linux-io-storage.md)
-- [Memory Management](12-operating-systems/03-memory-management.md)
-- [Io Models](12-operating-systems/04-io-models.md)
+- [Linux Kernel Architecture](/12-operating-systems/01-linux-kernel-architecture.md)
+- [Cpu Scheduling](/12-operating-systems/02-cpu-scheduling.md)
+- [Linux Process Memory](/12-operating-systems/02-linux-process-memory.md)
+- [Linux Io Storage](/12-operating-systems/03-linux-io-storage.md)
+- [Memory Management](/12-operating-systems/03-memory-management.md)
+- [Io Models](/12-operating-systems/04-io-models.md)

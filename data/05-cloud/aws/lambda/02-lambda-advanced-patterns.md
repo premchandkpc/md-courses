@@ -1,6 +1,6 @@
 # ⚡ Lambda Advanced Patterns — Complete Deep Dive
 
-**Related**: [Lambda Basics](01-lambda-deep-dive.md) · [S3](../s3/01-s3-deep-dive.md) · [API Gateway](../api-gateway/01-api-gateway.md) · [CloudWatch](../cloudwatch/02-cloudwatch-observability.md) · [DynamoDB](../dynamodb/01-dynamodb-deep-dive.md)
+**Related**: [Lambda Basics](/05-cloud/aws/lambda/01-lambda-deep-dive.md) · [S3](/05-cloud/aws/s3/01-s3-deep-dive.md) · [API Gateway](/api-gateway/01-api-gateway.md) · [CloudWatch](/05-cloud/aws/cloudwatch/02-cloudwatch-observability.md) · [DynamoDB](/dynamodb/01-dynamodb-deep-dive.md)
 
 ---
 
@@ -1304,4 +1304,4 @@ DESTINATIONS           = "If this succeeds, tell Bob. If it
 
 ---
 
-**Next**: [EC2 Networking & Security](../ec2/02-ec2-networking-security.md)
+**Next**: [EC2 Networking & Security](/05-cloud/aws/ec2/02-ec2-networking-security.md)

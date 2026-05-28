@@ -1,6 +1,6 @@
 # 📊 Amazon CloudWatch — Complete Deep Dive
 
-**Related**: [Lambda](../lambda/01-lambda-deep-dive.md) · [EC2](../ec2/01-ec2-deep-dive.md) · [RDS](../rds/01-rds-deep-dive.md) · [ECS](../ecs/01-ecs-deep-dive.md)
+**Related**: [Lambda](/05-cloud/aws/lambda/01-lambda-deep-dive.md) · [EC2](/05-cloud/aws/ec2/01-ec2-deep-dive.md) · [RDS](/05-cloud/aws/rds/01-rds-deep-dive.md) · [ECS](/05-cloud/aws/ecs/01-ecs-deep-dive.md)
 
 ---
 
@@ -983,4 +983,4 @@ INSIGHTS         Top 10 IPs by error count, top 5 endpoints
 
 ---
 
-**Next**: [S3 Deep Dive](../s3/01-s3-deep-dive.md) — Object storage
+**Next**: [S3 Deep Dive](/05-cloud/aws/s3/01-s3-deep-dive.md) — Object storage

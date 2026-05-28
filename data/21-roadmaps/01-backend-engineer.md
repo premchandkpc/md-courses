@@ -453,9 +453,9 @@ Markdown Notes       CI/CD Canary Deploy     Multi-region Active-Active   SLO Au
 
 ## Cross-References
 
-- [System Design Interview Prep](../03-system-design-prep.md) — Framework, design patterns, database selection guide, 30 practice questions
-- [HTTP Protocols](../../11-networking/02-http-protocols.md) — Phase 1 networking fundamentals deep dive
-- [PostgreSQL Architecture](../../08-databases/02-postgresql-architecture.md) — Phase 2 database internals
-- [Distributed Transactions](../../09-distributed-systems/02-distributed-transactions.md) — Phase 3 distributed systems
-- [Kubernetes Networking](../../07-kubernetes/03-kubernetes-networking.md) — Phase 2-3 container orchestration
-- [Stream Processing](../../09-distributed-systems/04-stream-processing.md) — Phase 3 streaming fundamentals
+- [System Design Interview Prep](/21-roadmaps/03-system-design-prep.md) — Framework, design patterns, database selection guide, 30 practice questions
+- [HTTP Protocols](/11-networking/02-http-protocols.md) — Phase 1 networking fundamentals deep dive
+- [PostgreSQL Architecture](/08-databases/02-postgresql-architecture.md) — Phase 2 database internals
+- [Distributed Transactions](/09-distributed-systems/02-distributed-transactions.md) — Phase 3 distributed systems
+- [Kubernetes Networking](/07-kubernetes/03-kubernetes-networking.md) — Phase 2-3 container orchestration
+- [Stream Processing](/09-distributed-systems/04-stream-processing.md) — Phase 3 streaming fundamentals

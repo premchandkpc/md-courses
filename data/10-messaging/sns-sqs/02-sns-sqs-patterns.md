@@ -428,8 +428,8 @@ aws sqs purge-queue --queue-url https://sqs.us-east-1.amazonaws.com/.../orders-d
 ## Cross-References
 
 
-- [Kafka Production Patterns](../kafka/02-kafka-patterns.md) — Kafka vs SQS+SNS comparison, event sourcing patterns
-- [Kafka Production Operations](../kafka/04-kafka-production-operations.md) — Cluster sizing, client tuning, monitoring
-- [Distributed Transactions](../../09-distributed-systems/02-distributed-transactions.md) — Outbox pattern, Saga orchestration
-- [CloudWatch Observability](../../05-cloud/aws/cloudwatch/02-cloudwatch-observability.md) — SQS metrics, alarm configuration
-- [Microservices Security](../../16-microservices/08-security-identity.md) — OAuth2 tokens, API gateway rate limiting
+- [Kafka Production Patterns](/10-messaging/kafka/02-kafka-patterns.md) — Kafka vs SQS+SNS comparison, event sourcing patterns
+- [Kafka Production Operations](/10-messaging/kafka/04-kafka-production-operations.md) — Cluster sizing, client tuning, monitoring
+- [Distributed Transactions](/09-distributed-systems/02-distributed-transactions.md) — Outbox pattern, Saga orchestration
+- [CloudWatch Observability](/05-cloud/aws/cloudwatch/02-cloudwatch-observability.md) — SQS metrics, alarm configuration
+- [Microservices Security](/16-microservices/08-security-identity.md) — OAuth2 tokens, API gateway rate limiting

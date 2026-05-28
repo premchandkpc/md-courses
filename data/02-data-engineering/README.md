@@ -406,22 +406,22 @@ Achieving end-to-end exactly-once requires coordination across source, processin
 
 | Domain | Connection |
 |--------|-----------|
-| [01 — AI/ML](../01-ai-ml/) | Feature engineering, training data pipelines, model inference data preparation, feature stores |
-| [03 — Backend](../03-backend/) | API design for data ingestion, backend data processing services, event-driven architectures |
-| [05 — Cloud](../05-cloud/) | S3/GCS/ADLS object stores, managed warehouses (Redshift, BigQuery, Snowflake), EMR/Dataproc |
-| [06 — DevOps](../06-devops/) | Infrastructure as code for data infrastructure, Airflow/Airbyte on K8s, data pipeline CI/CD |
-| [07 — Kubernetes](../07-kubernetes/) | Running Spark/Flink on K8s, elastic scaling for data workloads, Spark Operator |
-| [08 — Databases](../08-databases/) | OLTP vs OLAP boundaries, CDC sources, warehouse internals, query engine architecture |
-| [09 — Distributed Systems](../09-distributed-systems/) | Distributed processing foundations, consensus for metadata, replication for fault tolerance |
-| [10 — Messaging](../10-messaging/) | Event backbone for streaming, Kafka as data bus, message semantics |
-| [11 — Networking](../11-networking/) | Data transfer optimization, network for shuffle, bandwidth limits in large-scale processing |
+| [01 — AI/ML](/01-ai-ml/) | Feature engineering, training data pipelines, model inference data preparation, feature stores |
+| [03 — Backend](/03-backend/) | API design for data ingestion, backend data processing services, event-driven architectures |
+| [05 — Cloud](/05-cloud/) | S3/GCS/ADLS object stores, managed warehouses (Redshift, BigQuery, Snowflake), EMR/Dataproc |
+| [06 — DevOps](/06-devops/) | Infrastructure as code for data infrastructure, Airflow/Airbyte on K8s, data pipeline CI/CD |
+| [07 — Kubernetes](/07-kubernetes/) | Running Spark/Flink on K8s, elastic scaling for data workloads, Spark Operator |
+| [08 — Databases](/08-databases/) | OLTP vs OLAP boundaries, CDC sources, warehouse internals, query engine architecture |
+| [09 — Distributed Systems](/09-distributed-systems/) | Distributed processing foundations, consensus for metadata, replication for fault tolerance |
+| [10 — Messaging](/10-messaging/) | Event backbone for streaming, Kafka as data bus, message semantics |
+| [11 — Networking](/11-networking/) | Data transfer optimization, network for shuffle, bandwidth limits in large-scale processing |
 
 ---
 
 ## Related
 
-- [Databases](../../08-databases/) — Data storage and querying
-- [Messaging](../../10-messaging/) — Event streaming (Kafka)
-- [Cloud Platforms](../../05-cloud/) — Data warehousing (Redshift, BigQuery)
-- [Backend](../../03-backend/) — Data service APIs
-- [Distributed Systems](../../09-distributed-systems/) — Scale and consistency
+- [Databases](/08-databases/) — Data storage and querying
+- [Messaging](/10-messaging/) — Event streaming (Kafka)
+- [Cloud Platforms](/05-cloud/) — Data warehousing (Redshift, BigQuery)
+- [Backend](/03-backend/) — Data service APIs
+- [Distributed Systems](/09-distributed-systems/) — Scale and consistency

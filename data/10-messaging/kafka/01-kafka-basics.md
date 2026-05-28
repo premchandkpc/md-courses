@@ -3,7 +3,7 @@
 
 > **Run the live simulator**: [kafka-replication.html](/10-messaging/kafka/kafka-replication.html) — produce messages, kill leaders, watch ISR management in real-time.
 
-**Related**: [Production Patterns](02-kafka-patterns.md) · [RabbitMQ](../rabbitmq/01-rabbitmq-basics.md) · [SNS/SQS](../sns-sqs/01-sns-sqs-basics.md)
+**Related**: [Production Patterns](/10-messaging/kafka/02-kafka-patterns.md) · [RabbitMQ](/10-messaging/rabbitmq/01-rabbitmq-basics.md) · [SNS/SQS](/10-messaging/sns-sqs/01-sns-sqs-basics.md)
 
 ---
 

@@ -2382,12 +2382,12 @@ Use OpenTelemetry Go SDK. Propagate trace context through `context.Context` acro
 
 ## Related
 
-- [Profiling Deep Dive](18-performance-engineering/profiling/01-profiling-deep-dive.md)
-- [Linux Kernel Architecture](12-operating-systems/01-linux-kernel-architecture.md)
-- [Cpu Scheduling](12-operating-systems/02-cpu-scheduling.md)
-- [Linux Process Memory](12-operating-systems/02-linux-process-memory.md)
-- [Linux Io Storage](12-operating-systems/03-linux-io-storage.md)
-- [Memory Management](12-operating-systems/03-memory-management.md)
+- [Profiling Deep Dive](/18-performance-engineering/profiling/01-profiling-deep-dive.md)
+- [Linux Kernel Architecture](/12-operating-systems/01-linux-kernel-architecture.md)
+- [Cpu Scheduling](/12-operating-systems/02-cpu-scheduling.md)
+- [Linux Process Memory](/12-operating-systems/02-linux-process-memory.md)
+- [Linux Io Storage](/12-operating-systems/03-linux-io-storage.md)
+- [Memory Management](/12-operating-systems/03-memory-management.md)
 
 ## Runtime Flow: Goroutine Scheduling (GMP Model)
 

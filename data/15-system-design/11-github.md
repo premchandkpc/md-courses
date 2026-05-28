@@ -2,7 +2,7 @@
 
 > **Scope**: Requirements (100M+ repositories, 50M+ developers), Git storage (pack files, delta compression, object storage), repository model (forks, PRs, branches, tags), collaboration (issues, PRs, code review, discussions, projects), CI/CD (GitHub Actions, self-hosted runners, workflow orchestration), storage (Git LFS, large file policies), search (code, issues, users), database (MySQL, Redis, Elasticsearch), availability (multi-region, read replicas for git clone), failure analysis.
 >
-> **Related**: [07-amazon.md](./07-amazon.md) | [09-google-search.md](./09-google-search.md)
+> **Related**: [07-amazon.md](/15-system-design/07-amazon.md) | [09-google-search.md](/15-system-design/09-google-search.md)
 
 
 ```mermaid
@@ -1370,9 +1370,9 @@ Infrastructure (estimated):
 
 ## Related
 
-- [Cap Consistency](09-distributed-systems/01-cap-consistency.md)
-- [Consensus Replication](09-distributed-systems/01-consensus-replication.md)
-- [Consensus Raft](09-distributed-systems/02-consensus-raft.md)
-- [Distributed Transactions](09-distributed-systems/02-distributed-transactions.md)
-- [Distributed Caching](09-distributed-systems/03-distributed-caching.md)
-- [Distributed Storage](09-distributed-systems/03-distributed-storage.md)
+- [Cap Consistency](/09-distributed-systems/01-cap-consistency.md)
+- [Consensus Replication](/09-distributed-systems/01-consensus-replication.md)
+- [Consensus Raft](/09-distributed-systems/02-consensus-raft.md)
+- [Distributed Transactions](/09-distributed-systems/02-distributed-transactions.md)
+- [Distributed Caching](/09-distributed-systems/03-distributed-caching.md)
+- [Distributed Storage](/09-distributed-systems/03-distributed-storage.md)

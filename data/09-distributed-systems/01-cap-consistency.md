@@ -2,7 +2,7 @@
 
 > **Scope**: Formal proof of CAP (Brewer's conjecture, Gilbert-Lynch proof), tradeoffs (CP vs AP, PACELC extension), consistency model hierarchy from linearizability to eventual consistency, CRDT theory and practice, real-world consistency in Dynamo, Spanner, Cassandra, ZooKeeper, etcd, Cosmos DB, CockroachDB, MongoDB, Kafka, S3.
 >
-> **Related**: [02-consensus-raft.md](./02-consensus-raft.md) | [03-distributed-caching.md](./03-distributed-caching.md) | [04-distributed-transactions.md](./04-distributed-transactions.md)
+> **Related**: [02-consensus-raft.md](/09-distributed-systems/02-consensus-raft.md) | [03-distributed-caching.md](/09-distributed-systems/03-distributed-caching.md) | [04-distributed-transactions.md](/09-distributed-systems/04-distributed-transactions.md)
 
 
 ```mermaid
@@ -487,9 +487,9 @@ Consistency models are a spectrum from "always right, slow" (linearizability) to
 
 ## Related
 
-- [Postgresql Internals](08-databases/01-postgresql-internals.md)
-- [Relational Database Internals](08-databases/01-relational-database-internals.md)
-- [Postgresql Architecture](08-databases/02-postgresql-architecture.md)
-- [Redis Internals](08-databases/02-redis-internals.md)
-- [Postgresql Troubleshooting Tuning](08-databases/03-postgresql-troubleshooting-tuning.md)
-- [Redis Deep Dive](08-databases/04-redis-deep-dive.md)
+- [Postgresql Internals](/08-databases/01-postgresql-internals.md)
+- [Relational Database Internals](/08-databases/01-relational-database-internals.md)
+- [Postgresql Architecture](/08-databases/02-postgresql-architecture.md)
+- [Redis Internals](/08-databases/02-redis-internals.md)
+- [Postgresql Troubleshooting Tuning](/08-databases/03-postgresql-troubleshooting-tuning.md)
+- [Redis Deep Dive](/08-databases/04-redis-deep-dive.md)

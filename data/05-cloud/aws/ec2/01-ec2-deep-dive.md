@@ -1,6 +1,6 @@
 # 🖥️ Amazon EC2 — Complete Deep Dive
 
-**Related**: [S3](../s3/01-s3-deep-dive.md) · [EBS](#ebs-volumes) · [Auto Scaling](#auto-scaling-groups) · [IAM](../iam/01-iam-deep-dive.md)
+**Related**: [S3](/05-cloud/aws/s3/01-s3-deep-dive.md) · [EBS](#ebs-volumes) · [Auto Scaling](#auto-scaling-groups) · [IAM](/05-cloud/aws/iam/01-iam-deep-dive.md)
 
 ---
 
@@ -874,4 +874,4 @@ PLACEMENT GROUP  =  Seating arrangements:
 
 ---
 
-**Next**: [Lambda](../lambda/01-lambda-deep-dive.md) — Serverless compute
+**Next**: [Lambda](/05-cloud/aws/lambda/01-lambda-deep-dive.md) — Serverless compute

@@ -507,8 +507,8 @@ export function createServiceDashboard(scope: any, serviceName: string) {
 ## Cross-References
 
 
-- [EC2 Networking & Security](../ec2/02-ec2-networking-security.md) — VPC Flow Logs, instance metadata
-- [ECS Deployment Patterns](../ecs/02-ecs-deployment-patterns.md) — Container Insights, ECS Exec
-- [EKS Operations](../eks/02-eks-operations.md) — Prometheus, Grafana, kube-state-metrics
-- [Kubernetes Observability](../../../07-kubernetes/06-kubernetes-observability.md) — Metrics Server, cAdvisor
-- [SRE & Observability](../../../14-sre-observability/) — SLIs, SLOs, error budgets
+- [EC2 Networking & Security](/05-cloud/aws/ec2/02-ec2-networking-security.md) — VPC Flow Logs, instance metadata
+- [ECS Deployment Patterns](/05-cloud/aws/ecs/02-ecs-deployment-patterns.md) — Container Insights, ECS Exec
+- [EKS Operations](/05-cloud/aws/eks/02-eks-operations.md) — Prometheus, Grafana, kube-state-metrics
+- [Kubernetes Observability](/07-kubernetes/06-kubernetes-observability.md) — Metrics Server, cAdvisor
+- [SRE & Observability](/14-sre-observability/) — SLIs, SLOs, error budgets

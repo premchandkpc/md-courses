@@ -35,7 +35,7 @@ graph TB
 
 This directory contains **full architecture blueprints** for real-world systems. Each blueprint covers requirements, architecture decisions, data models, API design, deployment topology, tradeoffs, and scaling considerations.
 
-**Related**: [System Design](../15-system-design/README.md) · [Microservices](../16-microservices/README.md) · [Software Architecture](../17-software-architecture/README.md) · [Low-Level Design](../24-low-level-design/README.md)
+**Related**: [System Design](/15-system-design/README.md) · [Microservices](/16-microservices/README.md) · [Software Architecture](/17-software-architecture/README.md) · [Low-Level Design](/24-low-level-design/README.md)
 
 ---
 
@@ -616,12 +616,12 @@ Hybrid approach:
 
 | Domain | Connection |
 |--------|-----------|
-| [System Design](../15-system-design/README.md) | Case studies, capacity estimation, tradeoffs |
-| [Microservices](../16-microservices/README.md) | Service decomposition, inter-service communication |
-| [Software Architecture](../17-software-architecture/README.md) | Architecture patterns, decisions, evaluation |
-| [Low-Level Design](../24-low-level-design/README.md) | Class design, sequence diagrams, OOP |
-| [Databases](../08-databases/README.md) | Data modeling, partitioning, replication |
-| [Distributed Systems](../09-distributed-systems/README.md) | Consistency, consensus, coordination |
+| [System Design](/15-system-design/README.md) | Case studies, capacity estimation, tradeoffs |
+| [Microservices](/16-microservices/README.md) | Service decomposition, inter-service communication |
+| [Software Architecture](/17-software-architecture/README.md) | Architecture patterns, decisions, evaluation |
+| [Low-Level Design](/24-low-level-design/README.md) | Class design, sequence diagrams, OOP |
+| [Databases](/08-databases/README.md) | Data modeling, partitioning, replication |
+| [Distributed Systems](/09-distributed-systems/README.md) | Consistency, consensus, coordination |
 
 ---
 
@@ -647,13 +647,13 @@ Like cooking:
 
 ---
 
-**Next**: [Low-Level Design](../24-low-level-design/README.md) · [System Design](../15-system-design/README.md)
+**Next**: [Low-Level Design](/24-low-level-design/README.md) · [System Design](/15-system-design/README.md)
 
 ## Related
 
-- [System Design Principles](15-system-design/01-system-design-principles.md)
-- [Whatsapp](15-system-design/01-whatsapp.md)
-- [Netflix](15-system-design/02-netflix.md)
-- [System Design Blueprints](15-system-design/02-system-design-blueprints.md)
-- [Twitter](15-system-design/03-twitter.md)
-- [Uber](15-system-design/04-uber.md)
+- [System Design Principles](/15-system-design/01-system-design-principles.md)
+- [Whatsapp](/15-system-design/01-whatsapp.md)
+- [Netflix](/15-system-design/02-netflix.md)
+- [System Design Blueprints](/15-system-design/02-system-design-blueprints.md)
+- [Twitter](/15-system-design/03-twitter.md)
+- [Uber](/15-system-design/04-uber.md)

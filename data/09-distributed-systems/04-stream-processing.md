@@ -522,17 +522,17 @@ See code examples above for practical usage patterns.
 ## Cross-References
 
 
-- [Kafka Patterns](../../10-messaging/kafka/02-kafka-patterns.md) — Event sourcing, CQRS, stream-table duality
-- [Distributed Transactions](../02-distributed-transactions.md) — Saga, exactly-once semantics, outbox pattern
-- [Distributed Storage](../03-distributed-storage.md) — State backends, RocksDB configuration, checkpointing
-- [Kubernetes Observability](../../07-kubernetes/06-kubernetes-observability.md) — Flink/Kafka Streams monitoring, metrics
-- [Backend Roadmap](../../21-roadmaps/01-backend-engineer.md) — Phase 3 stream processing, Phase 4 large-scale design
+- [Kafka Patterns](/10-messaging/kafka/02-kafka-patterns.md) — Event sourcing, CQRS, stream-table duality
+- [Distributed Transactions](/09-distributed-systems/02-distributed-transactions.md) — Saga, exactly-once semantics, outbox pattern
+- [Distributed Storage](/09-distributed-systems/03-distributed-storage.md) — State backends, RocksDB configuration, checkpointing
+- [Kubernetes Observability](/07-kubernetes/06-kubernetes-observability.md) — Flink/Kafka Streams monitoring, metrics
+- [Backend Roadmap](/21-roadmaps/01-backend-engineer.md) — Phase 3 stream processing, Phase 4 large-scale design
 
 ## Related
 
-- [Postgresql Internals](08-databases/01-postgresql-internals.md)
-- [Relational Database Internals](08-databases/01-relational-database-internals.md)
-- [Postgresql Architecture](08-databases/02-postgresql-architecture.md)
-- [Redis Internals](08-databases/02-redis-internals.md)
-- [Postgresql Troubleshooting Tuning](08-databases/03-postgresql-troubleshooting-tuning.md)
-- [Redis Deep Dive](08-databases/04-redis-deep-dive.md)
+- [Postgresql Internals](/08-databases/01-postgresql-internals.md)
+- [Relational Database Internals](/08-databases/01-relational-database-internals.md)
+- [Postgresql Architecture](/08-databases/02-postgresql-architecture.md)
+- [Redis Internals](/08-databases/02-redis-internals.md)
+- [Postgresql Troubleshooting Tuning](/08-databases/03-postgresql-troubleshooting-tuning.md)
+- [Redis Deep Dive](/08-databases/04-redis-deep-dive.md)

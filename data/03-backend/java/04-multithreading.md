@@ -1,6 +1,6 @@
 # 🧵 Java Multithreading & Concurrency — Complete Deep Dive
 
-**Related**: [Java Memory Model & GC](06-java-memory-gc.md) · [OOP Concepts](01-oop-concepts.md) · [Collections Framework](02-collections-framework.md)
+**Related**: [Java Memory Model & GC](/03-backend/java/06-java-memory-gc.md) · [OOP Concepts](/03-backend/java/01-oop-concepts.md) · [Collections Framework](/03-backend/java/02-collections-framework.md)
 
 ---
 
@@ -1367,7 +1367,7 @@ THREADLOCAL    =  Personal locker for each worker. What's inside is
 
 ---
 
-**Next**: [JVM Architecture & Class Loading](05-jvm-architecture.md) — JVM internals, classloaders, bytecode execution
+**Next**: [JVM Architecture & Class Loading](/03-backend/java/05-jvm-architecture.md) — JVM internals, classloaders, bytecode execution
 
 
 ## Observability
@@ -1456,9 +1456,9 @@ Use Micrometer Tracing (formerly Spring Cloud Sleuth) or OpenTelemetry Java SDK.
 
 ## Related
 
-- [Jvm Performance](18-performance-engineering/jvm-tuning/01-jvm-performance.md)
-- [Cap Consistency](09-distributed-systems/01-cap-consistency.md)
-- [Consensus Replication](09-distributed-systems/01-consensus-replication.md)
-- [Consensus Raft](09-distributed-systems/02-consensus-raft.md)
-- [Distributed Transactions](09-distributed-systems/02-distributed-transactions.md)
-- [Distributed Caching](09-distributed-systems/03-distributed-caching.md)
+- [Jvm Performance](/18-performance-engineering/jvm-tuning/01-jvm-performance.md)
+- [Cap Consistency](/09-distributed-systems/01-cap-consistency.md)
+- [Consensus Replication](/09-distributed-systems/01-consensus-replication.md)
+- [Consensus Raft](/09-distributed-systems/02-consensus-raft.md)
+- [Distributed Transactions](/09-distributed-systems/02-distributed-transactions.md)
+- [Distributed Caching](/09-distributed-systems/03-distributed-caching.md)

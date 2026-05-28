@@ -1,6 +1,6 @@
 # ⚡💾 Amazon ElastiCache — Complete Deep Dive
 
-**Related**: [RDS](../rds/01-rds-deep-dive.md) · [EC2](../ec2/01-ec2-deep-dive.md) · [CloudWatch](../cloudwatch/01-cloudwatch-deep-dive.md) · [IAM](../iam/01-iam-deep-dive.md)
+**Related**: [RDS](/05-cloud/aws/rds/01-rds-deep-dive.md) · [EC2](/05-cloud/aws/ec2/01-ec2-deep-dive.md) · [CloudWatch](/05-cloud/aws/cloudwatch/01-cloudwatch-deep-dive.md) · [IAM](/05-cloud/aws/iam/01-iam-deep-dive.md)
 
 ---
 
@@ -765,7 +765,7 @@ EVICTION         =  When your notebook is full, you have to
 
 ---
 
-**Next**: [CloudWatch Deep Dive](../cloudwatch/01-cloudwatch-deep-dive.md) — Monitoring and observability
+**Next**: [CloudWatch Deep Dive](/05-cloud/aws/cloudwatch/01-cloudwatch-deep-dive.md) — Monitoring and observability
 
 
 ## Observability

@@ -502,21 +502,21 @@ graph LR
 
 | Domain | Connection |
 |--------|-----------|
-| [02 — Data Engineering](../02-data-engineering/) | Spark/Flink on K8s, data pipelines on K8s, storage for data workloads (Lakehouse, object store via CSI) |
-| [03 — Backend](../03-backend/) | Deploying backend services on K8s, service discovery, canary deployments for APIs |
-| [05 — Cloud](../05-cloud/) | EKS/GKE/AKS — managed K8s, node pools, cluster networking, cloud LBs |
-| [06 — DevOps](../06-devops/) | CI/CD pipelines deploying to K8s, IaC for cluster provisioning, GitOps tooling |
-| [08 — Databases](../08-databases/) | Running databases on K8s (operators for Postgres, MySQL, Cassandra), stateful workloads |
-| [09 — Distributed Systems](../09-distributed-systems/) | K8s itself is a distributed system (etcd, raft, API server); distributed patterns on K8s |
-| [10 — Messaging](../10-messaging/) | Kafka on K8s (Strimzi), message-driven autoscaling (KEDA), event-driven K8s jobs |
-| [11 — Networking](../11-networking/) | CNI plugins, network policies, service mesh, DNS in K8s, eBPF networking |
-| [14 — SRE/Observability](../14-sre-observability/) | Prometheus + Grafana on K8s, Loki for logs, OpenTelemetry tracing, K8s-specific SLOs |
+| [02 — Data Engineering](/02-data-engineering/) | Spark/Flink on K8s, data pipelines on K8s, storage for data workloads (Lakehouse, object store via CSI) |
+| [03 — Backend](/03-backend/) | Deploying backend services on K8s, service discovery, canary deployments for APIs |
+| [05 — Cloud](/05-cloud/) | EKS/GKE/AKS — managed K8s, node pools, cluster networking, cloud LBs |
+| [06 — DevOps](/06-devops/) | CI/CD pipelines deploying to K8s, IaC for cluster provisioning, GitOps tooling |
+| [08 — Databases](/08-databases/) | Running databases on K8s (operators for Postgres, MySQL, Cassandra), stateful workloads |
+| [09 — Distributed Systems](/09-distributed-systems/) | K8s itself is a distributed system (etcd, raft, API server); distributed patterns on K8s |
+| [10 — Messaging](/10-messaging/) | Kafka on K8s (Strimzi), message-driven autoscaling (KEDA), event-driven K8s jobs |
+| [11 — Networking](/11-networking/) | CNI plugins, network policies, service mesh, DNS in K8s, eBPF networking |
+| [14 — SRE/Observability](/14-sre-observability/) | Prometheus + Grafana on K8s, Loki for logs, OpenTelemetry tracing, K8s-specific SLOs |
 
 ## Related
 
-- [Readme](05-cloud/README.md)
-- [Cloudwatch Deep Dive](05-cloud/aws/cloudwatch/01-cloudwatch-deep-dive.md)
-- [Cloudwatch Observability](05-cloud/aws/cloudwatch/02-cloudwatch-observability.md)
-- [Ec2 Deep Dive](05-cloud/aws/ec2/01-ec2-deep-dive.md)
-- [Ec2 Networking Security](05-cloud/aws/ec2/02-ec2-networking-security.md)
-- [Ecs Deep Dive](05-cloud/aws/ecs/01-ecs-deep-dive.md)
+- [Readme](/05-cloud/README.md)
+- [Cloudwatch Deep Dive](/05-cloud/aws/cloudwatch/01-cloudwatch-deep-dive.md)
+- [Cloudwatch Observability](/05-cloud/aws/cloudwatch/02-cloudwatch-observability.md)
+- [Ec2 Deep Dive](/05-cloud/aws/ec2/01-ec2-deep-dive.md)
+- [Ec2 Networking Security](/05-cloud/aws/ec2/02-ec2-networking-security.md)
+- [Ecs Deep Dive](/05-cloud/aws/ecs/01-ecs-deep-dive.md)

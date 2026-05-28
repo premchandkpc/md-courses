@@ -934,8 +934,8 @@ ratio = dist_projected / dist_original  # ≈ 1
 
 ## Related
 
-- [Databases](../../08-databases/) — Vector search, embeddings storage
-- [Python Backend](../../03-backend/) — ML inference APIs
-- [Cloud Platforms](../../05-cloud/) — GPU/TPU infrastructure
-- [Data Engineering](../../02-data-engineering/) — Training data pipelines
-- [Performance Engineering](../../18-performance-engineering/) — Model optimization
+- [Databases](/08-databases/) — Vector search, embeddings storage
+- [Python Backend](/03-backend/) — ML inference APIs
+- [Cloud Platforms](/05-cloud/) — GPU/TPU infrastructure
+- [Data Engineering](/02-data-engineering/) — Training data pipelines
+- [Performance Engineering](/18-performance-engineering/) — Model optimization

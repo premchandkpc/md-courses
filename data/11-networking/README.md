@@ -435,26 +435,26 @@ HTTP over QUIC (UDP-based). Eliminates TCP HOL blocking.
 
 | Domain | Connection |
 |--------|-----------|
-| [00 — Foundations](../00-foundations/) | Graph algorithms for routing, information theory for compression, queueing theory for network buffers |
-| [01 — AI/ML](../01-ai-ml/) | Network traffic analysis, distributed training networking, model serving latency optimization |
-| [02 — Data Engineering](../02-data-engineering/) | Data transfer optimization, network for shuffle (Spark/Flink), bandwidth in large-scale processing |
-| [03 — Backend](../03-backend/) | HTTP/gRPC API design, TLS termination, connection pooling, TCP tuning for backend services |
-| [04 — Frontend](../04-frontend/) | HTTP/2 multiplexing, CDN content delivery, DNS resolution impact, TLS handshake latency |
-| [05 — Cloud](../05-cloud/) | VPC design, Route 53, CloudFront, load balancers (ALB/NLB), Direct Connect, Cloud CDN |
-| [06 — DevOps](../06-devops/) | Network infrastructure as code, firewall rules, TLS automation, DNS automation |
-| [07 — Kubernetes](../07-kubernetes/) | CNI plugins, network policies, service mesh (Envoy/Istio), Service types, Ingress/Gateway API |
-| [08 — Databases](../08-databases/) | Database connection networking, replication network traffic, query latency from network |
-| [09 — Distributed Systems](../09-distributed-systems/) | Network partitions, latency and timeouts, consensus protocol messaging, failure detection |
-| [10 — Messaging](../10-messaging/) | Broker networking, replication traffic, Kafka's request pipeline, message serialization |
+| [00 — Foundations](/00-foundations/) | Graph algorithms for routing, information theory for compression, queueing theory for network buffers |
+| [01 — AI/ML](/01-ai-ml/) | Network traffic analysis, distributed training networking, model serving latency optimization |
+| [02 — Data Engineering](/02-data-engineering/) | Data transfer optimization, network for shuffle (Spark/Flink), bandwidth in large-scale processing |
+| [03 — Backend](/03-backend/) | HTTP/gRPC API design, TLS termination, connection pooling, TCP tuning for backend services |
+| [04 — Frontend](/04-frontend/) | HTTP/2 multiplexing, CDN content delivery, DNS resolution impact, TLS handshake latency |
+| [05 — Cloud](/05-cloud/) | VPC design, Route 53, CloudFront, load balancers (ALB/NLB), Direct Connect, Cloud CDN |
+| [06 — DevOps](/06-devops/) | Network infrastructure as code, firewall rules, TLS automation, DNS automation |
+| [07 — Kubernetes](/07-kubernetes/) | CNI plugins, network policies, service mesh (Envoy/Istio), Service types, Ingress/Gateway API |
+| [08 — Databases](/08-databases/) | Database connection networking, replication network traffic, query latency from network |
+| [09 — Distributed Systems](/09-distributed-systems/) | Network partitions, latency and timeouts, consensus protocol messaging, failure detection |
+| [10 — Messaging](/10-messaging/) | Broker networking, replication traffic, Kafka's request pipeline, message serialization |
 
 ## Related
 
-- [Linux Kernel Architecture](12-operating-systems/01-linux-kernel-architecture.md)
-- [Cpu Scheduling](12-operating-systems/02-cpu-scheduling.md)
-- [Linux Process Memory](12-operating-systems/02-linux-process-memory.md)
-- [Linux Io Storage](12-operating-systems/03-linux-io-storage.md)
-- [Memory Management](12-operating-systems/03-memory-management.md)
-- [Io Models](12-operating-systems/04-io-models.md)
+- [Linux Kernel Architecture](/12-operating-systems/01-linux-kernel-architecture.md)
+- [Cpu Scheduling](/12-operating-systems/02-cpu-scheduling.md)
+- [Linux Process Memory](/12-operating-systems/02-linux-process-memory.md)
+- [Linux Io Storage](/12-operating-systems/03-linux-io-storage.md)
+- [Memory Management](/12-operating-systems/03-memory-management.md)
+- [Io Models](/12-operating-systems/04-io-models.md)
 
 ## Runtime Flow: Full-Stack Request Lifecycle
 

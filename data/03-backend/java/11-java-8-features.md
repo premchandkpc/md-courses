@@ -1,6 +1,6 @@
 # 🔄 Java 8+ Features — What Changed in Each Version
 
-**Related**: [Streams & Lambda](07-streams-lambda.md) · [Collections Framework](02-collections-framework.md) · [Generics](08-generics.md) · [Spring Boot](12-spring-boot.md)
+**Related**: [Streams & Lambda](/03-backend/java/07-streams-lambda.md) · [Collections Framework](/03-backend/java/02-collections-framework.md) · [Generics](/03-backend/java/08-generics.md) · [Spring Boot](/03-backend/java/12-spring-boot.md)
 
 ---
 
@@ -949,13 +949,13 @@ JAVA 21  =  Virtual threads. "Threads without the cost."
 
 ---
 
-**Next**: [Spring Boot](12-spring-boot.md) — Production-grade Spring applications
+**Next**: [Spring Boot](/03-backend/java/12-spring-boot.md) — Production-grade Spring applications
 
 ## Related
 
-- [Jvm Performance](18-performance-engineering/jvm-tuning/01-jvm-performance.md)
-- [Cap Consistency](09-distributed-systems/01-cap-consistency.md)
-- [Consensus Replication](09-distributed-systems/01-consensus-replication.md)
-- [Consensus Raft](09-distributed-systems/02-consensus-raft.md)
-- [Distributed Transactions](09-distributed-systems/02-distributed-transactions.md)
-- [Distributed Caching](09-distributed-systems/03-distributed-caching.md)
+- [Jvm Performance](/18-performance-engineering/jvm-tuning/01-jvm-performance.md)
+- [Cap Consistency](/09-distributed-systems/01-cap-consistency.md)
+- [Consensus Replication](/09-distributed-systems/01-consensus-replication.md)
+- [Consensus Raft](/09-distributed-systems/02-consensus-raft.md)
+- [Distributed Transactions](/09-distributed-systems/02-distributed-transactions.md)
+- [Distributed Caching](/09-distributed-systems/03-distributed-caching.md)

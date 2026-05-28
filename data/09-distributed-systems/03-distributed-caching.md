@@ -2,7 +2,7 @@
 
 > **Scope**: Caching strategies (cache-aside, read-through, write-through, write-behind, refresh-ahead), eviction policies (LRU, LFU, ARC, LIRS, TinyLFU, 2Q), Redis cluster internals, Memcached internals, cache invalidation patterns, caching at scale (Netflix EVCache, Twitter Twemproxy, Facebook mcrouter), consistent hashing variants, cache stampede prevention, failure modes and monitoring.
 >
-> **Related**: [01-cap-consistency.md](./01-cap-consistency.md) | [04-distributed-transactions.md](./04-distributed-transactions.md)
+> **Related**: [01-cap-consistency.md](/09-distributed-systems/01-cap-consistency.md) | [04-distributed-transactions.md](/09-distributed-systems/04-distributed-transactions.md)
 
 
 ```mermaid
@@ -686,9 +686,9 @@ Atomic DB update + outbox write in same transaction. CDC ensures cache update ev
 
 ## Related
 
-- [Postgresql Internals](08-databases/01-postgresql-internals.md)
-- [Relational Database Internals](08-databases/01-relational-database-internals.md)
-- [Postgresql Architecture](08-databases/02-postgresql-architecture.md)
-- [Redis Internals](08-databases/02-redis-internals.md)
-- [Postgresql Troubleshooting Tuning](08-databases/03-postgresql-troubleshooting-tuning.md)
-- [Redis Deep Dive](08-databases/04-redis-deep-dive.md)
+- [Postgresql Internals](/08-databases/01-postgresql-internals.md)
+- [Relational Database Internals](/08-databases/01-relational-database-internals.md)
+- [Postgresql Architecture](/08-databases/02-postgresql-architecture.md)
+- [Redis Internals](/08-databases/02-redis-internals.md)
+- [Postgresql Troubleshooting Tuning](/08-databases/03-postgresql-troubleshooting-tuning.md)
+- [Redis Deep Dive](/08-databases/04-redis-deep-dive.md)

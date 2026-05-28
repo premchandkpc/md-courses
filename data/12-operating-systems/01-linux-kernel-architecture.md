@@ -5,7 +5,7 @@
 
 > **Scope**: Monolithic kernel design, key subsystems, kernel/user space boundary, source tree layout, device driver model, kernel module system, and virtual filesystem — the full anatomy of the Linux kernel.
 
-> **Related**: [02-cpu-scheduling.md](02-cpu-scheduling.md), [03-memory-management.md](03-memory-management.md), [04-io-models.md](04-io-models.md), [05-process-threads-fibers.md](05-process-threads-fibers.md), [06-system-calls-ipc.md](06-system-calls-ipc.md)
+> **Related**: [02-cpu-scheduling.md](/12-operating-systems/02-cpu-scheduling.md), [03-memory-management.md](/12-operating-systems/03-memory-management.md), [04-io-models.md](/12-operating-systems/04-io-models.md), [05-process-threads-fibers.md](/12-operating-systems/05-process-threads-fibers.md), [06-system-calls-ipc.md](/12-operating-systems/06-system-calls-ipc.md)
 
 ---
 
@@ -772,9 +772,9 @@ Page fault (file cache): ~500ns (page cache hit) / ~5ms (disk read)
 
 ## Related
 
-- [Tcp Ip Deep Dive](11-networking/01-tcp-ip-deep-dive.md)
-- [Tcpip Protocol Stack](11-networking/01-tcpip-protocol-stack.md)
-- [Http Protocols](11-networking/02-http-protocols.md)
-- [Tls Http Grpc](11-networking/02-tls-http-grpc.md)
-- [Dns Cdn Loadbalancing](11-networking/03-dns-cdn-loadbalancing.md)
-- [Readme](11-networking/README.md)
+- [Tcp Ip Deep Dive](/11-networking/01-tcp-ip-deep-dive.md)
+- [Tcpip Protocol Stack](/11-networking/01-tcpip-protocol-stack.md)
+- [Http Protocols](/11-networking/02-http-protocols.md)
+- [Tls Http Grpc](/11-networking/02-tls-http-grpc.md)
+- [Dns Cdn Loadbalancing](/11-networking/03-dns-cdn-loadbalancing.md)
+- [Readme](/11-networking/README.md)

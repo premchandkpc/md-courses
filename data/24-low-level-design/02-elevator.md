@@ -1552,9 +1552,9 @@ ExternalRequest   InternalRequest
 
 ## Related
 
-- [Transformation Summary](03-backend/java/00-TRANSFORMATION-SUMMARY.md)
-- [Oop Concepts](03-backend/java/01-oop-concepts.md)
-- [Collections Framework](03-backend/java/02-collections-framework.md)
-- [Exception Handling](03-backend/java/03-exception-handling.md)
-- [Multithreading](03-backend/java/04-multithreading.md)
-- [Jvm Architecture](03-backend/java/05-jvm-architecture.md)
+- [Transformation Summary](/03-backend/java/00-TRANSFORMATION-SUMMARY.md)
+- [Oop Concepts](/03-backend/java/01-oop-concepts.md)
+- [Collections Framework](/03-backend/java/02-collections-framework.md)
+- [Exception Handling](/03-backend/java/03-exception-handling.md)
+- [Multithreading](/03-backend/java/04-multithreading.md)
+- [Jvm Architecture](/03-backend/java/05-jvm-architecture.md)

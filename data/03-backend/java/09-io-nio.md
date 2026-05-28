@@ -1,6 +1,6 @@
 # 📂 Java I/O & NIO — Complete Deep Dive
 
-**Related**: [Exception Handling](03-exception-handling.md) · [Streams & Lambda](07-streams-lambda.md) · [Java 8+ Features](10-java-8-features.md)
+**Related**: [Exception Handling](/03-backend/java/03-exception-handling.md) · [Streams & Lambda](/03-backend/java/07-streams-lambda.md) · [Java 8+ Features](/03-backend/java/11-java-8-features.md)
 
 ---
 
@@ -1124,7 +1124,7 @@ TRANSIENT      =  "Don't take a photo of this field." Like a fingerprint
 
 ---
 
-**Next**: [Annotations & Reflection](10-annotations-reflection.md) — Meta-programming in Java
+**Next**: [Annotations & Reflection](/03-backend/java/10-annotations-reflection.md) — Meta-programming in Java
 
 
 ## Practical Example
@@ -1134,9 +1134,9 @@ See code examples above for practical usage patterns.
 
 ## Related
 
-- [Jvm Performance](18-performance-engineering/jvm-tuning/01-jvm-performance.md)
-- [Cap Consistency](09-distributed-systems/01-cap-consistency.md)
-- [Consensus Replication](09-distributed-systems/01-consensus-replication.md)
-- [Consensus Raft](09-distributed-systems/02-consensus-raft.md)
-- [Distributed Transactions](09-distributed-systems/02-distributed-transactions.md)
-- [Distributed Caching](09-distributed-systems/03-distributed-caching.md)
+- [Jvm Performance](/18-performance-engineering/jvm-tuning/01-jvm-performance.md)
+- [Cap Consistency](/09-distributed-systems/01-cap-consistency.md)
+- [Consensus Replication](/09-distributed-systems/01-consensus-replication.md)
+- [Consensus Raft](/09-distributed-systems/02-consensus-raft.md)
+- [Distributed Transactions](/09-distributed-systems/02-distributed-transactions.md)
+- [Distributed Caching](/09-distributed-systems/03-distributed-caching.md)

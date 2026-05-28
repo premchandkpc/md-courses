@@ -2,7 +2,7 @@
 
 > **Scope**: Requirements (150M+ MAU, 19M+ active servers, 4B+ daily messages), WebSocket gateway for real-time, REST API for CRUD, guild/server model (channels, roles, permissions), voice/video (WebRTC SFU, adaptive bitrate, noise suppression), message storage (Cassandra), file upload (CDN, attachment scanning), real-time presence, rate limiting, failure analysis.
 >
-> **Related**: [03-twitter.md](./03-twitter.md) | [07-amazon.md](./07-amazon.md)
+> **Related**: [03-twitter.md](/15-system-design/03-twitter.md) | [07-amazon.md](/15-system-design/07-amazon.md)
 
 
 ```mermaid
@@ -1476,9 +1476,9 @@ ScyllaDB:
 
 ## Related
 
-- [Cap Consistency](09-distributed-systems/01-cap-consistency.md)
-- [Consensus Replication](09-distributed-systems/01-consensus-replication.md)
-- [Consensus Raft](09-distributed-systems/02-consensus-raft.md)
-- [Distributed Transactions](09-distributed-systems/02-distributed-transactions.md)
-- [Distributed Caching](09-distributed-systems/03-distributed-caching.md)
-- [Distributed Storage](09-distributed-systems/03-distributed-storage.md)
+- [Cap Consistency](/09-distributed-systems/01-cap-consistency.md)
+- [Consensus Replication](/09-distributed-systems/01-consensus-replication.md)
+- [Consensus Raft](/09-distributed-systems/02-consensus-raft.md)
+- [Distributed Transactions](/09-distributed-systems/02-distributed-transactions.md)
+- [Distributed Caching](/09-distributed-systems/03-distributed-caching.md)
+- [Distributed Storage](/09-distributed-systems/03-distributed-storage.md)

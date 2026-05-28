@@ -2,7 +2,7 @@
 
 > **Scope**: Requirements (10M rides/day, real-time dispatch, location tracking, pricing engine, ETA computation, driver matching, surge pricing), geospatial indexing (Google S2, Uber H3, Geohash), ride dispatch (nearest driver with two-phase accept), supply/demand forecasting, surge pricing, ETA computation, multi-region deployment, failure analysis.
 >
-> **Related**: [03-twitter.md](./03-twitter.md) | [06-stripe.md](./06-stripe.md)
+> **Related**: [03-twitter.md](/15-system-design/03-twitter.md) | [06-stripe.md](/15-system-design/06-stripe.md)
 
 
 ```mermaid
@@ -984,9 +984,9 @@ See code examples above for practical usage patterns.
 
 ## Related
 
-- [Cap Consistency](09-distributed-systems/01-cap-consistency.md)
-- [Consensus Replication](09-distributed-systems/01-consensus-replication.md)
-- [Consensus Raft](09-distributed-systems/02-consensus-raft.md)
-- [Distributed Transactions](09-distributed-systems/02-distributed-transactions.md)
-- [Distributed Caching](09-distributed-systems/03-distributed-caching.md)
-- [Distributed Storage](09-distributed-systems/03-distributed-storage.md)
+- [Cap Consistency](/09-distributed-systems/01-cap-consistency.md)
+- [Consensus Replication](/09-distributed-systems/01-consensus-replication.md)
+- [Consensus Raft](/09-distributed-systems/02-consensus-raft.md)
+- [Distributed Transactions](/09-distributed-systems/02-distributed-transactions.md)
+- [Distributed Caching](/09-distributed-systems/03-distributed-caching.md)
+- [Distributed Storage](/09-distributed-systems/03-distributed-storage.md)

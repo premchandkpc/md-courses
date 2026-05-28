@@ -1,6 +1,6 @@
 # 🗄️ Hibernate & JPA — Complete Deep Dive
 
-**Related**: [Spring Boot](12-spring-boot.md) · [Annotations & Reflection](10-annotations-reflection.md) · [JDBC](09-io-nio.md) · [Collections Framework](02-collections-framework.md)
+**Related**: [Spring Boot](/03-backend/java/12-spring-boot.md) · [Annotations & Reflection](/03-backend/java/10-annotations-reflection.md) · [JDBC](/03-backend/java/09-io-nio.md) · [Collections Framework](/03-backend/java/02-collections-framework.md)
 
 ---
 
@@ -1112,13 +1112,13 @@ N+1          =  You ask "Who are my 100 users?" (1 query). Then for each
 
 ---
 
-**Next**: [Design Patterns in Java](14-design-patterns-in-java.md) — Common patterns with Java-specific examples
+**Next**: [Design Patterns in Java](/03-backend/java/14-design-patterns-in-java.md) — Common patterns with Java-specific examples
 
 ## Related
 
-- [Jvm Performance](18-performance-engineering/jvm-tuning/01-jvm-performance.md)
-- [Cap Consistency](09-distributed-systems/01-cap-consistency.md)
-- [Consensus Replication](09-distributed-systems/01-consensus-replication.md)
-- [Consensus Raft](09-distributed-systems/02-consensus-raft.md)
-- [Distributed Transactions](09-distributed-systems/02-distributed-transactions.md)
-- [Distributed Caching](09-distributed-systems/03-distributed-caching.md)
+- [Jvm Performance](/18-performance-engineering/jvm-tuning/01-jvm-performance.md)
+- [Cap Consistency](/09-distributed-systems/01-cap-consistency.md)
+- [Consensus Replication](/09-distributed-systems/01-consensus-replication.md)
+- [Consensus Raft](/09-distributed-systems/02-consensus-raft.md)
+- [Distributed Transactions](/09-distributed-systems/02-distributed-transactions.md)
+- [Distributed Caching](/09-distributed-systems/03-distributed-caching.md)

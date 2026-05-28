@@ -243,7 +243,7 @@ Refines CAP: if partition (P), tradeoff between Availability (A) and Consistency
 
 ### Distributed Databases
 
-- See [Distributed SQL](../08-databases/#distributed-sql) in the Databases section for CockroachDB, TiDB, Spanner, YugabyteDB details
+- See [Distributed SQL](/08-databases/#distributed-sql) in the Databases section for CockroachDB, TiDB, Spanner, YugabyteDB details
 
 ---
 
@@ -406,20 +406,20 @@ Ensures database writes and message sending are atomic (both happen or both don'
 
 | Domain | Connection |
 |--------|-----------|
-| [00 — Foundations](../00-foundations/) | Algorithmic foundations (distributed algorithms), automata theory (state machines), complexity |
-| [02 — Data Engineering](../02-data-engineering/) | Distributed processing frameworks (Spark, Flink), exactly-once semantics |
-| [03 — Backend](../03-backend/) | Microservice communication, distributed transactions, service discovery |
-| [05 — Cloud](../05-cloud/) | Cloud-native distributed systems, global databases (Spanner, DynamoDB Global Tables) |
-| [07 — Kubernetes](../07-kubernetes/) | K8s itself is a distributed system (etcd, scheduler, controllers); orchestration of distributed workloads |
-| [08 — Databases](../08-databases/) | Distributed SQL databases are the practical application of consensus and replication |
-| [10 — Messaging](../10-messaging/) | Kafka's distributed log is a replicated state machine; message ordering, partitioning |
-| [11 — Networking](../11-networking/) | Network partitions, latency, timeout detection are fundamental to distributed system behavior |
+| [00 — Foundations](/00-foundations/) | Algorithmic foundations (distributed algorithms), automata theory (state machines), complexity |
+| [02 — Data Engineering](/02-data-engineering/) | Distributed processing frameworks (Spark, Flink), exactly-once semantics |
+| [03 — Backend](/03-backend/) | Microservice communication, distributed transactions, service discovery |
+| [05 — Cloud](/05-cloud/) | Cloud-native distributed systems, global databases (Spanner, DynamoDB Global Tables) |
+| [07 — Kubernetes](/07-kubernetes/) | K8s itself is a distributed system (etcd, scheduler, controllers); orchestration of distributed workloads |
+| [08 — Databases](/08-databases/) | Distributed SQL databases are the practical application of consensus and replication |
+| [10 — Messaging](/10-messaging/) | Kafka's distributed log is a replicated state machine; message ordering, partitioning |
+| [11 — Networking](/11-networking/) | Network partitions, latency, timeout detection are fundamental to distributed system behavior |
 
 ## Related
 
-- [Postgresql Internals](08-databases/01-postgresql-internals.md)
-- [Relational Database Internals](08-databases/01-relational-database-internals.md)
-- [Postgresql Architecture](08-databases/02-postgresql-architecture.md)
-- [Redis Internals](08-databases/02-redis-internals.md)
-- [Postgresql Troubleshooting Tuning](08-databases/03-postgresql-troubleshooting-tuning.md)
-- [Redis Deep Dive](08-databases/04-redis-deep-dive.md)
+- [Postgresql Internals](/08-databases/01-postgresql-internals.md)
+- [Relational Database Internals](/08-databases/01-relational-database-internals.md)
+- [Postgresql Architecture](/08-databases/02-postgresql-architecture.md)
+- [Redis Internals](/08-databases/02-redis-internals.md)
+- [Postgresql Troubleshooting Tuning](/08-databases/03-postgresql-troubleshooting-tuning.md)
+- [Redis Deep Dive](/08-databases/04-redis-deep-dive.md)

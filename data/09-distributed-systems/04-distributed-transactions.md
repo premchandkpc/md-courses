@@ -2,7 +2,7 @@
 
 > **Scope**: ACID in distributed systems, 2PC (prepare/commit phases, failure scenarios, coordinator crash, XA protocol), 3PC (non-blocking variant), Saga pattern (choreography vs orchestration, compensating transactions), TCC (Try-Confirm/Cancel), Seata AT, distributed transaction patterns (outbox, CDC, idempotency key), transactional messaging (Kafka transactions, exactly-once), optimistic concurrency, distributed deadlock detection, real-world implementations (Spanner, CockroachDB, PostgreSQL).
 >
-> **Related**: [01-cap-consistency.md](./01-cap-consistency.md) | [02-consensus-raft.md](./02-consensus-raft.md) | [05-stream-processing.md](./05-stream-processing.md)
+> **Related**: [01-cap-consistency.md](/09-distributed-systems/01-cap-consistency.md) | [02-consensus-raft.md](/09-distributed-systems/02-consensus-raft.md) | [05-stream-processing.md](/09-distributed-systems/05-stream-processing.md)
 
 
 ```mermaid
@@ -619,9 +619,9 @@ See code examples above for practical usage patterns.
 
 ## Related
 
-- [Postgresql Internals](08-databases/01-postgresql-internals.md)
-- [Relational Database Internals](08-databases/01-relational-database-internals.md)
-- [Postgresql Architecture](08-databases/02-postgresql-architecture.md)
-- [Redis Internals](08-databases/02-redis-internals.md)
-- [Postgresql Troubleshooting Tuning](08-databases/03-postgresql-troubleshooting-tuning.md)
-- [Redis Deep Dive](08-databases/04-redis-deep-dive.md)
+- [Postgresql Internals](/08-databases/01-postgresql-internals.md)
+- [Relational Database Internals](/08-databases/01-relational-database-internals.md)
+- [Postgresql Architecture](/08-databases/02-postgresql-architecture.md)
+- [Redis Internals](/08-databases/02-redis-internals.md)
+- [Postgresql Troubleshooting Tuning](/08-databases/03-postgresql-troubleshooting-tuning.md)
+- [Redis Deep Dive](/08-databases/04-redis-deep-dive.md)

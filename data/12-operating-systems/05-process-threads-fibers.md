@@ -2,7 +2,7 @@
 
 > **Scope**: Process lifecycle (fork/exec/exit/zombie/orphan/init reaping/wait), COW fork internals, clone syscall flags, pthreads/NPTL 1:1 threading, thread-local storage (TLS), goroutine G/M/P scheduler model, fiber/coroutine comparison (stackful vs stackless), NPTL 1:1 vs M:N threading, thread pool patterns, context switch cost comparison across all concurrency primitives.
 
-> **Related**: [01-linux-kernel-architecture.md](01-linux-kernel-architecture.md), [02-cpu-scheduling.md](02-cpu-scheduling.md), [06-system-calls-ipc.md](06-system-calls-ipc.md)
+> **Related**: [01-linux-kernel-architecture.md](/12-operating-systems/01-linux-kernel-architecture.md), [02-cpu-scheduling.md](/12-operating-systems/02-cpu-scheduling.md), [06-system-calls-ipc.md](/12-operating-systems/06-system-calls-ipc.md)
 
 ---
 
@@ -1251,9 +1251,9 @@ Fix: Use `__sync_fetch_and_add` (x86 LOCK prefix) or compare-and-swap loop. With
 
 ## Related
 
-- [Tcp Ip Deep Dive](11-networking/01-tcp-ip-deep-dive.md)
-- [Tcpip Protocol Stack](11-networking/01-tcpip-protocol-stack.md)
-- [Http Protocols](11-networking/02-http-protocols.md)
-- [Tls Http Grpc](11-networking/02-tls-http-grpc.md)
-- [Dns Cdn Loadbalancing](11-networking/03-dns-cdn-loadbalancing.md)
-- [Readme](11-networking/README.md)
+- [Tcp Ip Deep Dive](/11-networking/01-tcp-ip-deep-dive.md)
+- [Tcpip Protocol Stack](/11-networking/01-tcpip-protocol-stack.md)
+- [Http Protocols](/11-networking/02-http-protocols.md)
+- [Tls Http Grpc](/11-networking/02-tls-http-grpc.md)
+- [Dns Cdn Loadbalancing](/11-networking/03-dns-cdn-loadbalancing.md)
+- [Readme](/11-networking/README.md)

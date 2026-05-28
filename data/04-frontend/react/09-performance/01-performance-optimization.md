@@ -596,7 +596,7 @@ flowchart TD
 - [ ] Bundle size analyzed and compared against performance budget
 - [ ] Flame graph reviewed for deep component trees causing cascading renders
 
-**Cross-reference**: See [Production Issues](./07-production-issues.md) for error tracking and monitoring. See [Rendering Performance](./03-rendering-performance.md) for Fiber architecture and reconciliation optimizations.
+**Cross-reference**: See [Production Issues](/04-frontend/react/36-production-failures/01-production-issues.md) for error tracking and monitoring. See [Rendering Performance](/04-frontend/react/03-rendering-pipeline/01-rendering-performance.md) for Fiber architecture and reconciliation optimizations.
 
 ## 2. Reconciliation & Fiber
 
@@ -997,11 +997,11 @@ Track bundle size per commit with `bundlesize` or `size-limit` in CI.
 ## Related
 
 
-- [Networking](../../11-networking/) — HTTP, performance, optimization
-- [Security](../../13-security/) — CORS, authentication, XSS prevention
-- [Backend](../../03-backend/) — API design and contracts
-- [Performance Engineering](../../18-performance-engineering/) — Browser rendering
-- [Testing](../../19-testing/) — E2E and component testing
+- [Networking](/11-networking/) — HTTP, performance, optimization
+- [Security](/13-security/) — CORS, authentication, XSS prevention
+- [Backend](/03-backend/) — API design and contracts
+- [Performance Engineering](/18-performance-engineering/) — Browser rendering
+- [Testing](/19-testing/) — E2E and component testing
 
 
 ## Practical Example

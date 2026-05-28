@@ -1,6 +1,6 @@
 # 🗄️ Amazon RDS — Complete Deep Dive
 
-**Related**: [EC2](../ec2/01-ec2-deep-dive.md) · [Lambda](../lambda/01-lambda-deep-dive.md) · [IAM](../iam/01-iam-deep-dive.md) · [CloudWatch](../cloudwatch/01-cloudwatch-deep-dive.md)
+**Related**: [EC2](/05-cloud/aws/ec2/01-ec2-deep-dive.md) · [Lambda](/05-cloud/aws/lambda/01-lambda-deep-dive.md) · [IAM](/05-cloud/aws/iam/01-iam-deep-dive.md) · [CloudWatch](/05-cloud/aws/cloudwatch/01-cloudwatch-deep-dive.md)
 
 ---
 
@@ -741,7 +741,7 @@ MAINTENANCE     =  The 1-hour window at 3am Sunday
 
 ---
 
-**Next**: [IAM Deep Dive](../iam/01-iam-deep-dive.md) — Access management
+**Next**: [IAM Deep Dive](/05-cloud/aws/iam/01-iam-deep-dive.md) — Access management
 
 
 ## Observability

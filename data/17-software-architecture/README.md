@@ -2,7 +2,7 @@
 
 Software architecture is the **high-level structure** of a system — the set of design decisions that shape how it's built, deployed, and evolved. Good architecture makes change easy; bad architecture makes every feature a nightmare.
 
-**Related**: [Microservices](../16-microservices/README.md) · [System Design](../15-system-design/README.md) · [Design Patterns](../data/designpatterns.md) · [Domain-Driven Design](domain-driven/README.md)
+**Related**: [Microservices](/16-microservices/README.md) · [System Design](/15-system-design/README.md) · [Design Patterns](/17-software-architecture/design-patterns/designpatterns.md) · [Domain-Driven Design](/05-cloud/README.md)
 
 ---
 
@@ -653,12 +653,12 @@ Level 4: Code (Class Level)
 
 | Domain | Connection |
 |--------|-----------|
-| [Microservices](../16-microservices/README.md) | Architecture styles, bounded context, patterns |
-| [System Design](../15-system-design/README.md) | Quality attributes, tradeoffs, evaluation |
-| [Software Engineering](../25-software-engineering/README.md) | SOLID, clean code, refactoring |
-| [Pattern Catalog](../data/designpatterns.md) | GoF patterns, enterprise patterns |
-| [Distributed Systems](../09-distributed-systems/README.md) | Event-driven, CQRS in distributed context |
-| [Performance Engineering](../18-performance-engineering/README.md) | Architecture performance tactics |
+| [Microservices](/16-microservices/README.md) | Architecture styles, bounded context, patterns |
+| [System Design](/15-system-design/README.md) | Quality attributes, tradeoffs, evaluation |
+| [Software Engineering](/25-software-engineering/README.md) | SOLID, clean code, refactoring |
+| [Pattern Catalog](/17-software-architecture/design-patterns/designpatterns.md) | GoF patterns, enterprise patterns |
+| [Distributed Systems](/09-distributed-systems/README.md) | Event-driven, CQRS in distributed context |
+| [Performance Engineering](/18-performance-engineering/README.md) | Architecture performance tactics |
 
 ---
 
@@ -692,13 +692,13 @@ Bad architecture:
 
 ---
 
-**Next**: [Performance Engineering](../18-performance-engineering/README.md) · [Software Engineering](../25-software-engineering/README.md)
+**Next**: [Performance Engineering](/18-performance-engineering/README.md) · [Software Engineering](/25-software-engineering/README.md)
 
 ## Related
 
-- [System Design Principles](15-system-design/01-system-design-principles.md)
-- [Whatsapp](15-system-design/01-whatsapp.md)
-- [Netflix](15-system-design/02-netflix.md)
-- [System Design Blueprints](15-system-design/02-system-design-blueprints.md)
-- [Twitter](15-system-design/03-twitter.md)
-- [Uber](15-system-design/04-uber.md)
+- [System Design Principles](/15-system-design/01-system-design-principles.md)
+- [Whatsapp](/15-system-design/01-whatsapp.md)
+- [Netflix](/15-system-design/02-netflix.md)
+- [System Design Blueprints](/15-system-design/02-system-design-blueprints.md)
+- [Twitter](/15-system-design/03-twitter.md)
+- [Uber](/15-system-design/04-uber.md)

@@ -429,16 +429,16 @@ results = db.events.aggregate(pipeline)
 ## Cross-References
 
 
-- [PostgreSQL Architecture](../02-postgresql-architecture.md) — ACID, MVCC, replication comparison
-- [Database Internals](../../08-databases/01-db-internals.md) — LSM-tree vs B-tree storage engines
-- [Distributed Transactions](../../09-distributed-systems/02-distributed-transactions.md) — Consistency models, transaction isolation
-- [Distributed Storage](../../09-distributed-systems/03-distributed-storage.md) — Consistent hashing, quorum, gossip
+- [PostgreSQL Architecture](/08-databases/02-postgresql-architecture.md) — ACID, MVCC, replication comparison
+- [Database Internals](/08-databases/01-relational-database-internals.md) — LSM-tree vs B-tree storage engines
+- [Distributed Transactions](/09-distributed-systems/02-distributed-transactions.md) — Consistency models, transaction isolation
+- [Distributed Storage](/09-distributed-systems/03-distributed-storage.md) — Consistent hashing, quorum, gossip
 
 ## Related
 
-- [Cap Consistency](09-distributed-systems/01-cap-consistency.md)
-- [Consensus Replication](09-distributed-systems/01-consensus-replication.md)
-- [Consensus Raft](09-distributed-systems/02-consensus-raft.md)
-- [Distributed Transactions](09-distributed-systems/02-distributed-transactions.md)
-- [Distributed Caching](09-distributed-systems/03-distributed-caching.md)
-- [Distributed Storage](09-distributed-systems/03-distributed-storage.md)
+- [Cap Consistency](/09-distributed-systems/01-cap-consistency.md)
+- [Consensus Replication](/09-distributed-systems/01-consensus-replication.md)
+- [Consensus Raft](/09-distributed-systems/02-consensus-raft.md)
+- [Distributed Transactions](/09-distributed-systems/02-distributed-transactions.md)
+- [Distributed Caching](/09-distributed-systems/03-distributed-caching.md)
+- [Distributed Storage](/09-distributed-systems/03-distributed-storage.md)

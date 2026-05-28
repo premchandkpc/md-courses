@@ -236,12 +236,12 @@ pg_locks with NOT granted → find blocking pid → cancel or tune query → add
 
 ## Related
 
-- [Readme](18-performance-engineering/README.md)
-- [Jvm Performance](18-performance-engineering/jvm-tuning/01-jvm-performance.md)
-- [Optimization Patterns](18-performance-engineering/optimization/01-optimization-patterns.md)
-- [Profiling Deep Dive](18-performance-engineering/profiling/01-profiling-deep-dive.md)
-- [Readme](03-backend/README.md)
-- [Goroutines Channels Concurrency](03-backend/go/01-goroutines-channels-concurrency.md)
+- [Readme](/18-performance-engineering/README.md)
+- [Jvm Performance](/18-performance-engineering/jvm-tuning/01-jvm-performance.md)
+- [Optimization Patterns](/18-performance-engineering/optimization/01-optimization-patterns.md)
+- [Profiling Deep Dive](/18-performance-engineering/profiling/01-profiling-deep-dive.md)
+- [Readme](/03-backend/README.md)
+- [Goroutines Channels Concurrency](/03-backend/go/01-goroutines-channels-concurrency.md)
 
 ## Debugging Walkthrough: EXPLAIN ANALYZE Deep Dive
 

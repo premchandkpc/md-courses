@@ -6,7 +6,7 @@
 
 > **Scope**: Virtual memory architecture, MMU/TLB, page fault handling, buddy allocator, slab/SLUB allocator, OOM killer, NUMA memory policies, swap (zswap/zram), cgroup memory controller, page cache, mmap, ASLR — every aspect of Linux memory management.
 
-> **Related**: [01-linux-kernel-architecture.md](01-linux-kernel-architecture.md), [02-cpu-scheduling.md](02-cpu-scheduling.md), [04-io-models.md](04-io-models.md)
+> **Related**: [01-linux-kernel-architecture.md](/12-operating-systems/01-linux-kernel-architecture.md), [02-cpu-scheduling.md](/12-operating-systems/02-cpu-scheduling.md), [04-io-models.md](/12-operating-systems/04-io-models.md)
 
 ---
 
@@ -1354,9 +1354,9 @@ Cache bandwidth (per core):
 
 ## Related
 
-- [Tcp Ip Deep Dive](11-networking/01-tcp-ip-deep-dive.md)
-- [Tcpip Protocol Stack](11-networking/01-tcpip-protocol-stack.md)
-- [Http Protocols](11-networking/02-http-protocols.md)
-- [Tls Http Grpc](11-networking/02-tls-http-grpc.md)
-- [Dns Cdn Loadbalancing](11-networking/03-dns-cdn-loadbalancing.md)
-- [Readme](11-networking/README.md)
+- [Tcp Ip Deep Dive](/11-networking/01-tcp-ip-deep-dive.md)
+- [Tcpip Protocol Stack](/11-networking/01-tcpip-protocol-stack.md)
+- [Http Protocols](/11-networking/02-http-protocols.md)
+- [Tls Http Grpc](/11-networking/02-tls-http-grpc.md)
+- [Dns Cdn Loadbalancing](/11-networking/03-dns-cdn-loadbalancing.md)
+- [Readme](/11-networking/README.md)

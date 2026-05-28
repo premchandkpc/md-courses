@@ -515,7 +515,7 @@ sequenceDiagram
     Note over S,C: Each Suspense boundary streams independently
 ```
 
-**Cross-reference**: Streaming SSR works on top of HTTP chunked transfer encoding. See [Networking](../../11-networking/) for HTTP streaming concepts. See [Backend](../../03-backend/) for SQL/database access patterns from server components.
+**Cross-reference**: Streaming SSR works on top of HTTP chunked transfer encoding. See [Networking](/11-networking/) for HTTP streaming concepts. See [Backend](/03-backend/) for SQL/database access patterns from server components.
 
 ### Server Actions ("use server")
 
@@ -994,7 +994,7 @@ app.get('/dashboard/:id', (req, res) => {
 | **Load shedding** | Reject requests with `503` when connection count exceeds threshold |
 | **Edge Streaming** | Use edge functions (Vercel, Cloudflare) for lower latency per chunk |
 
-**Cross-reference**: See [Networking](../../11-networking/) for TCP backpressure, HTTP chunked transfer, and CDN streaming. See [Performance Engineering](../../18-performance-engineering/) for TTFB optimization.
+**Cross-reference**: See [Networking](/11-networking/) for TCP backpressure, HTTP chunked transfer, and CDN streaming. See [Performance Engineering](/18-performance-engineering/) for TTFB optimization.
 
 ---
 
@@ -1180,7 +1180,7 @@ function DateOption({ date }) {
 - [ ] React DevTools hydration warnings checked in development
 - [ ] E2E tests verify SSR output matches client output
 
-**Cross-reference**: See [Testing](../../19-testing/) for hydration test patterns. See [Performance Engineering](../../18-performance-engineering/) for CLS and INP metrics affected by hydration.
+**Cross-reference**: See [Testing](/19-testing/) for hydration test patterns. See [Performance Engineering](/18-performance-engineering/) for CLS and INP metrics affected by hydration.
 
 ---
 
@@ -1217,8 +1217,8 @@ function DateOption({ date }) {
 ## Related
 
 
-- [Networking](../../11-networking/) — HTTP, performance, optimization
-- [Security](../../13-security/) — CORS, authentication, XSS prevention
-- [Backend](../../03-backend/) — API design and contracts
-- [Performance Engineering](../../18-performance-engineering/) — Browser rendering
-- [Testing](../../19-testing/) — E2E and component testing
+- [Networking](/11-networking/) — HTTP, performance, optimization
+- [Security](/13-security/) — CORS, authentication, XSS prevention
+- [Backend](/03-backend/) — API design and contracts
+- [Performance Engineering](/18-performance-engineering/) — Browser rendering
+- [Testing](/19-testing/) — E2E and component testing

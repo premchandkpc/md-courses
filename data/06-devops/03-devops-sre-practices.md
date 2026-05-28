@@ -1,6 +1,6 @@
 # DevOps & SRE Practices — Senior/Principal Engineer Deep Dive
 
-**Related**: [Infrastructure as Code](01-infrastructure-as-code.md) · [Configuration Management](02-configuration-management.md) · [Kubernetes Operations](../data/kubernetes/02-advanced-k8s.md) · [Observability](../data/observability/)
+**Related**: [Infrastructure as Code](/06-devops/01-infrastructure-as-code.md) · [Configuration Management](/06-devops/02-configuration-management.md) · [Kubernetes Operations](/07-kubernetes/02-advanced-k8s.md) · [Observability](/data/observability/)
 
 ---
 
@@ -1826,13 +1826,13 @@ DevOps/SRE — Common Failure Patterns:
 
 ---
 
-**Navigation**: [Infrastructure as Code](01-infrastructure-as-code.md) · [Configuration Management](02-configuration-management.md) · back to [Index](../indexes.md)
+**Navigation**: [Infrastructure as Code](/06-devops/01-infrastructure-as-code.md) · [Configuration Management](/06-devops/02-configuration-management.md) · back to [Index](/08-databases/internals/indexes.md)
 
 ## Related
 
-- [Kubernetes Basics](07-kubernetes/01-kubernetes-basics.md)
-- [Advanced K8S](07-kubernetes/02-advanced-k8s.md)
-- [Kubernetes Networking](07-kubernetes/03-kubernetes-networking.md)
-- [Kubernetes Security](07-kubernetes/04-kubernetes-security.md)
-- [Kubernetes Storage](07-kubernetes/05-kubernetes-storage.md)
-- [Kubernetes Observability](07-kubernetes/06-kubernetes-observability.md)
+- [Kubernetes Basics](/07-kubernetes/01-kubernetes-basics.md)
+- [Advanced K8S](/07-kubernetes/02-advanced-k8s.md)
+- [Kubernetes Networking](/07-kubernetes/03-kubernetes-networking.md)
+- [Kubernetes Security](/07-kubernetes/04-kubernetes-security.md)
+- [Kubernetes Storage](/07-kubernetes/05-kubernetes-storage.md)
+- [Kubernetes Observability](/07-kubernetes/06-kubernetes-observability.md)

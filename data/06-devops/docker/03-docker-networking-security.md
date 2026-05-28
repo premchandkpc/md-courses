@@ -1,6 +1,6 @@
 # 🌐 Docker Networking & Security — Complete Deep Dive
 
-**Related**: [Docker Basics](01-container-basics.md) · [Compose & Orchestration](02-compose-orchestration.md) · [Production Operations](04-docker-production-operations.md) · [Kubernetes Networking](../kubernetes/03-kubernetes-networking.md)
+**Related**: [Docker Basics](/06-devops/docker/01-container-basics.md) · [Compose & Orchestration](/06-devops/docker/02-compose-orchestration.md) · [Production Operations](/06-devops/docker/04-docker-production-operations.md) · [Kubernetes Networking](/07-kubernetes/03-kubernetes-networking.md)
 
 ---
 

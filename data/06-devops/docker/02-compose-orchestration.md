@@ -1,6 +1,6 @@
 # 🐳 Docker Compose & Orchestration — Complete Deep Dive
 
-**Related**: [Container Basics](01-container-basics.md) · [Kubernetes Basics](../kubernetes/01-kubernetes-basics.md) · [Compose Spec](https://compose-spec.io)
+**Related**: [Container Basics](/06-devops/docker/01-container-basics.md) · [Kubernetes Basics](/07-kubernetes/01-kubernetes-basics.md) · [Compose Spec](https://compose-spec.io)
 
 ---
 
@@ -1041,4 +1041,4 @@ KEY INSIGHT:
 
 ---
 
-**Next**: [Kubernetes Basics](../kubernetes/01-kubernetes-basics.md)
+**Next**: [Kubernetes Basics](/07-kubernetes/01-kubernetes-basics.md)

@@ -2,7 +2,7 @@
 
 > **Scope**: Requirements (100M+ API requests/day, 99.99%+ uptime, PCI-DSS compliance, global payments), payment flow, idempotency, fraud detection (Stripe Radar), PCI-DSS compliance, API design, payment state machine, failure analysis, edge cases (race conditions, double charges, idempotency key collisions).
 >
-> **Related**: [04-uber.md](./04-uber.md) | [03-twitter.md](./03-twitter.md)
+> **Related**: [04-uber.md](/15-system-design/04-uber.md) | [03-twitter.md](/15-system-design/03-twitter.md)
 
 
 ```mermaid
@@ -969,9 +969,9 @@ Storage Sizing:
 
 ## Related
 
-- [Cap Consistency](09-distributed-systems/01-cap-consistency.md)
-- [Consensus Replication](09-distributed-systems/01-consensus-replication.md)
-- [Consensus Raft](09-distributed-systems/02-consensus-raft.md)
-- [Distributed Transactions](09-distributed-systems/02-distributed-transactions.md)
-- [Distributed Caching](09-distributed-systems/03-distributed-caching.md)
-- [Distributed Storage](09-distributed-systems/03-distributed-storage.md)
+- [Cap Consistency](/09-distributed-systems/01-cap-consistency.md)
+- [Consensus Replication](/09-distributed-systems/01-consensus-replication.md)
+- [Consensus Raft](/09-distributed-systems/02-consensus-raft.md)
+- [Distributed Transactions](/09-distributed-systems/02-distributed-transactions.md)
+- [Distributed Caching](/09-distributed-systems/03-distributed-caching.md)
+- [Distributed Storage](/09-distributed-systems/03-distributed-storage.md)

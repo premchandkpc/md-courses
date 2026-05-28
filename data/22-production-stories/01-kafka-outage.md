@@ -1181,8 +1181,8 @@ props.put(ProducerConfig.BUFFER_MEMORY_CONFIG, 33554432);  // 32 MB
 
 ## Related
 
-- [Databases](../../08-databases/) — Outages, corruption, performance
-- [Distributed Systems](../../09-distributed-systems/) — Consensus, cascade failures
-- [Kubernetes](../../07-kubernetes/) — Cluster failures
-- [Networking](../../11-networking/) — DNS, TCP issues
-- [SRE](../../14-sre-observability/) — Incident response
+- [Databases](/08-databases/) — Outages, corruption, performance
+- [Distributed Systems](/09-distributed-systems/) — Consensus, cascade failures
+- [Kubernetes](/07-kubernetes/) — Cluster failures
+- [Networking](/11-networking/) — DNS, TCP issues
+- [SRE](/14-sre-observability/) — Incident response

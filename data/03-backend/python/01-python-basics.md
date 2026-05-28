@@ -1,6 +1,6 @@
 # 🐍 Python — Complete Deep Dive
 
-**Related**: [Advanced Python](02-python-advanced.md) · [Python Docs](https://docs.python.org/3/)
+**Related**: [Advanced Python](/03-backend/python/02-python-advanced.md) · [Python Docs](https://docs.python.org/3/)
 
 ---
 
@@ -1088,9 +1088,9 @@ Python is a BLUEPRINT INTERPRETER:
 
 ## Related
 
-- [Readme](02-data-engineering/README.md)
-- [Data Governance](02-data-engineering/data-quality-governance/01-data-governance.md)
-- [Airflow Dagster](02-data-engineering/orchestration/01-airflow-dagster.md)
-- [Apache Spark](02-data-engineering/processing/01-apache-spark.md)
-- [Apache Flink](02-data-engineering/processing/02-apache-flink.md)
-- [Columnar Storage](02-data-engineering/storage-formats/01-columnar-storage.md)
+- [Readme](/02-data-engineering/README.md)
+- [Data Governance](/02-data-engineering/data-quality-governance/01-data-governance.md)
+- [Airflow Dagster](/02-data-engineering/orchestration/01-airflow-dagster.md)
+- [Apache Spark](/02-data-engineering/processing/01-apache-spark.md)
+- [Apache Flink](/02-data-engineering/processing/02-apache-flink.md)
+- [Columnar Storage](/02-data-engineering/storage-formats/01-columnar-storage.md)

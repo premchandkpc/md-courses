@@ -1,6 +1,6 @@
 # 🏛️ Microservices Architecture Patterns — Complete Deep Dive
 
-**Related**: [Service Decomposition](02-service-decomposition.md) · [API Gateway](04-api-gateway.md) · [Circuit Breaker](05-circuit-breaker-resilience.md)
+**Related**: [Service Decomposition](/16-microservices/02-service-decomposition.md) · [API Gateway](/16-microservices/04-api-gateway.md) · [Circuit Breaker](/16-microservices/05-circuit-breaker-resilience.md)
 
 ---
 
@@ -1637,13 +1637,13 @@ CONFIG SERVER  =  A central bulletin board where each restaurant
 
 ---
 
-**Next**: [Service Decomposition](02-service-decomposition.md)
+**Next**: [Service Decomposition](/16-microservices/02-service-decomposition.md)
 
 ## Related
 
-- [Cap Consistency](09-distributed-systems/01-cap-consistency.md)
-- [Consensus Replication](09-distributed-systems/01-consensus-replication.md)
-- [Consensus Raft](09-distributed-systems/02-consensus-raft.md)
-- [Distributed Transactions](09-distributed-systems/02-distributed-transactions.md)
-- [Distributed Caching](09-distributed-systems/03-distributed-caching.md)
-- [Distributed Storage](09-distributed-systems/03-distributed-storage.md)
+- [Cap Consistency](/09-distributed-systems/01-cap-consistency.md)
+- [Consensus Replication](/09-distributed-systems/01-consensus-replication.md)
+- [Consensus Raft](/09-distributed-systems/02-consensus-raft.md)
+- [Distributed Transactions](/09-distributed-systems/02-distributed-transactions.md)
+- [Distributed Caching](/09-distributed-systems/03-distributed-caching.md)
+- [Distributed Storage](/09-distributed-systems/03-distributed-storage.md)

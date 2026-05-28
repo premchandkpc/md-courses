@@ -416,8 +416,8 @@ aws ecs update-service --cluster prod --service api --desired-count 10
 ## Cross-References
 
 
-- [EC2 Networking & Security](../ec2/02-ec2-networking-security.md) — VPC design, security groups, network ACLs
-- [EKS Operations](../eks/02-eks-operations.md) — EKS vs ECS comparison, Karpenter vs ECS capacity providers
-- [CloudWatch Observability](../cloudwatch/02-cloudwatch-observability.md) — Container Insights, CloudWatch Logs, X-Ray
-- [Kubernetes Storage](../../../07-kubernetes/05-kubernetes-storage.md) — EBS, EFS CSI drivers, StatefulSet patterns
-- [Distributed Transactions](../../../09-distributed-systems/02-distributed-transactions.md) — Saga patterns for ECS multi-service workflows
+- [EC2 Networking & Security](/05-cloud/aws/ec2/02-ec2-networking-security.md) — VPC design, security groups, network ACLs
+- [EKS Operations](/05-cloud/aws/eks/02-eks-operations.md) — EKS vs ECS comparison, Karpenter vs ECS capacity providers
+- [CloudWatch Observability](/05-cloud/aws/cloudwatch/02-cloudwatch-observability.md) — Container Insights, CloudWatch Logs, X-Ray
+- [Kubernetes Storage](/07-kubernetes/05-kubernetes-storage.md) — EBS, EFS CSI drivers, StatefulSet patterns
+- [Distributed Transactions](/09-distributed-systems/02-distributed-transactions.md) — Saga patterns for ECS multi-service workflows

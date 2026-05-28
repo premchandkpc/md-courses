@@ -1,6 +1,6 @@
 # Infrastructure as Code — Senior/Principal Engineer Deep Dive
 
-**Related**: [Configuration Management](02-configuration-management.md) · [DevOps & SRE Practices](03-devops-sre-practices.md) · [Kubernetes](../data/kubernetes/01-kubernetes-basics.md)
+**Related**: [Configuration Management](/06-devops/02-configuration-management.md) · [DevOps & SRE Practices](/06-devops/03-devops-sre-practices.md) · [Kubernetes](/07-kubernetes/01-kubernetes-basics.md)
 
 ---
 
@@ -2360,9 +2360,9 @@ Infrastructure as Code — PRD Checklist
 
 ## Related
 
-- [Kubernetes Basics](07-kubernetes/01-kubernetes-basics.md)
-- [Advanced K8S](07-kubernetes/02-advanced-k8s.md)
-- [Kubernetes Networking](07-kubernetes/03-kubernetes-networking.md)
-- [Kubernetes Security](07-kubernetes/04-kubernetes-security.md)
-- [Kubernetes Storage](07-kubernetes/05-kubernetes-storage.md)
-- [Kubernetes Observability](07-kubernetes/06-kubernetes-observability.md)
+- [Kubernetes Basics](/07-kubernetes/01-kubernetes-basics.md)
+- [Advanced K8S](/07-kubernetes/02-advanced-k8s.md)
+- [Kubernetes Networking](/07-kubernetes/03-kubernetes-networking.md)
+- [Kubernetes Security](/07-kubernetes/04-kubernetes-security.md)
+- [Kubernetes Storage](/07-kubernetes/05-kubernetes-storage.md)
+- [Kubernetes Observability](/07-kubernetes/06-kubernetes-observability.md)

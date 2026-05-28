@@ -675,10 +675,10 @@ Edge Computing:
 
 | Related File | Connection |
 |-------------|-----------|
-| [Cloud Disaster Recovery](../05-cloud/README.md#disaster-recovery) | RPO/RTO, backup strategies, DR patterns |
-| [SRE Disaster Recovery](../14-sre-observability/README.md#disaster-recovery) | DR testing, chaos engineering, runbooks |
-| [Argo CD Multi-Cluster](../06-devops/ci-cd/02-argo-gitops-deployment-automation.md) | ApplicationSet, multi-cluster GitOps |
-| [Service Mesh Multi-Cluster](../16-microservices/01-architecture-patterns.md) | Multi-cluster mesh, cross-region service discovery |
+| [Cloud Disaster Recovery](/05-cloud/README.md#disaster-recovery) | RPO/RTO, backup strategies, DR patterns |
+| [SRE Disaster Recovery](/14-sre-observability/README.md#disaster-recovery) | DR testing, chaos engineering, runbooks |
+| [Argo CD Multi-Cluster](/06-devops/ci-cd/02-argo-gitops-deployment-automation.md) | ApplicationSet, multi-cluster GitOps |
+| [Service Mesh Multi-Cluster](/16-microservices/01-architecture-patterns.md) | Multi-cluster mesh, cross-region service discovery |
 
 ---
 
@@ -699,9 +699,9 @@ Edge Computing:
 
 ## Related
 
-- [Cap Consistency](09-distributed-systems/01-cap-consistency.md)
-- [Consensus Replication](09-distributed-systems/01-consensus-replication.md)
-- [Consensus Raft](09-distributed-systems/02-consensus-raft.md)
-- [Distributed Transactions](09-distributed-systems/02-distributed-transactions.md)
-- [Distributed Caching](09-distributed-systems/03-distributed-caching.md)
-- [Distributed Storage](09-distributed-systems/03-distributed-storage.md)
+- [Cap Consistency](/09-distributed-systems/01-cap-consistency.md)
+- [Consensus Replication](/09-distributed-systems/01-consensus-replication.md)
+- [Consensus Raft](/09-distributed-systems/02-consensus-raft.md)
+- [Distributed Transactions](/09-distributed-systems/02-distributed-transactions.md)
+- [Distributed Caching](/09-distributed-systems/03-distributed-caching.md)
+- [Distributed Storage](/09-distributed-systems/03-distributed-storage.md)

@@ -3,7 +3,7 @@
 
 > **Run the live simulator**: [circuit-breaker.html](/16-microservices/circuit-breaker.html) — click buttons to trigger state transitions and watch the circuit breaker react.
 
-**Related**: [API Gateway](04-api-gateway.md) · [Distributed Transactions](06-distributed-transactions-saga.md) · [Observability](08-observability.md)
+**Related**: [API Gateway](/16-microservices/04-api-gateway.md) · [Distributed Transactions](/16-microservices/06-distributed-transactions-saga.md) · [Observability](/16-microservices/08-security-identity.md)
 
 ---
 
@@ -840,13 +840,13 @@ FAILURE           services also fail → everything is down.
 
 ---
 
-**Next**: [Distributed Transactions & Saga](06-distributed-transactions-saga.md)
+**Next**: [Distributed Transactions & Saga](/16-microservices/06-distributed-transactions-saga.md)
 
 ## Related
 
-- [Cap Consistency](09-distributed-systems/01-cap-consistency.md)
-- [Consensus Replication](09-distributed-systems/01-consensus-replication.md)
-- [Consensus Raft](09-distributed-systems/02-consensus-raft.md)
-- [Distributed Transactions](09-distributed-systems/02-distributed-transactions.md)
-- [Distributed Caching](09-distributed-systems/03-distributed-caching.md)
-- [Distributed Storage](09-distributed-systems/03-distributed-storage.md)
+- [Cap Consistency](/09-distributed-systems/01-cap-consistency.md)
+- [Consensus Replication](/09-distributed-systems/01-consensus-replication.md)
+- [Consensus Raft](/09-distributed-systems/02-consensus-raft.md)
+- [Distributed Transactions](/09-distributed-systems/02-distributed-transactions.md)
+- [Distributed Caching](/09-distributed-systems/03-distributed-caching.md)
+- [Distributed Storage](/09-distributed-systems/03-distributed-storage.md)

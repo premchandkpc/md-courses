@@ -537,9 +537,9 @@ Balances cost + consistency
 ## Related
 
 
-- [Databases internals](../../08-databases/)
-- [Distributed Systems patterns](../../09-distributed-systems/)
-- [Cloud Architecture](../)
+- [Databases internals](/08-databases/)
+- [Distributed Systems patterns](/09-distributed-systems/)
+- [Cloud Architecture](/05-cloud/aws/)
 
 
 ## Observability

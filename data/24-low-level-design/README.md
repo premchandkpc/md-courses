@@ -2,7 +2,7 @@
 
 Low-level design (LLD) is the **detailed blueprint** of a software component — the classes, interfaces, relationships, state machines, and algorithms that translate high-level architecture into working code.
 
-**Related**: [Software Architecture](../17-software-architecture/README.md) · [Design Patterns](../data/designpatterns.md) · [Software Engineering](../25-software-engineering/README.md) · [System Design](../15-system-design/README.md)
+**Related**: [Software Architecture](/17-software-architecture/README.md) · [Design Patterns](/17-software-architecture/design-patterns/designpatterns.md) · [Software Engineering](/25-software-engineering/README.md) · [System Design](/15-system-design/README.md)
 
 ---
 
@@ -982,11 +982,11 @@ class VendingMachine {
 
 | Domain | Connection |
 |--------|-----------|
-| [Software Architecture](../17-software-architecture/README.md) | Architecture styles, high-level design |
-| [System Design](../15-system-design/README.md) | Scalable system blueprints |
-| [Design Patterns](../data/designpatterns.md) | Full pattern catalog with code |
-| [Software Engineering](../25-software-engineering/README.md) | Clean code, SOLID, refactoring |
-| [Interviews](../20-interviews/README.md) | LLD interview preparation |
+| [Software Architecture](/17-software-architecture/README.md) | Architecture styles, high-level design |
+| [System Design](/15-system-design/README.md) | Scalable system blueprints |
+| [Design Patterns](/17-software-architecture/design-patterns/designpatterns.md) | Full pattern catalog with code |
+| [Software Engineering](/25-software-engineering/README.md) | Clean code, SOLID, refactoring |
+| [Interviews](/20-interviews/README.md) | LLD interview preparation |
 
 ---
 
@@ -1015,13 +1015,13 @@ The best LLD is boring. It's obvious, predictable, and unsurprising.
 
 ---
 
-**Next**: [Software Engineering](../25-software-engineering/README.md) · [Design Patterns](../data/designpatterns.md)
+**Next**: [Software Engineering](/25-software-engineering/README.md) · [Design Patterns](/17-software-architecture/design-patterns/designpatterns.md)
 
 ## Related
 
-- [Transformation Summary](03-backend/java/00-TRANSFORMATION-SUMMARY.md)
-- [Oop Concepts](03-backend/java/01-oop-concepts.md)
-- [Collections Framework](03-backend/java/02-collections-framework.md)
-- [Exception Handling](03-backend/java/03-exception-handling.md)
-- [Multithreading](03-backend/java/04-multithreading.md)
-- [Jvm Architecture](03-backend/java/05-jvm-architecture.md)
+- [Transformation Summary](/03-backend/java/00-TRANSFORMATION-SUMMARY.md)
+- [Oop Concepts](/03-backend/java/01-oop-concepts.md)
+- [Collections Framework](/03-backend/java/02-collections-framework.md)
+- [Exception Handling](/03-backend/java/03-exception-handling.md)
+- [Multithreading](/03-backend/java/04-multithreading.md)
+- [Jvm Architecture](/03-backend/java/05-jvm-architecture.md)

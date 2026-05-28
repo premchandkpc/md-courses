@@ -2,7 +2,7 @@
 
 > **Scope**: Requirements (trillions of pages, billions of queries/day, sub-100ms latency), crawling (Caffeine, politeness, freshness), indexing (inverted index, MapReduce pipeline), query processing (parsing, spell correction, intent detection), ranking (PageRank, RankBrain, BERT/MUM, real-time signals), serving (sharding, replication, load balancing), infrastructure (GFS, Bigtable, Spanner, Borg), failure analysis.
 >
-> **Related**: [05-youtube.md](./05-youtube.md) | [07-amazon.md](./07-amazon.md)
+> **Related**: [05-youtube.md](/15-system-design/05-youtube.md) | [07-amazon.md](/15-system-design/07-amazon.md)
 
 
 ```mermaid
@@ -1420,9 +1420,9 @@ Infrastructure:
 
 ## Related
 
-- [Cap Consistency](09-distributed-systems/01-cap-consistency.md)
-- [Consensus Replication](09-distributed-systems/01-consensus-replication.md)
-- [Consensus Raft](09-distributed-systems/02-consensus-raft.md)
-- [Distributed Transactions](09-distributed-systems/02-distributed-transactions.md)
-- [Distributed Caching](09-distributed-systems/03-distributed-caching.md)
-- [Distributed Storage](09-distributed-systems/03-distributed-storage.md)
+- [Cap Consistency](/09-distributed-systems/01-cap-consistency.md)
+- [Consensus Replication](/09-distributed-systems/01-consensus-replication.md)
+- [Consensus Raft](/09-distributed-systems/02-consensus-raft.md)
+- [Distributed Transactions](/09-distributed-systems/02-distributed-transactions.md)
+- [Distributed Caching](/09-distributed-systems/03-distributed-caching.md)
+- [Distributed Storage](/09-distributed-systems/03-distributed-storage.md)

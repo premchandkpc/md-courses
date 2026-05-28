@@ -1047,22 +1047,22 @@ resource "aws_fis_experiment_template" "az_failure" {
 
 | Domain | Connection |
 |--------|-----------|
-| [01 — AI/ML](../01-ai-ml/) | GPU compute, SageMaker/Vertex/Bedrock, managed ML services, LLM inference on cloud |
-| [02 — Data Engineering](../02-data-engineering/) | Object storage (S3/GCS/Blob), warehouses (Redshift/BigQuery/Synapse), data processing (EMR/Dataflow/Databricks) |
-| [03 — Backend](../03-backend/) | Cloud compute for backend services, managed databases, load balancers, auto-scaling backend apps |
-| [06 — DevOps](../06-devops/) | CI/CD with cloud tooling, IA C (CDK, CloudFormation, Deployment Manager), cloud-native DevOps |
-| [07 — Kubernetes](../07-kubernetes/) | EKS/GKE/AKS — managed Kubernetes; cloud-native patterns, service mesh, GitOps on cloud K8s |
-| [08 — Databases](../08-databases/) | Cloud-managed databases (RDS, Cloud SQL, Azure SQL), NoSQL (DynamoDB, Firestore, Cosmos DB) |
-| [09 — Distributed Systems](../09-distributed-systems/) | Cloud-native distributed systems, global databases (Spanner, Cosmos), consensus at scale |
-| [10 — Messaging](../10-messaging/) | SQS/SNS, EventBridge, Pub/Sub, Azure Service Bus — the messaging backbone on each cloud |
-| [11 — Networking](../11-networking/) | VPC design, DNS (Route 53, Cloud DNS, Azure DNS), CDN (CloudFront, Cloud CDN, Azure Front Door), Elastic Load Balancing |
-| [14 — SRE/Observability](../14-sre-observability/) | CloudWatch, Stackdriver/Cloud Monitoring, Azure Monitor; infrastructure monitoring, alerting on cloud |
+| [01 — AI/ML](/01-ai-ml/) | GPU compute, SageMaker/Vertex/Bedrock, managed ML services, LLM inference on cloud |
+| [02 — Data Engineering](/02-data-engineering/) | Object storage (S3/GCS/Blob), warehouses (Redshift/BigQuery/Synapse), data processing (EMR/Dataflow/Databricks) |
+| [03 — Backend](/03-backend/) | Cloud compute for backend services, managed databases, load balancers, auto-scaling backend apps |
+| [06 — DevOps](/06-devops/) | CI/CD with cloud tooling, IA C (CDK, CloudFormation, Deployment Manager), cloud-native DevOps |
+| [07 — Kubernetes](/07-kubernetes/) | EKS/GKE/AKS — managed Kubernetes; cloud-native patterns, service mesh, GitOps on cloud K8s |
+| [08 — Databases](/08-databases/) | Cloud-managed databases (RDS, Cloud SQL, Azure SQL), NoSQL (DynamoDB, Firestore, Cosmos DB) |
+| [09 — Distributed Systems](/09-distributed-systems/) | Cloud-native distributed systems, global databases (Spanner, Cosmos), consensus at scale |
+| [10 — Messaging](/10-messaging/) | SQS/SNS, EventBridge, Pub/Sub, Azure Service Bus — the messaging backbone on each cloud |
+| [11 — Networking](/11-networking/) | VPC design, DNS (Route 53, Cloud DNS, Azure DNS), CDN (CloudFront, Cloud CDN, Azure Front Door), Elastic Load Balancing |
+| [14 — SRE/Observability](/14-sre-observability/) | CloudWatch, Stackdriver/Cloud Monitoring, Azure Monitor; infrastructure monitoring, alerting on cloud |
 
 ## Related
 
-- [Kubernetes Basics](07-kubernetes/01-kubernetes-basics.md)
-- [Advanced K8S](07-kubernetes/02-advanced-k8s.md)
-- [Kubernetes Networking](07-kubernetes/03-kubernetes-networking.md)
-- [Kubernetes Security](07-kubernetes/04-kubernetes-security.md)
-- [Kubernetes Storage](07-kubernetes/05-kubernetes-storage.md)
-- [Kubernetes Observability](07-kubernetes/06-kubernetes-observability.md)
+- [Kubernetes Basics](/07-kubernetes/01-kubernetes-basics.md)
+- [Advanced K8S](/07-kubernetes/02-advanced-k8s.md)
+- [Kubernetes Networking](/07-kubernetes/03-kubernetes-networking.md)
+- [Kubernetes Security](/07-kubernetes/04-kubernetes-security.md)
+- [Kubernetes Storage](/07-kubernetes/05-kubernetes-storage.md)
+- [Kubernetes Observability](/07-kubernetes/06-kubernetes-observability.md)

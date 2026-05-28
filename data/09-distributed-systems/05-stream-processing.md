@@ -2,7 +2,7 @@
 
 > **Scope**: Stream vs batch, processing models (one-at-a-time, micro-batch, continuous), time semantics (event time, processing time, watermarks, lateness), state management (keyed state, operator state, state backends, checkpointing), windowing (tumbling, sliding, session), stream joins, fault tolerance (exactly-once, at-least-once, backpressure), Apache Kafka Streams, Apache Flink, Apache Pulsar, stream processing patterns (CEP, anomaly detection), production CDC pipeline.
 >
-> **Related**: [04-distributed-transactions.md](./04-distributed-transactions.md)
+> **Related**: [04-distributed-transactions.md](/09-distributed-systems/04-distributed-transactions.md)
 
 
 ```mermaid
@@ -634,9 +634,9 @@ Example: Order pipeline
 
 ## Related
 
-- [Postgresql Internals](08-databases/01-postgresql-internals.md)
-- [Relational Database Internals](08-databases/01-relational-database-internals.md)
-- [Postgresql Architecture](08-databases/02-postgresql-architecture.md)
-- [Redis Internals](08-databases/02-redis-internals.md)
-- [Postgresql Troubleshooting Tuning](08-databases/03-postgresql-troubleshooting-tuning.md)
-- [Redis Deep Dive](08-databases/04-redis-deep-dive.md)
+- [Postgresql Internals](/08-databases/01-postgresql-internals.md)
+- [Relational Database Internals](/08-databases/01-relational-database-internals.md)
+- [Postgresql Architecture](/08-databases/02-postgresql-architecture.md)
+- [Redis Internals](/08-databases/02-redis-internals.md)
+- [Postgresql Troubleshooting Tuning](/08-databases/03-postgresql-troubleshooting-tuning.md)
+- [Redis Deep Dive](/08-databases/04-redis-deep-dive.md)

@@ -2,7 +2,7 @@
 
 > **Scope**: Requirements (300M+ active customers, 1.5M+ sellers, millions of products), product catalog (browse, search, faceted navigation), shopping cart (multi-device sync, persistence), order management (lifecycle, fulfillment integration), payment system (idempotency, fraud detection), recommendation engine (collaborative filtering, real-time personalization), seller marketplace (merchant onboarding, inventory, fulfillment by Amazon), DynamoDB/ElastiCache/CDN architecture, failure analysis.
 >
-> **Related**: [06-stripe.md](./06-stripe.md) | [09-google-search.md](./09-google-search.md)
+> **Related**: [06-stripe.md](/15-system-design/06-stripe.md) | [09-google-search.md](/15-system-design/09-google-search.md)
 
 
 ```mermaid
@@ -1778,9 +1778,9 @@ See code examples above for practical usage patterns.
 
 ## Related
 
-- [Cap Consistency](09-distributed-systems/01-cap-consistency.md)
-- [Consensus Replication](09-distributed-systems/01-consensus-replication.md)
-- [Consensus Raft](09-distributed-systems/02-consensus-raft.md)
-- [Distributed Transactions](09-distributed-systems/02-distributed-transactions.md)
-- [Distributed Caching](09-distributed-systems/03-distributed-caching.md)
-- [Distributed Storage](09-distributed-systems/03-distributed-storage.md)
+- [Cap Consistency](/09-distributed-systems/01-cap-consistency.md)
+- [Consensus Replication](/09-distributed-systems/01-consensus-replication.md)
+- [Consensus Raft](/09-distributed-systems/02-consensus-raft.md)
+- [Distributed Transactions](/09-distributed-systems/02-distributed-transactions.md)
+- [Distributed Caching](/09-distributed-systems/03-distributed-caching.md)
+- [Distributed Storage](/09-distributed-systems/03-distributed-storage.md)

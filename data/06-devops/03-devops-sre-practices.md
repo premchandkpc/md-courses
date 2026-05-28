@@ -1,6 +1,6 @@
 # DevOps & SRE Practices — Senior/Principal Engineer Deep Dive
 
-**Related**: [Infrastructure as Code](/06-devops/01-infrastructure-as-code.md) · [Configuration Management](/06-devops/02-configuration-management.md) · [Kubernetes Operations](/07-kubernetes/02-advanced-k8s.md) · [Observability](/data/observability/)
+**Related**: [Infrastructure as Code](/06-devops/01-infrastructure-as-code.md) · [Configuration Management](/06-devops/02-configuration-management.md) · [Kubernetes Operations](/07-kubernetes/02-advanced-k8s.md) · [Observability](/14-sre-observability/README.md)
 
 ---
 

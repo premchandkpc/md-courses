@@ -309,7 +309,7 @@ Every existing item's DOM node gets **updated with new content** instead of simp
 | List with stable keys | Keyed reconciliation | O(n) |
 | List with index keys | Position-based (wrong) | O(n) + unnecessary DOM |
 
-**Cross-reference**: This diffing algorithm is analogous to the `git diff` algorithm — both match common prefix/suffix, then use a heuristic for the middle section. See [OS](/08-operating-systems/) for scheduling algorithm comparisons.
+**Cross-reference**: This diffing algorithm is analogous to the `git diff` algorithm — both match common prefix/suffix, then use a heuristic for the middle section. See [OS](/12-operating-systems/README.md) for scheduling algorithm comparisons.
 
 ---
 
@@ -431,7 +431,7 @@ function workLoopConcurrent(deadline) {
 }
 ```
 
-**Cross-reference**: This is the same cooperative multitasking model used in OS kernel schedulers. See [Operating Systems](/08-operating-systems/) for preemption and time-slicing concepts.
+**Cross-reference**: This is the same cooperative multitasking model used in OS kernel schedulers. See [Operating Systems](/12-operating-systems/README.md) for preemption and time-slicing concepts.
 
 ### Lane Priorities (Bitmask System)
 

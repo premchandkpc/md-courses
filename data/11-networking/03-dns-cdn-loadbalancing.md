@@ -521,7 +521,7 @@ Client                     L7 LB (TLS termination)         Server
 - [Kubernetes Networking](/07-kubernetes/03-kubernetes-networking.md) — Ingress controllers, service types, DNS in K8s
 - [Distributed Systems](/09-distributed-systems/README.md) — Consistent hashing, gossip protocol, failure detection
 - [Backend Roadmap](/21-roadmaps/01-backend-engineer.md) — Phase 2 networking fundamentals, Phase 3 CDN design
-- [CloudFront Distribution](/05-cloud/aws/cdn/01-cloudfront.md) — AWS-specific CDN configuration, Lambda@Edge
+- [CloudFront Distribution](/05-cloud/README.md) — AWS-specific CDN configuration, Lambda@Edge
 
 ## Related
 

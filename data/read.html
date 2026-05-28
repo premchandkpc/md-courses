@@ -1028,8 +1028,10 @@ async function loadFile(path) {
   const body = document.getElementById('fileContent');
   body.innerHTML = '<span class="loading" style="color:var(--fg3)">Loading...</span>';
 
+  // Strip leading / for API (server resolves relative to data/ root)
+  const apiPath = path.replace(/^\//, '');
   try {
-    const r = await fetch(CONFIG.api + '/file?path=' + encodeURIComponent(path));
+    const r = await fetch(CONFIG.api + '/file?path=' + encodeURIComponent(apiPath));
     const d = await r.json();
     if (d.error) {
       body.innerHTML = `<p>Error: ${esc(d.error)}</p>`;

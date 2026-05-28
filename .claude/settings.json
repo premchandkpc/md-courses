@@ -55,7 +55,9 @@
       "Bash(python3 server.py > /tmp/server.log 2>&1 & *)",
       "Bash(lsof -ti:3000)",
       "Bash(awk '/^function buildTreeHtml/,/^}$/{print NR\": \"$0}' /Users/ramyachowdary/Documents/prem-work/md-courses/data/read.html)",
-      "Bash(awk '/^function renderContent/,/^}$/{print NR\": \"$0}' /Users/ramyachowdary/Documents/prem-work/md-courses/data/read.html)"
+      "Bash(awk '/^function renderContent/,/^}$/{print NR\": \"$0}' /Users/ramyachowdary/Documents/prem-work/md-courses/data/read.html)",
+      "Bash(awk '{print $NF}')",
+      "Bash(xargs -I {} basename {})"
     ],
     "additionalDirectories": [
       "/private/tmp"

@@ -356,7 +356,7 @@ Command Query Responsibility Segregation. Separate read and write models.
 
 ### Transactional Outbox
 
-(Early covered in [Distributed Systems — Transactional Outbox](/09-distributed-systems/#transactional-outbox))
+(Early covered in [Distributed Systems — Transactional Outbox](/09-distributed-systems/README.md#transactional-outbox))
 
 Ensures DB write + message publish atomic: write to outbox table in same transaction → relay outbox → publish to broker → delete.
 

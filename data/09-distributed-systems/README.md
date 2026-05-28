@@ -243,7 +243,7 @@ Refines CAP: if partition (P), tradeoff between Availability (A) and Consistency
 
 ### Distributed Databases
 
-- See [Distributed SQL](/08-databases/#distributed-sql) in the Databases section for CockroachDB, TiDB, Spanner, YugabyteDB details
+- See [Distributed SQL](/08-databases/README.md#distributed-sql) in the Databases section for CockroachDB, TiDB, Spanner, YugabyteDB details
 
 ---
 

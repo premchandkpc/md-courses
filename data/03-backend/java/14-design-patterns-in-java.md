@@ -1261,7 +1261,7 @@ RESPONSIBILITY    then Level 3. If one can't solve it, it passes up.
 
 ---
 
-**Next**: [Index](/index.md) — Back to main index
+**Next**: [Index](/17-software-architecture/design-patterns/designpatterns.md) — Back to main index
 
 
 ## Comparison Table

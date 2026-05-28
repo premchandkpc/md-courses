@@ -18,7 +18,7 @@ With index:
 Jump directly to location
 ```
 
-**Related**: [Microservices DB Scaling](/16-microservices/README.md#7-databases) · [Data Model](/inputs/ff/self-study-app/docs/DATA_MODEL.md)
+**Related**: [Microservices DB Scaling](/16-microservices/README.md#7-databases) · [Database Design](/08-databases/README.md)
 
 ---
 

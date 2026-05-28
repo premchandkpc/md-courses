@@ -1,6 +1,6 @@
 # ⚡ Lambda Advanced Patterns — Complete Deep Dive
 
-**Related**: [Lambda Basics](/05-cloud/aws/lambda/01-lambda-deep-dive.md) · [S3](/05-cloud/aws/s3/01-s3-deep-dive.md) · [API Gateway](/api-gateway/01-api-gateway.md) · [CloudWatch](/05-cloud/aws/cloudwatch/02-cloudwatch-observability.md) · [DynamoDB](/dynamodb/01-dynamodb-deep-dive.md)
+**Related**: [Lambda Basics](/05-cloud/aws/lambda/01-lambda-deep-dive.md) · [S3](/05-cloud/aws/s3/01-s3-deep-dive.md) · [API Gateway](/05-cloud/README.md) · [CloudWatch](/05-cloud/aws/cloudwatch/02-cloudwatch-observability.md) · [DynamoDB](/08-databases/README.md)
 
 ---
 

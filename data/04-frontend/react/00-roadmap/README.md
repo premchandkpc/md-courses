@@ -42,10 +42,11 @@ graph TB
 |---|---|---|---|
 | `00-roadmap` | Navigation, learning paths, prerequisites | All | 2 |
 | `01-core-fundamentals` | JSX, components, props, events, lifecycle | Beginner | 4 |
-| `02-react-internals` | Fiber, reconciler, scheduler, lanes, hydration | Staff | 6 |
+| `02-react-internals` | Fiber, reconciler, scheduler, lanes, hydration | Staff | 7 |
 | `03-rendering-pipeline` | Virtual DOM, reconciliation, commit, paint | Senior | 5 |
 | `04-hooks-deep-dive` | useState, useEffect, useRef, custom hooks | Intermediate | 5 |
 | `05-state-management` | Redux, Zustand, Jotai, Context, signals | Senior | 4 |
+| `06-component-architecture` | Composition, patterns, HOCs, render props | Intermediate | 1 |
 | `06-component-architecture` | Composition, patterns, HOCs, render props | Intermediate | 3 |
 | `07-routing` | React Router, Next.js routing, deep linking | Intermediate | 3 |
 | `08-forms` | Controlled/uncontrolled, validation, libraries | Intermediate | 3 |

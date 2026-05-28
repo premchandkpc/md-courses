@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>React Fiber Reconciliation Visualizer</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Inter', -apple-system, system-ui, sans-serif; background: #0d1117; color: #e6edf3; display: flex; flex-direction: column; height: 100vh; }
+  
+  /* Header */
+  header { background: #161b22; border-bottom: 1px solid #30363d; padding: 12px 20px; display: flex; align-items: center; gap: 16px; flex-shrink: 0; }
+  header h1 { font-size: 16px; font-weight: 600; color: #58a6ff; }
+  header .subtitle { font-size: 12px; color: #8b949e; }
+  
+  /* Controls */
+  .controls { background: #161b22; border-bottom: 1px solid #30363d; padding: 10px 20px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; flex-shrink: 0; }
+  .controls button { background: #21262d; border: 1px solid #30363d; color: #c9d1d9; padding: 6px 14px; border-radius: 6px; cursor: pointer; font-size: 13px; transition: background .15s; }
+  .controls button:hover { background: #30363d; }
+  .controls button.primary { background: #238636; border-color: #2ea043; color: #fff; }
+  .controls button.primary:hover { background: #2ea043; }
+  .controls button.danger { background: #8b1a1a; border-color: #bd2c2c; color: #fff; }
+  .controls label { font-size: 12px; color: #8b949e; display: flex; align-items: center; gap: 6px; }
+  .controls select { background: #21262d; border: 1px solid #30363d; color: #c9d1d9; padding: 4px 8px; border-radius: 4px; font-size: 12px; }
+  .badge { font-size: 11px; background: #1f2937; padding: 2px 8px; border-radius: 10px; color: #8b949e; margin-left: auto; }
+  
+  /* Main layout */
+  .main { display: flex; flex: 1; overflow: hidden; }
+  
+  /* Tree canvas */
+  .canvas { flex: 1; position: relative; overflow: auto; background: #0d1117; background-image: radial-gradient(circle, #161b22 1px, transparent 1px); background-size: 24px 24px; }
+  .canvas svg { width: 100%; height: 100%; min-width: 800px; min-height: 600px; }
+  
+  /* Info panel */
+  .panel { width: 320px; background: #161b22; border-left: 1px solid #30363d; display: flex; flex-direction: column; flex-shrink: 0; }
+  .panel h3 { font-size: 13px; font-weight: 600; padding: 12px 16px; border-bottom: 1px solid #30363d; color: #58a6ff; }
+  .panel-content { padding: 12px 16px; font-size: 13px; line-height: 1.6; overflow-y: auto; flex: 1; }
+  .panel-content .prop { display: flex; justify-content: space-between; padding: 3px 0; border-bottom: 1px solid #21262d; font-family: 'JetBrains Mono', monospace; font-size: 12px; }
+  .panel-content .prop .key { color: #8b949e; }
+  .panel-content .prop .val { color: #7ee787; }
+  .panel-content .explain { background: #1c2333; border-left: 3px solid #58a6ff; padding: 8px 12px; margin: 8px 0; border-radius: 0 6px 6px 0; font-size: 12px; color: #8b949e; }
+  .step-log { margin-top: 8px; max-height: 200px; overflow-y: auto; }
+  .step-log .entry { padding: 3px 0; font-size: 11px; font-family: 'JetBrains Mono', monospace; border-bottom: 1px solid #1c2128; }
+  .step-log .entry .step-num { color: #8b949e; }
+  .step-log .entry.begin { color: #58a6ff; }
+  .step-log .entry.complete { color: #3fb950; }
+  .step-log .entry.skip { color: #8b949e; }
+  
+  /* Fiber node SVG */
+  .node-rect { cursor: pointer; transition: stroke-width .15s; }
+  .node-rect:hover { stroke-width: 3; }
+  
+  /* Phase indicators */
+  .phase-begin { color: #58a6ff; }
+  .phase-complete { color: #3fb950; }
+  
+  /* Status bar */
+  .status { background: #0d1117; border-top: 1px solid #30363d; padding: 6px 20px; font-size: 11px; color: #8b949e; font-family: 'JetBrains Mono', monospace; display: flex; gap: 20px; flex-shrink: 0; }
+  .status span { display: flex; align-items: center; gap: 4px; }
+  .dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+  .dot.begin { background: #58a6ff; }
+  .dot.complete { background: #3fb950; }
+  .dot.idle { background: #8b949e; }
+  
+  /* Responsive */
+  @media (max-width: 768px) { .panel { width: 240px; } }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>⚛ Fiber Reconciliation Visualizer</h1>
+  <span class="subtitle">Step through React's render+commit phases</span>
+</header>
+
+<div class="controls">
+  <button class="primary" id="btnPlay">▶ Play</button>
+  <button id="btnStep">⏭ Step</button>
+  <button id="btnReset">↺ Reset</button>
+  <span style="color:#30363d;width:1px;height:20px;background:#30363d;margin:0 4px;"></span>
+  <label>Speed: <select id="speedSelect">
+    <option value="2000">Slow</option>
+    <option value="1000" selected>Normal</option>
+    <option value="400">Fast</option>
+    <option value="1">Instant</option>
+  </select></label>
+  <label>Demo: <select id="demoSelect">
+    <option value="simple">Simple Tree</option>
+    <option value="list">List w/ Keys</option>
+    <option value="nested">Nested + Suspense</option>
+  </select></label>
+  <span class="badge" id="stepBadge">Step 0 / 0</span>
+</div>
+
+<div class="main">
+  <div class="canvas" id="canvas">
+    <svg id="svg" viewBox="0 0 1000 700"></svg>
+  </div>
+  <div class="panel" id="panel">
+    <h3>📋 Fiber Info</h3>
+    <div class="panel-content" id="panelContent">
+      <div class="explain">Click a fiber node to inspect its properties</div>
+      <div class="step-log" id="stepLog"></div>
+    </div>
+  </div>
+</div>
+
+<div class="status">
+  <span>Phase: <span id="phaseDisplay">Idle</span></span>
+  <span>Nodes: <span id="nodeCount">0</span></span>
+  <span>Depth: <span id="treeDepth">0</span></span>
+  <span>Re-renders: <span id="renderCount">0</span></span>
+</div>
+
+<script>
+// ====== Fiber Tree Definitions ======
+const DEMOS = {
+  simple: {
+    name: 'Simple Tree',
+    // 1 root, 2 children, 1 grandchild
+    generateSteps: () => {
+      const steps = [];
+      // Mock reconciliation: beginWork on each node, then completeWork
+      const tree = [
+        { id: 'root', tag: 'HostRoot', type: 'Root', depth: 0, children: ['a', 'b'] },
+        { id: 'a', tag: 'FunctionComponent', type: 'Header', depth: 1, children: ['a1'] },
+        { id: 'a1', tag: 'HostComponent', type: 'div', depth: 2, children: [] },
+        { id: 'b', tag: 'FunctionComponent', type: 'Footer', depth: 1, children: [] },
+      ];
+      
+      // Simulate DFS traversal
+      steps.push({ type: 'begin', nodeId: 'root', msg: 'beginWork on Root' });
+      steps.push({ type: 'begin', nodeId: 'a', msg: 'beginWork on Header' });
+      steps.push({ type: 'begin', nodeId: 'a1', msg: 'beginWork on <div>' });
+      steps.push({ type: 'complete', nodeId: 'a1', msg: 'completeWork <div> → no children' });
+      steps.push({ type: 'complete', nodeId: 'a', msg: 'completeWork Header → children done' });
+      steps.push({ type: 'begin', nodeId: 'b', msg: 'beginWork on Footer' });
+      steps.push({ type: 'complete', nodeId: 'b', msg: 'completeWork Footer → leaf' });
+      steps.push({ type: 'complete', nodeId: 'root', msg: 'completeWork Root → commit' });
+      steps.push({ type: 'commit', nodeId: 'root', msg: '⚡ Commit phase: mutations applied to DOM' });
+      return { tree, steps };
+    }
+  },
+  
+  list: {
+    name: 'List w/ Keys',
+    generateSteps: () => {
+      const tree = [
+        { id: 'root', tag: 'HostRoot', type: 'Root', depth: 0, children: ['list'] },
+        { id: 'list', tag: 'FunctionComponent', type: 'List', depth: 1, children: ['item1', 'item2', 'item3'] },
+        { id: 'item1', tag: 'HostComponent', type: 'li', depth: 2, children: [], key: '1' },
+        { id: 'item2', tag: 'HostComponent', type: 'li', depth: 2, children: [], key: '2' },
+        { id: 'item3', tag: 'HostComponent', type: 'li', depth: 2, children: [], key: '3' },
+      ];
+      const steps = [
+        { type: 'begin', nodeId: 'root', msg: 'beginWork Root' },
+        { type: 'begin', nodeId: 'list', msg: 'beginWork List → reconcile children[3]' },
+        { type: 'begin', nodeId: 'item1', msg: 'beginWork li key="1" → reuse' },
+        { type: 'complete', nodeId: 'item1', msg: 'completeWork li key="1"' },
+        { type: 'begin', nodeId: 'item2', msg: 'beginWork li key="2" → moved' },
+        { type: 'complete', nodeId: 'item2', msg: 'completeWork li key="2"' },
+        { type: 'begin', nodeId: 'item3', msg: 'beginWork li key="3" → new' },
+        { type: 'complete', nodeId: 'item3', msg: 'completeWork li key="3"' },
+        { type: 'complete', nodeId: 'list', msg: 'completeWork List' },
+        { type: 'complete', nodeId: 'root', msg: 'completeWork Root' },
+        { type: 'commit', nodeId: 'root', msg: '⚡ Commit: DOM mutations (move + insert)' },
+      ];
+      return { tree, steps };
+    }
+  },
+
+  nested: {
+    name: 'Nested + Suspense',
+    generateSteps: () => {
+      const tree = [
+        { id: 'root', tag: 'HostRoot', type: 'Root', depth: 0, children: ['shell'] },
+        { id: 'shell', tag: 'FunctionComponent', type: 'Shell', depth: 1, children: ['nav', 'main'] },
+        { id: 'nav', tag: 'FunctionComponent', type: 'Nav', depth: 2, children: [] },
+        { id: 'main', tag: 'FunctionComponent', type: 'MainContent', depth: 2, children: ['susp', 'footer'] },
+        { id: 'susp', tag: 'SuspenseComponent', type: 'Suspense', depth: 3, children: ['profile'], fallback: 'Loading...' },
+        { id: 'profile', tag: 'FunctionComponent', type: 'UserProfile', depth: 4, children: [] },
+        { id: 'footer', tag: 'HostComponent', type: 'footer', depth: 3, children: [] },
+      ];
+      const steps = [
+        { type: 'begin', nodeId: 'root', msg: 'beginWork Root' },
+        { type: 'begin', nodeId: 'shell', msg: 'beginWork Shell' },
+        { type: 'begin', nodeId: 'nav', msg: 'beginWork Nav → bailout (no changes)' },
+        { type: 'complete', nodeId: 'nav', msg: 'completeWork Nav (bailout)' },
+        { type: 'begin', nodeId: 'main', msg: 'beginWork MainContent' },
+        { type: 'begin', nodeId: 'susp', msg: 'beginWork Suspense → data pending ⏳' },
+        { type: 'complete', nodeId: 'susp', msg: 'completeWork Suspense → show fallback' },
+        { type: 'begin', nodeId: 'footer', msg: 'beginWork <footer>' },
+        { type: 'complete', nodeId: 'footer', msg: 'completeWork <footer>' },
+        { type: 'complete', nodeId: 'main', msg: 'completeWork MainContent' },
+        { type: 'complete', nodeId: 'shell', msg: 'completeWork Shell' },
+        { type: 'complete', nodeId: 'root', msg: 'completeWork Root' },
+        { type: 'commit', nodeId: 'root', msg: '⚡ Commit phase: DOM mutations + passive effects' },
+      ];
+      return { tree, steps };
+    }
+  }
+};
+
+// ====== State ======
+let currentStep = -1;
+let currentDemo = 'simple';
+let steps = [];
+let tree = [];
+let isPlaying = false;
+let playTimer = null;
+let renderCountVal = 0;
+
+// ====== SVG rendering ======
+const COLORS = {
+  HostRoot: '#8b5cf6',
+  HostComponent: '#3fb950',
+  FunctionComponent: '#58a6ff',
+  SuspenseComponent: '#d29922',
+  ClassComponent: '#f0883e',
+  // Phase colors
+  'phase-idle': '#21262d',
+  'phase-begin': '#58a6ff',
+  'phase-complete': '#3fb950',
+  'phase-commit': '#f0883e',
+};
+
+function getNodeColor(node) {
+  return COLORS[node.tag] || '#8b949e';
+}
+
+function layoutTree(tree) {
+  // Simple top-down layout
+  const grouped = {};
+  tree.forEach(n => { grouped[n.id] = n; });
+  
+  const positions = {};
+  const xSpacing = 160;
+  const ySpacing = 100;
+  const startX = 500;
+  const startY = 50;
+  
+  function layoutNode(id, x, y, leftBound) {
+    const node = grouped[id];
+    if (!node) return leftBound;
+    
+    positions[id] = { x, y };
+    
+    if (node.children.length === 0) {
+      return x + xSpacing;
+    }
+    
+    let childX = x - (node.children.length - 1) * xSpacing / 2;
+    let maxX = x;
+    
+    node.children.forEach(childId => {
+      const childNode = grouped[childId];
+      if (childNode) {
+        maxX = Math.max(maxX, layoutNode(childId, childX, y + ySpacing, childX));
+        childX += xSpacing;
+      }
+    });
+    
+    return maxX;
+  }
+  
+  layoutNode('root', 500, 60, 500);
+  
+  // Assign phase state
+  tree.forEach(n => {
+    positions[n.id].phase = 'idle';
+    positions[n.id].tag = n.tag;
+    positions[n.id].type = n.type;
+    positions[n.id].key = n.key || null;
+  });
+  
+  return positions;
+}
+
+function renderTree(positions, activeIds = {}) {
+  const svg = document.getElementById('svg');
+  const grouped = {};
+  tree.forEach(n => { grouped[n.id] = n; });
+  
+  let html = '';
+  
+  // Draw edges first
+  tree.forEach(node => {
+    if (!node.children) return;
+    node.children.forEach(childId => {
+      const p = positions[node.id];
+      const cp = positions[childId];
+      if (!p || !cp) return;
+      
+      const isActive = activeIds[node.id] || activeIds[childId];
+      const edgeColor = isActive ? '#58a6ff' : '#30363d';
+      const edgeWidth = isActive ? 2.5 : 1;
+      
+      html += `<line x1="${p.x}" y1="${p.y + 14}" x2="${cp.x}" y2="${cp.y - 14}" stroke="${edgeColor}" stroke-width="${edgeWidth}" opacity="0.6"/>`;
+    });
+  });
+  
+  // Draw nodes
+  tree.forEach(node => {
+    const p = positions[node.id];
+    if (!p) return;
+    
+    const color = getNodeColor(node);
+    const phase = p.phase || 'idle';
+    const phaseColor = COLORS[`phase-${phase}`] || '#21262d';
+    const isActive = activeIds[node.id];
+    const strokeW = isActive ? 3 : 1.5;
+    const fillOpacity = phase === 'complete' ? 0.3 : (phase === 'commit' ? 0.4 : 0.15);
+    
+    const nodeWidth = 130;
+    const nodeHeight = 44;
+    const rx = 8;
+    const x = p.x - nodeWidth / 2;
+    const y = p.y - nodeHeight / 2;
+    
+    html += `<g class="node-group" data-id="${node.id}" style="cursor:pointer">`;
+    // Phase indicator ring
+    if (isActive) {
+      html += `<rect x="${x - 3}" y="${y - 3}" width="${nodeWidth + 6}" height="${nodeHeight + 6}" rx="${rx + 2}" fill="none" stroke="${phaseColor}" stroke-width="2" stroke-dasharray="4,3" opacity="0.7"/>`;
+    }
+    // Background
+    html += `<rect class="node-rect" x="${x}" y="${y}" width="${nodeWidth}" height="${nodeHeight}" rx="${rx}" fill="${color}" fill-opacity="${fillOpacity}" stroke="${isActive ? phaseColor : color}" stroke-width="${strokeW}"/>`;
+    // Label
+    html += `<text x="${p.x}" y="${p.y - 4}" text-anchor="middle" fill="${isActive ? '#fff' : '#e6edf3'}" font-size="12" font-weight="600">${node.type}</text>`;
+    html += `<text x="${p.x}" y="${p.y + 12}" text-anchor="middle" fill="#8b949e" font-size="10">${node.tag}${node.key ? ` key="${node.key}"` : ''}</text>`;
+    // Phase badge
+    if (phase !== 'idle') {
+      html += `<rect x="${p.x + nodeWidth / 2 - 46}" y="${y - 14}" width="44" height="14" rx="4" fill="${phaseColor}" opacity="0.8"/>`;
+      html += `<text x="${p.x + nodeWidth / 2 - 24}" y="${y - 4}" text-anchor="middle" fill="#fff" font-size="9" font-weight="600">${phase.toUpperCase()}</text>`;
+    }
+    html += `</g>`;
+  });
+  
+  svg.innerHTML = html;
+  
+  // Click handlers
+  document.querySelectorAll('.node-group').forEach(g => {
+    g.addEventListener('click', () => {
+      const id = g.dataset.id;
+      const node = tree.find(n => n.id === id);
+      const pos = positions[id];
+      if (node && pos) showNodeInfo(node, pos);
+    });
+  });
+  
+  updateStatus();
+}
+
+function showNodeInfo(node, pos) {
+  const content = document.getElementById('panelContent');
+  let html = `<div class="explain">Fiber node details — click any node</div>`;
+  html += `<div class="prop"><span class="key">id</span><span class="val">${node.id}</span></div>`;
+  html += `<div class="prop"><span class="key">type</span><span class="val">${node.type}</span></div>`;
+  html += `<div class="prop"><span class="key">tag</span><span class="val">${node.tag}</span></div>`;
+  html += `<div class="prop"><span class="key">depth</span><span class="val">${node.depth}</span></div>`;
+  if (node.key) html += `<div class="prop"><span class="key">key</span><span class="val">"${node.key}"</span></div>`;
+  html += `<div class="prop"><span class="key">children</span><span class="val">${node.children.length}</span></div>`;
+  html += `<div class="prop"><span class="key">phase</span><span class="val">${pos.phase}</span></div>`;
+  
+  // Explanation based on tag
+  const explanations = {
+    HostRoot: 'Entry point. Holds the fiber root and pending work lanes.',
+    HostComponent: 'Represents a DOM element (div, span, etc.). Minimal reconciliation.',
+    FunctionComponent: 'Your component function. May re-render if hooks triggered.',
+    SuspenseComponent: 'Shows fallback while waiting for async data. Children mount when ready.',
+    ClassComponent: 'Legacy. Has lifecycle methods and state instance.',
+  };
+  if (explanations[node.tag]) {
+    html += `<div class="explain" style="margin-top:8px">${explanations[node.tag]}</div>`;
+  }
+  
+  html += `<h4 style="font-size:12px;margin:12px 0 4px;color:#8b949e">Step Log</h4>`;
+  html += `<div class="step-log" id="stepLog">`;
+  
+  content.innerHTML = html;
+}
+
+function updateStatus() {
+  document.getElementById('nodeCount').textContent = tree.length;
+  const maxDepth = Math.max(...tree.map(n => n.depth));
+  document.getElementById('treeDepth').textContent = maxDepth;
+  document.getElementById('renderCount').textContent = renderCountVal;
+  
+  const activeNum = steps.slice(0, currentStep + 1).filter(s => s.type === 'begin' || s.type === 'complete' || s.type === 'commit').length;
+  const total = steps.filter(s => s.type === 'begin' || s.type === 'complete' || s.type === 'commit').length;
+  document.getElementById('stepBadge').textContent = `Step ${activeNum} / ${total}`;
+  
+  // Phase
+  const lastStep = steps[currentStep];
+  const phase = lastStep ? lastStep.type : 'idle';
+  const phaseDisplay = document.getElementById('phaseDisplay');
+  phaseDisplay.textContent = phase === 'commit' ? 'Commit Phase' : (phase === 'idle' ? 'Idle' : 'Render Phase');
+  phaseDisplay.style.color = COLORS[`phase-${phase === 'begin' ? 'begin' : phase === 'complete' ? 'complete' : phase === 'commit' ? 'commit' : 'idle'}`];
+}
+
+function loadDemo(name) {
+  currentDemo = name;
+  currentStep = -1;
+  isPlaying = false;
+  if (playTimer) { clearInterval(playTimer); playTimer = null; }
+  document.getElementById('btnPlay').textContent = '▶ Play';
+  
+  const demo = DEMOS[name];
+  if (!demo) return;
+  const result = demo.generateSteps();
+  tree = result.tree;
+  steps = result.steps;
+  renderCountVal = 0;
+  
+  const positions = layoutTree(tree);
+  renderTree(positions);
+  
+  const stepLog = document.getElementById('stepLog');
+  if (stepLog) stepLog.innerHTML = '';
+  
+  const content = document.getElementById('panelContent');
+  content.innerHTML = `<div class="explain">${demo.name} loaded. Click "Step" or "Play" to walk through reconciliation.</div><div class="step-log" id="stepLog"></div>`;
+  
+  document.getElementById('stepBadge').textContent = `Step 0 / ${steps.filter(s => s.type === 'begin' || s.type === 'complete' || s.type === 'commit').length}`;
+  document.getElementById('phaseDisplay').textContent = 'Idle';
+  document.getElementById('phaseDisplay').style.color = '#8b949e';
+}
+
+function stepForward() {
+  if (currentStep >= steps.length - 1) {
+    if (isPlaying) {
+      isPlaying = false;
+      document.getElementById('btnPlay').textContent = '▶ Play';
+      if (playTimer) { clearInterval(playTimer); playTimer = null; }
+    }
+    return;
+  }
+  
+  currentStep++;
+  const step = steps[currentStep];
+  const positions = layoutTree(tree);
+  
+  // Update phases based on steps up to current
+  const activeIds = {};
+  const idleIds = {};
+  tree.forEach(n => { idleIds[n.id] = true; });
+  
+  for (let i = 0; i <= currentStep; i++) {
+    const s = steps[i];
+    if (positions[s.nodeId]) {
+      if (s.type === 'begin') positions[s.nodeId].phase = 'begin';
+      else if (s.type === 'complete') positions[s.nodeId].phase = 'complete';
+      else if (s.type === 'commit') {
+        tree.forEach(n => { if (positions[n.id]) positions[n.id].phase = 'commit'; });
+      }
+    }
+    if (positions[s.nodeId]) {
+      activeIds[s.nodeId] = true;
+      delete idleIds[s.nodeId];
+    }
+  }
+  
+  if (step.type === 'commit') renderCountVal++;
+  
+  renderTree(positions, activeIds);
+  
+  // Step log
+  const stepLog = document.getElementById('stepLog');
+  if (stepLog) {
+    const entry = document.createElement('div');
+    entry.className = `entry ${step.type}`;
+    entry.innerHTML = `<span class="step-num">#${currentStep}</span> ${step.msg}`;
+    stepLog.appendChild(entry);
+    stepLog.scrollTop = stepLog.scrollHeight;
+  }
+  
+  document.getElementById('stepBadge').textContent = `Step ${currentStep + 1} / ${steps.filter(s => s.type === 'begin' || s.type === 'complete' || s.type === 'commit').length}`;
+  
+  const phaseDisplay = document.getElementById('phaseDisplay');
+  if (step.type === 'commit') {
+    phaseDisplay.textContent = 'Commit Phase';
+    phaseDisplay.style.color = COLORS['phase-commit'];
+  } else {
+    phaseDisplay.textContent = 'Render Phase';
+    phaseDisplay.style.color = COLORS[`phase-${step.type}`];
+  }
+  
+  // Auto-stop on last step
+  if (currentStep >= steps.length - 1 && isPlaying) {
+    isPlaying = false;
+    document.getElementById('btnPlay').textContent = '▶ Play';
+    if (playTimer) { clearInterval(playTimer); playTimer = null; }
+    phaseDisplay.textContent = 'Completed';
+    phaseDisplay.style.color = '#3fb950';
+  }
+}
+
+function resetDemo() {
+  isPlaying = false;
+  if (playTimer) { clearInterval(playTimer); playTimer = null; }
+  document.getElementById('btnPlay').textContent = '▶ Play';
+  loadDemo(currentDemo);
+}
+
+function togglePlay() {
+  if (currentStep >= steps.length - 1) {
+    resetDemo();
+    setTimeout(() => togglePlay(), 50);
+    return;
+  }
+  
+  isPlaying = !isPlaying;
+  document.getElementById('btnPlay').textContent = isPlaying ? '⏸ Pause' : '▶ Play';
+  
+  if (isPlaying) {
+    const speed = parseInt(document.getElementById('speedSelect').value);
+    stepForward();
+    playTimer = setInterval(() => {
+      if (currentStep < steps.length - 1) {
+        stepForward();
+      } else {
+        isPlaying = false;
+        document.getElementById('btnPlay').textContent = '▶ Play';
+        clearInterval(playTimer);
+        playTimer = null;
+      }
+    }, speed);
+  } else {
+    if (playTimer) { clearInterval(playTimer); playTimer = null; }
+  }
+}
+
+// ====== Init ======
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('btnStep').addEventListener('click', stepForward);
+  document.getElementById('btnPlay').addEventListener('click', togglePlay);
+  document.getElementById('btnReset').addEventListener('click', resetDemo);
+  document.getElementById('demoSelect').addEventListener('change', (e) => loadDemo(e.target.value));
+  document.getElementById('speedSelect').addEventListener('change', () => {
+    if (isPlaying) {
+      clearInterval(playTimer);
+      playTimer = setInterval(stepForward, parseInt(document.getElementById('speedSelect').value));
+    }
+  });
+  
+  loadDemo('simple');
+});
+</script>
+</body>
+</html>

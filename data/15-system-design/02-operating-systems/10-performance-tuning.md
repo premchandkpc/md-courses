@@ -1,6 +1,6 @@
 # Performance Tuning & Profiling Deep Dive - L5 Operating Systems
 
-> **[🎨 View Interactive Diagram](performance-tuning-architecture.html)** | [← Back to Index](../../systems-index.html)
+> **[← Back to Index](../../systems-index.html)**
 
 *"Where's the bottleneck? How profile CPU, memory, I/O?"*
 

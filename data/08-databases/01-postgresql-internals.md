@@ -1115,9 +1115,50 @@ WHERE o.created > '2024-01-01';
 -- Better: filter first, then join
 SELECT * FROM orders o
 WHERE o.created > '2024-01-01'
-JOIN items i ON o.item_id = i.id;
+JOIN items i ON o.item_order_id = i.id;
 ```
 
+### Replication Lag Animation
+
+```mermaid
+sequenceDiagram
+    participant App as Application
+    participant Primary as Primary DB
+    participant WAL as WAL Sender
+    participant Network as Network
+    participant Replica as Replica DB
+    participant Receiver as WAL Receiver
+    
+    Note over Primary,Replica: t=0ms: Write arrives
+    App->>Primary: UPDATE orders SET status='shipped'
+    activate Primary
+    Primary->>Primary: Write to WAL buffer
+    Primary->>WAL: WAL ready to send
+    Primary-->>App: ACK (synchronous_commit=local)
+    deactivate Primary
+    
+    Note over Primary,Replica: t=1ms: WAL transmission
+    WAL->>Network: Send WAL segment (16MB @ 1Gbps)
+    activate Network
+    Note over Network: ~128ms latency
+    
+    Note over Primary,Replica: t=50ms: Replica receives
+    Network->>Receiver: WAL arrives
+    activate Receiver
+    Receiver->>Replica: Write to pg_wal/
+    deactivate Network
+    
+    Note over Primary,Replica: t=60ms: Replica applies
+    Receiver->>Replica: Startup process replays WAL
+    activate Replica
+    Replica->>Replica: Apply UPDATE to data page
+    Replica-->>Receiver: ACK (replication_offset)
+    deactivate Replica
+    deactivate Receiver
+    
+    Note over Primary,Replica: Replication lag = 60ms
+    Note over Primary,Replica: If replica slow: lag grows (200ms, 1s, ∞)
+```
 
 ## Observability
 

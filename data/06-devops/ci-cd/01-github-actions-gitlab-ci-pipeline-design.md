@@ -2255,6 +2255,57 @@ pipeline {
 - [ ] **Cost**: Monitor minutes usage, optimize runner utilization
 - [ ] **Security**: Audit action versions, use approved actions only
 
+### Visual: CI/CD Pipeline Execution Flow
+
+```mermaid
+graph TD
+    Code["Developer<br/>Commits Code"] -->|Push| Repo["Repository<br/>(GitHub/GitLab)"]
+    Repo -->|Webhook| Trigger["Trigger Event<br/>push/PR"]
+    Trigger -->|Queue| Queue["Job Queue<br/>Runner Assignment"]
+    
+    Queue -->|Assign| Runner["Runner<br/>(Virtual Machine)"]
+    Runner -->|1. Checkout| CheckOut["Checkout<br/>git clone"]
+    CheckOut -->|2. Setup| Setup["Setup<br/>Install Dependencies"]
+    Setup -->|3. Build| Build["Build<br/>Compile/Package"]
+    Build -->|4. Test| Test["Test<br/>Unit/Integration"]
+    Test -->|Pass?| TestPass["Tests Pass"]
+    Test -->|Fail| TestFail["Tests Fail"]
+    TestFail -->|Artifact| FailArt["Store Logs<br/>as Artifact"]
+    FailArt -->|Notify| Notify["Notify Dev<br/>Email/Slack"]
+    
+    TestPass -->|5. Build Image| Docker["Build Docker<br/>Image"]
+    Docker -->|6. Push| Registry["Push to<br/>Registry"]
+    Registry -->|7. Deploy| Deploy["Deploy<br/>to Staging"]
+    Deploy -->|8. E2E Test| E2E["E2E Test<br/>Integration"]
+    E2E -->|Pass| Prod["Deploy to<br/>Production"]
+    E2E -->|Fail| RollBack["Rollback<br/>Previous Version"]
+    
+    Build -->|Cache| Cache["Dependency Cache<br/>Reuse Next Build"]
+    Docker -->|Cache| LayerCache["Docker Layer<br/>Cache"]
+    
+    style Code fill:#1e3a5f,stroke:#00d4ff
+    style Repo fill:#1e3a5f,stroke:#00d4ff
+    style Trigger fill:#3a7ca5,stroke:#00d4ff
+    style Queue fill:#3a7ca5,stroke:#00d4ff
+    style Runner fill:#3a7ca5,stroke:#00d4ff
+    style CheckOut fill:#3a7ca5,stroke:#00d4ff
+    style Setup fill:#3a7ca5,stroke:#00d4ff
+    style Build fill:#3a7ca5,stroke:#00d4ff
+    style Test fill:#3a7ca5,stroke:#00d4ff
+    style TestPass fill:#1e5f3f,stroke:#34d399
+    style TestFail fill:#5f1e1e,stroke:#ef4444
+    style FailArt fill:#5f1e1e,stroke:#ef4444
+    style Notify fill:#5f1e1e,stroke:#ef4444
+    style Docker fill:#1e5f3f,stroke:#34d399
+    style Registry fill:#1e5f3f,stroke:#34d399
+    style Deploy fill:#1e5f3f,stroke:#34d399
+    style E2E fill:#3a7ca5,stroke:#00d4ff
+    style Prod fill:#1e5f3f,stroke:#34d399
+    style RollBack fill:#5f1e1e,stroke:#ef4444
+    style Cache fill:#3a7ca5,stroke:#00d4ff
+    style LayerCache fill:#3a7ca5,stroke:#00d4ff
+```
+
 ---
 
 ## Conclusion

@@ -2287,6 +2287,61 @@ Infrastructure as Code — PRD Checklist
 □ Rollback plan documented
 ```
 
+### Visual: Terraform Plan → Apply Lifecycle
+
+```mermaid
+graph TD
+    Code["Write Terraform<br/>config.tf"] -->|tf init| Init["Initialize<br/>Backend (S3+Dynamo)"]
+    Init -->|Download| Providers["Download<br/>Providers"]
+    Providers -->|Validate| Validate["Validate<br/>Syntax + Schema"]
+    
+    Validate -->|tf plan| Plan["Plan<br/>Compare desired vs actual"]
+    Plan -->|Query| Current["Query current<br/>state (etcd, AWS)"]
+    Current -->|Diff| Diff["Generate diff<br/>+ → ~ → -"]
+    Diff -->|Show| Changeset["Changeset<br/>JSON/Human"]
+    
+    Changeset -->|Review| Review["Human<br/>Review"]
+    Review -->|Approve| Apply["tf apply<br/>Execute Plan"]
+    Review -->|Reject| Reject["Reject<br/>No changes"]
+    
+    Apply -->|Create| Create["Create<br/>Resources"]
+    Apply -->|Update| Update["Update<br/>Existing"]
+    Apply -->|Delete| Delete["Delete<br/>Marked"]
+    
+    Create -->|API Call| AWS["AWS API<br/>Create Resource"]
+    Update -->|API Call| AWS
+    Delete -->|API Call| AWS
+    
+    AWS -->|Success| NewState["Update State<br/>File"]
+    NewState -->|Lock| Lock["State Lock<br/>(DynamoDB)"]
+    Lock -->|Persist| Storage["S3 Backend<br/>Encrypted"]
+    
+    AWS -->|Fail| Error["Rollback<br/>Partial Apply"]
+    Error -->|Revert| NewState
+    
+    Storage -->|Next run| Current
+    
+    style Code fill:#1e3a5f,stroke:#00d4ff
+    style Init fill:#3a7ca5,stroke:#00d4ff
+    style Providers fill:#3a7ca5,stroke:#00d4ff
+    style Validate fill:#3a7ca5,stroke:#00d4ff
+    style Plan fill:#3a7ca5,stroke:#00d4ff
+    style Current fill:#3a7ca5,stroke:#00d4ff
+    style Diff fill:#3a7ca5,stroke:#00d4ff
+    style Changeset fill:#1e5f3f,stroke:#34d399
+    style Review fill:#1e3a5f,stroke:#00d4ff
+    style Apply fill:#1e5f3f,stroke:#34d399
+    style Reject fill:#5f1e1e,stroke:#ef4444
+    style Create fill:#1e5f3f,stroke:#34d399
+    style Update fill:#1e5f3f,stroke:#34d399
+    style Delete fill:#1e5f3f,stroke:#34d399
+    style AWS fill:#3a7ca5,stroke:#00d4ff
+    style NewState fill:#1e5f3f,stroke:#34d399
+    style Lock fill:#3a7ca5,stroke:#00d4ff
+    style Storage fill:#3a7ca5,stroke:#00d4ff
+    style Error fill:#5f1e1e,stroke:#ef4444
+```
+
 ---
 
 ## Interview Questions

@@ -103,6 +103,43 @@ graph LR
 - Fanout ~300-500 for 8KB with 20B keys
 - Height = 1 + ceil(log_fanout(N)) → 5 levels for 1B rows
 
+### B+tree Traversal
+
+```mermaid
+graph LR
+    Root["Root Node<br/>[20, 40, 60]"]
+    
+    Root -->|key < 20| B1["Branch Node<br/>[5, 15]"]
+    Root -->|20 <= key < 40| B2["Branch Node<br/>[25, 35]"]
+    Root -->|40 <= key < 60| B3["Branch Node<br/>[45, 55]"]
+    
+    B1 -->|key < 5| L1["Leaf Node<br/>key:1→TID:100<br/>key:2→TID:200"]
+    B1 -->|key >= 5| L2["Leaf Node<br/>key:5→TID:300<br/>key:15→TID:400"]
+    
+    B2 -->|key < 25| L3["Leaf Node<br/>key:20→TID:500<br/>key:25→TID:600"]
+    B2 -->|key >= 25| L4["Leaf Node<br/>key:35→TID:700<br/>key:38→TID:800"]
+    
+    B3 -->|key < 45| L5["Leaf Node<br/>key:40→TID:900<br/>key:45→TID:1000"]
+    B3 -->|key >= 45| L6["Leaf Node<br/>key:55→TID:1100<br/>key:60→TID:1200"]
+    
+    L1 -.->|sibling ptr| L2
+    L2 -.->|sibling ptr| L3
+    L3 -.->|sibling ptr| L4
+    L4 -.->|sibling ptr| L5
+    L5 -.->|sibling ptr| L6
+    
+    style Root fill:#00d4ff
+    style B1 fill:#a78bfa
+    style B2 fill:#a78bfa
+    style B3 fill:#a78bfa
+    style L1 fill:#34d399
+    style L2 fill:#34d399
+    style L3 fill:#34d399
+    style L4 fill:#34d399
+    style L5 fill:#34d399
+    style L6 fill:#34d399
+```
+
 ### Split/Merge
 
 ```python
@@ -162,6 +199,32 @@ Write Buffer → flush → L0 SST (overlapping keys)
                         ▼
                     L2 SST (10x larger)
 ```
+
+### LSM Compaction Flow
+
+```mermaid
+graph LR
+    subgraph Memtable["In-Memory<br/>Memtable<br/>(sorted)"]
+        M["key1:100<br/>key5:500<br/>key8:800"]
+    end
+    
+    M -->|flush when full| L0["L0 SSTables<br/>(may overlap)<br/>SST1<br/>SST2<br/>SST3"]
+    
+    L0 -->|compaction| L1["L1 SSTables<br/>(non-overlapping)<br/>10x larger<br/>SST1<br/>SST2"]
+    
+    L1 -->|merge sort| L2["L2 SSTables<br/>(10x L1)<br/>100x Memtable<br/>SST1"]
+    
+    L2 -->|... higher levels| L_N["Ln<br/>(base level)"]
+    
+    style Memtable fill:#3fb950
+    style M fill:#34d399
+    style L0 fill:#fbbf24
+    style L1 fill:#f97316
+    style L2 fill:#dc2626
+    style L_N fill:#7c3aed
+```
+
+
 
 - **Memtable**: In-memory sorted tree (Red-Black/SkipList)
 - **SSTable**: Immutable on-disk sorted file + index + bloom filter
@@ -250,6 +313,48 @@ SERIALIZABLE       Safe        Safe            Safe
 ## MVCC
 
 Each transaction sees the database as of its snapshot time. PostgreSQL tracks via XMIN/XMAX in tuple header:
+
+### MVCC Snapshot Isolation
+
+```mermaid
+graph TD
+    subgraph Transactions["Concurrent Transactions"]
+        T1["Transaction A<br/>xid=100<br/>BEGIN"]
+        T2["Transaction B<br/>xid=101<br/>UPDATE row"]
+        T3["Transaction A<br/>SELECT row"]
+    end
+    
+    subgraph Tuple_Versions["Tuple Versions on Disk"]
+        V1["Version 1<br/>t_xmin=95<br/>t_xmax=0<br/>value=Alice<br/>visible to 100"]
+        V2["Version 2<br/>t_xmin=101<br/>t_xmax=0<br/>value=Bob<br/>NOT visible to 100"]
+    end
+    
+    subgraph Snapshots["Transaction Snapshots"]
+        S1["Snapshot for Txn A<br/>xmin=100<br/>xmax=102<br/>xip=[100,101]"]
+        S2["Snapshot for Txn B<br/>xmin=101<br/>xmax=103<br/>xip=[101,102]"]
+    end
+    
+    T1 --> S1
+    T2 --> V2
+    T3 --> S1
+    S1 --> V1
+    S1 -.-> V2
+    
+    V1 --> Result1["Txn A sees:<br/>Alice"]
+    V2 --> Result2["Txn B sees:<br/>Bob"]
+    
+    style T1 fill:#00d4ff
+    style T2 fill:#a78bfa
+    style T3 fill:#00d4ff
+    style V1 fill:#34d399
+    style V2 fill:#ef4444
+    style S1 fill:#fbbf24
+    style S2 fill:#fbbf24
+    style Result1 fill:#34d399
+    style Result2 fill:#34d399
+```
+
+
 
 ```python
 def is_visible(tuple, snapshot):

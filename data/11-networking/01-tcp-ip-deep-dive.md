@@ -187,6 +187,27 @@ Bit:  0-3    4-7     8-15         16-18   19-31
 
 ### Fragmentation
 
+```mermaid
+graph LR
+    PKT["IP Packet<br/>4020 bytes<br/>ID=123"] --> MTU["MTU = 1500<br/>(20 bytes header)"]
+    MTU --> FRAG["Fragmentation<br/>by Router"]
+    FRAG --> F1["Fragment 1<br/>Offset=0<br/>MF=1<br/>1480 bytes data"]
+    FRAG --> F2["Fragment 2<br/>Offset=185<br/>MF=1<br/>1480 bytes data"]
+    FRAG --> F3["Fragment 3<br/>Offset=370<br/>MF=0<br/>560 bytes data"]
+    F1 --> REASSEM["Reassembly<br/>at Destination<br/>by ID + Offset"]
+    F2 --> REASSEM
+    F3 --> REASSEM
+    REASSEM --> FULL["Original Packet<br/>Reconstructed"]
+    style PKT fill:#60a5fa
+    style MTU fill:#ef4444
+    style FRAG fill:#ef4444
+    style F1 fill:#a78bfa
+    style F2 fill:#a78bfa
+    style F3 fill:#a78bfa
+    style REASSEM fill:#34d399
+    style FULL fill:#34d399
+```
+
 ```
 Original packet:  4000 bytes payload, ID=123, DF=0
   ┌──────────────────────────────────────────────────────┐
@@ -540,6 +561,33 @@ When receiver's buffer is full (rwnd = 0):
 ---
 
 ## 7. TCP Congestion Control
+
+```mermaid
+graph TD
+    CC["TCP Congestion<br/>Control"] --> LB["Loss-Based<br/>(Packet Loss Triggers Action)"]
+    CC --> MB["Model-Based<br/>(Bandwidth/RTT Measurements)"]
+    LB --> CUBIC["CUBIC<br/>(Default Linux)"]
+    LB --> RENO["Reno<br/>(Legacy)"]
+    LB --> VEGAS["Vegas<br/>(Delay-Based)"]
+    MB --> BBR["BBR<br/>(Google)"]
+    MB --> COPA["Copa<br/>(Research)"]
+    CUBIC --> CCWD["cwnd Growth"]
+    CUBIC --> PHASE["Phases: Slow Start<br/>Congestion Avoidance<br/>Fast Recovery"]
+    BBR --> PACE["Bandwidth-Aware<br/>Pacing"]
+    BBR --> BDP["BDP = BtlBW × RTprop"]
+    style CC fill:#60a5fa
+    style LB fill:#ef4444
+    style MB fill:#34d399
+    style CUBIC fill:#a78bfa
+    style RENO fill:#a78bfa
+    style VEGAS fill:#a78bfa
+    style BBR fill:#a78bfa
+    style COPA fill:#a78bfa
+    style CCWD fill:#ef4444
+    style PHASE fill:#ef4444
+    style PACE fill:#34d399
+    style BDP fill:#34d399
+```
 
 ```
                    TCP Congestion Control

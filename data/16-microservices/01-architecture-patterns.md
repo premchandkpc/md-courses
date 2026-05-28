@@ -21,6 +21,42 @@
 
 ## 🧭 Architecture Evolution
 
+### Service Mesh Pattern
+
+```mermaid
+graph LR
+    Client["Client"]
+    Sidecar1["Envoy<br/>Sidecar"]
+    Service1["Service A<br/>Pod"]
+    Sidecar2["Envoy<br/>Sidecar"]
+    Service2["Service B<br/>Pod"]
+    Sidecar3["Envoy<br/>Sidecar"]
+    Service3["Service C<br/>Pod"]
+    
+    Client -->|request| Sidecar1
+    Sidecar1 -->|forward| Service1
+    Service1 -->|response| Sidecar1
+    Sidecar1 -->|forward| Client
+    
+    Sidecar1 -->|request| Sidecar2
+    Sidecar2 -->|forward| Service2
+    Service2 -->|response| Sidecar2
+    Sidecar2 -->|forward| Sidecar1
+    
+    Sidecar2 -->|request| Sidecar3
+    Sidecar3 -->|forward| Service3
+    Service3 -->|response| Sidecar3
+    Sidecar3 -->|forward| Sidecar2
+    
+    style Client fill:#60a5fa
+    style Service1 fill:#34d399
+    style Service2 fill:#34d399
+    style Service3 fill:#34d399
+    style Sidecar1 fill:#fbbf24
+    style Sidecar2 fill:#fbbf24
+    style Sidecar3 fill:#fbbf24
+```
+
 ```mermaid
 sequenceDiagram
     participant Client

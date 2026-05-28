@@ -58,6 +58,41 @@ graph LR
 
 ---
 
+## Service Discovery Flow (Sequence Diagram)
+
+```mermaid
+sequenceDiagram
+    participant Service as Service Instance
+    participant Registry as Service Registry
+    participant Client as Client App
+    participant DNS as DNS/Load Balancer
+    
+    Service->>Registry: register(name, ip:port)
+    Registry-->>Service: registered
+    
+    loop Heartbeat (every 30s)
+        Service->>Registry: heartbeat()
+        Registry-->>Service: ack
+    end
+    
+    Client->>Registry: query(service_name)
+    Registry-->>Client: [ip1:port1, ip2:port2, ip3:port3]
+    Client->>Client: select instance (load balance)
+    Client->>Service: request
+    Service-->>Client: response
+    
+    Note over Service,Registry: Service shutdown
+    Service->>Registry: deregister(name)
+    Registry-->>Service: deregistered
+    
+    style Service fill:#34d399
+    style Registry fill:#fbbf24
+    style Client fill:#60a5fa
+    style DNS fill:#ef4444
+```
+
+---
+
 ## 🧭 Why Service Discovery?
 
 ### The Problem

@@ -1271,6 +1271,51 @@ spec:
                   periodSeconds: 10
 ```
 
+### Visual: GitOps Continuous Delivery Flow
+
+```mermaid
+graph TD
+    Dev["Developer<br/>Commits Code"] -->|Push| GitRepo["Git Repository<br/>(main branch)"]
+    GitRepo -->|Webhook| ArgoCD["ArgoCD<br/>Controller"]
+    
+    ArgoCD -->|Watch| Manifest["Kubernetes<br/>Manifests"]
+    Manifest -->|Fetch| Helm["Helm Charts<br/>/Kustomize"]
+    
+    ArgoCD -->|Compare| Desired["Desired State<br/>(Git)"]
+    ArgoCD -->|vs.| Actual["Actual State<br/>(Cluster)"]
+    
+    Desired -->|Differ| OutOfSync["OutOfSync<br/>State"]
+    Actual -->|Differ| OutOfSync
+    
+    OutOfSync -->|Auto-Sync<br/>Enabled| Sync["Sync<br/>Apply"]
+    OutOfSync -->|Manual| Wait["Await Manual<br/>Approval"]
+    
+    Sync -->|Pre-Sync<br/>Jobs| PreJob["Run<br/>Migrations"]
+    PreJob -->|Deploy<br/>Waves| Deploy["Deploy<br/>Resources"]
+    Deploy -->|Post-Sync<br/>Jobs| PostJob["Run Tests<br/>Health Checks"]
+    PostJob -->|Success| Healthy["Application<br/>Healthy"]
+    
+    Healthy -->|Monitor| Observ["Prometheus/<br/>Grafana"]
+    Observ -->|Health OK| InSync["In Sync<br/>Status"]
+    
+    style Dev fill:#1e3a5f,stroke:#00d4ff
+    style GitRepo fill:#1e3a5f,stroke:#00d4ff
+    style ArgoCD fill:#3a7ca5,stroke:#00d4ff
+    style Manifest fill:#3a7ca5,stroke:#00d4ff
+    style Helm fill:#3a7ca5,stroke:#00d4ff
+    style Desired fill:#3a7ca5,stroke:#00d4ff
+    style Actual fill:#3a7ca5,stroke:#00d4ff
+    style OutOfSync fill:#5f1e1e,stroke:#ef4444
+    style Sync fill:#1e5f3f,stroke:#34d399
+    style PreJob fill:#1e5f3f,stroke:#34d399
+    style Deploy fill:#1e5f3f,stroke:#34d399
+    style PostJob fill:#1e5f3f,stroke:#34d399
+    style Healthy fill:#1e5f3f,stroke:#34d399
+    style Observ fill:#3a7ca5,stroke:#00d4ff
+    style InSync fill:#1e5f3f,stroke:#34d399
+    style Wait fill:#5f1e1e,stroke:#ef4444
+```
+
 ---
 
 ## Failure Analysis

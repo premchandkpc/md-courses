@@ -295,6 +295,27 @@ preferredReplicaImbalanceCount:
 
 ### Consumer Lag Graph
 
+```mermaid
+graph LR
+    PROD["Producer<br/>500 msg/sec"] --> QUEUE["Queue<br/>LogEndOffset"]
+    CONSUMER["Consumer<br/>100 msg/sec"] --> OFFSET["CommittedOffset"]
+    QUEUE --> LAG["Lag<br/>= LEO - Committed"]
+    LAG --> ALERT["Lag > 1000<br/>Alert!"]
+    PROD --> RATE_IN["Rate In:<br/>500/sec"]
+    CONSUMER --> RATE_OUT["Rate Out:<br/>100/sec"]
+    RATE_IN --> BUILDUP["Buildup Rate:<br/>400/sec"]
+    BUILDUP --> TIME["Time to Max:<br/>lag = 400 × time"]
+    style PROD fill:#60a5fa
+    style QUEUE fill:#a78bfa
+    style CONSUMER fill:#34d399
+    style OFFSET fill:#a78bfa
+    style LAG fill:#ef4444
+    style ALERT fill:#ef4444
+    style RATE_IN fill:#60a5fa
+    style RATE_OUT fill:#34d399
+    style BUILDUP fill:#ef4444
+    style TIME fill:#ef4444
+```
 
 ```
   Consumer Group: my-app-1

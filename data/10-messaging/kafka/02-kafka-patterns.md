@@ -141,6 +141,31 @@ Shopify uses event sourcing for orders: every state change (created, paid, packe
 
 ## 1. CQRS with Kafka
 
+```mermaid
+graph LR
+    PROD["Producer<br/>OrderService"] --> TOPIC["orders-events<br/>Topic"]
+    TOPIC --> PARTITION0["Partition 0"]
+    TOPIC --> PARTITION1["Partition 1"]
+    PARTITION0 --> CG1["Consumer Group 1<br/>OrderProjector"]
+    PARTITION1 --> CG1
+    CG1 --> READDB["Read DB<br/>order_summary"]
+    PARTITION0 --> CG2["Consumer Group 2<br/>NotificationService"]
+    PARTITION1 --> CG2
+    CG2 --> NOTIF["Send Email/SMS"]
+    PARTITION0 --> CG3["Consumer Group 3<br/>Analytics"]
+    PARTITION1 --> CG3
+    CG3 --> METRICS["Metrics Store"]
+    style PROD fill:#60a5fa
+    style TOPIC fill:#34d399
+    style PARTITION0 fill:#a78bfa
+    style PARTITION1 fill:#a78bfa
+    style CG1 fill:#34d399
+    style CG2 fill:#34d399
+    style CG3 fill:#34d399
+    style READDB fill:#34d399
+    style NOTIF fill:#60a5fa
+    style METRICS fill:#60a5fa
+```
 
 ```text
 Separates commands (writes) from queries (reads):

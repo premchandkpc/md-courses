@@ -299,6 +299,61 @@ Write Path: Points → WAL → Cache → TSM files (sorted, compressed)
 TSM file: [Data Blocks | Index Blocks | Bloom Filter | Index | Footer]
 ```
 
+### Quorum Reads & Writes
+
+```mermaid
+graph TB
+    subgraph Read["Read Request"]
+        R_Client["Client<br/>READ key"]
+        R_N1["Node 1<br/>version=5"]
+        R_N2["Node 2<br/>version=3"]
+        R_N3["Node 3<br/>version=5"]
+        
+        R_Client -->|ask all| R_N1
+        R_Client -->|ask all| R_N2
+        R_Client -->|ask all| R_N3
+        
+        R_N1 -->|respond| R_Quorum["Wait for<br/>R ≥ ceil(N/2)<br/>2 of 3"]
+        R_N2 -->|respond| R_Quorum
+        R_N3 -->|respond| R_Quorum
+        
+        R_Quorum -->|return max version| R_Result["Result:<br/>version=5<br/>(majority)"]
+    end
+    
+    subgraph Write["Write Request"]
+        W_Client["Client<br/>WRITE key=5"]
+        W_N1["Node 1<br/>version=5"]
+        W_N2["Node 2<br/>version=5"]
+        W_N3["Node 3<br/>version=4<br/>(slow)"]
+        
+        W_Client -->|write to all| W_N1
+        W_Client -->|write to all| W_N2
+        W_Client -->|write to all| W_N3
+        
+        W_N1 -->|ACK| W_Quorum["Wait for<br/>W ≥ ceil(N/2)<br/>2 of 3"]
+        W_N2 -->|ACK| W_Quorum
+        W_N3 -->|ACK| W_Quorum
+        
+        W_Quorum -->|Commit<br/>when quorum| W_Result["Write ACK to client<br/>(N3 may catch up later)"]
+    end
+    
+    Note over Read: R + W > N ensures<br/>read-write overlap<br/>(R=2, W=2, N=3)
+    
+    style R_Client fill:#00d4ff
+    style R_N1 fill:#34d399
+    style R_N2 fill:#a78bfa
+    style R_N3 fill:#34d399
+    style R_Quorum fill:#fbbf24
+    style R_Result fill:#34d399
+    
+    style W_Client fill:#00d4ff
+    style W_N1 fill:#34d399
+    style W_N2 fill:#34d399
+    style W_N3 fill:#a78bfa
+    style W_Quorum fill:#fbbf24
+    style W_Result fill:#34d399
+```
+
 **Point:** `measurement,tag=val field=val timestamp`. **Retention Policy:** Auto-delete by age.
 
 **Continuous Query:** Auto-run downsampling. `SELECT MEAN(v) ... GROUP BY time(1h) INTO ...`

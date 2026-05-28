@@ -167,6 +167,38 @@ Host: example.com\r\n                     | Frame (9 bytes)|
 
 ### Multiplexing
 
+```mermaid
+graph LR
+    HTTP1["HTTP/1.1<br/>6 Connections"] --> TCP1["TCP 1<br/>Stream A"]
+    HTTP1 --> TCP2["TCP 2<br/>Stream B"]
+    HTTP1 --> TCP3["TCP 3<br/>Stream C"]
+    HTTP1 --> TCP4["TCP 4<br/>Stream D"]
+    HTTP1 --> TCP5["TCP 5<br/>Stream E"]
+    HTTP1 --> TCP6["TCP 6<br/>Stream F"]
+    HTTP2["HTTP/2<br/>1 Connection"] --> SINGLE["Single TCP<br/>All Streams"]
+    SINGLE --> SA["Stream A"]
+    SINGLE --> SB["Stream B"]
+    SINGLE --> SC["Stream C"]
+    SINGLE --> SD["Stream D"]
+    SINGLE --> SE["Stream E"]
+    SINGLE --> SF["Stream F"]
+    style HTTP1 fill:#ef4444
+    style TCP1 fill:#a78bfa
+    style TCP2 fill:#a78bfa
+    style TCP3 fill:#a78bfa
+    style TCP4 fill:#a78bfa
+    style TCP5 fill:#a78bfa
+    style TCP6 fill:#a78bfa
+    style HTTP2 fill:#34d399
+    style SINGLE fill:#60a5fa
+    style SA fill:#a78bfa
+    style SB fill:#a78bfa
+    style SC fill:#a78bfa
+    style SD fill:#a78bfa
+    style SE fill:#a78bfa
+    style SF fill:#a78bfa
+```
+
 ```text
 HTTP/1.1 (6 parallel TCP):       HTTP/2 (1 TCP):
 +--[TCP 1]--+ Stream A           +--------+
@@ -223,6 +255,28 @@ QUIC: lost packet blocks only its stream.
 ---
 
 ## HTTP/3 & QUIC
+
+```mermaid
+graph LR
+    STREAMS["Multiple<br/>Streams"] --> S1["Stream 1<br/>(HTML)"]
+    STREAMS --> S2["Stream 2<br/>(CSS)"]
+    STREAMS --> S3["Stream 3<br/>(JS)"]
+    STREAMS --> S4["Stream 4<br/>(Image)"]
+    S1 --> QUIC["Single UDP<br/>Connection"]
+    S2 --> QUIC
+    S3 --> QUIC
+    S4 --> QUIC
+    QUIC --> LOSS1["Loss in S2"]
+    QUIC --> LOSS2["S1,S3,S4<br/>Continue!"]
+    style STREAMS fill:#60a5fa
+    style S1 fill:#a78bfa
+    style S2 fill:#a78bfa
+    style S3 fill:#a78bfa
+    style S4 fill:#a78bfa
+    style QUIC fill:#34d399
+    style LOSS1 fill:#ef4444
+    style LOSS2 fill:#34d399
+```
 
 ### QUIC Transport
 

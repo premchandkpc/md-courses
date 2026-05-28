@@ -197,6 +197,38 @@ If P2 sees 2 before 1, program order is violated from P2's perspective.
 
 **Vector Clocks:** Each process maintains a vector of size N (number of processes). On event: increment own component. On message send: attach entire vector. On receive: merge (element-wise max), then increment own component.
 
+### Vector Clocks for Causal Ordering
+
+```mermaid
+sequenceDiagram
+    participant A as Process A
+    participant B as Process B
+    participant C as Process C
+    
+    Note over A,C: Initial: all [0,0,0]
+    
+    A->>A: Event 1: incr own
+    Note over A: VC=[1,0,0]
+    A->>B: Send msg with [1,0,0]
+    
+    B->>B: Receive msg
+    Note over B: VC=max([0,1,0], [1,0,0])+1=[1,1,0]
+    B->>C: Send msg with [1,1,0]
+    
+    C->>C: Receive msg
+    Note over C: VC=max([0,0,1], [1,1,0])+1=[1,1,1]
+    C->>C: Event 2: incr own
+    Note over C: VC=[1,1,2]
+    
+    A->>B: Send msg with [2,0,0]
+    Note over A: VC=[2,0,0]
+    
+    B->>B: Receive from A
+    Note over B: VC=max([1,1,0], [2,0,0])+1=[2,1,0]
+    
+    Note over A,C: If VC[A] < VC[C] on all: A→C<br/>(causally ordered)
+```
+
 ```text
             VCa                    VCb                    VCc
 Process A: [1,0,0] -> [2,0,0] -> [2,1,0] -> [3,2,0] -> [3,2,1]
@@ -465,6 +497,49 @@ Key Tradeoff Parameters:
 
 ## 15. Split-Brain Detection
 
+### Split-Brain Partition Scenario
+
+```mermaid
+stateDiagram-v2
+    [*] --> Healthy: "Cluster starts<br/>Leader elected"
+    
+    Healthy --> Partition: "Network split<br/>majority & minority partitions"
+    
+    Partition --> SplitBrain: "Minority elects<br/>new leader (BAD)"
+    
+    SplitBrain --> Detect: "Majority detects<br/>minority leader"
+    
+    Detect --> Heal: "Network heals<br/>partitions reunite"
+    
+    Heal --> Recover: "Conflict resolution<br/>(who has quorum?)"
+    
+    Recover --> Healthy: "Converge to<br/>single leader"
+    
+    note right of Partition
+        Majority partition:
+        - 3/5 nodes can form quorum
+        - Leader stays active
+        
+        Minority partition:
+        - 2/5 nodes, no quorum
+        - Should NOT elect leader
+    end note
+    
+    note right of SplitBrain
+        If minority elects leader:
+        - Two leaders exist
+        - Conflicting writes
+        - Data inconsistency
+        - DANGEROUS!
+    end note
+    
+    note right of Recover
+        Quorum wins:
+        - Majority leader: legitimate
+        - Minority leader: stale
+        - Minority data rolled back
+    end note
+```
 
 **Lease Mechanism:** Leader holds a lease (time-bound permission). If lease expires, another node can become leader. Prevent two active leaders simultaneously.
 

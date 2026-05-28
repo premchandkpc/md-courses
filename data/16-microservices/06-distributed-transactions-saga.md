@@ -20,6 +20,46 @@
 
 ---
 
+## Distributed Saga Transaction Flow
+
+```mermaid
+sequenceDiagram
+    participant Client
+    participant Order as Order Service
+    participant Payment as Payment Service
+    participant Inventory as Inventory Service
+    participant Notify as Notification Service
+    
+    Client->>Order: 1. Create Order
+    Order->>Payment: 2. Charge Payment
+    alt Payment Success
+        Payment-->>Order: Charged
+        Order->>Inventory: 3. Reserve Inventory
+        alt Inventory Success
+            Inventory-->>Order: Reserved
+            Order->>Notify: 4. Send Confirmation
+            Notify-->>Order: Sent
+            Order-->>Client: Order Complete ✓
+        else Inventory Fails
+            Inventory-->>Order: Failed
+            Order->>Payment: Compensate: Refund
+            Payment-->>Order: Refunded
+            Order-->>Client: Order Failed (inventory)
+        end
+    else Payment Fails
+        Payment-->>Order: Failed
+        Order-->>Client: Order Failed (payment)
+    end
+    
+    style Client fill:#60a5fa
+    style Order fill:#fbbf24
+    style Payment fill:#34d399
+    style Inventory fill:#34d399
+    style Notify fill:#34d399
+```
+
+---
+
 ## 🧭 The Distributed Transaction Problem
 
 

@@ -1310,6 +1310,45 @@ RUN --mount=type=cache,target=/root/.npm \
 # docker build --squash -t myapp .
 ```
 
+### Visual: Docker Image Build & Layer Cache
+
+```mermaid
+graph TD
+    A["Dockerfile"] -->|FROM ubuntu:22.04| Layer1["Layer 1<br/>Base OS<br/>200MB"]
+    A -->|RUN apt-get update| Layer2["Layer 2<br/>Dependencies<br/>150MB"]
+    A -->|COPY app.jar| Layer3["Layer 3<br/>App Code<br/>50MB"]
+    A -->|RUN java -jar| Layer4["Layer 4<br/>Compiled State<br/>100MB"]
+    A -->|CMD java -jar| Layer5["Layer 5<br/>Metadata<br/>0 bytes"]
+    
+    Layer1 --> Cache["Build Cache<br/>Hit?"]
+    Layer2 --> Cache
+    Layer3 --> Cache
+    Layer4 --> Cache
+    Layer5 --> Cache
+    
+    Cache -->|Hit| Reuse["Reuse Layers<br/>Fast Build"]
+    Cache -->|Miss| Rebuild["Rebuild From<br/>This Layer<br/>Slow Build"]
+    
+    Reuse -->|Stack All| Image["Final Image<br/>union mount<br/>overlay2"]
+    Rebuild -->|Stack All| Image
+    
+    Image -->|docker run| Container["Container<br/>RW Layer<br/>(temp)"]
+    Image -->|Registry Push| Push["Docker Hub<br/>Registry"]
+    
+    style A fill:#1e3a5f,stroke:#00d4ff
+    style Layer1 fill:#3a7ca5,stroke:#00d4ff
+    style Layer2 fill:#3a7ca5,stroke:#00d4ff
+    style Layer3 fill:#3a7ca5,stroke:#00d4ff
+    style Layer4 fill:#3a7ca5,stroke:#00d4ff
+    style Layer5 fill:#3a7ca5,stroke:#00d4ff
+    style Cache fill:#1e3a5f,stroke:#00d4ff
+    style Reuse fill:#1e5f3f,stroke:#34d399
+    style Rebuild fill:#5f1e1e,stroke:#ef4444
+    style Image fill:#1e5f3f,stroke:#34d399
+    style Container fill:#1e5f3f,stroke:#34d399
+    style Push fill:#3a7ca5,stroke:#00d4ff
+```
+
 ---
 
 ## 🧠 Simplest Mental Model

@@ -390,6 +390,45 @@ spec:
         ephemeral-storage: "10Gi"
 ```
 
+### Visual: Storage Provisioning & Mounting Pipeline
+
+```mermaid
+graph TD
+    Admin["Admin<br/>Create PV"] -->|Storage Resource| PV["PersistentVolume<br/>100Gi RWO"]
+    User["User<br/>Request Storage"] -->|PVC| PVC["PersistentVolumeClaim<br/>50Gi RWO"]
+    
+    PVC -->|Bind| Binding["PVC<br/>Bound"]
+    Binding -->|Mount| Pod["Pod<br/>Create"]
+    
+    SC["StorageClass<br/>gp3<br/>(Provisioner)"] -->|Dynamic| CSI["CSI Driver<br/>ebs.csi.aws.com"]
+    CSI -->|1. CreateVolume| VolumeCreate["AWS EBS<br/>Create Volume"]
+    VolumeCreate -->|2. ControllerAttach| Attach["Attach to Node"]
+    
+    Pod -->|kubelet| Kubelet["kubelet<br/>Mounts PVC"]
+    Attach -->|3. NodeStage| Mount["Mount<br/>/mnt/data"]
+    Mount -->|4. NodePublish| MountPath["Container<br/>/data"]
+    MountPath -->|5. Ready| Ready["App Access<br/>Read/Write"]
+    
+    VolumeCreate -->|Backend| Storage["Actual Storage<br/>AWS EBS/EFS/NFS"]
+    Storage -->|Data| Ready
+    
+    style Admin fill:#1e3a5f,stroke:#00d4ff
+    style PV fill:#1e3a5f,stroke:#00d4ff
+    style User fill:#1e3a5f,stroke:#00d4ff
+    style PVC fill:#3a7ca5,stroke:#00d4ff
+    style Binding fill:#3a7ca5,stroke:#00d4ff
+    style Pod fill:#3a7ca5,stroke:#00d4ff
+    style SC fill:#3a7ca5,stroke:#00d4ff
+    style CSI fill:#3a7ca5,stroke:#00d4ff
+    style VolumeCreate fill:#1e5f3f,stroke:#34d399
+    style Attach fill:#1e5f3f,stroke:#34d399
+    style Kubelet fill:#1e3a5f,stroke:#00d4ff
+    style Mount fill:#1e5f3f,stroke:#34d399
+    style MountPath fill:#1e5f3f,stroke:#34d399
+    style Ready fill:#1e5f3f,stroke:#34d399
+    style Storage fill:#1e5f3f,stroke:#34d399
+```
+
 ---
 
 ## Simplest Mental Model

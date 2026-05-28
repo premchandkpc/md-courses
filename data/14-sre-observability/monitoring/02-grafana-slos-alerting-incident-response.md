@@ -6,6 +6,40 @@
 
 ---
 
+## SLO & Alerting Architecture
+
+```mermaid
+graph TB
+    METRICS["Prometheus Metrics<br/>(time-series DB)"] --> SLI["SLI Calculation<br/>(queries)"]
+    SLI --> SLO["SLO Tracking<br/>(target vs actual)"]
+    SLO --> ERROR_BUDGET["Error Budget<br/>(1 - SLO %)"]
+    ERROR_BUDGET --> BURN["Burn Rate<br/>(fast/slow)"]
+    BURN --> ALERT["Alert Rules<br/>(PromQL)"]
+    ALERT --> NOTIFICATION["Notification<br/>(Slack/PagerDuty/SMS)"]
+    METRICS --> GRAFANA["Grafana Dashboards<br/>(visualization)"]
+    GRAFANA --> PANEL["Panels<br/>(graphs/gauges)"]
+    NOTIFICATION --> INCIDENT["Incident<br/>(on-call page)"]
+    INCIDENT --> INVESTIGATION["Investigation<br/>(dig into logs/traces)"]
+    INVESTIGATION --> MITIGATION["Mitigation<br/>(fix/rollback)"]
+    MITIGATION --> POSTMORTEM["Postmortem<br/>(blameless review)"]
+    
+    style METRICS fill:#60a5fa
+    style SLI fill:#34d399
+    style SLO fill:#34d399
+    style ERROR_BUDGET fill:#fbbf24
+    style BURN fill:#fbbf24
+    style ALERT fill:#ef4444
+    style NOTIFICATION fill:#ef4444
+    style GRAFANA fill:#00d4ff
+    style PANEL fill:#60a5fa
+    style INCIDENT fill:#ef4444
+    style INVESTIGATION fill:#fbbf24
+    style MITIGATION fill:#34d399
+    style POSTMORTEM fill:#34d399
+```
+
+---
+
 ## SECTION 1: NOOB EXPLANATION (Analogies)
 
 ### Grafana = Doctor's Dashboard

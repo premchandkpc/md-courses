@@ -833,6 +833,45 @@ spec:
 # 5. System pods (kube-system) — protected
 ```
 
+### Visual: Performance Optimization Pipeline
+
+```mermaid
+graph TD
+    Load["Application Load<br/>Increases"] -->|Trigger| HPA["HPA<br/>Scale Pods"]
+    HPA -->|More Pods<br/>Needed| Scheduler["Scheduler<br/>Find Node"]
+    Scheduler -->|No Capacity| CA["Cluster Autoscaler<br/>Add Nodes"]
+    
+    Load -->|CPU/Memory| Monitor["Prometheus<br/>Monitor"]
+    Monitor -->|Metrics| Alert["Alert<br/>Thresholds"]
+    Alert -->|Trigger| VPA["VPA<br/>Right-size Requests"]
+    VPA -->|Update| Pod["Pod<br/>Recreate"]
+    
+    Etcd["etcd Performance"] -->|Latency| ApiServer["API Server<br/>Slow Responses"]
+    ApiServer -->|Throttle| Scheduler
+    Etcd -->|Tuning| EtcdTune["SSD + Defrag<br/>+ Compaction"]
+    EtcdTune -->|Improve| ApiServer
+    
+    Network["Network Load"] -->|High| CNI["CNI Plugin<br/>Tuning"]
+    CNI -->|Switch to| IPVS["IPVS Mode<br/>(vs iptables)"]
+    IPVS -->|Faster| Traffic["Traffic<br/>Forwarding"]
+    
+    style Load fill:#5f1e1e,stroke:#ef4444
+    style HPA fill:#3a7ca5,stroke:#00d4ff
+    style Scheduler fill:#3a7ca5,stroke:#00d4ff
+    style CA fill:#1e5f3f,stroke:#34d399
+    style Monitor fill:#3a7ca5,stroke:#00d4ff
+    style Alert fill:#5f1e1e,stroke:#ef4444
+    style VPA fill:#3a7ca5,stroke:#00d4ff
+    style Pod fill:#1e5f3f,stroke:#34d399
+    style Etcd fill:#3a7ca5,stroke:#00d4ff
+    style ApiServer fill:#3a7ca5,stroke:#00d4ff
+    style EtcdTune fill:#1e5f3f,stroke:#34d399
+    style Network fill:#5f1e1e,stroke:#ef4444
+    style CNI fill:#3a7ca5,stroke:#00d4ff
+    style IPVS fill:#1e5f3f,stroke:#34d399
+    style Traffic fill:#1e5f3f,stroke:#34d399
+```
+
 ---
 
 ## Cost Optimization

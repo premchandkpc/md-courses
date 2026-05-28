@@ -961,6 +961,59 @@ Docker Scout workflow:
   5. Policy evaluation: pass/fail gates for CI/CD
 ```
 
+### Visual: Container Lifecycle & Operations Pipeline
+
+```mermaid
+graph TD
+    Build["Build Image<br/>docker build"] -->|Optimize Layers| Cache["Layer Cache<br/>Reuse"]
+    Cache -->|Scan CVEs| Scout["Docker Scout<br/>Vulnerability Check"]
+    Scout -->|Pass?| Publish["Push to Registry<br/>docker push"]
+    Scout -->|Fail| Block["Reject<br/>Fix vulnerabilities"]
+    
+    Publish -->|Pull| Run["docker run<br/>Create Container"]
+    Run -->|Start| Init["Init Process<br/>entrypoint"]
+    Init -->|Exec| App["Application<br/>Running"]
+    
+    App -->|Health Check| Health["healthcheck<br/>TCP/HTTP probe"]
+    Health -->|Pass| Ready["Ready<br/>Healthy"]
+    Health -->|Fail| Restart["Restart<br/>Policy"]
+    Restart -->|Always| ResetApp["Restart App"]
+    Restart -->|OnFailure| RetryN["Retry N times"]
+    Restart -->|Never| Dead["Container Dead"]
+    
+    App -->|Logs| Logging["Logging Driver<br/>json-file/splunk"]
+    Logging -->|Ship| Observ["Observability<br/>ELK/Splunk"]
+    
+    App -->|Resources| CGroup["cgroups<br/>CPU/Memory Limits"]
+    CGroup -->|Enforce| Limit["Limit Enforced"]
+    
+    App -->|Signal| Stop["SIGTERM<br/>Graceful Shutdown"]
+    Stop -->|Wait| Grace["Grace Period<br/>30s"]
+    Grace -->|Done| Kill["SIGKILL<br/>Force Kill"]
+    
+    style Build fill:#1e3a5f,stroke:#00d4ff
+    style Cache fill:#1e5f3f,stroke:#34d399
+    style Scout fill:#3a7ca5,stroke:#00d4ff
+    style Publish fill:#1e5f3f,stroke:#34d399
+    style Block fill:#5f1e1e,stroke:#ef4444
+    style Run fill:#3a7ca5,stroke:#00d4ff
+    style Init fill:#1e5f3f,stroke:#34d399
+    style App fill:#1e5f3f,stroke:#34d399
+    style Health fill:#3a7ca5,stroke:#00d4ff
+    style Ready fill:#1e5f3f,stroke:#34d399
+    style Restart fill:#3a7ca5,stroke:#00d4ff
+    style ResetApp fill:#1e5f3f,stroke:#34d399
+    style RetryN fill:#3a7ca5,stroke:#00d4ff
+    style Dead fill:#5f1e1e,stroke:#ef4444
+    style Logging fill:#3a7ca5,stroke:#00d4ff
+    style Observ fill:#1e5f3f,stroke:#34d399
+    style CGroup fill:#3a7ca5,stroke:#00d4ff
+    style Limit fill:#1e5f3f,stroke:#34d399
+    style Stop fill:#3a7ca5,stroke:#00d4ff
+    style Grace fill:#3a7ca5,stroke:#00d4ff
+    style Kill fill:#5f1e1e,stroke:#ef4444
+```
+
 ---
 
 ## 🧠 Simplest Mental Model

@@ -257,6 +257,34 @@ graph LR
 
 ---
 
+## 0. TCP 3-Way Handshake (Foundation)
+
+Before TLS can begin, a TCP connection must be established. This is the foundation layer:
+
+```mermaid
+sequenceDiagram
+    participant Client
+    participant Server
+
+    Client->>Server: SYN (seq=X)
+    Note over Server: Allocate resources
+    Server->>Client: SYN+ACK (seq=Y, ack=X+1)
+    Note over Client: Verify ACK number
+    Client->>Server: ACK (seq=X+1, ack=Y+1)
+    Note over Server,Client: TCP connection ESTABLISHED
+    Note over Server,Client: TLS handshake can now begin
+```
+
+**Latency cost**: 1 RTT (round trip time) for TCP connection establishment.
+
+**Sequence number handling**:
+- Client sends SYN with initial sequence number X
+- Server sends SYN+ACK with its own sequence Y and acknowledges X+1
+- Client sends final ACK acknowledging Y+1
+- Both sides now synchronized on byte counts
+
+---
+
 ## 1. TLS 1.3 Handshake
 
 

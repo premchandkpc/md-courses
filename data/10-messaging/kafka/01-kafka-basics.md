@@ -281,6 +281,27 @@ Twitter's producer service handles 500K tweets/second. Each producer batches mes
 
 ## 4. Consumers & Consumer Groups
 
+```mermaid
+sequenceDiagram
+    participant Consumer1
+    participant Consumer2
+    participant Broker as Group Coordinator
+    participant Topic
+
+    Consumer1->>Broker: JoinGroup (group-id, topics)
+    Consumer2->>Broker: JoinGroup (group-id, topics)
+    Note over Broker: Wait for all consumers
+    Broker->>Broker: Rebalance: Assign partitions
+    Broker->>Consumer1: Assign P0, P3
+    Broker->>Consumer2: Assign P1, P4
+    Note over Consumer1,Consumer2: Revoke old offsets
+    Consumer1->>Topic: Fetch from P0, P3
+    Consumer2->>Topic: Fetch from P1, P4
+    Note over Consumer1,Consumer2: Process messages
+    Consumer1->>Broker: CommitOffset (P0: 100)
+    Consumer2->>Broker: CommitOffset (P1: 50)
+```
+
 ```text
 Partition assignment (3 consumers, 6 partitions):
   C1: P0,P3   C2: P1,P4   C3: P2,P5
@@ -360,6 +381,26 @@ Netflix uses consumer groups for parallel processing: a single "recommendations"
 ---
 
 ## 5. Replication & ISR
+
+```mermaid
+graph LR
+    PART0["Partition 0"] --> LEADER["Leader<br/>Broker 1<br/>Offset=100"]
+    LEADER --> REPLICA1["Replica 1<br/>Broker 2<br/>Offset=99<br/>ISR ✓"]
+    LEADER --> REPLICA2["Replica 2<br/>Broker 3<br/>Offset=80<br/>Lagged"]
+    PROD["Producer<br/>acks=all"] --> LEADER
+    LEADER --> ACK1["ACK from Broker 1"]
+    REPLICA1 --> ACK2["ACK from Broker 2"]
+    ACK1 --> RESP["Respond to Producer<br/>min.insync.replicas=2"]
+    ACK2 --> RESP
+    style PART0 fill:#60a5fa
+    style LEADER fill:#34d399
+    style REPLICA1 fill:#a78bfa
+    style REPLICA2 fill:#ef4444
+    style PROD fill:#60a5fa
+    style ACK1 fill:#34d399
+    style ACK2 fill:#34d399
+    style RESP fill:#34d399
+```
 
 ```text
 RF=3: 1 leader + 2 followers on different brokers.

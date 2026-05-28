@@ -6,6 +6,40 @@
 
 ---
 
+## Distributed Tracing Architecture
+
+```mermaid
+sequenceDiagram
+    actor User
+    participant API as API Gateway
+    participant Auth as Auth Service
+    participant User_SVC as User Service
+    participant DB as Database
+    participant Cache as Redis Cache
+    
+    User->>API: Request (trace_id: abc123)
+    API->>Auth: Validate token
+    activate Auth
+    Auth->>Auth: Check JWT
+    Auth-->>API: ✓ Valid
+    deactivate Auth
+    API->>User_SVC: Get user profile
+    activate User_SVC
+    User_SVC->>Cache: Check cache
+    alt Cache Hit
+        Cache-->>User_SVC: Return data
+    else Cache Miss
+        User_SVC->>DB: Query user
+        DB-->>User_SVC: Return row
+        User_SVC->>Cache: Store in cache
+    end
+    User_SVC-->>API: Profile data
+    deactivate User_SVC
+    API-->>User: 200 OK (spans: 5, duration: 245ms)
+```
+
+---
+
 ## SECTION 1: NOOB EXPLANATION (Analogies)
 
 ### Logs, Metrics, Traces = Three Pillars of Observability

@@ -374,6 +374,39 @@ Cache miss (TTL > staleness_tolerance):
 
 ## 7. Consistent Hashing & Variants
 
+### Consistent Hashing Ring
+
+```mermaid
+graph TB
+    subgraph Ring["Hash Ring (0-360 degrees)"]
+        N1["Node A<br/>hash=45<br/>slots: 0-119"]
+        N2["Node B<br/>hash=180<br/>slots: 120-239"]
+        N3["Node C<br/>hash=270<br/>slots: 240-359"]
+    end
+    
+    subgraph Keys["Key Placement"]
+        K1["Key1<br/>hash(key1)=30<br/>→ Node A"]
+        K2["Key2<br/>hash(key2)=150<br/>→ Node B"]
+        K3["Key3<br/>hash(key3)=300<br/>→ Node C"]
+        K4["Key4<br/>hash(key4)=10<br/>→ Node A"]
+    end
+    
+    K1 -.-> N1
+    K2 -.-> N2
+    K3 -.-> N3
+    K4 -.-> N1
+    
+    Note over Ring: Without Node D:<br/>Most keys stay on same nodes
+    Note over Ring: With Node D (hash=120):<br/>Only keys in 120-180 move
+    
+    style N1 fill:#34d399
+    style N2 fill:#34d399
+    style N3 fill:#34d399
+    style K1 fill:#00d4ff
+    style K2 fill:#00d4ff
+    style K3 fill:#00d4ff
+    style K4 fill:#00d4ff
+```
 
 ```text
 Classic Consistent Hashing Ring:

@@ -193,11 +193,52 @@ Pipeline             → Data/ETL processing
 Space-based          → Very high scalability (trading, gaming)
 ```
 
+### Architecture Evolution Path
+
+```mermaid
+graph LR
+    Monolith["Single Monolith<br/>One deployable<br/>One database"]
+    Extract["Extract Services<br/>Identify boundaries<br/>Domain boundaries"]
+    Decompose["Decomposed<br/>Multiple services<br/>Independent deploy"]
+    Distributed["Distributed<br/>Service mesh<br/>Event-driven<br/>Data federation"]
+    
+    Monolith -->|growing pain| Extract
+    Extract -->|team growth| Decompose
+    Decompose -->|scale requirements| Distributed
+    
+    style Monolith fill:#60a5fa
+    style Extract fill:#fbbf24
+    style Decompose fill:#34d399
+    style Distributed fill:#ef4444
+```
+
 ---
 
 ## 3. Layered Architecture 📚
 
-### Traditional N-Tier
+### Traditional N-Tier (Visual)
+
+```mermaid
+graph TD
+    UI["Presentation Layer<br/>UI, Controllers, Views"]
+    APP["Application Layer<br/>Use Cases, Orchestration"]
+    DOMAIN["Domain Layer<br/>Business Logic, Entities"]
+    PERSIST["Persistence Layer<br/>Data Access, Repositories"]
+    DB[(Database)]
+    
+    UI --> APP
+    APP --> DOMAIN
+    DOMAIN --> PERSIST
+    PERSIST --> DB
+    
+    style UI fill:#60a5fa
+    style APP fill:#fbbf24
+    style DOMAIN fill:#34d399
+    style PERSIST fill:#ef4444
+    style DB fill:#6b7280
+```
+
+### Traditional N-Tier (ASCII)
 ```
 ┌──────────────────────┐
 │ Presentation Layer   │  UI, Controllers
@@ -339,6 +380,35 @@ Event Sourced:
 ---
 
 ## 6. Event-Driven Architecture 📨
+
+### Event Flow Diagram
+
+```mermaid
+graph LR
+    Source["Event Source"]
+    Broker["Event Broker<br/>Kafka/RabbitMQ/NATS"]
+    Consumer1["Consumer A"]
+    Consumer2["Consumer B"]
+    Consumer3["Consumer C"]
+    
+    Source -->|publish event| Broker
+    Broker -->|subscribe| Consumer1
+    Broker -->|subscribe| Consumer2
+    Broker -->|subscribe| Consumer3
+    
+    Consumer1 --> Action1["Action 1<br/>Update DB"]
+    Consumer2 --> Action2["Action 2<br/>Send Email"]
+    Consumer3 --> Action3["Action 3<br/>Log Analytics"]
+    
+    style Source fill:#60a5fa
+    style Broker fill:#fbbf24
+    style Consumer1 fill:#34d399
+    style Consumer2 fill:#34d399
+    style Consumer3 fill:#34d399
+    style Action1 fill:#ef4444
+    style Action2 fill:#ef4444
+    style Action3 fill:#ef4444
+```
 
 ### Concepts
 - **Event**: Something significant that happened

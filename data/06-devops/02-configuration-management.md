@@ -2404,6 +2404,73 @@ Monitoring:
   □ Saturation metrics (server CPU, memory, queue depth)
 ```
 
+### Visual: Configuration Management Architecture
+
+```mermaid
+graph TD
+    subgraph Push["Push Model (Ansible)"]
+        Control["Control Node<br/>(Ansible Server)"]
+        Playbook["Playbook<br/>(YAML)"]
+        Inv["Inventory<br/>(host list)"]
+        
+        Control -->|SSH| Host1["Host 1<br/>(Bastion)"]
+        Control -->|SSH| Host2["Host 2<br/>(Web)"]
+        Control -->|SSH| Host3["Host 3<br/>(DB)"]
+        
+        Playbook -->|Parse| Control
+        Inv -->|Read| Control
+    end
+    
+    subgraph Pull["Pull Model (Puppet/Chef)"]
+        Master["Master<br/>(Puppet Server)"]
+        Agent1["Agent 1<br/>(Bastion)"]
+        Agent2["Agent 2<br/>(Web)"]
+        Agent3["Agent 3<br/>(DB)"]
+        
+        Manifest["Manifest<br/>(puppet code)"]
+        Recipes["Recipes<br/>(chef code)"]
+        
+        Agent1 -->|Poll every 30m| Master
+        Agent2 -->|Poll every 30m| Master
+        Agent3 -->|Poll every 30m| Master
+        
+        Manifest -->|Compile| Master
+        Recipes -->|Converge| Master
+        
+        Master -->|Send config| Agent1
+        Master -->|Send config| Agent2
+        Master -->|Send config| Agent3
+    end
+    
+    Host1 -->|Idempotent| State1["Desired State"]
+    Host2 -->|Idempotent| State2["Desired State"]
+    Host3 -->|Idempotent| State3["Desired State"]
+    
+    Agent1 -->|Converge| State1
+    Agent2 -->|Converge| State2
+    Agent3 -->|Converge| State3
+    
+    style Push fill:#1e3a5f,stroke:#00d4ff
+    style Control fill:#3a7ca5,stroke:#00d4ff
+    style Playbook fill:#3a7ca5,stroke:#00d4ff
+    style Inv fill:#3a7ca5,stroke:#00d4ff
+    style Host1 fill:#1e5f3f,stroke:#34d399
+    style Host2 fill:#1e5f3f,stroke:#34d399
+    style Host3 fill:#1e5f3f,stroke:#34d399
+    
+    style Pull fill:#1e3a5f,stroke:#00d4ff
+    style Master fill:#3a7ca5,stroke:#00d4ff
+    style Agent1 fill:#1e5f3f,stroke:#34d399
+    style Agent2 fill:#1e5f3f,stroke:#34d399
+    style Agent3 fill:#1e5f3f,stroke:#34d399
+    style Manifest fill:#3a7ca5,stroke:#00d4ff
+    style Recipes fill:#3a7ca5,stroke:#00d4ff
+    
+    style State1 fill:#1e5f3f,stroke:#34d399
+    style State2 fill:#1e5f3f,stroke:#34d399
+    style State3 fill:#1e5f3f,stroke:#34d399
+```
+
 ---
 
 ## Immutable Infrastructure: The Paradigm Shift

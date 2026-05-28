@@ -2492,6 +2492,64 @@ data:
 - [ ] **Rollback**: Keep git history clean, enable instant rollback
 - [ ] **Drift Detection**: Alert when cluster diverges from git
 
+### Visual: Progressive Deployment Strategy (Canary/Blue-Green)
+
+```mermaid
+graph TD
+    GitRepo["Git Repository<br/>Manifest Update"] -->|Webhook| ArgoCD["ArgoCD<br/>Detects Change"]
+    
+    subgraph Strategy["Deployment Strategy"]
+        Canary["Canary<br/>10% traffic"]
+        Monitor["Monitor<br/>Metrics"]
+        Rollout["Rollout<br/>25%→50%→100%"]
+    end
+    
+    ArgoCD -->|Progressive| Strategy
+    
+    subgraph BlueGreen["Blue-Green"]
+        Blue["Blue (v1)<br/>100% traffic"]
+        Green["Green (v2)<br/>0% traffic"]
+        Validate["Validate Green<br/>Health Checks"]
+        Switch["Switch<br/>Traffic to v2"]
+    end
+    
+    ArgoCD -->|Alternative| BlueGreen
+    
+    Canary -->|v2 pods<br/>10%| Analyze["Analyze<br/>Errors/Latency"]
+    Analyze -->|OK| Monitor
+    Monitor -->|Pass| Rollout
+    Rollout -->|25%| Monitor
+    Rollout -->|50%| Monitor
+    Rollout -->|100%| Success["Deployment<br/>Success"]
+    
+    Analyze -->|Fail| Rollback["Automatic<br/>Rollback"]
+    Rollback -->|Revert Git| GitRevert["git revert"]
+    GitRevert -->|ArgoCD Syncs| Blue
+    
+    Blue -->|Healthy| Validate
+    Validate -->|Pass| Switch
+    Switch -->|Instant| Green
+    Green -->|100% traffic| Success
+    
+    Green -->|Fail| InstantRollback["Instant<br/>Rollback"]
+    InstantRollback -->|Switch back| Blue
+    
+    style GitRepo fill:#1e3a5f,stroke:#00d4ff
+    style ArgoCD fill:#3a7ca5,stroke:#00d4ff
+    style Canary fill:#3a7ca5,stroke:#00d4ff
+    style Monitor fill:#3a7ca5,stroke:#00d4ff
+    style Rollout fill:#3a7ca5,stroke:#00d4ff
+    style Blue fill:#1e5f3f,stroke:#34d399
+    style Green fill:#5f1e1e,stroke:#ef4444
+    style Validate fill:#3a7ca5,stroke:#00d4ff
+    style Switch fill:#1e5f3f,stroke:#34d399
+    style Analyze fill:#3a7ca5,stroke:#00d4ff
+    style Success fill:#1e5f3f,stroke:#34d399
+    style Rollback fill:#5f1e1e,stroke:#ef4444
+    style GitRevert fill:#3a7ca5,stroke:#00d4ff
+    style InstantRollback fill:#5f1e1e,stroke:#ef4444
+```
+
 ---
 
 ## Conclusion

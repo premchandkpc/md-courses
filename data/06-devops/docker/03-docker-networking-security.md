@@ -763,6 +763,49 @@ Sample findings:
   [PASS] 4.1 - Ensure container user is non-root
 ```
 
+### Visual: Docker Network & Security Layers
+
+```mermaid
+graph TD
+    Container["Container A<br/>eth0"] -->|Bridge| Bridge["Bridge Network<br/>docker0"]
+    Bridge -->|IP Routes| Host["Host Network<br/>Stack"]
+    Host -->|iptables| Rules["NAT Rules<br/>Port Mapping"]
+    Rules -->|External| Internet["External Network<br/>Internet"]
+    
+    Container -->|Seccomp| Syscall["Syscall Filter<br/>Deny dangerous calls"]
+    Container -->|Capabilities| Cap["Capabilities<br/>Drop CAP_NET_ADMIN"]
+    Container -->|AppArmor| AppArmor["AppArmor Profile<br/>File restrictions"]
+    Syscall -->|Restrict| Kernel["Linux Kernel"]
+    Cap -->|Restrict| Kernel
+    AppArmor -->|Restrict| Kernel
+    
+    Container -->|Namespaces| NS["Namespaces"]
+    NS -->|PID| PidNS["PID Namespace<br/>Isolated processes"]
+    NS -->|NET| NetNS["NET Namespace<br/>Isolated stack"]
+    NS -->|Mount| MountNS["Mount Namespace<br/>Isolated filesystem"]
+    NS -->|UTS| UtsNS["UTS Namespace<br/>Isolated hostname"]
+    
+    Container -->|Read-Only| RO["Read-Only Filesystem<br/>/tmp volume"]
+    RO -->|Immutable| Safe["Safe Execution"]
+    
+    style Container fill:#5f1e1e,stroke:#ef4444
+    style Bridge fill:#3a7ca5,stroke:#00d4ff
+    style Host fill:#3a7ca5,stroke:#00d4ff
+    style Rules fill:#3a7ca5,stroke:#00d4ff
+    style Internet fill:#3a7ca5,stroke:#00d4ff
+    style Syscall fill:#1e5f3f,stroke:#34d399
+    style Cap fill:#1e5f3f,stroke:#34d399
+    style AppArmor fill:#1e5f3f,stroke:#34d399
+    style Kernel fill:#1e3a5f,stroke:#00d4ff
+    style NS fill:#3a7ca5,stroke:#00d4ff
+    style PidNS fill:#1e5f3f,stroke:#34d399
+    style NetNS fill:#1e5f3f,stroke:#34d399
+    style MountNS fill:#1e5f3f,stroke:#34d399
+    style UtsNS fill:#1e5f3f,stroke:#34d399
+    style RO fill:#1e5f3f,stroke:#34d399
+    style Safe fill:#1e5f3f,stroke:#34d399
+```
+
 ---
 
 ## 🧠 Simplest Mental Model

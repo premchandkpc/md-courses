@@ -208,8 +208,10 @@ A:
 - Expected: Diagnosis approach (hot key vs uneven distribution), multiple solutions
 
 ---
+
+```mermaid
 graph LR
-    CLI["Client<br/>(redis-cli)" --> CMD["Command<br/>Parser"]
+    CLI["Client<br/>(redis-cli)"] --> CMD["Command<br/>Parser"]
     CMD --> EV_L["Event Loop<br/>(aeMain / epoll)"]
     EV_L --> READ_S["Read from<br/>Socket"]
     READ_S --> PROC["Process Command<br/>(lookupCommand)"]
@@ -231,7 +233,7 @@ graph LR
     style ZIPL fill:#e8912e
     style INT_SET fill:#e8912e
     style RDB fill:#3a7ca5
-    style AOF fill:#c73e1d
+    style AOF fill:#ef4444
 ```
 
 ## Scope
@@ -1146,6 +1148,41 @@ zskiplistNode *zslInsert(zskiplist *zsl, double score, sds ele) {
 ---
 
 ## Data Persistence — RDB & AOF
+
+### Write-Ahead Log (WAL) / AOF Flow
+
+```mermaid
+sequenceDiagram
+    participant App as Application
+    participant Redis as Redis<br/>Server
+    participant AOF as AOF<br/>Buffer
+    participant Disk as Disk<br/>(fsync)
+    participant Memory as Memory<br/>(Data)
+    
+    App->>Redis: SET key value
+    activate Redis
+    Redis->>AOF: Append command to AOF buf
+    activate AOF
+    Note over AOF: "*3\r\n$3\r\nSET..."
+    AOF-->>Redis: buffered
+    deactivate AOF
+    
+    Redis->>Disk: fsync (based on appendfsync policy)
+    activate Disk
+    Note over Disk: fsync every second (default)
+    Disk-->>Redis: durably written
+    deactivate Disk
+    
+    Redis->>Memory: Apply to data structure
+    activate Memory
+    Memory-->>Redis: ✓ committed
+    deactivate Memory
+    
+    Redis-->>App: +OK response
+    deactivate Redis
+    
+    Note over App,Disk: On crash: replay AOF from disk → recover all durable writes
+```
 
 ### RDB Persistence Flow
 

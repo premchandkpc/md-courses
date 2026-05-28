@@ -185,6 +185,41 @@ for (String s : cowList) {  // safe even if other thread modifies
 
 ## Executors & Thread Pools
 
+### Thread Pool Executor Flow
+
+```mermaid
+graph TB
+    Tasks["Incoming Tasks"]
+    Queue["Work Queue<br/>(bounded/unbounded)"]
+    Pool["Thread Pool<br/>(core + max threads)"]
+    Worker1["Worker 1"]
+    Worker2["Worker 2"]
+    WorkerN["Worker N"]
+    Execute["Execute Task"]
+    Result["Task Complete"]
+    
+    Tasks -->|submit| Queue
+    Queue -->|dequeue| Pool
+    Pool -->|assign| Worker1
+    Pool -->|assign| Worker2
+    Pool -->|assign| WorkerN
+    Worker1 --> Execute
+    Worker2 --> Execute
+    WorkerN --> Execute
+    Execute --> Result
+    
+    style Tasks fill:#60a5fa
+    style Queue fill:#fbbf24
+    style Pool fill:#34d399
+    style Worker1 fill:#34d399
+    style Worker2 fill:#34d399
+    style WorkerN fill:#34d399
+    style Execute fill:#fbbf24
+    style Result fill:#34d399
+```
+
+### ExecutorService Thread Pool
+
 
 ```text
 ThreadPoolExecutor Anatomy:

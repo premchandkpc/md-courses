@@ -216,8 +216,24 @@ stateDiagram-v2
     end note
 ```
 
-## The 3 States
+## The 3 States (Colored Diagram)
 
+```mermaid
+stateDiagram-v2
+    [*] --> CLOSED
+    CLOSED --> OPEN: failures exceed threshold<br/>failure_rate > 50%
+    OPEN --> HALF_OPEN: timeout expires<br/>attempt recovery
+    HALF_OPEN --> CLOSED: test succeeds<br/>service healthy
+    HALF_OPEN --> OPEN: test fails<br/>exponential backoff
+    
+    CLOSED --> CLOSED: success
+    OPEN --> OPEN: reject all
+    HALF_OPEN --> HALF_OPEN: testing
+    
+    style CLOSED fill:#34d399
+    style OPEN fill:#ef4444
+    style HALF_OPEN fill:#fbbf24
+```
 
 ```
 ┌─────────┐

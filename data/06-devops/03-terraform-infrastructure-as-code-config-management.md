@@ -2120,6 +2120,55 @@ pulumi.export("instance_ids", [i.id for i in instances])
 - [ ] **Git**: Commit code + lock file, not state files
 - [ ] **Destroy Safety**: Use prevent_destroy lifecycle rules
 
+### Visual: Terraform State & Locking Mechanism
+
+```mermaid
+graph TD
+    User1["User 1<br/>terraform plan"] -->|Lock| Dynamo["DynamoDB<br/>Lease Lock"]
+    User2["User 2<br/>terraform apply"] -->|Wait| Dynamo
+    
+    Dynamo -->|Acquire Lock<br/>ID=terraform| Lock["Lock Acquired<br/>User 1"]
+    
+    Lock -->|Read| State["Remote State<br/>S3 Backend"]
+    State -->|Fetch| StateFile["terraform.tfstate<br/>(JSON)"]
+    StateFile -->|Parse| Resources["Current Resources<br/>(Inventory)"]
+    
+    User1 -->|Generate| Plan["Plan<br/>Diff: desired vs current"]
+    Plan -->|Show| Preview["Preview<br/>+ AWS::EC2::Instance<br/>- AWS::S3::Bucket"]
+    Preview -->|Approve| User1
+    
+    User1 -->|Execute| Apply["Apply<br/>Execute changes"]
+    Apply -->|Create/Update| AWS["AWS API<br/>Create/Update resources"]
+    AWS -->|Success| UpdateState["Update State<br/>File"]
+    UpdateState -->|Serialize| NewState["New terraform.tfstate<br/>(with new resources)"]
+    NewState -->|Upload| S3["S3 Backend<br/>Encrypted + Versioned"]
+    
+    S3 -->|Release| Unlock["Release Lock<br/>User 1 done"]
+    Unlock -->|Now available| User2
+    User2 -->|Acquire| User2Lock["User 2 acquires lock"]
+    
+    AWS -->|Fail| Rollback["Rollback<br/>Partial apply"]
+    Rollback -->|Revert| State
+    
+    style User1 fill:#1e3a5f,stroke:#00d4ff
+    style User2 fill:#5f1e1e,stroke:#ef4444
+    style Dynamo fill:#3a7ca5,stroke:#00d4ff
+    style Lock fill:#3a7ca5,stroke:#00d4ff
+    style State fill:#3a7ca5,stroke:#00d4ff
+    style StateFile fill:#3a7ca5,stroke:#00d4ff
+    style Resources fill:#3a7ca5,stroke:#00d4ff
+    style Plan fill:#3a7ca5,stroke:#00d4ff
+    style Preview fill:#1e5f3f,stroke:#34d399
+    style Apply fill:#1e5f3f,stroke:#34d399
+    style AWS fill:#3a7ca5,stroke:#00d4ff
+    style UpdateState fill:#1e5f3f,stroke:#34d399
+    style NewState fill:#1e5f3f,stroke:#34d399
+    style S3 fill:#3a7ca5,stroke:#00d4ff
+    style Unlock fill:#1e5f3f,stroke:#34d399
+    style User2Lock fill:#1e5f3f,stroke:#34d399
+    style Rollback fill:#5f1e1e,stroke:#ef4444
+```
+
 ---
 
 ## Conclusion

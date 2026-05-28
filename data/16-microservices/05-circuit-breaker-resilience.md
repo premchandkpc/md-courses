@@ -351,6 +351,43 @@ public class CircuitBreakerEventListener {
 
 ## 2. Retry with Backoff
 
+### Retry Storm Prevention
+
+```mermaid
+graph TD
+    Failure["Initial Failure"]
+    Retry1["Retry 1<br/>Immediate"]
+    Retry2["Retry 2<br/>Wait 1s"]
+    Retry3["Retry 3<br/>Wait 2s"]
+    Retry4["Retry 4<br/>Wait 4s"]
+    CircuitOpen["Circuit Opens<br/>All Fail Fast"]
+    Exponential["Exponential Backoff<br/>1s → 2s → 4s → 8s"]
+    Jitter["Add Jitter<br/>Prevent Thundering Herd"]
+    Success["Success<br/>or Give Up"]
+    
+    Failure --> Retry1
+    Retry1 -->|still fails| Retry2
+    Retry2 -->|still fails| Retry3
+    Retry3 -->|still fails| Retry4
+    Retry4 -->|all fail| CircuitOpen
+    
+    Exponential -.->|prevents| Retry1
+    Jitter -.->|randomizes| Exponential
+    CircuitOpen --> Success
+    
+    style Failure fill:#ef4444
+    style Retry1 fill:#fbbf24
+    style Retry2 fill:#fbbf24
+    style Retry3 fill:#fbbf24
+    style Retry4 fill:#fbbf24
+    style CircuitOpen fill:#ef4444
+    style Exponential fill:#fbbf24
+    style Jitter fill:#fbbf24
+    style Success fill:#34d399
+```
+
+### Traditional Retry Pattern
+
 ### Problem
 
 ```text

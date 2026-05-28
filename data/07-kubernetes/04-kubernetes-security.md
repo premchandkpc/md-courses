@@ -641,6 +641,40 @@ priority: WARNING
 
 **Outputs:** stdout, HTTP, Slack, PagerDuty, Falcosidekick
 
+### Visual: Security Layers & Threat Mitigation
+
+```mermaid
+graph TD
+    A["User/Attacker"] -->|1. Access| API["API Server"]
+    API -->|AuthN<br/>TLS/OIDC| Auth["Authenticate"]
+    Auth -->|AuthZ<br/>RBAC| Authz["Authorize"]
+    Authz -->|Admission<br/>Control| Admission["Validate/Mutate"]
+    Admission -->|Pod Spec<br/>Created| Pod["Pod (Container)"]
+    
+    Pod -->|SecurityContext| SC["No root, read-only FS<br/>Drop capabilities"]
+    SC -->|Seccomp/AppArmor| Restrict["Syscall Filter"]
+    Restrict -->|Container<br/>Isolated| Container["Sandbox"]
+    
+    Container -->|NetworkPolicy| NetPolicy["Network Isolation"]
+    NetPolicy -->|Allowed IPs| Access["Access Control"]
+    
+    Container -->|Runtime<br/>Monitor| Falco["Falco (Syscall Monitor)"]
+    Falco -->|Detect<br/>Anomalies| Alert["Alert/Block"]
+    
+    style API fill:#1e3a5f,stroke:#00d4ff
+    style Auth fill:#1e3a5f,stroke:#00d4ff
+    style Authz fill:#1e3a5f,stroke:#00d4ff
+    style Admission fill:#3a7ca5,stroke:#00d4ff
+    style Pod fill:#5f1e1e,stroke:#ef4444
+    style SC fill:#3a7ca5,stroke:#00d4ff
+    style Restrict fill:#3a7ca5,stroke:#00d4ff
+    style Container fill:#1e5f3f,stroke:#34d399
+    style NetPolicy fill:#3a7ca5,stroke:#00d4ff
+    style Access fill:#3a7ca5,stroke:#00d4ff
+    style Falco fill:#3a7ca5,stroke:#00d4ff
+    style Alert fill:#5f1e1e,stroke:#ef4444
+```
+
 ---
 
 ## Simplest Mental Model

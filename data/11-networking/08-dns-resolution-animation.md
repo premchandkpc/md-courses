@@ -21,6 +21,26 @@ graph TB
 
 Simulate the full DNS resolution flow: from browser to authoritative nameserver and back. Visualize recursive resolution, caching at multiple levels, TTL-based expiry, CNAME chasing, and failure handling.
 
+```mermaid
+sequenceDiagram
+    participant Client as Client<br/>(Browser)
+    participant Resolver as Recursive Resolver<br/>(ISP)
+    participant Root as Root Server
+    participant TLD as TLD Server<br/>(.com)
+    participant Auth as Authoritative<br/>Nameserver
+
+    Client->>Resolver: Query: example.com?
+    Note over Resolver: Check cache (miss)
+    Resolver->>Root: Query: example.com?
+    Root->>Resolver: Response: Ask TLD server
+    Resolver->>TLD: Query: example.com?
+    TLD->>Resolver: Response: Ask authoritative NS
+    Resolver->>Auth: Query: example.com?
+    Auth->>Resolver: Response: A record 93.184.216.34
+    Resolver->>Client: Response: 93.184.216.34
+    Note over Resolver,Client: Cache result (TTL=3600s)
+```
+
 **Learning Objectives:**
 - Understand the hierarchical DNS resolution process
 - See how caching at browser, OS, and resolver levels reduces latency

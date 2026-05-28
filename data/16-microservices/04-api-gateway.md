@@ -77,6 +77,37 @@ graph LR
    └────────────┘      └────────────┘      └────────────┘
 ```
 
+## Load Balancer Distribution
+
+```mermaid
+graph LR
+    Client["Client<br/>Request Stream"]
+    LB["Load Balancer<br/>Round Robin / Weighted"]
+    Backend1["Backend 1<br/>8080"]
+    Backend2["Backend 2<br/>8081"]
+    Backend3["Backend 3<br/>8082"]
+    Response["Response"]
+    
+    Client -->|request 1| LB
+    Client -->|request 2| LB
+    Client -->|request 3| LB
+    
+    LB -->|→ B1| Backend1
+    LB -->|→ B2| Backend2
+    LB -->|→ B3| Backend3
+    
+    Backend1 --> Response
+    Backend2 --> Response
+    Backend3 --> Response
+    
+    style Client fill:#60a5fa
+    style LB fill:#fbbf24
+    style Backend1 fill:#34d399
+    style Backend2 fill:#34d399
+    style Backend3 fill:#34d399
+    style Response fill:#34d399
+```
+
 ## 1. Core Responsibilities
 
 #### Step-by-Step (API Gateway Request Flow)

@@ -380,6 +380,46 @@ spec:
         memory: 8Gi
 ```
 
+### Visual: Observability Stack & Signal Flow
+
+```mermaid
+graph TD
+    Cluster["Kubernetes Cluster<br/>Nodes & Pods"] -->|Scrape| MetricsServer["Metrics Server<br/>kubelet /metrics"]
+    Cluster -->|Export| PrometheusExporter["Prometheus<br/>Node Exporter"]
+    Cluster -->|Custom Metrics| AppMetrics["App Metrics<br/>(instrumented)"]
+    
+    MetricsServer -->|CPU/Memory| Prometheus["Prometheus<br/>Time-Series DB"]
+    PrometheusExporter -->|Node Data| Prometheus
+    AppMetrics -->|Custom Metrics| Prometheus
+    
+    Prometheus -->|Metrics| Grafana["Grafana<br/>Dashboard"]
+    Prometheus -->|Alert Rules| AlertManager["AlertManager<br/>Notify"]
+    
+    Cluster -->|Logs| Loki["Loki<br/>Log Aggregation"]
+    Loki -->|Visualize| Grafana
+    
+    Cluster -->|Traces| Jaeger["Jaeger/Tempo<br/>Distributed Tracing"]
+    Jaeger -->|Timeline| Grafana
+    
+    Prometheus -->|Archive| Thanos["Thanos<br/>Long-term Storage"]
+    
+    AlertManager -->|Alert| Slack["Slack/<br/>PagerDuty"]
+    Grafana -->|View All| SRE["SRE Dashboard<br/>Metrics + Logs + Traces"]
+    
+    style Cluster fill:#1e3a5f,stroke:#00d4ff
+    style MetricsServer fill:#3a7ca5,stroke:#00d4ff
+    style PrometheusExporter fill:#3a7ca5,stroke:#00d4ff
+    style AppMetrics fill:#3a7ca5,stroke:#00d4ff
+    style Prometheus fill:#3a7ca5,stroke:#00d4ff
+    style Loki fill:#3a7ca5,stroke:#00d4ff
+    style Jaeger fill:#3a7ca5,stroke:#00d4ff
+    style Thanos fill:#3a7ca5,stroke:#00d4ff
+    style Grafana fill:#1e5f3f,stroke:#34d399
+    style AlertManager fill:#3a7ca5,stroke:#00d4ff
+    style Slack fill:#5f1e1e,stroke:#ef4444
+    style SRE fill:#1e5f3f,stroke:#34d399
+```
+
 ---
 
 ## Simplest Mental Model

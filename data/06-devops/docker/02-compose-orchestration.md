@@ -995,6 +995,55 @@ docker stack rm myapp
 docker service inspect --pretty myapp_web
 ```
 
+### Visual: Docker Compose Service Orchestration
+
+```mermaid
+graph TD
+    A["docker-compose.yml"] -->|Services| Web["web service<br/>nginx:latest"]
+    A -->|Services| API["api service<br/>flask:app"]
+    A -->|Services| DB["db service<br/>postgres:15"]
+    
+    Web -->|Network| Network["Bridge Network<br/>compose-net"]
+    API -->|Network| Network
+    DB -->|Network| Network
+    
+    Network -->|DNS: web| WebContainer["Container<br/>web:80"]
+    Network -->|DNS: api| ApiContainer["Container<br/>api:5000"]
+    Network -->|DNS: db| DbContainer["Container<br/>db:5432"]
+    
+    Web -->|healthcheck| HealthWeb["Check /health<br/>every 10s"]
+    HealthWeb -->|Pass| ReadyWeb["Ready"]
+    HealthWeb -->|Fail| RestartWeb["Restart"]
+    
+    API -->|depends_on| DB
+    API -->|Wait for| DbHealth["db healthcheck<br/>Pass"]
+    DbHealth -->|Start| ApiStart["Start API"]
+    
+    Web -->|Volume| Vol["Named Volume<br/>logs"]
+    DB -->|PVC-like| DbVol["Named Volume<br/>pgdata"]
+    
+    Vol -->|Persist| PersistLogs["Host Directory<br/>/var/lib/docker/volumes"]
+    DbVol -->|Persist| PersistData["Host Directory<br/>/var/lib/docker/volumes"]
+    
+    style A fill:#1e3a5f,stroke:#00d4ff
+    style Web fill:#3a7ca5,stroke:#00d4ff
+    style API fill:#3a7ca5,stroke:#00d4ff
+    style DB fill:#3a7ca5,stroke:#00d4ff
+    style Network fill:#3a7ca5,stroke:#00d4ff
+    style WebContainer fill:#1e5f3f,stroke:#34d399
+    style ApiContainer fill:#1e5f3f,stroke:#34d399
+    style DbContainer fill:#1e5f3f,stroke:#34d399
+    style HealthWeb fill:#3a7ca5,stroke:#00d4ff
+    style ReadyWeb fill:#1e5f3f,stroke:#34d399
+    style RestartWeb fill:#5f1e1e,stroke:#ef4444
+    style DbHealth fill:#3a7ca5,stroke:#00d4ff
+    style ApiStart fill:#1e5f3f,stroke:#34d399
+    style Vol fill:#3a7ca5,stroke:#00d4ff
+    style DbVol fill:#3a7ca5,stroke:#00d4ff
+    style PersistLogs fill:#1e5f3f,stroke:#34d399
+    style PersistData fill:#1e5f3f,stroke:#34d399
+```
+
 ---
 
 ## 🧠 Simplest Mental Model

@@ -1033,6 +1033,47 @@ PRR Process:
 └──────────────────────────────────────────────────────────┘
 ```
 
+### Visual: SRE Incident Management Pipeline
+
+```mermaid
+graph TD
+    Alert["Alert Triggered<br/>Threshold exceeded"] -->|Severity| S["Classify Severity<br/>P1/P2/P3"]
+    S -->|P1: Critical| Escalate["Escalate to<br/>On-Call Lead"]
+    S -->|P2: Major| OnCall["Page On-Call<br/>Engineer"]
+    S -->|P3: Minor| Queue["Add to<br/>Incident Queue"]
+    
+    Escalate -->|Mobilize| Incident["Incident<br/>War Room"]
+    OnCall -->|Investigate| Triage["Triage<br/>Assess impact"]
+    
+    Triage -->|Immediate| Mitigation["Execute<br/>Mitigation"]
+    Mitigation -->|Status| Update["Update<br/>Status Page"]
+    Update -->|Continue| RootCause["Investigate<br/>Root Cause"]
+    
+    RootCause -->|Found| Analysis["Post-incident<br/>Analysis"]
+    Analysis -->|Lessons| Document["Document<br/>Findings"]
+    Document -->|Action Items| ActionItems["Create<br/>Action Items"]
+    ActionItems -->|Assign| FollowUp["Follow-up<br/>Tracking"]
+    FollowUp -->|Monitor| Close["Close<br/>Incident"]
+    
+    Incident -->|Communicate| Incident
+    
+    style Alert fill:#5f1e1e,stroke:#ef4444
+    style S fill:#3a7ca5,stroke:#00d4ff
+    style Escalate fill:#5f1e1e,stroke:#ef4444
+    style OnCall fill:#5f1e1e,stroke:#ef4444
+    style Queue fill:#5f1e1e,stroke:#ef4444
+    style Incident fill:#5f1e1e,stroke:#ef4444
+    style Triage fill:#3a7ca5,stroke:#00d4ff
+    style Mitigation fill:#1e5f3f,stroke:#34d399
+    style Update fill:#3a7ca5,stroke:#00d4ff
+    style RootCause fill:#3a7ca5,stroke:#00d4ff
+    style Analysis fill:#3a7ca5,stroke:#00d4ff
+    style Document fill:#1e5f3f,stroke:#34d399
+    style ActionItems fill:#3a7ca5,stroke:#00d4ff
+    style FollowUp fill:#3a7ca5,stroke:#00d4ff
+    style Close fill:#1e5f3f,stroke:#34d399
+```
+
 ---
 
 ## Change Management: Progressive Delivery

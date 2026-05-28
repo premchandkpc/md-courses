@@ -685,6 +685,27 @@ public class Customer {
 
 ## 5. Strangler Fig Pattern
 
+### Monolith to Microservices Evolution
+
+```mermaid
+graph LR
+    Phase1["Phase 1: Monolith<br/>Single Deployable<br/>All features in one app"]
+    Phase2["Phase 2: Extract Service A<br/>Gateway routes to new service<br/>Monolith handles rest"]
+    Phase3["Phase 3: Extract Service B<br/>More routes to new services<br/>Monolith shrinks"]
+    Phase4["Phase 4: Fully Decomposed<br/>All services independent<br/>Monolith deprecated"]
+    
+    Phase1 -->|strangler fig| Phase2
+    Phase2 -->|gradual| Phase3
+    Phase3 -->|continue| Phase4
+    
+    style Phase1 fill:#60a5fa
+    style Phase2 fill:#fbbf24
+    style Phase3 fill:#fbbf24
+    style Phase4 fill:#34d399
+```
+
+### Strangler Fig Implementation
+
 ### Migration Strategy
 
 ```text

@@ -87,6 +87,44 @@ Raft decomposes consensus into five sub-problems, each independently solvable an
 
 ## 2. Server States: Leader, Follower, Candidate
 
+### Raft Election Flow
+
+```mermaid
+sequenceDiagram
+    participant F as Follower<br/>Node
+    participant C as Candidate<br/>Node
+    participant L as Leader<br/>Node
+    
+    Note over F: election timeout<br/>(150-300ms)
+    F->>F: Increment term
+    F->>F: Vote for self
+    F->>C: Become candidate
+    activate C
+    
+    C->>L: RequestVote(term=2)
+    activate L
+    Note over L: term 2 > current<br/>Update term
+    L->>L: Step down to follower
+    L-->>C: Grant vote
+    deactivate L
+    
+    C->>F: RequestVote(term=2)
+    Note over F: Already voted for self<br/>in this term
+    F-->>C: Deny vote
+    
+    Note over C: Win majority?<br/>2 votes out of 3
+    C->>C: Become leader
+    deactivate C
+    
+    C->>F: Send heartbeat
+    C->>L: Send heartbeat
+    Note over F,L: Heartbeat resets<br/>election timeout
+    
+    style C fill:#34d399
+    style F fill:#a78bfa
+    style L fill:#a78bfa
+```
+
 ```text
 +--------+      timeout, starts election      +-----------+
 |        | ----------------------------------> |           |

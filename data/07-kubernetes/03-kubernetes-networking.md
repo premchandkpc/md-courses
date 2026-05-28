@@ -291,6 +291,39 @@ spec:
   - 192.168.1.100
 ```
 
+### Visual: CNI & Service Discovery Flow
+
+```mermaid
+graph TD
+    K["kubelet<br/>(Node Agent)"] -->|1. Create Pod| Pause["Pause Container<br/>(netns holder)"]
+    K -->|2. Call CNI| CNI["CNI Plugin<br/>(Calico/Cilium)"]
+    CNI -->|3. Assign IP| IPAM["IPAM<br/>(IP Pool)"]
+    IPAM -->|4. Allocate| PodIP["Pod IP<br/>10.0.1.5"]
+    CNI -->|5. Create veth| Veth["veth pair<br/>(Pod<->Host)"]
+    Veth -->|6. Connect| Bridge["CNI Bridge<br/>cni0"]
+    Bridge -->|7. Route| Routes["Node Routes<br/>table"]
+    
+    Pause -->|8. Start App| App["App Container"]
+    App -->|9. DNS Query| CoreDNS["CoreDNS<br/>53"]
+    CoreDNS -->|10. Resolve| Service["Service A<br/>ClusterIP"]
+    Service -->|11. DNAT| KubeProxy["kube-proxy<br/>(iptables/IPVS)"]
+    KubeProxy -->|12. Select Pod| Pod["Target Pod<br/>10.0.1.10"]
+    
+    style K fill:#1e3a5f,stroke:#00d4ff
+    style Pause fill:#1e3a5f,stroke:#00d4ff
+    style CNI fill:#3a7ca5,stroke:#00d4ff
+    style IPAM fill:#3a7ca5,stroke:#00d4ff
+    style PodIP fill:#1e5f3f,stroke:#34d399
+    style Veth fill:#3a7ca5,stroke:#00d4ff
+    style Bridge fill:#3a7ca5,stroke:#00d4ff
+    style Routes fill:#3a7ca5,stroke:#00d4ff
+    style App fill:#1e5f3f,stroke:#34d399
+    style CoreDNS fill:#3a7ca5,stroke:#00d4ff
+    style Service fill:#3a7ca5,stroke:#00d4ff
+    style KubeProxy fill:#3a7ca5,stroke:#00d4ff
+    style Pod fill:#1e5f3f,stroke:#34d399
+```
+
 ---
 
 ## Simplest Mental Model

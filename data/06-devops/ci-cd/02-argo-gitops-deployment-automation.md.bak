@@ -2565,7 +2565,4 @@ Key takeaways:
 5. **Audit trail** (git history)
 6. **Scale to any cluster count** (ApplicationSet)
 
-## Interactive Components
-
-Interactive visualizations for this topic have been prepared.
-(Components: state machine, topology map, or observability dashboard)
+<!-- Interactive Components: Add dashboard/flow visualization here -->

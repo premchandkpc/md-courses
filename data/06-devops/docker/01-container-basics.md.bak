@@ -1471,7 +1471,4 @@ Docker is about CONSISTENCY: "Works on my machine" → "Works in my container".
 **Answer**: **UID namespace mapping is not enabled by default**. Inside the container, UID 1000 maps to UID 1000 on the host. The file on the host is owned by root (UID 0), which is `nobody` inside the container (no mapping for root). Even with 755 permissions, the `owner` entry in the directory's permissions is mapped to a different UID. Fix: 1) `chown -R 1000:1000` on the host directory. 2) Use `--userns=host` (default) but match UIDs. 3) Enable **user namespace remapping** (`/etc/docker/daemon.json` `{"userns-remap": "default"}`) — maps UID 0 in container to non-root UID on host, improving security but making bind-mounted volumes' file ownership complex. 4) Use `subPath` mount with correct permissions. 5) Set `securityContext.fsGroup` in Kubernetes to auto-chown the volume.
 
 
-## Interactive Components
-
-Interactive visualizations for this topic have been prepared.
-(Components: state machine, topology map, or observability dashboard)
+<!-- Interactive Components: Add dashboard/flow visualization here -->

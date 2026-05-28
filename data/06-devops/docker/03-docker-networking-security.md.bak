@@ -837,7 +837,4 @@ graph TD
 
 
 See code examples above for practical usage patterns.
-## Interactive Components
-
-Interactive visualizations for this topic have been prepared.
-(Components: state machine, topology map, or observability dashboard)
+<!-- Interactive Components: Add dashboard/flow visualization here -->

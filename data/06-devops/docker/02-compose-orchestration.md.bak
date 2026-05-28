@@ -1092,7 +1092,4 @@ KEY INSIGHT:
 
 **Next**: [Kubernetes Basics](/07-kubernetes/01-kubernetes-basics.md)
 
-## Interactive Components
-
-Interactive visualizations for this topic have been prepared.
-(Components: state machine, topology map, or observability dashboard)
+<!-- Interactive Components: Add dashboard/flow visualization here -->

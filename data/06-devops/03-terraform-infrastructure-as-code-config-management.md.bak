@@ -2195,7 +2195,4 @@ Key takeaways:
 - [Kubernetes Storage](/07-kubernetes/05-kubernetes-storage.md)
 - [Kubernetes Observability](/07-kubernetes/06-kubernetes-observability.md)
 
-## Interactive Components
-
-Interactive visualizations for this topic have been prepared.
-(Components: state machine, topology map, or observability dashboard)
+<!-- Interactive Components: Add dashboard/flow visualization here -->

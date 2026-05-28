@@ -2371,7 +2371,4 @@ flowchart LR
 
 **Docker Host Dashboard**: container count, CPU/memory/disk per container, restart rate, image size distribution, layer usage.
 
-## Interactive Components
-
-Interactive visualizations for this topic have been prepared.
-(Components: state machine, topology map, or observability dashboard)
+<!-- Interactive Components: Add dashboard/flow visualization here -->

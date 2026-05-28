@@ -862,3 +862,141 @@ OUTBOX PATTERN =  Writing a letter (event) and immediately putting
 - [Distributed Transactions](/09-distributed-systems/02-distributed-transactions.md)
 - [Distributed Caching](/09-distributed-systems/03-distributed-caching.md)
 - [Distributed Storage](/09-distributed-systems/03-distributed-storage.md)
+
+---
+
+## Interactive Components
+
+### Domain Event Publishing Flow
+
+```html-live
+<div style="display:flex;flex-direction:column;align-items:center;gap:8px;padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>
+    @keyframes flow-pulse {
+      0%,100%{opacity:.3;transform:translateY(0)}
+      50%{opacity:1;transform:translateY(-2px)}
+    }
+    .flow-title {
+      color:#00d4ff;
+      font-family:monospace;
+      font-size:14px;
+      font-weight:bold;
+      margin-bottom:8px;
+      letter-spacing:1px;
+    }
+    .flow-node {
+      display:inline-block;
+      padding:8px 16px;
+      border-radius:4px;
+      font-size:12px;
+      font-family:monospace;
+      color:#e3eaf0;
+      background:#1e3a5f;
+      border:1px solid #00d4ff;
+    }
+    .flow-arrow {
+      color:#00d4ff;
+      font-size:16px;
+      animation:flow-pulse 1.5s infinite;
+      font-weight:bold;
+    }
+  </style>
+
+  <div class="flow-title">Transactional Outbox Pattern</div>
+  <div style="display:flex;flex-direction:column;align-items:center;gap:6px">
+    <div class="flow-node">Order Created</div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-node">Save to Outbox (Same TX)</div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-node">Publish to Message Broker</div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-node">Consumers React (Async)</div>
+  </div>
+</div>
+```
+
+### Strangler Fig Migration Progress
+
+```html-live
+<div style="padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>
+    .slider-title {
+      color:#00d4ff;
+      font-family:monospace;
+      font-size:14px;
+      font-weight:bold;
+      margin-bottom:12px;
+      letter-spacing:1px;
+    }
+    .slider-container {
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+    }
+    .slider-label {
+      color:#e3eaf0;
+      font-family:monospace;
+      font-size:12px;
+    }
+    .slider-wrapper {
+      display:flex;
+      align-items:center;
+      gap:12px;
+    }
+    .slider-input {
+      flex:1;
+      height:6px;
+      border-radius:3px;
+      background:#1e3a5f;
+      outline:none;
+      -webkit-appearance:none;
+      appearance:none;
+    }
+    .slider-input::-webkit-slider-thumb {
+      -webkit-appearance:none;
+      appearance:none;
+      width:18px;
+      height:18px;
+      border-radius:50%;
+      background:#00d4ff;
+      cursor:pointer;
+      box-shadow:0 0 8px #00d4ff;
+      border:2px solid #0b0e14;
+    }
+    .slider-input::-moz-range-thumb {
+      width:18px;
+      height:18px;
+      border-radius:50%;
+      background:#00d4ff;
+      cursor:pointer;
+      box-shadow:0 0 8px #00d4ff;
+      border:2px solid #0b0e14;
+    }
+    .slider-value {
+      font-family:monospace;
+      color:#34d399;
+      min-width:80px;
+      text-align:right;
+      font-size:12px;
+      font-weight:bold;
+    }
+  </style>
+
+  <div class="slider-title">Strangler Fig Migration</div>
+  <div class="slider-container">
+    <label class="slider-label">% Services Migrated to Microservices:</label>
+    <div class="slider-wrapper">
+      <input type="range" min="0" max="100" value="30" class="slider-input" id="migration-slider">
+      <span class="slider-value" id="migration-value">30 %</span>
+    </div>
+  </div>
+
+  <script>
+    const slider = document.getElementById('migration-slider');
+    const valueDisplay = document.getElementById('migration-value');
+    slider.addEventListener('input', (e) => {
+      valueDisplay.textContent = e.target.value + ' %';
+    });
+  </script>
+</div>
+```

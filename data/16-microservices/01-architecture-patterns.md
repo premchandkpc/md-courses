@@ -1683,3 +1683,136 @@ CONFIG SERVER  =  A central bulletin board where each restaurant
 - [Distributed Transactions](/09-distributed-systems/02-distributed-transactions.md)
 - [Distributed Caching](/09-distributed-systems/03-distributed-caching.md)
 - [Distributed Storage](/09-distributed-systems/03-distributed-storage.md)
+
+---
+
+## Interactive Components
+
+### Service Mesh Communication Flow
+
+```html-live
+<div style="display:flex;flex-direction:column;align-items:center;gap:8px;padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>
+    @keyframes flow-pulse {
+      0%,100%{opacity:.3;transform:translateY(0)}
+      50%{opacity:1;transform:translateY(-2px)}
+    }
+    .flow-title {
+      color:#00d4ff;
+      font-family:monospace;
+      font-size:14px;
+      font-weight:bold;
+      margin-bottom:8px;
+      letter-spacing:1px;
+    }
+    .flow-node {
+      display:inline-block;
+      padding:8px 16px;
+      border-radius:4px;
+      font-size:12px;
+      font-family:monospace;
+      color:#e3eaf0;
+      background:#1e3a5f;
+      border:1px solid #00d4ff;
+    }
+    .flow-arrow {
+      color:#00d4ff;
+      font-size:16px;
+      animation:flow-pulse 1.5s infinite;
+      font-weight:bold;
+    }
+  </style>
+
+  <div class="flow-title">Service Mesh (Envoy Sidecar) Communication</div>
+  <div style="display:flex;flex-direction:column;align-items:center;gap:6px">
+    <div class="flow-node">Service A</div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-node">Envoy Sidecar (mTLS)</div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-node">Service B</div>
+  </div>
+</div>
+```
+
+### Architecture Styles State Comparison
+
+```html-live
+<div style="padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>
+    .state-machine-title {
+      color:#00d4ff;
+      font-family:monospace;
+      font-size:14px;
+      font-weight:bold;
+      margin-bottom:16px;
+      letter-spacing:1px;
+    }
+    .state-demo {
+      text-align:center;
+    }
+    .state-display {
+      font-size:18px;
+      font-family:monospace;
+      padding:16px;
+      border-radius:4px;
+      margin:16px 0;
+      color:#0b0e14;
+      font-weight:bold;
+      min-height:50px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      border:2px solid currentColor;
+    }
+    .state-layered { background:#34d399;border-color:#22c55e }
+    .state-hexagonal { background:#fbbf24;border-color:#f59e0b }
+    .state-event-driven { background:#60a5fa;border-color:#3b82f6 }
+    .state-buttons {
+      display:flex;
+      gap:8px;
+      justify-content:center;
+      flex-wrap:wrap;
+      margin-top:16px;
+    }
+    .state-button {
+      padding:8px 16px;
+      border:1px solid #00d4ff;
+      background:#1e3a5f;
+      color:#00d4ff;
+      border-radius:4px;
+      cursor:pointer;
+      font-family:monospace;
+      font-size:12px;
+      transition:all 0.2s;
+    }
+    .state-button:hover {
+      background:#2a5a8f;
+      box-shadow:0 0 8px #00d4ff;
+    }
+  </style>
+
+  <div class="state-machine-title">Architecture Style Comparison</div>
+  <div class="state-demo">
+    <div class="state-display state-layered" id="arch-display">LAYERED</div>
+    <div class="state-buttons">
+      <button class="state-button" onclick="setArch('LAYERED')">Layered</button>
+      <button class="state-button" onclick="setArch('HEXAGONAL')">Hexagonal</button>
+      <button class="state-button" onclick="setArch('EVENT-DRIVEN')">Event-Driven</button>
+    </div>
+  </div>
+
+  <script>
+    const archMap = {
+      'LAYERED': { label: 'LAYERED (Simple)', class: 'state-layered' },
+      'HEXAGONAL': { label: 'HEXAGONAL (Testable)', class: 'state-hexagonal' },
+      'EVENT-DRIVEN': { label: 'EVENT-DRIVEN (Scalable)', class: 'state-event-driven' }
+    };
+    function setArch(arch) {
+      const display = document.getElementById('arch-display');
+      const info = archMap[arch];
+      display.textContent = info.label;
+      display.className = 'state-display ' + info.class;
+    }
+  </script>
+</div>
+```

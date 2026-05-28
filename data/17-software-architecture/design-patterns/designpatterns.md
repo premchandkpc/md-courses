@@ -168,6 +168,181 @@ Logger.getInstance()
 
 ---
 
+## Interactive Components
+
+### Design Pattern Categories
+
+```html-live
+<div style="padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>
+    .state-machine-title {
+      color:#00d4ff;
+      font-family:monospace;
+      font-size:14px;
+      font-weight:bold;
+      margin-bottom:16px;
+      letter-spacing:1px;
+    }
+    .state-demo {
+      text-align:center;
+    }
+    .state-display {
+      font-size:18px;
+      font-family:monospace;
+      padding:16px;
+      border-radius:4px;
+      margin:16px 0;
+      color:#0b0e14;
+      font-weight:bold;
+      min-height:50px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      border:2px solid currentColor;
+    }
+    .state-creational { background:#34d399;border-color:#22c55e }
+    .state-structural { background:#fbbf24;border-color:#f59e0b }
+    .state-behavioral { background:#60a5fa;border-color:#3b82f6 }
+    .state-buttons {
+      display:flex;
+      gap:8px;
+      justify-content:center;
+      flex-wrap:wrap;
+      margin-top:16px;
+    }
+    .state-button {
+      padding:8px 16px;
+      border:1px solid #00d4ff;
+      background:#1e3a5f;
+      color:#00d4ff;
+      border-radius:4px;
+      cursor:pointer;
+      font-family:monospace;
+      font-size:12px;
+      transition:all 0.2s;
+    }
+    .state-button:hover {
+      background:#2a5a8f;
+      box-shadow:0 0 8px #00d4ff;
+    }
+  </style>
+
+  <div class="state-machine-title">Design Pattern Types</div>
+  <div class="state-demo">
+    <div class="state-display state-creational" id="pattern-display">CREATIONAL</div>
+    <div class="state-buttons">
+      <button class="state-button" onclick="setPattern('CREATIONAL')">Creational</button>
+      <button class="state-button" onclick="setPattern('STRUCTURAL')">Structural</button>
+      <button class="state-button" onclick="setPattern('BEHAVIORAL')">Behavioral</button>
+    </div>
+  </div>
+
+  <script>
+    const patternMap = {
+      'CREATIONAL': { label: 'CREATIONAL (Object Creation)', class: 'state-creational' },
+      'STRUCTURAL': { label: 'STRUCTURAL (Object Composition)', class: 'state-structural' },
+      'BEHAVIORAL': { label: 'BEHAVIORAL (Communication)', class: 'state-behavioral' }
+    };
+    function setPattern(pattern) {
+      const display = document.getElementById('pattern-display');
+      const info = patternMap[pattern];
+      display.textContent = info.label;
+      display.className = 'state-display ' + info.class;
+    }
+  </script>
+</div>
+```
+
+### Architecture Pattern Topology
+
+```html-live
+<div style="padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>
+    .topology-title {
+      color:#00d4ff;
+      font-family:monospace;
+      font-size:14px;
+      font-weight:bold;
+      margin-bottom:12px;
+      letter-spacing:1px;
+    }
+    .topology-svg {
+      width:100%;
+      max-width:600px;
+      height:300px;
+      background:#1a2332;
+      border:1px solid #1e3a5f;
+      border-radius:4px;
+    }
+    .topo-edge {
+      stroke:#1e3a5f;
+      stroke-width:2;
+    }
+    .topo-legend {
+      display:flex;
+      gap:16px;
+      margin-top:12px;
+      font-size:12px;
+      color:#e3eaf0;
+      font-family:monospace;
+      flex-wrap:wrap;
+    }
+    .legend-item {
+      display:flex;
+      align-items:center;
+      gap:6px;
+    }
+    .legend-color {
+      width:16px;
+      height:16px;
+      border-radius:2px;
+    }
+  </style>
+
+  <div class="topology-title">Microservices Topology</div>
+  <svg class="topology-svg" viewBox="0 0 600 300">
+    <defs>
+      <marker id="arrow-arch" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+        <polygon points="0 0, 10 3, 0 6" fill="#1e3a5f"/>
+      </marker>
+    </defs>
+    <!-- Load Balancer -->
+    <g>
+      <rect x="250" y="20" width="100" height="50" rx="4" fill="#1e3a5f" stroke="#00d4ff" stroke-width="1"/>
+      <text x="300" y="50" text-anchor="middle" fill="#e3eaf0" font-size="12" font-family="monospace">API GW</text>
+    </g>
+    <!-- Services -->
+    <g>
+      <rect x="80" y="140" width="80" height="50" rx="4" fill="#1e3a5f" stroke="#00d4ff" stroke-width="1"/>
+      <text x="120" y="170" text-anchor="middle" fill="#e3eaf0" font-size="12" font-family="monospace">Users</text>
+    </g>
+    <g>
+      <rect x="260" y="140" width="80" height="50" rx="4" fill="#1e3a5f" stroke="#00d4ff" stroke-width="1"/>
+      <text x="300" y="170" text-anchor="middle" fill="#e3eaf0" font-size="12" font-family="monospace">Orders</text>
+    </g>
+    <g>
+      <rect x="440" y="140" width="80" height="50" rx="4" fill="#1e3a5f" stroke="#00d4ff" stroke-width="1"/>
+      <text x="480" y="170" text-anchor="middle" fill="#e3eaf0" font-size="12" font-family="monospace">Payments</text>
+    </g>
+    <!-- Database -->
+    <g>
+      <circle cx="300" cy="260" r="25" fill="#1e3a5f" stroke="#00d4ff" stroke-width="1"/>
+      <text x="300" y="265" text-anchor="middle" fill="#e3eaf0" font-size="10" font-family="monospace">DB</text>
+    </g>
+    <!-- Edges -->
+    <line class="topo-edge" x1="300" y1="70" x2="120" y2="140" marker-end="url(#arrow-arch)"/>
+    <line class="topo-edge" x1="300" y1="70" x2="300" y2="140" marker-end="url(#arrow-arch)"/>
+    <line class="topo-edge" x1="300" y1="70" x2="480" y2="140" marker-end="url(#arrow-arch)"/>
+  </svg>
+  <div class="topo-legend">
+    <div class="legend-item"><div class="legend-color" style="background:#1e3a5f;border:1px solid #00d4ff"></div><span>Service</span></div>
+    <div class="legend-item"><div class="legend-color" style="background:#1e3a5f;border:1px solid #1e3a5f;height:2px;top:6px;position:relative"></div><span>Route</span></div>
+  </div>
+</div>
+```
+
+---
+
 # ✅ Used In
 
 * logging

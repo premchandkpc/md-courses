@@ -797,3 +797,191 @@ Real-world impact: Netflix estimates circuit breakers prevent ~30% of outages.
 - [Distributed Transactions](/09-distributed-systems/02-distributed-transactions.md)
 - [Distributed Caching](/09-distributed-systems/03-distributed-caching.md)
 - [Distributed Storage](/09-distributed-systems/03-distributed-storage.md)
+
+---
+
+## Interactive Components
+
+### Circuit Breaker State Machine
+
+```html-live
+<div style="padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>
+    .state-machine-title {
+      color:#00d4ff;
+      font-family:monospace;
+      font-size:14px;
+      font-weight:bold;
+      margin-bottom:16px;
+      letter-spacing:1px;
+    }
+    .state-demo {
+      text-align:center;
+    }
+    .state-display {
+      font-size:18px;
+      font-family:monospace;
+      padding:16px;
+      border-radius:4px;
+      margin:16px 0;
+      color:#0b0e14;
+      font-weight:bold;
+      min-height:50px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      border:2px solid currentColor;
+    }
+    .state-closed { background:#34d399;border-color:#22c55e }
+    .state-open { background:#ef4444;border-color:#dc2626 }
+    .state-half-open { background:#fbbf24;border-color:#f59e0b }
+    .state-buttons {
+      display:flex;
+      gap:8px;
+      justify-content:center;
+      flex-wrap:wrap;
+      margin-top:16px;
+    }
+    .state-button {
+      padding:8px 16px;
+      border:1px solid #00d4ff;
+      background:#1e3a5f;
+      color:#00d4ff;
+      border-radius:4px;
+      cursor:pointer;
+      font-family:monospace;
+      font-size:12px;
+      transition:all 0.2s;
+    }
+    .state-button:hover {
+      background:#2a5a8f;
+      box-shadow:0 0 8px #00d4ff;
+    }
+  </style>
+
+  <div class="state-machine-title">Circuit Breaker State Transitions</div>
+  <div class="state-demo">
+    <div class="state-display state-closed" id="state-display">CLOSED</div>
+    <div class="state-buttons">
+      <button class="state-button" onclick="setState('CLOSED')">Healthy</button>
+      <button class="state-button" onclick="setState('OPEN')">Failing</button>
+      <button class="state-button" onclick="setState('HALF_OPEN')">Testing</button>
+    </div>
+  </div>
+
+  <script>
+    const stateMap = {
+      'CLOSED': { label: 'CLOSED', class: 'state-closed' },
+      'OPEN': { label: 'OPEN', class: 'state-open' },
+      'HALF_OPEN': { label: 'HALF-OPEN', class: 'state-half-open' }
+    };
+    function setState(state) {
+      const display = document.getElementById('state-display');
+      const info = stateMap[state];
+      display.textContent = info.label;
+      display.className = 'state-display ' + info.class;
+    }
+  </script>
+</div>
+```
+
+### Circuit Breaker Failure Injection
+
+```html-live
+<div style="padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>
+    .cascade-title {
+      color:#00d4ff;
+      font-family:monospace;
+      font-size:14px;
+      font-weight:bold;
+      margin-bottom:16px;
+      letter-spacing:1px;
+    }
+    .cascade-stages {
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+      margin-bottom:16px;
+    }
+    .cascade-stage {
+      display:flex;
+      align-items:center;
+      gap:12px;
+    }
+    .cascade-label {
+      color:#e3eaf0;
+      font-family:monospace;
+      font-size:12px;
+      min-width:120px;
+    }
+    .cascade-indicator {
+      width:24px;
+      height:24px;
+      border-radius:4px;
+      background:#34d399;
+      border:2px solid #22c55e;
+      transition:all 0.3s;
+    }
+    .cascade-indicator.failing {
+      background:#ef4444;
+      border-color:#dc2626;
+      box-shadow:0 0 12px #ef4444;
+      animation:cascade-fail 0.6s ease-out;
+    }
+    @keyframes cascade-fail {
+      0%{transform:scale(1);opacity:1}
+      100%{transform:scale(1.2);opacity:0.8}
+    }
+    .cascade-controls {
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+    }
+    .cascade-button {
+      padding:8px 16px;
+      border:1px solid #00d4ff;
+      background:#1e3a5f;
+      color:#00d4ff;
+      border-radius:4px;
+      cursor:pointer;
+      font-family:monospace;
+      font-size:12px;
+      transition:all 0.2s;
+    }
+    .cascade-button:hover {
+      background:#2a5a8f;
+      box-shadow:0 0 8px #00d4ff;
+    }
+  </style>
+
+  <div class="cascade-title">Failure Cascade Prevention</div>
+  <div class="cascade-stages" id="cascade-stages">
+    <div class="cascade-stage"><span class="cascade-label">Service A</span><div class="cascade-indicator" data-stage="svc-a"></div></div>
+    <div class="cascade-stage"><span class="cascade-label">Service B (calls A)</span><div class="cascade-indicator" data-stage="svc-b"></div></div>
+    <div class="cascade-stage"><span class="cascade-label">Service C (calls B)</span><div class="cascade-indicator" data-stage="svc-c"></div></div>
+  </div>
+  <div class="cascade-controls">
+    <button class="cascade-button" onclick="startCascade()">Without Circuit Breaker</button>
+    <button class="cascade-button" onclick="resetCascade()">Reset</button>
+  </div>
+
+  <script>
+    function startCascade() {
+      const stages = document.querySelectorAll('[data-stage]');
+      let delay = 0;
+      stages.forEach((stage) => {
+        setTimeout(() => {
+          stage.classList.add('failing');
+        }, delay);
+        delay += 400;
+      });
+    }
+    function resetCascade() {
+      document.querySelectorAll('[data-stage]').forEach((stage) => {
+        stage.classList.remove('failing');
+      });
+    }
+  </script>
+</div>
+```

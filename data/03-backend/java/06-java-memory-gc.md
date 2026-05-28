@@ -532,6 +532,39 @@ Object Lifetime Flow:
 
 ## 6. Object Allocation & TLABs
 
+### Memory Allocation Overview
+
+```mermaid
+graph TD
+    A["New Object Request"]
+    B["Check TLAB<br/>Available Space"]
+    C["Allocate from<br/>TLAB"]
+    D["TLAB Full"]
+    E["Request New TLAB<br/>from Eden"]
+    F["Allocate Directly<br/>in Eden"]
+    G["Large Object"]
+    H["Object Ready<br/>in Memory"]
+    
+    A --> B
+    B --> C
+    B --> D
+    B --> G
+    C --> H
+    D --> E
+    E --> H
+    G --> F
+    F --> H
+    
+    style A fill:#60a5fa
+    style B fill:#fbbf24
+    style C fill:#34d399
+    style D fill:#ef4444
+    style E fill:#fbbf24
+    style F fill:#fbbf24
+    style G fill:#ef4444
+    style H fill:#34d399
+```
+
 ### TLAB (Thread-Local Allocation Buffer)
 
 ```text

@@ -262,6 +262,24 @@ graph LR
 
 ### Full 1-RTT Handshake
 
+```mermaid
+sequenceDiagram
+    participant Client
+    participant Server
+
+    Client->>Server: ClientHello (Ciphers, ECDHE Key Share, SNI, ALPN)
+    Note over Server: Verify ClientHello
+    Server->>Client: ServerHello (Cipher, ECDHE Key Share)
+    Server->>Client: EncryptedExtensions (ALPN, ServerName)
+    Server->>Client: Certificate (X.509 chain)
+    Server->>Client: CertificateVerify (signature proof)
+    Server->>Client: Finished (handshake HMAC)
+    Note over Client: Verify cert chain, compute traffic keys
+    Client->>Server: Finished (handshake HMAC)
+    Note over Server,Client: Secure connection established
+    Client->>Server: Application Data (encrypted)
+    Server->>Client: Application Data (encrypted)
+```
 
 ```
 Client                                      Server

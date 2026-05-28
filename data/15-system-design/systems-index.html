@@ -1,783 +1,122 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Google L5 AI/ML System Design - Complete Index</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: #333;
-            line-height: 1.6;
-        }
-
-        .container {
-            max-width: 1600px;
-            margin: 0 auto;
-            padding: 40px 20px;
-        }
-
-        header {
-            text-align: center;
-            color: white;
-            margin-bottom: 50px;
-        }
-
-        h1 {
-            font-size: 3em;
-            margin-bottom: 10px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-        }
-
-        .subtitle {
-            font-size: 1.2em;
-            opacity: 0.95;
-            margin-bottom: 30px;
-        }
-
-        .cta-button {
-            display: inline-block;
-            background: white;
-            color: #667eea;
-            padding: 15px 40px;
-            border-radius: 8px;
-            text-decoration: none;
-            font-weight: 600;
-            transition: all 0.3s;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
-        }
-
-        .cta-button:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 30px rgba(0,0,0,0.3);
-        }
-
-        .section {
-            background: white;
-            border-radius: 12px;
-            padding: 40px;
-            margin-bottom: 40px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-        }
-
-        .section h2 {
-            color: #667eea;
-            margin-bottom: 30px;
-            font-size: 2em;
-            border-bottom: 3px solid #667eea;
-            padding-bottom: 15px;
-        }
-
-        .systems-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 30px;
-            margin-bottom: 40px;
-        }
-
-        .system-card {
-            background: linear-gradient(135deg, #f5f7fa 0%, #ffffff 100%);
-            border: 2px solid #667eea;
-            border-radius: 12px;
-            padding: 30px;
-            transition: all 0.3s;
-            overflow: hidden;
-        }
-
-        .system-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 50px rgba(102, 126, 234, 0.3);
-            border-color: #764ba2;
-        }
-
-        .system-card .badge {
-            display: inline-block;
-            background: #667eea;
-            color: white;
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-size: 0.8em;
-            margin-bottom: 15px;
-            font-weight: 600;
-        }
-
-        .system-card h3 {
-            color: #333;
-            font-size: 1.5em;
-            margin-bottom: 10px;
-        }
-
-        .system-card .challenge {
-            color: #d9534f;
-            font-weight: 600;
-            margin-bottom: 15px;
-            font-size: 0.95em;
-        }
-
-        .system-card p {
-            color: #666;
-            margin-bottom: 15px;
-            line-height: 1.6;
-        }
-
-        .system-card .metrics {
-            background: #f0f4ff;
-            padding: 15px;
-            border-radius: 8px;
-            margin: 20px 0;
-            border-left: 4px solid #667eea;
-        }
-
-        .system-card .metrics-item {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 8px;
-            font-size: 0.9em;
-        }
-
-        .system-card .metrics-label {
-            color: #667eea;
-            font-weight: 600;
-        }
-
-        .system-card .metrics-value {
-            color: #333;
-            font-weight: 600;
-        }
-
-        .system-card .links {
-            display: flex;
-            gap: 10px;
-            margin-top: 20px;
-            flex-wrap: wrap;
-        }
-
-        .system-card .link {
-            display: inline-block;
-            color: white;
-            background: #667eea;
-            text-decoration: none;
-            padding: 10px 16px;
-            border-radius: 6px;
-            font-size: 0.9em;
-            font-weight: 600;
-            transition: all 0.3s;
-            border: none;
-            cursor: pointer;
-        }
-
-        .system-card .link:hover {
-            background: #764ba2;
-            transform: translateY(-2px);
-        }
-
-        .comparison-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 20px 0;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-
-        .comparison-table th {
-            background: #667eea;
-            color: white;
-            padding: 15px;
-            text-align: left;
-            font-weight: 600;
-        }
-
-        .comparison-table td {
-            padding: 15px;
-            border-bottom: 1px solid #ddd;
-        }
-
-        .comparison-table tr:nth-child(even) {
-            background: #f9f9f9;
-        }
-
-        .comparison-table tr:hover {
-            background: #f0f4ff;
-        }
-
-        .learning-path {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 30px;
-            border-radius: 12px;
-            margin: 30px 0;
-        }
-
-        .learning-path h3 {
-            margin-bottom: 20px;
-            font-size: 1.3em;
-        }
-
-        .learning-path ol {
-            margin-left: 25px;
-        }
-
-        .learning-path li {
-            margin-bottom: 12px;
-            line-height: 1.7;
-        }
-
-        .key-concepts {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            margin: 30px 0;
-        }
-
-        .concept-box {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 20px;
-            border-radius: 8px;
-            text-align: center;
-        }
-
-        .concept-box .icon {
-            font-size: 2em;
-            margin-bottom: 10px;
-        }
-
-        .concept-box h4 {
-            margin-bottom: 8px;
-        }
-
-        .concept-box p {
-            font-size: 0.9em;
-            opacity: 0.95;
-        }
-
-        .footer {
-            text-align: center;
-            color: white;
-            padding: 40px;
-            margin-top: 40px;
-            border-top: 2px solid rgba(255,255,255,0.2);
-        }
-
-        .video-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 30px;
-            margin: 30px 0;
-        }
-
-        .video-placeholder {
-            background: #f0f4ff;
-            border: 2px dashed #667eea;
-            border-radius: 12px;
-            padding: 40px;
-            text-align: center;
-            color: #667eea;
-        }
-
-        .video-placeholder .play-icon {
-            font-size: 3em;
-            margin-bottom: 15px;
-        }
-
-        .stats-row {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            margin: 30px 0;
-        }
-
-        .stat-card {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 25px;
-            border-radius: 8px;
-            text-align: center;
-        }
-
-        .stat-card .number {
-            font-size: 2.5em;
-            font-weight: 700;
-            margin-bottom: 5px;
-        }
-
-        .stat-card .label {
-            font-size: 0.95em;
-            opacity: 0.9;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>System Design — Interactive Index</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0b0e14;--bg2:#11161e;--bg3:#18202a;--bg4:#1f2937;--border:#1e2a3a;--fg:#e3eaf0;--fg2:#94a3b8;--fg3:#64748b;--accent:#60a5fa;--accent-hover:#93c5fd;--green:#34d399;--purple:#a78bfa;--pink:#f472b6;--orange:#fb923c;--radius:10px;--font:'Inter',system-ui,-apple-system,sans-serif;--mono:'JetBrains Mono',monospace}
+body{font-family:var(--font);background:var(--bg);color:var(--fg);min-height:100vh;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+.container{max-width:1200px;margin:0 auto;padding:40px 24px}
+h1{font-size:32px;font-weight:800;letter-spacing:-.025em;margin-bottom:6px;display:flex;align-items:center;gap:12px}
+.sub{color:var(--fg2);font-size:14px;margin-bottom:40px;line-height:1.6}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:16px;margin-bottom:40px}
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:24px;cursor:pointer;transition:all .25s cubic-bezier(.4,0,.2,1);text-decoration:none;color:var(--fg);position:relative;overflow:hidden}
+.card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--accent);opacity:0;transition:opacity .2s}
+.card:hover{background:var(--bg3);border-color:var(--accent);transform:translateY(-3px);box-shadow:0 8px 24px rgba(0,0,0,.3)}
+.card:hover::before{opacity:1}
+.card-icon{font-size:28px;margin-bottom:10px}
+.card h3{font-size:16px;font-weight:700;margin-bottom:6px}
+.card p{font-size:12.5px;color:var(--fg2);line-height:1.5;margin-bottom:8px}
+.card .tags{display:flex;gap:4px;flex-wrap:wrap}
+.card .tag{font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:.04em;padding:2px 8px;background:var(--bg4);border-radius:4px;color:var(--fg3);border:1px solid var(--border)}
+.card .tag.green{color:var(--green);border-color:rgba(52,211,149,.2);background:rgba(52,211,149,.06)}
+.card .tag.purple{color:var(--purple);border-color:rgba(167,139,250,.2);background:rgba(167,139,250,.06)}
+.card .tag.orange{color:var(--orange);border-color:rgba(251,146,60,.2);background:rgba(251,146,60,.06)}
+.card .tag.pink{color:var(--pink);border-color:rgba(244,114,182,.2);background:rgba(244,114,182,.06)}
+.card .tag.blue{color:var(--accent);border-color:rgba(96,165,250,.2);background:rgba(96,165,250,.06)}
+.foundations{grid-column:1/-1;margin-bottom:8px}
+.foundations h2{font-size:14px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--fg3);margin-bottom:12px}
+.section-title{font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--fg3);margin:24px 0 8px;padding:8px 12px;background:var(--bg2);border-radius:6px;border-left:3px solid var(--accent)}
+.back-link{display:inline-flex;align-items:center;gap:6px;color:var(--fg3);text-decoration:none;font-size:13px;margin-bottom:24px;transition:color .15s}
+.back-link:hover{color:var(--accent)}
+.stats{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:32px}
+.stat{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--fg2);padding:6px 12px;background:var(--bg2);border:1px solid var(--border);border-radius:6px}
+.search-box{width:100%;padding:12px 16px;background:var(--bg3);border:1px solid var(--border);border-radius:8px;color:var(--fg);font-size:14px;outline:none;font-family:var(--font);margin-bottom:24px;transition:border-color .15s}
+.search-box:focus{border-color:var(--accent);background:var(--bg4)}
+.search-box::placeholder{color:var(--fg3)}
+@media(max-width:700px){.container{padding:20px 14px}h1{font-size:24px}.grid{grid-template-columns:1fr}}
+</style>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>🔥 Google L5 AI/ML System Design Masterclass</h1>
-            <p class="subtitle">Complete interview preparation. Real depth. Production-level thinking.</p>
-            <a href="#systems" class="cta-button">Start Learning</a>
-        </header>
+<div class="container">
+  <a class="back-link" href="javascript:history.back()">← Back</a>
+  <h1>📋 System Design — Interactive Index</h1>
+  <p class="sub">Interactive architecture diagrams for every system design concept. Click any card to open the visual walkthrough.</p>
+  <div class="stats">
+    <span class="stat">📐 <span id="topicCount">0</span> topics</span>
+    <span class="stat">🎨 <span id="diagramCount">0</span> interactive diagrams</span>
+  </div>
+  <input class="search-box" id="search" placeholder="Search topics..." autocomplete="off">
+  <div class="section-title">⚡ Foundations</div>
+  <div class="grid" id="foundationsGrid"></div>
+  <div class="section-title">🌐 Networking</div>
+  <div class="grid" id="networkingGrid"></div>
+  <div class="section-title">📦 Systems</div>
+  <div class="grid" id="systemsGrid"></div>
+</div>
+<script>
+const topics = {
+  foundations: [
+    {icon:'⚡',name:'Latency',desc:'Sources of latency, measurement, optimization strategies, P99 tail latency, caching hierarchy',file:'00-foundations/latency-architecture.html',tags:['performance','blue']},
+    {icon:'📊',name:'Throughput',desc:'Requests per second, bandwidth, saturation, Little\'s Law, scaling strategies',file:'00-foundations/throughput-architecture.html',tags:['scaling','green']},
+    {icon:'🟢',name:'Availability',desc:'High availability, SLA/SLO/SLI, redundancy, failover, graceful degradation',file:'00-foundations/availability-architecture.html',tags:['reliability','green']},
+    {icon:'🎯',name:'Consistency',desc:'Strong vs eventual consistency, CAP theorem, vector clocks, CRDTs',file:'00-foundations/consistency-architecture.html',tags:['distributed','purple']},
+    {icon:'🌀',name:'PACELC',desc:'PACELC trade-offs, partition tolerance vs latency vs consistency',file:'00-foundations/pacelc-architecture.html',tags:['distributed','purple']},
+    {icon:'🏛️',name:'CAP Theorem',desc:'Consistency, Availability, Partition Tolerance trade-offs, real-world choices',file:'00-foundations/cap-architecture.html',tags:['distributed','purple']},
+    {icon:'🔒',name:'Reliability & Durability',desc:'Fault tolerance, replication, durability guarantees, data loss prevention',file:'00-foundations/reliability-architecture.html',tags:['reliability','green']},
+    {icon:'🔄',name:'Idempotency',desc:'Idempotency keys, at-least-once vs exactly-once, retry strategies',file:'00-foundations/idempotency-architecture.html',tags:['patterns','orange']},
+    {icon:'⏸️',name:'Backpressure',desc:'Load shedding, rate limiting, circuit breakers, graceful degradation',file:'00-foundations/backpressure-architecture.html',tags:['reliability','orange']},
+  ],
+  networking: [
+    {icon:'🔗',name:'TCP/IP Stack',desc:'OSI model, TCP handshake, congestion control, flow control, Nagle\'s algorithm',file:'01-networking/tcp-ip-architecture.html',tags:['protocol','blue']},
+    {icon:'🌐',name:'DNS Resolution',desc:'Recursive resolution, caching, TTL, anycast, DNS-based routing',file:'01-networking/dns-architecture.html',tags:['infra','blue']},
+    {icon:'📨',name:'HTTP/HTTPS',desc:'HTTP/1.1, HTTP/2 multiplexing, HTTP/3 QUIC, TLS handshake, persistent connections',file:'01-networking/http-architecture.html',tags:['protocol','blue']},
+    {icon:'📦',name:'UDP & Datagrams',desc:'Connectionless protocol, QUIC, DNS, streaming, real-time communication',file:'01-networking/udp-architecture.html',tags:['protocol','blue']},
+    {icon:'🔌',name:'WebSockets',desc:'Upgrade handshake, full-duplex communication, reconnection strategies, frame types',file:'01-networking/websockets-architecture.html',tags:['realtime','purple']},
+    {icon:'⚖️',name:'Load Balancing',desc:'ALB vs NLB, consistent hashing, health checks, connection draining, sticky sessions',file:'01-networking/load-balancing-architecture.html',tags:['infra','green']},
+    {icon:'🗺️',name:'CDNs',desc:'Edge caching, origin shield, cache invalidation, geo-routing, DDoS mitigation',file:'01-networking/cdn-architecture.html',tags:['infra','green']},
+  ],
+  systems: [
+    {icon:'▶️',name:'YouTube Recommendations',desc:'Two-tower retrieval, ranking, real-time signals, candidate generation',file:'youtube-architecture.html',tags:['ml','pink']},
+    {icon:'🔍',name:'Google Search Ranking',desc:'Indexing, query understanding, ranking signals, PageRank, fresh documents',file:'search-architecture.html',tags:['ml','pink']},
+    {icon:'📈',name:'Ads CTR Prediction',desc:'RTB pipeline, feature engineering, model serving, auction mechanics',file:'ads-architecture.html',tags:['ml','pink']},
+    {icon:'🤖',name:'LLM Serving',desc:'Token generation, KV cache, continuous batching, speculative decoding, quantization',file:'llm-architecture.html',tags:['ml','pink']},
+    {icon:'🎵',name:'TikTok Feed Ranking',desc:'For-you page, user embedding, content embedding, real-time personalization',file:'tiktok-architecture.html',tags:['ml','pink']},
+    {icon:'🎬',name:'Netflix Recs',desc:'Personalized rows, A/B testing, bandits, multi-armed bandit, causal inference',file:'netflix-architecture.html',tags:['ml','pink']},
+    {icon:'📍',name:'Maps & Geo',desc:'Spatial indexing, route optimization, ETA prediction, real-time traffic',file:'maps-architecture.html',tags:['geo','orange']},
+  ]
+};
 
-        <!-- Systems Overview -->
-        <div class="section" id="systems">
-            <h2>📚 Complete System Designs</h2>
-            <p style="margin-bottom: 30px; color: #666;">Master 7 fundamental AI/ML systems at Google L5 level. Each includes architecture, ML pipelines, production realities, and scaling strategies.</p>
+function render() {
+  const q = document.getElementById('search').value.toLowerCase().trim();
+  for (const [key, group] of Object.entries(topics)) {
+    const grid = document.getElementById(key + 'Grid');
+    if (!grid) continue;
+    const filtered = q ? group.filter(t => t.name.toLowerCase().includes(q) || t.desc.toLowerCase().includes(q) || t.tags.some(tg => tg.includes(q))) : group;
+    grid.innerHTML = filtered.map(t => `
+      <a class="card" href="${t.file}">
+        <div class="card-icon">${t.icon}</div>
+        <h3>${t.name}</h3>
+        <p>${t.desc}</p>
+        <div class="tags">${t.tags.map(tg => `<span class="tag ${tg}">${tg}</span>`).join('')}</div>
+      </a>
+    `).join('');
+  }
+  document.getElementById('topicCount').textContent = Object.values(topics).flat().length;
+  document.getElementById('diagramCount').textContent = Object.values(topics).flat().length;
+}
 
-            <div class="systems-grid">
-                <!-- System 1: YouTube -->
-                <div class="system-card">
-                    <span class="badge">Recommendation System</span>
-                    <h3>🎬 YouTube Recommendations</h3>
-                    <p class="challenge">How to rank 1B videos for 2.5B users in <500ms?</p>
-                    <p>The gold standard recommendation engine. Covers candidate generation (FAISS), ranking (neural networks), re-ranking (freshness/diversity), online learning, and exploration/exploitation at planetary scale.</p>
-                    <div class="metrics">
-                        <div class="metrics-item">
-                            <span class="metrics-label">Scale:</span>
-                            <span class="metrics-value">1B+ DAU</span>
-                        </div>
-                        <div class="metrics-item">
-                            <span class="metrics-label">Latency:</span>
-                            <span class="metrics-value"><500ms p99</span>
-                        </div>
-                        <div class="metrics-item">
-                            <span class="metrics-label">QPS:</span>
-                            <span class="metrics-value">350K+</span>
-                        </div>
-                        <div class="metrics-item">
-                            <span class="metrics-label">Revenue Impact:</span>
-                            <span class="metrics-value">80% watch-time</span>
-                        </div>
-                    </div>
-                    <p><strong>Key Topics:</strong> FAISS, collaborative filtering, neural ranking, embedding systems, online learning, Thompson sampling</p>
-                    <div class="links">
-                        <a href="01-YouTube-Recommendations.md" class="link">📖 Read Deep Dive</a>
-                        <a href="youtube-architecture.html" class="link">🎨 Interactive Diagram</a>
-                    </div>
-                </div>
+document.getElementById('search').addEventListener('input', render);
+render();
 
-                <!-- System 2: Google Search -->
-                <div class="system-card">
-                    <span class="badge">Search & Retrieval</span>
-                    <h3>🔍 Google Search Ranking</h3>
-                    <p class="challenge">Return 10 most relevant pages from 1T corpus in <200ms?</p>
-                    <p>The retrieval challenge. Massive inverted index sharding, LambdaMART ranking, semantic search with BERT, and adversarial robustness against SEO spam.</p>
-                    <div class="metrics">
-                        <div class="metrics-item">
-                            <span class="metrics-label">Scale:</span>
-                            <span class="metrics-value">1T+ pages</span>
-                        </div>
-                        <div class="metrics-item">
-                            <span class="metrics-label">Latency:</span>
-                            <span class="metrics-value"><200ms p99</span>
-                        </div>
-                        <div class="metrics-item">
-                            <span class="metrics-label">QPS:</span>
-                            <span class="metrics-value">100K+</span>
-                        </div>
-                        <div class="metrics-item">
-                            <span class="metrics-label">Shards:</span>
-                            <span class="metrics-value">1000+</span>
-                        </div>
-                    </div>
-                    <p><strong>Key Topics:</strong> Inverted indexes, PageRank, LambdaMART, BERT embeddings, typo tolerance, spam detection</p>
-                    <div class="links">
-                        <a href="02-Google-Search-Ranking.md" class="link">📖 Read Deep Dive</a>
-                        <a href="search-architecture.html" class="link">🎨 Interactive Diagram</a>
-                    </div>
-                </div>
-
-                <!-- System 3: Ads CTR -->
-                <div class="system-card">
-                    <span class="badge">Online Learning</span>
-                    <h3>💰 Ads CTR Prediction</h3>
-                    <p class="challenge">Predict clicks in <50ms with online learning at 1M QPS?</p>
-                    <p>Real-time learning infrastructure. CTR prediction, bandit algorithms, real-time feature stores, streaming updates, and click fraud detection.</p>
-                    <div class="metrics">
-                        <div class="metrics-item">
-                            <span class="metrics-label">Scale:</span>
-                            <span class="metrics-value">1M QPS</span>
-                        </div>
-                        <div class="metrics-item">
-                            <span class="metrics-label">Latency:</span>
-                            <span class="metrics-value"><50ms p99</span>
-                        </div>
-                        <div class="metrics-item">
-                            <span class="metrics-label">Impressions/day:</span>
-                            <span class="metrics-value">400M+</span>
-                        </div>
-                        <div class="metrics-item">
-                            <span class="metrics-label">Revenue:</span>
-                            <span class="metrics-value">$280B/year</span>
-                        </div>
-                    </div>
-                    <p><strong>Key Topics:</strong> DCN models, Thompson sampling, contextual bandits, feature stores, fraud detection, online learning</p>
-                    <div class="links">
-                        <a href="03-Ads-CTR-Prediction.md" class="link">📖 Read Deep Dive</a>
-                        <a href="ads-architecture.html" class="link">🎨 Interactive Diagram</a>
-                    </div>
-                </div>
-
-                <!-- System 4: LLM Serving -->
-                <div class="system-card">
-                    <span class="badge">Inference Optimization</span>
-                    <h3>🤖 LLM Serving Infrastructure</h3>
-                    <p class="challenge">Serve 70B models with <500ms TTFT at billion-scale?</p>
-                    <p>Modern inference optimization. Batching, KV caching, speculative decoding, quantization, and cost-per-token economics at massive scale.</p>
-                    <div class="metrics">
-                        <div class="metrics-item">
-                            <span class="metrics-label">Concurrency:</span>
-                            <span class="metrics-value">100K+ users</span>
-                        </div>
-                        <div class="metrics-item">
-                            <span class="metrics-label">TTFT:</span>
-                            <span class="metrics-value"><500ms p99</span>
-                        </div>
-                        <div class="metrics-item">
-                            <span class="metrics-label">Model Size:</span>
-                            <span class="metrics-value">70B-540B params</span>
-                        </div>
-                        <div class="metrics-item">
-                            <span class="metrics-label">Cost Focus:</span>
-                            <span class="metrics-value">Critical</span>
-                        </div>
-                    </div>
-                    <p><strong>Key Topics:</strong> Batching, KV cache, speculative decoding, quantization, distillation, request scheduling</p>
-                    <div class="links">
-                        <a href="04-LLM-Serving-Infrastructure.md" class="link">📖 Read Deep Dive</a>
-                        <a href="llm-architecture.html" class="link">🎨 Interactive Diagram</a>
-                    </div>
-                </div>
-
-                <!-- System 5: TikTok -->
-                <div class="system-card">
-                    <span class="badge">Real-Time Engagement</span>
-                    <h3>🎵 TikTok Feed Ranking</h3>
-                    <p class="challenge">Generate infinite personalized feed with exploration/exploitation?</p>
-                    <p>Real-time ranking with reinforcement learning. Multi-armed bandits, long-term value optimization, and engagement prediction at 2B MAU scale.</p>
-                    <div class="metrics">
-                        <div class="metrics-item">
-                            <span class="metrics-label">Scale:</span>
-                            <span class="metrics-value">2B+ MAU</span>
-                        </div>
-                        <div class="metrics-item">
-                            <span class="metrics-label">Latency:</span>
-                            <span class="metrics-value"><500ms p99</span>
-                        </div>
-                        <div class="metrics-item">
-                            <span class="metrics-label">Refresh Rate:</span>
-                            <span class="metrics-value">Per scroll</span>
-                        </div>
-                        <div class="metrics-item">
-                            <span class="metrics-label">Focus:</span>
-                            <span class="metrics-value">Engagement</span>
-                        </div>
-                    </div>
-                    <p><strong>Key Topics:</strong> Reinforcement learning, contextual bandits, long-term value, user engagement modeling, creator growth</p>
-                    <div class="links">
-                        <a href="05-TikTok-Feed-Ranking.md" class="link">📖 Read Deep Dive</a>
-                        <a href="tiktok-architecture.html" class="link">🎨 Interactive Diagram</a>
-                    </div>
-                </div>
-
-                <!-- System 6: Netflix -->
-                <div class="system-card">
-                    <span class="badge">Batch Recommendation</span>
-                    <h3>📺 Netflix Recommendations</h3>
-                    <p class="challenge">Cold-start + diversity + long-term satisfaction optimization?</p>
-                    <p>Offline batch pipelines with collaborative filtering, content-based filtering, and diversity boosting. Handles cold-start with context-based recommendations.</p>
-                    <div class="metrics">
-                        <div class="metrics-item">
-                            <span class="metrics-label">Scale:</span>
-                            <span class="metrics-value">250M+ users</span>
-                        </div>
-                        <div class="metrics-item">
-                            <span class="metrics-label">Freshness:</span>
-                            <span class="metrics-value">Daily batch</span>
-                        </div>
-                        <div class="metrics-item">
-                            <span class="metrics-label">Catalog:</span>
-                            <span class="metrics-value">10K+ titles</span>
-                        </div>
-                        <div class="metrics-item">
-                            <span class="metrics-label">Focus:</span>
-                            <span class="metrics-value">Satisfaction</span>
-                        </div>
-                    </div>
-                    <p><strong>Key Topics:</strong> Collaborative filtering, content-based, cold-start, diversity penalties, batch pipelines</p>
-                    <div class="links">
-                        <a href="06-Netflix-Recommendations.md" class="link">📖 Read Deep Dive</a>
-                        <a href="netflix-architecture.html" class="link">🎨 Interactive Diagram</a>
-                    </div>
-                </div>
-
-                <!-- System 7: Maps -->
-                <div class="system-card">
-                    <span class="badge">Geospatial Ranking</span>
-                    <h3>🗺️ Google Maps Ranking</h3>
-                    <p class="challenge">Rank places by relevance + distance + popularity at scale?</p>
-                    <p>Geospatial indexing with learning-to-rank. Handles regional spikes, locality-aware serving, and real-time signals from user behavior.</p>
-                    <div class="metrics">
-                        <div class="metrics-item">
-                            <span class="metrics-label">Scale:</span>
-                            <span class="metrics-value">200M+ places</span>
-                        </div>
-                        <div class="metrics-item">
-                            <span class="metrics-label">Latency:</span>
-                            <span class="metrics-value"><200ms p99</span>
-                        </div>
-                        <div class="metrics-item">
-                            <span class="metrics-label">QPS:</span>
-                            <span class="metrics-value">100K+</span>
-                        </div>
-                        <div class="metrics-item">
-                            <span class="metrics-label">Geographic:</span>
-                            <span class="metrics-value">Distributed</span>
-                        </div>
-                    </div>
-                    <p><strong>Key Topics:</strong> Geospatial indexing, learning-to-rank, regional popularity, real-time signals, location bias</p>
-                    <div class="links">
-                        <a href="07-Maps-Ranking.md" class="link">📖 Read Deep Dive</a>
-                        <a href="maps-architecture.html" class="link">🎨 Interactive Diagram</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Comparative Analysis -->
-        <div class="section">
-            <h2>⚖️ Comparative Analysis</h2>
-            <p style="margin-bottom: 20px; color: #666;">Understand similarities and differences across systems.</p>
-
-            <table class="comparison-table">
-                <thead>
-                    <tr>
-                        <th>System</th>
-                        <th>Retrieval Method</th>
-                        <th>Ranking Approach</th>
-                        <th>Online Learning</th>
-                        <th>Latency SLA</th>
-                        <th>Main Challenge</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td><strong>YouTube</strong></td>
-                        <td>FAISS (ANN)</td>
-                        <td>Neural Network (watch-time)</td>
-                        <td>Yes (Thompson sampling)</td>
-                        <td><500ms</td>
-                        <td>Candidate generation at scale</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Google Search</strong></td>
-                        <td>Inverted Index</td>
-                        <td>LambdaMART (GBDT)</td>
-                        <td>Limited (CTR signals)</td>
-                        <td><200ms</td>
-                        <td>Index sharding & retrieval</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Ads CTR</strong></td>
-                        <td>Feature lookup</td>
-                        <td>Deep Neural Network</td>
-                        <td>Yes (mini-batch SGD)</td>
-                        <td><50ms</td>
-                        <td>Inference latency + cost</td>
-                    </tr>
-                    <tr>
-                        <td><strong>LLM Serving</strong></td>
-                        <td>N/A (token-based)</td>
-                        <td>Sampling from model</td>
-                        <td>No (stateless)</td>
-                        <td><500ms TTFT</td>
-                        <td>Batching & KV cache</td>
-                    </tr>
-                    <tr>
-                        <td><strong>TikTok</strong></td>
-                        <td>Fast heuristic</td>
-                        <td>RL (contextual bandit)</td>
-                        <td>Yes (per-session)</td>
-                        <td><500ms</td>
-                        <td>Exploration/exploitation</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Netflix</strong></td>
-                        <td>Batch precompute</td>
-                        <td>Collaborative + content-based</td>
-                        <td>No (daily recompute)</td>
-                        <td>Batch (hours)</td>
-                        <td>Cold-start + diversity</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Maps</strong></td>
-                        <td>Geospatial index</td>
-                        <td>Learning-to-rank</td>
-                        <td>Yes (real-time signals)</td>
-                        <td><200ms</td>
-                        <td>Geographic distribution</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-
-        <!-- Learning Path -->
-        <div class="section">
-            <h2>🎓 Recommended Learning Path</h2>
-
-            <div class="learning-path">
-                <h3>Foundation Level (Day 1-2)</h3>
-                <ol>
-                    <li><strong>YouTube Recommendations</strong> - Most comprehensive system. Covers all fundamental concepts (retrieval, ranking, re-ranking, online learning)</li>
-                    <li><strong>Google Search Ranking</strong> - Different retrieval challenge (inverted index vs FAISS). Introduces learning-to-rank</li>
-                    <li><strong>Ads CTR Prediction</strong> - Online learning focus. Real-time feature engineering</li>
-                </ol>
-            </div>
-
-            <div class="learning-path">
-                <h3>Intermediate Level (Day 3-4)</h3>
-                <ol>
-                    <li><strong>LLM Serving</strong> - Modern inference optimization. Batching, KV cache, speculative decoding</li>
-                    <li><strong>TikTok Feed</strong> - Reinforcement learning approach. Exploration/exploitation</li>
-                    <li><strong>Netflix Recommendations</strong> - Batch approach. Cold-start and diversity</li>
-                </ol>
-            </div>
-
-            <div class="learning-path">
-                <h3>Advanced Level (Day 5-6)</h3>
-                <ol>
-                    <li><strong>Maps Ranking</strong> - Geospatial challenges. Regional distribution</li>
-                    <li><strong>Comparative Analysis</strong> - Design unified platform for multiple systems</li>
-                    <li><strong>Production Patterns</strong> - Failures, monitoring, scaling, A/B testing</li>
-                </ol>
-            </div>
-        </div>
-
-        <!-- Key Concepts -->
-        <div class="section">
-            <h2>🧠 Fundamental Concepts Across All Systems</h2>
-            <div class="key-concepts">
-                <div class="concept-box">
-                    <div class="icon">🔍</div>
-                    <h4>Retrieval</h4>
-                    <p>Finding candidates from large corpus efficiently (FAISS, inverted index, heuristics)</p>
-                </div>
-                <div class="concept-box">
-                    <div class="icon">📊</div>
-                    <h4>Ranking</h4>
-                    <p>Scoring and ordering candidates (neural networks, GBDT, learned models)</p>
-                </div>
-                <div class="concept-box">
-                    <div class="icon">🎯</div>
-                    <h4>Features</h4>
-                    <p>Representing users, items, context for ML models (embeddings, signals)</p>
-                </div>
-                <div class="concept-box">
-                    <div class="icon">🔄</div>
-                    <h4>Online Learning</h4>
-                    <p>Adapting to real-time feedback (streaming, bandits, incremental updates)</p>
-                </div>
-                <div class="concept-box">
-                    <div class="icon">⚡</div>
-                    <h4>Latency Optimization</h4>
-                    <p>Meeting SLA requirements (caching, batching, quantization)</p>
-                </div>
-                <div class="concept-box">
-                    <div class="icon">🛡️</div>
-                    <h4>Production</h4>
-                    <p>Monitoring, failures, A/B testing, safe rollouts</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- Scale Stats -->
-        <div class="section">
-            <h2>📈 Scale & Scope</h2>
-            <div class="stats-row">
-                <div class="stat-card">
-                    <div class="number">1B+</div>
-                    <div class="label">Daily Active Users</div>
-                </div>
-                <div class="stat-card">
-                    <div class="number">1M+</div>
-                    <div class="label">Peak QPS</div>
-                </div>
-                <div class="stat-card">
-                    <div class="number"><100ms</div>
-                    <div class="label">Latency SLA</div>
-                </div>
-                <div class="stat-card">
-                    <div class="number">99.99%</div>
-                    <div class="label">Availability</div>
-                </div>
-                <div class="stat-card">
-                    <div class="number">1 Trillion</div>
-                    <div class="label">Items Indexed</div>
-                </div>
-                <div class="stat-card">
-                    <div class="number">$Billions</div>
-                    <div class="label">Revenue at Stake</div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Resources -->
-        <div class="section">
-            <h2>📚 Additional Resources</h2>
-            <div class="systems-grid" style="grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));">
-                <div class="system-card" style="border-color: #764ba2;">
-                    <h3>Production Patterns</h3>
-                    <p>Real failure modes, incident response, monitoring patterns</p>
-                    <div class="links">
-                        <a href="production-patterns.html" class="link">Read →</a>
-                    </div>
-                </div>
-                <div class="system-card" style="border-color: #764ba2;">
-                    <h3>Tradeoff Analysis</h3>
-                    <p>Database choices, caching strategies, consistency models</p>
-                    <div class="links">
-                        <a href="tradeoff-analysis.html" class="link">Read →</a>
-                    </div>
-                </div>
-                <div class="system-card" style="border-color: #764ba2;">
-                    <h3>Interview Tips</h3>
-                    <p>How to think, communicate, and handle follow-ups like a Google L5</p>
-                    <div class="links">
-                        <a href="interview-tips.html" class="link">Read →</a>
-                    </div>
-                </div>
-                <div class="system-card" style="border-color: #764ba2;">
-                    <h3>Scaling Strategies</h3>
-                    <p>Handling 10x, 100x, 1000x increases in traffic</p>
-                    <div class="links">
-                        <a href="scaling-strategies.html" class="link">Read →</a>
-                    </div>
-                </div>
-                <div class="system-card" style="border-color: #764ba2;">
-                    <h3>A/B Testing Framework</h3>
-                    <p>How Google tests recommendations at scale</p>
-                    <div class="links">
-                        <a href="ab-testing.html" class="link">Read →</a>
-                    </div>
-                </div>
-                <div class="system-card" style="border-color: #764ba2;">
-                    <h3>Cost Optimization</h3>
-                    <p>Balancing quality, latency, and cost at scale</p>
-                    <div class="links">
-                        <a href="cost-optimization.html" class="link">Read →</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="footer">
-            <h2>🔥 Ready to Interview?</h2>
-            <p style="font-size: 1.1em; margin: 20px 0;">Deep dive into any system above. Think like a Google L5.</p>
-            <p style="opacity: 0.8;">This is real content, real depth, real tradeoffs. Not memorized answers.</p>
-            <p style="margin-top: 30px; opacity: 0.7;">Last updated: May 2026</p>
-        </div>
-    </div>
+const cards = document.querySelectorAll('.card');
+cards.forEach(c => c.addEventListener('click', e => {
+  if (e.target.closest('.card')) { /* let default href work */ }
+}));
+</script>
 </body>
 </html>

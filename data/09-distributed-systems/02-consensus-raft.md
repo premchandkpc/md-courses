@@ -87,6 +87,34 @@ Raft decomposes consensus into five sub-problems, each independently solvable an
 
 ## 2. Server States: Leader, Follower, Candidate
 
+### Interactive: Raft State Machine
+
+<div style="padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>.state-machine-title{color:#00d4ff;font-family:monospace;font-size:14px;font-weight:bold;margin-bottom:16px}.state-demo{text-align:center}.state-display{font-size:18px;font-family:monospace;padding:16px;border-radius:4px;margin:16px 0;color:#0b0e14;font-weight:bold;min-height:50px;display:flex;align-items:center;justify-content:center;border:2px solid currentColor}.state-follower{background:#60a5fa;border-color:#3b82f6}.state-candidate{background:#fbbf24;border-color:#f59e0b}.state-leader{background:#34d399;border-color:#22c55e}.state-buttons{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:16px}.state-button{padding:8px 16px;border:1px solid #00d4ff;background:#1e3a5f;color:#00d4ff;border-radius:4px;cursor:pointer;font-family:monospace;font-size:12px;transition:all 0.2s}.state-button:hover{background:#2a5a8f;box-shadow:0 0 8px #00d4ff}</style>
+  <div class="state-machine-title">Raft Server State Transitions</div>
+  <div class="state-demo">
+    <div class="state-display state-follower" id="raft-state">FOLLOWER</div>
+    <div class="state-buttons">
+      <button class="state-button" onclick="setRaftState('FOLLOWER')">Follower (Stable)</button>
+      <button class="state-button" onclick="setRaftState('CANDIDATE')">Candidate (Election)</button>
+      <button class="state-button" onclick="setRaftState('LEADER')">Leader (Active)</button>
+    </div>
+  </div>
+  <script>
+    const raftMap = {
+      'FOLLOWER': { label: 'FOLLOWER', class: 'state-follower' },
+      'CANDIDATE': { label: 'CANDIDATE', class: 'state-candidate' },
+      'LEADER': { label: 'LEADER', class: 'state-leader' }
+    };
+    function setRaftState(state) {
+      const display = document.getElementById('raft-state');
+      const info = raftMap[state];
+      display.textContent = info.label;
+      display.className = 'state-display ' + info.class;
+    }
+  </script>
+</div>
+
 ### Raft Election Flow
 
 ```mermaid

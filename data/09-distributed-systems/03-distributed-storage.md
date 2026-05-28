@@ -46,6 +46,35 @@ graph LR
 
 ---
 
+## Interactive: Storage Cluster Topology
+
+<div style="padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>.topology-title{color:#00d4ff;font-family:monospace;font-size:14px;font-weight:bold;margin-bottom:12px}.topology-svg{width:100%;max-width:600px;height:300px;background:#1a2332;border:1px solid #1e3a5f;border-radius:4px}.topo-edge{stroke:#1e3a5f;stroke-width:2}.topo-legend{display:flex;gap:16px;margin-top:12px;font-size:12px;color:#e3eaf0;font-family:monospace;flex-wrap:wrap}.legend-item{display:flex;align-items:center;gap:6px}</style>
+  <div class="topology-title">HDFS Cluster Layout (NameNode + ChunkServers)</div>
+  <svg class="topology-svg" viewBox="0 0 600 300">
+    <defs><marker id="arrow-storage" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto"><polygon points="0 0, 10 3, 0 6" fill="#1e3a5f"/></marker></defs>
+    <!-- NameNode -->
+    <g><rect x="220" y="10" width="160" height="60" rx="4" fill="#1e3a5f" stroke="#fbbf24" stroke-width="2"/><text x="300" y="35" text-anchor="middle" fill="#e3eaf0" font-size="12" font-family="monospace">NameNode</text><text x="300" y="50" text-anchor="middle" fill="#a3aab8" font-size="10" font-family="monospace">(Metadata)</text></g>
+    <!-- ChunkServers Rack 1 -->
+    <g><rect x="30" y="130" width="100" height="50" rx="4" fill="#1e3a5f" stroke="#00d4ff" stroke-width="1"/><text x="80" y="160" text-anchor="middle" fill="#e3eaf0" font-size="11" font-family="monospace">Chunk-1</text></g>
+    <g><rect x="160" y="130" width="100" height="50" rx="4" fill="#1e3a5f" stroke="#00d4ff" stroke-width="1"/><text x="210" y="160" text-anchor="middle" fill="#e3eaf0" font-size="11" font-family="monospace">Chunk-2</text></g>
+    <!-- ChunkServers Rack 2 -->
+    <g><rect x="310" y="130" width="100" height="50" rx="4" fill="#1e3a5f" stroke="#00d4ff" stroke-width="1"/><text x="360" y="160" text-anchor="middle" fill="#e3eaf0" font-size="11" font-family="monospace">Chunk-3</text></g>
+    <g><rect x="440" y="130" width="100" height="50" rx="4" fill="#1e3a5f" stroke="#00d4ff" stroke-width="1"/><text x="490" y="160" text-anchor="middle" fill="#e3eaf0" font-size="11" font-family="monospace">Chunk-4</text></g>
+    <!-- Connections -->
+    <line class="topo-edge" x1="270" y1="70" x2="80" y2="130" marker-end="url(#arrow-storage)"/>
+    <line class="topo-edge" x1="300" y1="70" x2="210" y2="130" marker-end="url(#arrow-storage)"/>
+    <line class="topo-edge" x1="330" y1="70" x2="360" y2="130" marker-end="url(#arrow-storage)"/>
+    <line class="topo-edge" x1="360" y1="70" x2="490" y2="130" marker-end="url(#arrow-storage)"/>
+    <!-- Replication label -->
+    <text x="300" y="280" text-anchor="middle" fill="#a3aab8" font-size="11" font-family="monospace">3x Replication, Rack-Aware Placement</text>
+  </svg>
+  <div class="topo-legend">
+    <div class="legend-item"><div style="width:14px;height:14px;background:#1e3a5f;border:2px solid #fbbf24"></div><span>NameNode (Master)</span></div>
+    <div class="legend-item"><div style="width:14px;height:14px;background:#1e3a5f;border:1px solid #00d4ff"></div><span>ChunkServer (Data)</span></div>
+  </div>
+</div>
+
 ## 1. GFS / HDFS Architecture
 
 

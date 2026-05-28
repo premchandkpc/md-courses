@@ -37,6 +37,73 @@ Jump directly to location
 
 ---
 
+## Interactive: B+Tree Structure
+
+<div style="padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>.topology-title{color:#00d4ff;font-family:monospace;font-size:14px;font-weight:bold;margin-bottom:12px}.topology-svg{width:100%;max-width:600px;height:300px;background:#1a2332;border:1px solid #1e3a5f;border-radius:4px}.topo-edge{stroke:#1e3a5f;stroke-width:2}.topo-legend{display:flex;gap:16px;margin-top:12px;font-size:12px;color:#e3eaf0;font-family:monospace;flex-wrap:wrap}.legend-item{display:flex;align-items:center;gap:6px}</style>
+  <div class="topology-title">B+Tree Index Layout (Order 4)</div>
+  <svg class="topology-svg" viewBox="0 0 600 300">
+    <defs><marker id="tree-arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto"><polygon points="0 0, 10 3, 0 6" fill="#1e3a5f"/></marker></defs>
+    <!-- Root -->
+    <g><rect x="230" y="10" width="140" height="50" rx="4" fill="#1e3a5f" stroke="#00d4ff" stroke-width="2"/><text x="300" y="40" text-anchor="middle" fill="#e3eaf0" font-size="12" font-family="monospace">Root: [10, 50]</text></g>
+    <!-- Internal nodes -->
+    <g><rect x="50" y="90" width="120" height="50" rx="4" fill="#1e3a5f" stroke="#00d4ff" stroke-width="1"/><text x="110" y="120" text-anchor="middle" fill="#e3eaf0" font-size="11" font-family="monospace">Int: [5, 8]</text></g>
+    <g><rect x="240" y="90" width="120" height="50" rx="4" fill="#1e3a5f" stroke="#00d4ff" stroke-width="1"/><text x="300" y="120" text-anchor="middle" fill="#e3eaf0" font-size="11" font-family="monospace">Int: [20, 40]</text></g>
+    <g><rect x="430" y="90" width="120" height="50" rx="4" fill="#1e3a5f" stroke="#00d4ff" stroke-width="1"/><text x="490" y="120" text-anchor="middle" fill="#e3eaf0" font-size="11" font-family="monospace">Int: [60, 90]</text></g>
+    <!-- Leaf nodes -->
+    <g><rect x="10" y="170" width="100" height="50" rx="4" fill="#3a7ca5" stroke="#00d4ff" stroke-width="1"/><text x="60" y="200" text-anchor="middle" fill="#e3eaf0" font-size="10" font-family="monospace">Leaf: [5,8]</text></g>
+    <g><rect x="140" y="170" width="100" height="50" rx="4" fill="#3a7ca5" stroke="#00d4ff" stroke-width="1"/><text x="190" y="200" text-anchor="middle" fill="#e3eaf0" font-size="10" font-family="monospace">Leaf: [10,15]</text></g>
+    <g><rect x="270" y="170" width="100" height="50" rx="4" fill="#3a7ca5" stroke="#00d4ff" stroke-width="1"/><text x="320" y="200" text-anchor="middle" fill="#e3eaf0" font-size="10" font-family="monospace">Leaf: [50,55]</text></g>
+    <g><rect x="400" y="170" width="100" height="50" rx="4" fill="#3a7ca5" stroke="#00d4ff" stroke-width="1"/><text x="450" y="200" text-anchor="middle" fill="#e3eaf0" font-size="10" font-family="monospace">Leaf: [60,85]</text></g>
+    <!-- Edges -->
+    <line class="topo-edge" x1="270" y1="60" x2="110" y2="90"/>
+    <line class="topo-edge" x1="300" y1="60" x2="300" y2="90"/>
+    <line class="topo-edge" x1="330" y1="60" x2="490" y2="90"/>
+    <line class="topo-edge" x1="110" y1="140" x2="60" y2="170"/>
+    <line class="topo-edge" x1="110" y1="140" x2="190" y2="170"/>
+    <line class="topo-edge" x1="300" y1="140" x2="320" y2="170"/>
+    <line class="topo-edge" x1="490" y1="140" x2="450" y2="170"/>
+  </svg>
+  <div class="topo-legend">
+    <div class="legend-item"><div style="width:14px;height:14px;background:#1e3a5f;border:1px solid #00d4ff"></div><span>Internal Node</span></div>
+    <div class="legend-item"><div style="width:14px;height:14px;background:#3a7ca5;border:1px solid #00d4ff"></div><span>Leaf Node</span></div>
+  </div>
+</div>
+
+## Interactive: Index Rebalancing Cascade
+
+<div style="padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>.cascade-title{color:#00d4ff;font-family:monospace;font-size:14px;font-weight:bold;margin-bottom:16px}.cascade-stages{display:flex;flex-direction:column;gap:12px;margin-bottom:16px}.cascade-stage{display:flex;align-items:center;gap:12px}.cascade-label{color:#e3eaf0;font-family:monospace;font-size:12px;min-width:140px}.cascade-indicator{width:24px;height:24px;border-radius:4px;background:#34d399;border:2px solid #22c55e;transition:all 0.3s}.cascade-indicator.failing{background:#ef4444;border-color:#dc2626;box-shadow:0 0 12px #ef4444;animation:cascade-fail 0.6s ease-out}@keyframes cascade-fail{0%{transform:scale(1);opacity:1}100%{transform:scale(1.2);opacity:0.8}}.cascade-controls{display:flex;gap:8px;flex-wrap:wrap}.cascade-button{padding:8px 16px;border:1px solid #00d4ff;background:#1e3a5f;color:#00d4ff;border-radius:4px;cursor:pointer;font-family:monospace;font-size:12px;transition:all 0.2s}.cascade-button:hover{background:#2a5a8f;box-shadow:0 0 8px #00d4ff}</style>
+  <div class="cascade-title">Node Split Cascade During Insert</div>
+  <div class="cascade-stages">
+    <div class="cascade-stage"><span class="cascade-label">Insert into full leaf</span><div class="cascade-indicator" data-stage="insert"></div></div>
+    <div class="cascade-stage"><span class="cascade-label">Leaf node splits</span><div class="cascade-indicator" data-stage="leaf-split"></div></div>
+    <div class="cascade-stage"><span class="cascade-label">Parent updated</span><div class="cascade-indicator" data-stage="parent"></div></div>
+    <div class="cascade-stage"><span class="cascade-label">Parent overflows</span><div class="cascade-indicator" data-stage="parent-full"></div></div>
+    <div class="cascade-stage"><span class="cascade-label">Internal node splits</span><div class="cascade-indicator" data-stage="internal-split"></div></div>
+    <div class="cascade-stage"><span class="cascade-label">Root grows</span><div class="cascade-indicator" data-stage="root-grow"></div></div>
+  </div>
+  <div class="cascade-controls">
+    <button class="cascade-button" onclick="splitCascade()">Simulate Node Split</button>
+    <button class="cascade-button" onclick="resetSplit()">Reset</button>
+  </div>
+  <script>
+    function splitCascade() {
+      const stages = ['insert', 'leaf-split', 'parent', 'parent-full', 'internal-split', 'root-grow'];
+      let delay = 0;
+      stages.forEach((id) => {
+        setTimeout(() => {
+          document.querySelector('[data-stage="'+id+'"]').classList.add('failing');
+        }, delay);
+        delay += 250;
+      });
+    }
+    function resetSplit() {
+      document.querySelectorAll('[data-stage]').forEach(s => s.classList.remove('failing'));
+    }
+  </script>
+</div>
+
 ## Layer 4: Production Reality
 
 

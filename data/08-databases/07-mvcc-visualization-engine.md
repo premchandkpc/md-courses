@@ -132,6 +132,54 @@ Simulate PostgreSQL-style MVCC: visualize tuple versions, transaction snapshots,
 
 ---
 
+## Interactive: Isolation Level Tuning
+
+<div style="padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>.slider-title{color:#00d4ff;font-family:monospace;font-size:14px;font-weight:bold;margin-bottom:12px}.slider-container{display:flex;flex-direction:column;gap:12px}.slider-label{color:#e3eaf0;font-family:monospace;font-size:12px}.slider-wrapper{display:flex;align-items:center;gap:12px}.slider-input{flex:1;height:6px;border-radius:3px;background:#1e3a5f;outline:none;-webkit-appearance:none;appearance:none}.slider-input::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:18px;height:18px;border-radius:50%;background:#00d4ff;cursor:pointer;box-shadow:0 0 8px #00d4ff;border:2px solid #0b0e14}.slider-input::-moz-range-thumb{width:18px;height:18px;border-radius:50%;background:#00d4ff;cursor:pointer;box-shadow:0 0 8px #00d4ff;border:2px solid #0b0e14}.slider-value{font-family:monospace;color:#34d399;min-width:120px;text-align:right;font-size:12px;font-weight:bold}</style>
+  <div class="slider-title">Consistency vs Performance Tradeoff</div>
+  <div class="slider-container">
+    <label class="slider-label">Isolation Level (strictness):</label>
+    <div class="slider-wrapper">
+      <input type="range" min="1" max="4" value="2" class="slider-input" id="isolation-slider">
+      <span class="slider-value" id="isolation-value">Read Committed</span>
+    </div>
+  </div>
+  <script>
+    const levels = { 1: 'Read Uncommitted', 2: 'Read Committed', 3: 'Repeatable Read', 4: 'Serializable' };
+    const slider = document.getElementById('isolation-slider');
+    const value = document.getElementById('isolation-value');
+    slider.addEventListener('input', (e) => { value.textContent = levels[e.target.value]; });
+  </script>
+</div>
+
+### Transaction Visibility State Machine
+
+<div style="padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>.state-machine-title{color:#00d4ff;font-family:monospace;font-size:14px;font-weight:bold;margin-bottom:16px}.state-demo{text-align:center}.state-display{font-size:18px;font-family:monospace;padding:16px;border-radius:4px;margin:16px 0;color:#0b0e14;font-weight:bold;min-height:50px;display:flex;align-items:center;justify-content:center;border:2px solid currentColor}.state-active{background:#60a5fa;border-color:#3b82f6}.state-committed{background:#34d399;border-color:#22c55e}.state-aborted{background:#ef4444;border-color:#dc2626}.state-buttons{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:16px}.state-button{padding:8px 16px;border:1px solid #00d4ff;background:#1e3a5f;color:#00d4ff;border-radius:4px;cursor:pointer;font-family:monospace;font-size:12px;transition:all 0.2s}.state-button:hover{background:#2a5a8f;box-shadow:0 0 8px #00d4ff}</style>
+  <div class="state-machine-title">Tuple Visibility States</div>
+  <div class="state-demo">
+    <div class="state-display state-active" id="vis-display">LIVE</div>
+    <div class="state-buttons">
+      <button class="state-button" onclick="setVisState('LIVE')">Live (xmin ≤ xid, xmax = 0)</button>
+      <button class="state-button" onclick="setVisState('UPDATED')">Updated (xmax set)</button>
+      <button class="state-button" onclick="setVisState('DELETED')">Deleted (xmax by deleter)</button>
+    </div>
+  </div>
+  <script>
+    const visMap = {
+      'LIVE': { label: 'LIVE', class: 'state-active' },
+      'UPDATED': { label: 'UPDATED', class: 'state-committed' },
+      'DELETED': { label: 'DELETED', class: 'state-aborted' }
+    };
+    function setVisState(state) {
+      const display = document.getElementById('vis-display');
+      const info = visMap[state];
+      display.textContent = info.label;
+      display.className = 'state-display ' + info.class;
+    }
+  </script>
+</div>
+
 ## Animation Frames
 
 

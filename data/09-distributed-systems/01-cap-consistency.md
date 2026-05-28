@@ -55,6 +55,26 @@ graph LR
 
 ---
 
+## Interactive: Consistency Model Spectrum
+
+<div style="padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>.slider-title{color:#00d4ff;font-family:monospace;font-size:14px;font-weight:bold;margin-bottom:12px}.slider-container{display:flex;flex-direction:column;gap:12px}.slider-label{color:#e3eaf0;font-family:monospace;font-size:12px}.slider-wrapper{display:flex;align-items:center;gap:12px}.slider-input{flex:1;height:6px;border-radius:3px;background:#1e3a5f;outline:none;-webkit-appearance:none;appearance:none}.slider-input::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:18px;height:18px;border-radius:50%;background:#00d4ff;cursor:pointer;box-shadow:0 0 8px #00d4ff;border:2px solid #0b0e14}.slider-input::-moz-range-thumb{width:18px;height:18px;border-radius:50%;background:#00d4ff;cursor:pointer;box-shadow:0 0 8px #00d4ff;border:2px solid #0b0e14}.slider-value{font-family:monospace;color:#34d399;min-width:150px;text-align:right;font-size:12px;font-weight:bold}</style>
+  <div class="slider-title">Consistency vs Availability Tradeoff</div>
+  <div class="slider-container">
+    <label class="slider-label">CAP System Choice:</label>
+    <div class="slider-wrapper">
+      <input type="range" min="1" max="3" value="2" class="slider-input" id="cap-slider">
+      <span class="slider-value" id="cap-value">AP (Available)</span>
+    </div>
+  </div>
+  <script>
+    const capModes = { 1: 'CP (Consistent)', 2: 'AP (Available)', 3: 'CA (Single-node)' };
+    const slider = document.getElementById('cap-slider');
+    const value = document.getElementById('cap-value');
+    slider.addEventListener('input', (e) => { value.textContent = capModes[e.target.value]; });
+  </script>
+</div>
+
 ## 1. CAP Theorem Formal Proof
 
 

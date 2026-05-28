@@ -38,6 +38,36 @@ graph LR
 
 ---
 
+## Interactive: NoSQL Shard Topology
+
+<div style="padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>.topology-title{color:#00d4ff;font-family:monospace;font-size:14px;font-weight:bold;margin-bottom:12px}.topology-svg{width:100%;max-width:600px;height:300px;background:#1a2332;border:1px solid #1e3a5f;border-radius:4px}.topo-edge{stroke:#1e3a5f;stroke-width:2}.topo-legend{display:flex;gap:16px;margin-top:12px;font-size:12px;color:#e3eaf0;font-family:monospace;flex-wrap:wrap}.legend-item{display:flex;align-items:center;gap:6px}</style>
+  <div class="topology-title">Cassandra Ring with Replication Factor 3</div>
+  <svg class="topology-svg" viewBox="0 0 600 300">
+    <defs><marker id="arrow-cassandra" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto"><polygon points="0 0, 10 3, 0 6" fill="#1e3a5f"/></marker></defs>
+    <!-- Ring -->
+    <circle cx="300" cy="150" r="100" fill="none" stroke="#1e3a5f" stroke-width="2" stroke-dasharray="5,5"/>
+    <!-- Nodes -->
+    <circle cx="400" cy="150" r="18" fill="#3a7ca5" stroke="#00d4ff" stroke-width="2"/>
+    <text x="400" y="155" text-anchor="middle" fill="#e3eaf0" font-size="12" font-family="monospace" font-weight="bold">N1</text>
+    <circle cx="250" cy="80" r="18" fill="#3a7ca5" stroke="#00d4ff" stroke-width="2"/>
+    <text x="250" y="85" text-anchor="middle" fill="#e3eaf0" font-size="12" font-family="monospace" font-weight="bold">N2</text>
+    <circle cx="200" cy="220" r="18" fill="#3a7ca5" stroke="#00d4ff" stroke-width="2"/>
+    <text x="200" y="225" text-anchor="middle" fill="#e3eaf0" font-size="12" font-family="monospace" font-weight="bold">N3</text>
+    <!-- Replication arrows -->
+    <path d="M 390 145 L 260 85" stroke="#34d399" stroke-width="2" fill="none" marker-end="url(#arrow-cassandra)"/>
+    <path d="M 260 85 L 210 215" stroke="#34d399" stroke-width="2" fill="none" marker-end="url(#arrow-cassandra)"/>
+    <path d="M 210 215 L 390 155" stroke="#34d399" stroke-width="2" fill="none" marker-end="url(#arrow-cassandra)"/>
+    <!-- Center label -->
+    <text x="300" y="155" text-anchor="middle" fill="#a3aab8" font-size="11" font-family="monospace">consistent</text>
+    <text x="300" y="170" text-anchor="middle" fill="#a3aab8" font-size="11" font-family="monospace">hashing</text>
+  </svg>
+  <div class="topo-legend">
+    <div class="legend-item"><div style="width:14px;height:14px;background:#3a7ca5;border:1px solid #00d4ff"></div><span>Data Node</span></div>
+    <div class="legend-item"><div style="width:14px;height:2px;background:#34d399;position:relative;top:1px"></div><span>Replication Path</span></div>
+  </div>
+</div>
+
 ## NoSQL Taxonomy
 
 

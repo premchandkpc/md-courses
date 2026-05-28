@@ -5,6 +5,35 @@
 
 ---
 
+## Interactive: Data Structure Performance
+
+<div style="padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>.obs-title{color:#00d4ff;font-family:monospace;font-size:14px;font-weight:bold;margin-bottom:16px}.obs-grid{display:grid;grid-template-columns:repeat(auto-fit, minmax(150px, 1fr));gap:12px}.obs-card{padding:12px;background:#1a2332;border:1px solid #1e3a5f;border-radius:4px;display:flex;flex-direction:column;align-items:center;transition:all 0.3s}.obs-card:hover{border-color:#00d4ff;box-shadow:0 0 8px rgba(0, 212, 255, 0.3)}.obs-label{color:#a3aab8;font-family:monospace;font-size:11px;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px}.obs-value{font-family:monospace;font-size:20px;font-weight:bold;margin-bottom:4px;letter-spacing:0.5px}.obs-unit{color:#a3aab8;font-family:monospace;font-size:10px;text-transform:uppercase}.metric-healthy{color:#34d399}.metric-warning{color:#fbbf24}.metric-critical{color:#ef4444}</style>
+  <div class="obs-title">Redis Operations Throughput</div>
+  <div class="obs-grid">
+    <div class="obs-card">
+      <div class="obs-label">GET Operation</div>
+      <div class="obs-value metric-healthy">500K</div>
+      <div class="obs-unit">ops/sec</div>
+    </div>
+    <div class="obs-card">
+      <div class="obs-label">SET Operation</div>
+      <div class="obs-value metric-healthy">450K</div>
+      <div class="obs-unit">ops/sec</div>
+    </div>
+    <div class="obs-card">
+      <div class="obs-label">LPUSH Operation</div>
+      <div class="obs-value metric-healthy">280K</div>
+      <div class="obs-unit">ops/sec</div>
+    </div>
+    <div class="obs-card">
+      <div class="obs-label">Memory Usage</div>
+      <div class="obs-value metric-warning">12.3</div>
+      <div class="obs-unit">GB</div>
+    </div>
+  </div>
+</div>
+
 ## Layer 1: Beginner Mental Model
 
 **Analogy**: Like a human memory. You keep frequently used data in your working memory (cache), organized by type (strings, lists, sets). You write down important things (persistence via RDB/AOF). If your brain crashes, you read your notes to recover.

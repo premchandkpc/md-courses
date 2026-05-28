@@ -58,6 +58,66 @@ graph LR
 
 ---
 
+## Interactive: Consistent Hashing Ring
+
+<div style="padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>.topology-title{color:#00d4ff;font-family:monospace;font-size:14px;font-weight:bold;margin-bottom:12px}.topology-svg{width:100%;max-width:500px;height:280px;background:#1a2332;border:1px solid #1e3a5f;border-radius:4px}.topo-legend{display:flex;gap:16px;margin-top:12px;font-size:12px;color:#e3eaf0;font-family:monospace;flex-wrap:wrap}.legend-item{display:flex;align-items:center;gap:6px}</style>
+  <div class="topology-title">Consistent Hash Ring (3 Nodes)</div>
+  <svg class="topology-svg" viewBox="0 0 500 280">
+    <!-- Ring circle -->
+    <circle cx="250" cy="140" r="120" fill="none" stroke="#1e3a5f" stroke-width="2"/>
+    <!-- Nodes on ring -->
+    <circle cx="370" cy="140" r="20" fill="#3a7ca5" stroke="#00d4ff" stroke-width="2"/>
+    <text x="370" y="145" text-anchor="middle" fill="#e3eaf0" font-size="12" font-family="monospace" font-weight="bold">A</text>
+    <circle cx="165" cy="60" r="20" fill="#3a7ca5" stroke="#00d4ff" stroke-width="2"/>
+    <text x="165" y="65" text-anchor="middle" fill="#e3eaf0" font-size="12" font-family="monospace" font-weight="bold">B</text>
+    <circle cx="165" cy="220" r="20" fill="#3a7ca5" stroke="#00d4ff" stroke-width="2"/>
+    <text x="165" y="225" text-anchor="middle" fill="#e3eaf0" font-size="12" font-family="monospace" font-weight="bold">C</text>
+    <!-- Hash ranges (colored arcs) -->
+    <path d="M 370 140 A 120 120 0 0 1 165 60" fill="none" stroke="#34d399" stroke-width="3" opacity="0.7"/>
+    <text x="330" y="70" fill="#34d399" font-size="10" font-family="monospace">Node A</text>
+    <path d="M 165 60 A 120 120 0 0 1 165 220" fill="none" stroke="#60a5fa" stroke-width="3" opacity="0.7"/>
+    <text x="110" y="140" fill="#60a5fa" font-size="10" font-family="monospace">Node B</text>
+    <path d="M 165 220 A 120 120 0 0 1 370 140" fill="none" stroke="#fbbf24" stroke-width="3" opacity="0.7"/>
+    <text x="300" y="250" fill="#fbbf24" font-size="10" font-family="monospace">Node C</text>
+    <!-- Center label -->
+    <text x="250" y="145" text-anchor="middle" fill="#a3aab8" font-size="11" font-family="monospace">hash ring</text>
+  </svg>
+  <div class="topo-legend">
+    <div class="legend-item"><div style="width:14px;height:14px;background:#3a7ca5;border:1px solid #00d4ff"></div><span>Cache Node</span></div>
+    <div class="legend-item"><div style="width:14px;height:3px;background:#34d399"></div><span>Hash Range</span></div>
+  </div>
+</div>
+
+### Cache Hit Rate Observability
+
+<div style="padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>.obs-title{color:#00d4ff;font-family:monospace;font-size:14px;font-weight:bold;margin-bottom:16px}.obs-grid{display:grid;grid-template-columns:repeat(auto-fit, minmax(150px, 1fr));gap:12px}.obs-card{padding:12px;background:#1a2332;border:1px solid #1e3a5f;border-radius:4px;display:flex;flex-direction:column;align-items:center;transition:all 0.3s}.obs-card:hover{border-color:#00d4ff;box-shadow:0 0 8px rgba(0, 212, 255, 0.3)}.obs-label{color:#a3aab8;font-family:monospace;font-size:11px;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px}.obs-value{font-family:monospace;font-size:20px;font-weight:bold;margin-bottom:4px;letter-spacing:0.5px}.obs-unit{color:#a3aab8;font-family:monospace;font-size:10px;text-transform:uppercase}.metric-healthy{color:#34d399}.metric-warning{color:#fbbf24}.metric-critical{color:#ef4444}</style>
+  <div class="obs-title">Distributed Cache Metrics</div>
+  <div class="obs-grid">
+    <div class="obs-card">
+      <div class="obs-label">Hit Rate</div>
+      <div class="obs-value metric-healthy">96</div>
+      <div class="obs-unit">%</div>
+    </div>
+    <div class="obs-card">
+      <div class="obs-label">Requests/sec</div>
+      <div class="obs-value metric-healthy">45K</div>
+      <div class="obs-unit">req/s</div>
+    </div>
+    <div class="obs-card">
+      <div class="obs-label">Evictions</div>
+      <div class="obs-value metric-warning">234</div>
+      <div class="obs-unit">keys/s</div>
+    </div>
+    <div class="obs-card">
+      <div class="obs-label">Memory Used</div>
+      <div class="obs-value metric-healthy">8.7</div>
+      <div class="obs-unit">GB</div>
+    </div>
+  </div>
+</div>
+
 ## 1. Caching Strategies
 
 

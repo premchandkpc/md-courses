@@ -54,6 +54,57 @@ graph LR
 
 ## 1. Two-Phase Commit (2PC)
 
+### Interactive: 2PC Flow with State Visualization
+
+<div style="padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>.state-machine-title{color:#00d4ff;font-family:monospace;font-size:14px;font-weight:bold;margin-bottom:16px}.state-demo{text-align:center}.state-display{font-size:16px;font-family:monospace;padding:12px;border-radius:4px;margin:12px 0;color:#0b0e14;font-weight:bold;min-height:40px;display:flex;align-items:center;justify-content:center;border:2px solid currentColor}.state-init{background:#60a5fa;border-color:#3b82f6}.state-prepared{background:#fbbf24;border-color:#f59e0b}.state-committed{background:#34d399;border-color:#22c55e}.state-aborted{background:#ef4444;border-color:#dc2626}.state-buttons{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:12px}.state-button{padding:6px 12px;border:1px solid #00d4ff;background:#1e3a5f;color:#00d4ff;border-radius:4px;cursor:pointer;font-family:monospace;font-size:11px;transition:all 0.2s}.state-button:hover{background:#2a5a8f;box-shadow:0 0 8px #00d4ff}</style>
+  <div class="state-machine-title">Coordinator & Participant State</div>
+  <div style="display:flex;gap:16px;margin-bottom:16px">
+    <div style="flex:1">
+      <div style="color:#00d4ff;font-size:11px;font-weight:bold;margin-bottom:8px">COORDINATOR</div>
+      <div class="state-display state-init" id="coord-state">IDLE</div>
+    </div>
+    <div style="flex:1">
+      <div style="color:#00d4ff;font-size:11px;font-weight:bold;margin-bottom:8px">PARTICIPANT</div>
+      <div class="state-display state-init" id="part-state">IDLE</div>
+    </div>
+  </div>
+  <div class="state-buttons">
+    <button class="state-button" onclick="begin2pc()">Begin Transaction</button>
+    <button class="state-button" onclick="prepare2pc()">Phase 1: Prepare</button>
+    <button class="state-button" onclick="commit2pc()">Phase 2: Commit</button>
+    <button class="state-button" onclick="reset2pc()">Reset</button>
+  </div>
+  <script>
+    let phase = 'idle';
+    function begin2pc() {
+      document.getElementById('coord-state').textContent = 'PREPARING';
+      document.getElementById('coord-state').className = 'state-display state-prepared';
+      phase = 'begun';
+    }
+    function prepare2pc() {
+      if(phase !== 'begun') return;
+      document.getElementById('part-state').textContent = 'PREPARED';
+      document.getElementById('part-state').className = 'state-display state-prepared';
+      phase = 'prepared';
+    }
+    function commit2pc() {
+      if(phase !== 'prepared') return;
+      document.getElementById('coord-state').textContent = 'COMMITTED';
+      document.getElementById('coord-state').className = 'state-display state-committed';
+      document.getElementById('part-state').textContent = 'COMMITTED';
+      document.getElementById('part-state').className = 'state-display state-committed';
+      phase = 'committed';
+    }
+    function reset2pc() {
+      document.getElementById('coord-state').textContent = 'IDLE';
+      document.getElementById('coord-state').className = 'state-display state-init';
+      document.getElementById('part-state').textContent = 'IDLE';
+      document.getElementById('part-state').className = 'state-display state-init';
+      phase = 'idle';
+    }
+  </script>
+</div>
 
 ```text
 Phase 1: PREPARE                     Phase 2: COMMIT/ABORT

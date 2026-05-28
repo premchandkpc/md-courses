@@ -48,6 +48,58 @@ graph LR
 
 ---
 
+## Interactive: Eviction Policy Simulation
+
+<div style="padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>.slider-title{color:#00d4ff;font-family:monospace;font-size:14px;font-weight:bold;margin-bottom:12px}.slider-container{display:flex;flex-direction:column;gap:12px}.slider-label{color:#e3eaf0;font-family:monospace;font-size:12px}.slider-wrapper{display:flex;align-items:center;gap:12px}.slider-input{flex:1;height:6px;border-radius:3px;background:#1e3a5f;outline:none;-webkit-appearance:none;appearance:none}.slider-input::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:18px;height:18px;border-radius:50%;background:#00d4ff;cursor:pointer;box-shadow:0 0 8px #00d4ff;border:2px solid #0b0e14}.slider-input::-moz-range-thumb{width:18px;height:18px;border-radius:50%;background:#00d4ff;cursor:pointer;box-shadow:0 0 8px #00d4ff;border:2px solid #0b0e14}.slider-value{font-family:monospace;color:#34d399;min-width:100px;text-align:right;font-size:12px;font-weight:bold}</style>
+  <div class="slider-title">Memory Allocation</div>
+  <div class="slider-container">
+    <label class="slider-label">Max Memory (MB):</label>
+    <div class="slider-wrapper">
+      <input type="range" min="64" max="4096" value="512" class="slider-input" id="mem-slider">
+      <span class="slider-value" id="mem-value">512 MB</span>
+    </div>
+  </div>
+  <script>
+    const slider = document.getElementById('mem-slider');
+    const value = document.getElementById('mem-value');
+    slider.addEventListener('input', (e) => { value.textContent = e.target.value + ' MB'; });
+  </script>
+</div>
+
+### Replication Failure Cascade
+
+<div style="padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>.cascade-title{color:#00d4ff;font-family:monospace;font-size:14px;font-weight:bold;margin-bottom:16px}.cascade-stages{display:flex;flex-direction:column;gap:12px;margin-bottom:16px}.cascade-stage{display:flex;align-items:center;gap:12px}.cascade-label{color:#e3eaf0;font-family:monospace;font-size:12px;min-width:140px}.cascade-indicator{width:24px;height:24px;border-radius:4px;background:#34d399;border:2px solid #22c55e;transition:all 0.3s}.cascade-indicator.failing{background:#ef4444;border-color:#dc2626;box-shadow:0 0 12px #ef4444;animation:cascade-fail 0.6s ease-out}@keyframes cascade-fail{0%{transform:scale(1);opacity:1}100%{transform:scale(1.2);opacity:0.8}}.cascade-controls{display:flex;gap:8px;flex-wrap:wrap}.cascade-button{padding:8px 16px;border:1px solid #00d4ff;background:#1e3a5f;color:#00d4ff;border-radius:4px;cursor:pointer;font-family:monospace;font-size:12px;transition:all 0.2s}.cascade-button:hover{background:#2a5a8f;box-shadow:0 0 8px #00d4ff}</style>
+  <div class="cascade-title">Primary Failure Cascade</div>
+  <div class="cascade-stages">
+    <div class="cascade-stage"><span class="cascade-label">Primary Healthy</span><div class="cascade-indicator" data-stage="primary"></div></div>
+    <div class="cascade-stage"><span class="cascade-label">Network Partition</span><div class="cascade-indicator" data-stage="network"></div></div>
+    <div class="cascade-stage"><span class="cascade-label">Replication Lag</span><div class="cascade-indicator" data-stage="lag"></div></div>
+    <div class="cascade-stage"><span class="cascade-label">Sentinel Detects</span><div class="cascade-indicator" data-stage="sentinel"></div></div>
+    <div class="cascade-stage"><span class="cascade-label">Replica Promoted</span><div class="cascade-indicator" data-stage="promote"></div></div>
+  </div>
+  <div class="cascade-controls">
+    <button class="cascade-button" onclick="redisCascade()">Trigger Primary Failure</button>
+    <button class="cascade-button" onclick="redisReset()">Reset</button>
+  </div>
+  <script>
+    function redisCascade() {
+      const stages = ['primary', 'network', 'lag', 'sentinel', 'promote'];
+      let delay = 0;
+      stages.forEach((id) => {
+        setTimeout(() => {
+          document.querySelector('[data-stage="'+id+'"]').classList.add('failing');
+        }, delay);
+        delay += 300;
+      });
+    }
+    function redisReset() {
+      document.querySelectorAll('[data-stage]').forEach(s => s.classList.remove('failing'));
+    }
+  </script>
+</div>
+
 ## Data Structures Overview
 
 ```text

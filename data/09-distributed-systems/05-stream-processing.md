@@ -58,6 +58,35 @@ graph LR
 
 ---
 
+## Interactive: Stream Processing Metrics
+
+<div style="padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>.obs-title{color:#00d4ff;font-family:monospace;font-size:14px;font-weight:bold;margin-bottom:16px}.obs-grid{display:grid;grid-template-columns:repeat(auto-fit, minmax(150px, 1fr));gap:12px}.obs-card{padding:12px;background:#1a2332;border:1px solid #1e3a5f;border-radius:4px;display:flex;flex-direction:column;align-items:center;transition:all 0.3s}.obs-card:hover{border-color:#00d4ff;box-shadow:0 0 8px rgba(0, 212, 255, 0.3)}.obs-label{color:#a3aab8;font-family:monospace;font-size:11px;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px}.obs-value{font-family:monospace;font-size:20px;font-weight:bold;margin-bottom:4px;letter-spacing:0.5px}.obs-unit{color:#a3aab8;font-family:monospace;font-size:10px;text-transform:uppercase}.metric-healthy{color:#34d399}</style>
+  <div class="obs-title">Flink Cluster Performance</div>
+  <div class="obs-grid">
+    <div class="obs-card">
+      <div class="obs-label">Events/sec</div>
+      <div class="obs-value metric-healthy">1.2M</div>
+      <div class="obs-unit">throughput</div>
+    </div>
+    <div class="obs-card">
+      <div class="obs-label">Window Latency</div>
+      <div class="obs-value metric-healthy">850</div>
+      <div class="obs-unit">ms</div>
+    </div>
+    <div class="obs-card">
+      <div class="obs-label">State Store Size</div>
+      <div class="obs-value metric-healthy">4.2</div>
+      <div class="obs-unit">GB</div>
+    </div>
+    <div class="obs-card">
+      <div class="obs-label">Checkpoint Time</div>
+      <div class="obs-value metric-healthy">2.3</div>
+      <div class="obs-unit">sec</div>
+    </div>
+  </div>
+</div>
+
 ## 1. Stream vs Batch Processing
 
 

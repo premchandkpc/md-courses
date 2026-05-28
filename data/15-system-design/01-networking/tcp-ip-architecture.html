@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>TCP/IP Protocol Stack Architecture — System Design Architecture</title>
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0b0e14;--bg2:#11161e;--bg3:#18202a;--bg4:#1f2937;--border:#1e2a3a;--fg:#e3eaf0;--fg2:#94a3b8;--fg3:#64748b;--accent:#60a5fa;--accent-hover:#93c5fd;--green:#34d399;--purple:#a78bfa;--pink:#f472b6;--orange:#fb923c;--radius:10px;--font:'Inter',system-ui,-apple-system,sans-serif;--mono:'JetBrains Mono',monospace}
+body{font-family:var(--font);background:var(--bg);color:var(--fg);min-height:100vh;overflow-x:hidden;-webkit-font-smoothing:antialiased;padding:20px}
+.container{max-width:1100px;margin:0 auto}
+h1{font-size:26px;font-weight:800;letter-spacing:-.02em;margin:20px 0 20px;display:flex;align-items:center;gap:10px}
+.desc{color:var(--fg2);font-size:14px;margin-bottom:24px;line-height:1.6}
+.diagram-box{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:24px;margin-bottom:24px;overflow:auto;display:flex;justify-content:center;min-height:300px}
+.diagram-box svg{max-width:100%;height:auto}
+.components{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px;margin-bottom:24px}
+.component{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:16px}
+.component h3{font-size:13px;font-weight:700;margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.component p{font-size:12px;color:var(--fg2);line-height:1.5}
+.back-link{display:inline-flex;align-items:center;gap:6px;color:var(--fg3);text-decoration:none;font-size:13px;margin-bottom:16px;transition:color .15s}
+.back-link:hover{color:var(--accent)}
+.flow-desc{font-size:12px;color:var(--fg3);font-family:var(--mono);padding:12px 16px;background:var(--bg2);border:1px solid var(--border);border-radius:6px;margin-bottom:20px;line-height:1.6}
+.kv-list{margin-bottom:24px}
+.kv-item{display:flex;padding:8px 0;border-bottom:1px solid var(--border);font-size:13px}
+.kv-key{color:var(--fg3);width:140px;flex-shrink:0;font-weight:600}
+.kv-val{color:var(--fg)}
+@media(max-width:700px){.components{grid-template-columns:1fr}h1{font-size:20px}}
+</style>
+</head>
+<body>
+<div class="container">
+<a class="back-link" href="javascript:history.back()">← Back</a>
+<h1>🔗 TCP/IP Protocol Stack Architecture</h1>
+<p class="desc">The OSI model and TCP/IP stack breakdown — from physical bits to application data, with headers at each layer and how data flows through the stack.</p>
+<div class="flow-desc">Flow: Application → Transport (TCP/UDP) → Network (IP) → Link (Ethernet/WiFi) → Physical. Each layer adds its own header, the receiver strips them in reverse.</div>
+<div class="diagram-box">
+<pre class="mermaid">
+graph TB
+    subgraph Sender["📤 Sender"]
+        APP_S[Application Layer<br/>HTTP/2, gRPC, WebSocket]
+        TRANS_S[Transport Layer<br/>TCP: SEQ+ACK, Window<br/>UDP: Ports]
+        NET_S[Network Layer<br/>IP: Source + Dest IP]
+        LINK_S[Link Layer<br/>MAC: Source + Dest MAC]
+    end
+    subgraph Wire["🌐 Network"]
+        PHYS[Physical Layer<br/>Bits on Wire]
+    end
+    subgraph Receiver["📥 Receiver"]
+        LINK_R[Link Layer]
+        NET_R[Network Layer]
+        TRANS_R[Transport Layer]
+        APP_R[Application Layer]
+    end
+    APP_S -->|Data| TRANS_S
+    TRANS_S -->|TCP/UDP Header + Data| NET_S
+    NET_S -->|IP Header + TCP + Data| LINK_S
+    LINK_S -->|MAC Header + IP + TCP + Data + FCS| PHYS
+    PHYS --> LINK_R
+    LINK_R -->|Strip MAC| NET_R
+    NET_R -->|Strip IP| TRANS_R
+    TRANS_R -->|Strip TCP| APP_R
+    style TRANS_S fill:#1e3a5f,stroke:#4a8bc2
+    style TRANS_R fill:#1e3a5f,stroke:#4a8bc2
+    style NET_S fill:#2a1a3a,stroke:#a78bfa
+    style NET_R fill:#2a1a3a,stroke:#a78bfa
+</pre>
+</div>
+<div class="components">
+<div class="component"><h3>📦 TCP Segment</h3><p>Source/Dest port (16-bit), Sequence number, ACK number, Flags (SYN/ACK/FIN/RST), Window size, Checksum. 20-60 byte header.</p></div>
+<div class="component"><h3>📦 IP Packet</h3><p>Version (4/6), TTL, Source IP (32-bit v4 / 128-bit v6), Dest IP, Protocol (TCP=6, UDP=17). 20-60 byte header.</p></div>
+<div class="component"><h3>📦 Ethernet Frame</h3><p>Source MAC (48-bit), Dest MAC, EtherType, Payload, FCS (CRC32). 14-22 byte header. Switched at Layer 2.</p></div>
+<div class="component"><h3>🔄 Encapsulation</h3><p>Each layer adds its header around the payload from the layer above. Total overhead: ~66 bytes per packet (TCP over IPv4 over Ethernet).</p></div>
+</div>
+<div class="kv-list">
+<div class="kv-item"><span class="kv-key">TCP Overhead</span><span class="kv-val">20 byte header + 20 byte IP header + 14 byte Ethernet = ~54 bytes/packet</span></div>
+<div class="kv-item"><span class="kv-key">MSS</span><span class="kv-val">Maximum Segment Size = MTU - IP header - TCP header = 1460 bytes (typical)</span></div>
+<div class="kv-item"><span class="kv-key">MTU</span><span class="kv-val">Maximum Transmission Unit: Ethernet = 1500 bytes, WiFi = 2304 bytes</span></div>
+<div class="kv-item"><span class="kv-key">Path MTU</span><span class="kv-val">Smallest MTU along the path. Discovery via ICMP, fragmentation avoided.</span></div>
+</div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<script>
+mermaid.initialize({
+  startOnLoad: true,
+  theme: 'dark',
+  themeVariables: {
+    background: '#11161e',
+    primaryColor: '#60a5fa',
+    primaryBorderColor: '#1e2a3a',
+    primaryTextColor: '#e3eaf0',
+    lineColor: '#94a3b8',
+    tertiaryColor: '#11161e',
+    fontSize: '14px',
+    fontFamily: 'Inter,system-ui,sans-serif'
+  }
+});
+</script>
+</body>
+</html>

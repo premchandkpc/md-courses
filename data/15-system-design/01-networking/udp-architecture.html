@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>UDP & Datagram Architecture — System Design Architecture</title>
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0b0e14;--bg2:#11161e;--bg3:#18202a;--bg4:#1f2937;--border:#1e2a3a;--fg:#e3eaf0;--fg2:#94a3b8;--fg3:#64748b;--accent:#60a5fa;--accent-hover:#93c5fd;--green:#34d399;--purple:#a78bfa;--pink:#f472b6;--orange:#fb923c;--radius:10px;--font:'Inter',system-ui,-apple-system,sans-serif;--mono:'JetBrains Mono',monospace}
+body{font-family:var(--font);background:var(--bg);color:var(--fg);min-height:100vh;overflow-x:hidden;-webkit-font-smoothing:antialiased;padding:20px}
+.container{max-width:1100px;margin:0 auto}
+h1{font-size:26px;font-weight:800;letter-spacing:-.02em;margin:20px 0 20px;display:flex;align-items:center;gap:10px}
+.desc{color:var(--fg2);font-size:14px;margin-bottom:24px;line-height:1.6}
+.diagram-box{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:24px;margin-bottom:24px;overflow:auto;display:flex;justify-content:center;min-height:300px}
+.diagram-box svg{max-width:100%;height:auto}
+.components{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px;margin-bottom:24px}
+.component{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:16px}
+.component h3{font-size:13px;font-weight:700;margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.component p{font-size:12px;color:var(--fg2);line-height:1.5}
+.back-link{display:inline-flex;align-items:center;gap:6px;color:var(--fg3);text-decoration:none;font-size:13px;margin-bottom:16px;transition:color .15s}
+.back-link:hover{color:var(--accent)}
+.flow-desc{font-size:12px;color:var(--fg3);font-family:var(--mono);padding:12px 16px;background:var(--bg2);border:1px solid var(--border);border-radius:6px;margin-bottom:20px;line-height:1.6}
+.kv-list{margin-bottom:24px}
+.kv-item{display:flex;padding:8px 0;border-bottom:1px solid var(--border);font-size:13px}
+.kv-key{color:var(--fg3);width:140px;flex-shrink:0;font-weight:600}
+.kv-val{color:var(--fg)}
+@media(max-width:700px){.components{grid-template-columns:1fr}h1{font-size:20px}}
+</style>
+</head>
+<body>
+<div class="container">
+<a class="back-link" href="javascript:history.back()">← Back</a>
+<h1>📦 UDP & Datagram Architecture</h1>
+<p class="desc">Connectionless, unreliable, but fast datagram protocol. Foundation for DNS, QUIC, streaming, gaming, and real-time communication.</p>
+<div class="flow-desc">Flow: Application → UDP (no handshake, no ordering, no retransmission) → IP → Destination. Fire-and-forget with optional application-level reliability.</div>
+<div class="diagram-box">
+<pre class="mermaid">
+graph TB
+    subgraph Sender["📤 Sender"]
+        APP_S[Application<br/>e.g., DNS, QUIC, WebRTC]
+        UDP_S[UDP Layer<br/>Src Port + Dest Port<br/>Length + Checksum]
+        IP_S[IP Layer]
+    end
+    subgraph Network["🌐 Network"]
+        NET[Datagram<br/>Max 65535 bytes]
+        LOSS[❌ Packet Loss<br/>No Retransmit]
+        OOO[🔄 Out of Order<br/>No Reordering]
+    end
+    subgraph Receiver["📥 Receiver"]
+        IP_R[IP Layer]
+        UDP_R[UDP Layer]
+        APP_R[Application]
+    end
+    APP_S -->|Datagram| UDP_S
+    UDP_S -->|8-byte header + payload| IP_S
+    IP_S --> NET
+    NET --> LOSS
+    NET --> OOO
+    NET --> IP_R
+    IP_R --> UDP_R
+    UDP_R --> APP_R
+    APP_R -.->|App handles reliability| APP_S
+    style UDP_S fill:#1e3a5f,stroke:#4a8bc2
+    style UDP_R fill:#1e3a5f,stroke:#4a8bc2
+    style LOSS fill:#3a1a2a,stroke:#f87171
+    style OOO fill:#3a1a2a,stroke:#f87171
+</pre>
+</div>
+<div class="components">
+<div class="component"><h3>📦 UDP Header</h3><p>Only 8 bytes: Source Port (16-bit), Dest Port (16-bit), Length (16-bit), Checksum (16-bit). No sequence numbers, no ACKs, no windowing.</p></div>
+<div class="component"><h3>🚀 QUIC (HTTP/3)</h3><p>Barely-UDP — adds TCP-like reliability at application layer. 0-RTT handshake, connection migration, stream multiplexing without HOL blocking.</p></div>
+<div class="component"><h3>📞 WebRTC (SRTP/SCTP)</h3><p>Real-time audio/video over UDP. SCTP for data channels (reliable ordered). SRTP for media (tolerates packet loss, values low latency).</p></div>
+<div class="component"><h3>🌐 DNS over UDP</h3><p>Single UDP request/response (max 512 bytes, EDNS0 extends to 4096). Falls back to TCP for large responses (zone transfers).</p></div>
+</div>
+<div class="kv-list">
+<div class="kv-item"><span class="kv-key">Header Size</span><span class="kv-val">8 bytes (vs 20-60 for TCP). 0 overhead for connection state.</span></div>
+<div class="kv-item"><span class="kv-key">Max Datagram</span><span class="kv-val">65535 bytes including header. Path MTU typically 1500, so fragmentation common.</span></div>
+<div class="kv-item"><span class="kv-key">Use Cases</span><span class="kv-val">DNS, DHCP, NTP, VoIP, video streaming, gaming, QUIC, WebRTC, DTLS</span></div>
+<div class="kv-item"><span class="kv-key">Application Responsibility</span><span class="kv-val">Sequencing, retransmission, congestion control, flow control — all at app layer</span></div>
+</div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<script>
+mermaid.initialize({
+  startOnLoad: true,
+  theme: 'dark',
+  themeVariables: {
+    background: '#11161e',
+    primaryColor: '#60a5fa',
+    primaryBorderColor: '#1e2a3a',
+    primaryTextColor: '#e3eaf0',
+    lineColor: '#94a3b8',
+    tertiaryColor: '#11161e',
+    fontSize: '14px',
+    fontFamily: 'Inter,system-ui,sans-serif'
+  }
+});
+</script>
+</body>
+</html>

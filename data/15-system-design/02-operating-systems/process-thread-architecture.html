@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Process & Thread Management - System Design</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f5f5f5; padding: 40px 20px; }
+        .container { max-width: 1200px; margin: 0 auto; background: white; padding: 40px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        h1 { color: #2c3e50; margin-bottom: 30px; }
+        .nav { display: flex; gap: 20px; margin-bottom: 30px; }
+        .nav a { padding: 10px 20px; background: #3498db; color: white; text-decoration: none; border-radius: 4px; }
+        .nav a:hover { background: #2980b9; }
+        .diagram { background: #f9f9f9; padding: 30px; border-radius: 8px; border: 1px solid #ddd; margin: 20px 0; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="nav">
+            <a href="../../systems-index.html">← Back to Index</a>
+            <a href="01-process-thread-management.md">📄 Read Deep Dive</a>
+        </div>
+        <h1>Process & Thread Management</h1>
+        
+        <div class="diagram">
+            <h2>Process vs Thread</h2>
+            <table style="width: 100%; border-collapse: collapse;">
+                <tr style="background: #f0f0f0;">
+                    <td style="padding: 10px; border: 1px solid #ddd;"><strong>Aspect</strong></td>
+                    <td style="padding: 10px; border: 1px solid #ddd;"><strong>Process</strong></td>
+                    <td style="padding: 10px; border: 1px solid #ddd;"><strong>Thread</strong></td>
+                </tr>
+                <tr>
+                    <td style="padding: 10px; border: 1px solid #ddd;"><strong>Memory</strong></td>
+                    <td style="padding: 10px; border: 1px solid #ddd;">10-100MB (isolated)</td>
+                    <td style="padding: 10px; border: 1px solid #ddd;">1-8MB (shared heap)</td>
+                </tr>
+                <tr>
+                    <td style="padding: 10px; border: 1px solid #ddd;"><strong>Creation</strong></td>
+                    <td style="padding: 10px; border: 1px solid #ddd;">100-1000ms</td>
+                    <td style="padding: 10px; border: 1px solid #ddd;">1-5ms</td>
+                </tr>
+                <tr>
+                    <td style="padding: 10px; border: 1px solid #ddd;"><strong>Context Switch</strong></td>
+                    <td style="padding: 10px; border: 1px solid #ddd;">1-10ms (TLB flush)</td>
+                    <td style="padding: 10px; border: 1px solid #ddd;">0.1-1ms (TLB valid)</td>
+                </tr>
+                <tr>
+                    <td style="padding: 10px; border: 1px solid #ddd;"><strong>Isolation</strong></td>
+                    <td style="padding: 10px; border: 1px solid #ddd;">Strong (OS protection)</td>
+                    <td style="padding: 10px; border: 1px solid #ddd;">Weak (shared memory)</td>
+                </tr>
+            </table>
+        </div>
+        
+        <div class="diagram">
+            <h2>Thread Pool Sizing</h2>
+            <p><strong>Formula:</strong> Workers = CPUs × (1 + I/O_time / CPU_time)</p>
+            <ul style="margin: 15px 0 15px 20px;">
+                <li><strong>8 CPUs, I/O-bound:</strong> 8 × (1 + 100/10) = 88 threads</li>
+                <li><strong>8 CPUs, CPU-bound:</strong> 8 × (1 + 0/10) = 8 threads</li>
+                <li><strong>Optimal:</strong> Balance utilization without thrashing</li>
+                <li><strong>Too few:</strong> Queue backlog, latency spike</li>
+                <li><strong>Too many:</strong> Context switch overhead, memory limit</li>
+            </ul>
+        </div>
+        
+        <div class="diagram">
+            <h2>Process Lifecycle</h2>
+            <p>States: <strong>Create → Ready → Running → Blocked → Terminated</strong></p>
+            <ul style="margin: 15px 0 15px 20px;">
+                <li><strong>Create:</strong> fork/spawn (allocate resources)</li>
+                <li><strong>Ready:</strong> waiting for CPU (in queue)</li>
+                <li><strong>Running:</strong> executing on core</li>
+                <li><strong>Blocked:</strong> waiting for I/O (disk, network, lock)</li>
+                <li><strong>Terminated:</strong> exit, cleanup</li>
+            </ul>
+        </div>
+        
+        <div class="diagram">
+            <h2>Context Switch Cost Breakdown</h2>
+            <ul style="margin: 15px 0 15px 20px;">
+                <li><strong>Save registers:</strong> &lt;1μs (hardware)</li>
+                <li><strong>Load registers:</strong> &lt;1μs (hardware)</li>
+                <li><strong>TLB flush:</strong> variable (depends on architecture)</li>
+                <li><strong>Cache cold start:</strong> 1-10ms (data not in L1)</li>
+                <li><strong>Total overhead:</strong> 1-10ms per switch</li>
+                <li><strong>High frequency:</strong> >1000 switches/sec = 10% CPU wasted</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Load Balancing Architecture — System Design Architecture</title>
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0b0e14;--bg2:#11161e;--bg3:#18202a;--bg4:#1f2937;--border:#1e2a3a;--fg:#e3eaf0;--fg2:#94a3b8;--fg3:#64748b;--accent:#60a5fa;--accent-hover:#93c5fd;--green:#34d399;--purple:#a78bfa;--pink:#f472b6;--orange:#fb923c;--radius:10px;--font:'Inter',system-ui,-apple-system,sans-serif;--mono:'JetBrains Mono',monospace}
+body{font-family:var(--font);background:var(--bg);color:var(--fg);min-height:100vh;overflow-x:hidden;-webkit-font-smoothing:antialiased;padding:20px}
+.container{max-width:1100px;margin:0 auto}
+h1{font-size:26px;font-weight:800;letter-spacing:-.02em;margin:20px 0 20px;display:flex;align-items:center;gap:10px}
+.desc{color:var(--fg2);font-size:14px;margin-bottom:24px;line-height:1.6}
+.diagram-box{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:24px;margin-bottom:24px;overflow:auto;display:flex;justify-content:center;min-height:300px}
+.diagram-box svg{max-width:100%;height:auto}
+.components{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px;margin-bottom:24px}
+.component{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:16px}
+.component h3{font-size:13px;font-weight:700;margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.component p{font-size:12px;color:var(--fg2);line-height:1.5}
+.back-link{display:inline-flex;align-items:center;gap:6px;color:var(--fg3);text-decoration:none;font-size:13px;margin-bottom:16px;transition:color .15s}
+.back-link:hover{color:var(--accent)}
+.flow-desc{font-size:12px;color:var(--fg3);font-family:var(--mono);padding:12px 16px;background:var(--bg2);border:1px solid var(--border);border-radius:6px;margin-bottom:20px;line-height:1.6}
+.kv-list{margin-bottom:24px}
+.kv-item{display:flex;padding:8px 0;border-bottom:1px solid var(--border);font-size:13px}
+.kv-key{color:var(--fg3);width:140px;flex-shrink:0;font-weight:600}
+.kv-val{color:var(--fg)}
+@media(max-width:700px){.components{grid-template-columns:1fr}h1{font-size:20px}}
+</style>
+</head>
+<body>
+<div class="container">
+<a class="back-link" href="javascript:history.back()">← Back</a>
+<h1>⚖️ Load Balancing Architecture</h1>
+<p class="desc">Distribution of traffic across multiple servers for availability, scalability, and fault tolerance. Layer 4 vs Layer 7, algorithms, and health checks.</p>
+<div class="flow-desc">Flow: Client → DNS (round-robin) → Load Balancer → Health Check → Backend Pool (N servers) → Response. Failed server = drained from pool.</div>
+<div class="diagram-box">
+<pre class="mermaid">
+graph TB
+    Clients[👥 Clients]
+    subgraph LB["⚖️ Load Balancer"]
+        LB4[Layer 4<br/>TCP/UDP<br/>NLB / HAProxy]
+        LB7[Layer 7<br/>HTTP/HTTPS<br/>ALB / Envoy]
+        ALGO{Algorithm}
+    end
+    subgraph Backend["🖥️ Backend Pool"]
+        B1[Server 1<br/>Healthy]
+        B2[Server 2<br/>Healthy]
+        B3[Server 3<br/>Draining]
+        B4[Server N<br/>Healthy]
+    end
+    subgraph Health["💓 Health Checks"]
+        HC[Active: /health<br/>Passive: Circuit Breaker]
+        DRAIN[Drain: Wait for<br/>in-flight requests]
+    end
+    Clients -->|DNS A Record| LB4
+    Clients -->|HTTP| LB7
+    LB4 --> ALGO
+    LB7 --> ALGO
+    ALGO -->|Round Robin| B1 & B2 & B3 & B4
+    ALGO -->|Least Connections| B1 & B2 & B3 & B4
+    ALGO -->|Consistent Hash| B1 & B2 & B3 & B4
+    B3 -.->|Draining| DRAIN
+    DRAIN -.->|Removed| B4
+    HC -->|Mark Unhealthy| B3
+    style LB4 fill:#1e3a5f,stroke:#4a8bc2
+    style LB7 fill:#1e3a5f,stroke:#4a8bc2
+    style B3 fill:#3a1a2a,stroke:#f87171
+    style DRAIN fill:#2a1a3a,stroke:#a78bfa
+</pre>
+</div>
+<div class="components">
+<div class="component"><h3>⚖️ Layer 4 (NLB)</h3><p>TCP/UDP level. Sees IP + port, not HTTP. Lower latency, fewer features. Connection-level balancing. Preserves client IP. Good for non-HTTP or performance-critical.</p></div>
+<div class="component"><h3>📋 Layer 7 (ALB)</h3><p>HTTP/HTTPS level. Sees URL, headers, cookies, host. Path-based routing (/api → cluster A, /web → B). SSL termination, sticky sessions, WAF.</p></div>
+<div class="component"><h3>🔄 Algorithms</h3><p>Round robin (simple), Least connections (fair), IP hash (sticky), Consistent hash (cache stability), Random, Weighted (different server capacities).</p></div>
+<div class="component"><h3>💓 Health Checks</h3><p>Active (periodic HTTP/TCP checks to /health), Passive (monitor real traffic failures, circuit breaker). Graceful draining: wait for in-flight requests.</p></div>
+</div>
+<div class="kv-list">
+<div class="kv-item"><span class="kv-key">Sticky Sessions</span><span class="kv-val">Cookie-based (ALB inserts cookie) or IP hash. Avoid if possible — stateless is better.</span></div>
+<div class="kv-item"><span class="kv-key">Connection Draining</span><span class="kv-val">30-300s timeout for in-flight requests before terminating. ELB: deregistration_delay.</span></div>
+<div class="kv-item"><span class="kv-key">Cross-Zone</span><span class="kv-val">Distribute traffic evenly across AZs, not just within zone. ELB: cross_zone.enabled=true.</span></div>
+<div class="kv-item"><span class="kv-key">Slow Start</span><span class="kv-val">New servers start with fewer requests, ramp up over N seconds. Prevents cold-start overload.</span></div>
+</div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<script>
+mermaid.initialize({
+  startOnLoad: true,
+  theme: 'dark',
+  themeVariables: {
+    background: '#11161e',
+    primaryColor: '#60a5fa',
+    primaryBorderColor: '#1e2a3a',
+    primaryTextColor: '#e3eaf0',
+    lineColor: '#94a3b8',
+    tertiaryColor: '#11161e',
+    fontSize: '14px',
+    fontFamily: 'Inter,system-ui,sans-serif'
+  }
+});
+</script>
+</body>
+</html>

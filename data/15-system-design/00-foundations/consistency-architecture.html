@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Consistency Architecture — System Design Architecture</title>
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0b0e14;--bg2:#11161e;--bg3:#18202a;--bg4:#1f2937;--border:#1e2a3a;--fg:#e3eaf0;--fg2:#94a3b8;--fg3:#64748b;--accent:#60a5fa;--accent-hover:#93c5fd;--green:#34d399;--purple:#a78bfa;--pink:#f472b6;--orange:#fb923c;--radius:10px;--font:'Inter',system-ui,-apple-system,sans-serif;--mono:'JetBrains Mono',monospace}
+body{font-family:var(--font);background:var(--bg);color:var(--fg);min-height:100vh;overflow-x:hidden;-webkit-font-smoothing:antialiased;padding:20px}
+.container{max-width:1100px;margin:0 auto}
+h1{font-size:26px;font-weight:800;letter-spacing:-.02em;margin:20px 0 20px;display:flex;align-items:center;gap:10px}
+.desc{color:var(--fg2);font-size:14px;margin-bottom:24px;line-height:1.6}
+.diagram-box{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:24px;margin-bottom:24px;overflow:auto;display:flex;justify-content:center;min-height:300px}
+.diagram-box svg{max-width:100%;height:auto}
+.components{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px;margin-bottom:24px}
+.component{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:16px}
+.component h3{font-size:13px;font-weight:700;margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.component p{font-size:12px;color:var(--fg2);line-height:1.5}
+.back-link{display:inline-flex;align-items:center;gap:6px;color:var(--fg3);text-decoration:none;font-size:13px;margin-bottom:16px;transition:color .15s}
+.back-link:hover{color:var(--accent)}
+.flow-desc{font-size:12px;color:var(--fg3);font-family:var(--mono);padding:12px 16px;background:var(--bg2);border:1px solid var(--border);border-radius:6px;margin-bottom:20px;line-height:1.6}
+.kv-list{margin-bottom:24px}
+.kv-item{display:flex;padding:8px 0;border-bottom:1px solid var(--border);font-size:13px}
+.kv-key{color:var(--fg3);width:140px;flex-shrink:0;font-weight:600}
+.kv-val{color:var(--fg)}
+@media(max-width:700px){.components{grid-template-columns:1fr}h1{font-size:20px}}
+</style>
+</head>
+<body>
+<div class="container">
+<a class="back-link" href="javascript:history.back()">← Back</a>
+<h1>🎯 Consistency Architecture</h1>
+<p class="desc">Consistency models from strong to eventual, their trade-offs, and how to choose the right model for each data access pattern.</p>
+<div class="flow-desc">Flow: Client Write → Primary/Load → Replicas (sync/async) → Read from Replica. Consistency level determined by read-write path configuration.</div>
+<div class="diagram-box">
+<pre class="mermaid">
+graph LR
+    subgraph Client["👤 Client"]
+        W[Write Request]
+        R[Read Request]
+    end
+    subgraph Primary["📝 Primary"]
+        P[(Primary DB)]
+        WAL[WAL / Write-Ahead Log]
+    end
+    subgraph Sync["🔄 Sync Replicas"]
+        S1[(Replica 1<br/>Strong)]
+    end
+    subgraph Async["📨 Async Replicas"]
+        S2[(Replica 2<br/>Eventual)]
+        S3[(Replica N<br/>Eventual)]
+    end
+    W -->|1. Write| P
+    P -->|2a. Sync Replicate| S1
+    P -->|2b. Async Replicate| S2 & S3
+    R -->|3. Read| S1
+    R --->|3. Read Stale| S2
+    style P fill:#1e3a5f,stroke:#4a8bc2
+    style S1 fill:#1a3a2a,stroke:#34d399
+    style S2 fill:#3a1a2a,stroke:#f87171
+    style S3 fill:#3a1a2a,stroke:#f87171
+</pre>
+</div>
+<div class="components">
+<div class="component"><h3>⚡ Strong Consistency</h3><p>Read-after-write guarantees. Sync replication, quorum reads (R+W > N). Higher latency but no stale reads.</p></div>
+<div class="component"><h3>🔄 Eventual Consistency</h3><p>Async replication, stale reads possible but converge over time. DNS converges in ~TTL, DynamoDB in ~1s.</p></div>
+<div class="component"><h3>🎯 Read-After-Write</h3><p>Write goes to primary, immediate reads from primary, later reads from replica after ack. Session-level guarantees.</p></div>
+<div class="component"><h3>🌀 Conflict Resolution</h3><p>Last-write-wins, vector clocks, CRDTs, application-level merge. NWR tuning in Cassandra/DynamoDB.</p></div>
+</div>
+<div class="kv-list">
+<div class="kv-item"><span class="kv-key">Strong</span><span class="kv-val">Linearizability: every read sees latest write. Spanner, ZooKeeper, etcd</span></div>
+<div class="kv-item"><span class="kv-key">Causal</span><span class="kv-val">Causally related operations ordered. DynamoDB, Cosmos DB</span></div>
+<div class="kv-item"><span class="kv-key">Eventual</span><span class="kv-val">Replicas converge without coordination. DNS, S3</span></div>
+<div class="kv-item"><span class="kv-key">Trade-off</span><span class="kv-val">Strong = higher latency (sync replication, quorum). Eventual = faster writes</span></div>
+</div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<script>
+mermaid.initialize({
+  startOnLoad: true,
+  theme: 'dark',
+  themeVariables: {
+    background: '#11161e',
+    primaryColor: '#60a5fa',
+    primaryBorderColor: '#1e2a3a',
+    primaryTextColor: '#e3eaf0',
+    lineColor: '#94a3b8',
+    tertiaryColor: '#11161e',
+    fontSize: '14px',
+    fontFamily: 'Inter,system-ui,sans-serif'
+  }
+});
+</script>
+</body>
+</html>

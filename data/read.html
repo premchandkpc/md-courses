@@ -27,6 +27,24 @@
   --shadow:0 1px 3px rgba(0,0,0,.3),0 1px 2px rgba(0,0,0,.2);
   --shadow-lg:0 4px 16px rgba(0,0,0,.4);
   --font-size:15px;
+  --toc-bg:var(--bg2);--overlay:rgba(0,0,0,.5);--search-result-bg:var(--bg3);--search-result-hover:var(--bg4);--search-result-border:var(--border);--search-result-fg:var(--fg2);--search-highlight:rgba(251,191,36,.25);
+  --float-toc-bg:var(--bg3);--float-toc-border:var(--border);--float-toc-shadow:var(--shadow-lg);
+}
+[data-theme="light"]{
+  --bg:#f8f9fa;--bg2:#ffffff;--bg3:#f1f3f5;--bg4:#e9ecef;--bg5:#dee2e6;
+  --border:#e0e0e0;--border-light:#d0d0d0;
+  --fg:#1a1a2e;--fg2:#495057;--fg3:#868e96;
+  --accent:#2563eb;--accent-hover:#1d4ed8;
+  --green:#059669;--green-bg:rgba(5,150,105,.08);
+  --yellow:#d97706;--yellow-bg:rgba(217,119,6,.08);
+  --red:#dc2626;--red-bg:rgba(220,38,38,.08);
+  --purple:#7c3aed;--purple-bg:rgba(124,58,237,.08);
+  --pink:#db2777;--orange:#ea580c;
+  --code-fg:#1a1a2e;--code-bg:#f1f3f5;
+  --shadow:0 1px 3px rgba(0,0,0,.08),0 1px 2px rgba(0,0,0,.06);
+  --shadow-lg:0 4px 16px rgba(0,0,0,.1);
+  --toc-bg:var(--bg2);--overlay:rgba(0,0,0,.2);--search-result-bg:#fff;--search-result-hover:var(--bg3);--search-result-border:var(--border);--search-result-fg:var(--fg2);--search-highlight:rgba(217,119,6,.15);
+  --float-toc-bg:var(--bg2);--float-toc-border:var(--border);--float-toc-shadow:0 2px 12px rgba(0,0,0,.12);
 }
 body{
   font-family:var(--font-display);background:var(--bg);color:var(--fg);
@@ -428,6 +446,100 @@ body{
 .toc-item.h2{padding-left:16px}
 .toc-item.h3{padding-left:26px;font-size:11px;color:var(--fg3)}
 
+/* ─── Floating TOC ─── */
+.float-toc{
+  position:fixed;right:20px;top:100px;z-index:50;
+  background:var(--float-toc-bg);border:1px solid var(--float-toc-border);
+  border-radius:var(--radius);padding:8px 0;min-width:180px;max-width:220px;
+  box-shadow:var(--float-toc-shadow);max-height:60vh;overflow-y:auto;
+  opacity:0;transform:translateY(-8px);pointer-events:none;
+  transition:opacity .2s,transform .2s;font-family:var(--font-display);
+}
+.float-toc.show{opacity:1;transform:translateY(0);pointer-events:auto}
+.float-toc-label{
+  font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;
+  color:var(--fg3);padding:4px 14px 6px;border-bottom:1px solid var(--border);
+}
+.float-toc-item{
+  display:block;padding:4px 14px;font-size:11.5px;color:var(--fg3);
+  cursor:pointer;border-left:2px solid transparent;transition:all .1s;
+  text-decoration:none;line-height:1.35;
+}
+.float-toc-item:hover{color:var(--fg);background:var(--bg4)}
+.float-toc-item.active{color:var(--accent);border-left-color:var(--accent);font-weight:600}
+.float-toc-item.h3{padding-left:22px;font-size:11px}
+
+/* ─── In-Page Search ─── */
+.inpage-search{
+  position:sticky;top:0;z-index:15;background:var(--bg2);
+  border-bottom:1px solid var(--border);padding:8px 16px;
+  display:none;align-items:center;gap:8px;flex-shrink:0;
+}
+.inpage-search.show{display:flex}
+.inpage-search input{
+  flex:1;padding:6px 10px;background:var(--bg3);border:1px solid var(--border);
+  border-radius:5px;color:var(--fg);font-size:13px;outline:none;font-family:var(--font-display);
+}
+.inpage-search input:focus{border-color:var(--accent)}
+.inpage-search .match-count{font-size:11px;color:var(--fg3);white-space:nowrap}
+.inpage-search .nav-btn{
+  background:var(--bg3);border:1px solid var(--border);color:var(--fg2);
+  border-radius:4px;cursor:pointer;padding:4px 8px;font-size:12px;transition:all .1s;
+}
+.inpage-search .nav-btn:hover{background:var(--bg4);color:var(--fg)}
+.inpage-search .close-ips{background:none;border:none;color:var(--fg3);cursor:pointer;font-size:18px;padding:0 4px}
+
+/* ─── Full-Text Search Results ─── */
+.search-overlay{
+  position:fixed;inset:0;z-index:200;background:var(--overlay);
+  display:none;align-items:flex-start;justify-content:center;
+  padding-top:60px;opacity:0;transition:opacity .2s;
+}
+.search-overlay.open{display:flex;opacity:1}
+.search-panel{
+  background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);
+  width:min(700px,90vw);max-height:70vh;overflow:hidden;
+  box-shadow:0 8px 40px rgba(0,0,0,.3);display:flex;flex-direction:column;
+}
+.search-panel-header{
+  display:flex;align-items:center;gap:8px;padding:12px 16px;
+  border-bottom:1px solid var(--border);flex-shrink:0;
+}
+.search-panel-header input{
+  flex:1;padding:8px 12px;background:var(--bg3);border:1px solid var(--border);
+  border-radius:6px;color:var(--fg);font-size:14px;outline:none;font-family:var(--font-display);
+}
+.search-panel-header input:focus{border-color:var(--accent)}
+.search-panel-header .close-so{background:none;border:none;color:var(--fg3);cursor:pointer;font-size:22px;padding:0 6px}
+.search-panel-body{overflow-y:auto;flex:1;padding:8px 0}
+.search-result-item{
+  padding:10px 16px;cursor:pointer;transition:background .1s;
+  border-bottom:1px solid var(--search-result-border);
+}
+.search-result-item:hover{background:var(--search-result-hover)}
+.search-result-item .path{font-size:10.5px;color:var(--fg3);font-family:var(--font-mono);margin-bottom:2px}
+.search-result-item .title{font-size:13px;font-weight:600;color:var(--fg)}
+.search-result-item .snippet{font-size:12px;color:var(--search-result-fg);margin-top:2px;line-height:1.4}
+.search-result-item .snippet em{font-style:normal;background:var(--search-highlight);padding:0 2px;border-radius:2px;font-weight:600}
+.search-result-item .match-line{font-size:10.5px;color:var(--fg3);margin-top:2px}
+.search-status-text{padding:16px;text-align:center;color:var(--fg3);font-size:13px}
+
+/* ─── Page Transition ─── */
+.page-transition{
+  position:fixed;inset:0;z-index:300;pointer-events:none;
+  background:var(--bg);opacity:0;transition:opacity .25s;
+}
+.page-transition.active{opacity:1}
+.content-body.loading{opacity:0;transform:translateY(8px);transition:opacity .25s,transform .25s}
+.content-body.loaded{opacity:1;transform:translateY(0)}
+
+/* ─── Auto-Hide Sidebar ─── */
+@media(max-width:900px){
+  .sidebar{transition:transform .25s cubic-bezier(.4,0,.2,1),width .25s}
+  .sidebar.hide-mobile{transform:translateX(-100%)}
+  .sidebar.hide-mobile.collapsed{width:0;transform:none}
+}
+
 /* ─── Lightbox ─── */
 .lightbox{
   position:fixed;inset:0;z-index:1000;background:rgba(0,0,0,.85);
@@ -549,6 +661,8 @@ body{
           <button class="control-btn" id="zoomOut" title="Decrease font size">A−</button>
           <button class="control-btn" id="zoomReset" title="Reset font size">A</button>
           <button class="control-btn" id="zoomIn" title="Increase font size">A+</button>
+          <button class="control-btn" id="themeBtn" title="Toggle theme">🌓</button>
+          <button class="control-btn" id="ftsBtn" title="Search all files">🔍</button>
           <button class="control-btn" id="fullscreenBtn" title="Fullscreen reading">⛶</button>
         </div>
       </div>
@@ -572,6 +686,13 @@ body{
       <div class="topics-grid" id="topicsGrid"></div>
     </div>
     <div id="fileView" style="display:none;flex:1;overflow:hidden;flex-direction:column;">
+      <div class="inpage-search" id="inpageSearch">
+        <input type="text" id="inpageSearchInput" placeholder="Find in page..." autocomplete="off">
+        <span class="match-count" id="inpageMatchCount"></span>
+        <button class="nav-btn" id="inpagePrev">▲</button>
+        <button class="nav-btn" id="inpageNext">▼</button>
+        <button class="close-ips" id="inpageClose">✕</button>
+      </div>
       <div class="content-body md" id="fileContent"></div>
     </div>
   </div>
@@ -589,10 +710,23 @@ body{
     <button class="floating-btn" id="backTopBtn" title="Back to top">↑</button>
     <button class="floating-btn" id="kbToggle" title="Keyboard shortcuts">⌘</button>
   </div>
+  <div class="float-toc" id="floatToc"><div class="float-toc-label">On this page</div></div>
+  <div class="search-overlay" id="searchOverlay">
+    <div class="search-panel">
+      <div class="search-panel-header">
+        <input type="text" id="ftsInput" placeholder="Search all files..." autocomplete="off">
+        <button class="close-so" id="ftsClose">✕</button>
+      </div>
+      <div class="search-panel-body" id="ftsResults"></div>
+    </div>
+  </div>
+  <div class="page-transition" id="pageTransition"></div>
   <div class="kb-panel" id="kbPanel">
     <h3>Keyboard Shortcuts</h3>
-    <div class="kb-row"><span class="desc">Search</span><span class="key">⌘K</span></div>
+    <div class="kb-row"><span class="desc">Search files</span><span class="key">⌘K</span></div>
+    <div class="kb-row"><span class="desc">Find in page</span><span class="key">⌘F</span></div>
     <div class="kb-row"><span class="desc">Sidebar</span><span class="key">⌘B</span></div>
+    <div class="kb-row"><span class="desc">Theme toggle</span><span class="key">⌘T</span></div>
     <div class="kb-row"><span class="desc">Top</span><span class="key">⌘↑</span></div>
     <div class="kb-row"><span class="desc">Zoom −</span><span class="key">⌘−</span></div>
     <div class="kb-row"><span class="desc">Zoom +</span><span class="key">⌘+</span></div>
@@ -738,7 +872,6 @@ function attachEventDelegation() {
 
   document.addEventListener('keydown', (e) => {
     const meta = e.metaKey || e.ctrlKey;
-    if (meta && e.key === 'k') { e.preventDefault(); document.getElementById('search').focus(); }
     if (meta && e.key === 'b') { e.preventDefault(); toggleSidebar(); }
     if (meta && e.key === 'ArrowUp') { e.preventDefault(); scrollContentToTop(); }
     if (meta && e.key === '-') { e.preventDefault(); changeZoom(-CONFIG.zoomStep); }
@@ -1503,7 +1636,370 @@ function closeKeyboardPanel() {
   document.getElementById('kbPanel').classList.remove('open');
 }
 
-// ─── Utilities ───
+// ═══════════════════════════════════════════════════════════════
+// THEME TOGGLE
+// ═══════════════════════════════════════════════════════════════
+
+function applyTheme(theme) {
+  document.documentElement.setAttribute('data-theme', theme);
+  localStorage.setItem('kb-theme', theme);
+  document.getElementById('themeBtn').textContent = theme === 'dark' ? '🌓' : '☀️';
+}
+
+function detectTheme() {
+  const saved = localStorage.getItem('kb-theme');
+  if (saved) return saved;
+  return window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+}
+
+document.getElementById('themeBtn').addEventListener('click', () => {
+  const current = document.documentElement.getAttribute('data-theme') || 'dark';
+  applyTheme(current === 'dark' ? 'light' : 'dark');
+});
+
+window.matchMedia('(prefers-color-scheme: light)').addEventListener('change', (e) => {
+  if (!localStorage.getItem('kb-theme')) {
+    applyTheme(e.matches ? 'light' : 'dark');
+  }
+});
+
+applyTheme(detectTheme());
+
+// ═══════════════════════════════════════════════════════════════
+// FULL-TEXT SEARCH (overlay)
+// ═══════════════════════════════════════════════════════════════
+
+const ftsInput = document.getElementById('ftsInput');
+const ftsResults = document.getElementById('ftsResults');
+const searchOverlay = document.getElementById('searchOverlay');
+let ftsTimeout = null;
+
+function openSearchOverlay() {
+  searchOverlay.classList.add('open');
+  setTimeout(() => ftsInput.focus(), 100);
+  ftsInput.value = '';
+  ftsResults.innerHTML = '';
+}
+
+function closeSearchOverlay() {
+  searchOverlay.classList.remove('open');
+  document.getElementById('search').focus();
+}
+
+document.getElementById('ftsBtn').addEventListener('click', openSearchOverlay);
+document.getElementById('ftsClose').addEventListener('click', closeSearchOverlay);
+searchOverlay.addEventListener('click', (e) => {
+  if (e.target === searchOverlay) closeSearchOverlay();
+});
+
+ftsInput.addEventListener('input', () => {
+  clearTimeout(ftsTimeout);
+  const q = ftsInput.value.trim();
+  if (!q) { ftsResults.innerHTML = ''; return; }
+  ftsTimeout = setTimeout(() => doFTS(q), 200);
+});
+
+ftsInput.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') {
+    e.preventDefault();
+    const first = ftsResults.querySelector('.search-result-item');
+    if (first) first.click();
+  }
+  if (e.key === 'Escape') closeSearchOverlay();
+});
+
+async function doFTS(q) {
+  ftsResults.innerHTML = '<div class="search-status-text">Searching…</div>';
+  try {
+    const r = await fetch(`/api/search?q=${encodeURIComponent(q)}`);
+    const d = await r.json();
+    if (!d.results || d.results.length === 0) {
+      ftsResults.innerHTML = '<div class="search-status-text">No results found</div>';
+      return;
+    }
+    let html = `<div class="search-status-text">${d.count} result${d.count !== 1 ? 's' : ''} for "${esc(q)}"</div>`;
+    for (const res of d.results) {
+      const name = res.name || res.path.split('/').pop().replace(/\.md$/, '');
+      let snippet = '';
+      if (res.matches && res.matches.length > 0) {
+        snippet = res.matches[0].text;
+        const idx = snippet.toLowerCase().indexOf(q.toLowerCase());
+        if (idx !== -1) {
+          snippet = esc(snippet.substring(0, idx)) + '<em>' + esc(snippet.substring(idx, idx + q.length)) + '</em>' + esc(snippet.substring(idx + q.length));
+        } else {
+          snippet = esc(snippet);
+        }
+        snippet = `<div class="snippet">${snippet}</div>`;
+      }
+      html += `<div class="search-result-item" data-path="${esc(res.path)}">
+        <div class="path">${esc(res.path)}</div>
+        <div class="title">${esc(name)}${res.nameMatch ? '' : ''}</div>
+        ${snippet}
+        <div class="match-line">${res.matches ? res.matches.length + ' match(es)' : 'filename match'}</div>
+      </div>`;
+    }
+    ftsResults.innerHTML = html;
+    ftsResults.querySelectorAll('.search-result-item').forEach(el => {
+      el.addEventListener('click', () => {
+        closeSearchOverlay();
+        navigateTo(el.dataset.path);
+      });
+    });
+  } catch (e) {
+    ftsResults.innerHTML = '<div class="search-status-text">Search failed</div>';
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════
+// FLOATING TOC
+// ═══════════════════════════════════════════════════════════════
+
+function buildFloatingTOC() {
+  const ftoc = document.getElementById('floatToc');
+  const headings = document.querySelectorAll('#fileContent h2, #fileContent h3');
+  if (headings.length < 3) {
+    ftoc.classList.remove('show');
+    return;
+  }
+  // Remove old items except label
+  ftoc.querySelectorAll('.float-toc-item').forEach(el => el.remove());
+  let prevH2 = null;
+  headings.forEach(h => {
+    const tag = h.tagName.toLowerCase();
+    const tx = h.textContent.replace(/L\d\s*/i, '').trim();
+    const id = h.id || ('ftoc-' + Math.random().toString(36).slice(2));
+    h.id = h.id || id;
+    const item = document.createElement('a');
+    item.className = 'float-toc-item ' + tag;
+    item.href = '#' + id;
+    item.textContent = tx;
+    item.addEventListener('click', (e) => {
+      e.preventDefault();
+      document.getElementById(id).scrollIntoView({ behavior: 'smooth' });
+    });
+    ftoc.appendChild(item);
+    if (tag === 'h2') prevH2 = item;
+  });
+  ftoc.classList.add('show');
+}
+
+function updateFloatingTOC() {
+  const ftoc = document.getElementById('floatToc');
+  const body = document.getElementById('fileContent');
+  if (!ftoc.classList.contains('show')) return;
+  const items = ftoc.querySelectorAll('.float-toc-item');
+  let active = null;
+  const st = body.scrollTop + 120;
+  items.forEach(item => item.classList.remove('active'));
+  document.querySelectorAll('#fileContent h2, #fileContent h3').forEach(h => {
+    if (h.offsetTop <= st) active = h;
+  });
+  if (active) {
+    const el = ftoc.querySelector(`[href="#${active.id}"]`);
+    if (el) el.classList.add('active');
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════
+// IN-PAGE SEARCH (⌘F)
+// ═══════════════════════════════════════════════════════════════
+
+const inpageSearch = document.getElementById('inpageSearch');
+const inpageInput = document.getElementById('inpageSearchInput');
+const inpageMatchCount = document.getElementById('inpageMatchCount');
+let inpageMatches = [];
+let inpageCurrent = -1;
+
+function openInpageSearch() {
+  if (!STATE.currentPath) return;
+  inpageSearch.classList.add('show');
+  setTimeout(() => inpageInput.focus(), 50);
+  inpageInput.select();
+}
+
+function closeInpageSearch() {
+  inpageSearch.classList.remove('show');
+  inpageInput.value = '';
+  clearInpageHighlights();
+  inpageMatches = [];
+  inpageCurrent = -1;
+  inpageMatchCount.textContent = '';
+}
+
+function clearInpageHighlights() {
+  document.querySelectorAll('.inpage-highlight').forEach(el => {
+    const parent = el.parentNode;
+    parent.replaceChild(document.createTextNode(el.textContent), el);
+    parent.normalize();
+  });
+}
+
+function doInpageSearch() {
+  clearInpageHighlights();
+  const q = inpageInput.value.trim().toLowerCase();
+  if (!q) { inpageMatchCount.textContent = ''; return; }
+  const body = document.getElementById('fileContent');
+  const walker = document.createTextNode(body);
+  const textNodes = [];
+  while (walker.nextNode()) textNodes.push(walker.currentNode);
+  inpageMatches = [];
+  for (const node of textNodes) {
+    const text = node.textContent;
+    const lower = text.toLowerCase();
+    let idx = 0;
+    while ((idx = lower.indexOf(q, idx)) !== -1) {
+      const span = document.createElement('span');
+      span.className = 'inpage-highlight';
+      span.textContent = text.substring(idx, idx + q.length);
+      const after = node.splitText(idx + q.length);
+      node.splitText(idx);
+      node.parentNode.replaceChild(span, node.nextSibling);
+      inpageMatches.push(span);
+      idx = idx + q.length;
+      node = after;
+      lower = after.textContent.toLowerCase();
+      idx = lower.indexOf(q, idx);
+    }
+  }
+  inpageCurrent = inpageMatches.length > 0 ? 0 : -1;
+  updateInpageMatch();
+  if (inpageMatches.length > 0) scrollToInpageMatch(0);
+}
+
+function updateInpageMatch() {
+  inpageMatchCount.textContent = inpageMatches.length > 0
+    ? `${inpageCurrent + 1}/${inpageMatches.length}`
+    : '0 matches';
+  document.querySelectorAll('.inpage-highlight').forEach(el => el.style.background = 'var(--search-highlight)');
+  if (inpageMatches[inpageCurrent]) {
+    inpageMatches[inpageCurrent].style.background = 'rgba(251,191,36,.45)';
+  }
+}
+
+function scrollToInpageMatch(idx) {
+  if (idx >= 0 && idx < inpageMatches.length) {
+    inpageMatches[idx].scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+}
+
+document.getElementById('inpagePrev').addEventListener('click', () => {
+  if (inpageMatches.length === 0) return;
+  inpageCurrent = (inpageCurrent - 1 + inpageMatches.length) % inpageMatches.length;
+  updateInpageMatch();
+  scrollToInpageMatch(inpageCurrent);
+});
+
+document.getElementById('inpageNext').addEventListener('click', () => {
+  if (inpageMatches.length === 0) return;
+  inpageCurrent = (inpageCurrent + 1) % inpageMatches.length;
+  updateInpageMatch();
+  scrollToInpageMatch(inpageCurrent);
+});
+
+document.getElementById('inpageClose').addEventListener('click', closeInpageSearch);
+
+inpageInput.addEventListener('input', doInpageSearch);
+inpageInput.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') {
+    e.preventDefault();
+    if (e.shiftKey) {
+      document.getElementById('inpagePrev').click();
+    } else {
+      document.getElementById('inpageNext').click();
+    }
+  }
+  if (e.key === 'Escape') closeInpageSearch();
+});
+
+// ═══════════════════════════════════════════════════════════════
+// AUTO-HIDE SIDEBAR ON MOBILE SCROLL
+// ═══════════════════════════════════════════════════════════════
+
+let lastScrollY = 0;
+
+document.getElementById('fileContent').addEventListener('scroll', () => {
+  const sidebar = document.getElementById('sidebar');
+  if (window.innerWidth > 900) return;
+  const st = document.getElementById('fileContent').scrollTop;
+  if (st > lastScrollY && st > 60) {
+    sidebar.classList.add('hide-mobile');
+  } else {
+    sidebar.classList.remove('hide-mobile');
+  }
+  lastScrollY = st;
+}, { passive: true });
+
+// ═══════════════════════════════════════════════════════════════
+// EXTEND KEYBOARD SHORTCUTS
+// ═══════════════════════════════════════════════════════════════
+
+document.addEventListener('keydown', (e) => {
+  const meta = e.metaKey || e.ctrlKey;
+  if (meta && e.key === 'k') {
+    e.preventDefault();
+    openSearchOverlay();
+  }
+  if (meta && e.key === 'f') {
+    e.preventDefault();
+    // Don't open if we're in the FTS overlay
+    if (searchOverlay.classList.contains('open')) return;
+    openInpageSearch();
+  }
+  if (meta && e.key === 't') {
+    e.preventDefault();
+    document.getElementById('themeBtn').click();
+  }
+});
+
+// ═══════════════════════════════════════════════════════════════
+// PAGE TRANSITIONS
+// ═══════════════════════════════════════════════════════════════
+
+function showPageTransition() {
+  const pt = document.getElementById('pageTransition');
+  pt.classList.add('active');
+  setTimeout(() => pt.classList.remove('active'), 300);
+}
+
+// Patch loadFile to add transition
+const origLoadFile = loadFile;
+loadFile = function(path) {
+  showPageTransition();
+  const body = document.getElementById('fileContent');
+  body.classList.add('loading');
+  body.classList.remove('loaded');
+  origLoadFile(path);
+  setTimeout(() => {
+    body.classList.remove('loading');
+    body.classList.add('loaded');
+    // Build floating TOC after render
+    setTimeout(() => {
+      buildFloatingTOC();
+      // Patch scroll handler for floating TOC
+    }, 100);
+  }, 50);
+};
+
+// ═══════════════════════════════════════════════════════════════
+// EXTEND loadFile COMPUTED STATS FOR FLOATING TOC
+// ═══════════════════════════════════════════════════════════════
+
+// Patch buildTOC to also update floating TOC
+const origBuildTOC = buildTOC;
+buildTOC = function() {
+  origBuildTOC();
+  setTimeout(buildFloatingTOC, 50);
+};
+
+// Patch the scroll listener in buildTOC to also update floating TOC
+const origBodyScroll = document.getElementById('fileContent');
+if (origBodyScroll) {
+  origBodyScroll.addEventListener('scroll', updateFloatingTOC, { passive: true });
+}
+
+// ═══════════════════════════════════════════════════════════════
+// UTILITIES
+// ═══════════════════════════════════════════════════════════════
 function esc(s) {
   const m = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
   return (s || '').replace(/[&<>"']/g, x => m[x]);

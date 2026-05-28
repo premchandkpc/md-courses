@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Reliability & Durability Architecture — System Design Architecture</title>
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0b0e14;--bg2:#11161e;--bg3:#18202a;--bg4:#1f2937;--border:#1e2a3a;--fg:#e3eaf0;--fg2:#94a3b8;--fg3:#64748b;--accent:#60a5fa;--accent-hover:#93c5fd;--green:#34d399;--purple:#a78bfa;--pink:#f472b6;--orange:#fb923c;--radius:10px;--font:'Inter',system-ui,-apple-system,sans-serif;--mono:'JetBrains Mono',monospace}
+body{font-family:var(--font);background:var(--bg);color:var(--fg);min-height:100vh;overflow-x:hidden;-webkit-font-smoothing:antialiased;padding:20px}
+.container{max-width:1100px;margin:0 auto}
+h1{font-size:26px;font-weight:800;letter-spacing:-.02em;margin:20px 0 20px;display:flex;align-items:center;gap:10px}
+.desc{color:var(--fg2);font-size:14px;margin-bottom:24px;line-height:1.6}
+.diagram-box{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:24px;margin-bottom:24px;overflow:auto;display:flex;justify-content:center;min-height:300px}
+.diagram-box svg{max-width:100%;height:auto}
+.components{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px;margin-bottom:24px}
+.component{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:16px}
+.component h3{font-size:13px;font-weight:700;margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.component p{font-size:12px;color:var(--fg2);line-height:1.5}
+.back-link{display:inline-flex;align-items:center;gap:6px;color:var(--fg3);text-decoration:none;font-size:13px;margin-bottom:16px;transition:color .15s}
+.back-link:hover{color:var(--accent)}
+.flow-desc{font-size:12px;color:var(--fg3);font-family:var(--mono);padding:12px 16px;background:var(--bg2);border:1px solid var(--border);border-radius:6px;margin-bottom:20px;line-height:1.6}
+.kv-list{margin-bottom:24px}
+.kv-item{display:flex;padding:8px 0;border-bottom:1px solid var(--border);font-size:13px}
+.kv-key{color:var(--fg3);width:140px;flex-shrink:0;font-weight:600}
+.kv-val{color:var(--fg)}
+@media(max-width:700px){.components{grid-template-columns:1fr}h1{font-size:20px}}
+</style>
+</head>
+<body>
+<div class="container">
+<a class="back-link" href="javascript:history.back()">← Back</a>
+<h1>🔒 Reliability & Durability Architecture</h1>
+<p class="desc">Ensuring data survives failures through replication, erasure coding, checksums, and durability guarantees at every tier.</p>
+<div class="flow-desc">Flow: Write → Replication factor N → Sync/Ack quorum → Checksum verification → Periodic scrub → Repair.</div>
+<div class="diagram-box">
+<pre class="mermaid">
+graph TB
+    Write[Client Write]
+    subgraph Replication["🔄 Replication"]
+        L1[(Node 1 Primary)]
+        L2[(Node 2 Replica)]
+        L3[(Node 3 Replica)]
+    end
+    subgraph Storage["💾 Storage"]
+        S1[SSD/HDD]
+        S2[SSD/HDD]
+        S3[SSD/HDD]
+    end
+    subgraph Integrity["🔍 Integrity"]
+        CK1[Checksum Verify]
+        CK2[Scrub Repair]
+        CK3[Backup]
+    end
+    Write --> L1
+    L1 -->|Replicate| L2 & L3
+    L2 & L3 -->|Ack| L1
+    L1 --> S1
+    L2 --> S2
+    L3 --> S3
+    S1 --> CK1
+    CK1 --> CK2
+    S1 --> CK3
+    style L1 fill:#1e3a5f,stroke:#4a8bc2
+    style L2 fill:#1a3a2a,stroke:#34d399
+    style L3 fill:#1a3a2a,stroke:#34d399
+</pre>
+</div>
+<div class="components">
+<div class="component"><h3>🔄 Replication Factor</h3><p>RF=3 means 3 copies across failure domains. Tolerates N-1 simultaneous failures. Increases write cost 3×.</p></div>
+<div class="component"><h3>🔍 Checksums</h3><p>CRC32 or SHA-256 on every data block. Background scrubbing detects and repairs silent data corruption.</p></div>
+<div class="component"><h3>📦 Erasure Coding</h3><p>Fragment data into M + N parity shards. 4+2 EC tolerates 2 failures with 1.5× storage overhead vs 3× for RF=3.</p></div>
+<div class="component"><h3>🗄️ Backup Strategy</h3><p>Full backup + WAL archiving + point-in-time recovery. Test restores quarterly.</p></div>
+</div>
+<div class="kv-list">
+<div class="kv-item"><span class="kv-key">Durability SLA</span><span class="kv-val">S3: 99.999999999% (11 9s). EBS: 99.999%</span></div>
+<div class="kv-item"><span class="kv-key">Replication</span><span class="kv-val">Sync (higher consistency, latency) vs Async (faster, possible loss)</span></div>
+<div class="kv-item"><span class="kv-key">Erasure Coding</span><span class="kv-val">More space-efficient than replication. 4+2 = 1.5× overhead</span></div>
+<div class="kv-item"><span class="kv-key">Testing</span><span class="kv-val">Restore from backup every 3 months. Inject disk failures.</span></div>
+</div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<script>
+mermaid.initialize({
+  startOnLoad: true,
+  theme: 'dark',
+  themeVariables: {
+    background: '#11161e',
+    primaryColor: '#60a5fa',
+    primaryBorderColor: '#1e2a3a',
+    primaryTextColor: '#e3eaf0',
+    lineColor: '#94a3b8',
+    tertiaryColor: '#11161e',
+    fontSize: '14px',
+    fontFamily: 'Inter,system-ui,sans-serif'
+  }
+});
+</script>
+</body>
+</html>

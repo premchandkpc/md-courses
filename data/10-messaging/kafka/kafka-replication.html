@@ -342,5 +342,20 @@ function init() {
 
 init();
 </script>
+
+<script>
+// Hash navigation: scroll to element on load + hashchange
+(function(){
+  function scrollToHash(){
+    var h = window.location.hash;
+    if(h && h.length > 1){
+      var el = document.getElementById(h.substring(1));
+      if(el) setTimeout(function(){ el.scrollIntoView({behavior:'smooth', block:'start'}); }, 200);
+    }
+  }
+  window.addEventListener('hashchange', scrollToHash);
+  window.addEventListener('load', scrollToHash);
+})();
+</script>
 </body>
 </html>

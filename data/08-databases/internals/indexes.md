@@ -1,5 +1,9 @@
 # 🗂️ Database Indexes — Complete Comparison Tables
 
+
+> **Run the live simulator**: [btree-visualizer.html](/08-databases/btree-visualizer.html) — insert keys into an Order-4 B+Tree and watch node splits and tree growth in real-time.
+
+
 An index is like a **book index 📖**.
 
 Without index:

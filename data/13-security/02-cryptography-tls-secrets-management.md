@@ -1,6 +1,10 @@
 # Cryptography, TLS, and Secrets Management: Deep Dive
 
 
+> **Run the live simulator**: [jwt-debugger.html](/13-security/jwt-debugger.html) — inspect, decode, tamper, and verify JSON Web Tokens with real HMAC-SHA256 signing.
+
+
+
 ```mermaid
 graph LR
     CRYPTO["Cryptography"] --> SYM_CRYPTO["Symmetric<br/>(same key)"]

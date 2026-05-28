@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>GC Visualizer — Interactive Simulator</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:system-ui,-apple-system,sans-serif;background:#0d1117;color:#e6edf3;padding:24px;max-width:900px;margin:0 auto}
+h1{font-size:20px;margin-bottom:4px;color:#58a6ff}
+.sub{color:#8b949e;font-size:13px;margin-bottom:16px}
+h2{font-size:14px;color:#e6edf3;margin:16px 0 8px}
+.controls{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0}
+.btn{padding:6px 14px;border:1px solid #30363d;border-radius:6px;background:#1c2128;color:#e6edf3;cursor:pointer;font-size:11px;transition:all .15s}
+.btn:hover{border-color:#8b949e}
+.btn.primary{background:#1f3a5f;border-color:#58a6ff;color:#58a6ff}
+.btn.primary:hover{background:#26446e}
+.btn.danger{background:#3d1a1a;border-color:#f85149;color:#f85149}
+.btn.danger:hover{background:#4d2222}
+.btn.warn{background:#3a2a1a;border-color:#d29922;color:#d29922}
+.btn.warn:hover{background:#4a3a2a}
+.btn.success{background:#1a3a2c;border-color:#3fb950;color:#3fb950}
+.btn.success:hover{background:#1f4a36}
+.heap{background:#161b22;border:1px solid #30363d;border-radius:8px;overflow:hidden;margin:12px 0;position:relative;height:90px;display:flex}
+.heap .gen{height:100%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;transition:width .3s;position:relative;overflow:hidden}
+.heap .young{background:#1f3a5f;border-right:1px solid #30363d}
+.heap .old{background:#3a1f1f;min-width:20%}
+.heap .region{border-right:1px solid rgba(255,255,255,0.08);height:100%}
+.heap .region.filled{background:rgba(88,166,255,0.3);position:relative}
+.heap .region.survivor{background:#2d5a7b}
+.heap .label{font-size:9px;color:#8b949e;position:absolute;top:2px;left:4px}
+.heap .obj{position:absolute;width:6px;height:6px;border-radius:50%;transition:all .3s}
+.heap .obj.young-obj{background:#58a6ff}
+.heap .obj.old-obj{background:#f85149}
+.heap .obj.promoted{background:#d29922;animation:pulse 0.5s}
+.heap .obj.dying{background:#8b949e;animation:fadeOut 0.8s forwards}
+.heap .pause-overlay{position:absolute;top:0;left:0;right:0;bottom:0;background:rgba(248,81,73,0.15);display:none;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#f85149}
+.heap .pause-overlay.active{display:flex}
+.heap .gc-arrow{position:absolute;font-size:18px;color:#d29922;animation:moveArrow 0.5s}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(100px,1fr));gap:8px;margin:8px 0}
+.stat{background:#161b22;border:1px solid #30363d;border-radius:6px;padding:10px;text-align:center}
+.stat .num{font-size:20px;font-weight:700;color:#e6edf3}
+.stat .lbl{font-size:10px;color:#8b949e;margin-top:2px}
+.stat .num.warn{color:#d29922}
+.stat .num.danger{color:#f85149}
+.gc-log{background:#161b22;border:1px solid #30363d;border-radius:6px;padding:8px;max-height:150px;overflow-y:auto;font-family:'JetBrains Mono',monospace;font-size:10px;margin-top:8px}
+.gc-entry{padding:2px 4px;border-radius:2px;margin:1px 0}
+.gc-entry.young-gc{border-left:2px solid #58a6ff;color:#8b949e}
+.gc-entry.full-gc{border-left:2px solid #f85149;color:#f85149}
+.gc-entry.alloc{border-left:2px solid #3fb950;color:#8b949e}
+.gc-entry.promote{border-left:2px solid #d29922;color:#d29922}
+@keyframes pulse{0%{transform:scale(1)}50%{transform:scale(1.8)}100%{transform:scale(1)}}
+@keyframes fadeOut{0%{opacity:1;transform:scale(1)}100%{opacity:0;transform:scale(0.3)}}
+@keyframes moveArrow{0%{transform:translateX(0);opacity:1}100%{transform:translateX(100px);opacity:0}}
+</style>
+</head>
+<body>
+<h1>🗑️ GC Visualizer — Heap & Garbage Collection</h1>
+<div class="sub">Watch objects allocate, age, promote, and get collected in the JVM heap</div>
+
+<h2>JVM Heap</h2>
+<div class="heap" id="heap">
+  <div class="young" id="young-gen" style="width:60%">
+    <div class="label">Young Gen (Eden + S0/S1)</div>
+    <div id="young-objects" style="position:absolute;top:20px;left:4px;right:4px;bottom:4px"></div>
+  </div>
+  <div class="old" id="old-gen" style="width:40%">
+    <div class="label">Old Gen</div>
+    <div id="old-objects" style="position:absolute;top:20px;left:4px;right:4px;bottom:4px"></div>
+  </div>
+  <div class="pause-overlay" id="pause-overlay">⏸️ GC PAUSE (STW)</div>
+</div>
+
+<h2>Controls</h2>
+<div class="controls">
+  <button class="btn primary" onclick="allocateObject()">📦 Allocate Object</button>
+  <button class="btn primary" onclick="allocateBatch()">📦📦 Allocate 5</button>
+  <button class="btn warn" onclick="triggerYoungGC()">♻️ Trigger Young GC</button>
+  <button class="btn danger" onclick="triggerFullGC()">💀 Trigger Full GC</button>
+  <button class="btn success" onclick="setAutoAlloc()" id="auto-btn">▶ Auto Allocate</button>
+  <button class="btn" onclick="resetSim()">⟲ Reset</button>
+</div>
+
+<h2>Statistics</h2>
+<div class="stats">
+  <div class="stat"><div class="num" id="s-objects">0</div><div class="lbl">Objects</div></div>
+  <div class="stat"><div class="num" id="s-young">0</div><div class="lbl">Young</div></div>
+  <div class="stat"><div class="num" id="s-old">0</div><div class="lbl">Old</div></div>
+  <div class="stat"><div class="num" id="s-promoted">0</div><div class="lbl">Promoted</div></div>
+  <div class="stat"><div class="num" id="s-collected">0</div><div class="lbl">Collected</div></div>
+  <div class="stat"><div class="num" id="s-gen">1</div><div class="lbl">GC Cycles</div></div>
+</div>
+
+<h2>GC Log</h2>
+<div class="gc-log" id="gc-log"></div>
+
+<script>
+const YOUNG_MAX = 60; // max objects before young GC trigger
+let objects = []; // {age:0, gen:'young'}
+let stats = {young:0, old:0, promoted:0, collected:0, gcCycles:0, objId:0};
+let autoTimer = null;
+let isPaused = false;
+
+function allocateObject(){
+  if(isPaused) return;
+  const obj = {id:++stats.objId, age:0, gen:'young'};
+  objects.push(obj);
+  stats.young++;
+  updateDisplay();
+  log(`${obj.id}: allocated in Eden`, 'alloc');
+  if(stats.young >= YOUNG_MAX) triggerYoungGC();
+}
+
+function allocateBatch(){
+  for(let i=0;i<5;i++) allocateObject();
+}
+
+function triggerYoungGC(){
+  if(isPaused) return;
+  showPause(true);
+  const toCollect = objects.filter(o=>o.gen==='young');
+  const surviving = [];
+  let promoted = 0;
+  
+  toCollect.forEach(o=>{
+    o.age++;
+    if(o.age >= 3){
+      o.gen = 'old';
+      stats.old++;
+      stats.young--;
+      stats.promoted++;
+      promoted++;
+      surviving.push(o);
+    } else {
+      // survive young GC
+      surviving.push(o);
+    }
+  });
+  
+  // Collect dead young objects
+  const collectedCount = toCollect.length - surviving.length;
+  objects = objects.filter(o=>o.gen==='old').concat(surviving);
+  stats.collected += collectedCount;
+  stats.gcCycles++;
+  
+  updateDisplay();
+  log(`Young GC: ${collectedCount} collected, ${promoted} promoted, ${surviving.length} survived`, 'young-gc');
+  setTimeout(()=>showPause(false), 400);
+}
+
+function triggerFullGC(){
+  if(isPaused) return;
+  showPause(true);
+  const before = objects.length;
+  objects = objects.filter(o=>o.age < 5);
+  const collected = before - objects.length;
+  stats.collected += collected;
+  stats.old = objects.filter(o=>o.gen==='old').length;
+  stats.young = objects.filter(o=>o.gen==='young').length;
+  stats.gcCycles++;
+  updateDisplay();
+  log(`Full GC: ${collected} collected across all generations. Heap: ${objects.length} survivors`, 'full-gc');
+  setTimeout(()=>showPause(false), 600);
+}
+
+function showPause(active){
+  isPaused = active;
+  document.getElementById('pause-overlay').className = 'pause-overlay' + (active ? ' active' : '');
+}
+
+function setAutoAlloc(){
+  if(autoTimer){
+    clearInterval(autoTimer);
+    autoTimer = null;
+    document.getElementById('auto-btn').textContent = '▶ Auto Allocate';
+    return;
+  }
+  document.getElementById('auto-btn').textContent = '⏹ Stop';
+  autoTimer = setInterval(()=>{
+    allocateObject();
+    if(isPaused && autoTimer){ clearInterval(autoTimer); autoTimer = null; }
+  }, 300);
+}
+
+function resetSim(){
+  if(autoTimer){ clearInterval(autoTimer); autoTimer = null; document.getElementById('auto-btn').textContent = '▶ Auto Allocate'; }
+  objects = [];
+  stats = {young:0, old:0, promoted:0, collected:0, gcCycles:0, objId:0};
+  isPaused = false;
+  document.getElementById('pause-overlay').className = 'pause-overlay';
+  document.getElementById('gc-log').innerHTML = '';
+  updateDisplay();
+}
+
+function updateDisplay(){
+  document.getElementById('s-objects').textContent = objects.length;
+  document.getElementById('s-young').textContent = stats.young;
+  document.getElementById('s-old').textContent = stats.old;
+  document.getElementById('s-promoted').textContent = stats.promoted;
+  document.getElementById('s-collected').textContent = stats.collected;
+  document.getElementById('s-gen').textContent = stats.gcCycles;
+  
+  // Render objects in heap
+  const youngDiv = document.getElementById('young-objects');
+  const oldDiv = document.getElementById('old-objects');
+  let youngHtml = '', oldHtml = '';
+  objects.filter(o=>o.gen==='young').forEach(o=>{
+    const x = Math.random() * 90 + '%';
+    const y = Math.random() * 70 + 'px';
+    youngHtml += `<div class="obj young-obj" style="left:${x};top:${y};background:#58a6ff" title="Obj ${o.id} age=${o.age}"></div>`;
+  });
+  objects.filter(o=>o.gen==='old').forEach(o=>{
+    const x = Math.random() * 90 + '%';
+    const y = Math.random() * 70 + 'px';
+    oldHtml += `<div class="obj old-obj" style="left:${x};top:${y};background:#f85149" title="Obj ${o.id} age=${o.age}"></div>`;
+  });
+  youngDiv.innerHTML = youngHtml;
+  oldDiv.innerHTML = oldHtml;
+  
+  // Color warnings
+  document.getElementById('s-young').className = stats.young > 40 ? 'num warn' : 'num';
+  document.getElementById('s-old').className = stats.old > 30 ? (stats.old > 45 ? 'num danger' : 'num warn') : 'num';
+}
+
+function log(msg, type){
+  const el = document.getElementById('gc-log');
+  const entry = document.createElement('div');
+  entry.className = 'gc-entry ' + type;
+  entry.textContent = `[${stats.gcCycles}] ${msg}`;
+  el.appendChild(entry);
+  el.scrollTop = el.scrollHeight;
+}
+
+updateDisplay();
+log('JVM started. Eden is empty, ready for allocations.', 'alloc');
+</script>
+<script>
+(function(){
+  function scrollToHash(){
+    var h = window.location.hash;
+    if(h && h.length > 1){
+      var el = document.getElementById(h.substring(1));
+      if(el) setTimeout(function(){ el.scrollIntoView({behavior:'smooth', block:'start'}); }, 200);
+    }
+  }
+  window.addEventListener('hashchange', scrollToHash);
+  window.addEventListener('load', scrollToHash);
+})();
+</script>
+</body>
+</html>

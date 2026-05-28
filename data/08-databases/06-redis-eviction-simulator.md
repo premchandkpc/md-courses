@@ -1,6 +1,6 @@
 # Redis Memory Eviction Policies — Interactive Simulator
 
-> **Run the live simulator**: [redis-eviction.html](/redis-eviction.html) — add keys with different TTLs, fill memory, and watch eviction policies in action.
+> **Run the live simulator**: [redis-eviction.html](/08-databases/redis-eviction.html) — add keys with different TTLs, fill memory, and watch eviction policies in action.
 
 ## Overview
 

@@ -1,6 +1,6 @@
 # Kafka Partition Replication — Interactive Simulator
 
-> **Run the live simulator**: [kafka-replication.html](/kafka-replication.html) — produce messages, kill leaders, watch ISR management in real-time.
+> **Run the live simulator**: [kafka-replication.html](/10-messaging/kafka/kafka-replication.html) — produce messages, kill leaders, watch ISR management in real-time.
 
 ## Overview
 

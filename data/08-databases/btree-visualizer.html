@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>B+Tree Visualizer — Interactive Simulator</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:system-ui,-apple-system,sans-serif;background:#0d1117;color:#e6edf3;padding:24px;max-width:900px;margin:0 auto}
+h1{font-size:20px;margin-bottom:4px;color:#58a6ff}
+.sub{color:#8b949e;font-size:13px;margin-bottom:16px}
+h2{font-size:14px;color:#e6edf3;margin:16px 0 8px}
+.controls{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0}
+.btn{padding:6px 14px;border:1px solid #30363d;border-radius:6px;background:#1c2128;color:#e6edf3;cursor:pointer;font-size:11px;transition:all .15s}
+.btn:hover{border-color:#8b949e}
+.btn.primary{background:#1f3a5f;border-color:#58a6ff;color:#58a6ff}
+.btn.primary:hover{background:#26446e}
+.btn.success{background:#1a3a2c;border-color:#3fb950;color:#3fb950}
+.btn.success:hover{background:#1f4a36}
+.btn.danger{background:#3d1a1a;border-color:#f85149;color:#f85149}
+.btn.danger:hover{background:#4d2222}
+.input-row{display:flex;gap:8px;align-items:center;margin:8px 0}
+.input-row input{padding:6px 10px;border:1px solid #30363d;border-radius:4px;background:#0d1117;color:#e6edf3;font-size:12px;width:150px;font-family:'JetBrains Mono',monospace}
+.input-row input:focus{outline:none;border-color:#58a6ff}
+.tree{position:relative;margin:16px 0;overflow-x:auto;padding:10px 0}
+.node{display:inline-flex;flex-direction:column;align-items:center;margin:4px 8px;position:relative}
+.node-box{display:flex;border:2px solid #30363d;border-radius:6px;background:#0d1117;overflow:hidden}
+.node-box.root{border-color:#58a6ff}
+.node-box.internal{border-color:#2d5a7b}
+.node-box.leaf{border-color:#3fb950}
+.node-key{padding:6px 10px;font-size:12px;font-weight:600;color:#e6edf3;border-right:1px solid #30363d;min-width:28px;text-align:center}
+.node-key:last-child{border-right:none}
+.node-key.highlight{background:#1f3a5f;color:#58a6ff}
+.node-key.split{background:#3d1a1a;color:#f85149}
+.children{display:flex;margin-top:8px;position:relative}
+.children::before{content:'';position:absolute;top:-8px;left:50%;right:50%;height:8px;border-left:1px solid #30363d;border-right:1px solid #30363d}
+.leaf-row{display:flex;gap:4px;justify-content:center;margin-top:4px;padding:4px;background:#161b22;border-radius:4px}
+.leaf-link{width:8px;height:2px;background:#30363d;margin:0 2px}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(100px,1fr));gap:8px;margin:8px 0}
+.stat{background:#161b22;border:1px solid #30363d;border-radius:6px;padding:10px;text-align:center}
+.stat .num{font-size:18px;font-weight:700;color:#e6edf3}
+.stat .lbl{font-size:10px;color:#8b949e;margin-top:2px}
+.log{background:#161b22;border:1px solid #30363d;border-radius:6px;padding:8px;max-height:120px;overflow-y:auto;font-family:'JetBrains Mono',monospace;font-size:10px;margin-top:8px}
+.log-entry{padding:2px 4px;color:#8b949e}
+.log-entry.insert{color:#3fb950;border-left:2px solid #3fb950;padding-left:4px}
+.log-entry.split{color:#d29922;border-left:2px solid #d29922;padding-left:4px}
+.log-entry.search{color:#58a6ff;border-left:2px solid #58a6ff;padding-left:4px}
+.tier-label{font-size:9px;color:#8b949e;text-align:center;margin:4px 0}
+</style>
+</head>
+<body>
+<h1>🌲 B+Tree Visualizer</h1>
+<div class="sub">Order-4 B+Tree — insert keys and watch the tree grow and split</div>
+
+<h2>Insert Keys</h2>
+<div class="input-row">
+  <input id="key-input" value="" placeholder="e.g. 42" onkeydown="if(event.key==='Enter')insertKey()">
+  <button class="btn primary" onclick="insertKey()">➕ Insert</button>
+  <button class="btn success" onclick="insertBatch()">➕➕ Insert 1-10</button>
+  <button class="btn danger" onclick="resetTree()">⟲ Reset</button>
+</div>
+
+<h2>Search</h2>
+<div class="input-row">
+  <input id="search-input" value="" placeholder="Search key..." onkeydown="if(event.key==='Enter')searchKey()">
+  <button class="btn" onclick="searchKey()">🔍 Search</button>
+</div>
+
+<h2>B+Tree Structure</h2>
+<div class="tree" id="tree"></div>
+
+<h2>Statistics</h2>
+<div class="stats">
+  <div class="stat"><div class="num" id="s-keys">0</div><div class="lbl">Keys</div></div>
+  <div class="stat"><div class="num" id="s-nodes">0</div><div class="lbl">Nodes</div></div>
+  <div class="stat"><div class="num" id="s-height">0</div><div class="lbl">Height</div></div>
+  <div class="stat"><div class="num" id="s-splits">0</div><div class="lbl">Splits</div></div>
+</div>
+
+<h2>Operation Log</h2>
+<div class="log" id="log"></div>
+
+<script>
+// Order-4 B+Tree: max 3 keys per node, max 4 children
+const MAX_KEYS = 3;
+const MIN_KEYS = 1;
+let tree = null;
+let stats = {keys:0, nodes:1, height:1, splits:0};
+
+class BPlusNode {
+  constructor(isLeaf=true){
+    this.isLeaf = isLeaf;
+    this.keys = [];
+    this.children = []; // for internal nodes
+    this.parent = null;
+    this.next = null; // for leaf linked list
+  }
+}
+
+function insertKey(){
+  const input = document.getElementById('key-input');
+  const val = parseInt(input.value);
+  if(isNaN(val)) return;
+  input.value = '';
+  
+  if(!tree){
+    tree = new BPlusNode(true);
+    tree.keys.push(val);
+    updateStats();
+    render(tree);
+    log(`Inserted ${val} — root created`, 'insert');
+    return;
+  }
+  
+  // Find leaf to insert into
+  const leaf = findLeaf(tree, val);
+  if(!leaf) return;
+  
+  leaf.keys.push(val);
+  leaf.keys.sort((a,b)=>a-b);
+  log(`Inserted ${val} into leaf`, 'insert');
+  
+  // Check for split
+  if(leaf.keys.length > MAX_KEYS){
+    splitNode(leaf);
+  }
+  
+  updateStats();
+  render(tree);
+}
+
+function findLeaf(node, key){
+  if(node.isLeaf) return node;
+  for(let i=0; i<node.keys.length; i++){
+    if(key < node.keys[i]) return findLeaf(node.children[i], key);
+  }
+  return findLeaf(node.children[node.children.length-1], key);
+}
+
+function splitNode(node){
+  stats.splits++;
+  const midIdx = Math.floor(node.keys.length / 2);
+  const midKey = node.keys[midIdx];
+  
+  const newRight = new BPlusNode(node.isLeaf);
+  newRight.keys = node.keys.splice(midIdx + (node.isLeaf ? 0 : 1));
+  
+  if(node.isLeaf){
+    // Leaf split: keep mid key in left, move rest to right
+    const midKeyLeaf = node.keys.splice(midIdx);
+    newRight.keys = midKeyLeaf;
+    // Link leaves
+    newRight.next = node.next;
+    node.next = newRight;
+  } else {
+    // Internal split: move children too
+    const movedKeys = node.keys.splice(midIdx + 1);
+    const movedChildren = node.children.splice(midIdx + 1);
+    node.keys = node.keys.slice(0, midIdx);
+    newRight.keys = movedKeys;
+    newRight.children = movedChildren;
+    newRight.children.forEach(c=>c.parent = newRight);
+  }
+  
+  if(!node.parent){
+    // Create new root
+    const newRoot = new BPlusNode(false);
+    newRoot.keys = [midKey];
+    newRoot.children = [node, newRight];
+    node.parent = newRoot;
+    newRight.parent = newRoot;
+    tree = newRoot;
+    log(`Split! New root created with key ${midKey}. Height increased.`, 'split');
+  } else {
+    // Insert into parent
+    const parent = node.parent;
+    newRight.parent = parent;
+    const idx = parent.children.indexOf(node);
+    parent.keys.splice(idx, 0, midKey);
+    parent.children.splice(idx+1, 0, newRight);
+    log(`Split! Promoted key ${midKey} to parent.`, 'split');
+    
+    if(parent.keys.length > MAX_KEYS){
+      splitNode(parent);
+    }
+  }
+}
+
+function searchKey(){
+  const input = document.getElementById('search-input');
+  const val = parseInt(input.value);
+  if(isNaN(val) || !tree) return;
+  
+  const path = [];
+  let node = tree;
+  while(!node.isLeaf){
+    path.push(node.keys.join(','));
+    let found = false;
+    for(let i=0; i<node.keys.length; i++){
+      if(val < node.keys[i]){ node = node.children[i]; found = true; break; }
+    }
+    if(!found) node = node.children[node.children.length-1];
+  }
+  path.push(node.keys.join(','));
+  const found = node.keys.includes(val);
+  log(`Search ${val}: ${found ? '✅ FOUND' : '❌ NOT FOUND'} in leaf [${node.keys.join(',')}] (path: ${path.join(' → ')})`, 'search');
+}
+
+function insertBatch(){
+  for(let i=1; i<=10; i++) {
+    if(!tree){
+      tree = new BPlusNode(true);
+      tree.keys.push(i);
+    } else {
+      const leaf = findLeaf(tree, i);
+      leaf.keys.push(i);
+      leaf.keys.sort((a,b)=>a-b);
+      if(leaf.keys.length > MAX_KEYS) splitNode(leaf);
+    }
+  }
+  updateStats(); render(tree);
+  log('Inserted keys 1-10', 'insert');
+}
+
+function resetTree(){
+  tree = null;
+  stats = {keys:0, nodes:1, height:1, splits:0};
+  document.getElementById('tree').innerHTML = '<div style="color:#8b949e;text-align:center;padding:20px">Tree is empty. Insert keys to build the B+Tree.</div>';
+  updateStats();
+  document.getElementById('log').innerHTML = '';
+}
+
+function countNodes(node){
+  if(!node) return 0;
+  let count = 1;
+  if(!node.isLeaf) node.children.forEach(c=>count += countNodes(c));
+  return count;
+}
+
+function getHeight(node){
+  if(!node || node.isLeaf) return 1;
+  return 1 + getHeight(node.children[0]);
+}
+
+function updateStats(){
+  stats.keys = tree ? tree.keys.reduce((sum,n)=>sum + countKeys(n), 0) : 0;
+  stats.nodes = tree ? countNodes(tree) : 0;
+  stats.height = tree ? getHeight(tree) : 0;
+  
+  document.getElementById('s-keys').textContent = stats.keys;
+  document.getElementById('s-nodes').textContent = stats.nodes;
+  document.getElementById('s-height').textContent = stats.height;
+  document.getElementById('s-splits').textContent = stats.splits;
+}
+
+function countKeys(node){
+  let total = node.keys.length;
+  if(!node.isLeaf) node.children.forEach(c=>total += countKeys(c));
+  return total;
+}
+
+function render(node, depth=0){
+  const div = document.getElementById('tree');
+  if(!node){ div.innerHTML = '<div style="color:#8b949e;text-align:center;padding:20px">Tree is empty.</div>'; return; }
+  
+  function renderNode(n, d){
+    const type = d===0 ? 'root' : n.isLeaf ? 'leaf' : 'internal';
+    let html = `<div class="node-box ${type}">`;
+    n.keys.forEach((k,i)=>{
+      html += `<div class="node-key">${k}</div>`;
+    });
+    html += '</div>';
+    
+    if(!n.isLeaf && n.children.length > 0){
+      html += '<div class="children">';
+      n.children.forEach(c=>{
+        html += `<div style="display:flex;flex-direction:column;align-items:center">${renderNode(c, d+1)}</div>`;
+      });
+      html += '</div>';
+    }
+    
+    // Show leaf next-pointer
+    if(n.isLeaf && n.next){
+      html += `<div class="leaf-row">→ leaf:[${n.next.keys.join(',')}]</div>`;
+    }
+    
+    return `<div class="node" style="margin:${d>0?'8px 4px':'0'}">${html}</div>`;
+  }
+  
+  div.innerHTML = renderNode(node, 0);
+}
+
+function log(msg, type){
+  const el = document.getElementById('log');
+  const entry = document.createElement('div');
+  entry.className = 'log-entry ' + type;
+  entry.textContent = msg;
+  el.appendChild(entry);
+  el.scrollTop = el.scrollHeight;
+}
+
+log('B+Tree ready. Insert keys to visualize tree structure.', 'insert');
+</script>
+<script>
+(function(){
+  function scrollToHash(){
+    var h = window.location.hash;
+    if(h && h.length > 1){
+      var el = document.getElementById(h.substring(1));
+      if(el) setTimeout(function(){ el.scrollIntoView({behavior:'smooth', block:'start'}); }, 200);
+    }
+  }
+  window.addEventListener('hashchange', scrollToHash);
+  window.addEventListener('load', scrollToHash);
+})();
+</script>
+</body>
+</html>

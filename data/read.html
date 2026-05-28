@@ -363,6 +363,22 @@ body{
   box-shadow:var(--shadow);
   position:relative;
 }
+.diagram-fullscreen{
+  position:fixed;inset:0;z-index:999;background:rgba(0,0,0,.95);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:40px;opacity:0;pointer-events:none;transition:opacity .2s;
+}
+.diagram-fullscreen.open{opacity:1;pointer-events:auto}
+.diagram-fullscreen .close-btn{
+  position:absolute;top:20px;right:30px;background:none;border:none;
+  color:#fff;font-size:32px;cursor:pointer;opacity:.7;transition:opacity .15s;
+}
+.diagram-fullscreen .close-btn:hover{opacity:1}
+.diagram-fullscreen .fs-content{
+  max-width:90vw;max-height:90vh;overflow:auto;display:flex;
+  align-items:center;justify-content:center;
+}
+.diagram-fullscreen .mermaid{transform:scale(1)!important}
 .md .mermaid-wrap.animate-in{animation:fadeSlide .5s ease-out}
 @keyframes fadeSlide{
   from{opacity:0;transform:translateY(14px)}
@@ -489,6 +505,7 @@ body{
     <div class="sidebar-header">
       <h2>Explorer</h2>
       <div class="sidebar-toolbar">
+        <button class="sidebar-btn" id="homeBtn" data-action="home" title="Home">🏠</button>
         <button class="sidebar-btn" id="bookmarkToggle" title="Bookmarks">⭐</button>
         <button class="sidebar-btn" id="collapseSidebar" title="Toggle sidebar">◀</button>
       </div>
@@ -559,6 +576,10 @@ body{
   <div class="lightbox" id="lightbox">
     <button class="lb-close" data-action="closeLightbox">✕</button>
     <img id="lightboxImg" src="" alt="">
+  </div>
+  <div class="diagram-fullscreen" id="diagramFullscreen">
+    <button class="close-btn" data-action="closeDiagramFullscreen">✕</button>
+    <div class="fs-content" id="fsContent"></div>
   </div>
   <div class="floating-controls">
     <button class="floating-btn" id="backTopBtn" title="Back to top">↑</button>
@@ -637,6 +658,11 @@ async function init() {
   renderTopics();
   renderRecentFiles();
   attachTreeEvents();
+
+  const lastFile = localStorage.getItem('lastViewedFile');
+  if (lastFile && STATE.flatFiles.some(f => f.path === lastFile)) {
+    loadFile(lastFile);
+  }
 }
 
 // ─── State Persistence ───
@@ -678,6 +704,12 @@ function attachEventDelegation() {
       'zoomIn': () => changeZoom(CONFIG.zoomStep),
       'zoomReset': () => changeZoom(0),
       'fullscreen': () => toggleFullscreen(),
+      'diagramZoomOut': (el) => zoomDiagram(el.dataset.diagram, -0.2),
+      'diagramZoomIn': (el) => zoomDiagram(el.dataset.diagram, 0.2),
+      'diagramZoomReset': (el) => resetDiagramZoom(el.dataset.diagram),
+      'diagramFullscreen': (el) => openDiagramFullscreen(el.dataset.diagram),
+      'closeDiagramFullscreen': () => closeDiagramFullscreen(),
+      'home': () => goHome(),
     };
 
     if (action in actionMap) {
@@ -879,6 +911,7 @@ async function loadFile(path) {
   document.getElementById('togglesRow').style.display = 'flex';
 
   STATE.currentPath = path;
+  localStorage.setItem('lastViewedFile', path);
   addToRecentFiles(path);
 
   const name = path.split('/').pop().replace(/\.md$/, '');
@@ -1106,7 +1139,17 @@ function renderContent(container, text) {
     text = text.replace(`__CODE${i}__`, `<pre data-lang="${esc(lang || 'text')}"><button class="copy-btn" data-action="copyCode">Copy</button><code class="lang-${esc(lang)}">${highlight(code, lang)}</code></pre>`);
   }
   for (let i = 0; i < diagrams.length; i++) {
-    text = text.replace(`__MERMAID${i}__`, `<div class="mermaid-wrap animate-in"><div class="mermaid">${diagrams[i]}</div></div>`);
+    text = text.replace(`__MERMAID${i}__`, `
+      <div class="diagram-container">
+        <div class="diagram-controls">
+          <button class="diagram-btn" data-action="diagramZoomOut" data-diagram="${i}">−</button>
+          <button class="diagram-btn" data-action="diagramZoomReset" data-diagram="${i}">Reset</button>
+          <button class="diagram-btn" data-action="diagramZoomIn" data-diagram="${i}">+</button>
+          <button class="diagram-btn" data-action="diagramFullscreen" data-diagram="${i}">⛶</button>
+        </div>
+        <div class="mermaid-wrap animate-in" data-diagram-id="${i}"><div class="mermaid" style="transform:scale(1);transform-origin:top center">${diagrams[i]}</div></div>
+      </div>
+    `);
   }
 
   container.innerHTML = text;
@@ -1161,6 +1204,62 @@ function renderContent(container, text) {
       }
     }, 50);
   }
+}
+
+const diagramZooms = {};
+
+function getDiagramScale(diagramId) {
+  return diagramZooms[diagramId] || 1;
+}
+
+function setDiagramScale(diagramId, scale) {
+  diagramZooms[diagramId] = Math.max(0.5, Math.min(3, scale));
+  const mermaidEl = document.querySelector(`[data-diagram-id="${diagramId}"] .mermaid`);
+  if (mermaidEl) {
+    mermaidEl.style.transform = `scale(${diagramZooms[diagramId]})`;
+  }
+}
+
+function zoomDiagram(diagramId, delta) {
+  const current = getDiagramScale(diagramId);
+  setDiagramScale(diagramId, current + delta);
+}
+
+function resetDiagramZoom(diagramId) {
+  setDiagramScale(diagramId, 1);
+}
+
+function openDiagramFullscreen(diagramId) {
+  const mermaidEl = document.querySelector(`[data-diagram-id="${diagramId}"] .mermaid`);
+  if (!mermaidEl) return;
+
+  const fsModal = document.getElementById('diagramFullscreen');
+  const fsContent = document.getElementById('fsContent');
+  fsContent.innerHTML = `<div class="mermaid">${mermaidEl.innerHTML}</div>`;
+  fsModal.classList.add('open');
+
+  if (window.mermaid) {
+    setTimeout(() => {
+      try {
+        mermaid.run({ nodes: fsContent.querySelectorAll('.mermaid') });
+      } catch (e) {
+        console.error('Mermaid fullscreen render failed:', e);
+      }
+    }, 50);
+  }
+}
+
+function closeDiagramFullscreen() {
+  document.getElementById('diagramFullscreen').classList.remove('open');
+}
+
+function goHome() {
+  document.getElementById('start').style.display = 'flex';
+  document.getElementById('fileView').style.display = 'none';
+  document.getElementById('togglesRow').style.display = 'none';
+  STATE.currentPath = '';
+  localStorage.removeItem('lastViewedFile');
+  document.querySelectorAll('.tree-item.active').forEach(el => el.classList.remove('active'));
 }
 
 function slugify(t) {

@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Page Replacement — Interactive Simulator</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:system-ui,-apple-system,sans-serif;background:#0d1117;color:#e6edf3;padding:24px;max-width:900px;margin:0 auto}
+h1{font-size:20px;margin-bottom:4px;color:#58a6ff}
+.sub{color:#8b949e;font-size:13px;margin-bottom:16px}
+h2{font-size:14px;color:#e6edf3;margin:16px 0 8px}
+.controls{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0}
+.btn{padding:6px 14px;border:1px solid #30363d;border-radius:6px;background:#1c2128;color:#e6edf3;cursor:pointer;font-size:11px;transition:all .15s}
+.btn:hover{border-color:#8b949e}
+.btn.primary{background:#1f3a5f;border-color:#58a6ff;color:#58a6ff}
+.btn.primary:hover{background:#26446e}
+.btn.success{background:#1a3a2c;border-color:#3fb950;color:#3fb950}
+.btn.success:hover{background:#1f4a36}
+.btn.danger{background:#3d1a1a;border-color:#f85149;color:#f85149}
+.btn.danger:hover{background:#4d2222}
+.policy-select{display:flex;gap:8px;margin:8px 0}
+.policy-btn{padding:8px 16px;border:1px solid #30363d;border-radius:6px;background:#0d1117;color:#8b949e;cursor:pointer;font-size:12px;font-weight:600;transition:all .15s}
+.policy-btn.active{border-color:#58a6ff;color:#58a6ff;background:#1f3a5f}
+.policy-btn:hover{border-color:#8b949e}
+.ref-input{display:flex;gap:4px;margin:8px 0;align-items:center}
+.ref-input input{padding:6px 10px;border:1px solid #30363d;border-radius:4px;background:#0d1117;color:#e6edf3;font-size:12px;width:200px;font-family:'JetBrains Mono',monospace}
+.ref-input input:focus{outline:none;border-color:#58a6ff}
+.preset{font-size:10px;color:#8b949e;cursor:pointer;padding:3px 8px;border:1px solid #30363d;border-radius:4px}
+.preset:hover{color:#58a6ff;border-color:#58a6ff}
+.frames{display:flex;gap:4px;margin:12px 0;justify-content:center;min-height:60px}
+.frame{width:56px;height:52px;border:2px solid #30363d;border-radius:6px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:18px;font-weight:700;background:#0d1117;transition:all .2s}
+.frame.active{border-color:#58a6ff;background:#1f3a5f}
+.frame.fault{border-color:#f85149;background:#3d1a1a;animation:flash 0.3s}
+.frame.hit{border-color:#3fb950;background:#1a3a2c}
+.frame .idx{font-size:9px;color:#8b949e;font-weight:400}
+.ref-sequence{display:flex;gap:3px;flex-wrap:wrap;margin:8px 0;padding:8px;background:#161b22;border-radius:6px;border:1px solid #30363d;min-height:32px}
+.ref-page{width:28px;height:28px;display:flex;align-items:center;justify-content:center;border-radius:4px;font-size:11px;font-weight:600;background:#0d1117;border:1px solid #30363d;color:#8b949e}
+.ref-page.current{background:#58a6ff;color:#fff;border-color:#58a6ff}
+.ref-page.fault{background:#f85149;color:#fff;border-color:#f85149}
+.ref-page.hit{background:#3fb950;color:#fff;border-color:#3fb950}
+.metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:8px;margin:8px 0}
+.metric{background:#161b22;border:1px solid #30363d;border-radius:6px;padding:10px}
+.metric .num{font-size:20px;font-weight:700;color:#e6edf3}
+.metric .lbl{font-size:10px;color:#8b949e;margin-top:2px}
+.memory-bar{background:#161b22;border:1px solid #30363d;border-radius:6px;height:24px;overflow:hidden;display:flex;margin:8px 0}
+.memory-bar .seg{height:100%;transition:width .2s;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:600;color:#fff;min-width:40px}
+.memory-bar .used{background:#26446e}
+.memory-bar .free{background:#1c2128;color:#8b949e}
+.log{background:#161b22;border:1px solid #30363d;border-radius:6px;padding:8px;max-height:150px;overflow-y:auto;font-family:'JetBrains Mono',monospace;font-size:11px;margin-top:8px}
+.log-entry{padding:2px 0;color:#8b949e}
+.log-entry.fault{color:#f85149}
+.log-entry.hit{color:#3fb950}
+.log-entry.evict{color:#d29922}
+@keyframes flash{0%{opacity:0.5}100%{opacity:1}}
+</style>
+</head>
+<body>
+<h1>📄 Page Replacement Algorithms</h1>
+<div class="sub">Watch FIFO, LRU, and LFU in action — step through page references interactively</div>
+
+<h2>Algorithm</h2>
+<div class="policy-select" id="algo-select">
+  <div class="policy-btn active" data-algo="fifo" onclick="setAlgo('fifo')">FIFO</div>
+  <div class="policy-btn" data-algo="lru" onclick="setAlgo('lru')">LRU</div>
+  <div class="policy-btn" data-algo="lfu" onclick="setAlgo('lfu')">LFU</div>
+</div>
+
+<h2>Page Frames</h2>
+<div class="frames" id="frames"></div>
+
+<h2>Reference String</h2>
+<div class="ref-input">
+  <input id="ref-input" value="7 0 1 2 0 3 0 4 2 3 0 3 2 1 2 0 1 7 0 1" placeholder="Space-separated page numbers">
+  <button class="btn primary" onclick="loadRefs()">Load</button>
+  <span class="preset" onclick="document.getElementById('ref-input').value='7 0 1 2 0 3 0 4 2 3 0 3 2 1 2 0 1 7 0 1';loadRefs()">Classic</span>
+  <span class="preset" onclick="document.getElementById('ref-input').value='1 2 3 4 1 2 5 1 2 3 4 5';loadRefs()">FIFO Belady</span>
+</div>
+
+<div class="ref-sequence" id="ref-sequence"></div>
+
+<h2>Controls</h2>
+<div class="controls">
+  <button class="btn primary" id="btn-step" onclick="step()">▶ Step</button>
+  <button class="btn success" onclick="autoPlay()">▶▶ Auto Play</button>
+  <button class="btn danger" onclick="resetSim()">⟲ Reset</button>
+</div>
+
+<h2>Statistics</h2>
+<div class="metrics">
+  <div class="metric"><div class="num" id="m-faults">0</div><div class="lbl">Page Faults</div></div>
+  <div class="metric"><div class="num" id="m-hits">0</div><div class="lbl">Hits</div></div>
+  <div class="metric"><div class="num" id="m-rate">0%</div><div class="lbl">Hit Rate</div></div>
+  <div class="metric"><div class="num" id="m-step">0</div><div class="lbl">Step</div></div>
+</div>
+
+<h2>Memory Usage</h2>
+<div class="memory-bar" id="mem-bar"></div>
+
+<h2>Event Log</h2>
+<div class="log" id="log"></div>
+
+<script>
+let state = {algo:'fifo',frames:3,refs:[],pos:0,faults:0,hits:0,history:[],frameContents:[[],[],[]],freq:{}};
+const MAX_FRAMES = 4;
+
+function setAlgo(algo){
+  state.algo = algo;
+  document.querySelectorAll('.policy-btn').forEach(b=>b.classList.toggle('active',b.dataset.algo===algo));
+  resetSim();
+}
+
+function loadRefs(){
+  const input = document.getElementById('ref-input').value.trim();
+  state.refs = input.split(/\s+/).map(Number).filter(n=>!isNaN(n));
+  resetSim();
+}
+
+function resetSim(){
+  state.pos = 0; state.faults = 0; state.hits = 0; state.history = [];
+  state.frameContents = Array.from({length:MAX_FRAMES},()=>[]);
+  state.freq = {};
+  document.getElementById('log').innerHTML = '';
+  render();
+}
+
+function step(){
+  if(state.pos >= state.refs.length) return;
+  const page = state.refs[state.pos];
+  const frames = state.frameContents[state.algo === 'fifo' ? 0 : state.algo === 'lru' ? 1 : 2];
+  
+  let fault = false, evicted = null;
+  const hit = frames.includes(page);
+  
+  if(!hit){
+    fault = true;
+    state.faults++;
+    if(frames.length >= MAX_FRAMES){
+      if(state.algo === 'fifo'){
+        evicted = frames.shift();
+      } else if(state.algo === 'lru'){
+        // LRU: remove least recently used (first in queue)
+        evicted = frames.shift();
+      } else if(state.algo === 'lfu'){
+        // LFU: remove least frequently used
+        let minFreq = Infinity, minIdx = 0;
+        frames.forEach((p,i)=>{ if((state.freq[p]||0) < minFreq){ minFreq = state.freq[p]||0; minIdx = i; }});
+        evicted = frames.splice(minIdx,1)[0];
+      }
+    }
+    frames.push(page);
+  } else {
+    state.hits++;
+    if(state.algo === 'lru'){
+      // Move to most recently used (end of queue)
+      const idx = frames.indexOf(page);
+      frames.splice(idx,1);
+      frames.push(page);
+    }
+  }
+  
+  // Update frequency
+  state.freq[page] = (state.freq[page]||0) + 1;
+  
+  state.history.push({page, fault, hit, evicted, frames:[...frames], pos:state.pos});
+  state.pos++;
+  
+  const log = document.getElementById('log');
+  const entry = document.createElement('div');
+  entry.className = 'log-entry' + (fault ? ' fault' : ' hit');
+  entry.textContent = `#${state.pos}: Page ${page} — ${fault ? '❌ FAULT' : '✅ HIT'}${evicted !== null ? ' (evicted '+evicted+')' : ''} | Frames: [${frames.join(',')}]`;
+  log.appendChild(entry);
+  log.scrollTop = log.scrollHeight;
+  
+  render();
+  updateStats();
+}
+
+let autoTimer = null;
+function autoPlay(){
+  if(autoTimer){ clearInterval(autoTimer); autoTimer = null; return; }
+  document.querySelector('#btn-step').textContent = '⏹ Stop';
+  autoTimer = setInterval(()=>{
+    if(state.pos >= state.refs.length){ clearInterval(autoTimer); autoTimer = null; document.querySelector('#btn-step').textContent = '▶ Step'; return; }
+    step();
+  }, 400);
+}
+
+function render(){
+  const framesDiv = document.getElementById('frames');
+  const algoIdx = state.algo === 'fifo' ? 0 : state.algo === 'lru' ? 1 : 2;
+  const frames = state.frameContents[algoIdx];
+  const current = state.pos > 0 ? state.refs[state.pos-1] : null;
+  const last = state.history.length > 0 ? state.history[state.history.length-1] : null;
+  
+  let html = '';
+  for(let i=0; i<MAX_FRAMES; i++){
+    const val = frames[i];
+    let cls = 'frame';
+    if(val !== undefined) cls += ' active';
+    if(last && last.fault && last.frames[i] !== undefined && !last.hit) cls += ' fault';
+    else if(last && last.hit && last.frames[i] === current) cls += ' hit';
+    html += `<div class="${cls}">${val !== undefined ? val : ''}<div class="idx">${i+1}</div></div>`;
+  }
+  framesDiv.innerHTML = html;
+  
+  // Ref sequence
+  const refDiv = document.getElementById('ref-sequence');
+  let refHtml = '';
+  state.refs.forEach((p,i)=>{
+    let cls = 'ref-page';
+    if(i === state.pos-1) cls += ' current';
+    else if(i < state.pos){
+      const h = state.history[i];
+      if(h && h.fault) cls += ' fault';
+      else if(h && h.hit) cls += ' hit';
+    }
+    refHtml += `<div class="${cls}">${p}</div>`;
+  });
+  refDiv.innerHTML = refHtml;
+  
+  // Memory bar
+  const used = Math.min(state.faults * 10, 100);
+  document.getElementById('mem-bar').innerHTML = 
+    `<div class="seg used" style="width:${Math.min(used,100)}%">${state.faults} faults</div>` +
+    `<div class="seg free" style="width:${100-Math.min(used,100)}%">${Math.max(0,state.refs.length-state.faults)} ops</div>`;
+}
+
+function updateStats(){
+  const total = state.hits + state.faults;
+  document.getElementById('m-faults').textContent = state.faults;
+  document.getElementById('m-hits').textContent = state.hits;
+  document.getElementById('m-rate').textContent = total > 0 ? Math.round(state.hits/total*100)+'%' : '0%';
+  document.getElementById('m-step').textContent = state.pos + '/' + state.refs.length;
+}
+
+loadRefs();
+</script>
+<script>
+(function(){
+  function scrollToHash(){
+    var h = window.location.hash;
+    if(h && h.length > 1){
+      var el = document.getElementById(h.substring(1));
+      if(el) setTimeout(function(){ el.scrollIntoView({behavior:'smooth', block:'start'}); }, 200);
+    }
+  }
+  window.addEventListener('hashchange', scrollToHash);
+  window.addEventListener('load', scrollToHash);
+})();
+</script>
+</body>
+</html>

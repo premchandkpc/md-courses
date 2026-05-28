@@ -1,6 +1,6 @@
 # Raft Consensus Algorithm — Interactive Simulator
 
-> **Run the live simulator**: [raft-consensus.html](/raft-consensus.html) — trigger elections, watch term increments, and see log replication in real-time.
+> **Run the live simulator**: [raft-consensus.html](/09-distributed-systems/raft-consensus.html) — trigger elections, watch term increments, and see log replication in real-time.
 
 ## Overview
 

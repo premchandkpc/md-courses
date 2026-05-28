@@ -1,6 +1,6 @@
 # Kubernetes Scheduling Algorithm — Interactive Simulator
 
-> **Run the live simulator**: [kubernetes-scheduling.html](/kubernetes-scheduling.html) — add pods, watch the scheduler score and bind them to nodes interactively.
+> **Run the live simulator**: [kubernetes-scheduling.html](/07-kubernetes/kubernetes-scheduling.html) — add pods, watch the scheduler score and bind them to nodes interactively.
 
 ## Overview
 

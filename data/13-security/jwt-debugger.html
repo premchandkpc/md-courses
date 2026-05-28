@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>JWT Debugger — Interactive Simulator</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:system-ui,-apple-system,sans-serif;background:#0d1117;color:#e6edf3;padding:24px;max-width:900px;margin:0 auto}
+h1{font-size:20px;margin-bottom:4px;color:#58a6ff}
+.sub{color:#8b949e;font-size:13px;margin-bottom:16px}
+h2{font-size:14px;color:#e6edf3;margin:16px 0 8px}
+.tabs{display:flex;gap:4px;margin-bottom:12px}
+.tab{padding:6px 14px;border:1px solid #30363d;border-radius:6px 6px 0 0;background:#161b22;color:#8b949e;cursor:pointer;font-size:11px}
+.tab.active{background:#1c2128;color:#58a6ff;border-bottom-color:#1c2128}
+.editor{border:1px solid #30363d;border-radius:0 6px 6px 6px;background:#161b22;padding:12px;font-family:'JetBrains Mono',monospace;font-size:12px;min-height:80px;white-space:pre;overflow-x:auto;color:#e6edf3}
+.editor .key{color:#79c0ff}
+.editor .str{color:#a5d6ff}
+.editor .num{color:#79c0ff}
+.editor .bool{color:#ff7b72}
+.editor .null{color:#8b949e}
+.editor .op{color:#e6edf3}
+.token-section{border:1px solid #30363d;border-radius:6px;background:#161b22;padding:12px;margin-bottom:8px}
+.token-label{font-size:10px;color:#8b949e;margin-bottom:4px;text-transform:uppercase;letter-spacing:0.5px}
+.token-value{font-family:'JetBrains Mono',monospace;font-size:11px;word-break:break-all;line-height:1.5;color:#e6edf3}
+.token-value.header{color:#79c0ff}
+.token-value.payload{color:#a5d6ff}
+.token-value.sig{color:#3fb950}
+.token-sep{color:#30363d;font-size:18px;text-align:center;padding:4px 0}
+.controls{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
+.btn{padding:6px 14px;border:1px solid #30363d;border-radius:6px;background:#1c2128;color:#e6edf3;cursor:pointer;font-size:11px;transition:all .15s}
+.btn:hover{border-color:#8b949e}
+.btn.primary{background:#1f3a5f;border-color:#58a6ff;color:#58a6ff}
+.btn.primary:hover{background:#26446e}
+.btn.danger{background:#3d1a1a;border-color:#f85149;color:#f85149}
+.btn.danger:hover{background:#4d2222}
+.verify-result{padding:8px 12px;border-radius:6px;font-size:12px;margin-top:8px}
+.verify-result.valid{background:#1a3a2c;border:1px solid #3fb950;color:#3fb950}
+.verify-result.invalid{background:#3d1a1a;border:1px solid #f85149;color:#f85149}
+.payload-fields{margin-top:8px}
+.field-row{display:flex;gap:8px;margin-bottom:4px;align-items:center}
+.field-row label{font-size:11px;color:#8b949e;min-width:60px}
+.field-row input{flex:1;padding:4px 8px;border:1px solid #30363d;border-radius:4px;background:#0d1117;color:#e6edf3;font-size:11px;font-family:'JetBrains Mono',monospace}
+.field-row input:focus{outline:none;border-color:#58a6ff}
+.metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px;margin:8px 0}
+.metric{background:#161b22;border:1px solid #30363d;border-radius:6px;padding:10px}
+.metric .num{font-size:18px;font-weight:700;color:#e6edf3}
+.metric .lbl{font-size:10px;color:#8b949e;margin-top:2px}
+.signature-info{font-size:11px;color:#8b949e;margin-top:4px}
+.signature-info strong{color:#e6edf3}
+</style>
+</head>
+<body>
+<h1>🔑 JWT Debugger</h1>
+<div class="sub">Inspect, decode, and verify JSON Web Tokens — interactively</div>
+
+<div class="tabs">
+  <div class="tab active" onclick="switchTab('editor')">Editor</div>
+  <div class="tab" onclick="switchTab('token')">Token</div>
+</div>
+
+<div id="tab-editor">
+  <h2>Payload Editor</h2>
+  <div class="payload-fields">
+    <div class="field-row"><label>sub:</label><input id="f-sub" value="user_42" oninput="updateToken()"></div>
+    <div class="field-row"><label>name:</label><input id="f-name" value="Alice Johnson" oninput="updateToken()"></div>
+    <div class="field-row"><label>role:</label><input id="f-role" value="admin" oninput="updateToken()"></div>
+    <div class="field-row"><label>iss:</label><input id="f-iss" value="auth.example.com" oninput="updateToken()"></div>
+    <div class="field-row"><label>exp:</label><input id="f-exp" value="9999999999" oninput="updateToken()"></div>
+  </div>
+
+  <h2>Signing Secret</h2>
+  <div class="field-row"><input id="f-secret" value="my-secret-key" oninput="updateToken()" style="max-width:300px"></div>
+
+  <div class="controls">
+    <button class="btn primary" onclick="updateToken()">🔄 Update Token</button>
+    <button class="btn" onclick="tamperToken()">⚠️ Tamper with Payload</button>
+    <button class="btn" onclick="updateToken()">🔐 Sign</button>
+  </div>
+</div>
+
+<div id="tab-token" style="display:none">
+  <h2>Encoded JWT</h2>
+  <div class="editor" id="jwt-encoded" style="min-height:40px;display:flex;align-items:center;justify-content:center;word-break:break-all;font-size:11px"></div>
+
+  <h2>Decoded</h2>
+  <div class="token-section">
+    <div class="token-label">Header (alg + typ)</div>
+    <div class="token-value header" id="jwt-header"></div>
+  </div>
+  <div class="token-sep">▼</div>
+  <div class="token-section">
+    <div class="token-label">Payload (claims)</div>
+    <div class="token-value payload" id="jwt-payload"></div>
+  </div>
+  <div class="token-sep">▼</div>
+  <div class="token-section">
+    <div class="token-label">Signature (HMAC-SHA256)</div>
+    <div class="token-value sig" id="jwt-sig"></div>
+    <div class="signature-info" id="jwt-sig-info"></div>
+  </div>
+
+  <div class="controls">
+    <button class="btn primary" onclick="verifyToken()">✅ Verify Signature</button>
+    <button class="btn danger" onclick="tamperToken()">⚠️ Modify Token</button>
+    <button class="btn" onclick="resetToken()">🔄 Reset</button>
+  </div>
+  <div id="verify-result"></div>
+</div>
+
+<h2>Statistics</h2>
+<div class="metrics">
+  <div class="metric"><div class="num" id="m-alg">HS256</div><div class="lbl">Algorithm</div></div>
+  <div class="metric"><div class="num" id="m-claims">5</div><div class="lbl">Claims</div></div>
+  <div class="metric"><div class="num" id="m-len">0</div><div class="lbl">Token Length</div></div>
+  <div class="metric"><div class="num" id="m-verified">—</div><div class="lbl">Verified</div></div>
+</div>
+
+<script>
+// Simple base64url encode/decode (no padding)
+function b64u(str){ return btoa(str).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'') }
+function b64uDecode(str){ 
+  str = str.replace(/-/g,'+').replace(/_/g,'/');
+  while(str.length%4) str+='=';
+  return atob(str);
+}
+
+// Simple HMAC-SHA256 (using Web Crypto API)
+async function hmacSha256(secret, data){
+  const enc = new TextEncoder();
+  const key = await crypto.subtle.importKey('raw', enc.encode(secret), {name:'HMAC',hash:'SHA-256'}, false, ['sign']);
+  const sig = await crypto.subtle.sign('HMAC', key, enc.encode(data));
+  return b64u(String.fromCharCode(...new Uint8Array(sig)));
+}
+
+let currentToken = {header:{},payload:{},signature:'',raw:''};
+let tampered = false;
+
+function getPayload(){
+  return {
+    sub: document.getElementById('f-sub').value,
+    name: document.getElementById('f-name').value,
+    role: document.getElementById('f-role').value,
+    iss: document.getElementById('f-iss').value,
+    exp: parseInt(document.getElementById('f-exp').value) || 9999999999,
+    iat: Math.floor(Date.now()/1000)
+  };
+}
+
+function getSecret(){ return document.getElementById('f-secret').value || 'my-secret-key'; }
+
+async function updateToken(){
+  const header = {alg:'HS256',typ:'JWT'};
+  const payload = getPayload();
+  const secret = getSecret();
+  
+  const hB64 = b64u(JSON.stringify(header));
+  const pB64 = b64u(JSON.stringify(payload));
+  const signature = await hmacSha256(secret, hB64+'.'+pB64);
+  
+  currentToken = {header, payload, signature, raw: hB64+'.'+pB64+'.'+signature};
+  tampered = false;
+  renderToken();
+}
+
+function renderToken(){
+  const h = JSON.stringify(currentToken.header, null, 2);
+  const p = JSON.stringify(currentToken.payload, null, 2);
+  
+  document.getElementById('jwt-encoded').textContent = currentToken.raw;
+  document.getElementById('jwt-header').textContent = h;
+  document.getElementById('jwt-payload').textContent = p;
+  document.getElementById('jwt-sig').textContent = currentToken.signature;
+  document.getElementById('jwt-sig-info').textContent = tampered ? '⚠️ Signature does NOT match payload (tampered)' : '✅ Signature matches payload';
+  document.getElementById('jwt-sig-info').style.color = tampered ? '#f85149' : '#3fb950';
+  
+  document.getElementById('m-alg').textContent = 'HS256';
+  document.getElementById('m-claims').textContent = Object.keys(currentToken.payload).length;
+  document.getElementById('m-len').textContent = currentToken.raw.length + ' chars';
+  document.getElementById('m-verified').textContent = tampered ? '❌ FAIL' : '✅ PASS';
+  document.getElementById('m-verified').style.color = tampered ? '#f85149' : '#3fb950';
+  document.getElementById('verify-result').innerHTML = '';
+}
+
+async function verifyToken(){
+  const secret = getSecret();
+  const parts = currentToken.raw.split('.');
+  if(parts.length !== 3) return;
+  const expectedSig = await hmacSha256(secret, parts[0]+'.'+parts[1]);
+  const valid = expectedSig === parts[2] && !tampered;
+  const el = document.getElementById('verify-result');
+  el.className = 'verify-result ' + (valid ? 'valid' : 'invalid');
+  el.textContent = valid ? '✅ Signature VALID — Token is authentic' : '❌ Signature INVALID — Token has been tampered with!';
+  document.getElementById('m-verified').textContent = valid ? '✅ PASS' : '❌ FAIL';
+  document.getElementById('m-verified').style.color = valid ? '#3fb950' : '#f85149';
+}
+
+function tamperToken(){
+  const parts = currentToken.raw.split('.');
+  if(parts.length !== 3) { updateToken(); return; }
+  try {
+    const payload = JSON.parse(b64uDecode(parts[1]));
+    payload.role = 'superadmin';
+    const newPB64 = b64u(JSON.stringify(payload));
+    currentToken.raw = parts[0]+'.'+newPB64+'.'+parts[2];
+    currentToken.payload = payload;
+    tampered = true;
+    renderToken();
+    document.getElementById('verify-result').className = '';
+    document.getElementById('verify-result').textContent = '';
+  } catch(e){ updateToken(); }
+}
+
+function resetToken(){ updateToken(); }
+function switchTab(name){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('tab-editor').style.display = name==='editor' ? 'block' : 'none';
+  document.getElementById('tab-token').style.display = name==='token' ? 'block' : 'none';
+  event.target.classList.add('active');
+}
+
+updateToken();
+</script>
+<script>
+(function(){
+  function scrollToHash(){
+    var h = window.location.hash;
+    if(h && h.length > 1){
+      var el = document.getElementById(h.substring(1));
+      if(el) setTimeout(function(){ el.scrollIntoView({behavior:'smooth', block:'start'}); }, 200);
+    }
+  }
+  window.addEventListener('hashchange', scrollToHash);
+  window.addEventListener('load', scrollToHash);
+})();
+</script>
+</body>
+</html>

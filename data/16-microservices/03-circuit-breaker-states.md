@@ -1,6 +1,6 @@
 # Circuit Breaker Pattern — Interactive State Machine
 
-> **Run the live simulator**: [circuit-breaker.html](/circuit-breaker.html) — click buttons to trigger state transitions and watch the circuit breaker react in real-time.
+> **Run the live simulator**: [circuit-breaker.html](/16-microservices/circuit-breaker.html) — click buttons to trigger state transitions and watch the circuit breaker react in real-time.
 
 ## Overview
 

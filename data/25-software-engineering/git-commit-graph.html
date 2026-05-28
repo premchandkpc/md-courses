@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Git Commit Graph — Interactive Simulator</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:system-ui,-apple-system,sans-serif;background:#0d1117;color:#e6edf3;padding:24px;max-width:900px;margin:0 auto}
+h1{font-size:20px;margin-bottom:4px;color:#58a6ff}
+.sub{color:#8b949e;font-size:13px;margin-bottom:16px}
+h2{font-size:14px;color:#e6edf3;margin:16px 0 8px}
+.controls{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0}
+.btn{padding:6px 14px;border:1px solid #30363d;border-radius:6px;background:#1c2128;color:#e6edf3;cursor:pointer;font-size:11px;transition:all .15s}
+.btn:hover{border-color:#8b949e}
+.btn.primary{background:#1f3a5f;border-color:#58a6ff;color:#58a6ff}
+.btn.primary:hover{background:#26446e}
+.btn.success{background:#1a3a2c;border-color:#3fb950;color:#3fb950}
+.btn.success:hover{background:#1f4a36}
+.btn.danger{background:#3d1a1a;border-color:#f85149;color:#f85149}
+.btn.danger:hover{background:#4d2222}
+.btn.warn{background:#3a2a1a;border-color:#d29922;color:#d29922}
+.btn.warn:hover{background:#4a3a2a}
+.graph{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:16px;min-height:200px;overflow-x:auto;margin:12px 0;font-family:'JetBrains Mono',monospace;font-size:12px;line-height:1.6}
+.graph pre{margin:0}
+.commit-line{display:flex;align-items:center;padding:2px 0}
+.commit-dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:8px;flex-shrink:0}
+.commit-dot.default{background:#58a6ff}
+.commit-dot.feature{background:#3fb950}
+.commit-dot.hotfix{background:#f85149}
+.commit-dot.release{background:#d29922}
+.commit-dot.merge{background:#a78bfa}
+.commit-msg{color:#e6edf3;font-size:11px;margin-left:8px}
+.commit-hash{color:#8b949e;font-size:10px;margin-right:8px;font-family:'JetBrains Mono',monospace}
+.commit-branch{font-size:9px;padding:1px 5px;border-radius:3px;margin-right:6px;font-weight:600}
+.commit-branch.default{background:#1f3a5f;color:#58a6ff}
+.commit-branch.feature{background:#1a3a2c;color:#3fb950}
+.commit-branch.hotfix{background:#3d1a1a;color:#f85149}
+.commit-branch.release{background:#3a2a1a;color:#d29922}
+.branch-labels{display:flex;gap:8px;margin-bottom:8px;flex-wrap:wrap}
+.branch-tag{padding:3px 10px;border-radius:12px;font-size:10px;font-weight:600;display:flex;align-items:center;gap:4px}
+.branch-tag.default{background:#1f3a5f;color:#58a6ff;border:1px solid #58a6ff}
+.branch-tag.feature{background:#1a3a2c;color:#3fb950;border:1px solid #3fb950}
+.branch-tag.hotfix{background:#3d1a1a;color:#f85149;border:1px solid #f85149}
+.branch-tag.release{background:#3a2a1a;color:#d29922;border:1px solid #d29922}
+.branch-tag .head{font-size:8px;opacity:0.7;margin-left:2px}
+.graph-lines{position:relative;padding-left:20px}
+.commit-row{display:flex;align-items:center;position:relative;padding:3px 0}
+.lane{width:14px;height:100%;position:absolute;left:0;border-left:2px solid;opacity:0.3}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:8px;margin:8px 0}
+.stat{background:#161b22;border:1px solid #30363d;border-radius:6px;padding:10px;text-align:center}
+.stat .num{font-size:18px;font-weight:700;color:#e6edf3}
+.stat .lbl{font-size:10px;color:#8b949e;margin-top:2px}
+.connector{display:inline-block;width:20px;text-align:center;color:#30363d;font-size:10px;flex-shrink:0}
+</style>
+</head>
+<body>
+<h1>🌳 Git Commit Graph</h1>
+<div class="sub">Visualize branches, merges, and commit history interactively</div>
+
+<h2>Branches</h2>
+<div class="branch-labels" id="branch-labels"></div>
+
+<h2>Controls</h2>
+<div class="controls">
+  <button class="btn primary" onclick="commit('default')">✅ Commit (main)</button>
+  <button class="btn success" onclick="commit('feature')">🌿 Commit (feature)</button>
+  <button class="btn danger" onclick="commit('hotfix')">🔴 Commit (hotfix)</button>
+  <button class="btn" onclick="createBranch()">🌱 New Branch</button>
+  <button class="btn warn" onclick="mergeBranch()">🔀 Merge to main</button>
+  <button class="btn" onclick="switchBranch()">🔄 Switch Branch</button>
+  <button class="btn danger" onclick="resetSim()">⟲ Reset</button>
+</div>
+
+<h2>Commit Graph</h2>
+<div class="graph" id="graph"></div>
+
+<h2>Statistics</h2>
+<div class="stats">
+  <div class="stat"><div class="num" id="s-commits">0</div><div class="lbl">Commits</div></div>
+  <div class="stat"><div class="num" id="s-branches">2</div><div class="lbl">Branches</div></div>
+  <div class="stat"><div class="num" id="s-merges">0</div><div class="lbl">Merges</div></div>
+  <div class="stat"><div class="num" id="s-active">main</div><div class="lbl">Active Branch</div></div>
+</div>
+
+<script>
+let state = {
+  commits: [],
+  branches: {main: null},
+  head: 'main', // current branch
+  branchOrder: ['main'],
+  commitCount: 0
+};
+
+const COLORS = {default: '#58a6ff', feature: '#3fb950', hotfix: '#f85149', release: '#d29922', merge: '#a78bfa'};
+const BRANCH_NAMES = ['feature/login', 'feature/api', 'feature/ui', 'hotfix/auth', 'release/v2', 'feature/cache', 'hotfix/security'];
+let branchIdx = 0;
+
+function commit(type){
+  const branch = state.head;
+  const hash = (++state.commitCount).toString(16).padStart(7,'0').slice(0,7);
+  const parent = state.branches[branch];
+  
+  const msgs = {
+    default: ['Add initial structure','Update README','Fix formatting','Refactor core','Add tests','Update deps','Optimize loop'],
+    feature: ['Add login flow','Implement API','Build UI','Add caching','Wire up DB','Add validation'],
+    hotfix: ['Fix NPE','Patch security','Fix timeout','Fix memory leak'],
+    merge: ['Merge branch']
+  };
+  const pool = msgs[type] || msgs.default;
+  const msg = pool[Math.floor(Math.random()*pool.length)];
+  
+  const c = {hash, msg, branch, type, parent, children:[], ts: Date.now()};
+  if(parent !== null) {
+    const pCommit = state.commits.find(c=>c.hash===parent);
+    if(pCommit) pCommit.children.push(hash);
+  }
+  state.commits.push(c);
+  state.branches[branch] = hash;
+  
+  render();
+  updateStats();
+}
+
+function createBranch(){
+  const name = BRANCH_NAMES[branchIdx % BRANCH_NAMES.length];
+  branchIdx++;
+  if(state.branches[name]) return;
+  state.branches[name] = state.branches[state.head];
+  state.branchOrder.push(name);
+  state.head = name;
+  render();
+  updateStats();
+  log(`Created branch: ${name}`);
+}
+
+function mergeBranch(){
+  if(state.head === 'main'){
+    // Find a non-main branch to merge
+    const other = state.branchOrder.find(b=>b!=='main' && state.branches[b] !== null);
+    if(!other) return;
+    
+    const hash = (++state.commitCount).toString(16).padStart(7,'0').slice(0,7);
+    const mergeCommit = {
+      hash, msg: `Merge ${other} into main`,
+      branch: 'main', type: 'merge',
+      parent: state.branches.main,
+      children: [], ts: Date.now(), mergeParent: state.branches[other]
+    };
+    const pCommit = state.commits.find(c=>c.hash===state.branches.main);
+    if(pCommit) pCommit.children.push(hash);
+    state.commits.push(mergeCommit);
+    state.branches.main = hash;
+    state.branchOrder = state.branchOrder.filter(b=>b!==other);
+    delete state.branches[other];
+    log(`Merged ${other} → main`);
+    render();
+    updateStats();
+  } else {
+    // Merge current branch into main
+    const hash = (++state.commitCount).toString(16).padStart(7,'0').slice(0,7);
+    const mergeCommit = {
+      hash, msg: `Merge ${state.head} into main`,
+      branch: 'main', type: 'merge',
+      parent: state.branches.main,
+      children: [], ts: Date.now(), mergeParent: state.branches[state.head]
+    };
+    const pCommit = state.commits.find(c=>c.hash===state.branches.main);
+    if(pCommit) pCommit.children.push(hash);
+    state.commits.push(mergeCommit);
+    state.branches.main = hash;
+    const merged = state.head;
+    state.head = 'main';
+    state.branchOrder = state.branchOrder.filter(b=>b!==merged);
+    delete state.branches[merged];
+    log(`Merged ${merged} → main. Switched to main.`);
+    render();
+    updateStats();
+  }
+}
+
+function switchBranch(){
+  const others = state.branchOrder.filter(b=>b !== state.head);
+  if(others.length === 0) return;
+  state.head = others[Math.floor(Math.random() * others.length)];
+  render();
+  updateStats();
+  log(`Switched to: ${state.head}`);
+}
+
+function resetSim(){
+  state = {commits:[], branches:{main:null}, head:'main', branchOrder:['main'], commitCount:0};
+  document.getElementById('graph').innerHTML = '<div style="color:#8b949e;text-align:center;padding:40px">No commits yet. Start by creating commits!</div>';
+  render();
+  updateStats();
+}
+
+function render(){
+  const graph = document.getElementById('graph');
+  if(state.commits.length === 0){
+    graph.innerHTML = '<div style="color:#8b949e;text-align:center;padding:40px">No commits yet. Start by committing!</div>';
+    return;
+  }
+  
+  // Topological order (reverse chronological)
+  const ordered = [...state.commits].reverse();
+  
+  // Branch labels
+  const labelsDiv = document.getElementById('branch-labels');
+  let labelHtml = '';
+  state.branchOrder.forEach(b=>{
+    const type = b.startsWith('feature')?'feature':b.startsWith('hotfix')?'hotfix':b.startsWith('release')?'release':'default';
+    const head = state.branches[b] ? state.branches[b].slice(0,7) : '—';
+    labelHtml += `<div class="branch-tag ${type}">${b} <span class="head">@ ${head}</span></div>`;
+  });
+  labelsDiv.innerHTML = labelHtml;
+  
+  // Render commits
+  let html = '';
+  ordered.forEach(c=>{
+    const type = c.type;
+    const isCurrent = c.hash === state.branches[state.head];
+    const dot = `<span class="commit-dot ${type}"></span>`;
+    const hash = `<span class="commit-hash">${c.hash}</span>`;
+    const branch = c.branch !== 'main' ? `<span class="commit-branch ${type}">${c.branch}</span>` : '';
+    const marker = c.type === 'merge' ? '🔀 ' : isCurrent ? '◀ ' : '';
+    html += `<div class="commit-line">${dot}${hash}${branch}<span class="commit-msg">${marker}${c.msg}</span></div>`;
+  });
+  
+  // Also show merge connections as a separate visualization
+  const merges = state.commits.filter(c=>c.mergeParent);
+  if(merges.length > 0){
+    html += '<div style="border-top:1px solid #30363d;margin:8px 0;padding-top:8px;font-size:10px;color:#8b949e">Merge Connections:</div>';
+    merges.forEach(m=>{
+      html += `<div class="commit-line"><span style="color:#a78bfa">◇</span> <span class="commit-hash">${m.hash}</span> <span style="color:#8b949e">↔ ${m.mergeParent}</span></div>`;
+    });
+  }
+  
+  graph.innerHTML = html;
+}
+
+function updateStats(){
+  document.getElementById('s-commits').textContent = state.commits.length;
+  document.getElementById('s-branches').textContent = state.branchOrder.length;
+  document.getElementById('s-merges').textContent = state.commits.filter(c=>c.mergeParent).length;
+  document.getElementById('s-active').textContent = state.head;
+}
+
+const logDiv = document.createElement('div');
+logDiv.style.cssText = 'position:fixed;bottom:8px;right:8px;background:#161b22;border:1px solid #30363d;border-radius:6px;padding:6px 10px;font-size:10px;color:#8b949e;max-width:300px';
+document.body.appendChild(logDiv);
+
+function log(msg){
+  logDiv.textContent = '📌 ' + msg;
+  setTimeout(()=>{ if(logDiv.textContent.includes(msg)) logDiv.textContent = ''; }, 3000);
+}
+
+resetSim();
+</script>
+<script>
+(function(){
+  function scrollToHash(){
+    var h = window.location.hash;
+    if(h && h.length > 1){
+      var el = document.getElementById(h.substring(1));
+      if(el) setTimeout(function(){ el.scrollIntoView({behavior:'smooth', block:'start'}); }, 200);
+    }
+  }
+  window.addEventListener('hashchange', scrollToHash);
+  window.addEventListener('load', scrollToHash);
+})();
+</script>
+</body>
+</html>

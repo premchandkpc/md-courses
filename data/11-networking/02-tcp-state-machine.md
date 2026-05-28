@@ -1,6 +1,6 @@
 # TCP Connection State Machine — Interactive Guide
 
-> **Run the live simulator**: [tcp-state-machine.html](/tcp-state-machine.html) — step through SYN, SYN-ACK, ACK handshake and FIN teardown interactively.
+> **Run the live simulator**: [tcp-state-machine.html](/11-networking/tcp-state-machine.html) — step through SYN, SYN-ACK, ACK handshake and FIN teardown interactively.
 
 ## Overview
 

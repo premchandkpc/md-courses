@@ -1,6 +1,10 @@
 # Git Internals — Deep Dive
 
 
+> **Run the live simulator**: [git-commit-graph.html](/25-software-engineering/git-commit-graph.html) — create commits, branches, and merges; visualize the commit DAG interactively.
+
+
+
 ```mermaid
 graph LR
     GIT_OBJECTS["Git Object Model"] --> BLOB_G["Blob<br/>(file content)"]

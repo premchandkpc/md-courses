@@ -1,5 +1,9 @@
 # ⚙️ JVM Architecture & Class Loading — Complete Deep Dive
 
+
+> **Run the live simulator**: [gc-visualizer.html](/03-backend/java/gc-visualizer.html) — allocate objects, trigger Young/Full GC, and watch objects promote across heap generations.
+
+
 **Related**: [Java Memory Model & GC](06-java-memory-gc.md) · [Multithreading & Concurrency](04-multithreading.md) · [OOP Concepts](01-oop-concepts.md)
 
 ---

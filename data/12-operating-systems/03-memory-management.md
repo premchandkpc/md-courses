@@ -1,5 +1,9 @@
 # 🧠 Memory Management — Complete Deep Dive
 
+
+> **Run the live simulator**: [page-replacement.html](/12-operating-systems/page-replacement.html) — step through FIFO, LRU, and LFU page replacement algorithms with interactive page references.
+
+
 > **Scope**: Virtual memory architecture, MMU/TLB, page fault handling, buddy allocator, slab/SLUB allocator, OOM killer, NUMA memory policies, swap (zswap/zram), cgroup memory controller, page cache, mmap, ASLR — every aspect of Linux memory management.
 
 > **Related**: [01-linux-kernel-architecture.md](01-linux-kernel-architecture.md), [02-cpu-scheduling.md](02-cpu-scheduling.md), [04-io-models.md](04-io-models.md)

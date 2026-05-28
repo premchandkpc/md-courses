@@ -1275,6 +1275,71 @@ ALTER TABLE task_instance PARTITION BY RANGE (start_date);
 
 ---
 
+## Interactive Components
+
+```html-live
+<div style="display:flex;flex-direction:column;align-items:center;gap:8px;padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>@keyframes flow-pulse{0%,100%{opacity:.3;transform:translateY(0)}50%{opacity:1;transform:translateY(-2px)}}.flow-title{color:#00d4ff;font-family:monospace;font-size:14px;font-weight:bold;margin-bottom:8px}.flow-node{display:inline-block;padding:8px 16px;border-radius:4px;font-size:12px;font-family:monospace;color:#e3eaf0;background:#1e3a5f;border:1px solid #00d4ff}.flow-arrow{color:#00d4ff;font-size:16px;animation:flow-pulse 1.5s infinite}</style>
+  <div class="flow-title">DAG Orchestration: Define → Schedule → Monitor</div>
+  <div style="display:flex;flex-direction:column;align-items:center;gap:6px">
+    <div class="flow-node">DAG Definition</div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-node">Task Dependencies</div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-node">Scheduler Triggers</div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-node">Executor Runs</div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-node">Status Monitoring</div>
+  </div>
+</div>
+```
+
+```html-live
+<div style="padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>.state-machine-title{color:#00d4ff;font-family:monospace;font-size:14px;font-weight:bold;margin-bottom:16px}.state-demo{text-align:center}.state-display{font-size:18px;font-family:monospace;padding:16px;border-radius:4px;margin:16px 0;color:#0b0e14;font-weight:bold;min-height:50px;display:flex;align-items:center;justify-content:center;border:2px solid currentColor}.state-pending{background:#9333ea;border-color:#7e22ce}.state-running{background:#3b82f6;border-color:#1d4ed8}.state-success{background:#34d399;border-color:#22c55e}.state-failed{background:#ef4444;border-color:#dc2626}.state-buttons{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:16px}.state-button{padding:8px 16px;border:1px solid #00d4ff;background:#1e3a5f;color:#00d4ff;border-radius:4px;cursor:pointer;font-family:monospace;font-size:12px;transition:all 0.2s}.state-button:hover{background:#2a5a8f;box-shadow:0 0 8px #00d4ff}</style>
+  <div class="state-machine-title">Task Execution State</div>
+  <div class="state-demo">
+    <div class="state-display state-pending" id="dag-state-display">PENDING</div>
+    <div class="state-buttons">
+      <button class="state-button" onclick="setDAGState('PENDING')">Pending</button>
+      <button class="state-button" onclick="setDAGState('RUNNING')">Running</button>
+      <button class="state-button" onclick="setDAGState('SUCCESS')">Success</button>
+      <button class="state-button" onclick="setDAGState('FAILED')">Failed</button>
+    </div>
+  </div>
+  <script>
+    const dagStateMap = {
+      'PENDING': { label: 'PENDING', class: 'state-pending' },
+      'RUNNING': { label: 'RUNNING', class: 'state-running' },
+      'SUCCESS': { label: 'SUCCESS', class: 'state-success' },
+      'FAILED': { label: 'FAILED', class: 'state-failed' }
+    };
+    function setDAGState(state) {
+      const display = document.getElementById('dag-state-display');
+      const info = dagStateMap[state];
+      display.textContent = info.label;
+      display.className = 'state-display ' + info.class;
+    }
+  </script>
+</div>
+```
+
+```html-live
+<div style="padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>.obs-title{color:#00d4ff;font-family:monospace;font-size:14px;font-weight:bold;margin-bottom:16px}.obs-grid{display:grid;grid-template-columns:repeat(auto-fit, minmax(150px, 1fr));gap:12px}.obs-card{padding:12px;background:#1a2332;border:1px solid #1e3a5f;border-radius:4px;display:flex;flex-direction:column;align-items:center}.obs-label{color:#a3aab8;font-family:monospace;font-size:11px;text-transform:uppercase;margin-bottom:8px}.obs-value{font-family:monospace;font-size:20px;font-weight:bold;color:#34d399}.obs-unit{color:#a3aab8;font-family:monospace;font-size:10px}</style>
+  <div class="obs-title">Orchestration Metrics</div>
+  <div class="obs-grid">
+    <div class="obs-card"><div class="obs-label">DAGs Running</div><div class="obs-value">24</div><div class="obs-unit">active</div></div>
+    <div class="obs-card"><div class="obs-label">Avg Task Time</div><div class="obs-value">8.2</div><div class="obs-unit">min</div></div>
+    <div class="obs-card"><div class="obs-label">Success Rate</div><div class="obs-value">98.7</div><div class="obs-unit">%</div></div>
+    <div class="obs-card"><div class="obs-label">Queue Size</div><div class="obs-value">142</div><div class="obs-unit">tasks</div></div>
+  </div>
+</div>
+```
+
+---
+
 ## Related
 
 

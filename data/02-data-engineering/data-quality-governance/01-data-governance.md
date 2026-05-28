@@ -1131,6 +1131,55 @@ def check_access(user: str, dataset: str, classification: str) -> bool:
 
 ---
 
+## Interactive Components
+
+```html-live
+<div style="padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>.cascade-title{color:#00d4ff;font-family:monospace;font-size:14px;font-weight:bold;margin-bottom:16px;letter-spacing:1px}.cascade-stages{display:flex;flex-direction:column;gap:12px;margin-bottom:16px}.cascade-stage{display:flex;align-items:center;gap:12px}.cascade-label{color:#e3eaf0;font-family:monospace;font-size:12px;min-width:140px}.cascade-indicator{width:24px;height:24px;border-radius:4px;background:#34d399;border:2px solid #22c55e;transition:all 0.3s}.cascade-indicator.failing{background:#ef4444;border-color:#dc2626;box-shadow:0 0 12px #ef4444;animation:cascade-fail 0.6s ease-out}@keyframes cascade-fail{0%{transform:scale(1);opacity:1}100%{transform:scale(1.2);opacity:0.8}}.cascade-controls{display:flex;gap:8px;flex-wrap:wrap}.cascade-button{padding:8px 16px;border:1px solid #00d4ff;background:#1e3a5f;color:#00d4ff;border-radius:4px;cursor:pointer;font-family:monospace;font-size:12px;transition:all 0.2s}.cascade-button:hover{background:#2a5a8f;box-shadow:0 0 8px #00d4ff}</style>
+  <div class="cascade-title">Data Quality Issues: Detection & Impact</div>
+  <div class="cascade-stages">
+    <div class="cascade-stage"><span class="cascade-label">Data Missing</span><div class="cascade-indicator" data-stage="missing"></div></div>
+    <div class="cascade-stage"><span class="cascade-label">Schema Invalid</span><div class="cascade-indicator" data-stage="schema"></div></div>
+    <div class="cascade-stage"><span class="cascade-label">Validation Fail</span><div class="cascade-indicator" data-stage="validation"></div></div>
+    <div class="cascade-stage"><span class="cascade-label">Analytics Affected</span><div class="cascade-indicator" data-stage="analytics"></div></div>
+  </div>
+  <div class="cascade-controls">
+    <button class="cascade-button" onclick="triggerDataQuality()">Inject Data Issue</button>
+    <button class="cascade-button" onclick="resetDataQuality()">Reset</button>
+  </div>
+  <script>
+    function triggerDataQuality() {
+      const stages = ['missing', 'schema', 'validation', 'analytics'];
+      let delay = 0;
+      stages.forEach((id) => {
+        setTimeout(() => {
+          document.querySelector('[data-stage="'+id+'"]').classList.add('failing');
+        }, delay);
+        delay += 300;
+      });
+    }
+    function resetDataQuality() {
+      document.querySelectorAll('[data-stage]').forEach(s => s.classList.remove('failing'));
+    }
+  </script>
+</div>
+```
+
+```html-live
+<div style="padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>.obs-title{color:#00d4ff;font-family:monospace;font-size:14px;font-weight:bold;margin-bottom:16px}.obs-grid{display:grid;grid-template-columns:repeat(auto-fit, minmax(150px, 1fr));gap:12px}.obs-card{padding:12px;background:#1a2332;border:1px solid #1e3a5f;border-radius:4px;display:flex;flex-direction:column;align-items:center}.obs-label{color:#a3aab8;font-family:monospace;font-size:11px;text-transform:uppercase;margin-bottom:8px}.obs-value{font-family:monospace;font-size:20px;font-weight:bold;color:#34d399}.obs-unit{color:#a3aab8;font-family:monospace;font-size:10px}</style>
+  <div class="obs-title">Data Quality Metrics</div>
+  <div class="obs-grid">
+    <div class="obs-card"><div class="obs-label">Completeness</div><div class="obs-value">99.2</div><div class="obs-unit">%</div></div>
+    <div class="obs-card"><div class="obs-label">Null Values</div><div class="obs-value">0.8</div><div class="obs-unit">%</div></div>
+    <div class="obs-card"><div class="obs-label">Outliers Detected</div><div class="obs-value">23</div><div class="obs-unit">records</div></div>
+    <div class="obs-card"><div class="obs-label">Schema Drift</div><div class="obs-value">0</div><div class="obs-unit">changes</div></div>
+  </div>
+</div>
+```
+
+---
+
 ## Related
 
 - [Databases](/08-databases/) — Data storage and querying

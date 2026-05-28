@@ -1250,6 +1250,244 @@ class ContinuousBatchingScheduler:
 
 ---
 
+## Interactive Components
+
+```html-live
+<div style="display:flex;flex-direction:column;align-items:center;gap:8px;padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>
+    @keyframes flow-pulse {
+      0%,100%{opacity:.3;transform:translateY(0)}
+      50%{opacity:1;transform:translateY(-2px)}
+    }
+    .flow-title {
+      color:#00d4ff;
+      font-family:monospace;
+      font-size:14px;
+      font-weight:bold;
+      margin-bottom:8px;
+      letter-spacing:1px;
+    }
+    .flow-node {
+      display:inline-block;
+      padding:8px 16px;
+      border-radius:4px;
+      font-size:12px;
+      font-family:monospace;
+      color:#e3eaf0;
+      background:#1e3a5f;
+      border:1px solid #00d4ff;
+    }
+    .flow-arrow {
+      color:#00d4ff;
+      font-size:16px;
+      animation:flow-pulse 1.5s infinite;
+      font-weight:bold;
+    }
+  </style>
+  <div class="flow-title">Transformer Forward Path</div>
+  <div style="display:flex;flex-direction:column;align-items:center;gap:6px">
+    <div class="flow-node">Input Tokens</div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-node">Token Embedding</div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-node">Position Encoding</div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-node">Multi-Head Attention</div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-node">Feed-Forward (MLP)</div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-node">Layer Norm</div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-node">Output Logits</div>
+  </div>
+</div>
+```
+
+```html-live
+<div style="padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>
+    .slider-title {
+      color:#00d4ff;
+      font-family:monospace;
+      font-size:14px;
+      font-weight:bold;
+      margin-bottom:12px;
+      letter-spacing:1px;
+    }
+    .slider-container {
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+    }
+    .slider-label {
+      color:#e3eaf0;
+      font-family:monospace;
+      font-size:12px;
+    }
+    .slider-wrapper {
+      display:flex;
+      align-items:center;
+      gap:12px;
+    }
+    .slider-input {
+      flex:1;
+      height:6px;
+      border-radius:3px;
+      background:#1e3a5f;
+      outline:none;
+      -webkit-appearance:none;
+      appearance:none;
+    }
+    .slider-input::-webkit-slider-thumb {
+      -webkit-appearance:none;
+      appearance:none;
+      width:18px;
+      height:18px;
+      border-radius:50%;
+      background:#00d4ff;
+      cursor:pointer;
+      box-shadow:0 0 8px #00d4ff;
+      border:2px solid #0b0e14;
+    }
+    .slider-input::-moz-range-thumb {
+      width:18px;
+      height:18px;
+      border-radius:50%;
+      background:#00d4ff;
+      cursor:pointer;
+      box-shadow:0 0 8px #00d4ff;
+      border:2px solid #0b0e14;
+    }
+    .slider-value {
+      font-family:monospace;
+      color:#34d399;
+      min-width:80px;
+      text-align:right;
+      font-size:12px;
+      font-weight:bold;
+    }
+  </style>
+  <div class="slider-title">Transformer Architecture Tuning</div>
+  <div class="slider-container">
+    <label class="slider-label">Sequence Length:</label>
+    <div class="slider-wrapper">
+      <input type="range" min="128" max="4096" step="128" value="512" class="slider-input" id="seq-slider">
+      <span class="slider-value" id="seq-value">512</span>
+    </div>
+    <label class="slider-label">Attention Heads:</label>
+    <div class="slider-wrapper">
+      <input type="range" min="4" max="32" step="4" value="8" class="slider-input" id="heads-slider">
+      <span class="slider-value" id="heads-value">8</span>
+    </div>
+  </div>
+  <script>
+    const seqSlider = document.getElementById('seq-slider');
+    const seqValue = document.getElementById('seq-value');
+    seqSlider.addEventListener('input', (e) => {
+      seqValue.textContent = e.target.value;
+    });
+    const headsSlider = document.getElementById('heads-slider');
+    const headsValue = document.getElementById('heads-value');
+    headsSlider.addEventListener('input', (e) => {
+      headsValue.textContent = e.target.value;
+    });
+  </script>
+</div>
+```
+
+```html-live
+<div style="padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>
+    .obs-title {
+      color:#00d4ff;
+      font-family:monospace;
+      font-size:14px;
+      font-weight:bold;
+      margin-bottom:16px;
+      letter-spacing:1px;
+    }
+    .obs-grid {
+      display:grid;
+      grid-template-columns:repeat(auto-fit, minmax(150px, 1fr));
+      gap:12px;
+    }
+    .obs-card {
+      padding:12px;
+      background:#1a2332;
+      border:1px solid #1e3a5f;
+      border-radius:4px;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      transition:all 0.3s;
+    }
+    .obs-card:hover {
+      border-color:#00d4ff;
+      box-shadow:0 0 8px rgba(0, 212, 255, 0.3);
+    }
+    .obs-label {
+      color:#a3aab8;
+      font-family:monospace;
+      font-size:11px;
+      text-transform:uppercase;
+      letter-spacing:0.5px;
+      margin-bottom:8px;
+    }
+    .obs-value {
+      font-family:monospace;
+      font-size:20px;
+      font-weight:bold;
+      margin-bottom:4px;
+      letter-spacing:0.5px;
+    }
+    .obs-unit {
+      color:#a3aab8;
+      font-family:monospace;
+      font-size:10px;
+      text-transform:uppercase;
+    }
+    .metric-healthy { color:#34d399 }
+    .metric-warning { color:#fbbf24 }
+    .metric-critical { color:#ef4444 }
+  </style>
+  <div class="obs-title">Attention Performance Metrics</div>
+  <div class="obs-grid">
+    <div class="obs-card">
+      <div class="obs-label">Attention Speed</div>
+      <div class="obs-value metric-healthy">847</div>
+      <div class="obs-unit">tokens/ms</div>
+    </div>
+    <div class="obs-card">
+      <div class="obs-label">KV Cache Size</div>
+      <div class="obs-value metric-healthy">3.2</div>
+      <div class="obs-unit">GB</div>
+    </div>
+    <div class="obs-card">
+      <div class="obs-label">Inference Latency</div>
+      <div class="obs-value metric-healthy">234</div>
+      <div class="obs-unit">ms</div>
+    </div>
+    <div class="obs-card">
+      <div class="obs-label">Memory Peak</div>
+      <div class="obs-value metric-warning">82</div>
+      <div class="obs-unit">GB</div>
+    </div>
+    <div class="obs-card">
+      <div class="obs-label">Throughput</div>
+      <div class="obs-value metric-healthy">128</div>
+      <div class="obs-unit">seq/sec</div>
+    </div>
+    <div class="obs-card">
+      <div class="obs-label">Quality Score</div>
+      <div class="obs-value metric-healthy">0.92</div>
+      <div class="obs-unit">BLEU</div>
+    </div>
+  </div>
+</div>
+```
+
+---
+
 ## Related
 
 

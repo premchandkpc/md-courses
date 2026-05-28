@@ -2154,6 +2154,77 @@ class ModelCICD:
 
 ---
 
+## Interactive Components
+
+```html-live
+<div style="display:flex;flex-direction:column;align-items:center;gap:8px;padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>@keyframes flow-pulse{0%,100%{opacity:.3;transform:translateY(0)}50%{opacity:1;transform:translateY(-2px)}}.flow-title{color:#00d4ff;font-family:monospace;font-size:14px;font-weight:bold;margin-bottom:8px;letter-spacing:1px}.flow-node{display:inline-block;padding:8px 16px;border-radius:4px;font-size:12px;font-family:monospace;color:#e3eaf0;background:#1e3a5f;border:1px solid #00d4ff}.flow-arrow{color:#00d4ff;font-size:16px;animation:flow-pulse 1.5s infinite;font-weight:bold}</style>
+  <div class="flow-title">ML Pipeline: Data → Training → Deployment</div>
+  <div style="display:flex;flex-direction:column;align-items:center;gap:6px">
+    <div class="flow-node">Data Collection</div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-node">Data Validation</div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-node">Feature Engineering</div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-node">Model Training</div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-node">Evaluation & Testing</div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-node">Registry & Versioning</div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-node">Production Deployment</div>
+  </div>
+</div>
+```
+
+```html-live
+<div style="padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>.state-machine-title{color:#00d4ff;font-family:monospace;font-size:14px;font-weight:bold;margin-bottom:16px;letter-spacing:1px}.state-demo{text-align:center}.state-display{font-size:18px;font-family:monospace;padding:16px;border-radius:4px;margin:16px 0;color:#0b0e14;font-weight:bold;min-height:50px;display:flex;align-items:center;justify-content:center;border:2px solid currentColor}.state-pending{background:#9333ea;border-color:#7e22ce}.state-running{background:#3b82f6;border-color:#1d4ed8}.state-succeeded{background:#34d399;border-color:#22c55e}.state-failed{background:#ef4444;border-color:#dc2626}.state-buttons{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:16px}.state-button{padding:8px 16px;border:1px solid #00d4ff;background:#1e3a5f;color:#00d4ff;border-radius:4px;cursor:pointer;font-family:monospace;font-size:12px;transition:all 0.2s}.state-button:hover{background:#2a5a8f;box-shadow:0 0 8px #00d4ff}</style>
+  <div class="state-machine-title">MLOps Job State Machine</div>
+  <div class="state-demo">
+    <div class="state-display state-pending" id="mlops-state-display">PENDING</div>
+    <div class="state-buttons">
+      <button class="state-button" onclick="setMLOpsState('PENDING')">Pending</button>
+      <button class="state-button" onclick="setMLOpsState('RUNNING')">Running</button>
+      <button class="state-button" onclick="setMLOpsState('SUCCEEDED')">Succeeded</button>
+      <button class="state-button" onclick="setMLOpsState('FAILED')">Failed</button>
+    </div>
+  </div>
+  <script>
+    const mlopsStateMap = {
+      'PENDING': { label: 'PENDING', class: 'state-pending' },
+      'RUNNING': { label: 'RUNNING', class: 'state-running' },
+      'SUCCEEDED': { label: 'SUCCEEDED', class: 'state-succeeded' },
+      'FAILED': { label: 'FAILED', class: 'state-failed' }
+    };
+    function setMLOpsState(state) {
+      const display = document.getElementById('mlops-state-display');
+      const info = mlopsStateMap[state];
+      display.textContent = info.label;
+      display.className = 'state-display ' + info.class;
+    }
+  </script>
+</div>
+```
+
+```html-live
+<div style="padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>.obs-title{color:#00d4ff;font-family:monospace;font-size:14px;font-weight:bold;margin-bottom:16px;letter-spacing:1px}.obs-grid{display:grid;grid-template-columns:repeat(auto-fit, minmax(150px, 1fr));gap:12px}.obs-card{padding:12px;background:#1a2332;border:1px solid #1e3a5f;border-radius:4px;display:flex;flex-direction:column;align-items:center;transition:all 0.3s}.obs-card:hover{border-color:#00d4ff;box-shadow:0 0 8px rgba(0, 212, 255, 0.3)}.obs-label{color:#a3aab8;font-family:monospace;font-size:11px;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px}.obs-value{font-family:monospace;font-size:20px;font-weight:bold;margin-bottom:4px;letter-spacing:0.5px}.obs-unit{color:#a3aab8;font-family:monospace;font-size:10px;text-transform:uppercase}.metric-healthy{color:#34d399}.metric-warning{color:#fbbf24}.metric-critical{color:#ef4444}</style>
+  <div class="obs-title">MLOps Model Monitoring</div>
+  <div class="obs-grid">
+    <div class="obs-card"><div class="obs-label">Model Accuracy</div><div class="obs-value metric-healthy">92.4</div><div class="obs-unit">%</div></div>
+    <div class="obs-card"><div class="obs-label">Inference Latency</div><div class="obs-value metric-healthy">45</div><div class="obs-unit">ms</div></div>
+    <div class="obs-card"><div class="obs-label">Data Drift</div><div class="obs-value metric-warning">3.2</div><div class="obs-unit">KL div</div></div>
+    <div class="obs-card"><div class="obs-label">Prediction Drift</div><div class="obs-value metric-healthy">1.1</div><div class="obs-unit">%</div></div>
+    <div class="obs-card"><div class="obs-label">Model Age</div><div class="obs-value metric-warning">23</div><div class="obs-unit">days</div></div>
+    <div class="obs-card"><div class="obs-label">Retraining Status</div><div class="obs-value metric-healthy">Scheduled</div><div class="obs-unit">next week</div></div>
+  </div>
+</div>
+```
+
+---
+
 ## Related
 
 

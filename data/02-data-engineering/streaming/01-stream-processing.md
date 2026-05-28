@@ -968,6 +968,41 @@ Real-world hybrid:
 
 ---
 
+## Interactive Components
+
+```html-live
+<div style="display:flex;flex-direction:column;align-items:center;gap:8px;padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>@keyframes flow-pulse{0%,100%{opacity:.3;transform:translateY(0)}50%{opacity:1;transform:translateY(-2px)}}.flow-title{color:#00d4ff;font-family:monospace;font-size:14px;font-weight:bold;margin-bottom:8px}.flow-node{display:inline-block;padding:8px 16px;border-radius:4px;font-size:12px;font-family:monospace;color:#e3eaf0;background:#1e3a5f;border:1px solid #00d4ff}.flow-arrow{color:#00d4ff;font-size:16px;animation:flow-pulse 1.5s infinite}</style>
+  <div class="flow-title">Stream Processing: Event Flow</div>
+  <div style="display:flex;flex-direction:column;align-items:center;gap:6px">
+    <div class="flow-node">Events Arrive</div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-node">Parsing/Validation</div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-node">Windowing</div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-node">Aggregation</div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-node">Results Emitted</div>
+  </div>
+</div>
+```
+
+```html-live
+<div style="padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>.obs-title{color:#00d4ff;font-family:monospace;font-size:14px;font-weight:bold;margin-bottom:16px}.obs-grid{display:grid;grid-template-columns:repeat(auto-fit, minmax(150px, 1fr));gap:12px}.obs-card{padding:12px;background:#1a2332;border:1px solid #1e3a5f;border-radius:4px;display:flex;flex-direction:column;align-items:center}.obs-label{color:#a3aab8;font-family:monospace;font-size:11px;text-transform:uppercase;margin-bottom:8px}.obs-value{font-family:monospace;font-size:20px;font-weight:bold;color:#34d399}.obs-unit{color:#a3aab8;font-family:monospace;font-size:10px}</style>
+  <div class="obs-title">Pipeline Throughput & Latency</div>
+  <div class="obs-grid">
+    <div class="obs-card"><div class="obs-label">Throughput</div><div class="obs-value">1.2M</div><div class="obs-unit">evt/s</div></div>
+    <div class="obs-card"><div class="obs-label">Latency P99</div><div class="obs-value">234</div><div class="obs-unit">ms</div></div>
+    <div class="obs-card"><div class="obs-label">Data Quality</div><div class="obs-value">99.8</div><div class="obs-unit">%</div></div>
+    <div class="obs-card"><div class="obs-label">Uptime</div><div class="obs-value">99.99</div><div class="obs-unit">%</div></div>
+  </div>
+</div>
+```
+
+---
+
 ## Related
 
 - [Databases](/08-databases/) — Data storage and querying

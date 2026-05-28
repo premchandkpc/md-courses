@@ -1316,6 +1316,50 @@ Data Lake:
 
 ---
 
+## Interactive Components
+
+```html-live
+<div style="padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>.slider-title{color:#00d4ff;font-family:monospace;font-size:14px;font-weight:bold;margin-bottom:12px}.slider-container{display:flex;flex-direction:column;gap:12px}.slider-label{color:#e3eaf0;font-family:monospace;font-size:12px}.slider-wrapper{display:flex;align-items:center;gap:12px}.slider-input{flex:1;height:6px;border-radius:3px;background:#1e3a5f;outline:none;-webkit-appearance:none}.slider-input::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:#00d4ff;cursor:pointer;box-shadow:0 0 8px #00d4ff;border:2px solid #0b0e14}.slider-value{font-family:monospace;color:#34d399;min-width:80px;text-align:right;font-size:12px;font-weight:bold}</style>
+  <div class="slider-title">Columnar Compression Tuning</div>
+  <div class="slider-container">
+    <label class="slider-label">Page Size (KB):</label>
+    <div class="slider-wrapper">
+      <input type="range" min="64" max="2048" step="64" value="512" class="slider-input" id="page-slider">
+      <span class="slider-value" id="page-value">512</span>
+    </div>
+    <label class="slider-label">Compression Level:</label>
+    <div class="slider-wrapper">
+      <input type="range" min="1" max="9" step="1" value="5" class="slider-input" id="compress-slider">
+      <span class="slider-value" id="compress-value">5</span>
+    </div>
+  </div>
+  <script>
+    document.getElementById('page-slider').addEventListener('input', (e) => {
+      document.getElementById('page-value').textContent = e.target.value;
+    });
+    document.getElementById('compress-slider').addEventListener('input', (e) => {
+      document.getElementById('compress-value').textContent = e.target.value;
+    });
+  </script>
+</div>
+```
+
+```html-live
+<div style="padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>.obs-title{color:#00d4ff;font-family:monospace;font-size:14px;font-weight:bold;margin-bottom:16px}.obs-grid{display:grid;grid-template-columns:repeat(auto-fit, minmax(150px, 1fr));gap:12px}.obs-card{padding:12px;background:#1a2332;border:1px solid #1e3a5f;border-radius:4px;display:flex;flex-direction:column;align-items:center}.obs-label{color:#a3aab8;font-family:monospace;font-size:11px;text-transform:uppercase;margin-bottom:8px}.obs-value{font-family:monospace;font-size:20px;font-weight:bold;color:#34d399}.obs-unit{color:#a3aab8;font-family:monospace;font-size:10px}</style>
+  <div class="obs-title">Columnar Format Stats</div>
+  <div class="obs-grid">
+    <div class="obs-card"><div class="obs-label">Compression Ratio</div><div class="obs-value">12.3</div><div class="obs-unit">:1</div></div>
+    <div class="obs-card"><div class="obs-label">Read Speed</div><div class="obs-value">2.8</div><div class="obs-unit">GB/s</div></div>
+    <div class="obs-card"><div class="obs-label">Columns Pruned</div><div class="obs-value">87</div><div class="obs-unit">%</div></div>
+    <div class="obs-card"><div class="obs-label">Query Time</div><div class="obs-value">340</div><div class="obs-unit">ms</div></div>
+  </div>
+</div>
+```
+
+---
+
 ## Related
 
 

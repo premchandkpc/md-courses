@@ -1001,6 +1001,52 @@ def sample_with_temperature(logits, temperature=1.0):
 
 ---
 
+## Interactive Components
+
+```html-live
+<div style="padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>.slider-title{color:#00d4ff;font-family:monospace;font-size:14px;font-weight:bold;margin-bottom:12px;letter-spacing:1px}.slider-container{display:flex;flex-direction:column;gap:12px}.slider-label{color:#e3eaf0;font-family:monospace;font-size:12px}.slider-wrapper{display:flex;align-items:center;gap:12px}.slider-input{flex:1;height:6px;border-radius:3px;background:#1e3a5f;outline:none;-webkit-appearance:none;appearance:none}.slider-input::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:18px;height:18px;border-radius:50%;background:#00d4ff;cursor:pointer;box-shadow:0 0 8px #00d4ff;border:2px solid #0b0e14}.slider-input::-moz-range-thumb{width:18px;height:18px;border-radius:50%;background:#00d4ff;cursor:pointer;box-shadow:0 0 8px #00d4ff;border:2px solid #0b0e14}.slider-value{font-family:monospace;color:#34d399;min-width:80px;text-align:right;font-size:12px;font-weight:bold}</style>
+  <div class="slider-title">A/B Test Configuration</div>
+  <div class="slider-container">
+    <label class="slider-label">Sample Size (per group):</label>
+    <div class="slider-wrapper">
+      <input type="range" min="100" max="10000" step="100" value="1000" class="slider-input" id="sample-slider">
+      <span class="slider-value" id="sample-value">1000</span>
+    </div>
+    <label class="slider-label">Significance Level (α):</label>
+    <div class="slider-wrapper">
+      <input type="range" min="0.01" max="0.1" step="0.01" value="0.05" class="slider-input" id="alpha-slider">
+      <span class="slider-value" id="alpha-value">0.05</span>
+    </div>
+  </div>
+  <script>
+    document.getElementById('sample-slider').addEventListener('input', (e) => {
+      document.getElementById('sample-value').textContent = e.target.value;
+    });
+    document.getElementById('alpha-slider').addEventListener('input', (e) => {
+      document.getElementById('alpha-value').textContent = (parseFloat(e.target.value).toFixed(2));
+    });
+  </script>
+</div>
+```
+
+```html-live
+<div style="padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>.obs-title{color:#00d4ff;font-family:monospace;font-size:14px;font-weight:bold;margin-bottom:16px;letter-spacing:1px}.obs-grid{display:grid;grid-template-columns:repeat(auto-fit, minmax(150px, 1fr));gap:12px}.obs-card{padding:12px;background:#1a2332;border:1px solid #1e3a5f;border-radius:4px;display:flex;flex-direction:column;align-items:center;transition:all 0.3s}.obs-card:hover{border-color:#00d4ff;box-shadow:0 0 8px rgba(0, 212, 255, 0.3)}.obs-label{color:#a3aab8;font-family:monospace;font-size:11px;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px}.obs-value{font-family:monospace;font-size:20px;font-weight:bold;margin-bottom:4px;letter-spacing:0.5px}.obs-unit{color:#a3aab8;font-family:monospace;font-size:10px;text-transform:uppercase}.metric-healthy{color:#34d399}.metric-warning{color:#fbbf24}</style>
+  <div class="obs-title">Statistical Test Metrics</div>
+  <div class="obs-grid">
+    <div class="obs-card"><div class="obs-label">Control CVR</div><div class="obs-value metric-healthy">8.42</div><div class="obs-unit">%</div></div>
+    <div class="obs-card"><div class="obs-label">Test CVR</div><div class="obs-value metric-healthy">9.17</div><div class="obs-unit">%</div></div>
+    <div class="obs-card"><div class="obs-label">Lift</div><div class="obs-value metric-healthy">8.9</div><div class="obs-unit">%</div></div>
+    <div class="obs-card"><div class="obs-label">P-Value</div><div class="obs-value metric-healthy">0.0234</div><div class="obs-unit">significant</div></div>
+    <div class="obs-card"><div class="obs-label">Power</div><div class="obs-value metric-healthy">0.89</div><div class="obs-unit">1 - β</div></div>
+    <div class="obs-card"><div class="obs-label">KL Divergence</div><div class="obs-value metric-warning">0.012</div><div class="obs-unit">nats</div></div>
+  </div>
+</div>
+```
+
+---
+
 ## Related
 
 

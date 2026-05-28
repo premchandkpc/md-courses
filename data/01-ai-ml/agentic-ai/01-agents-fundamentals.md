@@ -2709,3 +2709,329 @@ class SupportAgent {
 | Infinite loops | Agent repeats same action | Track action history |
 | Context loss | Forgets previous steps | Maintain session memory |
 
+---
+
+## Interactive Components
+
+```html-live
+<div style="display:flex;flex-direction:column;align-items:center;gap:8px;padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>
+    @keyframes flow-pulse {
+      0%,100%{opacity:.3;transform:translateY(0)}
+      50%{opacity:1;transform:translateY(-2px)}
+    }
+    .flow-title {
+      color:#00d4ff;
+      font-family:monospace;
+      font-size:14px;
+      font-weight:bold;
+      margin-bottom:8px;
+      letter-spacing:1px;
+    }
+    .flow-node {
+      display:inline-block;
+      padding:8px 16px;
+      border-radius:4px;
+      font-size:12px;
+      font-family:monospace;
+      color:#e3eaf0;
+      background:#1e3a5f;
+      border:1px solid #00d4ff;
+    }
+    .flow-arrow {
+      color:#00d4ff;
+      font-size:16px;
+      animation:flow-pulse 1.5s infinite;
+      font-weight:bold;
+    }
+  </style>
+  <div class="flow-title">Agent Perception-Reasoning-Action Loop</div>
+  <div style="display:flex;flex-direction:column;align-items:center;gap:6px">
+    <div class="flow-node">Environment Input</div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-node">Perception (Parse State)</div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-node">Reasoning (LLM Thinks)</div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-node">Action (Tool Call)</div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-node">Observe (Feedback)</div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-node">Memory Update</div>
+  </div>
+</div>
+```
+
+```html-live
+<div style="padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>
+    .state-machine-title {
+      color:#00d4ff;
+      font-family:monospace;
+      font-size:14px;
+      font-weight:bold;
+      margin-bottom:16px;
+      letter-spacing:1px;
+    }
+    .state-demo {
+      text-align:center;
+    }
+    .state-display {
+      font-size:18px;
+      font-family:monospace;
+      padding:16px;
+      border-radius:4px;
+      margin:16px 0;
+      color:#0b0e14;
+      font-weight:bold;
+      min-height:50px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      border:2px solid currentColor;
+    }
+    .state-idle { background:#9333ea;border-color:#7e22ce }
+    .state-planning { background:#3b82f6;border-color:#1d4ed8 }
+    .state-acting { background:#fbbf24;border-color:#f59e0b }
+    .state-observing { background:#34d399;border-color:#22c55e }
+    .state-completed { background:#34d399;border-color:#22c55e }
+    .state-buttons {
+      display:flex;
+      gap:8px;
+      justify-content:center;
+      flex-wrap:wrap;
+      margin-top:16px;
+    }
+    .state-button {
+      padding:8px 16px;
+      border:1px solid #00d4ff;
+      background:#1e3a5f;
+      color:#00d4ff;
+      border-radius:4px;
+      cursor:pointer;
+      font-family:monospace;
+      font-size:12px;
+      transition:all 0.2s;
+    }
+    .state-button:hover {
+      background:#2a5a8f;
+      box-shadow:0 0 8px #00d4ff;
+    }
+  </style>
+  <div class="state-machine-title">Agent State Machine</div>
+  <div class="state-demo">
+    <div class="state-display state-idle" id="state-display">IDLE</div>
+    <div class="state-buttons" id="state-buttons">
+      <button class="state-button" onclick="setAgentState('IDLE')">Idle</button>
+      <button class="state-button" onclick="setAgentState('PLANNING')">Planning</button>
+      <button class="state-button" onclick="setAgentState('ACTING')">Acting</button>
+      <button class="state-button" onclick="setAgentState('OBSERVING')">Observing</button>
+      <button class="state-button" onclick="setAgentState('COMPLETED')">Completed</button>
+    </div>
+  </div>
+  <script>
+    const agentStateMap = {
+      'IDLE': { label: 'IDLE', class: 'state-idle' },
+      'PLANNING': { label: 'PLANNING', class: 'state-planning' },
+      'ACTING': { label: 'ACTING', class: 'state-acting' },
+      'OBSERVING': { label: 'OBSERVING', class: 'state-observing' },
+      'COMPLETED': { label: 'COMPLETED', class: 'state-completed' }
+    };
+    function setAgentState(state) {
+      const display = document.getElementById('state-display');
+      const info = agentStateMap[state];
+      display.textContent = info.label;
+      display.className = 'state-display ' + info.class;
+    }
+  </script>
+</div>
+```
+
+```html-live
+<div style="padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>
+    .cascade-title {
+      color:#00d4ff;
+      font-family:monospace;
+      font-size:14px;
+      font-weight:bold;
+      margin-bottom:16px;
+      letter-spacing:1px;
+    }
+    .cascade-stages {
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+      margin-bottom:16px;
+    }
+    .cascade-stage {
+      display:flex;
+      align-items:center;
+      gap:12px;
+    }
+    .cascade-label {
+      color:#e3eaf0;
+      font-family:monospace;
+      font-size:12px;
+      min-width:140px;
+    }
+    .cascade-indicator {
+      width:24px;
+      height:24px;
+      border-radius:4px;
+      background:#34d399;
+      border:2px solid #22c55e;
+      transition:all 0.3s;
+    }
+    .cascade-indicator.failing {
+      background:#ef4444;
+      border-color:#dc2626;
+      box-shadow:0 0 12px #ef4444;
+      animation:cascade-fail 0.6s ease-out;
+    }
+    @keyframes cascade-fail {
+      0%{transform:scale(1);opacity:1}
+      100%{transform:scale(1.2);opacity:0.8}
+    }
+    .cascade-controls {
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+    }
+    .cascade-button {
+      padding:8px 16px;
+      border:1px solid #00d4ff;
+      background:#1e3a5f;
+      color:#00d4ff;
+      border-radius:4px;
+      cursor:pointer;
+      font-family:monospace;
+      font-size:12px;
+      transition:all 0.2s;
+    }
+    .cascade-button:hover {
+      background:#2a5a8f;
+      box-shadow:0 0 8px #00d4ff;
+    }
+  </style>
+  <div class="cascade-title">Agent Failure Cascade (Hallucination)</div>
+  <div class="cascade-stages">
+    <div class="cascade-stage"><span class="cascade-label">Perception</span><div class="cascade-indicator" data-stage="perception"></div></div>
+    <div class="cascade-stage"><span class="cascade-label">Reasoning (LLM)</span><div class="cascade-indicator" data-stage="reasoning"></div></div>
+    <div class="cascade-stage"><span class="cascade-label">Tool Selection</span><div class="cascade-indicator" data-stage="selection"></div></div>
+    <div class="cascade-stage"><span class="cascade-label">Fabricated Result</span><div class="cascade-indicator" data-stage="fabrication"></div></div>
+    <div class="cascade-stage"><span class="cascade-label">User Impact</span><div class="cascade-indicator" data-stage="impact"></div></div>
+  </div>
+  <div class="cascade-controls">
+    <button class="cascade-button" onclick="startHallucination()">Inject Hallucination</button>
+    <button class="cascade-button" onclick="resetFailure()">Reset</button>
+  </div>
+  <script>
+    function startHallucination() {
+      const stages = ['perception', 'reasoning', 'selection', 'fabrication', 'impact'];
+      let delay = 0;
+      stages.forEach((id) => {
+        setTimeout(() => {
+          document.querySelector('[data-stage="'+id+'"]').classList.add('failing');
+        }, delay);
+        delay += 300;
+      });
+    }
+    function resetFailure() {
+      document.querySelectorAll('[data-stage]').forEach(s => s.classList.remove('failing'));
+    }
+  </script>
+</div>
+```
+
+```html-live
+<div style="padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>
+    .obs-title {
+      color:#00d4ff;
+      font-family:monospace;
+      font-size:14px;
+      font-weight:bold;
+      margin-bottom:16px;
+      letter-spacing:1px;
+    }
+    .obs-grid {
+      display:grid;
+      grid-template-columns:repeat(auto-fit, minmax(150px, 1fr));
+      gap:12px;
+    }
+    .obs-card {
+      padding:12px;
+      background:#1a2332;
+      border:1px solid #1e3a5f;
+      border-radius:4px;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      transition:all 0.3s;
+    }
+    .obs-card:hover {
+      border-color:#00d4ff;
+      box-shadow:0 0 8px rgba(0, 212, 255, 0.3);
+    }
+    .obs-label {
+      color:#a3aab8;
+      font-family:monospace;
+      font-size:11px;
+      text-transform:uppercase;
+      letter-spacing:0.5px;
+      margin-bottom:8px;
+    }
+    .obs-value {
+      font-family:monospace;
+      font-size:20px;
+      font-weight:bold;
+      margin-bottom:4px;
+      letter-spacing:0.5px;
+    }
+    .obs-unit {
+      color:#a3aab8;
+      font-family:monospace;
+      font-size:10px;
+      text-transform:uppercase;
+    }
+    .metric-healthy { color:#34d399 }
+    .metric-warning { color:#fbbf24 }
+    .metric-critical { color:#ef4444 }
+  </style>
+  <div class="obs-title">Agent Observability Metrics</div>
+  <div class="obs-grid">
+    <div class="obs-card">
+      <div class="obs-label">Reasoning Steps</div>
+      <div class="obs-value metric-healthy">4.2</div>
+      <div class="obs-unit">avg/task</div>
+    </div>
+    <div class="obs-card">
+      <div class="obs-label">Tool Usage</div>
+      <div class="obs-value metric-healthy">2.8</div>
+      <div class="obs-unit">calls/task</div>
+    </div>
+    <div class="obs-card">
+      <div class="obs-label">Success Rate</div>
+      <div class="obs-value metric-healthy">94</div>
+      <div class="obs-unit">%</div>
+    </div>
+    <div class="obs-card">
+      <div class="obs-label">Avg Latency</div>
+      <div class="obs-value metric-healthy">3.2</div>
+      <div class="obs-unit">sec</div>
+    </div>
+    <div class="obs-card">
+      <div class="obs-label">Cost per Task</div>
+      <div class="obs-value metric-healthy">0.42</div>
+      <div class="obs-unit">USD</div>
+    </div>
+    <div class="obs-card">
+      <div class="obs-label">Hallucination Rate</div>
+      <div class="obs-value metric-critical">3.1</div>
+      <div class="obs-unit">%</div>
+    </div>
+  </div>
+</div>
+```
+

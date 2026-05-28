@@ -444,3 +444,67 @@ HTTP over QUIC (UDP-based). Eliminates TCP HOL blocking.
 | [08 — Databases](../08-databases/) | Database connection networking, replication network traffic, query latency from network |
 | [09 — Distributed Systems](../09-distributed-systems/) | Network partitions, latency and timeouts, consensus protocol messaging, failure detection |
 | [10 — Messaging](../10-messaging/) | Broker networking, replication traffic, Kafka's request pipeline, message serialization |
+
+## Related
+
+- [Linux Kernel Architecture](12-operating-systems/01-linux-kernel-architecture.md)
+- [Cpu Scheduling](12-operating-systems/02-cpu-scheduling.md)
+- [Linux Process Memory](12-operating-systems/02-linux-process-memory.md)
+- [Linux Io Storage](12-operating-systems/03-linux-io-storage.md)
+- [Memory Management](12-operating-systems/03-memory-management.md)
+- [Io Models](12-operating-systems/04-io-models.md)
+
+## Runtime Flow: Full-Stack Request Lifecycle
+
+A step-by-step walkthrough of what happens when a user hits `https://example.com/api/orders`:
+
+```
+Step  Browser/Client                        Component          Time
+────  ──────────────────────────────────    ──────────────     ─────
+  1   User types URL or clicks link         Browser            0ms
+  2   Check browser cache for DNS           Browser DNS Cache  1ms
+  3   DNS resolution: example.com → IP      DNS Resolver       5-50ms
+  4   TCP 3-way handshake (SYN → SYN-ACK → ACK)   Kernel TCP  1-5ms
+  5   TLS 1.3 handshake (ClientHello → ServerHello → Cert → Done)  TLS Stack  10-50ms
+  6   HTTP/2 multiplexed request            Browser HTTP/2      0ms
+  7   CDN edge routing                      CloudFront/CloudFlare  1-5ms
+  8   Load balancer picks backend           AWS ALB / nginx     0.1ms
+  9   API Gateway auth + rate limit         Kong / Envoy        1-5ms
+ 10   Service routing to pod                K8s Service (iptables/IPVS)  0.1ms
+ 11   Sidecar proxy (Envoy) intercepts      Istio/Envoy         0.5ms
+ 12   Application handler processes request Spring/Express      5-50ms
+ 13   Cache lookup (Redis)                  Redis Client        0.5-2ms
+ 14   Cache MISS → PostgreSQL query         pg client + pool    1-10ms
+ 15   PostgreSQL: Parse → Bind → Execute → Fetch   PG Backend  2-20ms
+ 16   Response serialized (JSON/Protobuf)   App Serializer      0.5ms
+ 17   Response travels back through stack   Reverse path        5-10ms
+ 18   Browser renders response              Browser Render     5-100ms
+```
+
+```mermaid
+sequenceDiagram
+    participant B as Browser
+    participant D as DNS
+    participant C as CDN
+    participant L as LB
+    participant G as API Gateway
+    participant S as Service
+    participant R as Redis
+    participant P as PostgreSQL
+
+    B->>D: DNS lookup example.com
+    D-->>B: 203.0.113.42
+    B->>C: HTTPS request
+    C->>L: Route to origin
+    L->>G: Forward request
+    G->>S: Auth + rate limit
+    S->>R: Cache check (key: orders:123)
+    R-->>S: MISS
+    S->>P: SELECT * FROM orders WHERE id=123
+    P-->>S: order data
+    S->>R: SET orders:123 = data (TTL: 300s)
+    S-->>G: JSON response
+    G-->>L: OK
+    L-->>C: OK
+    C-->>B: 200 OK
+```

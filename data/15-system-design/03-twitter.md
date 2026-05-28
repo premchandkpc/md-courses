@@ -929,3 +929,12 @@ Storage:
 
 
 See code examples above for practical usage patterns.
+
+## Related
+
+- [Cap Consistency](09-distributed-systems/01-cap-consistency.md)
+- [Consensus Replication](09-distributed-systems/01-consensus-replication.md)
+- [Consensus Raft](09-distributed-systems/02-consensus-raft.md)
+- [Distributed Transactions](09-distributed-systems/02-distributed-transactions.md)
+- [Distributed Caching](09-distributed-systems/03-distributed-caching.md)
+- [Distributed Storage](09-distributed-systems/03-distributed-storage.md)

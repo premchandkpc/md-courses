@@ -249,3 +249,12 @@ ulimit -n 65536          # Increase shell limit
 6. **Mitigate**: Kill / restart / scale before root cause analysis
 7. **Root cause**: `perf`, `strace`, core dump analysis
 8. **Postmortem**: File incident report with timeline
+
+## Related
+
+- [Readme](18-performance-engineering/README.md)
+- [Jvm Performance](18-performance-engineering/jvm-tuning/01-jvm-performance.md)
+- [Optimization Patterns](18-performance-engineering/optimization/01-optimization-patterns.md)
+- [Profiling Deep Dive](18-performance-engineering/profiling/01-profiling-deep-dive.md)
+- [Readme](03-backend/README.md)
+- [Goroutines Channels Concurrency](03-backend/go/01-goroutines-channels-concurrency.md)

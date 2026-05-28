@@ -1453,3 +1453,12 @@ Use Micrometer Tracing (formerly Spring Cloud Sleuth) or OpenTelemetry Java SDK.
 | `SingleThreadExecutor` | 1 | 1 | LinkedBlockingQueue | Serial execution, no concurrency |
 | `ScheduledThreadPool` | Fixed | Fixed | DelayedWorkQueue | Timed / periodic tasks |
 | `WorkStealingPool` | Parallelism | Auto | Work-stealing deque | Fork-join, recursive tasks |
+
+## Related
+
+- [Jvm Performance](18-performance-engineering/jvm-tuning/01-jvm-performance.md)
+- [Cap Consistency](09-distributed-systems/01-cap-consistency.md)
+- [Consensus Replication](09-distributed-systems/01-consensus-replication.md)
+- [Consensus Raft](09-distributed-systems/02-consensus-raft.md)
+- [Distributed Transactions](09-distributed-systems/02-distributed-transactions.md)
+- [Distributed Caching](09-distributed-systems/03-distributed-caching.md)

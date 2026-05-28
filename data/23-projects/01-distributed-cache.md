@@ -1435,3 +1435,12 @@ void zfree(void *ptr) {
 - ARC: Megiddo & Modha, "ARC: A Self-Tuning, Low Overhead Replacement Cache"
 - LIRS: Jiang & Zhang, "LIRS: An Efficient Low Inter-reference Recency Set Replacement Policy"
 - jemalloc: `github.com/jemalloc/jemalloc`
+
+## Related
+
+- [System Design Principles](15-system-design/01-system-design-principles.md)
+- [Whatsapp](15-system-design/01-whatsapp.md)
+- [Netflix](15-system-design/02-netflix.md)
+- [System Design Blueprints](15-system-design/02-system-design-blueprints.md)
+- [Twitter](15-system-design/03-twitter.md)
+- [Uber](15-system-design/04-uber.md)

@@ -428,3 +428,12 @@ Ensures durability without flushing data pages on each commit. Central to Postgr
 | [07 — Kubernetes](../07-kubernetes/) | Running databases on K8s (stateful operators), CSI storage, database at scale on K8s |
 | [09 — Distributed Systems](../09-distributed-systems/) | Consensus (Raft, Paxos) in distributed databases, CAP theorem, consistency models |
 | [10 — Messaging](../10-messaging/) | CDC (Debezium, Kafka Connect), database event streaming, transactional outbox pattern |
+
+## Related
+
+- [Cap Consistency](09-distributed-systems/01-cap-consistency.md)
+- [Consensus Replication](09-distributed-systems/01-consensus-replication.md)
+- [Consensus Raft](09-distributed-systems/02-consensus-raft.md)
+- [Distributed Transactions](09-distributed-systems/02-distributed-transactions.md)
+- [Distributed Caching](09-distributed-systems/03-distributed-caching.md)
+- [Distributed Storage](09-distributed-systems/03-distributed-storage.md)

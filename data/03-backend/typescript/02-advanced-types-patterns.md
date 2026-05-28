@@ -1710,3 +1710,12 @@ Use OpenTelemetry JS SDK with auto-instrumentation. Propagate context through `A
 
 
 **Node.js Runtime Dashboard**: event loop lag, GC pause time, heap used/total, active handles, libuv utilization.
+
+## Related
+
+- [Readme](04-frontend/README.md)
+- [Components Jsx](04-frontend/react/01-components-jsx.md)
+- [Hooks State](04-frontend/react/02-hooks-state.md)
+- [Rendering Performance](04-frontend/react/03-rendering-performance.md)
+- [State Management](04-frontend/react/04-state-management.md)
+- [Routing Data Fetching](04-frontend/react/05-routing-data-fetching.md)

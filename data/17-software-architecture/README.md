@@ -693,3 +693,12 @@ Bad architecture:
 ---
 
 **Next**: [Performance Engineering](../18-performance-engineering/README.md) · [Software Engineering](../25-software-engineering/README.md)
+
+## Related
+
+- [System Design Principles](15-system-design/01-system-design-principles.md)
+- [Whatsapp](15-system-design/01-whatsapp.md)
+- [Netflix](15-system-design/02-netflix.md)
+- [System Design Blueprints](15-system-design/02-system-design-blueprints.md)
+- [Twitter](15-system-design/03-twitter.md)
+- [Uber](15-system-design/04-uber.md)

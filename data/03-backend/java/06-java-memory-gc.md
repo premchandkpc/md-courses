@@ -1845,3 +1845,132 @@ Result:
 | G1 | Variable regions (1-32MB) | Variable regions | Humongous regions (>50% region size) |
 | ZGC | Multi-mapped pages | Multi-mapped pages | Colored pointers (metadata bits) |
 | Shenandoah | Regions | Regions | Brooks forwarding pointers |
+
+## Related
+
+- [Jvm Performance](18-performance-engineering/jvm-tuning/01-jvm-performance.md)
+- [Cap Consistency](09-distributed-systems/01-cap-consistency.md)
+- [Consensus Replication](09-distributed-systems/01-consensus-replication.md)
+- [Consensus Raft](09-distributed-systems/02-consensus-raft.md)
+- [Distributed Transactions](09-distributed-systems/02-distributed-transactions.md)
+- [Distributed Caching](09-distributed-systems/03-distributed-caching.md)
+
+## Runtime Flow: G1GC Pause (Young Collection)
+
+```
+Step  Thread                              Event               Time
+────  ────────────────────────────────     ───────────────     ──────
+  1   Allocation rate fills Eden region    Mutator Threads     0-1000ms
+  2   G1 determines Eden is full           G1 Heuristics       0.01ms
+  3   All mutator threads reach safepoint  JVM Safepoint        0.1-5ms
+  4   Young GC begins (STW)                GC Threads           0ms
+  5   Scan GC roots (thread stacks, JNI, etc.)  GC Roots        1-10ms
+  6   Update RSet (remembered sets)        RSet Update         0.5-5ms
+  7   Process RSet (find old→young refs)   RSet Scan           0.5-5ms
+  8   Copy survivors from Eden → S0       Evacuation           1-20ms
+  9   Age tracking (promotion threshold)   Age Table           0.01ms
+ 10   Reset Eden (mark empty)              Region Reset         0.01ms
+ 11   Release safepoint                    JVM Safepoint        0.1ms
+ 12   Mutator threads resume               Application          0ms
+```
+
+```mermaid
+sequenceDiagram
+    participant M as Mutator (App)
+    participant S as Safepoint
+    participant G as GC Threads
+    participant H as Heap
+
+    M->>H: allocate objects (fills Eden)
+    M-->>M: allocation fast path
+    H-->>G: Eden full notification
+    G->>S: request safepoint
+    S-->>M: stop at safepoint
+    G->>G: scan GC roots
+    G->>H: evacuate Eden → S0
+    G->>H: update RSets
+    G->>H: age promotion
+    G->>S: release safepoint
+    S-->>M: resume execution
+```
+
+## Debugging Walkthrough: Heap Dump Analysis
+
+### Scenario: Java service OOM-killed every 6 hours. 8GB heap, 2GB usage at startup.
+
+```bash
+# Step 1: Trigger heap dump on OOM (-XX:+HeapDumpOnOutOfMemoryError)
+# or capture live dump:
+$ jmap -dump:live,format=b,file=heap.hprof <PID>
+
+# Step 2: Open in Eclipse MAT or JProfiler
+# → Look at "Leak Suspects" report
+# → Look at "Biggest Objects" / "Dominator Tree"
+
+# Step 3: CLI quick analysis (jhat — deprecated but works)
+$ jhat heap.hprof
+# → http://localhost:7000 shows class histograms
+
+# Step 4: Using jcmd (JDK 8+)
+$ jcmd <PID> GC.heap_dump heap.hprof
+
+# Step 5: Analyze with jmap histogram (no dump file needed)
+$ jmap -histo:live <PID> | head -20
+ num     #instances         #bytes  class name
+----------------------------------------------
+   1:       2451832      392293120  [B                          ← byte arrays
+   2:       1892345      302775200  java.util.HashMap$Node      ← map entries
+   3:       1234500       29628000  com.myapp.cache.CacheEntry  ← cache entries
+   4:       1100000       26400000  java.lang.String
+   5:        923456       22162944  java.util.LinkedHashMap$Entry
+```
+
+### Diagnosis
+
+| Signal | Analysis |
+|---|---|
+| 1.2M `CacheEntry` instances | Memory leak in cache (entries never evicted) |
+| 2.4M byte arrays | Each CacheEntry has a byte[] value = ~160 bytes |
+| 3M HashMap$Node | Cache is backed by HashMap without max-size bound |
+| Heap grows unbounded until OOM | Cache eviction policy is broken or absent |
+
+### Root Cause
+
+```java
+// ❌ Wrong: unbounded cache
+@Component
+public class UserCache {
+    private Map<String, User> cache = new HashMap<>();  // No bounds!
+    public User getUser(String id) {
+        return cache.computeIfAbsent(id, this::fetchFromDB);
+    }
+}
+
+// ✅ Fix: bounded with eviction
+@Component
+public class UserCache {
+    private Cache<String, User> cache = Caffeine.newBuilder()
+        .maximumSize(10000)
+        .expireAfterWrite(1, TimeUnit.HOURS)
+        .recordStats()
+        .build();
+}
+
+// ✅ Fix: or use Guava Cache
+LoadingCache<String, User> cache = CacheBuilder.newBuilder()
+    .maximumSize(10000)
+    .expireAfterAccess(30, TimeUnit.MINUTES)
+    .weakValues()
+    .build(cacheLoader);
+```
+
+### Memory Leak Checklist
+
+| Check | Tool | Command |
+|---|---|---|
+| Class histogram | `jmap` | `jmap -histo:live <PID>` |
+| GC roots | `jhat` / MAT | Open heap dump |
+| Largest objects | `jcmd` + GC.heap_dump | Analyze with profiler |
+| Thread stacks | `jstack` | `jstack <PID>` |
+| Native memory | `NMT` | `-XX:NativeMemoryTracking=summary` |
+| Off-heap | `pmap` | `pmap -x <PID>` |

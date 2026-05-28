@@ -1397,3 +1397,65 @@ Use OpenTelemetry Go SDK. Propagate trace context through `context.Context` acro
 - **Detection**: Heap profile shows unexpected large retained objects.
 - **Recovery**: 1) Take heap profile. 2) Restart periodically. 3) Use `strings.Clone()`.
 - **Prevention**: Use `strings.Clone()` before keeping substrings. Use `bytes.Clone()` for byte slices.
+
+## Related
+
+- [Profiling Deep Dive](18-performance-engineering/profiling/01-profiling-deep-dive.md)
+- [Linux Kernel Architecture](12-operating-systems/01-linux-kernel-architecture.md)
+- [Cpu Scheduling](12-operating-systems/02-cpu-scheduling.md)
+- [Linux Process Memory](12-operating-systems/02-linux-process-memory.md)
+- [Linux Io Storage](12-operating-systems/03-linux-io-storage.md)
+- [Memory Management](12-operating-systems/03-memory-management.md)
+
+## Debugging Walkthrough: pprof Flame Graph Analysis
+
+### Scenario: Go service uses 400% CPU (4 cores pinned) after deploy.
+
+```bash
+# Step 1: Capture CPU profile (30 seconds)
+$ go tool pprof -http=:8080 http://localhost:6060/debug/pprof/profile?seconds=30
+
+# Step 2: Open browser at http://localhost:8080
+#   → Click "Flame Graph" (top-down view)
+#   → Look for the widest frames at the top
+
+# Step 3: Interpret the flame graph
+#   - Wide bars = functions using the most CPU
+#   - Stack trace = call path
+#   - Root cause is usually a hot loop, excessive allocation, or serialization
+
+# Step 4: Example analysis from CLI
+$ go tool pprof -top -cum cpu.prof
+Showing nodes accounting for 35.42s, 88.55% of 40.00s total
+      flat  flat%   sum%     cum   cum%
+     18.2s 45.50% 45.50%   18.2s 45.50%  encoding/json.(*Decoder).Decode
+      8.1s 20.25% 65.75%   26.3s 65.75%  main.handleRequest
+      5.3s 13.25% 79.00%    5.3s 13.25%  runtime.mallocgc
+      3.8s  9.50% 88.50%   30.1s 75.25%  main.orderHandler
+```
+
+### Diagnosis
+
+| Signal | What It Means |
+|---|---|
+| `json.Decode` uses 45% of CPU | JSON serialization is bottleneck |
+| `mallocgc` shows 13% | GC pressure from allocations |
+| Main handler is 75% cumulative | Trace: request → handler → JSON |
+
+### Fix
+1. Switch to `encoding/json` → `jsoniter` or `ffjson` (3x faster)
+2. Pre-allocate slices: `make([]Order, 0, 100)` instead of `var orders []Order`
+3. Use `sync.Pool` for request/response buffers
+4. Profile memory too: `go tool pprof -http=:8081 http://localhost:6060/debug/pprof/heap`
+
+```mermaid
+graph TB
+    REQ["HTTP Request"] --> HANDLER["handleRequest<br/>75% CPU"]
+    HANDLER --> JSON["json.Decode<br/>45% CPU ❌"]
+    HANDLER --> ALLOC["mallocgc<br/>13% CPU"]
+    JSON --> GC["GC Pressure"]
+    ALLOC --> GC
+    style JSON fill:#f85149
+    style ALLOC fill:#d29922
+    style GC fill:#c73e1d
+```

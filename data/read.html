@@ -227,13 +227,28 @@ body{
 
 /* ─── Start Screen ─── */
 .start-screen{
-  display:flex;flex-direction:column;align-items:center;
-  justify-content:center;height:100%;gap:14px;text-align:center;
-  padding:40px;
+  display:flex;flex-direction:column;height:100%;padding:40px;overflow-y:auto;
 }
-.start-screen .big-icon{font-size:64px;margin-bottom:4px}
-.start-screen h1{font-size:30px;font-weight:800;letter-spacing:-.02em}
-.start-screen p{color:var(--fg2);max-width:440px;font-size:15px;line-height:1.6}
+.start-screen-header{
+  text-align:center;margin-bottom:40px;flex-shrink:0;
+}
+.start-screen-header .big-icon{font-size:56px;margin-bottom:8px}
+.start-screen-header h1{font-size:28px;font-weight:800;letter-spacing:-.02em;margin-bottom:6px}
+.start-screen-header p{color:var(--fg2);font-size:14px;line-height:1.6}
+.topics-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:20px;flex:1;
+}
+.topic-box{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:28px 20px;background:var(--bg3);border:1px solid var(--border);
+  border-radius:var(--radius);cursor:pointer;transition:all .2s;
+  text-decoration:none;color:var(--fg);min-height:160px;
+}
+.topic-box:hover{background:var(--bg4);border-color:var(--accent);transform:translateY(-4px)}
+.topic-box .icon{font-size:40px;margin-bottom:12px}
+.topic-box .name{font-weight:600;font-size:14px;text-align:center}
+@media(max-width:1100px){.topics-grid{grid-template-columns:repeat(2,1fr);gap:16px}}
+@media(max-width:700px){.topics-grid{grid-template-columns:1fr;gap:12px}}
 
 /* ═══ MARKDOWN STYLING ═══ */
 .md{font-size:var(--font-size);line-height:1.75;color:var(--fg)}
@@ -328,12 +343,25 @@ body{
   border:none;height:1px;background:linear-gradient(90deg,transparent,var(--border),transparent);
   margin:28px 0;
 }
+.md .diagram-container{
+  position:relative;margin:20px 0;
+}
+.md .diagram-controls{
+  display:flex;gap:4px;position:absolute;top:8px;right:8px;z-index:10;
+}
+.md .diagram-btn{
+  padding:4px 8px;background:var(--bg4);border:1px solid var(--border);
+  border-radius:4px;color:var(--fg3);cursor:pointer;font-size:11px;
+  transition:all .12s;
+}
+.md .diagram-btn:hover{background:var(--accent);color:#000;border-color:var(--accent)}
 .md .mermaid-wrap{
-  display:flex;justify-content:center;margin:20px 0;
+  display:flex;justify-content:center;margin:0;
   padding:20px;background:var(--bg3);border-radius:var(--radius);
-  border:1px solid var(--border);overflow-x:auto;
+  border:1px solid var(--border);overflow:auto;
   transition:opacity .4s,transform .3s;
   box-shadow:var(--shadow);
+  position:relative;
 }
 .md .mermaid-wrap.animate-in{animation:fadeSlide .5s ease-out}
 @keyframes fadeSlide{
@@ -515,9 +543,12 @@ body{
       </div>
     </div>
     <div id="start" class="start-screen">
-      <div class="big-icon">📚</div>
-      <h1>Engineering Knowledge Universe</h1>
-      <p>Select a file from the sidebar to begin</p>
+      <div class="start-screen-header">
+        <div class="big-icon">📚</div>
+        <h1>Engineering Knowledge Universe</h1>
+        <p>Explore topics in depth</p>
+      </div>
+      <div class="topics-grid" id="topicsGrid"></div>
     </div>
     <div id="fileView" style="display:none;flex:1;overflow:hidden;flex-direction:column;">
       <div class="content-body md" id="fileContent"></div>
@@ -577,7 +608,7 @@ const DOMAIN_ICONS = {
   'interviews':'💼','production-stories':'🚨','software-engineering':'📐','foundations':'📐',
   'frontend':'🎨','devops':'🔄','networking':'🌐','operating-systems':'⚡',
   'security':'🔒','system-design':'📋','performance-engineering':'⚡','testing':'🧪',
-  'cheat-sheets':'📎','interactive-simulations':'🎮','arch':'🏛️','data-engineering':'📊',
+  'cheat-sheets':'📎','arch':'🏛️','data-engineering':'📊',
   'projects':'📦'
 };
 
@@ -603,6 +634,7 @@ async function init() {
   });
   await loadTree();
   renderTree();
+  renderTopics();
   renderRecentFiles();
   attachTreeEvents();
 }
@@ -718,6 +750,38 @@ function buildTreeHtml(nodes, depth = 0) {
     }
   }
   return h;
+}
+
+function renderTopics() {
+  const grid = document.getElementById('topicsGrid');
+  if (!grid) return;
+
+  const topicDirs = STATE.treeData.filter(n => n.type === 'dir').slice(0, 12);
+  let html = '';
+
+  for (const topic of topicDirs) {
+    const icon = DOMAIN_ICONS[topic.name] || '📁';
+    const name = topic.name.replace(/^\d+-/, '').replace(/-/g, ' ');
+    const path = topic.path;
+    html += `
+      <div class="topic-box" data-path="${esc(path)}">
+        <div class="icon">${icon}</div>
+        <div class="name">${esc(name)}</div>
+      </div>
+    `;
+  }
+
+  grid.innerHTML = html;
+
+  grid.querySelectorAll('.topic-box').forEach(el => {
+    el.addEventListener('click', () => {
+      const path = el.dataset.path;
+      if (path) {
+        const firstFile = STATE.flatFiles.find(f => f.path.startsWith(path));
+        if (firstFile) loadFile(firstFile.path);
+      }
+    });
+  });
 }
 
 function attachTreeEvents() {
@@ -988,7 +1052,7 @@ function renderContent(container, text) {
   text = text.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
   text = text.replace(/\*([^*]+)\*/g, '<em>$1</em>');
   text = text.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (m, l, u) =>
-    u.endsWith('.md') ? `<a class="md-link">${l}</a>` : `<a href="${u}" target="_blank">${l}</a>`
+    u.endsWith('.md') ? `<a class="md-link" data-href="${u}">${l}</a>` : `<a href="${u}" target="_blank">${l}</a>`
   );
 
   // Headers with anchors
@@ -1059,9 +1123,17 @@ function renderContent(container, text) {
   // MD link handler
   container.querySelectorAll('.md-link').forEach(el => {
     el.addEventListener('click', (e) => {
-      const parent = e.target;
-      const href = parent.textContent.toLowerCase().replace(/\s+/g, '-');
-      const fullPath = STATE.currentPath.replace(/[^/]+$/, '') + href + '.md';
+      e.preventDefault();
+      const href = el.dataset.href;
+      if (!href) return;
+
+      // Resolve relative paths
+      let fullPath = href;
+      if (!href.startsWith('/')) {
+        const currentDir = STATE.currentPath.replace(/[^/]+$/, '');
+        fullPath = currentDir + href;
+      }
+
       loadFile(fullPath);
     });
   });
@@ -1173,7 +1245,7 @@ function buildTOC() {
 
     // Back to top visibility
     document.getElementById('backTopBtn').classList.toggle('show', body.scrollTop > CONFIG.scrollProgressThreshold);
-  }, { passive: true);
+  }, { passive: true });
 }
 
 // ─── UI Controls ───

@@ -2379,3 +2379,58 @@ Use OpenTelemetry Go SDK. Propagate trace context through `context.Context` acro
 - **Detection**: Heap profile shows unexpected large retained objects.
 - **Recovery**: 1) Take heap profile. 2) Restart periodically. 3) Use `strings.Clone()`.
 - **Prevention**: Use `strings.Clone()` before keeping substrings. Use `bytes.Clone()` for byte slices.
+
+## Related
+
+- [Profiling Deep Dive](18-performance-engineering/profiling/01-profiling-deep-dive.md)
+- [Linux Kernel Architecture](12-operating-systems/01-linux-kernel-architecture.md)
+- [Cpu Scheduling](12-operating-systems/02-cpu-scheduling.md)
+- [Linux Process Memory](12-operating-systems/02-linux-process-memory.md)
+- [Linux Io Storage](12-operating-systems/03-linux-io-storage.md)
+- [Memory Management](12-operating-systems/03-memory-management.md)
+
+## Runtime Flow: Goroutine Scheduling (GMP Model)
+
+```
+Step  Component                          Action               Time
+────  ──────────────────────────────      ───────────────     ──────
+  1   go myFunc() creates goroutine       go keyword           0.001ms
+  2   Goroutine placed on local queue     P (Processor)        0.001ms
+  3   If local queue full → global queue  P → Sched.global     0.01ms
+  4   M (OS thread) picks G from P.queue  M (thread)           0.001ms
+  5   M executes G on OS thread           M runs G             1-100ms
+  6   Blocking syscall (read/write):      Syscall              0.01ms
+      ├── M + G detach from P
+      └── New M (or idle M) picks up P
+  7   Non-blocking syscall (netpoll):     Netpoller (epoll)    0.01ms
+      ├── G blocks on netpoll
+      └── M picks next G from queue
+  8   G yields (preemption at function entry)  Goroutine preemption  0.001ms
+  9   G placed back on P.local queue      Runnable G           0.001ms
+ 10   Work stealing: idle P steals from busy P   Work Stealing  0.01ms
+```
+
+```mermaid
+sequenceDiagram
+    participant G as Goroutine
+    participant P as Processor (P)
+    participant M as OS Thread (M)
+    participant S as Scheduler
+    participant K as Kernel
+
+    G->>P: enqueue (runnext or local queue)
+    P->>M: execute G
+    M->>M: run goroutine code
+    alt blocking syscall
+        M->>K: syscall (read)
+        M->>K: detach from P
+        S->>P: new M picks up P
+        K-->>M: syscall returns
+        G->>S: enqueue on global
+    else network poll
+        M->>K: epoll wait (non-blocking)
+        G->>M: netpoll returns ready fd
+    end
+    M->>M: preempt after 10ms
+    G->>P: return to local queue
+```

@@ -1208,3 +1208,12 @@ flowchart LR
 - **Detection**: I/O wait spikes at regular intervals. `pg_stat_bgwriter.buffers_checkpoint` high. `checkpoint_write_time` increasing.
 - **Recovery**: 1) Increase `max_wal_size` (e.g., 2x current WAL generation per checkpoint). 2) Increase `checkpoint_timeout` to 15-30min.
 - **Prevention**: Set `max_wal_size` to 2-3x of WAL generated between checkpoints. Set `checkpoint_completion_target=0.9`. Monitor `pg_stat_bgwriter`.
+
+## Related
+
+- [Cap Consistency](09-distributed-systems/01-cap-consistency.md)
+- [Consensus Replication](09-distributed-systems/01-consensus-replication.md)
+- [Consensus Raft](09-distributed-systems/02-consensus-raft.md)
+- [Distributed Transactions](09-distributed-systems/02-distributed-transactions.md)
+- [Distributed Caching](09-distributed-systems/03-distributed-caching.md)
+- [Distributed Storage](09-distributed-systems/03-distributed-storage.md)

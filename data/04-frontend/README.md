@@ -393,3 +393,80 @@ Compile-time framework. Minimal runtime, reactive by default.
 | **Bundle Analysis** | `webpack-bundle-analyzer` | Identify large dependencies |
 | **Caching** | Service Worker, CDN, HTTP caching | Eliminate network requests for repeat visits |
 | **Preloading** | `<link rel=preload>`, DNS prefetch | Reduce perceived latency |
+
+## Deep Internals: Browser Rendering Pipeline
+
+### The Critical Rendering Path
+
+```
+Step  Component          Time    What Happens
+────  ────────────────   ─────   ──────────────────────────────────
+  1   HTML Parse         5-50ms  Tokenize → DOM tree (incremental)
+  2   CSS Parse          2-10ms  Tokenize → CSSOM tree (blocking)
+  3   Render Tree        1-5ms   DOM + CSSOM → visible nodes only
+  4   Layout (Reflow)    5-50ms  Calculate positions & sizes
+  5   Paint              5-20ms  Rasterize layers (pixels → bitmaps)
+  6   Compositing        1-5ms   Layer compositing (GPU)
+  7   Display            0.1ms   Paint to screen (vsync)
+```
+
+```mermaid
+graph LR
+    HTML["HTML"] --> DOM["DOM Tree"]
+    CSS["CSS"] --> CSSOM["CSSOM Tree"]
+    DOM --> RT["Render Tree"]
+    CSSOM --> RT
+    RT --> L["Layout<br/>(Reflow)"]
+    L --> P["Paint<br/>(Rasterize)"]
+    P --> C["Composite<br/>(GPU Layers)"]
+    C --> S["Screen"]
+    JS["JavaScript"] -.-> DOM
+    JS -.-> CSSOM
+    style HTML fill:#e8912e
+    style CSS fill:#4a8bc2
+    style JS fill:#d29922
+    style L fill:#c73e1d
+    style C fill:#3fb950
+```
+
+### Layers & Compositing
+
+```
+Why layers?
+Every repaint = re-rasterize.
+If you isolate changes to a layer, only THAT layer re-paints.
+
+┌──────────────────────────────────────┐
+│  Root Layer (viewport)               │
+│  ┌────────────────────────────────┐  │
+│  │ Layer 1: Fixed header          │  │  ← Re-paints only when header changes
+│  └────────────────────────────────┘  │
+│  ┌────────────────────────────────┐  │
+│  │ Layer 2: Scrollable content    │  │  ← Re-paints only on content change
+│  └────────────────────────────────┘  │
+│  ┌────────────────────────────────┐  │
+│  │ Layer 3: Animating sidebar     │  │  ← GPU-composited, no paint needed!
+│  └────────────────────────────────┘  │
+└──────────────────────────────────────┘
+```
+
+### What Triggers What
+
+| Action | Layout | Paint | Composite | Cost |
+|---|---|---|---|---|
+| `width: 50%` | ✅ Full | ✅ | ✅ | 💀 |
+| `position: absolute` | ✅ Self + children | ✅ | ✅ | 💀 |
+| `color: red` | ❌ | ✅ Self | ✅ | 👍 |
+| `transform: translate()` | ❌ | ❌ | ✅ (GPU) | 🚀 |
+| `opacity: 0.5` | ❌ | ❌ | ✅ (GPU) | 🚀 |
+| `will-change: transform` | ❌ | ❌ | ✅ (promotes layer) | 👍 |
+
+### Performance Rules
+
+```
+🚀 Prefer transform + opacity for animations (GPU composited)
+👍 Promote layers: will-change: transform (sparingly!)
+💀 Avoid layout-triggering animations (top, left, width, height)
+💀 Avoid forced synchronous layouts (reading offsetHeight after setting style)
+💀 Avoid paint-heavy properties (box-shadow, border-radius on large areas)
+```

@@ -467,3 +467,12 @@ websocat wss://echo.websocket.org
 ### Q2: How does gRPC compare to REST for microservice communication?
 
 **Answer**: gRPC uses HTTP/2 as transport and Protocol Buffers as the serialization format. **Advantages over REST**: (1) Binary protobuf is 3-10x smaller than JSON, making it faster for large payloads. (2) HTTP/2 multiplexing allows many concurrent RPCs over one connection — no connection pool pressure. (3) Strong typing with auto-generated client/server stubs from `.proto` files — eliminates serialization bugs. (4) Four communication patterns: Unary, Server streaming, Client streaming, Bidirectional streaming — REST only does unary request-response. (5) Native support for deadlines/timeouts, cancellation, and metadata propagation. **Disadvantages**: (1) Not directly consumable by browsers — needs gRPC-web proxy. (2) Protobuf is not human-readable for debugging. (3) Less mature tooling for load testing and caching compared to REST. (4) Steeper learning curve. **Choose gRPC** for internal service-to-service communication where performance matters. **Choose REST** for public-facing APIs, browser clients, and simple CRUD operations where developer ergonomics and debuggability are more important.
+
+## Related
+
+- [Linux Kernel Architecture](12-operating-systems/01-linux-kernel-architecture.md)
+- [Cpu Scheduling](12-operating-systems/02-cpu-scheduling.md)
+- [Linux Process Memory](12-operating-systems/02-linux-process-memory.md)
+- [Linux Io Storage](12-operating-systems/03-linux-io-storage.md)
+- [Memory Management](12-operating-systems/03-memory-management.md)
+- [Io Models](12-operating-systems/04-io-models.md)

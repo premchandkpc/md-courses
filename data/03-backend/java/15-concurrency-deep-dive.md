@@ -589,3 +589,147 @@ Use Micrometer Tracing (formerly Spring Cloud Sleuth) or OpenTelemetry Java SDK.
 - **Detection**: `jstack` shows deadlock detection: "Found one Java-level deadlock". Thread state: BLOCKED on a lock held by another thread that's waiting on this thread's lock.
 - **Recovery**: 1) Kill the stuck threads or restart JVM. 2) `jstack -l <pid>` to identify deadlocked threads. 3) Fix locking order in code.
 - **Prevention**: Always acquire locks in consistent order. Use `tryLock` with timeout instead of `synchronized`. Use `java.util.concurrent` classes. Enable `-XX:+PrintConcurrentLocks`.
+
+## Related
+
+- [Jvm Performance](18-performance-engineering/jvm-tuning/01-jvm-performance.md)
+- [Cap Consistency](09-distributed-systems/01-cap-consistency.md)
+- [Consensus Replication](09-distributed-systems/01-consensus-replication.md)
+- [Consensus Raft](09-distributed-systems/02-consensus-raft.md)
+- [Distributed Transactions](09-distributed-systems/02-distributed-transactions.md)
+- [Distributed Caching](09-distributed-systems/03-distributed-caching.md)
+
+## Debugging Walkthrough: Thread Dump Analysis
+
+### Scenario: Production app is slow — no errors, just high response times.
+
+```
+# Step 1: Capture thread dump (3 dumps, 5s apart)
+$ jstack -l <PID> > threaddump1.txt
+$ sleep 5 && jstack -l <PID> > threaddump2.txt
+$ sleep 5 && jstack -l <PID> > threaddump3.txt
+
+# Step 2: Look for BLOCKED threads
+$ grep -c "BLOCKED" threaddump*.txt        # Count blocked threads
+$ grep -B5 "BLOCKED" threaddump1.txt       # Find what's blocked
+
+# Step 3: Look for RUNNABLE threads stuck in the same place
+$ grep -A20 "RUNNABLE" threaddump1.txt | head -40
+
+# Step 4: Analyze a suspicious thread
+"http-nio-8080-exec-47" #47 daemon prio=5 os_prio=0 cpu=1234.56ms
+    java.lang.Thread.State: BLOCKED (on object monitor)
+    at com.myapp.OrderService.processPayment(OrderService.java:142)
+    - waiting to lock <0x00000000deadbeef> (a com.myapp.PaymentGateway)
+    at com.myapp.OrderController.checkout(OrderController.java:55)
+    
+"http-nio-8080-exec-12" #12 daemon prio=5 os_prio=0 cpu=5678.90ms
+    java.lang.Thread.State: RUNNABLE
+    at java.net.SocketInputStream.socketRead0(Native Method)
+    at ...HttpClient.execute (stuck reading response)
+    - locked <0x00000000deadbeef> (a com.myapp.PaymentGateway)
+```
+
+### Diagnosis
+
+| Symptom | Pattern | Root Cause |
+|---|---|---|
+| Many BLOCKED threads waiting on same monitor | Lock contention | External call (HTTP) holds lock while waiting |
+| One RUNNABLE thread holding the lock | Lock owner stuck in I/O | Downstream service slow / timeout too high |
+| CPU low but threads blocked | Not CPU-bound | I/O-bound contention |
+
+### Fix
+1. Reduce timeout on external HTTP call (30s → 2s)
+2. Use `ReentrantLock` with `tryLock(timeout)` instead of `synchronized`
+3. Add circuit breaker for external dependencies
+4. Pool connections with timeout: `httpClient.connectTimeout(Duration.ofSeconds(2))`
+
+```mermaid
+graph LR
+    T1["Thread-47<br/>BLOCKED"] --> L["🔒 PaymentGateway<br/>(monitor)"]
+    T2["Thread-12<br/>RUNNABLE"] --> L
+    L --> EXT["🔗 External HTTP<br/>(stuck 30s)"]
+    style T1 fill:#f85149
+    style T2 fill:#d29922
+    style L fill:#e8912e
+    style EXT fill:#c73e1d
+```
+
+## Deep Internals: Virtual Threads (Project Loom)
+
+### Why Virtual Threads?
+OS threads cost ~1MB stack + kernel context switch (~1μs). Virtual threads: ~10KB + user-space yield (~0.01μs). Create millions, not thousands.
+
+```
+Platform Thread:                     Virtual Thread:
+┌─────────────────────────────┐      ┌─────────────────────┐
+│ Stack: 1MB (pre-allocated)  │      │ Stack: 10KB (grows)  │
+│ TCB: kernel-managed         │      │ Continuation (heap)  │
+│ Context switch: ~1μs (HW)   │      │ Yield: ~0.01μs       │
+│ Max: ~10K per 8GB RAM       │      │ Max: millions        │
+│ Blocked → OS suspends       │      │ Blocked → unmount    │
+└─────────────────────────────┘      └─────────────────────┘
+```
+
+### Virtual Thread Lifecycle
+
+```mermaid
+stateDiagram-v1
+    [*] --> MOUNTED: Thread.start()
+    MOUNTED --> UNMOUNTED: Blocking op (I/O, lock, sleep)
+    UNMOUNTED --> RUNNABLE: I/O ready, lock available
+    RUNNABLE --> MOUNTED: Carrier thread available
+    MOUNTED --> [*]: Thread completes
+    UNMOUNTED --> CARRIER: Mounted on carrier thread
+    CARRIER --> MOUNTED: Running on carrier
+    CARRIER --> UNMOUNTED: Yield (park())
+```
+
+### Mounting & Unmounting
+
+```
+Step  Mode    Location                        Description
+────  ─────── ──────────────────────────────  ──────────────────────
+  1   Carrier Thread (ForkJoinPool)           Virtual thread starts
+  2   Mount   VirtualThread.mount()           Copy continuation → carrier stack
+  3   Run     vt.execute(continuation)         Run user code
+  4   Block   SocketInputStream.read()         I/O → park()
+  5   Unmount VirtualThread.unmount()          Save stack to heap
+  6   Park    Carrier picks next virtual       No OS thread blocked!
+```
+
+### When Virtual Threads Shine
+
+| Workload | Platform Threads | Virtual Threads |
+|---|---|---|
+| **Many concurrent I/O** | Thread pool exhaustion, context switch overhead | 100K+ concurrent connections |
+| **Request-per-thread** | Limited by OS thread count | Natural model, no thread pool sizing |
+| **Deep call stacks** | Stack overflow at 1000 frames | Growable stack (start ~10KB) |
+| **Fine-grained locking** | Contention unless tuned | `ReentrantLock` friendly (park/unpark) |
+
+### Virtual Threads vs Reactive
+
+| Aspect | Reactive (WebFlux) | Virtual Threads |
+|---|---|---|
+| **Programming model** | Callback/Mono/Flux | Imperative (synchronous-looking) |
+| **Stack traces** | Obscured (lambda chains) | Full, readable stack traces |
+| **Learning curve** | Steep (compose operators) | None (just write blocking code) |
+| **Debugging** | Hard (reactive chains) | Easy (linear code) |
+| **Throughput** | Excellent | Comparable |
+| **When to use** | Existing reactive stack | New services, sync codebases |
+
+### Gotchas
+
+```
+❌ synchronized (pinning — locks carrier thread)
+✅ ReentrantLock (unmounts virtual thread)
+
+❌ ThreadLocal with many threads (memory per thread)
+✅ ScopedValue (cheaper, inheritable)
+
+❌ Pooled virtual threads (defeats purpose)
+✅ Create new: Thread.startVirtualThread(() -> ...)
+
+❌ Blocking in synchronized block → pins carrier
+✅ Use java.util.concurrent locks
+```

@@ -1473,3 +1473,12 @@ ScyllaDB:
 **Discord is like a massive walkie-talkie network combined with a chatroom system, where every message is written in permanent ink (Cassandra) and delivered to everyone currently listening on that channel through a dedicated pneumatic tube (WebSocket).** The gateway is like a telephone switchboard operator who keeps a line open to every connected user — when someone speaks, the operator copies the message to everyone else in that room. Voice channels work like a high-tech party line: the SFU is a selective postman who only sends you the voices you need to hear (not everyone else's background noise). The permission system is a super-strict bouncer who checks your ID (roles) and a rulebook (permission overwrites) every time you try to do anything — send a message, join a voice channel, or even read a channel. Large guilds with thousands of members are like stadiums where the bouncer has to check every person at every entrance, so Discord precomputes who can go where and caches it (permission bitset in Redis) so the check takes microseconds instead of milliseconds.
 
 (End of file - total 794 lines)
+
+## Related
+
+- [Cap Consistency](09-distributed-systems/01-cap-consistency.md)
+- [Consensus Replication](09-distributed-systems/01-consensus-replication.md)
+- [Consensus Raft](09-distributed-systems/02-consensus-raft.md)
+- [Distributed Transactions](09-distributed-systems/02-distributed-transactions.md)
+- [Distributed Caching](09-distributed-systems/03-distributed-caching.md)
+- [Distributed Storage](09-distributed-systems/03-distributed-storage.md)

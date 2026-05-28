@@ -1384,3 +1384,12 @@ futex(FUTEX_WAIT):         ~200ns (uncontended, returns immediately)
 
 
 > **System calls are the embassy between userspace and the kernel. Your program is a foreign citizen; to do anything official (read a file, send a packet, create a process), you must go through the embassy window (syscall instruction). The embassy has a catalog of forms (syscall numbers), a counter window (registers), and a wait area for slow processes. vDSO is the automated kiosk outside the embassy — for simple tasks (what time is it?), you can get the answer without entering the building. IPC is the postal service between citizens: pipes are two-way tin cans with string, shared memory is a shared office you both rent, signals are telegrams with limited words, futex is knocking on the shared office door to see if someone is there first. seccomp is a gatekeeper inside your own embassy — it stamps "ALLOWED" or "DENIED" on every form before processing. The entire system exists because only the kernel can touch hardware safely, and every mechanism is a trade-off between isolation, speed, and convenience.**
+
+## Related
+
+- [Tcp Ip Deep Dive](11-networking/01-tcp-ip-deep-dive.md)
+- [Tcpip Protocol Stack](11-networking/01-tcpip-protocol-stack.md)
+- [Http Protocols](11-networking/02-http-protocols.md)
+- [Tls Http Grpc](11-networking/02-tls-http-grpc.md)
+- [Dns Cdn Loadbalancing](11-networking/03-dns-cdn-loadbalancing.md)
+- [Readme](11-networking/README.md)

@@ -674,3 +674,12 @@ def resolve(domain, record_type, resolver_cache, servers):
 - Maximum TTL can cap very long TTLs (some resolvers cap at 86400)
 
 **Simulation loop:** Each tick processes pending queries, applies simulated latency, returns responses, and updates cache TTLs. Cache entries tick down each second (or faster in accelerated mode).
+
+## Related
+
+- [Cap Consistency](/09-distributed-systems/01-cap-consistency.md)
+- [Consensus Replication](/09-distributed-systems/01-consensus-replication.md)
+- [Consensus Raft](/09-distributed-systems/02-consensus-raft.md)
+- [Distributed Transactions](/09-distributed-systems/02-distributed-transactions.md)
+- [Distributed Caching](/09-distributed-systems/03-distributed-caching.md)
+- [Distributed Storage](/09-distributed-systems/03-distributed-storage.md)

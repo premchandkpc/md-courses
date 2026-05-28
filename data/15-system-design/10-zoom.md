@@ -1284,3 +1284,12 @@ Server Infrastructure (estimated):
 **Zoom is like a global telephone exchange for video calls. The SFU is a super-efficient postal sorting center: everyone sends their letter (video stream) to the center, and the center puts the right letters into each recipient's mailbox — but unlike a traditional mail room, the SFU never opens the letters (E2EE).** If you're in a 3-person meeting, it's like three people in adjacent rooms with open doors (mesh topology). For a 50-person all-hands meeting, it's like a town hall where the active speaker is projected on a big screen while others are in the audience with name cards (SFU with thumbnail gallery). The signaling server is the town crier who announces who arrives, who leaves, who's talking, and who raised their hand — but the media itself (your actual voice and video) goes directly through the postal center. When your internet gets bad, the system smoothly downgrades from HD video to standard definition to audio-only to, if all else fails, a plain old telephone call (PSTN) — like a luxury car that turns into a bicycle when the road disappears, but never stops moving.
 
 (End of file - total 769 lines)
+
+## Related
+
+- [Cap Consistency](09-distributed-systems/01-cap-consistency.md)
+- [Consensus Replication](09-distributed-systems/01-consensus-replication.md)
+- [Consensus Raft](09-distributed-systems/02-consensus-raft.md)
+- [Distributed Transactions](09-distributed-systems/02-distributed-transactions.md)
+- [Distributed Caching](09-distributed-systems/03-distributed-caching.md)
+- [Distributed Storage](09-distributed-systems/03-distributed-storage.md)

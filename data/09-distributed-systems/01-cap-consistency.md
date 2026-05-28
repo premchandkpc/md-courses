@@ -484,3 +484,12 @@ Key Tradeoff Parameters:
 **CAP says:** When the network splits (which it will), you must choose between giving correct answers (consistency) or giving any answer at all (availability). You can never do both during a split. **PACELC adds:** Even without a split, you trade speed for correctness.
 
 Consistency models are a spectrum from "always right, slow" (linearizability) to "eventually right, fast" (eventual). Pick the weakest model your application can tolerate.
+
+## Related
+
+- [Postgresql Internals](08-databases/01-postgresql-internals.md)
+- [Relational Database Internals](08-databases/01-relational-database-internals.md)
+- [Postgresql Architecture](08-databases/02-postgresql-architecture.md)
+- [Redis Internals](08-databases/02-redis-internals.md)
+- [Postgresql Troubleshooting Tuning](08-databases/03-postgresql-troubleshooting-tuning.md)
+- [Redis Deep Dive](08-databases/04-redis-deep-dive.md)

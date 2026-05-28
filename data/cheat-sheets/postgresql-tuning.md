@@ -233,3 +233,84 @@ pg_locks with NOT granted → find blocking pid → cancel or tune query → add
 | `OR` conditions | Poor index usage | Use `UNION` or `IN` |
 | `ORDER BY ... LIMIT` without index | Sort on full result | Create composite index |
 | Implicit type coercion | Index not used | Match types explicitly |
+
+## Related
+
+- [Readme](18-performance-engineering/README.md)
+- [Jvm Performance](18-performance-engineering/jvm-tuning/01-jvm-performance.md)
+- [Optimization Patterns](18-performance-engineering/optimization/01-optimization-patterns.md)
+- [Profiling Deep Dive](18-performance-engineering/profiling/01-profiling-deep-dive.md)
+- [Readme](03-backend/README.md)
+- [Goroutines Channels Concurrency](03-backend/go/01-goroutines-channels-concurrency.md)
+
+## Debugging Walkthrough: EXPLAIN ANALYZE Deep Dive
+
+### Scenario: App dashboard page loads in 12s instead of <500ms.
+
+```sql
+-- Step 1: Identify the slow query (pg_stat_statements)
+SELECT query, mean_exec_time, calls, rows
+FROM pg_stat_statements
+ORDER BY mean_exec_time DESC
+LIMIT 5;
+
+-- Step 2: EXPLAIN ANALYZE the slowest query
+EXPLAIN (ANALYZE, BUFFERS, TIMING) 
+SELECT o.id, o.total, o.status, u.name
+FROM orders o
+JOIN users u ON o.user_id = u.id
+WHERE o.created_at > NOW() - INTERVAL '30 days'
+ORDER BY o.total DESC
+LIMIT 100;
+
+-- Output:
+--   Sort  (cost=48512.33..49876.11 rows=545514 width=42)
+--     Sort Key: o.total DESC
+--     Sort Method: external merge  Disk: 24568kB  ← DISK SORT!
+--     ->  Hash Join  (cost=12890.33..27980.11 rows=545514 width=42)
+--           Hash Cond: (o.user_id = u.id)
+--           ->  Seq Scan on orders o  ← FULL TABLE SCAN!
+--                 Filter: (created_at > now() - '30 days'::interval)
+--                 Rows Removed by Filter: 2451233
+--           ->  Hash  (cost=10540.33..10540.33 rows=189533 width=16)
+--                 ->  Seq Scan on users u  ← ANOTHER FULL SCAN!
+```
+
+### Diagnosis
+
+| Signal | Problem | Fix |
+|---|---|---|
+| `Seq Scan on orders` (2.4M rows) | No index on `created_at` | `CREATE INDEX idx_orders_created ON orders(created_at)` |
+| `external merge Disk: 24MB` | Sort spills to disk | Increase `work_mem` (16MB → 64MB) |
+| `Seq Scan on users` (189K rows) | Full table scan on users | Already has PK index — join is fine |
+| `Rows Removed by Filter: 2.4M` | Sequential scan filters most rows | Index would reduce to 545K |
+| `Buffers: shared hit=4500 read=32000` | 32K pages read from disk | Increase `shared_buffers` + check cache hit ratio |
+
+### After Fix
+
+```sql
+-- After adding index
+EXPLAIN (ANALYZE, BUFFERS, TIMING)
+SELECT ...;
+
+-- Output:
+--   Limit  (cost=1.42..8923.11 rows=100 width=42)
+--     ->  Nested Loop  (cost=1.42..48512.33 rows=545514 width=42)
+--           ->  Index Scan Backward using idx_orders_created on orders o  ← INDEX SCAN!
+--                 Index Cond: (created_at > now() - '30 days'::interval)
+--           ->  Index Scan using users_pkey on users u  ← INDEX SCAN!
+--                 Index Cond: (id = o.user_id)
+--   Execution Time: 142.3ms  ← 84x faster!
+```
+
+```mermaid
+graph LR
+    Q["Slow Query<br/>12s"] --> B["Before:<br/>Seq Scan + Disk Sort"]
+    Q --> A["After:<br/>Index Scan + Nested Loop"]
+    B --> BS["Seq Scan: 2.4M rows ❌"]
+    B --> BD["Disk Sort: 24MB ❌"]
+    A --> AI["Index Scan: 545K rows ✅"]
+    A --> AM["142ms ✅ 84x faster"]
+    style B fill:#c73e1d
+    style A fill:#3fb950
+```

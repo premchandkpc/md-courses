@@ -411,3 +411,12 @@ git rebase --continue
 | Last commit (discard) | `git reset --hard HEAD~1` | Completely remove |
 | Push with force | `git push --force-with-lease` | Safe force push |
 | Public commit | `git revert <hash>` | New commit undoing changes |
+
+## Related
+
+- [Readme](18-performance-engineering/README.md)
+- [Jvm Performance](18-performance-engineering/jvm-tuning/01-jvm-performance.md)
+- [Optimization Patterns](18-performance-engineering/optimization/01-optimization-patterns.md)
+- [Profiling Deep Dive](18-performance-engineering/profiling/01-profiling-deep-dive.md)
+- [Readme](03-backend/README.md)
+- [Goroutines Channels Concurrency](03-backend/go/01-goroutines-channels-concurrency.md)

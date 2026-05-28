@@ -621,3 +621,12 @@ Data Pipeline:
 ## Simplest Mental Model
 
 **Netflix is like a global video library with three core jobs: make the video ready (transcode), get it close to you (CDN), and pick what you'd like to watch (recommendation).** The video is pre-sliced into tiny chunks at many quality levels. The player acts like a smart taxi driver — it picks the best road (bitrate) based on traffic (bandwidth) and keeps a buffer (passengers waiting). Chaos engineering is like a fire drill that randomly shuts off rooms to make sure the exits work — the system is trained to handle failure as a normal state.
+
+## Related
+
+- [Cap Consistency](09-distributed-systems/01-cap-consistency.md)
+- [Consensus Replication](09-distributed-systems/01-consensus-replication.md)
+- [Consensus Raft](09-distributed-systems/02-consensus-raft.md)
+- [Distributed Transactions](09-distributed-systems/02-distributed-transactions.md)
+- [Distributed Caching](09-distributed-systems/03-distributed-caching.md)
+- [Distributed Storage](09-distributed-systems/03-distributed-storage.md)

@@ -631,3 +631,12 @@ Example: Order pipeline
 
 
 **Stream processing is like a conveyor belt in a factory, not a warehouse.** Instead of collecting items and processing them in batches (warehouse/batch), you process each item as it moves past your station (conveyor/stream). A "watermark" is like a sign saying "no more items from 9AM will arrive" — you can now finalize the 9-10AM shift report. "State" is your notebook where you keep running totals. "Backpressure" is the conveyor belt slowing because you're too slow. "Checkpoint" is taking a photo of your notebook every few minutes — if you mess up, you go back to the last photo and replay.
+
+## Related
+
+- [Postgresql Internals](08-databases/01-postgresql-internals.md)
+- [Relational Database Internals](08-databases/01-relational-database-internals.md)
+- [Postgresql Architecture](08-databases/02-postgresql-architecture.md)
+- [Redis Internals](08-databases/02-redis-internals.md)
+- [Postgresql Troubleshooting Tuning](08-databases/03-postgresql-troubleshooting-tuning.md)
+- [Redis Deep Dive](08-databases/04-redis-deep-dive.md)

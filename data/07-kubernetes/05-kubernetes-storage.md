@@ -479,3 +479,12 @@ K8s storage = shipping container warehouse
 **Q10**: A Deployment has `replicas: 3` with `emptyDir` volumes. Two pods are on the same node. When that node fails, only 1 pod is rescheduled. Why?
 
 **Answer**: `emptyDir` volumes are **ephemeral** — tied to the pod's lifecycle. When a node fails, the kubelet is unreachable, so pods enter `Unknown` state. After `--pod-eviction-timeout` (default 5 minutes), the controller manager evicts them. But `emptyDir` doesn't persist — the replacement pod gets a fresh empty directory. However, the **PodDisruptionBudget** (PDB) might prevent scheduling more than 1 replacement (if `minAvailable: 2` was set). Or: **DaemonSet** with `emptyDir` for logs — when the node comes back, the original pod may still be in `Terminating` state, consuming its UID/port/IP, and the new pod gets a different IP, confusing clients that cache DNS. Fix: use `persistentVolumeClaim` with `ReadWriteMany` for logs that must survive node failures.
+
+## Related
+
+- [Readme](05-cloud/README.md)
+- [Cloudwatch Deep Dive](05-cloud/aws/cloudwatch/01-cloudwatch-deep-dive.md)
+- [Cloudwatch Observability](05-cloud/aws/cloudwatch/02-cloudwatch-observability.md)
+- [Ec2 Deep Dive](05-cloud/aws/ec2/01-ec2-deep-dive.md)
+- [Ec2 Networking Security](05-cloud/aws/ec2/02-ec2-networking-security.md)
+- [Ecs Deep Dive](05-cloud/aws/ecs/01-ecs-deep-dive.md)

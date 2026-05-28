@@ -1151,3 +1151,12 @@ Recommendation: 4-8 TB NVMe SSDs per broker, RAID 10
 - KIP-588: Allow producers to recover from expired producer IDs
 - Jay Kreps, "The Log: What every software engineer should know about real-time data's unifying abstraction"
 - "Kafka: The Definitive Guide" by Neha Narkhede, Gwen Shapira, Todd Palino
+
+## Related
+
+- [System Design Principles](15-system-design/01-system-design-principles.md)
+- [Whatsapp](15-system-design/01-whatsapp.md)
+- [Netflix](15-system-design/02-netflix.md)
+- [System Design Blueprints](15-system-design/02-system-design-blueprints.md)
+- [Twitter](15-system-design/03-twitter.md)
+- [Uber](15-system-design/04-uber.md)

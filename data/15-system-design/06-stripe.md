@@ -966,3 +966,12 @@ Storage Sizing:
 **Stripe is like a global cashier that speaks every payment language.** You (the merchant) hand a token to Stripe — never the actual credit card number — and Stripe runs to the right bank, checks if the person is a fraudster (Radar), secures the money (authorization), then collects it (capture). If anything goes wrong, the idempotency key acts like a receipt number: you can ask "did that $20 charge go through?" and get the same answer every time, preventing accidental double charges. The card vault is a safety deposit box where PANs are locked in AES-256 cages, with keys stored in a hardware vault that even Stripe engineers can't open casually.
 
 (End of file - total 584 lines)
+
+## Related
+
+- [Cap Consistency](09-distributed-systems/01-cap-consistency.md)
+- [Consensus Replication](09-distributed-systems/01-consensus-replication.md)
+- [Consensus Raft](09-distributed-systems/02-consensus-raft.md)
+- [Distributed Transactions](09-distributed-systems/02-distributed-transactions.md)
+- [Distributed Caching](09-distributed-systems/03-distributed-caching.md)
+- [Distributed Storage](09-distributed-systems/03-distributed-storage.md)

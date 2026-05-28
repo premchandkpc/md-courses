@@ -42,7 +42,22 @@
       "Bash(mkdir -p 07-kubernetes/simulations)",
       "Bash(mkdir -p 11-networking/simulations)",
       "Bash(mkdir -p 08-databases/simulations)",
-      "Bash(grep -E \"\\\\.\\(html|md\\)$\")"
+      "Bash(grep -E \"\\\\.\\(html|md\\)$\")",
+      "Bash(grep -E \"\\\\.\\(js|ts|json|py\\)$|server\")",
+      "Bash(chmod +x /Users/ramyachowdary/Documents/prem-work/md-courses/server.py)",
+      "Bash(python3 server.py)",
+      "Bash(curl -s http://localhost:3000/)",
+      "Bash(python3 -m json.tool)",
+      "Bash(curl -s \"http://localhost:3000/api/file?path=09-distributed-systems/02-consensus-raft.md\")",
+      "Bash(python3 -c \"import sys, json; d = json.load\\(sys.stdin\\); print\\(d['content'][:300]\\)\")",
+      "Bash(pkill -f \"python3 server.py\")",
+      "Bash(curl -s http://localhost:3000/10-messaging/simulations/kafka-replication.html)",
+      "Bash(python3 server.py > /tmp/server.log 2>&1 & *)",
+      "Bash(lsof -ti:3000)",
+      "Bash(awk '/^function buildTreeHtml/,/^}$/{print NR\": \"$0}' /Users/ramyachowdary/Documents/prem-work/md-courses/data/read.html)"
+    ],
+    "additionalDirectories": [
+      "/private/tmp"
     ]
   }
 }

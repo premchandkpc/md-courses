@@ -2819,3 +2819,159 @@ and the control plane makes it happen, continuously reconciling.
 
 **Answer**: **kube-proxy and NetworkPolicy implementation differences**. If using different CNI plugins or kube-proxy modes on different nodes (e.g., some nodes use iptables, others use eBPF/Cilium), the policy enforcement differs. Also: **NodePort traffic** bypasses NetworkPolicy (it goes directly through kube-proxy, not through the CNI's policy engine). Or: some CNI plugins (Calico) enforce at the node level via iptables, while others (Cilium) enforce at eBPF level — if the policy references `ipBlock` with CIDR that includes some nodes' pod CIDR but not others, traffic intermittently fails.
 
+## Related
+
+- [Readme](05-cloud/README.md)
+- [Cloudwatch Deep Dive](05-cloud/aws/cloudwatch/01-cloudwatch-deep-dive.md)
+- [Cloudwatch Observability](05-cloud/aws/cloudwatch/02-cloudwatch-observability.md)
+- [Ec2 Deep Dive](05-cloud/aws/ec2/01-ec2-deep-dive.md)
+- [Ec2 Networking Security](05-cloud/aws/ec2/02-ec2-networking-security.md)
+- [Ecs Deep Dive](05-cloud/aws/ecs/01-ecs-deep-dive.md)
+
+## Runtime Flow: Pod Scheduling
+
+```
+Step  Control Plane                       Component           Time
+────  ──────────────────────────────       ───────────────     ─────
+  1   User runs: kubectl apply -f pod.yaml    kubectl          0ms
+  2   API Server validates + persists pod    etcd              5-50ms
+  3   Scheduler watches unscheduled pods     Scheduler         0.1ms
+  4   Scheduler runs filter plugins:          Scheduling        1-5ms
+      ├── NodeUnschedulable (node status)
+      ├── NodeResourcesFit (CPU/MEM/GUARANTEED)
+      ├── NodePorts (port conflict check)
+      └── InterPodAffinity (pod topology)
+  5   Scheduler runs score plugins:           Scoring           1-5ms
+      ├── NodeResourcesBalancedAllocation
+      ├── PodTopologySpread (zones)
+      └── ImageLocality (pull latency)
+  6   Scheduler picks winning node            bind decision     0.01ms
+  7   Scheduler POSTs binding to API Server   Bind              1ms
+  8   etcd persists binding                   etcd              5ms
+  9   kubelet watches pod binding on its node  kubelet          0.1ms
+ 10   kubelet invokes CRI to create container  containerd       50-200ms
+ 11   CRI pulls image (if not cached)          Registry pull    1-30s
+ 12   CRI creates sandbox (pause container)    runc             50ms
+ 13   CRI creates app container                runc             50ms
+ 14   CNI plugin assigns IP + configures net   Calico/Cilium   10-50ms
+ 15   CSI plugin mounts volumes                EBS/EFS driver   100-500ms
+ 16   kubelet updates pod status to Running    kubelet          0.1ms
+ 17   kube-proxy updates iptables/IPVS         kube-proxy       1-5ms
+ 18   Service endpoints updated + ready        EndpointSlice    1-10ms
+```
+
+```mermaid
+sequenceDiagram
+    participant U as kubectl
+    participant A as API Server
+    participant E as etcd
+    participant S as Scheduler
+    participant K as kubelet
+    participant C as CRI
+    participant N as CNI
+    participant V as CSI
+
+    U->>A: apply pod.yaml
+    A->>E: persist Pod spec
+    S->>A: watch unscheduled pods
+    S->>S: filter + score nodes
+    S->>A: bind pod to node-3
+    A->>E: persist binding
+    K->>A: watch my pods
+    K->>C: CreateContainer (pod sandbox)
+    C->>C: pull image, runc create
+    K->>N: AssignPodIP (CNI)
+    K->>V: MountVolume (CSI)
+    K->>A: update PodStatus=Running
+```
+
+## Deep Internals: CRI — Container Runtime Interface
+
+### Pod Sandbox Lifecycle
+
+```mermaid
+sequenceDiagram
+    participant K as kubelet
+    participant C as CRI Runtime (containerd)
+    participant S as shim (containerd-shim)
+    participant R as runc
+    participant N as Namespaces
+
+    K->>C: RunPodSandbox (config)
+    C->>S: create shim process
+    S->>R: runc create (pause container)
+    R->>N: create namespaces (PID, NET, MNT, UTS, IPC)
+    R-->>S: pause container running
+    S-->>C: sandbox ID
+    C-->>K: PodSandboxID
+    
+    K->>C: CreateContainer (nginx, config)
+    C->>C: unpack image (snapshotter: overlayfs)
+    C->>S: create container in sandbox
+    S->>R: runc create nginx
+    R->>N: join sandbox namespaces
+    R->>R: apply cgroups (CPU, MEM limits)
+    R-->>S: container ready
+    S-->>C: container ID
+    
+    K->>C: StartContainer (container ID)
+    C->>S: exec init process
+    S->>R: runc start
+    R->>R: exec nginx (PID 1 in container)
+    R-->>S: running
+    S-->>C: started
+    C-->>K: Container running
+```
+
+### CRI Components
+
+```
+kubelet                              Control Plane
+   │
+   ├── CRI gRPC API (runtime.v1.RuntimeService)
+   │   ├── RunPodSandbox / StopPodSandbox
+   │   ├── CreateContainer / StartContainer / StopContainer / RemoveContainer
+   │   ├── ContainerStatus / ListContainers
+   │   └── Exec / Attach / PortForward
+   │
+   ▼
+containerd                           Container Runtime
+   │
+   ├── containerd-shim               Per-container shim (keeps runc alive)
+   │   └── manages STDIO + exit code
+   │
+   ▼
+runc (OCI Runtime)                   Low-level runtime
+   ├── creates container (namespaces + cgroups)
+   └── runs container process
+```
+
+### Namespace Isolation
+
+| Namespace | Isolates | Created by CRI |
+|---|---|---|
+| **PID** | Process IDs | Sandbox + each container |
+| **NET** | Network stack, IP, ports | Sandbox (shared by all containers in pod) |
+| **MNT** | Mount points | Container rootfs + volumes |
+| **UTS** | Hostname + domain | Sandbox |
+| **IPC** | System V IPC + POSIX msg | Sandbox |
+| **User** | User/group IDs | Optional (user-namespace remapping) |
+
+### CRI Container Create Flow Detail
+
+```
+Step  kubelet → CRI         What Happens
+────  ─────────────────────  ─────────────────────────────────
+  1   ImageService.PullImage  Check local cache → pull from registry
+  2   Snapshooter.Prepare     Create overlayfs layer (diff + lower)
+  3   CreateContainer         Write OCI spec.json (config.json)
+  4   OCI spec includes:
+      ├── Rootfs path (overlay mount)
+      ├── Process args (entrypoint + cmd)
+      ├── Mounts (volumes, secrets, configmaps)
+      ├── Linux.Namespaces (join sandbox)
+      ├── Linux.Resources (CPU/MEM cgroups)
+      └── Linux.Seccomp (syscall filter)
+  5   runc create             Fork + exec into namespaces
+  6   runc start              Execute init process
+```

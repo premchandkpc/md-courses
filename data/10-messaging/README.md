@@ -456,3 +456,12 @@ Ensures DB write + message publish atomic: write to outbox table in same transac
 | [06 — DevOps](../06-devops/) | CI/CD event triggers, pipeline notification, deployment events via messaging |
 | [08 — Databases](../08-databases/) | CDC (Debezium streaming DB changes), transactional outbox, database event triggers |
 | [09 — Distributed Systems](../09-distributed-systems/) | Distributed log as replicated state machine, partitioned processing, exactly-once semantics |
+
+## Related
+
+- [Cap Consistency](09-distributed-systems/01-cap-consistency.md)
+- [Consensus Replication](09-distributed-systems/01-consensus-replication.md)
+- [Consensus Raft](09-distributed-systems/02-consensus-raft.md)
+- [Distributed Transactions](09-distributed-systems/02-distributed-transactions.md)
+- [Distributed Caching](09-distributed-systems/03-distributed-caching.md)
+- [Distributed Storage](09-distributed-systems/03-distributed-storage.md)

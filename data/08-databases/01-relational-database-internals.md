@@ -429,3 +429,60 @@ class WriteAheadLog:
 
 
 **Answer**: Implement a two-phase commit (2PC) protocol or use a consensus-based approach. In 2PC, a coordinator asks all participants to PREPARE (write WAL, make data durable but uncommitted). If all PREPARE succeeds, the coordinator sends COMMIT; otherwise, it sends ABORT. The failure mode is the coordinator crashing after PREPARE but before COMMIT — participants hold locks until recovery. Modern distributed databases like Spanner use TrueTime (clock synchronization) + Paxos for external consistency. CockroachDB uses a combination of Raft for replication and a transaction coordinator with MVCC timestamps. The key trade-off is between consistency guarantees and latency — synchronous replication across multiple datacenters adds significant latency.
+
+## Related
+
+- [Cap Consistency](09-distributed-systems/01-cap-consistency.md)
+- [Consensus Replication](09-distributed-systems/01-consensus-replication.md)
+- [Consensus Raft](09-distributed-systems/02-consensus-raft.md)
+- [Distributed Transactions](09-distributed-systems/02-distributed-transactions.md)
+- [Distributed Caching](09-distributed-systems/03-distributed-caching.md)
+- [Distributed Storage](09-distributed-systems/03-distributed-storage.md)
+
+## Runtime Flow: PostgreSQL Query Execution
+
+```
+Step  Component                            Action              Time
+────  ────────────────────────────────     ───────────────     ──────
+  1   Client sends query string            libpq / pg driver    0ms
+  2   PostgreSQL receives on port 5432     Postmaster process   0.1ms
+  3   Fork or assign backend process       Postmaster: fork()   1-5ms
+  4   Parse: SQL text → parse tree         Parser (gram.y)     0.1-1ms
+  5   Analyze: parse tree → query tree     Analyzer             0.05ms
+  6   Rewrite: rules + views expansion     Rewriter             0.05ms
+  7   Plan: query tree → plan tree         Planner (optimizer)  1-50ms
+      ├── Scan method selection (seq scan vs index scan)
+      ├── Join order (nested loop / hash / merge)
+      └── Cost estimation via pg_class + pg_stats
+  8   Execute: plan tree → tuples          Executor             1-1000ms
+      ├── ExecInitNode (open files, pin buffers)
+      ├── ExecProcNode (fetch tuples)
+      ├── Buffer Manager (page cache lookup)
+      └── Storage Engine (heap/index read)
+  9   Return tuples to client              DestReceiver         0.1ms
+```
+
+```mermaid
+sequenceDiagram
+    participant C as Client
+    participant P as Postmaster
+    participant B as Backend
+    participant Pa as Parser
+    participant Pl as Planner
+    participant E as Executor
+    participant S as Storage
+
+    C->>P: connect (port 5432)
+    P->>B: fork backend process
+    C->>B: SELECT * FROM orders WHERE user_id=42
+    B->>Pa: PARSE: SQL → Parse Tree
+    Pa-->>B: parse tree
+    B->>Pl: ANALYZE + REWRITE + PLAN
+    Pl->>Pl: cost-based optimization
+    Pl-->>B: plan tree (IndexScan on orders_user_idx)
+    B->>E: Execute plan
+    E->>S: Buffer Manager: read page 423
+    S-->>E: page (cache hit)
+    E-->>B: 3 tuples
+    B-->>C: result set
+```

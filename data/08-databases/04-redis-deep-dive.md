@@ -522,3 +522,12 @@ flowchart LR
 - **Detection**: `CLUSTER INFO` shows `cluster_state:fail`. `cluster_known_nodes` missing.
 - **Recovery**: 1) `CLUSTER FAILOVER TAKEOVER` on replicas. 2) Re-add failed nodes. 3) Ensure slot coverage.
 - **Prevention**: Set `cluster-node-timeout` appropriately. Use 3+ nodes in different AZs.
+
+## Related
+
+- [Cap Consistency](09-distributed-systems/01-cap-consistency.md)
+- [Consensus Replication](09-distributed-systems/01-consensus-replication.md)
+- [Consensus Raft](09-distributed-systems/02-consensus-raft.md)
+- [Distributed Transactions](09-distributed-systems/02-distributed-transactions.md)
+- [Distributed Caching](09-distributed-systems/03-distributed-caching.md)
+- [Distributed Storage](09-distributed-systems/03-distributed-storage.md)

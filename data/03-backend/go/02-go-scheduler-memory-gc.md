@@ -2040,3 +2040,12 @@ Use OpenTelemetry Go SDK. Propagate trace context through `context.Context` acro
 - **Detection**: Heap profile shows unexpected large retained objects.
 - **Recovery**: 1) Take heap profile. 2) Restart periodically. 3) Use `strings.Clone()`.
 - **Prevention**: Use `strings.Clone()` before keeping substrings. Use `bytes.Clone()` for byte slices.
+
+## Related
+
+- [Profiling Deep Dive](18-performance-engineering/profiling/01-profiling-deep-dive.md)
+- [Linux Kernel Architecture](12-operating-systems/01-linux-kernel-architecture.md)
+- [Cpu Scheduling](12-operating-systems/02-cpu-scheduling.md)
+- [Linux Process Memory](12-operating-systems/02-linux-process-memory.md)
+- [Linux Io Storage](12-operating-systems/03-linux-io-storage.md)
+- [Memory Management](12-operating-systems/03-memory-management.md)

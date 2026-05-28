@@ -947,3 +947,12 @@ SRE = Fleet Manager
 ---
 
 **Next**: [System Design](../15-system-design/README.md) · [Performance Engineering](../18-performance-engineering/README.md)
+
+## Related
+
+- [Readme](18-performance-engineering/README.md)
+- [Jvm Performance](18-performance-engineering/jvm-tuning/01-jvm-performance.md)
+- [Optimization Patterns](18-performance-engineering/optimization/01-optimization-patterns.md)
+- [Profiling Deep Dive](18-performance-engineering/profiling/01-profiling-deep-dive.md)
+- [Kubernetes Basics](07-kubernetes/01-kubernetes-basics.md)
+- [Advanced K8S](07-kubernetes/02-advanced-k8s.md)

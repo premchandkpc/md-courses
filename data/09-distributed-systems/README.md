@@ -412,3 +412,12 @@ Ensures database writes and message sending are atomic (both happen or both don'
 | [08 — Databases](../08-databases/) | Distributed SQL databases are the practical application of consensus and replication |
 | [10 — Messaging](../10-messaging/) | Kafka's distributed log is a replicated state machine; message ordering, partitioning |
 | [11 — Networking](../11-networking/) | Network partitions, latency, timeout detection are fundamental to distributed system behavior |
+
+## Related
+
+- [Postgresql Internals](08-databases/01-postgresql-internals.md)
+- [Relational Database Internals](08-databases/01-relational-database-internals.md)
+- [Postgresql Architecture](08-databases/02-postgresql-architecture.md)
+- [Redis Internals](08-databases/02-redis-internals.md)
+- [Postgresql Troubleshooting Tuning](08-databases/03-postgresql-troubleshooting-tuning.md)
+- [Redis Deep Dive](08-databases/04-redis-deep-dive.md)

@@ -2783,3 +2783,12 @@ class LeakyService {
 > **Last Updated**: May 2026  
 > **JDK Versions Covered**: 21 (LTS), 22, 23  
 > **Next LTS After 21**: Java 25 (Sept 2025)
+
+## Related
+
+- [Jvm Performance](18-performance-engineering/jvm-tuning/01-jvm-performance.md)
+- [Cap Consistency](09-distributed-systems/01-cap-consistency.md)
+- [Consensus Replication](09-distributed-systems/01-consensus-replication.md)
+- [Consensus Raft](09-distributed-systems/02-consensus-raft.md)
+- [Distributed Transactions](09-distributed-systems/02-distributed-transactions.md)
+- [Distributed Caching](09-distributed-systems/03-distributed-caching.md)

@@ -1367,3 +1367,12 @@ Infrastructure (estimated):
 **GitHub is like a massive library (100M+ books/repos) where every book has a complete edit history, every page, every crossed-out word, every revision is preserved (git objects as pack files).** Instead of checking out entire books, you just get the pages you need (shallow clone) or fetch pages as you turn them (partial clone). Pull requests are like suggesting edits to a book — the editor sees exactly what changed, discusses it line-by-line (code review comments), and can accept or reject (merge or close). GitHub Actions is a workshop attached to the library: whenever someone suggests a change (push), the workshop automatically runs tests, builds, and deploys (CI/CD pipeline). The search system is like having a tiny librarian inside every book who can instantly find any function name or variable across 100 million books (Elasticsearch code index). Forks are photocopies of a book that stay linked to the original, so when the original gets a new chapter, your copy knows about it (git alternates, object sharing).
 
 (End of file - total 787 lines)
+
+## Related
+
+- [Cap Consistency](09-distributed-systems/01-cap-consistency.md)
+- [Consensus Replication](09-distributed-systems/01-consensus-replication.md)
+- [Consensus Raft](09-distributed-systems/02-consensus-raft.md)
+- [Distributed Transactions](09-distributed-systems/02-distributed-transactions.md)
+- [Distributed Caching](09-distributed-systems/03-distributed-caching.md)
+- [Distributed Storage](09-distributed-systems/03-distributed-storage.md)

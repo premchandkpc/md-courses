@@ -1347,3 +1347,12 @@ Cache bandwidth (per core):
 
 
 > **Memory management is like a hotel. Virtual memory is the room numbers (addresses) that every guest believes is their own suite. The MMU is the front desk clerk who translates room numbers to actual rooms. The page table is the registration book. The buddy allocator is the housekeeping that groups small rooms into conference halls (big pages). Swap is the storage closet—when the hotel fills up, luggage goes to the closet (disk) and comes back when space opens. The OOM killer is the bouncer who kicks out the loudest guest when the hotel is totally full. Slab/SLUB is the drawer organizer at the front desk — tiny objects (pens, forms) are kept pre-organized. Everything is about giving each process the illusion of owning the whole hotel while actually sharing the real rooms efficiently.**
+
+## Related
+
+- [Tcp Ip Deep Dive](11-networking/01-tcp-ip-deep-dive.md)
+- [Tcpip Protocol Stack](11-networking/01-tcpip-protocol-stack.md)
+- [Http Protocols](11-networking/02-http-protocols.md)
+- [Tls Http Grpc](11-networking/02-tls-http-grpc.md)
+- [Dns Cdn Loadbalancing](11-networking/03-dns-cdn-loadbalancing.md)
+- [Readme](11-networking/README.md)

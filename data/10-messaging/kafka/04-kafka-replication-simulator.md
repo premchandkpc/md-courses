@@ -732,3 +732,12 @@ while running:
 **Timing model:** Each fetch/replicate operation takes simulated network latency (1-5ms configurable). Failure detection is configurable. Use discrete event simulation or fixed time-step.
 
 **Key edge to implement:** When a new leader is elected and a former leader comes back, the former leader truncates its log to the new leader's HW.
+
+## Related
+
+- [Cap Consistency](/09-distributed-systems/01-cap-consistency.md)
+- [Consensus Replication](/09-distributed-systems/01-consensus-replication.md)
+- [Consensus Raft](/09-distributed-systems/02-consensus-raft.md)
+- [Distributed Transactions](/09-distributed-systems/02-distributed-transactions.md)
+- [Distributed Caching](/09-distributed-systems/03-distributed-caching.md)
+- [Distributed Storage](/09-distributed-systems/03-distributed-storage.md)

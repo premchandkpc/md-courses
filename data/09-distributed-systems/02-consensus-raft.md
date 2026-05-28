@@ -759,3 +759,12 @@ Recovery via AppendEntries consistency check:
 ## Simplest Mental Model
 
 **Raft is a group of servers that stay in sync by having one leader that makes all decisions.** When the leader fails, the group picks a new one via a random timeout "election." The leader keeps a log of commands; followers copy it. Most servers must agree before a command is "committed." This simple three-state machine (leader-follower-candidate) with one clear leader at a time makes the whole consensus problem look like reliable log replication instead of abstract math.
+
+## Related
+
+- [Postgresql Internals](08-databases/01-postgresql-internals.md)
+- [Relational Database Internals](08-databases/01-relational-database-internals.md)
+- [Postgresql Architecture](08-databases/02-postgresql-architecture.md)
+- [Redis Internals](08-databases/02-redis-internals.md)
+- [Postgresql Troubleshooting Tuning](08-databases/03-postgresql-troubleshooting-tuning.md)
+- [Redis Deep Dive](08-databases/04-redis-deep-dive.md)

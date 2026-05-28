@@ -2280,3 +2280,12 @@ Real numbers:
 ---
 
 **This document covers 850+ lines of deep testing fundamentals. Next: E2E, contract, and chaos testing strategies.**
+
+## Related
+
+- [Infrastructure As Code](06-devops/01-infrastructure-as-code.md)
+- [Configuration Management](06-devops/02-configuration-management.md)
+- [Devops Sre Practices](06-devops/03-devops-sre-practices.md)
+- [Terraform Infrastructure As Code Config Management](06-devops/03-terraform-infrastructure-as-code-config-management.md)
+- [Readme](06-devops/README.md)
+- [Github Actions Gitlab Ci Pipeline Design](06-devops/ci-cd/01-github-actions-gitlab-ci-pipeline-design.md)

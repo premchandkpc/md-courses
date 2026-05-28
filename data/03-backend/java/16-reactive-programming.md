@@ -517,3 +517,12 @@ client.get()
 - [Distributed Transactions](../../09-distributed-systems/02-distributed-transactions.md) — Reactive Sagas, WebClient for compensation
 - [Kubernetes Observability](../../07-kubernetes/06-kubernetes-observability.md) — Reactive metrics with Micrometer, tracing with Brave
 - [Microservices Security](../../16-microservices/08-security-identity.md) — Reactive security context propagation, JWT validation in reactive pipeline
+
+## Related
+
+- [Jvm Performance](18-performance-engineering/jvm-tuning/01-jvm-performance.md)
+- [Cap Consistency](09-distributed-systems/01-cap-consistency.md)
+- [Consensus Replication](09-distributed-systems/01-consensus-replication.md)
+- [Consensus Raft](09-distributed-systems/02-consensus-raft.md)
+- [Distributed Transactions](09-distributed-systems/02-distributed-transactions.md)
+- [Distributed Caching](09-distributed-systems/03-distributed-caching.md)

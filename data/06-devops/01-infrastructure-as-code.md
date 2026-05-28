@@ -2358,3 +2358,11 @@ Infrastructure as Code — PRD Checklist
 
 **Answer**: **State drift + missing lifecycle block**. Scenario: someone renamed a resource (e.g., `aws_db_instance.prod` → `aws_db_instance.prod_v2`) in code but didn't `terraform state mv`. Terraform sees "old name is gone, new name is added" = delete old + create new. Or: state was refreshed and picked up a change that triggered replacement. Also: **for_each key change** — if you change the key in a `for_each` map, Terraform destroys the old resource and creates a new one. Fix: 1) Always use `lifecycle { prevent_destroy = true }` on production databases. 2) Before refactoring, `terraform state mv` to rename resources. 3) Run `terraform plan` with `-refresh-only` to detect drift before making changes. 4) Enable `-destroy` flag in CI only for explicit destroy pipelines.
 
+## Related
+
+- [Kubernetes Basics](07-kubernetes/01-kubernetes-basics.md)
+- [Advanced K8S](07-kubernetes/02-advanced-k8s.md)
+- [Kubernetes Networking](07-kubernetes/03-kubernetes-networking.md)
+- [Kubernetes Security](07-kubernetes/04-kubernetes-security.md)
+- [Kubernetes Storage](07-kubernetes/05-kubernetes-storage.md)
+- [Kubernetes Observability](07-kubernetes/06-kubernetes-observability.md)

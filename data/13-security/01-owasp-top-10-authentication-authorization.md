@@ -2418,3 +2418,79 @@ Attacker uses forged token to:
 - [Kubernetes](../../07-kubernetes/) — Pod security, RBAC
 - [Backend](../../03-backend/) — Input validation, auth
 - [Databases](../../08-databases/) — Encryption, access control
+
+## Deep Internals: OAuth 2.0 + OIDC Flow
+
+### The Authorization Code Flow (PKCE)
+
+```mermaid
+sequenceDiagram
+    participant B as Browser
+    participant A as App (Frontend)
+    participant S as App (Backend)
+    participant P as Auth Provider
+    participant R as Resource Server
+
+    B->>A: Click "Login with Google"
+    A->>A: Generate code_verifier (random 128 bytes)
+    A->>A: code_challenge = SHA256(code_verifier)
+    A->>P: ?response_type=code&client_id=xxx&redirect_uri=yyy
+    Note over B,P: User logs in, consents
+    P-->>B: Redirect to redirect_uri?code=AUTH_CODE
+    B->>A: Auth code received
+    A->>S: POST /auth/callback { code, code_verifier }
+    S->>P: POST /token { grant_type=authorization_code, code, code_verifier, client_secret }
+    Note over S,P: Server verifies PKCE (SHA256(verifier) == challenge?)
+    P-->>S: { access_token, refresh_token, id_token }
+    S->>S: Verify id_token (JWT signature)
+    S->>S: Extract user info from id_token claims
+    S-->>A: { session_cookie }
+    A-->>B: Dashboard 🎉
+```
+
+### Token Types
+
+| Token | Format | Purpose | Lifetime |
+|---|---|---|---|
+| **Authorization Code** | Opaque string (no meaning) | One-time exchange for tokens | 5-10 minutes |
+| **Access Token** | JWT (JSON Web Token) | Authorize API calls (Bearer header) | 15-60 minutes |
+| **Refresh Token** | Opaque or JWT | Get new access tokens | Days-weeks |
+| **ID Token** (OIDC) | JWT | User identity (email, name, sub) | Hours |
+| **Client Credentials** | JWT | Machine-to-machine auth | Configurable |
+
+### JWT Structure
+
+```
+Header:     {"alg": "RS256", "kid": "abc123", "typ": "JWT"}
+Payload:    {
+              "sub": "user_42",
+              "iss": "https://auth.example.com",
+              "aud": "my-api",
+              "exp": 1718000000,
+              "iat": 1717996400,
+              "scope": "openid profile email orders:read"
+            }
+Signature:  RSASHA256(base64(header) + "." + base64(payload), private_key)
+```
+
+### OAuth Grant Types
+
+| Grant Type | Use Case | Security Level |
+|---|---|---|
+| **Authorization Code + PKCE** | Public clients (SPA, mobile) | 🔒🔒🔒 |
+| **Authorization Code** | Confidential clients (backend) | 🔒🔒🔒 |
+| **Client Credentials** | Service-to-service | 🔒🔒 |
+| **Resource Owner Password** | Legacy (deprecated) | 🔒 |
+| **Device Code** | Input-constrained devices (TV, CLI) | 🔒🔒 |
+| **Refresh Token** | Long-lived sessions | 🔒🔒 (rotate on use) |
+
+### Common Attacks & Mitigations
+
+| Attack | How | Mitigation |
+|---|---|---|
+| **CSRF** | Attacker initiates flow, intercepts callback | `state` parameter + PKCE |
+| **Code Interception** | Malicious app receives auth code | PKCE (only original app has verifier) |
+| **Token Theft** | XSS steals access token | HttpOnly cookies, short token lifetime |
+| **Replay** | Reuse captured token | `nonce`, `jti`, short exp |
+| **Mix-Up** | Attacker swaps authorization server | `iss` validation in id_token |
+| **SSRF via redirect_uri** | Open redirector | Strict redirect_uri allowlist |

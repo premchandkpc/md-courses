@@ -1552,3 +1552,12 @@ async def test_async_performance():
 - **Detection**: CPU profile shows `pydantic.main.BaseModel.__init__` at top. Request duration correlates with body size.
 - **Recovery**: 1) Use `orm_mode` to skip validation on DB reads. 2) Cache validated models. 3) Switch to Pydantic v2 (5-10x faster).
 - **Prevention**: Use Pydantic v2 which has Rust-based validation. Use `model_validate()` instead of `model_validate()` on cached data. Limit request body size. Use fast streaming validators for large payloads.
+
+## Related
+
+- [Readme](02-data-engineering/README.md)
+- [Data Governance](02-data-engineering/data-quality-governance/01-data-governance.md)
+- [Airflow Dagster](02-data-engineering/orchestration/01-airflow-dagster.md)
+- [Apache Spark](02-data-engineering/processing/01-apache-spark.md)
+- [Apache Flink](02-data-engineering/processing/02-apache-flink.md)
+- [Columnar Storage](02-data-engineering/storage-formats/01-columnar-storage.md)

@@ -1016,3 +1016,12 @@ The best LLD is boring. It's obvious, predictable, and unsurprising.
 ---
 
 **Next**: [Software Engineering](../25-software-engineering/README.md) · [Design Patterns](../data/designpatterns.md)
+
+## Related
+
+- [Transformation Summary](03-backend/java/00-TRANSFORMATION-SUMMARY.md)
+- [Oop Concepts](03-backend/java/01-oop-concepts.md)
+- [Collections Framework](03-backend/java/02-collections-framework.md)
+- [Exception Handling](03-backend/java/03-exception-handling.md)
+- [Multithreading](03-backend/java/04-multithreading.md)
+- [Jvm Architecture](03-backend/java/05-jvm-architecture.md)

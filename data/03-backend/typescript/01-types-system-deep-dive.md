@@ -1949,3 +1949,12 @@ TypeScript type system:
 5. **Staff** — Type-driven API design, domain modeling with types
 
 **Next:** Enable `--strict` in tsconfig.json and fix type errors in your codebase.
+
+## Related
+
+- [Readme](04-frontend/README.md)
+- [Components Jsx](04-frontend/react/01-components-jsx.md)
+- [Hooks State](04-frontend/react/02-hooks-state.md)
+- [Rendering Performance](04-frontend/react/03-rendering-performance.md)
+- [State Management](04-frontend/react/04-state-management.md)
+- [Routing Data Fetching](04-frontend/react/05-routing-data-fetching.md)

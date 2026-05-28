@@ -746,3 +746,12 @@ thread apply all bt      # backtrace for all threads
 > - **valgrind** = a quality inspector who shadows one worker, tracking every piece of paper they pick up (malloc) and put down (free), flagging if they forget to return anything or write in someone else's drawer.
 > - **coredump** = a photograph of the accident scene — exactly what each worker was doing, what they were holding, and where they were standing when the crash happened.
 > - **sar/iostat** = the factory's daily logbook. Every 10 minutes it records temperature, output, queue lengths. You look back to find when things started going wrong.
+
+## Related
+
+- [Tcp Ip Deep Dive](11-networking/01-tcp-ip-deep-dive.md)
+- [Tcpip Protocol Stack](11-networking/01-tcpip-protocol-stack.md)
+- [Http Protocols](11-networking/02-http-protocols.md)
+- [Tls Http Grpc](11-networking/02-tls-http-grpc.md)
+- [Dns Cdn Loadbalancing](11-networking/03-dns-cdn-loadbalancing.md)
+- [Readme](11-networking/README.md)

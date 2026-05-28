@@ -893,3 +893,12 @@ Need a Map?
 - Collections.synchronizedMap() → Use ConcurrentHashMap
 
 **Key Insight:** Pick by access pattern (random? ordered? priority?), then by thread safety (none? read-heavy? high-contention?). Performance falls out naturally.
+
+## Related
+
+- [Jvm Performance](18-performance-engineering/jvm-tuning/01-jvm-performance.md)
+- [Cap Consistency](09-distributed-systems/01-cap-consistency.md)
+- [Consensus Replication](09-distributed-systems/01-consensus-replication.md)
+- [Consensus Raft](09-distributed-systems/02-consensus-raft.md)
+- [Distributed Transactions](09-distributed-systems/02-distributed-transactions.md)
+- [Distributed Caching](09-distributed-systems/03-distributed-caching.md)

@@ -1417,3 +1417,12 @@ Infrastructure:
 **Google Search is like the world's most thorough librarian with three jobs: one librarian constantly runs around discovering every book ever written (Crawler), another meticulously creates a cross-reference card catalog where every word maps to every book page containing it (Inverted Index), and a third reads your question and instantly finds the right cards in the catalog (Query Service + Index Servers).** The ranking system is like having 200 experts vote on which books are most important: PageRank counts how many other books cite each book (like academic citations), RankBrain understands that when you say "car" you might also like books mentioning "automobile" (word embeddings), and BERT understands that "from" and "to" are not the same (preposition awareness). The whole system runs on a custom-built library with 20+ branch locations worldwide (data centers), where each branch has a copy of the most popular books (index shards), so no matter which branch you walk into, you get your answer in under 200ms — faster than you can snap your fingers.
 
 (End of file - total 779 lines)
+
+## Related
+
+- [Cap Consistency](09-distributed-systems/01-cap-consistency.md)
+- [Consensus Replication](09-distributed-systems/01-consensus-replication.md)
+- [Consensus Raft](09-distributed-systems/02-consensus-raft.md)
+- [Distributed Transactions](09-distributed-systems/02-distributed-transactions.md)
+- [Distributed Caching](09-distributed-systems/03-distributed-caching.md)
+- [Distributed Storage](09-distributed-systems/03-distributed-storage.md)

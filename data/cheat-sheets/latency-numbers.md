@@ -505,3 +505,12 @@ mtr -r example.com
 
 
 **Answer**: (1) Check if the spike correlates with a deployment, traffic increase, or external dependency. (2) Use percentiles breakout by service — is the spike global or isolated to one endpoint? (3) Check slowest traces — is it a specific DB query, an external API, or GC pause? (4) Check resource saturation: CPU, memory, disk I/O, network bandwidth, connection pool utilization. (5) Check for lock contention: database row locks, distributed locks, mutexes. (6) Check for GC: if Java, get GC logs; if Go, check GC pause times. (7) Look for the "slow one" in a pool — sometimes one slightly degraded node causes coordinated omission for the entire pool. (8) Check for TLS — a certificate rotation causing re-handshake. (9) Use coordinated omission-aware analysis: the spike may have been queueing, not slow processing. (10) If nothing else, CPU profiling (flame graphs) during the spike often reveals the cause.
+
+## Related
+
+- [Readme](18-performance-engineering/README.md)
+- [Jvm Performance](18-performance-engineering/jvm-tuning/01-jvm-performance.md)
+- [Optimization Patterns](18-performance-engineering/optimization/01-optimization-patterns.md)
+- [Profiling Deep Dive](18-performance-engineering/profiling/01-profiling-deep-dive.md)
+- [Readme](03-backend/README.md)
+- [Goroutines Channels Concurrency](03-backend/go/01-goroutines-channels-concurrency.md)

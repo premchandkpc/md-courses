@@ -842,3 +842,12 @@ Use OpenTelemetry Python SDK. Auto-instrument popular frameworks (Flask, FastAPI
 - **Detection**: `asyncio.all_tasks()` count growing. Warning logs: "Task was destroyed but it is pending". Event loop may be blocked.
 - **Recovery**: 1) Cancel leaked tasks: `asyncio.gather(*asyncio.all_tasks(), return_exceptions=True)`. 2) Restart.
 - **Prevention**: Track created tasks in a set and ensure completion. Use `TaskGroup` (Python 3.11+). Always `await` or `task.cancel()`. Add task count monitoring.
+
+## Related
+
+- [Readme](02-data-engineering/README.md)
+- [Data Governance](02-data-engineering/data-quality-governance/01-data-governance.md)
+- [Airflow Dagster](02-data-engineering/orchestration/01-airflow-dagster.md)
+- [Apache Spark](02-data-engineering/processing/01-apache-spark.md)
+- [Apache Flink](02-data-engineering/processing/02-apache-flink.md)
+- [Columnar Storage](02-data-engineering/storage-formats/01-columnar-storage.md)

@@ -1525,3 +1525,12 @@ OpenSSL speed comparison:
 
 
 > **TLS is a secure box that two parties build in plain sight. The handshake is: "Here's my lockbox half (public key), here's yours — now together we have a shared key that only we know." Everyone can see the boxes being built, but can't open them. HTTP/1.1 is a fax machine — you send one page, wait for the response, send the next. HTTP/2 is a single wire with multiple conversations (streams) — like a group chat where each person has their own color text — but if the wire breaks, everyone waits. HTTP/3/QUIC is multiple wires (UDP packets) each with their own conversation color — if one breaks, only that conversation is affected. gRPC + Protobuf is like FedEx with pre-labeled packages — you define exactly what goes in each package (protobuf schema), and FedEx (gRPC) handles packaging, addressing, tracking, retries, and delivery confirmations automatically. The whole stack is a series of layers: each layer trusts the layer below and simplifies complexity for the layer above.**
+
+## Related
+
+- [Linux Kernel Architecture](12-operating-systems/01-linux-kernel-architecture.md)
+- [Cpu Scheduling](12-operating-systems/02-cpu-scheduling.md)
+- [Linux Process Memory](12-operating-systems/02-linux-process-memory.md)
+- [Linux Io Storage](12-operating-systems/03-linux-io-storage.md)
+- [Memory Management](12-operating-systems/03-memory-management.md)
+- [Io Models](12-operating-systems/04-io-models.md)

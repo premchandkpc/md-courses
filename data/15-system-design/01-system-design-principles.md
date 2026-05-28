@@ -696,3 +696,12 @@ Edge Computing:
 > - **CQRS** = Separate order-taking (writes) from menu display (reads). Different systems optimized for each.
 > - **Event Sourcing** = Keep the complete receipt tape. Any state can be reconstructed by replaying all transactions from day one.
 > - **SAGA** = A multi-step order with compensating actions: if dessert fails, the main course order is automatically refunded.
+
+## Related
+
+- [Cap Consistency](09-distributed-systems/01-cap-consistency.md)
+- [Consensus Replication](09-distributed-systems/01-consensus-replication.md)
+- [Consensus Raft](09-distributed-systems/02-consensus-raft.md)
+- [Distributed Transactions](09-distributed-systems/02-distributed-transactions.md)
+- [Distributed Caching](09-distributed-systems/03-distributed-caching.md)
+- [Distributed Storage](09-distributed-systems/03-distributed-storage.md)

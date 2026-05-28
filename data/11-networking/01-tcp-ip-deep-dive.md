@@ -1445,3 +1445,157 @@ To exceed single-core throughput:
 | **Reno** | AIMD (additive inc, multiplicative dec) | Fair | Low | Moderate |
 | **NewReno** | Reno + partial ACK handling | Fair | Low-Moderate | Moderate |
 | **Westwood** | Bandwidth estimation | Good | High (wireless) | Moderate |
+
+## Related
+
+- [Linux Kernel Architecture](12-operating-systems/01-linux-kernel-architecture.md)
+- [Cpu Scheduling](12-operating-systems/02-cpu-scheduling.md)
+- [Linux Process Memory](12-operating-systems/02-linux-process-memory.md)
+- [Linux Io Storage](12-operating-systems/03-linux-io-storage.md)
+- [Memory Management](12-operating-systems/03-memory-management.md)
+- [Io Models](12-operating-systems/04-io-models.md)
+
+## Debugging Walkthrough: tcpdump Packet Capture
+
+### Scenario: HTTP requests to service timeout intermittently — 1 in 100 takes 30s+.
+
+```bash
+# Step 1: Capture traffic to the service (port 8080)
+$ sudo tcpdump -i eth0 -s 0 -w capture.pcap port 8080
+
+# Step 2: Analyze with tshark
+$ tshark -r capture.pcap -Y "tcp.analysis.retransmission"
+# Count retransmissions
+$ tshark -r capture.pcap -Y "tcp.analysis.retransmission" | wc -l
+# → 342 retransmissions in 5 minutes!
+
+# Step 3: Find connections with retransmissions
+$ tshark -r capture.pcap -Y "tcp.analysis.retransmission" -T fields -e tcp.stream
+# → Stream 42 has 89 retransmissions
+
+# Step 4: Zoom into that stream
+$ tshark -r capture.pcap -T fields -e frame.time_relative   -e tcp.srcport -e tcp.dstport -e tcp.seq -e tcp.ack   -e tcp.flags -e tcp.analysis.retransmission   -Y "tcp.stream eq 42"
+```
+
+### Analysis of Stream 42
+
+```
+Time     Src:Port  Dst:Port  Seq     Ack     Flags      Retransmit
+0.000    52001 →   8080      1000    0       SYN        
+0.001    8080 →    52001     0       1001    SYN+ACK    
+0.001    52001 →   8080      1001    1       ACK         ← Handshake done
+0.010    52001 →   8080      1001    1       PUSH+ACK   ← HTTP request
+0.011    8080 →    52001     1       1501    ACK        
+30.012   52001 →   8080      1001    1       PUSH+ACK   ← RETRANSMISSION ❌
+30.013   8080 →    52001     1       1501    ACK         ← Response finally
+```
+
+### Root Cause
+
+| Signal | Meaning |
+|---|---|
+| No server-side ACK for 30s | Server didn't read from socket |
+| Retransmit at 30s = 1st timeout | Default TCP retransmission timeout |
+| Response comes immediately after retransmit | Server finally processed → socket buffer was full |
+| Connection count to this server | Application ran out of worker threads |
+
+### Fix
+
+1. **Application**: Increase worker thread pool (100 → 500)
+2. **TCP**: Reduce `tcp_retries2` for faster failure detection
+3. **Load balancer**: Add connection queue with timeout
+4. **Monitoring**: Alert on connection queue depth > 90%
+
+```bash
+# Check current TCP settings
+$ sysctl net.ipv4.tcp_retries2        # Default: 15 (≈900s)
+$ sysctl net.ipv4.tcp_syn_retries     # Default: 6
+
+# Tune for faster detection
+$ sudo sysctl -w net.ipv4.tcp_retries2=5   # ≈30s timeout
+```
+
+## Deep Internals: QUIC Protocol (HTTP/3)
+
+### Why QUIC?
+TCP + TLS → 2-3 round trips before data flows. QUIC = 0-RTT connection + encryption + multiplexing.
+
+```
+QUIC vs TCP+TLS
+                TCP+TLS                     QUIC (HTTP/3)
+                ───────                     ────────────
+                TCP Handshake (1 RTT)        QUIC Handshake (0-1 RTT)
+                TLS 1.3 Handshake (1 RTT)   (Crypto built-in)
+                ─────────────────────        ───────────────────
+                Total: 2-3 RTT              Total: 0-1 RTT
+                Head-of-line blocking        No HOL blocking
+                Kernel-space                 User-space
+```
+
+### QUIC Packet Structure
+
+```
+QUIC Packet
+├── Long/Short Header (1 byte)
+│   ├── Long: Connection ID, Version, Length
+│   └── Short: Connection ID only (after handshake)
+├── Protected Payload
+│   ├── Frame Type (variable-length)
+│   ├── Stream ID (variable-length)
+│   ├── Offset (variable-length)
+│   ├── Data
+│   └── Authentication Tag (AEAD)
+```
+
+### Key Innovations
+
+| Feature | TCP | QUIC |
+|---|---|---|
+| **Handshake** | TCP (kernel) + TLS (user) | Combined handshake (user-space) |
+| **0-RTT** | ❌ | ✅ Resumption with early data |
+| **Multiplexing** | Head-of-line blocking (lost packet blocks all streams) | Independent streams (lost packet blocks only its stream) |
+| **Connection Migration** | ❌ (breaks on IP change) | ✅ Connection ID (survives IP/port changes) |
+| **Loss Detection** | RTO, dup-ACK (kernel) | Packet number + gap-based (user-space) |
+| **Encryption** | Separate TLS layer | Built-in (header + payload encryption) |
+| **Implementation** | Kernel (hard to update) | User-space (easy to update via library) |
+
+### Connection Migration Flow
+
+```mermaid
+sequenceDiagram
+    participant C as Client (WiFi)
+    participant Q as QUIC Connection
+    participant S as Server
+
+    C->>Q: Initial connection (WiFi IP: 10.0.0.5)
+    Q->>S: QUIC Handshake (CID: ABC123)
+    S-->>C: Connection established
+    Note over C,S: Client switches from WiFi to Cellular
+    C->>Q: New path (Cellular IP: 100.1.2.3)
+    Note over Q: Client reuses same Connection ID
+    Q->>S: Packet with CID: ABC123 (new source IP)
+    S-->>Q: Validate + continue (no re-handshake!)
+    Note over C,S: Connection survives without interruption
+```
+
+### QUIC Loss Detection
+
+```
+Packet 1: Sent at T=0
+Packet 2: Sent at T=10ms
+Packet 3: Sent at T=20ms
+Packet 4: Sent at T=30ms
+
+        At T=50ms: ACK received for packets 1, 2, 4
+        Gap: packet 3 missing → trigger fast retransmit
+        NO head-of-line blocking: streams 1,2,4 continue
+```
+
+### Use Cases
+| Use Case | Why QUIC |
+|---|---|
+| **Video streaming** | No HOL blocking → smoother playback |
+| **Mobile apps** | Connection migration (WiFi → Cellular) |
+| **Game networking** | Low-latency, fast reconnect |
+| **IoT** | 0-RTT for frequent reconnect |
+| **Ad serving** | Every ms of latency costs revenue |

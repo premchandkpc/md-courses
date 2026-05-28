@@ -463,3 +463,12 @@ for i in $(seq 1 120); do curl -s -o /dev/null -w "%{http_code}\n" https://api.e
 
 
 **Answer**: **1-to-1 chat**: WebSocket connections from clients to a Gateway layer (Elastic Load Balancer routing by user hash). Gateway maintains a connection map (user_id → connection_id). Messages go through a Chat Service that writes to a message DB (Cassandra, keyed by conversation_id + message_id) and checks the Presence Service to see if receiver is online. If online, push via Gateway. If offline, send push notification. **Group chat**: For groups < 256 members, use write fanout — write one message to the group's timeline, then copy to each online member's inbox. For groups > 256, use read fanout — write once to group timeline, members pull (track last_read_id). **Presence**: Redis with heartbeat — each user sets a key with TTL, PUB/SUB notifies friends of status changes. **Ordering**: Use HLC (Hybrid Logical Clock) for causal ordering without vector clocks. **Scaling**: Each component horizontally scales. Gateway is stateless. Chat Service partitions by conversation hash. Message DB uses Cassandra (time-series model). Inbox is Redis sorted sets per user. **Delivery guarantees**: At-least-once with idempotency keys (message UUID). Gap detection: receiver tracks last_message_id and requests missing ones.
+
+## Related
+
+- [Cap Consistency](09-distributed-systems/01-cap-consistency.md)
+- [Consensus Replication](09-distributed-systems/01-consensus-replication.md)
+- [Consensus Raft](09-distributed-systems/02-consensus-raft.md)
+- [Distributed Transactions](09-distributed-systems/02-distributed-transactions.md)
+- [Distributed Caching](09-distributed-systems/03-distributed-caching.md)
+- [Distributed Storage](09-distributed-systems/03-distributed-storage.md)

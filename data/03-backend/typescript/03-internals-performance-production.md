@@ -2067,3 +2067,12 @@ Use OpenTelemetry JS SDK with auto-instrumentation. Propagate context through `A
 - **Detection**: Security scan finds `/static/js/*.map` accessible publicly.
 - **Recovery**: 1) Remove `.map` files from production. 2) Rotate any exposed secrets.
 - **Prevention**: Use `hidden-source-map` in webpack (sentry integration without public exposure). Exclude `.map` in deploy scripts.
+
+## Related
+
+- [Readme](04-frontend/README.md)
+- [Components Jsx](04-frontend/react/01-components-jsx.md)
+- [Hooks State](04-frontend/react/02-hooks-state.md)
+- [Rendering Performance](04-frontend/react/03-rendering-performance.md)
+- [State Management](04-frontend/react/04-state-management.md)
+- [Routing Data Fetching](04-frontend/react/05-routing-data-fetching.md)

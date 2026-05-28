@@ -843,3 +843,56 @@ Kafka is a COMMITTED LOG — like a database WAL, shared across services.
 ## Practical Example
 
 See code examples above for practical usage patterns.
+
+## Runtime Flow: Kafka Produce → Broker → Consume
+
+```
+Step  Producer Side                        Component           Time
+────  ────────────────────────────────      ───────────────     ──────
+  1   Producer creates ProducerRecord       Kafka Client         0ms
+  2   Serialize key + value (Avro/JSON)     Serializer           0.1ms
+  3   Partition: hash(key) % numPartitions  Partitioner          0.01ms
+  4   Check metadata cache for leader       Metadata Cache       0.1ms
+  5   Acquire buffer in RecordAccumulator   Buffer Pool          0.01ms
+  6   Batch with other records (linger.ms)  Sender Thread        ~10ms
+  7   Sender picks batch, creates ProduceRequest   Network Layer  0.1ms
+  8   Send request to partition leader      TCP (Kafka protocol)  1-5ms
+
+Broker Side
+  9   Acceptor thread accepts connection    Kafka Network        0.01ms
+ 10   Processor thread parses request       Request Channel      0.1ms
+ 11   API handler (kafka.api.Produce)       API Layer            0.01ms
+ 12   Append to partition log segment       Log (page cache)      0.1ms
+ 13   fsync to disk (if acks=all)           OS Page Cache → Disk  1-10ms
+ 14   Create follower fetch requests        Replica Fetcher      async
+ 15   Send response to producer             Network Layer         0.1ms
+
+Consumer Side
+ 16   Consumer polls (while true)           KafkaConsumer         0ms
+ 17   Fetch request to partition leader     Fetcher              0.1ms
+ 18   Read from log (page cache hit)        Log Segments         0.05ms
+ 19   Deserialize records                   Deserializer         0.1ms
+ 20   Process records in callback           Application          2-50ms
+ 21   Commit offset (auto or manual)        Offset Committer     0.5ms
+ 22   Consumer rebalance if partitions change   GroupCoordinator  10-100ms
+```
+
+```mermaid
+sequenceDiagram
+    participant P as Producer
+    participant B as Broker
+    participant F as Follower
+    participant C as Consumer
+
+    P->>P: Serialize + Partition
+    P->>B: ProduceRequest (batch)
+    B->>B: Append to log
+    B->>B: fsync (acks=all)
+    B-->>F: FetchRequest (replicate)
+    F-->>F: Append to replica
+    F-->>B: FetchResponse (caught up)
+    B-->>P: ProduceResponse (offset)
+    C->>B: FetchRequest
+    B-->>C: FetchResponse (records)
+    C->>C: Process + Commit offset
+```

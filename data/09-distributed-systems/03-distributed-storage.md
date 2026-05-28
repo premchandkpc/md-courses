@@ -433,3 +433,12 @@ def rs_encode(data: bytes, parity_count: int = 3) -> list:
 
 
 **Answer**: Erasure coding (EC) divides data into K data fragments + M parity fragments, storing them across K+M nodes. Any K fragments can reconstruct the data. Compared to 3x replication (200% overhead), EC-6-3 has 50% overhead (9 fragments instead of 6 data = 50%). EC-10-4 has 40% overhead. This means for the same durability, EC uses 60-75% less storage. The trade-offs: EC requires CPU-intensive computation for encoding/decoding (affects read/write latency). EC is slower for small reads (must read multiple fragments and reconstruct). EC is worse for partial reads (must read entire object to reconstruct). Therefore, use EC for cold/warm data (HDFS, Ceph, S3 Glacier) and replication for hot data. HDFS supports both: 3x replication for active data, EC for archived data. LRC (Locally Repairable Codes) further reduce repair bandwidth by creating local parity fragments.
+
+## Related
+
+- [Postgresql Internals](08-databases/01-postgresql-internals.md)
+- [Relational Database Internals](08-databases/01-relational-database-internals.md)
+- [Postgresql Architecture](08-databases/02-postgresql-architecture.md)
+- [Redis Internals](08-databases/02-redis-internals.md)
+- [Postgresql Troubleshooting Tuning](08-databases/03-postgresql-troubleshooting-tuning.md)
+- [Redis Deep Dive](08-databases/04-redis-deep-dive.md)

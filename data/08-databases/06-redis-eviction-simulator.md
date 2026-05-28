@@ -719,3 +719,12 @@ while running:
 ```
 
 **Memory model:** Simplified — track key size as key_string + value_serialized + overhead (dict entry ≈ 64 bytes per key). Use configurable overhead for realism.
+
+## Related
+
+- [Cap Consistency](/09-distributed-systems/01-cap-consistency.md)
+- [Consensus Replication](/09-distributed-systems/01-consensus-replication.md)
+- [Consensus Raft](/09-distributed-systems/02-consensus-raft.md)
+- [Distributed Transactions](/09-distributed-systems/02-distributed-transactions.md)
+- [Distributed Caching](/09-distributed-systems/03-distributed-caching.md)
+- [Distributed Storage](/09-distributed-systems/03-distributed-storage.md)

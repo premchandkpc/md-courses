@@ -2413,6 +2413,63 @@ graph TD
 
 **Answer**: **State drift + missing lifecycle block**. Scenario: someone renamed a resource (e.g., `aws_db_instance.prod` → `aws_db_instance.prod_v2`) in code but didn't `terraform state mv`. Terraform sees "old name is gone, new name is added" = delete old + create new. Or: state was refreshed and picked up a change that triggered replacement. Also: **for_each key change** — if you change the key in a `for_each` map, Terraform destroys the old resource and creates a new one. Fix: 1) Always use `lifecycle { prevent_destroy = true }` on production databases. 2) Before refactoring, `terraform state mv` to rename resources. 3) Run `terraform plan` with `-refresh-only` to detect drift before making changes. 4) Enable `-destroy` flag in CI only for explicit destroy pipelines.
 
+## Interactive Components
+
+### Infrastructure Topology
+
+<div style="padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>.topology-title{color:#00d4ff;font-family:monospace;font-size:14px;font-weight:bold;margin-bottom:12px;letter-spacing:1px}.topology-svg{width:100%;max-width:600px;height:300px;background:#1a2332;border:1px solid #1e3a5f;border-radius:4px}.topo-edge{stroke:#1e3a5f;stroke-width:2}.topo-legend{display:flex;gap:16px;margin-top:12px;font-size:12px;color:#e3eaf0;font-family:monospace;flex-wrap:wrap}.legend-item{display:flex;align-items:center;gap:6px}</style>
+  <div class="topology-title">IaC Terraform Topology</div>
+  <svg class="topology-svg" viewBox="0 0 600 300">
+    <defs>
+      <marker id="arrow-iac" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+        <polygon points="0 0, 10 3, 0 6" fill="#1e3a5f"/>
+      </marker>
+    </defs>
+    <g><rect x="50" y="20" width="150" height="50" rx="4" fill="#3a7ca5" stroke="#00d4ff" stroke-width="1"/><text x="125" y="50" text-anchor="middle" fill="#e3eaf0" font-size="12" font-family="monospace" font-weight="bold">HCL Config</text></g>
+    <g><rect x="400" y="20" width="150" height="50" rx="4" fill="#3a7ca5" stroke="#00d4ff" stroke-width="1"/><text x="475" y="50" text-anchor="middle" fill="#e3eaf0" font-size="12" font-family="monospace" font-weight="bold">State File</text></g>
+    <g><rect x="200" y="130" width="120" height="50" rx="4" fill="#1e5f3f" stroke="#34d399" stroke-width="1"/><text x="260" y="160" text-anchor="middle" fill="#e3eaf0" font-size="12" font-family="monospace" font-weight="bold">AWS/GCP</text></g>
+    <line class="topo-edge" x1="125" y1="70" x2="260" y2="130" marker-end="url(#arrow-iac)"/>
+    <line class="topo-edge" x1="475" y1="70" x2="260" y2="130" marker-end="url(#arrow-iac)"/>
+  </svg>
+  <div class="topo-legend">
+    <div class="legend-item"><div style="width:14px;height:14px;background:#3a7ca5;border:1px solid #00d4ff"></div><span>Config</span></div>
+    <div class="legend-item"><div style="width:14px;height:14px;background:#1e5f3f;border:1px solid #34d399"></div><span>Provider</span></div>
+  </div>
+</div>
+
+### Provider Failure Cascade
+
+<div style="padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>.cascade-title{color:#00d4ff;font-family:monospace;font-size:14px;font-weight:bold;margin-bottom:16px;letter-spacing:1px}.cascade-stages{display:flex;flex-direction:column;gap:12px;margin-bottom:16px}.cascade-stage{display:flex;align-items:center;gap:12px}.cascade-label{color:#e3eaf0;font-family:monospace;font-size:12px;min-width:140px}.cascade-indicator{width:24px;height:24px;border-radius:4px;background:#34d399;border:2px solid #22c55e;transition:all 0.3s}.cascade-indicator.failing{background:#ef4444;border-color:#dc2626;box-shadow:0 0 12px #ef4444;animation:cascade-fail 0.6s ease-out}@keyframes cascade-fail{0%{transform:scale(1);opacity:1}100%{transform:scale(1.2);opacity:0.8}}.cascade-controls{display:flex;gap:8px;flex-wrap:wrap}.cascade-button{padding:8px 16px;border:1px solid #00d4ff;background:#1e3a5f;color:#00d4ff;border-radius:4px;cursor:pointer;font-family:monospace;font-size:12px;transition:all 0.2s}.cascade-button:hover{background:#2a5a8f;box-shadow:0 0 8px #00d4ff}</style>
+  <div class="cascade-title">IaC Apply Failure</div>
+  <div class="cascade-stages">
+    <div class="cascade-stage"><span class="cascade-label">Plan Phase</span><div class="cascade-indicator" data-stage="plan"></div></div>
+    <div class="cascade-stage"><span class="cascade-label">Apply Phase</span><div class="cascade-indicator" data-stage="apply"></div></div>
+    <div class="cascade-stage"><span class="cascade-label">Provider API</span><div class="cascade-indicator" data-stage="provider"></div></div>
+    <div class="cascade-stage"><span class="cascade-label">Resource State</span><div class="cascade-indicator" data-stage="state"></div></div>
+  </div>
+  <div class="cascade-controls">
+    <button class="cascade-button" onclick="startIacFail()">Apply Fails</button>
+    <button class="cascade-button" onclick="resetIacFail()">Destroy & Retry</button>
+  </div>
+  <script>
+    function startIacFail() {
+      const stages = ['plan', 'apply', 'provider', 'state'];
+      let delay = 0;
+      stages.forEach((id) => {
+        setTimeout(() => {
+          document.querySelector('[data-stage="'+id+'"]').classList.add('failing');
+        }, delay);
+        delay += 350;
+      });
+    }
+    function resetIacFail() {
+      document.querySelectorAll('[data-stage]').forEach(s => s.classList.remove('failing'));
+    }
+  </script>
+</div>
+
 ## Related
 
 - [Kubernetes Basics](/07-kubernetes/01-kubernetes-basics.md)

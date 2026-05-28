@@ -408,6 +408,208 @@ Ensures durability without flushing data pages on each commit. Central to Postgr
 
 ---
 
+## Code Examples
+
+### PostgreSQL: Advanced Queries
+
+```sql
+-- Window functions for ranking
+SELECT 
+    user_id,
+    amount,
+    ROW_NUMBER() OVER (ORDER BY amount DESC) as rank,
+    ROUND(100.0 * amount / SUM(amount) OVER (), 2) as pct_of_total
+FROM transactions
+WHERE created_at >= NOW() - INTERVAL '30 days';
+
+-- CTE (Common Table Expression) for hierarchical data
+WITH RECURSIVE org AS (
+    SELECT id, name, manager_id, 1 as level
+    FROM employees
+    WHERE manager_id IS NULL
+    
+    UNION ALL
+    
+    SELECT e.id, e.name, e.manager_id, o.level + 1
+    FROM employees e
+    INNER JOIN org o ON e.manager_id = o.id
+)
+SELECT * FROM org ORDER BY level, name;
+
+-- Partial index for soft deletes
+CREATE INDEX active_users_idx ON users(id) 
+WHERE deleted_at IS NULL;
+
+-- Index on expression for case-insensitive search
+CREATE INDEX email_lower_idx ON users(LOWER(email));
+
+-- EXPLAIN ANALYZE to check query plan
+EXPLAIN ANALYZE
+SELECT * FROM orders 
+WHERE customer_id = 123 AND created_at > NOW() - INTERVAL '1 year'
+ORDER BY created_at DESC LIMIT 10;
+```
+
+### MongoDB: Document Queries & Aggregation
+
+```javascript
+// Create collection with schema validation
+db.createCollection("orders", {
+  validator: {
+    $jsonSchema: {
+      bsonType: "object",
+      required: ["customer_id", "amount", "created_at"],
+      properties: {
+        customer_id: { bsonType: "objectId" },
+        amount: { bsonType: "decimal" },
+        created_at: { bsonType: "date" },
+        status: { enum: ["pending", "shipped", "delivered"] }
+      }
+    }
+  }
+});
+
+// Aggregation pipeline: match → group → sort
+db.orders.aggregate([
+  { $match: { created_at: { $gte: new Date("2024-01-01") } } },
+  { $group: {
+      _id: "$customer_id",
+      total_amount: { $sum: "$amount" },
+      order_count: { $sum: 1 },
+      avg_order: { $avg: "$amount" }
+  }},
+  { $sort: { total_amount: -1 } },
+  { $limit: 10 }
+]);
+
+// Index for query performance
+db.orders.createIndex({ customer_id: 1, created_at: -1 });
+db.orders.createIndex({ status: 1, created_at: -1 });
+```
+
+### Redis: Caching & Data Structures
+
+```python
+import redis
+import json
+import time
+
+r = redis.Redis(host='localhost', port=6379, db=0)
+
+# String: Simple cache
+user_id = 42
+user_data = {"id": 42, "name": "Alice", "email": "alice@example.com"}
+r.setex(f"user:{user_id}", 3600, json.dumps(user_data))  # 1 hour TTL
+cached = json.loads(r.get(f"user:{user_id}"))
+
+# Hash: Object storage
+r.hset(f"user:{user_id}:profile", mapping={
+    "name": "Alice",
+    "email": "alice@example.com",
+    "age": 28
+})
+profile = r.hgetall(f"user:{user_id}:profile")
+
+# List: Queue/Log
+r.rpush("task_queue", "task1", "task2", "task3")  # Append
+task = r.lpop("task_queue")  # Pop from left (FIFO)
+
+# Set: Unique members
+r.sadd("active_users", user_id, 43, 44)  # Add to set
+is_active = r.sismember("active_users", user_id)  # Check membership
+count = r.scard("active_users")  # Count members
+
+# Sorted Set: Leaderboard
+r.zadd("leaderboard", {"alice": 1000, "bob": 950, "charlie": 900})
+top_10 = r.zrange("leaderboard", 0, 9, withscores=True)
+
+# TTL & Expiration
+r.expire("user:42", 3600)  # Set expiry in seconds
+ttl = r.ttl("user:42")  # Get remaining TTL
+```
+
+### SQL Performance Tuning
+
+```sql
+-- Missing index detection
+SELECT schemaname, tablename, indexname, idx_scan, idx_tup_read, idx_tup_fetch
+FROM pg_stat_user_indexes
+ORDER BY idx_scan ASC
+LIMIT 10;  -- Unused indexes
+
+-- Slow query analysis
+EXPLAIN (ANALYZE, BUFFERS, VERBOSE)
+SELECT orders.*, customers.name
+FROM orders
+JOIN customers ON orders.customer_id = customers.id
+WHERE orders.created_at > NOW() - INTERVAL '7 days';
+
+-- Table bloat detection
+SELECT 
+    schemaname,
+    tablename,
+    ROUND(100 * pg_relation_size(schemaname||'.'||tablename) / 
+    pg_total_relation_size(schemaname||'.'||tablename), 2) as table_ratio
+FROM pg_tables
+WHERE schemaname NOT IN ('pg_catalog', 'information_schema')
+ORDER BY pg_total_relation_size(schemaname||'.'||tablename) DESC;
+
+-- Autovacuum tune per table
+ALTER TABLE orders SET (
+    autovacuum_vacuum_scale_factor = 0.05,
+    autovacuum_analyze_scale_factor = 0.02,
+    autovacuum_vacuum_cost_delay = 2
+);
+```
+
+### Python: SQLAlchemy ORM
+
+```python
+from sqlalchemy import create_engine, Column, Integer, String, DateTime, ForeignKey
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker, relationship
+from datetime import datetime
+
+Base = declarative_base()
+
+class Customer(Base):
+    __tablename__ = 'customers'
+    id = Column(Integer, primary_key=True)
+    name = Column(String(100), nullable=False)
+    email = Column(String(100), unique=True)
+    orders = relationship("Order", back_populates="customer")
+
+class Order(Base):
+    __tablename__ = 'orders'
+    id = Column(Integer, primary_key=True)
+    customer_id = Column(Integer, ForeignKey('customers.id'), nullable=False)
+    amount = Column(Integer)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    customer = relationship("Customer", back_populates="orders")
+
+# Create engine & session
+engine = create_engine('postgresql://user:password@localhost/db')
+Base.metadata.create_all(engine)
+Session = sessionmaker(bind=engine)
+session = Session()
+
+# Query
+customer = session.query(Customer).filter_by(email='alice@example.com').first()
+orders = customer.orders  # Lazy load related orders
+
+# Insert
+new_order = Order(customer_id=customer.id, amount=1500)
+session.add(new_order)
+session.commit()
+
+# Batch insert
+customers = [Customer(name=f"User{i}", email=f"user{i}@example.com") for i in range(1000)]
+session.add_all(customers)
+session.commit()
+```
+
+---
+
 ## Learning Path
 
 1. **Stage 1** — SQL proficiency: joins, subqueries, aggregations, window functions, CTEs

@@ -377,6 +377,204 @@ Quantifying information, uncertainty, and divergence—critical for loss functio
 
 ---
 
+## Code Examples
+
+### Linear Regression (Gradient Descent)
+
+```python
+import numpy as np
+
+class LinearRegression:
+    def __init__(self, learning_rate=0.01, iterations=1000):
+        self.lr = learning_rate
+        self.iters = iterations
+        self.m, self.b = 0, 0
+
+    def fit(self, X, y):
+        n = len(X)
+        for _ in range(self.iters):
+            y_pred = self.m * X + self.b
+            dm = (-2/n) * np.sum(X * (y - y_pred))
+            db = (-2/n) * np.sum(y - y_pred)
+            self.m -= self.lr * dm
+            self.b -= self.lr * db
+
+    def predict(self, X):
+        return self.m * X + self.b
+
+# Usage
+X = np.array([1, 2, 3, 4, 5])
+y = np.array([2, 4, 5, 4, 5])
+model = LinearRegression()
+model.fit(X, y)
+print(model.predict(np.array([6])))
+```
+
+### k-Means Clustering
+
+```python
+import numpy as np
+
+class KMeans:
+    def __init__(self, k=3, max_iters=100):
+        self.k = k
+        self.max_iters = max_iters
+
+    def fit(self, X):
+        # Random initialization
+        idx = np.random.choice(len(X), self.k, replace=False)
+        self.centroids = X[idx]
+
+        for _ in range(self.max_iters):
+            # Assign clusters
+            distances = np.sqrt(((X - self.centroids[:, np.newaxis])**2).sum(axis=2))
+            labels = np.argmin(distances, axis=0)
+
+            # Update centroids
+            new_centroids = np.array([X[labels == i].mean(axis=0) for i in range(self.k)])
+            if np.allclose(self.centroids, new_centroids):
+                break
+            self.centroids = new_centroids
+
+        return labels
+
+# Usage with scikit-learn
+from sklearn.cluster import KMeans
+X = np.random.rand(100, 2)
+kmeans = KMeans(n_clusters=3, random_state=42)
+labels = kmeans.fit_predict(X)
+```
+
+### Decision Tree (CART Algorithm)
+
+```python
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.datasets import load_iris
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import accuracy_score
+
+# Load data
+iris = load_iris()
+X_train, X_test, y_train, y_test = train_test_split(
+    iris.data, iris.target, test_size=0.2, random_state=42
+)
+
+# Train tree
+tree = DecisionTreeClassifier(max_depth=5, criterion='gini', random_state=42)
+tree.fit(X_train, y_train)
+
+# Evaluate
+y_pred = tree.predict(X_test)
+print(f"Accuracy: {accuracy_score(y_test, y_pred):.3f}")
+
+# Feature importance
+for name, importance in zip(iris.feature_names, tree.feature_importances_):
+    print(f"{name}: {importance:.3f}")
+```
+
+### Neural Network (PyTorch)
+
+```python
+import torch
+import torch.nn as nn
+import torch.optim as optim
+from torch.utils.data import DataLoader, TensorDataset
+
+# Define simple network
+class SimpleNN(nn.Module):
+    def __init__(self, input_size=10, hidden_size=32, output_size=2):
+        super().__init__()
+        self.fc1 = nn.Linear(input_size, hidden_size)
+        self.relu = nn.ReLU()
+        self.fc2 = nn.Linear(hidden_size, output_size)
+
+    def forward(self, x):
+        x = self.fc1(x)
+        x = self.relu(x)
+        x = self.fc2(x)
+        return x
+
+# Training loop
+model = SimpleNN()
+criterion = nn.CrossEntropyLoss()
+optimizer = optim.Adam(model.parameters(), lr=0.001)
+
+# Dummy data
+X = torch.randn(100, 10)
+y = torch.randint(0, 2, (100,))
+dataset = TensorDataset(X, y)
+loader = DataLoader(dataset, batch_size=32)
+
+# Train
+for epoch in range(5):
+    for X_batch, y_batch in loader:
+        optimizer.zero_grad()
+        logits = model(X_batch)
+        loss = criterion(logits, y_batch)
+        loss.backward()
+        optimizer.step()
+    print(f"Epoch {epoch+1}, Loss: {loss.item():.3f}")
+```
+
+### Transformer Attention (PyTorch)
+
+```python
+import torch
+import torch.nn.functional as F
+
+def attention(query, key, value, mask=None):
+    """Multi-head attention: (batch, seq_len, d_model)"""
+    scores = torch.matmul(query, key.transpose(-2, -1)) / (query.shape[-1] ** 0.5)
+    if mask is not None:
+        scores = scores.masked_fill(mask == 0, -1e9)
+    weights = F.softmax(scores, dim=-1)
+    output = torch.matmul(weights, value)
+    return output, weights
+
+# Usage
+batch_size, seq_len, d_model = 2, 5, 64
+Q = torch.randn(batch_size, seq_len, d_model)
+K = torch.randn(batch_size, seq_len, d_model)
+V = torch.randn(batch_size, seq_len, d_model)
+output, weights = attention(Q, K, V)
+print(f"Output shape: {output.shape}, Weights shape: {weights.shape}")
+```
+
+### RAG (Retrieval-Augmented Generation)
+
+```python
+from transformers import AutoTokenizer, AutoModelForCausalLM
+from sentence_transformers import SentenceTransformer
+import numpy as np
+
+# Embedding model for retrieval
+embedding_model = SentenceTransformer('all-MiniLM-L6-v2')
+
+# Knowledge base documents
+docs = [
+    "Python is a high-level programming language.",
+    "Machine learning is a subset of artificial intelligence.",
+    "Neural networks are inspired by biological neurons."
+]
+doc_embeddings = embedding_model.encode(docs)
+
+# Query
+query = "What is machine learning?"
+query_embedding = embedding_model.encode(query)
+
+# Retrieve top-k documents
+scores = np.dot(doc_embeddings, query_embedding)
+top_k_idx = np.argsort(scores)[-3:][::-1]
+retrieved_docs = [docs[i] for i in top_k_idx]
+
+# Generate with context
+context = "\n".join(retrieved_docs)
+prompt = f"Context:\n{context}\n\nQuestion: {query}\n\nAnswer:"
+print(f"Prompt:\n{prompt}")
+```
+
+---
+
 ## Learning Path
 
 1. **Stage 1** — Math foundations: linear algebra, probability, calculus, optimization basics

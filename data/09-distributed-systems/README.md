@@ -391,6 +391,244 @@ Ensures database writes and message sending are atomic (both happen or both don'
 
 ---
 
+## Code Examples
+
+### Consistent Hashing (Ring-Based)
+
+```python
+import hashlib
+from bisect import bisect_right
+
+class ConsistentHash:
+    def __init__(self, nodes=None, replicas=3):
+        self.replicas = replicas
+        self.ring = {}
+        self.sorted_keys = []
+        if nodes:
+            for node in nodes:
+                self.add_node(node)
+
+    def _hash(self, key):
+        return int(hashlib.md5(key.encode()).hexdigest(), 16)
+
+    def add_node(self, node):
+        for i in range(self.replicas):
+            virtual_key = f"{node}:{i}"
+            hash_val = self._hash(virtual_key)
+            self.ring[hash_val] = node
+        self.sorted_keys = sorted(self.ring.keys())
+
+    def get_node(self, key):
+        if not self.ring:
+            return None
+        hash_val = self._hash(key)
+        idx = bisect_right(self.sorted_keys, hash_val)
+        return self.ring[self.sorted_keys[idx % len(self.sorted_keys)]]
+
+# Usage
+ch = ConsistentHash(['server1', 'server2', 'server3'])
+print(ch.get_node('user:42'))  # Returns one of the servers
+```
+
+### Idempotency Key Pattern (Idempotent Writes)
+
+```python
+from fastapi import FastAPI, HTTPException
+from pydantic import BaseModel
+import sqlite3
+import uuid
+
+app = FastAPI()
+db = sqlite3.connect(':memory:', check_same_thread=False)
+
+class TransferRequest(BaseModel):
+    from_account: int
+    to_account: int
+    amount: float
+    idempotency_key: str
+
+# Store completed operations by idempotency key
+def get_cached_result(idempotency_key):
+    cursor = db.execute(
+        "SELECT result FROM idempotency_store WHERE key = ?",
+        (idempotency_key,)
+    )
+    row = cursor.fetchone()
+    return row[0] if row else None
+
+@app.post("/transfer")
+async def transfer_money(req: TransferRequest):
+    # Check if already processed
+    cached = get_cached_result(req.idempotency_key)
+    if cached:
+        return cached
+
+    try:
+        # Perform transfer (safe to retry)
+        result = {
+            "status": "success",
+            "transaction_id": str(uuid.uuid4()),
+            "timestamp": __import__('datetime').datetime.utcnow().isoformat()
+        }
+        
+        # Store result
+        db.execute(
+            "INSERT INTO idempotency_store (key, result) VALUES (?, ?)",
+            (req.idempotency_key, result)
+        )
+        db.commit()
+        return result
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+```
+
+### Simple 2-Phase Commit (Distributed Transaction)
+
+```python
+class TwoPhaseCommit:
+    def __init__(self):
+        self.participants = {}  # {name: state}
+
+    def start_transaction(self, tx_id, participants):
+        """Phase 1: Prepare"""
+        self.participants = {p: "prepared" for p in participants}
+        
+        can_commit = True
+        for p in participants:
+            # Ask each participant if ready to commit
+            if not self.prepare(p, tx_id):
+                can_commit = False
+                break
+        
+        if not can_commit:
+            # Phase 2: Rollback if any participant fails
+            return self.abort_transaction(tx_id)
+        
+        # Phase 2: Commit if all prepared
+        return self.commit_transaction(tx_id)
+
+    def prepare(self, participant, tx_id):
+        """Participant locks resources and agrees to commit"""
+        print(f"{participant}: Preparing transaction {tx_id}")
+        return True  # In real impl: RPC to participant
+
+    def commit_transaction(self, tx_id):
+        """Tell all participants to commit"""
+        for p in self.participants:
+            print(f"{p}: Committing {tx_id}")
+        self.participants = {}
+        return {"status": "committed"}
+
+    def abort_transaction(self, tx_id):
+        """Tell all participants to rollback"""
+        for p in self.participants:
+            print(f"{p}: Rolling back {tx_id}")
+        self.participants = {}
+        return {"status": "aborted"}
+
+# Usage
+coordinator = TwoPhaseCommit()
+coordinator.start_transaction("tx1", ["db1", "db2", "db3"])
+```
+
+### Saga Pattern (Choreography)
+
+```python
+from enum import Enum
+
+class OrderStatus(Enum):
+    PENDING = 1
+    PAYMENT_DONE = 2
+    INVENTORY_RESERVED = 3
+    SHIPPED = 4
+    FAILED = 5
+
+class SagaChoreography:
+    def __init__(self):
+        self.order_state = {}
+
+    def start_order(self, order_id, user_id, items):
+        self.order_state[order_id] = {
+            "status": OrderStatus.PENDING,
+            "user_id": user_id,
+            "items": items
+        }
+        # Step 1: Request payment (publish event)
+        self.on_payment_requested(order_id)
+
+    def on_payment_requested(self, order_id):
+        print(f"Payment service: Processing payment for {order_id}")
+        # If payment succeeds, publish event
+        self.on_payment_completed(order_id)
+
+    def on_payment_completed(self, order_id):
+        self.order_state[order_id]["status"] = OrderStatus.PAYMENT_DONE
+        print(f"Order {order_id}: Payment done, requesting inventory")
+        # Step 2: Request inventory reservation
+        self.on_inventory_requested(order_id)
+
+    def on_inventory_requested(self, order_id):
+        print(f"Inventory service: Reserving items for {order_id}")
+        # If successful
+        self.on_inventory_reserved(order_id)
+
+    def on_inventory_reserved(self, order_id):
+        self.order_state[order_id]["status"] = OrderStatus.INVENTORY_RESERVED
+        print(f"Order {order_id}: Inventory reserved, ready to ship")
+        self.on_shipment_requested(order_id)
+
+    def on_shipment_requested(self, order_id):
+        print(f"Shipping service: Shipping order {order_id}")
+        self.order_state[order_id]["status"] = OrderStatus.SHIPPED
+
+# Usage
+saga = SagaChoreography()
+saga.start_order("ord123", "user42", [{"sku": "ABC", "qty": 2}])
+```
+
+### Rate Limiting: Token Bucket
+
+```python
+import time
+from threading import Lock
+
+class TokenBucket:
+    def __init__(self, capacity, refill_rate):
+        self.capacity = capacity
+        self.tokens = capacity
+        self.refill_rate = refill_rate  # tokens per second
+        self.last_refill = time.time()
+        self.lock = Lock()
+
+    def allow_request(self, tokens_needed=1):
+        with self.lock:
+            # Refill tokens based on elapsed time
+            now = time.time()
+            elapsed = now - self.last_refill
+            self.tokens = min(
+                self.capacity,
+                self.tokens + elapsed * self.refill_rate
+            )
+            self.last_refill = now
+
+            # Check if enough tokens
+            if self.tokens >= tokens_needed:
+                self.tokens -= tokens_needed
+                return True
+            return False
+
+# Usage
+limiter = TokenBucket(capacity=10, refill_rate=2)  # 10 tokens, 2/sec refill
+for i in range(15):
+    if limiter.allow_request():
+        print(f"Request {i}: Allowed")
+    else:
+        print(f"Request {i}: Rate limited")
+    time.sleep(0.2)
+```
+
+---
+
 ## Learning Path
 
 1. **Stage 1** — Understand CAP theorem, consistency models, basic replication patterns

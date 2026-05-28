@@ -520,6 +520,221 @@ Stateful vs Stateless      → Simplicity vs scalability
 
 ---
 
+## Code Examples
+
+### URL Shortener (KV Store)
+
+```python
+import hashlib
+import random
+import string
+
+class URLShortener:
+    def __init__(self):
+        self.url_map = {}  # short_id -> long_url
+        self.reverse_map = {}  # long_url -> short_id
+
+    def _generate_short_id(self, url):
+        """Generate 6-char short ID from URL hash"""
+        hash_val = hashlib.md5(url.encode()).hexdigest()
+        # Base62 encode for short IDs
+        return hash_val[:6]
+
+    def shorten(self, long_url):
+        if long_url in self.reverse_map:
+            return self.reverse_map[long_url]
+        
+        short_id = self._generate_short_id(long_url)
+        # Handle collision
+        while short_id in self.url_map:
+            short_id += random.choice(string.ascii_letters + string.digits)
+        
+        self.url_map[short_id] = long_url
+        self.reverse_map[long_url] = short_id
+        return short_id
+
+    def expand(self, short_id):
+        return self.url_map.get(short_id)
+
+# Usage
+shortener = URLShortener()
+short = shortener.shorten("https://www.example.com/very/long/url")
+print(f"Short: {short}, Expanded: {shortener.expand(short)}")
+```
+
+### Rate Limiter (Token Bucket + Redis)
+
+```python
+from redis import Redis
+from datetime import datetime, timedelta
+
+class RateLimiter:
+    def __init__(self, redis_client, limit=100, window_seconds=60):
+        self.redis = redis_client
+        self.limit = limit
+        self.window = window_seconds
+
+    def is_allowed(self, user_id):
+        key = f"rate_limit:{user_id}"
+        current = self.redis.incr(key)
+        
+        if current == 1:
+            self.redis.expire(key, self.window)
+        
+        return current <= self.limit
+
+# Usage
+redis_client = Redis()
+limiter = RateLimiter(redis_client, limit=10, window_seconds=60)
+for i in range(15):
+    if limiter.is_allowed("user123"):
+        print(f"Request {i}: Allowed")
+    else:
+        print(f"Request {i}: Rate limited")
+```
+
+### LRU Cache
+
+```python
+from collections import OrderedDict
+
+class LRUCache:
+    def __init__(self, capacity):
+        self.cache = OrderedDict()
+        self.capacity = capacity
+
+    def get(self, key):
+        if key not in self.cache:
+            return -1
+        self.cache.move_to_end(key)  # Mark as recently used
+        return self.cache[key]
+
+    def put(self, key, value):
+        if key in self.cache:
+            self.cache.move_to_end(key)
+        self.cache[key] = value
+        if len(self.cache) > self.capacity:
+            self.cache.popitem(last=False)  # Remove least recently used
+
+# Usage
+lru = LRUCache(capacity=2)
+lru.put(1, 'a')
+lru.put(2, 'b')
+print(lru.get(1))  # Returns 'a'
+lru.put(3, 'c')  # Evicts key 2
+print(lru.get(2))  # Returns -1 (not found)
+```
+
+### Bloom Filter (Membership Check)
+
+```python
+from bitarray import bitarray
+import hashlib
+
+class BloomFilter:
+    def __init__(self, size=10000, num_hashes=3):
+        self.size = size
+        self.num_hashes = num_hashes
+        self.bits = bitarray(size)
+        self.bits.setall(0)
+
+    def _hash(self, item, seed):
+        return int(hashlib.sha256(f"{item}:{seed}".encode()).hexdigest(), 16) % self.size
+
+    def add(self, item):
+        for i in range(self.num_hashes):
+            idx = self._hash(item, i)
+            self.bits[idx] = 1
+
+    def contains(self, item):
+        for i in range(self.num_hashes):
+            idx = self._hash(item, i)
+            if self.bits[idx] == 0:
+                return False
+        return True
+
+# Usage
+bf = BloomFilter(size=1000, num_hashes=3)
+bf.add("user123")
+print(bf.contains("user123"))  # True
+print(bf.contains("user456"))  # Probably False (no false negatives)
+```
+
+### Distributed Cache Invalidation (TTL + LRU)
+
+```python
+from dataclasses import dataclass
+from datetime import datetime, timedelta
+
+@dataclass
+class CacheEntry:
+    value: str
+    expiry_time: datetime
+    access_count: int = 0
+
+class DistributedCache:
+    def __init__(self, ttl_seconds=3600, max_size=1000):
+        self.cache = {}
+        self.ttl = ttl_seconds
+        self.max_size = max_size
+
+    def get(self, key):
+        if key not in self.cache:
+            return None
+        
+        entry = self.cache[key]
+        if datetime.utcnow() > entry.expiry_time:
+            del self.cache[key]
+            return None
+        
+        entry.access_count += 1
+        return entry.value
+
+    def set(self, key, value):
+        if len(self.cache) >= self.max_size:
+            # Evict least frequently used
+            lfu_key = min(self.cache, key=lambda k: self.cache[k].access_count)
+            del self.cache[lfu_key]
+        
+        self.cache[key] = CacheEntry(
+            value=value,
+            expiry_time=datetime.utcnow() + timedelta(seconds=self.ttl),
+            access_count=0
+        )
+
+# Usage
+cache = DistributedCache(ttl_seconds=300, max_size=100)
+cache.set("user:1", '{"name": "Alice"}')
+print(cache.get("user:1"))
+```
+
+### Consistent Hashing for Sharding
+
+```python
+import hashlib
+
+class ShardRouter:
+    def __init__(self, num_shards=16):
+        self.num_shards = num_shards
+
+    def get_shard(self, key):
+        """Route key to shard based on hash"""
+        hash_val = int(hashlib.md5(key.encode()).hexdigest(), 16)
+        return hash_val % self.num_shards
+
+    def get_partition(self, user_id):
+        """Map user to database partition"""
+        shard = self.get_shard(f"user:{user_id}")
+        return f"shard-{shard % 4}"  # 4 database shards
+
+# Usage
+router = ShardRouter(num_shards=16)
+print(f"User 123 -> {router.get_partition(123)}")
+print(f"User 456 -> {router.get_partition(456)}")
+```
+
+---
+
 ## 📚 Learning Path
 
 ### Phase 1: Fundamentals

@@ -232,6 +232,253 @@ High-performance RPC using HTTP/2 and Protocol Buffers. Default for microservice
 
 ---
 
+## Code Examples
+
+### Go: HTTP Server + Middleware
+
+```go
+package main
+
+import (
+    "fmt"
+    "log"
+    "net/http"
+    "time"
+)
+
+// Middleware for logging
+func loggingMiddleware(next http.Handler) http.Handler {
+    return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+        start := time.Now()
+        next.ServeHTTP(w, r)
+        log.Printf("%s %s took %v", r.Method, r.URL.Path, time.Since(start))
+    })
+}
+
+func helloHandler(w http.ResponseWriter, r *http.Request) {
+    fmt.Fprintf(w, "Hello, %s!", r.URL.Query().Get("name"))
+}
+
+func main() {
+    mux := http.NewServeMux()
+    mux.HandleFunc("/hello", helloHandler)
+    
+    // Wrap with middleware
+    handler := loggingMiddleware(mux)
+    
+    log.Fatal(http.ListenAndServe(":8080", handler))
+}
+```
+
+### Python: FastAPI with Async
+
+```python
+from fastapi import FastAPI, HTTPException
+from pydantic import BaseModel
+from typing import Optional
+import asyncio
+
+app = FastAPI()
+
+class User(BaseModel):
+    id: int
+    name: str
+    email: str
+
+users_db = {}
+
+@app.get("/users/{user_id}")
+async def get_user(user_id: int) -> User:
+    if user_id not in users_db:
+        raise HTTPException(status_code=404, detail="User not found")
+    return users_db[user_id]
+
+@app.post("/users")
+async def create_user(user: User) -> dict:
+    users_db[user.id] = user
+    return {"status": "created", "user": user}
+
+@app.get("/health")
+async def health_check():
+    # Simulate async work
+    await asyncio.sleep(0.1)
+    return {"status": "healthy"}
+
+# Run: uvicorn script:app --reload
+```
+
+### Java: Spring Boot REST Controller
+
+```java
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.web.bind.annotation.*;
+import java.util.HashMap;
+import java.util.Map;
+
+@SpringBootApplication
+public class Application {
+    public static void main(String[] args) {
+        SpringApplication.run(Application.class, args);
+    }
+}
+
+@RestController
+@RequestMapping("/api/users")
+class UserController {
+    private Map<Integer, User> users = new HashMap<>();
+
+    @GetMapping("/{id}")
+    public User getUser(@PathVariable int id) {
+        return users.getOrDefault(id, null);
+    }
+
+    @PostMapping
+    public Map<String, String> createUser(@RequestBody User user) {
+        users.put(user.getId(), user);
+        return Map.of("status", "created");
+    }
+
+    @GetMapping("/health")
+    public Map<String, String> health() {
+        return Map.of("status", "healthy");
+    }
+}
+
+class User {
+    private int id;
+    private String name;
+    private String email;
+    
+    // Getters/Setters
+    public int getId() { return id; }
+    public void setId(int id) { this.id = id; }
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
+    public String getEmail() { return email; }
+    public void setEmail(String email) { this.email = email; }
+}
+```
+
+### TypeScript: Express.js REST API
+
+```typescript
+import express, { Request, Response } from 'express';
+
+interface User {
+    id: number;
+    name: string;
+    email: string;
+}
+
+const app = express();
+app.use(express.json());
+
+const users: Map<number, User> = new Map();
+
+// Middleware: request logging
+app.use((req: Request, res: Response, next) => {
+    console.log(`${req.method} ${req.path}`);
+    next();
+});
+
+// Routes
+app.get('/users/:id', (req: Request, res: Response) => {
+    const user = users.get(parseInt(req.params.id));
+    if (!user) {
+        return res.status(404).json({ error: 'User not found' });
+    }
+    res.json(user);
+});
+
+app.post('/users', (req: Request, res: Response) => {
+    const user: User = req.body;
+    users.set(user.id, user);
+    res.status(201).json({ status: 'created', user });
+});
+
+app.get('/health', (req: Request, res: Response) => {
+    res.json({ status: 'healthy' });
+});
+
+app.listen(8080, () => {
+    console.log('Server running on port 8080');
+});
+```
+
+### Goroutines & Channels
+
+```go
+package main
+
+import (
+    "fmt"
+    "sync"
+    "time"
+)
+
+func worker(id int, jobs <-chan int, results chan<- int) {
+    for j := range jobs {
+        fmt.Printf("Worker %d processing job %d\n", id, j)
+        time.Sleep(time.Second)
+        results <- j * 2
+    }
+}
+
+func main() {
+    jobs := make(chan int, 5)
+    results := make(chan int, 5)
+    
+    // Start 3 workers
+    for w := 1; w <= 3; w++ {
+        go worker(w, jobs, results)
+    }
+    
+    // Send jobs
+    for j := 1; j <= 5; j++ {
+        jobs <- j
+    }
+    close(jobs)
+    
+    // Collect results
+    for i := 0; i < 5; i++ {
+        fmt.Println("Result:", <-results)
+    }
+}
+```
+
+### Java: Concurrent Collections
+
+```java
+import java.util.concurrent.*;
+import java.util.*;
+
+public class ConcurrencyExample {
+    public static void main(String[] args) throws InterruptedException {
+        // Thread pool
+        ExecutorService executor = Executors.newFixedThreadPool(4);
+        
+        // Concurrent map
+        ConcurrentHashMap<String, Integer> counters = new ConcurrentHashMap<>();
+        
+        // Submit tasks
+        for (int i = 0; i < 10; i++) {
+            executor.submit(() -> {
+                counters.putIfAbsent("count", 0);
+                counters.computeIfPresent("count", (k, v) -> v + 1);
+            });
+        }
+        
+        executor.shutdown();
+        executor.awaitTermination(5, TimeUnit.SECONDS);
+        
+        System.out.println("Final count: " + counters.get("count"));
+    }
+}
+```
+
+---
+
 ## Learning Path
 
 1. **Stage 1** — Pick one language (Java, Go, Python, or TS) and become proficient: syntax, data structures, standard library, testing

@@ -818,3 +818,70 @@ Result: reads respect causality even with async replication
 ---
 
 *Last Updated: 2026-05-28*
+
+<!-- html-live -->
+<div style="padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>
+    .state-machine-title {color:#00d4ff;font-family:monospace;font-size:14px;font-weight:bold;margin-bottom:16px;letter-spacing:1px}
+    .state-demo {text-align:center}
+    .state-display {font-size:18px;font-family:monospace;padding:16px;border-radius:4px;margin:16px 0;color:#0b0e14;font-weight:bold;min-height:50px;display:flex;align-items:center;justify-content:center;border:2px solid currentColor}
+    .state-strong {background:#ef4444;border-color:#dc2626}
+    .state-eventual {background:#fbbf24;border-color:#f59e0b}
+    .state-causal {background:#00d4ff;border-color:#0088cc}
+    .state-button {padding:8px 16px;border:1px solid #00d4ff;background:#1e3a5f;color:#00d4ff;border-radius:4px;cursor:pointer;font-family:monospace;font-size:12px;transition:all 0.2s}
+    .state-button:hover {background:#2a5a8f;box-shadow:0 0 8px #00d4ff}
+    .state-buttons {display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:16px}
+  </style>
+  <div class="state-machine-title">Consistency Model Selection</div>
+  <div class="state-demo">
+    <div class="state-display state-strong" id="state-display">STRONG</div>
+    <div class="state-buttons">
+      <button class="state-button" onclick="setState('strong')">Strong</button>
+      <button class="state-button" onclick="setState('eventual')">Eventual</button>
+      <button class="state-button" onclick="setState('causal')">Causal</button>
+    </div>
+  </div>
+  <script>
+    const stateMap = {'strong': {label: 'STRONG (Linearizable)', class: 'state-strong'}, 'eventual': {label: 'EVENTUAL', class: 'state-eventual'}, 'causal': {label: 'CAUSAL', class: 'state-causal'}};
+    function setState(s) {const d = document.getElementById('state-display'); const i = stateMap[s]; d.textContent = i.label; d.className = 'state-display ' + i.class;}
+  </script>
+</div>
+
+<!-- html-live -->
+<div style="padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>
+    .obs-title {color:#00d4ff;font-family:monospace;font-size:14px;font-weight:bold;margin-bottom:16px;letter-spacing:1px}
+    .obs-grid {display:grid;grid-template-columns:repeat(auto-fit, minmax(150px, 1fr));gap:12px}
+    .obs-card {padding:12px;background:#1a2332;border:1px solid #1e3a5f;border-radius:4px;display:flex;flex-direction:column;align-items:center;transition:all 0.3s}
+    .obs-card:hover {border-color:#00d4ff;box-shadow:0 0 8px rgba(0, 212, 255, 0.3)}
+    .obs-label {color:#a3aab8;font-family:monospace;font-size:11px;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px}
+    .obs-value {font-family:monospace;font-size:20px;font-weight:bold;margin-bottom:4px;letter-spacing:0.5px}
+    .obs-unit {color:#a3aab8;font-family:monospace;font-size:10px;text-transform:uppercase}
+    .metric-healthy {color:#34d399}
+    .metric-warning {color:#fbbf24}
+    .metric-critical {color:#ef4444}
+  </style>
+  <div class="obs-title">Consistency Metrics</div>
+  <div class="obs-grid">
+    <div class="obs-card">
+      <div class="obs-label">Replication Lag</div>
+      <div class="obs-value metric-warning">850</div>
+      <div class="obs-unit">ms</div>
+    </div>
+    <div class="obs-card">
+      <div class="obs-label">Write Ack Time</div>
+      <div class="obs-value metric-healthy">12</div>
+      <div class="obs-unit">ms</div>
+    </div>
+    <div class="obs-card">
+      <div class="obs-label">Stale Reads</div>
+      <div class="obs-value metric-healthy">2.1</div>
+      <div class="obs-unit">%</div>
+    </div>
+    <div class="obs-card">
+      <div class="obs-label">Conflict Rate</div>
+      <div class="obs-value metric-healthy">0.3</div>
+      <div class="obs-unit">%</div>
+    </div>
+  </div>
+</div>

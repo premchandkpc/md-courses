@@ -1608,4 +1608,60 @@ Company realizes from unpatched library
 - [Cloud Platforms](/05-cloud/) — IAM, network policies
 - [Kubernetes](/07-kubernetes/) — Pod security, RBAC
 - [Backend](/03-backend/) — Input validation, auth
+
+<!-- html-live -->
+<div style="display:flex;flex-direction:column;align-items:center;gap:8px;padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>
+    @keyframes flow-pulse {0%,100%{opacity:.3;transform:translateY(0)}50%{opacity:1;transform:translateY(-2px)}}
+    .flow-title {color:#00d4ff;font-family:monospace;font-size:14px;font-weight:bold;margin-bottom:8px;letter-spacing:1px}
+    .flow-node {display:inline-block;padding:8px 16px;border-radius:4px;font-size:12px;font-family:monospace;color:#e3eaf0;background:#1e3a5f;border:1px solid #00d4ff}
+    .flow-arrow {color:#00d4ff;font-size:16px;animation:flow-pulse 1.5s infinite;font-weight:bold}
+  </style>
+  <div class="flow-title">Zero Trust Verification Flow</div>
+  <div style="display:flex;flex-direction:column;align-items:center;gap:6px">
+    <div class="flow-node">User Request</div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-node">Identity Verify</div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-node">Device Check</div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-node">Context Analyze</div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-node">Threat Assess</div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-node">Grant Access</div>
+  </div>
+</div>
+
+<!-- html-live -->
+<div style="padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>
+    .cascade-title {color:#00d4ff;font-family:monospace;font-size:14px;font-weight:bold;margin-bottom:16px;letter-spacing:1px}
+    .cascade-stages {display:flex;flex-direction:column;gap:12px;margin-bottom:16px}
+    .cascade-stage {display:flex;align-items:center;gap:12px}
+    .cascade-label {color:#e3eaf0;font-family:monospace;font-size:12px;min-width:120px}
+    .cascade-indicator {width:24px;height:24px;border-radius:4px;background:#34d399;border:2px solid #22c55e;transition:all 0.3s}
+    .cascade-indicator.failing {background:#ef4444;border-color:#dc2626;box-shadow:0 0 12px #ef4444;animation:cascade-fail 0.6s ease-out}
+    @keyframes cascade-fail {0%{transform:scale(1);opacity:1}100%{transform:scale(1.2);opacity:0.8}}
+    .cascade-controls {display:flex;gap:8px;flex-wrap:wrap}
+    .cascade-button {padding:8px 16px;border:1px solid #00d4ff;background:#1e3a5f;color:#00d4ff;border-radius:4px;cursor:pointer;font-family:monospace;font-size:12px;transition:all 0.2s}
+    .cascade-button:hover {background:#2a5a8f;box-shadow:0 0 8px #00d4ff}
+  </style>
+  <div class="cascade-title">Security Breach Cascade</div>
+  <div class="cascade-stages" id="cascade-stages">
+    <div class="cascade-stage"><span class="cascade-label">Initial Compromise</span><div class="cascade-indicator" data-stage="stage0"></div></div>
+    <div class="cascade-stage"><span class="cascade-label">Lateral Movement</span><div class="cascade-indicator" data-stage="stage1"></div></div>
+    <div class="cascade-stage"><span class="cascade-label">Privilege Escalation</span><div class="cascade-indicator" data-stage="stage2"></div></div>
+    <div class="cascade-stage"><span class="cascade-label">Data Exfiltration</span><div class="cascade-indicator" data-stage="stage3"></div></div>
+    <div class="cascade-stage"><span class="cascade-label">Persistence</span><div class="cascade-indicator" data-stage="stage4"></div></div>
+  </div>
+  <div class="cascade-controls">
+    <button class="cascade-button" onclick="startCascade()">Inject Failure</button>
+    <button class="cascade-button" onclick="resetCascade()">Reset</button>
+  </div>
+  <script>
+    function startCascade() {const stages = document.querySelectorAll('[data-stage]'); let delay = 0; stages.forEach((stage) => {setTimeout(() => {stage.classList.add('failing');}, delay); delay += 300;});}
+    function resetCascade() {document.querySelectorAll('[data-stage]').forEach((stage) => {stage.classList.remove('failing');});}
+  </script>
+</div>
 - [Databases](/08-databases/) — Encryption, access control

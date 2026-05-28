@@ -492,3 +492,66 @@ Benefit: minimal rehashing on scale
 ---
 
 *Last Updated: 2026-05-28*
+
+<!-- html-live -->
+<div style="padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>
+    .topology-title {color:#00d4ff;font-family:monospace;font-size:14px;font-weight:bold;margin-bottom:12px;letter-spacing:1px}
+    .topology-svg {width:100%;max-width:600px;height:300px;background:#1a2332;border:1px solid #1e3a5f;border-radius:4px}
+    .topo-edge {stroke:#1e3a5f;stroke-width:2}
+    .topo-legend {display:flex;gap:16px;margin-top:12px;font-size:12px;color:#e3eaf0;font-family:monospace;flex-wrap:wrap}
+    .legend-item {display:flex;align-items:center;gap:6px}
+  </style>
+  <div class="topology-title">Load Balancer Topology</div>
+  <svg class="topology-svg" viewBox="0 0 600 300">
+    <defs><marker id="arrow1" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto"><polygon points="0 0, 10 3, 0 6" fill="#1e3a5f"/></marker></defs>
+    <g><rect x="250" y="20" width="100" height="50" rx="4" fill="#1e3a5f" stroke="#00d4ff" stroke-width="1"/><text x="300" y="50" text-anchor="middle" fill="#e3eaf0" font-size="12" font-family="monospace">Load Balancer</text></g>
+    <g><rect x="80" y="140" width="80" height="50" rx="4" fill="#1e3a5f" stroke="#00d4ff" stroke-width="1"/><text x="120" y="170" text-anchor="middle" fill="#e3eaf0" font-size="12" font-family="monospace">Server-1</text></g>
+    <g><rect x="260" y="140" width="80" height="50" rx="4" fill="#1e3a5f" stroke="#00d4ff" stroke-width="1"/><text x="300" y="170" text-anchor="middle" fill="#e3eaf0" font-size="12" font-family="monospace">Server-2</text></g>
+    <g><rect x="440" y="140" width="80" height="50" rx="4" fill="#1e3a5f" stroke="#00d4ff" stroke-width="1"/><text x="480" y="170" text-anchor="middle" fill="#e3eaf0" font-size="12" font-family="monospace">Server-3</text></g>
+    <line class="topo-edge" x1="300" y1="70" x2="120" y2="140" marker-end="url(#arrow1)"/>
+    <line class="topo-edge" x1="300" y1="70" x2="300" y2="140" marker-end="url(#arrow1)"/>
+    <line class="topo-edge" x1="300" y1="70" x2="480" y2="140" marker-end="url(#arrow1)"/>
+  </svg>
+  <div class="topo-legend">
+    <div class="legend-item"><div style="width:14px;height:14px;background:#1e3a5f;border:1px solid #00d4ff"></div><span>Server</span></div>
+  </div>
+</div>
+
+<!-- html-live -->
+<div style="padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>
+    .obs-title {color:#00d4ff;font-family:monospace;font-size:14px;font-weight:bold;margin-bottom:16px;letter-spacing:1px}
+    .obs-grid {display:grid;grid-template-columns:repeat(auto-fit, minmax(150px, 1fr));gap:12px}
+    .obs-card {padding:12px;background:#1a2332;border:1px solid #1e3a5f;border-radius:4px;display:flex;flex-direction:column;align-items:center;transition:all 0.3s}
+    .obs-card:hover {border-color:#00d4ff;box-shadow:0 0 8px rgba(0, 212, 255, 0.3)}
+    .obs-label {color:#a3aab8;font-family:monospace;font-size:11px;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px}
+    .obs-value {font-family:monospace;font-size:20px;font-weight:bold;margin-bottom:4px;letter-spacing:0.5px}
+    .obs-unit {color:#a3aab8;font-family:monospace;font-size:10px;text-transform:uppercase}
+    .metric-healthy {color:#34d399}
+    .metric-warning {color:#fbbf24}
+  </style>
+  <div class="obs-title">Load Balancer Metrics</div>
+  <div class="obs-grid">
+    <div class="obs-card">
+      <div class="obs-label">Throughput</div>
+      <div class="obs-value metric-healthy">15K</div>
+      <div class="obs-unit">req/s</div>
+    </div>
+    <div class="obs-card">
+      <div class="obs-label">Latency</div>
+      <div class="obs-value metric-healthy">2</div>
+      <div class="obs-unit">ms</div>
+    </div>
+    <div class="obs-card">
+      <div class="obs-label">Healthy Servers</div>
+      <div class="obs-value metric-healthy">3</div>
+      <div class="obs-unit">of 3</div>
+    </div>
+    <div class="obs-card">
+      <div class="obs-label">Connection Pool</div>
+      <div class="obs-value metric-healthy">94</div>
+      <div class="obs-unit">%</div>
+    </div>
+  </div>
+</div>

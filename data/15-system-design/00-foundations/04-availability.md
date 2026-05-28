@@ -1164,3 +1164,74 @@ Leaderless (Cassandra, DynamoDB):
 ---
 
 *Last Updated: 2026-05-28*
+
+<!-- html-live -->
+<div style="padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>
+    .cascade-title {color:#00d4ff;font-family:monospace;font-size:14px;font-weight:bold;margin-bottom:16px;letter-spacing:1px}
+    .cascade-stages {display:flex;flex-direction:column;gap:12px;margin-bottom:16px}
+    .cascade-stage {display:flex;align-items:center;gap:12px}
+    .cascade-label {color:#e3eaf0;font-family:monospace;font-size:12px;min-width:120px}
+    .cascade-indicator {width:24px;height:24px;border-radius:4px;background:#34d399;border:2px solid #22c55e;transition:all 0.3s}
+    .cascade-indicator.failing {background:#ef4444;border-color:#dc2626;box-shadow:0 0 12px #ef4444;animation:cascade-fail 0.6s ease-out}
+    @keyframes cascade-fail {0%{transform:scale(1);opacity:1}100%{transform:scale(1.2);opacity:0.8}}
+    .cascade-controls {display:flex;gap:8px;flex-wrap:wrap}
+    .cascade-button {padding:8px 16px;border:1px solid #00d4ff;background:#1e3a5f;color:#00d4ff;border-radius:4px;cursor:pointer;font-family:monospace;font-size:12px;transition:all 0.2s}
+    .cascade-button:hover {background:#2a5a8f;box-shadow:0 0 8px #00d4ff}
+  </style>
+  <div class="cascade-title">Outage Propagation Cascade</div>
+  <div class="cascade-stages" id="cascade-stages">
+    <div class="cascade-stage"><span class="cascade-label">Primary DB</span><div class="cascade-indicator" data-stage="stage0"></div></div>
+    <div class="cascade-stage"><span class="cascade-label">Connection Pool</span><div class="cascade-indicator" data-stage="stage1"></div></div>
+    <div class="cascade-stage"><span class="cascade-label">API Server</span><div class="cascade-indicator" data-stage="stage2"></div></div>
+    <div class="cascade-stage"><span class="cascade-label">Load Balancer</span><div class="cascade-indicator" data-stage="stage3"></div></div>
+    <div class="cascade-stage"><span class="cascade-label">Client Errors</span><div class="cascade-indicator" data-stage="stage4"></div></div>
+  </div>
+  <div class="cascade-controls">
+    <button class="cascade-button" onclick="startCascade()">Trigger Outage</button>
+    <button class="cascade-button" onclick="resetCascade()">Recover</button>
+  </div>
+  <script>
+    function startCascade() {const stages = document.querySelectorAll('[data-stage]'); let delay = 0; stages.forEach((stage) => {setTimeout(() => {stage.classList.add('failing');}, delay); delay += 300;});}
+    function resetCascade() {document.querySelectorAll('[data-stage]').forEach((stage) => {stage.classList.remove('failing');});}
+  </script>
+</div>
+
+<!-- html-live -->
+<div style="padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>
+    .obs-title {color:#00d4ff;font-family:monospace;font-size:14px;font-weight:bold;margin-bottom:16px;letter-spacing:1px}
+    .obs-grid {display:grid;grid-template-columns:repeat(auto-fit, minmax(150px, 1fr));gap:12px}
+    .obs-card {padding:12px;background:#1a2332;border:1px solid #1e3a5f;border-radius:4px;display:flex;flex-direction:column;align-items:center;transition:all 0.3s}
+    .obs-card:hover {border-color:#00d4ff;box-shadow:0 0 8px rgba(0, 212, 255, 0.3)}
+    .obs-label {color:#a3aab8;font-family:monospace;font-size:11px;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px}
+    .obs-value {font-family:monospace;font-size:20px;font-weight:bold;margin-bottom:4px;letter-spacing:0.5px}
+    .obs-unit {color:#a3aab8;font-family:monospace;font-size:10px;text-transform:uppercase}
+    .metric-healthy {color:#34d399}
+    .metric-warning {color:#fbbf24}
+    .metric-critical {color:#ef4444}
+  </style>
+  <div class="obs-title">Availability & Reliability Metrics</div>
+  <div class="obs-grid">
+    <div class="obs-card">
+      <div class="obs-label">Uptime</div>
+      <div class="obs-value metric-healthy">99.99</div>
+      <div class="obs-unit">%</div>
+    </div>
+    <div class="obs-card">
+      <div class="obs-label">MTTR</div>
+      <div class="obs-value metric-healthy">12</div>
+      <div class="obs-unit">min</div>
+    </div>
+    <div class="obs-card">
+      <div class="obs-label">Incidents/Mo</div>
+      <div class="obs-value metric-warning">2</div>
+      <div class="obs-unit">incidents</div>
+    </div>
+    <div class="obs-card">
+      <div class="obs-label">RTO Target</div>
+      <div class="obs-value metric-healthy">5</div>
+      <div class="obs-unit">min</div>
+    </div>
+  </div>
+</div>

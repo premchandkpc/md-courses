@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Redis World - Memory Pressure & Eviction Storms</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: linear-gradient(135deg, #0a0e1a 0%, #1a1f2e 100%);
+      color: #e3eaf0;
+      font-family: 'Monaco', 'Menlo', monospace;
+      overflow: hidden;
+      height: 100vh;
+    }
+    .container { display: flex; height: 100vh; padding: 16px; gap: 16px; }
+    .canvas-area { flex: 1; background: #0b0e14; border: 1px solid #1e3a5f; border-radius: 8px; }
+    .control-panel {
+      width: 330px;
+      background: #0b0e14;
+      border: 1px solid #1e3a5f;
+      border-radius: 8px;
+      padding: 16px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    h1, h3 { color: #00d4ff; letter-spacing: 1px; }
+    h1 { font-size: 18px; margin-bottom: 8px; }
+    h3 { font-size: 11px; text-transform: uppercase; margin-bottom: 6px; color: #a3aab8; }
+    .control-group { display: flex; flex-direction: column; gap: 6px; }
+    button {
+      padding: 6px 10px;
+      background: #1e3a5f;
+      border: 1px solid #00d4ff;
+      color: #00d4ff;
+      border-radius: 4px;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 10px;
+      transition: all 0.2s;
+    }
+    button:hover { background: #2a5a8f; box-shadow: 0 0 8px #00d4ff; }
+    button.failure { background: #ef4444; border-color: #ef4444; color: #0b0e14; }
+    .slider-container { display: flex; flex-direction: column; gap: 2px; }
+    label { font-size: 10px; color: #a3aab8; }
+    input[type="range"] {
+      width: 100%;
+      height: 3px;
+      border-radius: 2px;
+      background: #1e3a5f;
+      outline: none;
+      -webkit-appearance: none;
+    }
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: #00d4ff;
+      cursor: pointer;
+      box-shadow: 0 0 4px #00d4ff;
+    }
+    .metric {
+      background: #1a2332;
+      border: 1px solid #1e3a5f;
+      border-radius: 4px;
+      padding: 6px;
+      font-size: 10px;
+    }
+    .metric-value { color: #34d399; font-weight: bold; font-size: 12px; }
+    canvas { display: block; width: 100%; height: 100%; }
+    .title-bar { background: #1a2332; border-bottom: 1px solid #1e3a5f; padding: 10px 16px; }
+    .title-bar h1 { margin: 0; }
+  </style>
+</head>
+<body>
+  <div class="title-bar">
+    <h1>Redis World - Memory Pressure & Eviction Storms</h1>
+  </div>
+
+  <div class="container">
+    <div class="canvas-area">
+      <canvas id="canvas"></canvas>
+    </div>
+
+    <div class="control-panel">
+      <div>
+        <h3>Operation Control</h3>
+        <div class="control-group">
+          <button id="startOps">Start Ops</button>
+          <button id="stopOps">Stop Ops</button>
+        </div>
+      </div>
+
+      <div>
+        <h3>Memory Config</h3>
+        <div class="slider-container">
+          <label>Max Memory (MB)</label>
+          <input type="range" id="maxMemory" min="256" max="2048" value="1024">
+          <span style="font-size: 9px; color: #34d399;" id="memValue">1024MB</span>
+        </div>
+        <div class="slider-container">
+          <label>Op Rate (ops/s)</label>
+          <input type="range" id="opRate" min="10" max="500" value="100">
+          <span style="font-size: 9px; color: #34d399;" id="opValue">100</span>
+        </div>
+        <div class="slider-container">
+          <label>Eviction Threshold (%)</label>
+          <input type="range" id="threshold" min="50" max="95" value="80">
+          <span style="font-size: 9px; color: #34d399;" id="thresholdValue">80%</span>
+        </div>
+      </div>
+
+      <div>
+        <h3>Failure Injection</h3>
+        <div class="control-group">
+          <button id="fillMemory" class="failure">Fill Memory</button>
+          <button id="slowEvict" class="failure">Slow Eviction</button>
+          <button id="recover">Recover</button>
+        </div>
+      </div>
+
+      <div>
+        <h3>System State</h3>
+        <div class="metric">
+          <div class="metric-label">Memory Used</div>
+          <div class="metric-value" id="memUsed">0MB</div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">Memory Pressure</div>
+          <div class="metric-value" id="memPressure">0%</div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">Keys in Memory</div>
+          <div class="metric-value" id="keysCount">0</div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">Evictions/sec</div>
+          <div class="metric-value" id="evictionRate">0</div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">Hit Rate</div>
+          <div class="metric-value" id="hitRate">0%</div>
+        </div>
+      </div>
+
+      <div>
+        <h3>Pressure Physics</h3>
+        <div style="font-size: 9px; color: #a3aab8; line-height: 1.5;">
+          • Keys fill memory<br/>
+          • High memory → pressure<br/>
+          • Pressure > threshold<br/>
+          → Eviction storms<br/>
+          → Hit rate crashes
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+
+    function resizeCanvas() {
+      const rect = canvas.parentElement.getBoundingClientRect();
+      canvas.width = rect.width;
+      canvas.height = rect.height;
+    }
+    resizeCanvas();
+
+    const sim = {
+      maxMemory: 1024,
+      memUsed: 0,
+      keys: [],
+      opsActive: false,
+      opRate: 100,
+      evictionThreshold: 80,
+      evictionRate: 0,
+      totalAccesses: 0,
+      hits: 0,
+      misses: 0,
+      memPressure: 0,
+      slowEviction: false,
+      forceFill: false,
+      time: 0
+    };
+
+    function addKey(size) {
+      sim.keys.push({
+        id: sim.keys.length,
+        size: size || Math.floor(Math.random() * 50) + 10,
+        created: sim.time,
+        lastAccessed: sim.time,
+        frequency: 0
+      });
+      sim.memUsed += sim.keys[sim.keys.length - 1].size;
+    }
+
+    function evictKey() {
+      if (sim.keys.length === 0) return false;
+      // LRU: evict oldest by lastAccessed
+      let lruIdx = 0;
+      for (let i = 1; i < sim.keys.length; i++) {
+        if (sim.keys[i].lastAccessed < sim.keys[lruIdx].lastAccessed) {
+          lruIdx = i;
+        }
+      }
+      const removed = sim.keys.splice(lruIdx, 1)[0];
+      sim.memUsed = Math.max(0, sim.memUsed - removed.size);
+      return true;
+    }
+
+    function updateMemory() {
+      sim.memPressure = (sim.memUsed / sim.maxMemory) * 100;
+
+      // Eviction storms
+      let evicted = 0;
+      const evictionSpeed = sim.slowEviction ? 1 : 10;
+      while (sim.memPressure > sim.evictionThreshold && sim.keys.length > 0) {
+        if (evictKey()) {
+          evicted += evictionSpeed;
+        } else {
+          break;
+        }
+        sim.memPressure = (sim.memUsed / sim.maxMemory) * 100;
+      }
+      sim.evictionRate = evicted;
+
+      // Force fill
+      if (sim.forceFill && sim.keys.length < 100) {
+        for (let i = 0; i < 5; i++) {
+          addKey(Math.floor(Math.random() * 100) + 50);
+        }
+      }
+    }
+
+    function accessKey() {
+      sim.totalAccesses++;
+      if (sim.keys.length === 0) {
+        sim.misses++;
+        return false;
+      }
+
+      const keyIdx = Math.floor(Math.random() * sim.keys.length);
+      const key = sim.keys[keyIdx];
+      key.lastAccessed = sim.time;
+      key.frequency++;
+      sim.hits++;
+      return true;
+    }
+
+    function update() {
+      if (sim.opsActive) {
+        for (let i = 0; i < sim.opRate / 60; i++) {
+          if (Math.random() < 0.7) {
+            accessKey();
+          } else {
+            addKey();
+          }
+        }
+      }
+
+      updateMemory();
+      sim.time++;
+    }
+
+    function draw() {
+      ctx.fillStyle = '#0b0e14';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // Memory pressure visualization
+      const pressure = sim.memPressure;
+      const color = pressure > 85 ? '#ef4444' :
+                    pressure > 70 ? '#fbbf24' : '#34d399';
+
+      // Pressure glow
+      ctx.fillStyle = color;
+      ctx.globalAlpha = (pressure / 100) * 0.6;
+      ctx.fillRect(100, 100, 300, 300);
+      ctx.globalAlpha = 1;
+
+      // Memory bar
+      ctx.fillStyle = color;
+      ctx.fillRect(100, 100, (pressure / 100) * 300, 300);
+
+      // Border
+      ctx.strokeStyle = color;
+      ctx.lineWidth = 2;
+      ctx.strokeRect(100, 100, 300, 300);
+
+      // Labels
+      ctx.fillStyle = '#0b0e14';
+      ctx.font = 'bold 14px monospace';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('Memory', 250, 200);
+      ctx.font = '12px monospace';
+      ctx.fillText(pressure.toFixed(0) + '%', 250, 225);
+
+      // Keys visualization
+      const keySize = 8;
+      let x = 450;
+      let y = 120;
+      for (let i = 0; i < Math.min(sim.keys.length, 60); i++) {
+        ctx.fillStyle = sim.keys[i].frequency > 5 ? '#60a5fa' : '#34d399';
+        ctx.fillRect(x, y, keySize, keySize);
+        x += keySize + 2;
+        if (x > canvas.width - 100) {
+          x = 450;
+          y += keySize + 2;
+        }
+      }
+
+      // Eviction animation
+      if (sim.evictionRate > 0) {
+        const evictX = 250 + Math.random() * 100 - 50;
+        const evictY = 150 + Math.random() * 100;
+        ctx.fillStyle = '#ef4444';
+        ctx.globalAlpha = 0.7;
+        ctx.beginPath();
+        ctx.arc(evictX, evictY, 15, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.globalAlpha = 1;
+      }
+
+      // Stats
+      ctx.fillStyle = '#a3aab8';
+      ctx.font = '10px monospace';
+      ctx.textAlign = 'left';
+      const hitRate = sim.totalAccesses > 0 ? ((sim.hits / sim.totalAccesses) * 100).toFixed(0) : 0;
+      ctx.fillText(`Mem: ${sim.memUsed}/${sim.maxMemory}MB | Keys: ${sim.keys.length}`, 20, 30);
+      ctx.fillText(`Hit Rate: ${hitRate}% | Evictions: ${sim.evictionRate}`, 20, 50);
+    }
+
+    function animate() {
+      update();
+      draw();
+      requestAnimationFrame(animate);
+    }
+    animate();
+
+    document.getElementById('startOps').addEventListener('click', () => {
+      sim.opsActive = true;
+    });
+
+    document.getElementById('stopOps').addEventListener('click', () => {
+      sim.opsActive = false;
+    });
+
+    document.getElementById('maxMemory').addEventListener('input', (e) => {
+      sim.maxMemory = parseInt(e.target.value);
+      document.getElementById('memValue').textContent = sim.maxMemory + 'MB';
+    });
+
+    document.getElementById('opRate').addEventListener('input', (e) => {
+      sim.opRate = parseInt(e.target.value);
+      document.getElementById('opValue').textContent = sim.opRate;
+    });
+
+    document.getElementById('threshold').addEventListener('input', (e) => {
+      sim.evictionThreshold = parseInt(e.target.value);
+      document.getElementById('thresholdValue').textContent = sim.evictionThreshold + '%';
+    });
+
+    document.getElementById('fillMemory').addEventListener('click', () => {
+      sim.forceFill = true;
+    });
+
+    document.getElementById('slowEvict').addEventListener('click', () => {
+      sim.slowEviction = true;
+    });
+
+    document.getElementById('recover').addEventListener('click', () => {
+      sim.forceFill = false;
+      sim.slowEviction = false;
+      sim.keys = [];
+      sim.memUsed = 0;
+    });
+
+    setInterval(() => {
+      const hitRate = sim.totalAccesses > 0 ? ((sim.hits / sim.totalAccesses) * 100).toFixed(0) : 0;
+      document.getElementById('memUsed').textContent = sim.memUsed + 'MB';
+      document.getElementById('memPressure').textContent = sim.memPressure.toFixed(0) + '%';
+      document.getElementById('keysCount').textContent = sim.keys.length;
+      document.getElementById('evictionRate').textContent = sim.evictionRate;
+      document.getElementById('hitRate').textContent = hitRate + '%';
+    }, 100);
+  </script>
+</body>
+</html>

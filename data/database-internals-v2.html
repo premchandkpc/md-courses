@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Database Internals - GC Pauses & Lock Contention</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: linear-gradient(135deg, #0a0e1a 0%, #1a1f2e 100%);
+      color: #e3eaf0;
+      font-family: 'Monaco', 'Menlo', monospace;
+      overflow: hidden;
+      height: 100vh;
+    }
+    .container { display: flex; height: 100vh; padding: 16px; gap: 16px; }
+    .canvas-area { flex: 1; background: #0b0e14; border: 1px solid #1e3a5f; border-radius: 8px; }
+    .control-panel {
+      width: 330px;
+      background: #0b0e14;
+      border: 1px solid #1e3a5f;
+      border-radius: 8px;
+      padding: 16px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    h1, h3 { color: #00d4ff; letter-spacing: 1px; }
+    h1 { font-size: 18px; margin-bottom: 8px; }
+    h3 { font-size: 11px; text-transform: uppercase; margin-bottom: 6px; color: #a3aab8; }
+    .control-group { display: flex; flex-direction: column; gap: 6px; }
+    button {
+      padding: 6px 10px;
+      background: #1e3a5f;
+      border: 1px solid #00d4ff;
+      color: #00d4ff;
+      border-radius: 4px;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 10px;
+      transition: all 0.2s;
+    }
+    button:hover { background: #2a5a8f; box-shadow: 0 0 8px #00d4ff; }
+    button.failure { background: #ef4444; border-color: #ef4444; color: #0b0e14; }
+    .slider-container { display: flex; flex-direction: column; gap: 2px; }
+    label { font-size: 10px; color: #a3aab8; }
+    input[type="range"] {
+      width: 100%;
+      height: 3px;
+      border-radius: 2px;
+      background: #1e3a5f;
+      outline: none;
+      -webkit-appearance: none;
+    }
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: #00d4ff;
+      cursor: pointer;
+      box-shadow: 0 0 4px #00d4ff;
+    }
+    .metric {
+      background: #1a2332;
+      border: 1px solid #1e3a5f;
+      border-radius: 4px;
+      padding: 6px;
+      font-size: 10px;
+    }
+    .metric-value { color: #34d399; font-weight: bold; font-size: 12px; }
+    canvas { display: block; width: 100%; height: 100%; }
+    .title-bar { background: #1a2332; border-bottom: 1px solid #1e3a5f; padding: 10px 16px; }
+    .title-bar h1 { margin: 0; }
+  </style>
+</head>
+<body>
+  <div class="title-bar">
+    <h1>Database Internals - GC Pauses & Lock Contention</h1>
+  </div>
+
+  <div class="container">
+    <div class="canvas-area">
+      <canvas id="canvas"></canvas>
+    </div>
+
+    <div class="control-panel">
+      <div>
+        <h3>Workload Control</h3>
+        <div class="control-group">
+          <button id="startLoad">Start Load</button>
+          <button id="stopLoad">Stop Load</button>
+        </div>
+      </div>
+
+      <div>
+        <h3>Database Config</h3>
+        <div class="slider-container">
+          <label>Query Rate (q/s)</label>
+          <input type="range" id="queryRate" min="10" max="500" value="100">
+          <span style="font-size: 9px; color: #34d399;" id="qpsValue">100</span>
+        </div>
+        <div class="slider-container">
+          <label>Write Rate (w/s)</label>
+          <input type="range" id="writeRate" min="0" max="200" value="50">
+          <span style="font-size: 9px; color: #34d399;" id="wpsValue">50</span>
+        </div>
+        <div class="slider-container">
+          <label>GC Threshold (%)</label>
+          <input type="range" id="gcThreshold" min="50" max="95" value="70">
+          <span style="font-size: 9px; color: #34d399;" id="gcValue">70%</span>
+        </div>
+      </div>
+
+      <div>
+        <h3>Failure Injection</h3>
+        <div class="control-group">
+          <button id="highWrites" class="failure">High Writes</button>
+          <button id="contentionStorm" class="failure">Lock Storm</button>
+          <button id="recover">Recover</button>
+        </div>
+      </div>
+
+      <div>
+        <h3>System State</h3>
+        <div class="metric">
+          <div class="metric-label">Heap Used</div>
+          <div class="metric-value" id="heapUsed">0%</div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">WAL Pressure</div>
+          <div class="metric-value" id="walPressure">0%</div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">Lock Waits</div>
+          <div class="metric-value" id="lockWaits">0</div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">Avg Latency</div>
+          <div class="metric-value" id="avgLatency">0ms</div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">GC Pauses</div>
+          <div class="metric-value" id="gcCount">0</div>
+        </div>
+      </div>
+
+      <div>
+        <h3>Pressure Physics</h3>
+        <div style="font-size: 9px; color: #a3aab8; line-height: 1.5;">
+          • Writes fill WAL<br/>
+          • Heap usage grows<br/>
+          • Heap > threshold<br/>
+          → GC pause (freeze)<br/>
+          → Lock contention<br/>
+          → Latency spike
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+
+    function resizeCanvas() {
+      const rect = canvas.parentElement.getBoundingClientRect();
+      canvas.width = rect.width;
+      canvas.height = rect.height;
+    }
+    resizeCanvas();
+
+    const sim = {
+      queryRate: 100,
+      writeRate: 50,
+      heapUsed: 0,
+      heapCapacity: 100,
+      walBuffer: 0,
+      walCapacity: 100,
+      lockWaiters: 0,
+      locks: 10,
+      totalQueries: 0,
+      totalLatency: 0,
+      latencies: [],
+      gcThreshold: 70,
+      gcCount: 0,
+      gcPauseTime: 0,
+      loadActive: false,
+      highWriteMode: false,
+      contentionMode: false,
+      time: 0
+    };
+
+    function processQuery() {
+      let latency = Math.random() * 5 + 1;
+
+      // Lock contention adds latency
+      if (sim.lockWaiters > 0) {
+        const waitProbability = Math.min(0.9, sim.lockWaiters / sim.locks);
+        if (Math.random() < waitProbability) {
+          latency += (sim.lockWaiters / sim.locks) * 50;
+        }
+      }
+
+      // GC pause adds massive latency
+      if (sim.gcPauseTime > 0) {
+        latency += 200;
+        sim.gcPauseTime--;
+      }
+
+      sim.totalQueries++;
+      sim.totalLatency += latency;
+      sim.latencies.push(latency);
+      if (sim.latencies.length > 100) sim.latencies.shift();
+    }
+
+    function processWrite() {
+      // Writes fill WAL
+      sim.walBuffer = Math.min(sim.walCapacity, sim.walBuffer + (Math.random() * 5 + 2));
+      // Writes consume heap
+      sim.heapUsed = Math.min(sim.heapCapacity, sim.heapUsed + (Math.random() * 3 + 1));
+
+      // Lock contention from writes
+      if (Math.random() < 0.5) {
+        sim.lockWaiters = Math.min(sim.locks * 2, sim.lockWaiters + 1);
+      }
+    }
+
+    function updateGC() {
+      const heapPercent = (sim.heapUsed / sim.heapCapacity) * 100;
+
+      // GC trigger
+      if (heapPercent > sim.gcThreshold && sim.gcPauseTime === 0) {
+        sim.gcPauseTime = 10; // Pause for 10 frames
+        sim.gcCount++;
+        sim.heapUsed *= 0.3; // Collect garbage
+      }
+
+      // Heap recovery
+      if (sim.heapUsed > 0 && sim.gcPauseTime === 0) {
+        sim.heapUsed *= 0.99;
+      }
+
+      // WAL flushing
+      if (sim.walBuffer > 0) {
+        sim.walBuffer *= 0.95;
+      }
+
+      // Lock contention recovery
+      if (sim.lockWaiters > 0 && !sim.contentionMode) {
+        sim.lockWaiters = Math.max(0, sim.lockWaiters - 0.5);
+      }
+    }
+
+    function update() {
+      if (sim.loadActive) {
+        const writeMultiplier = sim.highWriteMode ? 2 : 1;
+        const contMultiplier = sim.contentionMode ? 3 : 1;
+
+        for (let i = 0; i < sim.queryRate / 60; i++) {
+          processQuery();
+        }
+        for (let i = 0; i < (sim.writeRate * writeMultiplier) / 60; i++) {
+          processWrite();
+        }
+
+        if (sim.contentionMode) {
+          sim.lockWaiters = Math.min(sim.locks * 3, sim.lockWaiters + contMultiplier);
+        }
+      }
+
+      updateGC();
+      sim.time++;
+    }
+
+    function draw() {
+      ctx.fillStyle = '#0b0e14';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // Three pressure indicators
+      const heapPercent = (sim.heapUsed / sim.heapCapacity) * 100;
+      const walPercent = (sim.walBuffer / sim.walCapacity) * 100;
+      const lockPercent = (sim.lockWaiters / sim.locks) * 100;
+
+      // Heap gauge
+      let heapColor = heapPercent > 80 ? '#ef4444' : heapPercent > 50 ? '#fbbf24' : '#34d399';
+      ctx.fillStyle = heapColor;
+      ctx.globalAlpha = 0.3;
+      ctx.fillRect(80, 80, 100, 200);
+      ctx.globalAlpha = 1;
+
+      ctx.fillStyle = heapColor;
+      ctx.fillRect(80, 80 + (1 - heapPercent / 100) * 200, 100, (heapPercent / 100) * 200);
+      ctx.strokeStyle = heapColor;
+      ctx.lineWidth = 2;
+      ctx.strokeRect(80, 80, 100, 200);
+
+      ctx.fillStyle = '#0b0e14';
+      ctx.font = 'bold 10px monospace';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('Heap', 130, 60);
+      ctx.fillText(heapPercent.toFixed(0) + '%', 130, 305);
+
+      // WAL gauge
+      let walColor = walPercent > 80 ? '#ef4444' : walPercent > 50 ? '#fbbf24' : '#34d399';
+      ctx.fillStyle = walColor;
+      ctx.globalAlpha = 0.3;
+      ctx.fillRect(220, 80, 100, 200);
+      ctx.globalAlpha = 1;
+
+      ctx.fillStyle = walColor;
+      ctx.fillRect(220, 80 + (1 - walPercent / 100) * 200, 100, (walPercent / 100) * 200);
+      ctx.strokeStyle = walColor;
+      ctx.lineWidth = 2;
+      ctx.strokeRect(220, 80, 100, 200);
+
+      ctx.fillStyle = '#0b0e14';
+      ctx.font = 'bold 10px monospace';
+      ctx.textAlign = 'center';
+      ctx.fillText('WAL', 270, 60);
+      ctx.fillText(walPercent.toFixed(0) + '%', 270, 305);
+
+      // Lock gauge
+      let lockColor = lockPercent > 80 ? '#ef4444' : lockPercent > 50 ? '#fbbf24' : '#34d399';
+      ctx.fillStyle = lockColor;
+      ctx.globalAlpha = 0.3;
+      ctx.fillRect(360, 80, 100, 200);
+      ctx.globalAlpha = 1;
+
+      ctx.fillStyle = lockColor;
+      ctx.fillRect(360, 80 + (1 - lockPercent / 100) * 200, 100, (lockPercent / 100) * 200);
+      ctx.strokeStyle = lockColor;
+      ctx.lineWidth = 2;
+      ctx.strokeRect(360, 80, 100, 200);
+
+      ctx.fillStyle = '#0b0e14';
+      ctx.font = 'bold 10px monospace';
+      ctx.textAlign = 'center';
+      ctx.fillText('Locks', 410, 60);
+      ctx.fillText(sim.lockWaiters, 410, 305);
+
+      // GC pause indicator
+      if (sim.gcPauseTime > 0) {
+        ctx.fillStyle = '#ef4444';
+        ctx.globalAlpha = 0.8;
+        ctx.fillRect(500, 100, 100, 150);
+        ctx.globalAlpha = 1;
+        ctx.fillStyle = '#fff';
+        ctx.font = 'bold 14px monospace';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText('GC', 550, 175);
+      }
+
+      // Latency graph
+      const graphX = 80;
+      const graphY = 350;
+      const graphW = canvas.width - 160;
+      const graphH = 150;
+
+      ctx.strokeStyle = '#1e3a5f';
+      ctx.lineWidth = 1;
+      ctx.strokeRect(graphX, graphY, graphW, graphH);
+
+      if (sim.latencies.length > 1) {
+        ctx.strokeStyle = '#00d4ff';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        for (let i = 0; i < sim.latencies.length; i++) {
+          const x = graphX + (i / sim.latencies.length) * graphW;
+          const y = graphY + graphH - Math.min(sim.latencies[i] / 300 * graphH, graphH);
+          if (i === 0) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
+        }
+        ctx.stroke();
+      }
+
+      ctx.fillStyle = '#a3aab8';
+      ctx.font = '10px monospace';
+      ctx.textAlign = 'left';
+      ctx.fillText('Latency (ms)', graphX, graphY - 5);
+
+      // Stats
+      const avgLatency = sim.totalQueries > 0 ? (sim.totalLatency / sim.totalQueries).toFixed(1) : 0;
+      ctx.fillStyle = '#a3aab8';
+      ctx.font = '10px monospace';
+      ctx.textAlign = 'left';
+      ctx.fillText(`Queries: ${sim.totalQueries} | Avg Latency: ${avgLatency}ms | GC Count: ${sim.gcCount}`, 20, 30);
+    }
+
+    function animate() {
+      update();
+      draw();
+      requestAnimationFrame(animate);
+    }
+    animate();
+
+    document.getElementById('startLoad').addEventListener('click', () => {
+      sim.loadActive = true;
+    });
+
+    document.getElementById('stopLoad').addEventListener('click', () => {
+      sim.loadActive = false;
+    });
+
+    document.getElementById('queryRate').addEventListener('input', (e) => {
+      sim.queryRate = parseInt(e.target.value);
+      document.getElementById('qpsValue').textContent = sim.queryRate;
+    });
+
+    document.getElementById('writeRate').addEventListener('input', (e) => {
+      sim.writeRate = parseInt(e.target.value);
+      document.getElementById('wpsValue').textContent = sim.writeRate;
+    });
+
+    document.getElementById('gcThreshold').addEventListener('input', (e) => {
+      sim.gcThreshold = parseInt(e.target.value);
+      document.getElementById('gcValue').textContent = sim.gcThreshold + '%';
+    });
+
+    document.getElementById('highWrites').addEventListener('click', () => {
+      sim.highWriteMode = true;
+    });
+
+    document.getElementById('contentionStorm').addEventListener('click', () => {
+      sim.contentionMode = true;
+    });
+
+    document.getElementById('recover').addEventListener('click', () => {
+      sim.highWriteMode = false;
+      sim.contentionMode = false;
+      sim.heapUsed = 0;
+      sim.walBuffer = 0;
+      sim.lockWaiters = 0;
+    });
+
+    setInterval(() => {
+      const heapPercent = (sim.heapUsed / sim.heapCapacity) * 100;
+      const walPercent = (sim.walBuffer / sim.walCapacity) * 100;
+      const avgLatency = sim.totalQueries > 0 ? (sim.totalLatency / sim.totalQueries).toFixed(0) : 0;
+
+      document.getElementById('heapUsed').textContent = heapPercent.toFixed(0) + '%';
+      document.getElementById('walPressure').textContent = walPercent.toFixed(0) + '%';
+      document.getElementById('lockWaits').textContent = Math.floor(sim.lockWaiters);
+      document.getElementById('avgLatency').textContent = avgLatency + 'ms';
+      document.getElementById('gcCount').textContent = sim.gcCount;
+    }, 100);
+  </script>
+</body>
+</html>

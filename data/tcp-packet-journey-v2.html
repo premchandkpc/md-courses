@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TCP World - Congestion & Exponential Backoff</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: linear-gradient(135deg, #0a0e1a 0%, #1a1f2e 100%);
+      color: #e3eaf0;
+      font-family: 'Monaco', 'Menlo', monospace;
+      overflow: hidden;
+      height: 100vh;
+    }
+    .container { display: flex; height: 100vh; padding: 16px; gap: 16px; }
+    .canvas-area { flex: 1; background: #0b0e14; border: 1px solid #1e3a5f; border-radius: 8px; }
+    .control-panel {
+      width: 330px;
+      background: #0b0e14;
+      border: 1px solid #1e3a5f;
+      border-radius: 8px;
+      padding: 16px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    h1, h3 { color: #00d4ff; letter-spacing: 1px; }
+    h1 { font-size: 18px; margin-bottom: 8px; }
+    h3 { font-size: 11px; text-transform: uppercase; margin-bottom: 6px; color: #a3aab8; }
+    .control-group { display: flex; flex-direction: column; gap: 6px; }
+    button {
+      padding: 6px 10px;
+      background: #1e3a5f;
+      border: 1px solid #00d4ff;
+      color: #00d4ff;
+      border-radius: 4px;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 10px;
+      transition: all 0.2s;
+    }
+    button:hover { background: #2a5a8f; box-shadow: 0 0 8px #00d4ff; }
+    button.failure { background: #ef4444; border-color: #ef4444; color: #0b0e14; }
+    .slider-container { display: flex; flex-direction: column; gap: 2px; }
+    label { font-size: 10px; color: #a3aab8; }
+    input[type="range"] {
+      width: 100%;
+      height: 3px;
+      border-radius: 2px;
+      background: #1e3a5f;
+      outline: none;
+      -webkit-appearance: none;
+    }
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: #00d4ff;
+      cursor: pointer;
+      box-shadow: 0 0 4px #00d4ff;
+    }
+    .metric {
+      background: #1a2332;
+      border: 1px solid #1e3a5f;
+      border-radius: 4px;
+      padding: 6px;
+      font-size: 10px;
+    }
+    .metric-value { color: #34d399; font-weight: bold; font-size: 12px; }
+    canvas { display: block; width: 100%; height: 100%; }
+    .title-bar { background: #1a2332; border-bottom: 1px solid #1e3a5f; padding: 10px 16px; }
+    .title-bar h1 { margin: 0; }
+  </style>
+</head>
+<body>
+  <div class="title-bar">
+    <h1>TCP World - Congestion & Exponential Backoff</h1>
+  </div>
+
+  <div class="container">
+    <div class="canvas-area">
+      <canvas id="canvas"></canvas>
+    </div>
+
+    <div class="control-panel">
+      <div>
+        <h3>Connection Control</h3>
+        <div class="control-group">
+          <button id="startSending">Start Sending</button>
+          <button id="stopSending">Stop Sending</button>
+        </div>
+      </div>
+
+      <div>
+        <h3>Network Config</h3>
+        <div class="slider-container">
+          <label>Send Rate (pkts/s)</label>
+          <input type="range" id="sendRate" min="10" max="500" value="100">
+          <span style="font-size: 9px; color: #34d399;" id="sendValue">100</span>
+        </div>
+        <div class="slider-container">
+          <label>Network RTT (ms)</label>
+          <input type="range" id="rtt" min="10" max="500" value="50">
+          <span style="font-size: 9px; color: #34d399;" id="rttValue">50ms</span>
+        </div>
+        <div class="slider-container">
+          <label>Loss Rate (%)</label>
+          <input type="range" id="lossRate" min="0" max="50" value="5">
+          <span style="font-size: 9px; color: #34d399;" id="lossValue">5%</span>
+        </div>
+      </div>
+
+      <div>
+        <h3>Failure Injection</h3>
+        <div class="control-group">
+          <button id="highLoss" class="failure">High Loss</button>
+          <button id="latencySpike" class="failure">Latency Spike</button>
+          <button id="recover">Recover</button>
+        </div>
+      </div>
+
+      <div>
+        <h3>System State</h3>
+        <div class="metric">
+          <div class="metric-label">Congestion Window</div>
+          <div class="metric-value" id="cwnd">0</div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">Packets in Flight</div>
+          <div class="metric-value" id="inFlight">0</div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">Retransmit Timeout</div>
+          <div class="metric-value" id="rto">0ms</div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">Loss Events</div>
+          <div class="metric-value" id="lossCount">0</div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">Throughput</div>
+          <div class="metric-value" id="throughput">0 Mbps</div>
+        </div>
+      </div>
+
+      <div>
+        <h3>Pressure Physics</h3>
+        <div style="font-size: 9px; color: #a3aab8; line-height: 1.5;">
+          • Send fills window<br/>
+          • Loss detected<br/>
+          → RTO exponential backoff<br/>
+          → Window shrinks<br/>
+          → Slow recovery
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+
+    function resizeCanvas() {
+      const rect = canvas.parentElement.getBoundingClientRect();
+      canvas.width = rect.width;
+      canvas.height = rect.height;
+    }
+    resizeCanvas();
+
+    const sim = {
+      sending: false,
+      sendRate: 100,
+      rtt: 50,
+      lossRate: 5,
+      cwnd: 32,
+      minCwnd: 2,
+      maxCwnd: 256,
+      packets: [], // { id, age, acked, lost }
+      rto: 50,
+      baseRto: 50,
+      rtoBackoff: 1,
+      inFlight: 0,
+      nextSeq: 0,
+      lossCount: 0,
+      totalSent: 0,
+      totalAcked: 0,
+      latencies: [],
+      highLoss: false,
+      latencySpike: false,
+      spikeTime: 0,
+      time: 0
+    };
+
+    function sendPacket() {
+      sim.packets.push({
+        id: sim.nextSeq++,
+        sent: sim.time,
+        age: 0,
+        acked: false,
+        lost: false
+      });
+      sim.inFlight++;
+      sim.totalSent++;
+    }
+
+    function processPackets() {
+      let acknowledged = 0;
+      let lostNow = 0;
+
+      sim.packets = sim.packets.filter(pkt => {
+        pkt.age++;
+        const effectiveRtt = sim.latencySpike && sim.spikeTime > 0 ? sim.rtt * 3 : sim.rtt;
+
+        // Check if should be acked
+        if (pkt.age >= effectiveRtt / 16 && !pkt.acked && !pkt.lost) {
+          const effectiveLoss = sim.highLoss ? sim.lossRate * 3 : sim.lossRate;
+          if (Math.random() < effectiveLoss / 100) {
+            // Packet lost
+            pkt.lost = true;
+            lostNow++;
+            return true;
+          } else {
+            // Acked
+            pkt.acked = true;
+            acknowledged++;
+            sim.totalAcked++;
+            return false;
+          }
+        }
+
+        // Check timeout
+        if (pkt.age > (sim.rto / 16) && !pkt.acked) {
+          if (!pkt.lost) {
+            pkt.lost = true;
+            lostNow++;
+          }
+          return true;
+        }
+
+        return pkt.age < 500;
+      });
+
+      // Process losses
+      if (lostNow > 0) {
+        sim.lossCount += lostNow;
+        // Multiplicative decrease
+        sim.cwnd = Math.max(sim.minCwnd, sim.cwnd / 2);
+        // Exponential backoff on RTO
+        sim.rtoBackoff = Math.min(32, sim.rtoBackoff * 2);
+        sim.rto = sim.baseRto * sim.rtoBackoff;
+      }
+
+      // Congestion avoidance (slow growth)
+      if (acknowledged > 0 && sim.cwnd < sim.maxCwnd) {
+        sim.cwnd += 0.5;
+      }
+
+      sim.inFlight = Math.max(0, sim.inFlight - acknowledged);
+
+      // RTO recovery
+      if (sim.inFlight === 0 && sim.rtoBackoff > 1) {
+        sim.rtoBackoff *= 0.95;
+        sim.rto = sim.baseRto * sim.rtoBackoff;
+      }
+    }
+
+    function update() {
+      if (sim.sending) {
+        for (let i = 0; i < sim.sendRate / 60; i++) {
+          if (sim.inFlight < sim.cwnd) {
+            sendPacket();
+          }
+        }
+      }
+
+      processPackets();
+
+      if (sim.latencySpike) {
+        sim.spikeTime--;
+        if (sim.spikeTime <= 0) {
+          sim.latencySpike = false;
+        }
+      }
+
+      sim.time++;
+    }
+
+    function draw() {
+      ctx.fillStyle = '#0b0e14';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // Congestion window visualization
+      const windowY = 100;
+      const windowHeight = 200;
+      const itemWidth = 4;
+      let x = 100;
+
+      // Draw window slots
+      for (let i = 0; i < sim.cwnd; i++) {
+        ctx.fillStyle = i < sim.inFlight ? '#60a5fa' : '#1e3a5f';
+        ctx.fillRect(x, windowY, itemWidth, windowHeight);
+        x += itemWidth + 2;
+      }
+
+      // Highlight overflow (loss condition)
+      if (sim.inFlight >= sim.cwnd) {
+        ctx.strokeStyle = '#ef4444';
+        ctx.lineWidth = 3;
+        ctx.strokeRect(100, windowY - 5, Math.min(x - 100, 300), windowHeight + 10);
+      }
+
+      // Window size label
+      ctx.fillStyle = '#34d399';
+      ctx.font = 'bold 10px monospace';
+      ctx.textAlign = 'left';
+      ctx.fillText(`Window: ${sim.cwnd.toFixed(0)}/${sim.maxCwnd}`, 100, windowY - 20);
+
+      // RTO visualization
+      const rtoX = 450;
+      const rtoY = 100;
+      const rtoColor = sim.rtoBackoff > 4 ? '#ef4444' : sim.rtoBackoff > 2 ? '#fbbf24' : '#34d399';
+
+      ctx.fillStyle = rtoColor;
+      ctx.globalAlpha = 0.3;
+      ctx.fillRect(rtoX, rtoY, 100, 50);
+      ctx.globalAlpha = 1;
+
+      ctx.strokeStyle = rtoColor;
+      ctx.lineWidth = 2;
+      ctx.strokeRect(rtoX, rtoY, 100, 50);
+
+      ctx.fillStyle = '#0b0e14';
+      ctx.font = 'bold 10px monospace';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('RTO', rtoX + 50, rtoY + 10);
+      ctx.fillText(sim.rto.toFixed(0) + 'ms', rtoX + 50, rtoY + 35);
+
+      // Packet flow animation
+      for (let i = 0; i < Math.min(sim.packets.length, 20); i++) {
+        const pkt = sim.packets[i];
+        const progress = Math.min(pkt.age / (sim.rtt / 16), 1);
+        const flowX = 100 + progress * 400;
+        const flowY = 350 + (i % 10) * 15;
+
+        ctx.fillStyle = pkt.lost ? '#ef4444' : pkt.acked ? '#34d399' : '#60a5fa';
+        ctx.beginPath();
+        ctx.arc(flowX, flowY, 3, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      // Latency graph
+      const graphX = 100;
+      const graphY = 450;
+      const graphW = canvas.width - 200;
+      const graphH = 100;
+
+      ctx.strokeStyle = '#1e3a5f';
+      ctx.lineWidth = 1;
+      ctx.strokeRect(graphX, graphY, graphW, graphH);
+
+      // Draw CWND over time (track last 100 updates)
+      if (sim.latencies.length > 1) {
+        ctx.strokeStyle = '#00d4ff';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        for (let i = 0; i < sim.latencies.length; i++) {
+          const x = graphX + (i / sim.latencies.length) * graphW;
+          const y = graphY + graphH - (sim.latencies[i] / sim.maxCwnd) * graphH;
+          if (i === 0) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
+        }
+        ctx.stroke();
+      }
+
+      ctx.fillStyle = '#a3aab8';
+      ctx.font = '10px monospace';
+      ctx.fillText('CWND over time', graphX, graphY - 5);
+
+      // Stats
+      ctx.fillStyle = '#a3aab8';
+      ctx.font = '10px monospace';
+      ctx.textAlign = 'left';
+      const throughput = sim.totalSent > 0 ? (sim.totalAcked / sim.totalSent * 100).toFixed(0) : 0;
+      ctx.fillText(`Sent: ${sim.totalSent} | Acked: ${sim.totalAcked} | Loss Events: ${sim.lossCount} | Backoff: ${sim.rtoBackoff.toFixed(1)}x`, 20, 30);
+    }
+
+    function animate() {
+      update();
+      draw();
+      requestAnimationFrame(animate);
+    }
+    animate();
+
+    document.getElementById('startSending').addEventListener('click', () => {
+      sim.sending = true;
+    });
+
+    document.getElementById('stopSending').addEventListener('click', () => {
+      sim.sending = false;
+    });
+
+    document.getElementById('sendRate').addEventListener('input', (e) => {
+      sim.sendRate = parseInt(e.target.value);
+      document.getElementById('sendValue').textContent = sim.sendRate;
+    });
+
+    document.getElementById('rtt').addEventListener('input', (e) => {
+      sim.rtt = parseInt(e.target.value);
+      sim.baseRto = sim.rtt;
+      document.getElementById('rttValue').textContent = sim.rtt + 'ms';
+    });
+
+    document.getElementById('lossRate').addEventListener('input', (e) => {
+      sim.lossRate = parseInt(e.target.value);
+      document.getElementById('lossValue').textContent = sim.lossRate + '%';
+    });
+
+    document.getElementById('highLoss').addEventListener('click', () => {
+      sim.highLoss = true;
+    });
+
+    document.getElementById('latencySpike').addEventListener('click', () => {
+      sim.latencySpike = true;
+      sim.spikeTime = 60;
+    });
+
+    document.getElementById('recover').addEventListener('click', () => {
+      sim.highLoss = false;
+      sim.latencySpike = false;
+      sim.cwnd = 32;
+      sim.rtoBackoff = 1;
+      sim.rto = sim.baseRto;
+      sim.packets = [];
+    });
+
+    setInterval(() => {
+      sim.latencies.push(sim.cwnd);
+      if (sim.latencies.length > 100) sim.latencies.shift();
+
+      const throughput = sim.totalSent > 0 ? ((sim.totalAcked / sim.totalSent) * 100).toFixed(0) : 0;
+      document.getElementById('cwnd').textContent = sim.cwnd.toFixed(0);
+      document.getElementById('inFlight').textContent = sim.inFlight;
+      document.getElementById('rto').textContent = sim.rto.toFixed(0) + 'ms';
+      document.getElementById('lossCount').textContent = sim.lossCount;
+      document.getElementById('throughput').textContent = throughput + '%';
+    }, 100);
+  </script>
+</body>
+</html>

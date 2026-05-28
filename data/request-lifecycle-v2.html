@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Request Lifecycle - Latency Propagation & Timeout Cascades</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: linear-gradient(135deg, #0a0e1a 0%, #1a1f2e 100%);
+      color: #e3eaf0;
+      font-family: 'Monaco', 'Menlo', monospace;
+      overflow: hidden;
+      height: 100vh;
+    }
+    .container { display: flex; height: 100vh; padding: 16px; gap: 16px; }
+    .canvas-area { flex: 1; background: #0b0e14; border: 1px solid #1e3a5f; border-radius: 8px; }
+    .control-panel {
+      width: 330px;
+      background: #0b0e14;
+      border: 1px solid #1e3a5f;
+      border-radius: 8px;
+      padding: 16px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    h1, h3 { color: #00d4ff; letter-spacing: 1px; }
+    h1 { font-size: 18px; margin-bottom: 8px; }
+    h3 { font-size: 11px; text-transform: uppercase; margin-bottom: 6px; color: #a3aab8; }
+    .control-group { display: flex; flex-direction: column; gap: 6px; }
+    button {
+      padding: 6px 10px;
+      background: #1e3a5f;
+      border: 1px solid #00d4ff;
+      color: #00d4ff;
+      border-radius: 4px;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 10px;
+      transition: all 0.2s;
+    }
+    button:hover { background: #2a5a8f; box-shadow: 0 0 8px #00d4ff; }
+    button.failure { background: #ef4444; border-color: #ef4444; color: #0b0e14; }
+    .slider-container { display: flex; flex-direction: column; gap: 2px; }
+    label { font-size: 10px; color: #a3aab8; }
+    input[type="range"] {
+      width: 100%;
+      height: 3px;
+      border-radius: 2px;
+      background: #1e3a5f;
+      outline: none;
+      -webkit-appearance: none;
+    }
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: #00d4ff;
+      cursor: pointer;
+      box-shadow: 0 0 4px #00d4ff;
+    }
+    .metric {
+      background: #1a2332;
+      border: 1px solid #1e3a5f;
+      border-radius: 4px;
+      padding: 6px;
+      font-size: 10px;
+    }
+    .metric-value { color: #34d399; font-weight: bold; font-size: 12px; }
+    canvas { display: block; width: 100%; height: 100%; }
+    .title-bar { background: #1a2332; border-bottom: 1px solid #1e3a5f; padding: 10px 16px; }
+    .title-bar h1 { margin: 0; }
+  </style>
+</head>
+<body>
+  <div class="title-bar">
+    <h1>Request Lifecycle - Latency Propagation & Timeout Cascades</h1>
+  </div>
+
+  <div class="container">
+    <div class="canvas-area">
+      <canvas id="canvas"></canvas>
+    </div>
+
+    <div class="control-panel">
+      <div>
+        <h3>Traffic Control</h3>
+        <div class="control-group">
+          <button id="startRequests">Start Requests</button>
+          <button id="stopRequests">Stop Requests</button>
+        </div>
+      </div>
+
+      <div>
+        <h3>Request Config</h3>
+        <div class="slider-container">
+          <label>Request Rate (req/s)</label>
+          <input type="range" id="reqRate" min="10" max="500" value="100">
+          <span style="font-size: 9px; color: #34d399;" id="rateValue">100</span>
+        </div>
+        <div class="slider-container">
+          <label>Timeout (ms)</label>
+          <input type="range" id="timeout" min="50" max="500" value="200">
+          <span style="font-size: 9px; color: #34d399;" id="timeoutValue">200ms</span>
+        </div>
+        <div class="slider-container">
+          <label>Retry Multiplier</label>
+          <input type="range" id="retryMultiplier" min="1" max="5" value="2">
+          <span style="font-size: 9px; color: #34d399;" id="retryValue">2x</span>
+        </div>
+      </div>
+
+      <div>
+        <h3>Failure Injection</h3>
+        <div class="control-group">
+          <button id="slowDB" class="failure">Slow Database</button>
+          <button id="slowService" class="failure">Slow Service</button>
+          <button id="recover">Recover</button>
+        </div>
+      </div>
+
+      <div>
+        <h3>System State</h3>
+        <div class="metric">
+          <div class="metric-label">Active Requests</div>
+          <div class="metric-value" id="activeRequests">0</div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">Avg Latency</div>
+          <div class="metric-value" id="avgLatency">0ms</div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">Timeouts/sec</div>
+          <div class="metric-value" id="timeoutRate">0</div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">Retry Queue</div>
+          <div class="metric-value" id="retryQueue">0</div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">Success Rate</div>
+          <div class="metric-value" id="successRate">0%</div>
+        </div>
+      </div>
+
+      <div>
+        <h3>Pressure Physics</h3>
+        <div style="font-size: 9px; color: #a3aab8; line-height: 1.5;">
+          • Requests flow down<br/>
+          • Latency accumulates<br/>
+          • Total > timeout<br/>
+          → Timeout fires<br/>
+          → Retries amplify<br/>
+          → Cascade
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+
+    function resizeCanvas() {
+      const rect = canvas.parentElement.getBoundingClientRect();
+      canvas.width = rect.width;
+      canvas.height = rect.height;
+    }
+    resizeCanvas();
+
+    const sim = {
+      layers: [
+        { name: 'Client', x: 100, y: canvas.height / 2, latency: 1, capacity: 1000, active: 0 },
+        { name: 'LB', x: 250, y: canvas.height / 2, latency: 2, capacity: 500, active: 0 },
+        { name: 'API', x: 400, y: canvas.height / 2, latency: 5, capacity: 300, active: 0 },
+        { name: 'Service', x: 550, y: canvas.height / 2, latency: 10, capacity: 200, active: 0 },
+        { name: 'DB', x: 700, y: canvas.height / 2, latency: 50, capacity: 100, active: 0 }
+      ],
+      requests: [],
+      reqRate: 100,
+      timeout: 200,
+      retryMultiplier: 2,
+      requestsActive: false,
+      totalRequests: 0,
+      successfulRequests: 0,
+      timedOutRequests: 0,
+      retryQueue: 0,
+      latencies: [],
+      slowDB: false,
+      slowService: false,
+      time: 0
+    };
+
+    function createRequest(retry = false) {
+      sim.requests.push({
+        id: sim.totalRequests++,
+        startTime: sim.time,
+        currentLayer: 0,
+        totalLatency: 0,
+        timedOut: false,
+        retried: retry,
+        lastTimeout: false
+      });
+    }
+
+    function processRequests() {
+      sim.layers.forEach(layer => layer.active = 0);
+
+      sim.requests = sim.requests.filter(req => {
+        req.totalLatency++;
+
+        const currentLayer = sim.layers[req.currentLayer];
+        currentLayer.active++;
+
+        // Layer latency
+        let layerLatency = currentLayer.latency;
+        if (sim.slowDB && req.currentLayer === 4) layerLatency *= 5;
+        if (sim.slowService && req.currentLayer === 3) layerLatency *= 3;
+
+        // Move to next layer
+        if (req.totalLatency % Math.max(1, Math.round(layerLatency / 16)) === 0) {
+          req.currentLayer++;
+        }
+
+        // Check timeout
+        if (req.totalLatency > sim.timeout && !req.timedOut) {
+          req.timedOut = true;
+          req.lastTimeout = true;
+          sim.timedOutRequests++;
+          return false; // Remove from active requests
+        }
+
+        // Completed
+        if (req.currentLayer >= sim.layers.length) {
+          sim.successfulRequests++;
+          sim.latencies.push(req.totalLatency);
+          if (sim.latencies.length > 100) sim.latencies.shift();
+          return false;
+        }
+
+        return true;
+      });
+
+      // Process retries
+      if (sim.retryQueue > 0) {
+        const retriesToProcess = Math.min(Math.ceil(sim.retryQueue / 10), 5);
+        for (let i = 0; i < retriesToProcess; i++) {
+          createRequest(true);
+          sim.retryQueue--;
+        }
+      }
+    }
+
+    function update() {
+      if (sim.requestsActive) {
+        for (let i = 0; i < sim.reqRate / 60; i++) {
+          createRequest();
+        }
+      }
+
+      processRequests();
+
+      // Timeouts trigger retries
+      for (const req of sim.requests) {
+        if (req.lastTimeout) {
+          sim.retryQueue += sim.retryMultiplier;
+          req.lastTimeout = false;
+        }
+      }
+
+      sim.time++;
+    }
+
+    function draw() {
+      ctx.fillStyle = '#0b0e14';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // Draw layers as vertical bars
+      sim.layers.forEach((layer, idx) => {
+        const pressure = Math.min(100, (layer.active / layer.capacity) * 100);
+        const color = pressure > 80 ? '#ef4444' : pressure > 50 ? '#fbbf24' : '#34d399';
+
+        // Pressure glow
+        ctx.fillStyle = color;
+        ctx.globalAlpha = (pressure / 100) * 0.4;
+        ctx.fillRect(layer.x - 30, 100, 60, 300);
+        ctx.globalAlpha = 1;
+
+        // Bar
+        ctx.fillStyle = color;
+        ctx.fillRect(layer.x - 30, 100 + (1 - pressure / 100) * 300, 60, (pressure / 100) * 300);
+
+        // Border
+        ctx.strokeStyle = color;
+        ctx.lineWidth = 2;
+        ctx.strokeRect(layer.x - 30, 100, 60, 300);
+
+        // Label
+        ctx.fillStyle = '#0b0e14';
+        ctx.font = 'bold 10px monospace';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(layer.name, layer.x, 70);
+        ctx.fillText(layer.active, layer.x, 420);
+      });
+
+      // Draw request flow
+      for (let i = 0; i < Math.min(sim.requests.length, 30); i++) {
+        const req = sim.requests[i];
+        const currentLayer = sim.layers[req.currentLayer];
+        const nextLayer = sim.layers[Math.min(req.currentLayer + 1, sim.layers.length - 1)];
+
+        const progress = req.totalLatency % 5 / 5;
+        const x = currentLayer.x + (nextLayer.x - currentLayer.x) * progress;
+        const y = currentLayer.y;
+
+        ctx.fillStyle = req.retried ? '#fbbf24' : '#60a5fa';
+        ctx.globalAlpha = 0.8;
+        ctx.beginPath();
+        ctx.arc(x, y, 4, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.globalAlpha = 1;
+      }
+
+      // Latency graph
+      const graphX = 100;
+      const graphY = 450;
+      const graphW = canvas.width - 200;
+      const graphH = 100;
+
+      ctx.strokeStyle = '#1e3a5f';
+      ctx.lineWidth = 1;
+      ctx.strokeRect(graphX, graphY, graphW, graphH);
+
+      if (sim.latencies.length > 1) {
+        ctx.strokeStyle = '#00d4ff';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        for (let i = 0; i < sim.latencies.length; i++) {
+          const x = graphX + (i / sim.latencies.length) * graphW;
+          const y = graphY + graphH - Math.min(sim.latencies[i] / sim.timeout * graphH, graphH);
+          if (i === 0) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
+        }
+        ctx.stroke();
+      }
+
+      // Timeout line
+      const timeoutY = graphY + graphH - (sim.timeout / sim.timeout) * graphH;
+      ctx.strokeStyle = '#ef4444';
+      ctx.lineWidth = 1;
+      ctx.setLineDash([3, 3]);
+      ctx.beginPath();
+      ctx.moveTo(graphX, timeoutY);
+      ctx.lineTo(graphX + graphW, timeoutY);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      ctx.fillStyle = '#a3aab8';
+      ctx.font = '10px monospace';
+      ctx.fillText('Latency', graphX, graphY - 5);
+
+      // Stats
+      ctx.fillStyle = '#a3aab8';
+      ctx.font = '10px monospace';
+      ctx.textAlign = 'left';
+      const avgLatency = sim.latencies.length > 0 ? (sim.latencies.reduce((a, b) => a + b) / sim.latencies.length).toFixed(0) : 0;
+      const successRate = sim.totalRequests > 0 ? ((sim.successfulRequests / sim.totalRequests) * 100).toFixed(0) : 0;
+      ctx.fillText(`Total: ${sim.totalRequests} | Success: ${sim.successfulRequests} | Timeouts: ${sim.timedOutRequests} | Retries: ${sim.retryQueue}`, 20, 30);
+      ctx.fillText(`Avg Latency: ${avgLatency}ms | Success Rate: ${successRate}%`, 20, 50);
+    }
+
+    function animate() {
+      update();
+      draw();
+      requestAnimationFrame(animate);
+    }
+    animate();
+
+    document.getElementById('startRequests').addEventListener('click', () => {
+      sim.requestsActive = true;
+    });
+
+    document.getElementById('stopRequests').addEventListener('click', () => {
+      sim.requestsActive = false;
+    });
+
+    document.getElementById('reqRate').addEventListener('input', (e) => {
+      sim.reqRate = parseInt(e.target.value);
+      document.getElementById('rateValue').textContent = sim.reqRate;
+    });
+
+    document.getElementById('timeout').addEventListener('input', (e) => {
+      sim.timeout = parseInt(e.target.value);
+      document.getElementById('timeoutValue').textContent = sim.timeout + 'ms';
+    });
+
+    document.getElementById('retryMultiplier').addEventListener('input', (e) => {
+      sim.retryMultiplier = parseInt(e.target.value);
+      document.getElementById('retryValue').textContent = sim.retryMultiplier + 'x';
+    });
+
+    document.getElementById('slowDB').addEventListener('click', () => {
+      sim.slowDB = true;
+    });
+
+    document.getElementById('slowService').addEventListener('click', () => {
+      sim.slowService = true;
+    });
+
+    document.getElementById('recover').addEventListener('click', () => {
+      sim.slowDB = false;
+      sim.slowService = false;
+      sim.retryQueue = 0;
+    });
+
+    setInterval(() => {
+      const avgLatency = sim.latencies.length > 0 ? (sim.latencies.reduce((a, b) => a + b) / sim.latencies.length).toFixed(0) : 0;
+      const successRate = sim.totalRequests > 0 ? ((sim.successfulRequests / sim.totalRequests) * 100).toFixed(0) : 0;
+      const activeReqs = sim.requests.length;
+
+      document.getElementById('activeRequests').textContent = activeReqs;
+      document.getElementById('avgLatency').textContent = avgLatency + 'ms';
+      document.getElementById('timeoutRate').textContent = sim.timedOutRequests;
+      document.getElementById('retryQueue').textContent = sim.retryQueue;
+      document.getElementById('successRate').textContent = successRate + '%';
+    }, 100);
+  </script>
+</body>
+</html>

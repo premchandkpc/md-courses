@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Raft World - Election Storms & Consensus Pressure</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: linear-gradient(135deg, #0a0e1a 0%, #1a1f2e 100%);
+      color: #e3eaf0;
+      font-family: 'Monaco', 'Menlo', monospace;
+      overflow: hidden;
+      height: 100vh;
+    }
+    .container { display: flex; height: 100vh; padding: 16px; gap: 16px; }
+    .canvas-area { flex: 1; background: #0b0e14; border: 1px solid #1e3a5f; border-radius: 8px; }
+    .control-panel {
+      width: 330px;
+      background: #0b0e14;
+      border: 1px solid #1e3a5f;
+      border-radius: 8px;
+      padding: 16px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    h1, h3 { color: #00d4ff; letter-spacing: 1px; }
+    h1 { font-size: 18px; margin-bottom: 8px; }
+    h3 { font-size: 11px; text-transform: uppercase; margin-bottom: 6px; color: #a3aab8; }
+    .control-group { display: flex; flex-direction: column; gap: 6px; }
+    button {
+      padding: 6px 10px;
+      background: #1e3a5f;
+      border: 1px solid #00d4ff;
+      color: #00d4ff;
+      border-radius: 4px;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 10px;
+      transition: all 0.2s;
+    }
+    button:hover { background: #2a5a8f; box-shadow: 0 0 8px #00d4ff; }
+    button.failure { background: #ef4444; border-color: #ef4444; color: #0b0e14; }
+    .slider-container { display: flex; flex-direction: column; gap: 2px; }
+    label { font-size: 10px; color: #a3aab8; }
+    input[type="range"] {
+      width: 100%;
+      height: 3px;
+      border-radius: 2px;
+      background: #1e3a5f;
+      outline: none;
+      -webkit-appearance: none;
+    }
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: #00d4ff;
+      cursor: pointer;
+      box-shadow: 0 0 4px #00d4ff;
+    }
+    .metric {
+      background: #1a2332;
+      border: 1px solid #1e3a5f;
+      border-radius: 4px;
+      padding: 6px;
+      font-size: 10px;
+    }
+    .metric-value { color: #34d399; font-weight: bold; font-size: 12px; }
+    canvas { display: block; width: 100%; height: 100%; }
+    .title-bar { background: #1a2332; border-bottom: 1px solid #1e3a5f; padding: 10px 16px; }
+    .title-bar h1 { margin: 0; }
+  </style>
+</head>
+<body>
+  <div class="title-bar">
+    <h1>Raft World - Election Storms & Consensus Pressure</h1>
+  </div>
+
+  <div class="container">
+    <div class="canvas-area">
+      <canvas id="canvas"></canvas>
+    </div>
+
+    <div class="control-panel">
+      <div>
+        <h3>Cluster Control</h3>
+        <div class="control-group">
+          <button id="startCluster">Start Cluster</button>
+          <button id="stopCluster">Stop Cluster</button>
+        </div>
+      </div>
+
+      <div>
+        <h3>Raft Config</h3>
+        <div class="slider-container">
+          <label>Cluster Size</label>
+          <input type="range" id="clusterSize" min="3" max="7" value="5">
+          <span style="font-size: 9px; color: #34d399;" id="sizeValue">5</span>
+        </div>
+        <div class="slider-container">
+          <label>Election Timeout (ms)</label>
+          <input type="range" id="electionTimeout" min="50" max="500" value="150">
+          <span style="font-size: 9px; color: #34d399;" id="timeoutValue">150ms</span>
+        </div>
+        <div class="slider-container">
+          <label>Heartbeat Interval (ms)</label>
+          <input type="range" id="heartbeatInterval" min="10" max="100" value="50">
+          <span style="font-size: 9px; color: #34d399;" id="beatValue">50ms</span>
+        </div>
+      </div>
+
+      <div>
+        <h3>Failure Injection</h3>
+        <div class="control-group">
+          <button id="partition" class="failure">Network Partition</button>
+          <button id="slowNetwork" class="failure">Slow Heartbeats</button>
+          <button id="recover">Recover</button>
+        </div>
+      </div>
+
+      <div>
+        <h3>System State</h3>
+        <div class="metric">
+          <div class="metric-label">Current Term</div>
+          <div class="metric-value" id="currentTerm">0</div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">Leader Status</div>
+          <div class="metric-value" id="leaderStatus">NONE</div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">Elections Count</div>
+          <div class="metric-value" id="electionCount">0</div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">Consensus Lag</div>
+          <div class="metric-value" id="consensusLag">0</div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">Votes in Flight</div>
+          <div class="metric-value" id="votesInFlight">0</div>
+        </div>
+      </div>
+
+      <div>
+        <h3>Pressure Physics</h3>
+        <div style="font-size: 9px; color: #a3aab8; line-height: 1.5;">
+          • No heartbeats<br/>
+          → Election timeout<br/>
+          • Candidate broadcasts<br/>
+          → Voting storms<br/>
+          → Split-brain
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+
+    function resizeCanvas() {
+      const rect = canvas.parentElement.getBoundingClientRect();
+      canvas.width = rect.width;
+      canvas.height = rect.height;
+    }
+    resizeCanvas();
+
+    const sim = {
+      clusterSize: 5,
+      running: false,
+      nodes: [],
+      currentTerm: 0,
+      leader: null,
+      electionTimeout: 150,
+      heartbeatInterval: 50,
+      electionCount: 0,
+      partitioned: false,
+      slowNetwork: false,
+      time: 0,
+      votes: [] // { from, to, term }
+    };
+
+    function initCluster() {
+      sim.nodes = [];
+      for (let i = 0; i < sim.clusterSize; i++) {
+        sim.nodes.push({
+          id: i,
+          state: 'follower', // follower, candidate, leader
+          term: 0,
+          votedFor: null,
+          heartbeatTime: 0,
+          electionTimer: Math.random() * 50 + 50,
+          x: 150 + i * 120,
+          y: canvas.height / 2,
+          health: 100
+        });
+      }
+      sim.leader = null;
+      sim.currentTerm = 0;
+    }
+
+    function broadcastHeartbeats() {
+      if (!sim.leader) return;
+      const leader = sim.nodes[sim.leader];
+
+      for (let i = 0; i < sim.nodes.length; i++) {
+        if (i !== sim.leader) {
+          const follower = sim.nodes[i];
+          const distance = Math.abs(follower.x - leader.x);
+
+          // Partition blocks messages
+          if (sim.partitioned && i > sim.clusterSize / 2) continue;
+
+          // Slow network delays heartbeats
+          const delay = sim.slowNetwork ? 5 : 1;
+          follower.heartbeatTime = delay;
+          follower.electionTimer = sim.electionTimeout;
+        }
+      }
+    }
+
+    function startElection(nodeId) {
+      const node = sim.nodes[nodeId];
+      if (node.state === 'follower') {
+        node.state = 'candidate';
+      }
+
+      if (node.state === 'candidate') {
+        node.term++;
+        sim.currentTerm = Math.max(sim.currentTerm, node.term);
+        sim.electionCount++;
+
+        // Request votes from other nodes
+        for (let i = 0; i < sim.nodes.length; i++) {
+          if (i !== nodeId) {
+            const other = sim.nodes[i];
+
+            // Partition blocks votes
+            if (sim.partitioned && nodeId > sim.clusterSize / 2 && i <= sim.clusterSize / 2) continue;
+            if (sim.partitioned && nodeId <= sim.clusterSize / 2 && i > sim.clusterSize / 2) continue;
+
+            if (other.term < node.term) {
+              other.term = node.term;
+              other.votedFor = nodeId;
+              sim.votes.push({ from: i, to: nodeId, term: node.term });
+            }
+          }
+        }
+      }
+    }
+
+    function tallyVotes() {
+      // Count votes for each candidate
+      const voteCounts = {};
+      for (let i = 0; i < sim.nodes.length; i++) {
+        voteCounts[i] = 0;
+      }
+
+      for (const vote of sim.votes) {
+        voteCounts[vote.to] = (voteCounts[vote.to] || 0) + 1;
+      }
+
+      // Check for quorum
+      const quorum = Math.floor(sim.clusterSize / 2) + 1;
+      for (let i = 0; i < sim.clusterSize; i++) {
+        if (voteCounts[i] >= quorum && sim.nodes[i].state === 'candidate') {
+          sim.leader = i;
+          sim.nodes[i].state = 'leader';
+          sim.votes = [];
+          return;
+        }
+      }
+    }
+
+    function update() {
+      if (!sim.running) return;
+
+      // Decay heartbeat timers
+      for (let node of sim.nodes) {
+        if (node.heartbeatTime > 0) node.heartbeatTime--;
+        if (node.electionTimer > 0) {
+          node.electionTimer--;
+        } else {
+          // Election timeout
+          startElection(node.id);
+        }
+      }
+
+      // Leader broadcasts
+      if (sim.leader !== null) {
+        const leader = sim.nodes[sim.leader];
+        if (sim.time % (sim.heartbeatInterval / 16) === 0) {
+          broadcastHeartbeats();
+        }
+      }
+
+      tallyVotes();
+
+      sim.time++;
+    }
+
+    function draw() {
+      ctx.fillStyle = '#0b0e14';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // Draw nodes
+      sim.nodes.forEach((node, i) => {
+        const stateColors = {
+          follower: '#34d399',
+          candidate: '#fbbf24',
+          leader: '#ef4444'
+        };
+
+        const color = stateColors[node.state] || '#888';
+
+        // Health glow
+        ctx.fillStyle = color;
+        ctx.globalAlpha = 0.3;
+        ctx.beginPath();
+        ctx.arc(node.x, node.y, 50, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.globalAlpha = 1;
+
+        // Node
+        ctx.fillStyle = color;
+        ctx.beginPath();
+        ctx.arc(node.x, node.y, 30, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Label
+        ctx.fillStyle = '#0b0e14';
+        ctx.font = 'bold 10px monospace';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(`N${node.id}`, node.x, node.y - 10);
+        ctx.font = '8px monospace';
+        ctx.fillText(node.state[0].toUpperCase(), node.x, node.y + 5);
+        ctx.fillText(`T${node.term}`, node.x, node.y + 15);
+      });
+
+      // Draw partition line
+      if (sim.partitioned) {
+        ctx.strokeStyle = '#ef4444';
+        ctx.lineWidth = 3;
+        ctx.setLineDash([5, 5]);
+        const midX = 150 + (sim.clusterSize / 2) * 120;
+        ctx.beginPath();
+        ctx.moveTo(midX, 50);
+        ctx.lineTo(midX, canvas.height - 50);
+        ctx.stroke();
+        ctx.setLineDash([]);
+
+        ctx.fillStyle = '#ef4444';
+        ctx.font = 'bold 12px monospace';
+        ctx.textAlign = 'center';
+        ctx.fillText('PARTITION', midX, 40);
+      }
+
+      // Draw votes in flight
+      let voteCount = 0;
+      for (let i = 0; i < Math.min(sim.votes.length, 10); i++) {
+        const vote = sim.votes[i];
+        const fromNode = sim.nodes[vote.from];
+        const toNode = sim.nodes[vote.to];
+
+        const progress = (sim.time * 2 + i * 30) % 100 / 100;
+        const x = fromNode.x + (toNode.x - fromNode.x) * progress;
+        const y = fromNode.y + (toNode.y - fromNode.y) * progress;
+
+        ctx.fillStyle = '#fbbf24';
+        ctx.beginPath();
+        ctx.arc(x, y, 2, 0, Math.PI * 2);
+        ctx.fill();
+        voteCount++;
+      }
+
+      // Stats
+      ctx.fillStyle = '#a3aab8';
+      ctx.font = '10px monospace';
+      ctx.textAlign = 'left';
+      const leaderStatus = sim.leader !== null ? `Leader: N${sim.leader}` : 'No Leader';
+      ctx.fillText(`Term: ${sim.currentTerm} | ${leaderStatus} | Elections: ${sim.electionCount}`, 20, 30);
+      ctx.fillText(`Votes in Flight: ${sim.votes.length} | Nodes: ${sim.clusterSize}`, 20, 50);
+    }
+
+    function animate() {
+      update();
+      draw();
+      requestAnimationFrame(animate);
+    }
+    animate();
+
+    document.getElementById('startCluster').addEventListener('click', () => {
+      initCluster();
+      sim.running = true;
+    });
+
+    document.getElementById('stopCluster').addEventListener('click', () => {
+      sim.running = false;
+    });
+
+    document.getElementById('clusterSize').addEventListener('input', (e) => {
+      sim.clusterSize = parseInt(e.target.value);
+      document.getElementById('sizeValue').textContent = sim.clusterSize;
+      if (sim.running) {
+        initCluster();
+      }
+    });
+
+    document.getElementById('electionTimeout').addEventListener('input', (e) => {
+      sim.electionTimeout = parseInt(e.target.value);
+      document.getElementById('timeoutValue').textContent = sim.electionTimeout + 'ms';
+    });
+
+    document.getElementById('heartbeatInterval').addEventListener('input', (e) => {
+      sim.heartbeatInterval = parseInt(e.target.value);
+      document.getElementById('beatValue').textContent = sim.heartbeatInterval + 'ms';
+    });
+
+    document.getElementById('partition').addEventListener('click', () => {
+      sim.partitioned = true;
+      sim.leader = null;
+      sim.votes = [];
+    });
+
+    document.getElementById('slowNetwork').addEventListener('click', () => {
+      sim.slowNetwork = true;
+    });
+
+    document.getElementById('recover').addEventListener('click', () => {
+      sim.partitioned = false;
+      sim.slowNetwork = false;
+      initCluster();
+    });
+
+    setInterval(() => {
+      const leaderStatus = sim.leader !== null ? `Leader: N${sim.leader}` : 'NONE';
+      const consensusLag = sim.nodes.filter(n => n.term < sim.currentTerm).length;
+      document.getElementById('currentTerm').textContent = sim.currentTerm;
+      document.getElementById('leaderStatus').textContent = leaderStatus;
+      document.getElementById('electionCount').textContent = sim.electionCount;
+      document.getElementById('consensusLag').textContent = consensusLag;
+      document.getElementById('votesInFlight').textContent = sim.votes.length;
+    }, 100);
+  </script>
+</body>
+</html>

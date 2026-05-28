@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kubernetes V2 - Node Pressure & Pod Eviction</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: linear-gradient(135deg, #0a0e1a 0%, #1a1f2e 100%);
+      color: #e3eaf0;
+      font-family: 'Monaco', 'Menlo', monospace;
+      overflow: hidden;
+      height: 100vh;
+    }
+    .container { display: flex; height: 100vh; padding: 16px; gap: 16px; }
+    .canvas-area { flex: 1; background: #0b0e14; border: 1px solid #1e3a5f; border-radius: 8px; }
+    .control-panel {
+      width: 330px;
+      background: #0b0e14;
+      border: 1px solid #1e3a5f;
+      border-radius: 8px;
+      padding: 16px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    h1, h3 { color: #00d4ff; letter-spacing: 1px; }
+    h1 { font-size: 18px; margin-bottom: 8px; }
+    h3 { font-size: 11px; text-transform: uppercase; margin-bottom: 6px; color: #a3aab8; }
+    .control-group { display: flex; flex-direction: column; gap: 6px; }
+    button {
+      padding: 6px 10px;
+      background: #1e3a5f;
+      border: 1px solid #00d4ff;
+      color: #00d4ff;
+      border-radius: 4px;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 10px;
+      transition: all 0.2s;
+    }
+    button:hover { background: #2a5a8f; box-shadow: 0 0 8px #00d4ff; }
+    button.failure { background: #ef4444; border-color: #ef4444; color: #0b0e14; }
+    .slider-container { display: flex; flex-direction: column; gap: 2px; }
+    label { font-size: 10px; color: #a3aab8; }
+    input[type="range"] {
+      width: 100%;
+      height: 3px;
+      border-radius: 2px;
+      background: #1e3a5f;
+      outline: none;
+      -webkit-appearance: none;
+    }
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: #00d4ff;
+      cursor: pointer;
+      box-shadow: 0 0 4px #00d4ff;
+    }
+    .metric {
+      background: #1a2332;
+      border: 1px solid #1e3a5f;
+      border-radius: 4px;
+      padding: 6px;
+      font-size: 10px;
+    }
+    .metric-value { color: #34d399; font-weight: bold; font-size: 12px; }
+    canvas { display: block; width: 100%; height: 100%; }
+    .title-bar { background: #1a2332; border-bottom: 1px solid #1e3a5f; padding: 10px 16px; }
+    .title-bar h1 { margin: 0; }
+  </style>
+</head>
+<body>
+  <div class="title-bar">
+    <h1>Kubernetes V2 - Node Pressure & Cascading Evictions</h1>
+  </div>
+
+  <div class="container">
+    <div class="canvas-area">
+      <canvas id="canvas"></canvas>
+    </div>
+
+    <div class="control-panel">
+      <div>
+        <h3>Workload Control</h3>
+        <div class="control-group">
+          <button id="deployPods">Deploy Pods</button>
+          <button id="scaleUp">Scale Up (+5)</button>
+          <button id="scaleDown">Scale Down (-5)</button>
+        </div>
+      </div>
+
+      <div>
+        <h3>Resource Pressure</h3>
+        <div class="slider-container">
+          <label>Pod CPU Request (m)</label>
+          <input type="range" id="cpuRequest" min="10" max="500" value="100">
+          <span style="font-size: 9px; color: #34d399;" id="cpuValue">100m</span>
+        </div>
+        <div class="slider-container">
+          <label>Pod Memory Request (Mi)</label>
+          <input type="range" id="memRequest" min="64" max="1024" value="256">
+          <span style="font-size: 9px; color: #34d399;" id="memValue">256Mi</span>
+        </div>
+      </div>
+
+      <div>
+        <h3>Failure Injection</h3>
+        <div class="control-group">
+          <button id="failNode" class="failure">Fail Node</button>
+          <button id="highMemPressure">High Mem Pressure</button>
+          <button id="recover">Recover</button>
+        </div>
+      </div>
+
+      <div>
+        <h3>System State</h3>
+        <div class="metric">
+          <div class="metric-label">Pods Running</div>
+          <div class="metric-value" id="podsRunning">0</div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">Pods Evicted</div>
+          <div class="metric-value" id="podsEvicted">0</div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">Node CPU Pressure</div>
+          <div class="metric-value" id="cpuPressure">0%</div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">Node Memory Pressure</div>
+          <div class="metric-value" id="memPressure">0%</div>
+        </div>
+      </div>
+
+      <div>
+        <h3>Pressure Physics</h3>
+        <div style="font-size: 9px; color: #a3aab8; line-height: 1.5;">
+          • Pods consume resources<br/>
+          • Node pressure accumulates<br/>
+          • High pressure → evictions<br/>
+          • Evictions cascade<br/>
+          → Cluster destabilizes
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+
+    function resizeCanvas() {
+      const rect = canvas.parentElement.getBoundingClientRect();
+      canvas.width = rect.width;
+      canvas.height = rect.height;
+    }
+    resizeCanvas();
+
+    const sim = {
+      nodes: [
+        { id: 0, x: 150, y: 150, cpuCapacity: 2000, memCapacity: 4096, cpuUsed: 0, memUsed: 0, cpuPressure: 0, memPressure: 0, health: 100, failed: false },
+        { id: 1, x: 400, y: 150, cpuCapacity: 2000, memCapacity: 4096, cpuUsed: 0, memUsed: 0, cpuPressure: 0, memPressure: 0, health: 100, failed: false },
+        { id: 2, x: 650, y: 150, cpuCapacity: 2000, memCapacity: 4096, cpuUsed: 0, memUsed: 0, cpuPressure: 0, memPressure: 0, health: 100, failed: false }
+      ],
+      pods: [],
+      cpuRequest: 100,
+      memRequest: 256,
+      podsEvicted: 0,
+      memPressureHigh: false
+    };
+
+    function deployPods() {
+      for (let i = 0; i < 3; i++) {
+        const nodeIdx = sim.pods.length % 3;
+        sim.pods.push({
+          id: sim.pods.length,
+          nodeIdx: nodeIdx,
+          cpuRequest: sim.cpuRequest,
+          memRequest: sim.memRequest,
+          state: 'running',
+          age: 0
+        });
+      }
+      updateNodePressure();
+    }
+
+    function updateNodePressure() {
+      sim.nodes.forEach(node => {
+        node.cpuUsed = 0;
+        node.memUsed = 0;
+      });
+
+      sim.pods.forEach(pod => {
+        if (pod.state === 'running') {
+          const node = sim.nodes[pod.nodeIdx];
+          if (node) {
+            node.cpuUsed += pod.cpuRequest;
+            node.memUsed += pod.memRequest;
+          }
+        }
+      });
+
+      // Calculate pressure
+      sim.nodes.forEach(node => {
+        node.cpuPressure = (node.cpuUsed / node.cpuCapacity) * 100;
+        node.memPressure = (node.memUsed / node.memCapacity) * 100;
+        node.health = Math.min(100, Math.max(0, 100 - Math.max(node.cpuPressure, node.memPressure)));
+
+        // Trigger evictions if pressure too high
+        if (node.memPressure > 85 && sim.memPressureHigh) {
+          // Evict lowest priority pods
+          sim.pods
+            .filter(p => p.nodeIdx === node.id && p.state === 'running')
+            .slice(-1)
+            .forEach(p => {
+              p.state = 'evicted';
+              sim.podsEvicted++;
+            });
+        }
+      });
+    }
+
+    function update() {
+      updateNodePressure();
+    }
+
+    function draw() {
+      ctx.fillStyle = '#0b0e14';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // Draw nodes
+      sim.nodes.forEach(node => {
+        const maxPressure = Math.max(node.cpuPressure, node.memPressure);
+        const color = maxPressure > 80 ? '#ef4444' :
+                     maxPressure > 50 ? '#fbbf24' : '#34d399';
+
+        // Pressure glow
+        ctx.fillStyle = color;
+        ctx.globalAlpha = (maxPressure / 100) * 0.5;
+        ctx.beginPath();
+        ctx.arc(node.x, node.y, 100, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.globalAlpha = 1;
+
+        // Node box
+        ctx.fillStyle = node.failed ? '#999' : color;
+        ctx.fillRect(node.x - 60, node.y - 60, 120, 120);
+
+        ctx.fillStyle = '#0b0e14';
+        ctx.font = 'bold 10px monospace';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(`Node ${node.id}`, node.x, node.y - 30);
+        ctx.font = '8px monospace';
+        ctx.fillText(`CPU: ${node.cpuPressure.toFixed(0)}%`, node.x, node.y - 10);
+        ctx.fillText(`Mem: ${node.memPressure.toFixed(0)}%`, node.x, node.y + 5);
+        ctx.fillText(`${node.health.toFixed(0)}%H`, node.x, node.y + 20);
+      });
+
+      // Draw pods on nodes
+      sim.pods.forEach(pod => {
+        if (pod.state === 'running') {
+          const node = sim.nodes[pod.nodeIdx];
+          const podX = node.x + (Math.random() - 0.5) * 80;
+          const podY = node.y + (Math.random() - 0.5) * 80;
+
+          ctx.fillStyle = '#60a5fa';
+          ctx.beginPath();
+          ctx.arc(podX, podY, 5, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      });
+
+      // Stats
+      ctx.fillStyle = '#a3aab8';
+      ctx.font = '10px monospace';
+      ctx.textAlign = 'left';
+      const runningPods = sim.pods.filter(p => p.state === 'running').length;
+      ctx.fillText(`Pods: ${runningPods} running, ${sim.podsEvicted} evicted`, 20, 30);
+    }
+
+    function animate() {
+      update();
+      draw();
+      requestAnimationFrame(animate);
+    }
+    animate();
+
+    document.getElementById('deployPods').addEventListener('click', deployPods);
+    document.getElementById('scaleUp').addEventListener('click', () => {
+      for (let i = 0; i < 5; i++) deployPods();
+    });
+    document.getElementById('scaleDown').addEventListener('click', () => {
+      for (let i = 0; i < 5 && sim.pods.length > 0; i++) {
+        sim.pods.pop();
+      }
+      updateNodePressure();
+    });
+
+    document.getElementById('cpuRequest').addEventListener('input', (e) => {
+      sim.cpuRequest = parseInt(e.target.value);
+      document.getElementById('cpuValue').textContent = sim.cpuRequest + 'm';
+    });
+
+    document.getElementById('memRequest').addEventListener('input', (e) => {
+      sim.memRequest = parseInt(e.target.value);
+      document.getElementById('memValue').textContent = sim.memRequest + 'Mi';
+    });
+
+    document.getElementById('failNode').addEventListener('click', () => {
+      sim.nodes[0].failed = true;
+      sim.nodes[0].health = 0;
+    });
+
+    document.getElementById('highMemPressure').addEventListener('click', () => {
+      sim.memPressureHigh = true;
+    });
+
+    document.getElementById('recover').addEventListener('click', () => {
+      sim.nodes.forEach(n => n.failed = false);
+      sim.memPressureHigh = false;
+      sim.pods = [];
+      sim.podsEvicted = 0;
+      updateNodePressure();
+    });
+
+    setInterval(() => {
+      const runningPods = sim.pods.filter(p => p.state === 'running').length;
+      document.getElementById('podsRunning').textContent = runningPods;
+      document.getElementById('podsEvicted').textContent = sim.podsEvicted;
+      document.getElementById('cpuPressure').textContent = Math.max(...sim.nodes.map(n => n.cpuPressure)).toFixed(0) + '%';
+      document.getElementById('memPressure').textContent = Math.max(...sim.nodes.map(n => n.memPressure)).toFixed(0) + '%';
+    }, 100);
+  </script>
+</body>
+</html>

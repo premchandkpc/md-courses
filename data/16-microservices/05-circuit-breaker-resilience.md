@@ -840,6 +840,10 @@ FAILURE           services also fail → everything is down.
 
 **Next**: [Distributed Transactions & Saga](06-distributed-transactions-saga.md)
 
+
+> **Run the live simulator**: [circuit-breaker.html](/16-microservices/circuit-breaker.html) — click buttons to trigger state transitions and watch the circuit breaker react.
+
+
 ## Related
 
 - [Cap Consistency](09-distributed-systems/01-cap-consistency.md)

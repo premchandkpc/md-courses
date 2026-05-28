@@ -429,6 +429,14 @@ Ensures durability without flushing data pages on each commit. Central to Postgr
 | [09 — Distributed Systems](../09-distributed-systems/) | Consensus (Raft, Paxos) in distributed databases, CAP theorem, consistency models |
 | [10 — Messaging](../10-messaging/) | CDC (Debezium, Kafka Connect), database event streaming, transactional outbox pattern |
 
+
+> **Run the live simulator**: [redis-eviction.html](/08-databases/redis-eviction.html) — add keys with different TTLs, fill memory, and watch eviction policies in action.
+
+
+
+> **Run the live simulator**: [btree-visualizer.html](/08-databases/btree-visualizer.html) — insert keys into an Order-4 B+Tree and watch node splits and tree growth in real-time.
+
+
 ## Related
 
 - [Cap Consistency](09-distributed-systems/01-cap-consistency.md)

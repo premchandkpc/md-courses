@@ -1446,6 +1446,10 @@ To exceed single-core throughput:
 | **NewReno** | Reno + partial ACK handling | Fair | Low-Moderate | Moderate |
 | **Westwood** | Bandwidth estimation | Good | High (wireless) | Moderate |
 
+
+> **Run the live simulator**: [tcp-state-machine.html](/11-networking/tcp-state-machine.html) — step through the TCP 3-way handshake, SYN flood, and FIN teardown interactively.
+
+
 ## Related
 
 - [Linux Kernel Architecture](12-operating-systems/01-linux-kernel-architecture.md)

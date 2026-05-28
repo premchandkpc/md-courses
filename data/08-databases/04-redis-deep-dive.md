@@ -523,6 +523,10 @@ flowchart LR
 - **Recovery**: 1) `CLUSTER FAILOVER TAKEOVER` on replicas. 2) Re-add failed nodes. 3) Ensure slot coverage.
 - **Prevention**: Set `cluster-node-timeout` appropriately. Use 3+ nodes in different AZs.
 
+
+> **Run the live simulator**: [redis-eviction.html](/08-databases/redis-eviction.html) — add keys with different TTLs, fill memory, and watch eviction policies in action.
+
+
 ## Related
 
 - [Cap Consistency](09-distributed-systems/01-cap-consistency.md)

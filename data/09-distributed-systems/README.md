@@ -413,6 +413,10 @@ Ensures database writes and message sending are atomic (both happen or both don'
 | [10 — Messaging](../10-messaging/) | Kafka's distributed log is a replicated state machine; message ordering, partitioning |
 | [11 — Networking](../11-networking/) | Network partitions, latency, timeout detection are fundamental to distributed system behavior |
 
+
+> **Run the live simulator**: [raft-consensus.html](/09-distributed-systems/raft-consensus.html) — trigger elections, watch term increments, and see log replication in real-time.
+
+
 ## Related
 
 - [Postgresql Internals](08-databases/01-postgresql-internals.md)

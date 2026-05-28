@@ -1013,6 +1013,10 @@ Use Micrometer Tracing (formerly Spring Cloud Sleuth) or OpenTelemetry Java SDK.
 - **Recovery**: 1) Kill the stuck threads or restart JVM. 2) `jstack -l <pid>` to identify deadlocked threads. 3) Fix locking order in code.
 - **Prevention**: Always acquire locks in consistent order. Use `tryLock` with timeout instead of `synchronized`. Use `java.util.concurrent` classes. Enable `-XX:+PrintConcurrentLocks`.
 
+
+> **Run the live simulator**: [gc-visualizer.html](/03-backend/java/gc-visualizer.html) — allocate objects, trigger Young/Full GC pauses, and watch objects promote across heap generations.
+
+
 ## Related
 
 - [Jvm Performance](18-performance-engineering/jvm-tuning/01-jvm-performance.md)

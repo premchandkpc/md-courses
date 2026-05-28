@@ -1846,6 +1846,10 @@ Result:
 | ZGC | Multi-mapped pages | Multi-mapped pages | Colored pointers (metadata bits) |
 | Shenandoah | Regions | Regions | Brooks forwarding pointers |
 
+
+> **Run the live simulator**: [gc-visualizer.html](/03-backend/java/gc-visualizer.html) — allocate objects, trigger Young/Full GC pauses, and watch objects promote across heap generations.
+
+
 ## Related
 
 - [Jvm Performance](18-performance-engineering/jvm-tuning/01-jvm-performance.md)

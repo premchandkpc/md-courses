@@ -2411,6 +2411,10 @@ Attacker uses forged token to:
 
 ---
 
+
+> **Run the live simulator**: [jwt-debugger.html](/13-security/jwt-debugger.html) — inspect, decode, tamper, and verify JSON Web Tokens with real HMAC-SHA256 signing.
+
+
 ## Related
 
 - [Networking](../../11-networking/) — TLS, DNS security

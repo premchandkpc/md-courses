@@ -677,6 +677,10 @@ Emergency Protocol (Saga)        → Distributed recovery plan
 
 **Next**: [Software Architecture](../17-software-architecture/README.md) · [System Design](../15-system-design/README.md)
 
+
+> **Run the live simulator**: [circuit-breaker.html](/16-microservices/circuit-breaker.html) — click buttons to trigger state transitions and watch the circuit breaker react.
+
+
 ## Related
 
 - [Cap Consistency](09-distributed-systems/01-cap-consistency.md)

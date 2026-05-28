@@ -678,6 +678,10 @@ If NO  → Entry stays in log but not applied
 
 See code examples above for practical usage patterns.
 
+
+> **Run the live simulator**: [raft-consensus.html](/09-distributed-systems/raft-consensus.html) — trigger elections, watch term increments, and see log replication in real-time.
+
+
 ## Related
 
 - [Postgresql Internals](08-databases/01-postgresql-internals.md)

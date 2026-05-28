@@ -1,5 +1,8 @@
 # 📨 Apache Kafka — Complete Deep Dive
 
+
+> **Run the live simulator**: [kafka-replication.html](/10-messaging/kafka/kafka-replication.html) — produce messages, kill leaders, watch ISR management in real-time.
+
 **Related**: [Production Patterns](02-kafka-patterns.md) · [RabbitMQ](../rabbitmq/01-rabbitmq-basics.md) · [SNS/SQS](../sns-sqs/01-sns-sqs-basics.md)
 
 ---

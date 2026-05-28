@@ -1,5 +1,8 @@
 # Software Engineering — Complete Guide 🛠️
 
+
+> **Run the live simulator**: [git-commit-graph.html](/25-software-engineering/git-commit-graph.html) — create commits, branches, and merges to visualize the commit DAG.
+
 Software engineering is the **disciplined application of engineering principles** to software development. It covers coding practices, design principles, collaboration patterns, and the professional skills needed to build maintainable systems.
 
 **Related**: [Software Architecture](../17-software-architecture/README.md) · [Testing](../19-testing/README.md) · [System Design](../15-system-design/README.md) · [Microservices](../16-microservices/README.md)

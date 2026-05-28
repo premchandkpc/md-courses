@@ -1690,6 +1690,10 @@ flowchart LR
 | `volatile-ttl` | Evict shortest TTL first | Session stores |
 | `allkeys-random` | Evict random key | Uniform access patterns |
 
+
+> **Run the live simulator**: [redis-eviction.html](/08-databases/redis-eviction.html) — add keys with different TTLs, fill memory, and watch eviction policies in action.
+
+
 ## Related
 
 - [Cap Consistency](09-distributed-systems/01-cap-consistency.md)

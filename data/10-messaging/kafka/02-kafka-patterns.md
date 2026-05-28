@@ -1,5 +1,8 @@
 # 📨 Kafka Production Patterns — Complete Deep Dive
 
+
+> **Run the live simulator**: [kafka-replication.html](/10-messaging/kafka/kafka-replication.html) — produce messages, kill leaders, watch ISR management in real-time.
+
 **Related**: [Kafka Basics](01-kafka-basics.md) · [Distributed Transactions & Saga](../microservices/06-distributed-transactions-saga.md) · [CQRS & Event Sourcing](../microservices/07-cqrs-event-sourcing.md)
 
 ---

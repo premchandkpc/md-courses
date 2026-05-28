@@ -561,6 +561,10 @@ Everything else (IPC, file systems, networking) is these four roles extending th
 
 **Next**: [Security Engineering](../13-security/README.md) · [Performance Engineering](../18-performance-engineering/README.md)
 
+
+> **Run the live simulator**: [page-replacement.html](/12-operating-systems/page-replacement.html) — step through FIFO, LRU, and LFU page replacement algorithms interactively.
+
+
 ## Related
 
 - [Tcp Ip Deep Dive](11-networking/01-tcp-ip-deep-dive.md)

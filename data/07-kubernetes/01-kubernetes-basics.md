@@ -2819,6 +2819,10 @@ and the control plane makes it happen, continuously reconciling.
 
 **Answer**: **kube-proxy and NetworkPolicy implementation differences**. If using different CNI plugins or kube-proxy modes on different nodes (e.g., some nodes use iptables, others use eBPF/Cilium), the policy enforcement differs. Also: **NodePort traffic** bypasses NetworkPolicy (it goes directly through kube-proxy, not through the CNI's policy engine). Or: some CNI plugins (Calico) enforce at the node level via iptables, while others (Cilium) enforce at eBPF level — if the policy references `ipBlock` with CIDR that includes some nodes' pod CIDR but not others, traffic intermittently fails.
 
+
+> **Run the live simulator**: [kubernetes-scheduling.html](/07-kubernetes/kubernetes-scheduling.html) — add pods, watch the scheduler score and bind them to nodes interactively.
+
+
 ## Related
 
 - [Readme](05-cloud/README.md)

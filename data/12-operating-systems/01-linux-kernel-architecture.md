@@ -811,6 +811,10 @@ Page fault (file cache): ~500ns (page cache hit) / ~5ms (disk read)
 | 5. Kernel execution | Handler function | Perform operation in kernel space |
 | 6. Return | `syscall_exit_work` | Restore registers, `sysret` to user |
 
+
+> **Run the live simulator**: [page-replacement.html](/12-operating-systems/page-replacement.html) — step through FIFO, LRU, and LFU page replacement algorithms interactively.
+
+
 ## Related
 
 - [Tcp Ip Deep Dive](11-networking/01-tcp-ip-deep-dive.md)

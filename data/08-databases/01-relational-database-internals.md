@@ -430,6 +430,10 @@ class WriteAheadLog:
 
 **Answer**: Implement a two-phase commit (2PC) protocol or use a consensus-based approach. In 2PC, a coordinator asks all participants to PREPARE (write WAL, make data durable but uncommitted). If all PREPARE succeeds, the coordinator sends COMMIT; otherwise, it sends ABORT. The failure mode is the coordinator crashing after PREPARE but before COMMIT — participants hold locks until recovery. Modern distributed databases like Spanner use TrueTime (clock synchronization) + Paxos for external consistency. CockroachDB uses a combination of Raft for replication and a transaction coordinator with MVCC timestamps. The key trade-off is between consistency guarantees and latency — synchronous replication across multiple datacenters adds significant latency.
 
+
+> **Run the live simulator**: [btree-visualizer.html](/08-databases/btree-visualizer.html) — insert keys into an Order-4 B+Tree and watch node splits and tree growth in real-time.
+
+
 ## Related
 
 - [Cap Consistency](09-distributed-systems/01-cap-consistency.md)

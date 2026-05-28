@@ -510,6 +510,10 @@ graph LR
 | [11 — Networking](../11-networking/) | CNI plugins, network policies, service mesh, DNS in K8s, eBPF networking |
 | [14 — SRE/Observability](../14-sre-observability/) | Prometheus + Grafana on K8s, Loki for logs, OpenTelemetry tracing, K8s-specific SLOs |
 
+
+> **Run the live simulator**: [kubernetes-scheduling.html](/07-kubernetes/kubernetes-scheduling.html) — add pods, watch the scheduler score and bind them to nodes interactively.
+
+
 ## Related
 
 - [Readme](05-cloud/README.md)

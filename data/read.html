@@ -1438,11 +1438,9 @@ function renderContent(container, text) {
   if (diagrams.length > 0) {
     setTimeout(() => {
       if (window.mermaid) {
-        try {
-          mermaid.run({ nodes: container.querySelectorAll('.mermaid') });
-        } catch (e) {
+        mermaid.run({ nodes: container.querySelectorAll('.mermaid') }).catch(e => {
           console.error('Mermaid render failed:', e);
-        }
+        });
       }
     }, 50);
   }
@@ -1472,23 +1470,26 @@ function resetDiagramZoom(diagramId) {
 }
 
 function openDiagramFullscreen(diagramId) {
-  const mermaidEl = document.querySelector(`[data-diagram-id="${diagramId}"] .mermaid`);
-  if (!mermaidEl) return;
+  const source = document.querySelector(`[data-diagram-id="${diagramId}"]`);
+  if (!source) return;
+  const mermaidEl = source.querySelector('.mermaid');
 
   const fsModal = document.getElementById('diagramFullscreen');
   const fsContent = document.getElementById('fsContent');
-  fsContent.innerHTML = `<div class="mermaid">${mermaidEl.innerHTML}</div>`;
-  fsModal.classList.add('open');
 
-  if (window.mermaid) {
+  // If SVG already rendered, display it directly. No re-render needed.
+  const svg = mermaidEl.querySelector('svg');
+  if (svg) {
+    fsContent.innerHTML = `<div class="mermaid" style="transform:scale(1.2);transform-origin:center center">${svg.outerHTML}</div>`;
+  } else {
+    // Not yet rendered — use raw source
+    const raw = mermaidEl.textContent || mermaidEl.innerHTML;
+    fsContent.innerHTML = `<div class="mermaid">${raw}</div>`;
     setTimeout(() => {
-      try {
-        mermaid.run({ nodes: fsContent.querySelectorAll('.mermaid') });
-      } catch (e) {
-        console.error('Mermaid fullscreen render failed:', e);
-      }
+      mermaid.run({ nodes: fsContent.querySelectorAll('.mermaid') }).catch(() => {});
     }, 50);
   }
+  fsModal.classList.add('open');
 }
 
 function closeDiagramFullscreen() {
@@ -1597,10 +1598,9 @@ function toggleSidebar() {
   document.getElementById('collapseSidebar').textContent = s.classList.contains('collapsed') ? '▶' : '◀';
   setTimeout(() => {
     if (window.mermaid) {
-      try {
-        mermaid.run({ nodes: document.querySelectorAll('.mermaid') });
-      } catch (e) {
-        console.error('Mermaid rerender failed:', e);
+      const unrendered = document.querySelectorAll('.mermaid:not(:has(svg))');
+      if (unrendered.length) {
+        mermaid.run({ nodes: unrendered }).catch(() => {});
       }
     }
   }, 100);
@@ -1968,16 +1968,13 @@ loadFile = function(path) {
   const body = document.getElementById('fileContent');
   body.classList.add('loading');
   body.classList.remove('loaded');
-  origLoadFile(path);
-  setTimeout(() => {
+  Promise.resolve(origLoadFile(path)).then(() => {
     body.classList.remove('loading');
     body.classList.add('loaded');
-    // Build floating TOC after render
-    setTimeout(() => {
-      buildFloatingTOC();
-      // Patch scroll handler for floating TOC
-    }, 100);
-  }, 50);
+    setTimeout(buildFloatingTOC, 100);
+  }).catch(() => {
+    body.classList.remove('loading');
+  });
 };
 
 // ═══════════════════════════════════════════════════════════════

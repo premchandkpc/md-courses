@@ -662,11 +662,26 @@ async function init() {
   renderTopics();
   renderRecentFiles();
   attachTreeEvents();
+  attachNavigationEvents();
+}
 
-  const lastFile = localStorage.getItem('lastViewedFile');
-  if (lastFile && STATE.flatFiles.some(f => f.path === lastFile)) {
-    loadFile(lastFile);
-  }
+function attachNavigationEvents() {
+  // Handle browser back/forward
+  window.addEventListener('popstate', (e) => {
+    if (e.state && e.state.path) {
+      loadFile(e.state.path);
+    } else {
+      goHome();
+    }
+  });
+
+  // Handle hash changes
+  window.addEventListener('hashchange', () => {
+    const hash = window.location.hash.replace(/^#/, '');
+    if (hash) {
+      navigateTo(hash);
+    }
+  });
 }
 
 // ─── State Persistence ───
@@ -740,10 +755,25 @@ async function loadTree() {
     const r = await fetch(CONFIG.api + '/tree');
     const d = await r.json();
     STATE.treeData = d.tree || [];
+    window.__fileTree = STATE.treeData;
     flattenFiles(STATE.treeData);
+    // After tree loaded, handle initial hash routing
+    handleHashNavigation();
   } catch (e) {
     console.error('Failed to load tree:', e);
     document.getElementById('tree').innerHTML = '<div style="padding:14px;color:var(--fg3)">Failed to load</div>';
+  }
+}
+
+function handleHashNavigation() {
+  const hash = window.location.hash.replace(/^#/, '');
+  if (hash) {
+    navigateTo(hash);
+  } else {
+    const lastFile = localStorage.getItem('lastViewedFile');
+    if (lastFile) {
+      navigateTo(lastFile);
+    }
   }
 }
 
@@ -756,6 +786,7 @@ function flattenFiles(nodes, prefix = '') {
       STATE.flatFiles.push({ path: p, name: n.name });
     }
   }
+  window.__flatFiles = STATE.flatFiles;
 }
 
 function renderTree() {
@@ -814,7 +845,10 @@ function renderTopics() {
       const path = el.dataset.path;
       if (path) {
         const firstFile = STATE.flatFiles.find(f => f.path.startsWith(path));
-        if (firstFile) loadFile(firstFile.path);
+        if (path) {
+          const firstFile = STATE.flatFiles.find(f => f.path.startsWith(path));
+          if (firstFile) navigateTo(firstFile.path);
+        }
       }
     });
   });
@@ -835,12 +869,7 @@ function attachTreeEvents() {
   document.querySelectorAll('.tree-item.file').forEach(el => {
     el.addEventListener('click', (e) => {
       if (e.target.classList.contains('bookmark-icon')) return;
-      const p = el.dataset.path;
-      if (p.endsWith('.html')) {
-        window.open(p, '_blank');
-      } else {
-        loadFile(p);
-      }
+      navigateTo(el.dataset.path);
     });
   });
 }
@@ -902,6 +931,56 @@ function scrollToFirstMatch(q) {
       return;
     }
   }
+}
+
+// ─── URI Resolution ───
+function resolvePath(uri) {
+  // Bare path like /java → look for README or first .md in directory
+  if (!uri.endsWith('.md') && !uri.endsWith('.html')) {
+    // Strip leading slash
+    const clean = uri.replace(/^\//, '');
+    return findEntryFile(clean);
+  }
+  // Ensure leading slash is stripped for API
+  return uri.replace(/^\//, '');
+}
+
+function findEntryFile(dir) {
+  const files = window.__flatFiles || [];
+  // Strip leading/trailing slash
+  const clean = dir.replace(/^\/+|\/+$/g, '');
+  // Prefer README.md in that directory
+  const readme = files.find(f => f.path === clean + '/README.md');
+  if (readme) return readme.path;
+  // Try exact match
+  const exact = files.find(f => f.path === clean);
+  if (exact) return exact.path;
+  // First .md file starting with this directory
+  const first = files.find(f => f.path.startsWith(clean + '/') && f.path.endsWith('.md'));
+  if (first) return first.path;
+  // Try without domain number prefix
+  const bare = files.find(f => {
+    const parts = f.path.split('/');
+    return parts.some(p => p.replace(/^\d+-/, '') === clean || p === clean);
+  });
+  if (bare) return bare.path;
+  return clean;
+}
+
+// ─── Navigation ───
+function navigateTo(uri) {
+  const resolved = resolvePath(uri);
+  if (resolved.endsWith('.html')) {
+    // HTML simulators: open in new tab
+    window.open('/' + resolved, '_blank');
+    return;
+  }
+  // Update URL hash without triggering hashchange
+  const newHash = '#' + resolved;
+  if (window.location.hash !== newHash) {
+    history.pushState({ path: resolved }, '', newHash);
+  }
+  loadFile(resolved);
 }
 
 // ─── File Loading ───
@@ -990,7 +1069,7 @@ function renderRecentFiles() {
   `).join('');
 
   list.querySelectorAll('.recent-item').forEach(el => {
-    el.addEventListener('click', () => loadFile(el.dataset.path));
+        el.addEventListener('click', () => navigateTo(el.dataset.path));
   });
 }
 
@@ -1102,9 +1181,12 @@ function renderContent(container, text) {
   text = text.replace(/`([^`]+)`/g, '<code>$1</code>');
   text = text.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
   text = text.replace(/\*([^*]+)\*/g, '<em>$1</em>');
-  text = text.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (m, l, u) =>
-    u.endsWith('.md') ? `<a class="md-link" data-href="${u}">${l}</a>` : `<a href="${u}" target="_blank">${l}</a>`
-  );
+  text = text.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (m, l, u) => {
+    const isExternal = u.startsWith('http://') || u.startsWith('https://') || u.startsWith('//');
+    if (isExternal) return `<a href="${u}" target="_blank" rel="noopener">${l}</a>`;
+    // Internal: .md, .html, or bare path → use navigateTo
+    return `<a class="internal-link" data-href="${u}" href="${u}">${l}</a>`;
+  });
 
   // Headers with anchors
   text = text.replace(/^######\s+(.+)$/gm, (m, t) => `<h6 id="h6-${slugify(t)}">${t}<a class="anchor-link" href="#h6-${slugify(t)}">#</a></h6>`);
@@ -1181,8 +1263,8 @@ function renderContent(container, text) {
     });
   });
 
-  // MD link handler
-  container.querySelectorAll('.md-link').forEach(el => {
+  // Internal link handler
+  container.querySelectorAll('.internal-link').forEach(el => {
     el.addEventListener('click', (e) => {
       e.preventDefault();
       const href = el.dataset.href;
@@ -1190,12 +1272,19 @@ function renderContent(container, text) {
 
       // Resolve relative paths
       let fullPath = href;
-      if (!href.startsWith('/')) {
+      if (!href.startsWith('/') && !href.startsWith('#')) {
         const currentDir = STATE.currentPath.replace(/[^/]+$/, '');
         fullPath = currentDir + href;
       }
 
-      loadFile(fullPath);
+      // Handle hash-only links (same-page anchors)
+      if (fullPath.startsWith('#')) {
+        const target = document.getElementById(fullPath.slice(1));
+        if (target) target.scrollIntoView({ behavior: 'smooth' });
+        return;
+      }
+
+      navigateTo(fullPath);
     });
   });
 
@@ -1278,6 +1367,7 @@ function goHome() {
   STATE.currentPath = '';
   localStorage.removeItem('lastViewedFile');
   document.querySelectorAll('.tree-item.active').forEach(el => el.classList.remove('active'));
+  history.pushState({ path: '' }, '', window.location.pathname);
 }
 
 function slugify(t) {

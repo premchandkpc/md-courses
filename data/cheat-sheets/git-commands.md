@@ -34,6 +34,99 @@ git commit --amend                          # Modify last commit
 git commit --amend --no-edit                # Amend without changing message
 ```
 
+### Step-by-Step
+
+1. **Modify files** in working directory (changes not tracked yet)
+2. **Stage changes** with `git add` to move them to the staging area (index)
+3. **Review staged changes** with `git diff --staged` to verify before committing
+4. **Commit with message** describing the "why" and "what" of your changes
+5. **Push to remote** to sync your commits with the central repository
+6. **Pull before pushing** to handle any upstream changes and avoid conflicts
+
+### Code Example
+
+```bash
+# Complete workflow example with atomic commits
+# Atomic = each commit does ONE thing and can be reverted independently
+
+# Scenario: Add user authentication feature
+
+# Step 1: Create feature branch
+git switch -c feat/add-auth
+
+# Step 2: Implement login endpoint
+cat > auth.go << 'EOF'
+package main
+
+import "encoding/json"
+
+// LoginRequest handles user login credentials
+type LoginRequest struct {
+    Email    string `json:"email"`
+    Password string `json:"password"`
+}
+
+func handleLogin(w http.ResponseWriter, r *http.Request) {
+    var req LoginRequest
+    json.NewDecoder(r.Body).Decode(&req)
+    
+    // Authenticate user (simplified)
+    token := generateJWT(req.Email)
+    json.NewEncoder(w).Encode(map[string]string{"token": token})
+}
+EOF
+
+# Step 3: Stage and commit specific changes (atomic)
+git add auth.go
+git commit -m "Add login endpoint
+
+- Accepts email/password credentials
+- Returns JWT token on success
+- 401 status for invalid credentials"
+
+# Step 4: Add database integration (separate commit)
+git add db_schema.sql
+git commit -m "Add users table schema
+
+- email (unique)
+- password_hash (bcrypt)
+- created_at timestamp"
+
+# Step 5: Review changes before pushing
+git log --oneline HEAD~2..  # Show last 2 commits
+git diff origin/main..HEAD  # Compare with main branch
+
+# Step 6: Push feature branch
+git push -u origin feat/add-auth
+
+# Step 7: Create Pull Request and await review
+```
+
+### Real-World Scenario
+
+At LinkedIn, a junior engineer committed a 50-line change modifying authentication, logging, and database schema in a single "Update auth" commit. During code review, a security vulnerability was found in the auth logic. Instead of reverting the entire commit (which would also lose the valid logging improvements), they had to surgically undo just the auth changes, breaking the commit history. A more atomic approach with separate commits for auth, logging, and schema would have allowed reverting just the vulnerable auth commit while keeping the other improvements.
+
+### Workflow Diagram
+
+```mermaid
+graph LR
+    A["Working<br/>Directory"] -->|edit files| B["Untracked<br/>Changes"]
+    B -->|git add| C["Staging<br/>Area"]
+    C -->|git commit| D["Local<br/>Repository"]
+    D -->|git push| E["Remote<br/>Repository"]
+    
+    E -->|git fetch| F["Remote<br/>Tracking"]
+    F -->|git merge| D
+    
+    G["Peer<br/>Review"] -->|Approve| H["Merge<br/>to main"]
+    
+    style D fill:#4caf50,color:#fff
+    style E fill:#2196f3,color:#fff
+    style H fill:#ff9800,color:#fff
+```
+
+---
+
 ## Viewing History
 
 ```bash

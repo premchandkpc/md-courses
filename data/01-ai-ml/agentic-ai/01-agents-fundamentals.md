@@ -21,6 +21,145 @@ graph TD
     style E fill:#1a3a52
 ```
 
+#### Step-by-Step
+
+1. **Perception Phase**: Agent reads raw input from environment (text, sensor data, API responses) and extracts meaningful state representation—cleaning, normalizing, and structuring the data.
+2. **Context Building**: Retrieved state is added to the agent's internal memory alongside history, system prompt, and available tools to form the full context.
+3. **LLM Reasoning**: Language model processes the context window and generates reasoning output that may include thoughts, analysis, and a decision about what action to take.
+4. **Action Selection**: Agent parses LLM output to identify the chosen action (tool call, API invocation, or final answer) and extracts required parameters.
+5. **Execution**: Selected action is executed in the real environment—returning results that are then observed by the agent.
+6. **Feedback Loop**: Observation is added to memory, loop returns to perception for the next iteration, refining decisions based on previous results.
+
+#### Code Example
+
+```python
+# Complete perception-reasoning-action loop
+import json
+from typing import Any, Dict, Optional
+from dataclasses import dataclass
+
+@dataclass
+class AgentStep:
+    observation: Optional[str] = None
+    thought: str = ""
+    action: str = ""
+    action_input: Dict = None
+    observation_result: str = ""
+
+class PerceptionReasoningActionLoop:
+    def __init__(self, llm_callable, tools: Dict[str, callable]):
+        self.llm = llm_callable  # LLM inference function
+        self.tools = tools  # Available tool functions
+        self.memory = []  # Perception history
+        self.max_iterations = 10
+
+    def perceive(self, raw_input: str) -> Dict[str, Any]:
+        """Step 1: Parse and structure input from environment."""
+        # Clean and normalize input
+        cleaned = raw_input.strip()
+        # Extract entities, intent, context
+        perception = {
+            "raw_input": cleaned,
+            "length": len(cleaned),
+            "has_question": "?" in cleaned,
+            "timestamp": __import__("time").time()
+        }
+        self.memory.append({"role": "user", "content": cleaned})
+        return perception
+
+    def reason(self) -> str:
+        """Step 2-3: Use LLM to generate reasoning and decision."""
+        # Build context from memory
+        system_prompt = "You are a helpful agent. Respond with Thought, then Action."
+        messages = [{"role": "system", "content": system_prompt}] + self.memory
+        
+        # Call LLM (step 3)
+        reasoning = self.llm(messages)
+        return reasoning
+
+    def act(self, reasoning: str) -> AgentStep:
+        """Step 4: Parse reasoning and select action."""
+        step = AgentStep(thought=reasoning)
+        
+        # Extract action from LLM output
+        if "Action:" in reasoning:
+            action_part = reasoning.split("Action:")[-1].strip()
+            if "(" in action_part and ")" in action_part:
+                tool_name = action_part.split("(")[0].strip()
+                args_str = action_part.split("(")[1].rstrip(")")
+                
+                step.action = tool_name
+                try:
+                    step.action_input = json.loads("{" + args_str + "}")
+                except json.JSONDecodeError:
+                    step.action_input = {"query": args_str}
+        return step
+
+    def execute_action(self, step: AgentStep) -> str:
+        """Step 5: Execute action in environment."""
+        if step.action in self.tools:
+            try:
+                result = self.tools[step.action](**step.action_input)
+                step.observation_result = str(result)
+            except Exception as e:
+                step.observation_result = f"Tool error: {str(e)}"
+        else:
+            step.observation_result = f"Unknown tool: {step.action}"
+        return step.observation_result
+
+    def loop(self, user_input: str) -> str:
+        """Complete PRA loop: perceive -> reason -> act -> observe -> repeat."""
+        perception = self.perceive(user_input)  # Step 1
+        
+        for iteration in range(self.max_iterations):
+            reasoning = self.reason()  # Step 2-3
+            step = self.act(reasoning)  # Step 4
+            
+            if "Final Answer:" in reasoning:
+                return reasoning.split("Final Answer:")[-1].strip()
+            
+            observation = self.execute_action(step)  # Step 5
+            self.memory.append({"role": "assistant", "content": reasoning})
+            self.memory.append({"role": "user", "content": f"Observation: {observation}"})
+        
+        return "Max iterations reached"
+
+# Usage example
+def search_tool(query: str) -> str:
+    return f"Found information about: {query}"
+
+def calculator_tool(expression: str) -> str:
+    return f"Result: {eval(expression)}"
+
+agent = PerceptionReasoningActionLoop(
+    llm_callable=lambda msgs: "Thought: I should search.\nAction: search_tool(\"AI agents\")",
+    tools={"search_tool": search_tool, "calculator_tool": calculator_tool}
+)
+
+result = agent.loop("What is the capital of France?")
+print(result)
+```
+
+#### Real-World Scenario
+
+At a customer service company, a support agent receives 50+ tickets per hour. When a customer submits a ticket ("My order hasn't shipped in 3 days"), the system: perceives the complaint via NLP extraction, reasons about whether to apologize+search knowledge base or escalate, acts by querying the order database and ticket system, observes the order status (delayed due to inventory), and loops to generate a personalized response. The feedback mechanism logs customer sentiment to improve future agent reasoning thresholds.
+
+#### Diagram
+
+```mermaid
+graph LR
+    A["User Input"] --> B["Perception<br/>NLP Parse"]
+    B --> C["Memory<br/>History+Context"]
+    C --> D["LLM<br/>Reason"]
+    D --> E{"Parse<br/>Output"}
+    E -->|Action| F["Execute<br/>Tool"]
+    E -->|Final| G["Return"]
+    F --> H["Observation"]
+    H --> I["Add Memory"]
+    I --> D
+    G --> J["Response"]
+```
+
 ```python
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
@@ -134,6 +273,150 @@ class StatefulAgent:
         return steps
 ```
 
+#### Step-by-Step
+
+1. **State Definition**: Create enumeration of valid states (IDLE, THINKING, ACTING, OBSERVING, COMPLETED, ERROR) and track current state in the agent instance.
+2. **Initial Transition**: Move from IDLE to THINKING when a new task arrives, signaling the agent is analyzing the problem.
+3. **Planning Phase**: LLM generates a decomposed plan (list of sub-steps) and stores it in memory for execution tracking.
+4. **Action-Observation Loop**: For each step in the plan, agent transitions to ACTING (executes tool/function), then OBSERVING (processes result), repeating until plan is exhausted.
+5. **Error Handling**: If any step fails, transition to ERROR state, log details, attempt recovery or escalation based on policy.
+6. **Completion**: Once all steps succeed, transition to COMPLETED state and generate final summary from accumulated observations.
+
+#### Code Example
+
+```python
+from enum import Enum
+from dataclasses import dataclass
+from datetime import datetime
+from typing import Optional, List
+
+class AgentState(Enum):
+    IDLE = "idle"
+    PLANNING = "planning"
+    ACTING = "acting"
+    OBSERVING = "observing"
+    RECOVERING = "recovering"
+    COMPLETED = "completed"
+    FAILED = "failed"
+
+@dataclass
+class StateTransition:
+    from_state: AgentState
+    to_state: AgentState
+    timestamp: float
+    reason: str
+
+class StatefulAgent:
+    def __init__(self, system_prompt: str, max_retries: int = 3):
+        self.state = AgentState.IDLE
+        self.system_prompt = system_prompt
+        self.history = []
+        self.transitions: List[StateTransition] = []
+        self.max_retries = max_retries
+        self.retry_count = 0
+
+    def transition(self, new_state: AgentState, reason: str = ""):
+        """Execute state transition with logging."""
+        if self._is_valid_transition(self.state, new_state):
+            transition = StateTransition(
+                from_state=self.state,
+                to_state=new_state,
+                timestamp=datetime.now().timestamp(),
+                reason=reason
+            )
+            self.transitions.append(transition)
+            old_state = self.state
+            self.state = new_state
+            print(f"[{old_state.value} -> {new_state.value}] {reason}")
+            return True
+        return False
+
+    def _is_valid_transition(self, from_state: AgentState, to_state: AgentState) -> bool:
+        """Define allowed state transitions."""
+        valid_transitions = {
+            AgentState.IDLE: [AgentState.PLANNING],
+            AgentState.PLANNING: [AgentState.ACTING, AgentState.FAILED],
+            AgentState.ACTING: [AgentState.OBSERVING, AgentState.RECOVERING],
+            AgentState.OBSERVING: [AgentState.ACTING, AgentState.COMPLETED, AgentState.FAILED],
+            AgentState.RECOVERING: [AgentState.ACTING, AgentState.FAILED],
+            AgentState.COMPLETED: [AgentState.IDLE],
+            AgentState.FAILED: [AgentState.RECOVERING, AgentState.IDLE],
+        }
+        return to_state in valid_transitions.get(from_state, [])
+
+    def run(self, task: str) -> dict:
+        """Complete state machine execution."""
+        self.transition(AgentState.PLANNING, f"Task: {task[:30]}...")
+        
+        try:
+            plan = self._create_plan(task)
+            results = []
+            
+            for step_idx, step in enumerate(plan):
+                self.transition(AgentState.ACTING, f"Step {step_idx + 1}/{len(plan)}")
+                result = self._execute_step(step)
+                
+                self.transition(AgentState.OBSERVING, f"Analyzing result")
+                processed = self._process_result(result)
+                results.append(processed)
+                
+                if not processed.get("success", False):
+                    self.retry_count += 1
+                    if self.retry_count < self.max_retries:
+                        self.transition(AgentState.RECOVERING, f"Retry {self.retry_count}")
+                        result = self._execute_step(step)  # Retry
+                    else:
+                        raise Exception(f"Step {step_idx} failed after retries")
+            
+            self.transition(AgentState.COMPLETED, "All steps succeeded")
+            return {"status": "success", "results": results}
+            
+        except Exception as e:
+            self.transition(AgentState.FAILED, f"Error: {str(e)}")
+            return {"status": "failed", "error": str(e)}
+
+    def _create_plan(self, task: str) -> List[str]:
+        """Generate decomposed plan."""
+        prompt = f"Break this task into 3-5 sequential steps:\n{task}"
+        # In real code, call LLM here
+        return [f"Step {i+1}" for i in range(3)]
+
+    def _execute_step(self, step: str) -> dict:
+        """Execute single step (simulated)."""
+        return {"step": step, "output": f"Result of {step}"}
+
+    def _process_result(self, result: dict) -> dict:
+        """Process and validate result."""
+        return {"success": True, "data": result}
+
+# Usage
+agent = StatefulAgent("You are a helpful agent")
+result = agent.run("Find the weather and book a flight")
+print(result)
+```
+
+#### Real-World Scenario
+
+A data pipeline agent ingests 10GB of customer transaction data. It transitions IDLE→PLANNING (breaks task: validation→deduplication→enrichment→loading), then cycles through ACTING→OBSERVING for each step. When validation fails on 2% of records (row count mismatch), it transitions to RECOVERING, retries with relaxed schema validation. After 3 retries still failing, it transitions FAILED and escalates to a data engineer via Slack, preventing downstream corruption.
+
+#### Diagram
+
+```mermaid
+stateDiagram-v2
+    [*] --> IDLE
+    IDLE --> PLANNING: New task
+    PLANNING --> ACTING: Generate plan
+    ACTING --> OBSERVING: Execute step
+    OBSERVING --> ACTING: Continue
+    OBSERVING --> COMPLETED: All done
+    OBSERVING --> RECOVERING: Failure detected
+    ACTING --> RECOVERING: Execution error
+    RECOVERING --> ACTING: Retry
+    RECOVERING --> FAILED: Max retries
+    FAILED --> IDLE: Reset
+    COMPLETED --> IDLE: Reset
+```
+
 ## 2. ReAct Pattern
 
 ### 2.1 Standard ReAct
@@ -151,6 +434,179 @@ Observation: 30% chance of rain in the afternoon.
 
 Thought: 30% chance is moderate. Recommend umbrella.
 Final Answer: You should bring an umbrella.
+```
+
+#### Step-by-Step
+
+1. **Thought Generation**: LLM analyzes the user query and current observations, generating reasoning about what information is needed or what decision should be made.
+2. **Action Selection**: Based on reasoning, LLM selects an appropriate tool (search, calculate, API call) and formats the action with parameters.
+3. **Tool Execution**: Selected action is executed synchronously in real environment, returning concrete results (search findings, calculation output, API response).
+4. **Observation Recording**: Tool output is captured as an observation and added to the reasoning chain to provide ground truth context.
+5. **Loop Decision**: Agent determines whether to continue (generate new Thought) or halt with Final Answer based on whether the question is answered.
+6. **Answer Generation**: When sufficient information is gathered, LLM generates Final Answer by synthesizing all observations into a coherent response.
+
+#### Code Example
+
+```python
+import json
+import re
+from typing import Dict, List, Callable, Optional
+
+class Tool:
+    def __init__(self, name: str, description: str, func: Callable):
+        self.name = name
+        self.description = description
+        self.func = func
+
+    def execute(self, **kwargs) -> str:
+        try:
+            result = self.func(**kwargs)
+            return str(result)
+        except Exception as e:
+            return f"Error: {str(e)}"
+
+class ReActAgent:
+    def __init__(self, llm_callable: Callable, tools: List[Tool]):
+        self.llm = llm_callable
+        self.tools = {t.name: t for t in tools}
+        self.max_iterations = 10
+        self.reasoning_trace = []
+
+    def run(self, question: str) -> str:
+        """Execute ReAct loop: Thought -> Action -> Observation -> repeat."""
+        self.reasoning_trace = [f"Question: {question}\n"]
+        
+        for iteration in range(self.max_iterations):
+            # Step 1: Generate thought
+            prompt = self._build_prompt()
+            response = self.llm(prompt)
+            
+            # Check for final answer (Step 6)
+            if "Final Answer:" in response:
+                final = response.split("Final Answer:")[-1].strip()
+                self.reasoning_trace.append(f"Final Answer: {final}")
+                return final
+            
+            # Step 2: Extract thought
+            thought = self._extract_thought(response)
+            if thought:
+                self.reasoning_trace.append(f"Thought: {thought}")
+            
+            # Step 3-4: Parse action and execute
+            action_info = self._parse_action(response)
+            if action_info:
+                tool_name, args = action_info
+                observation = self._execute_action(tool_name, args)  # Steps 3-4
+                self.reasoning_trace.append(f"Action: {tool_name}({json.dumps(args)})")
+                self.reasoning_trace.append(f"Observation: {observation}")
+            else:
+                break
+        
+        return "Max iterations reached without answer"
+
+    def _build_prompt(self) -> str:
+        """Build prompt with trace history."""
+        system = """You are a helpful reasoning agent.
+For each response:
+1. Provide a Thought analyzing the situation
+2. Choose an Action from available tools, or
+3. Provide Final Answer if you have enough information
+
+Format:
+Thought: <your reasoning>
+Action: <tool_name>(<json_args>)
+Or: Final Answer: <your answer>
+
+Available tools: """ + ", ".join(self.tools.keys())
+        
+        trace_str = "\n".join(self.reasoning_trace)
+        return f"{system}\n\n{trace_str}\nThought:"
+
+    def _extract_thought(self, response: str) -> str:
+        """Extract thought from LLM response."""
+        if "Thought:" in response:
+            thought = response.split("Thought:")[1]
+            if "Action:" in thought:
+                thought = thought.split("Action:")[0]
+            return thought.strip()
+        return ""
+
+    def _parse_action(self, response: str) -> Optional[tuple]:
+        """Parse action from LLM response."""
+        match = re.search(r'Action:\s*(\w+)\s*\((.*?)\)', response, re.DOTALL)
+        if not match:
+            return None
+        
+        tool_name = match.group(1)
+        args_str = match.group(2).strip()
+        
+        try:
+            args = json.loads(args_str)
+        except json.JSONDecodeError:
+            # Try to parse as key=value pairs
+            args = {}
+            for pair in args_str.split(","):
+                if "=" in pair:
+                    k, v = pair.split("=", 1)
+                    args[k.strip()] = v.strip().strip('"')
+        
+        return tool_name, args
+
+    def _execute_action(self, tool_name: str, args: Dict) -> str:
+        """Execute tool and return observation."""
+        if tool_name not in self.tools:
+            return f"Error: Unknown tool '{tool_name}'"
+        
+        tool = self.tools[tool_name]
+        return tool.execute(**args)
+
+# Example tools
+def web_search(query: str) -> str:
+    """Simulate web search."""
+    return f"Found articles about: {query}"
+
+def get_weather(city: str) -> str:
+    """Simulate weather API."""
+    return f"Weather in {city}: 18C, partly cloudy"
+
+def calculator(expression: str) -> str:
+    """Simple calculator."""
+    return f"Result: {eval(expression)}"
+
+# Setup agent
+tools = [
+    Tool("search", "Search the web", web_search),
+    Tool("weather", "Get weather for a city", get_weather),
+    Tool("calc", "Evaluate math expressions", calculator),
+]
+
+agent = ReActAgent(
+    llm_callable=lambda p: "Thought: I should search for more info\nAction: search(query=\"umbrella\")",
+    tools=tools
+)
+
+answer = agent.run("Should I bring an umbrella to London?")
+print(f"Answer: {answer}")
+```
+
+#### Real-World Scenario
+
+A financial advisor chatbot receives a query: "What's my account balance and should I invest in tech stocks?" The ReAct loop: Thought 1 determines it needs account data, executes check_balance tool (gets $50,000), Thought 2 recognizes it needs market data, executes get_tech_index tool (gets current performance), Thought 3 synthesizes both: balance is adequate, tech sector is up 12% this quarter but volatile. Final Answer: "Your balance is solid for diversified investment; recommend 40% tech allocation." This reasoning chain is logged and explainable to the user.
+
+#### Diagram
+
+```mermaid
+graph TD
+    Q["User Question"] --> T1["Thought: Plan"]
+    T1 --> A1["Action: Tool Call"]
+    A1 --> O1["Observation: Result"]
+    O1 --> T2{"More Info<br/>Needed?"}
+    T2 -->|Yes| T2a["Thought: Refine"]
+    T2a --> A2["Action: Tool Call"]
+    A2 --> O2["Observation: Result"]
+    O2 --> T2
+    T2 -->|No| FA["Final Answer"]
+    FA --> R["Return to User"]
 ```
 
 ```python
@@ -251,6 +707,218 @@ class Tool:
 
     def execute(self, **kwargs):
         return self.fn(**kwargs)
+```
+
+#### Step-by-Step
+
+1. **Function Introspection**: Use Python's `inspect` module to read function signature, extracting parameter names, types, and default values.
+2. **Type Mapping**: Convert Python type hints to JSON Schema types (str→string, int→integer, float→number, etc.) for LLM compatibility.
+3. **Schema Generation**: Build OpenAI-compatible tool schema with function name, description, and parameter JSON Schema (properties and required fields).
+4. **Validation Setup**: Mark parameters without defaults as required, allowing LLM to understand which arguments must be provided.
+5. **Format Conversion**: Package the schema in OpenAI tool-calling format for API transmission.
+6. **Execution Wrapper**: Implement execute method that safely calls the underlying function with validated kwargs and handles errors.
+
+#### Code Example
+
+```python
+import inspect
+from typing import Callable, get_type_hints, Optional, Any, Dict, List
+import json
+
+class ToolParameter:
+    def __init__(self, name: str, param_type: str, description: str, required: bool):
+        self.name = name
+        self.param_type = param_type
+        self.description = description
+        self.required = required
+
+class Tool:
+    """Tool definition with schema generation and execution."""
+    
+    def __init__(self, name: str, description: str, fn: Callable, examples: List[str] = None):
+        self.name = name
+        self.description = description
+        self.fn = fn
+        self.examples = examples or []
+        self.call_count = 0
+        self.last_error = None
+        self.parameters = self._extract_parameters()
+
+    def _extract_parameters(self) -> Dict[str, Any]:
+        """Extract parameters from function signature."""
+        sig = inspect.signature(self.fn)
+        try:
+            hints = get_type_hints(self.fn)
+        except:
+            hints = {}
+        
+        properties = {}
+        required = []
+        
+        for param_name, param in sig.parameters.items():
+            # Skip 'self' in methods
+            if param_name == 'self':
+                continue
+            
+            # Get type hint or default to str
+            param_type = hints.get(param_name, str)
+            json_type = self._python_type_to_json(param_type)
+            
+            # Extract docstring-based description if available
+            description = f"Parameter: {param_name}"
+            if self.fn.__doc__ and param_name in self.fn.__doc__:
+                # Parse from docstring (simplified)
+                description = param_name
+            
+            properties[param_name] = {
+                "type": json_type,
+                "description": description
+            }
+            
+            # Check if required (no default value)
+            if param.default is inspect.Parameter.empty:
+                required.append(param_name)
+        
+        return {
+            "type": "object",
+            "properties": properties,
+            "required": required
+        }
+
+    def _python_type_to_json(self, py_type: Any) -> str:
+        """Convert Python type to JSON Schema type."""
+        mapping = {
+            str: "string",
+            int: "integer",
+            float: "number",
+            bool: "boolean",
+            list: "array",
+            dict: "object",
+            List: "array",
+            Dict: "object",
+            Optional[str]: "string",
+        }
+        
+        # Handle Optional types
+        if hasattr(py_type, '__origin__'):
+            origin = py_type.__origin__
+            if origin in mapping:
+                return mapping[origin]
+        
+        return mapping.get(py_type, "string")
+
+    def to_openai_format(self) -> Dict[str, Any]:
+        """Format for OpenAI API tool calling."""
+        return {
+            "type": "function",
+            "function": {
+                "name": self.name,
+                "description": self.description,
+                "parameters": self.parameters
+            }
+        }
+
+    def to_claude_format(self) -> Dict[str, Any]:
+        """Format for Claude API."""
+        return {
+            "name": self.name,
+            "description": self.description,
+            "input_schema": {
+                "type": "object",
+                "properties": self.parameters["properties"],
+                "required": self.parameters["required"]
+            }
+        }
+
+    def execute(self, **kwargs) -> Dict[str, Any]:
+        """Execute tool with error handling."""
+        self.call_count += 1
+        try:
+            result = self.fn(**kwargs)
+            return {
+                "success": True,
+                "result": result,
+                "call_count": self.call_count
+            }
+        except TypeError as e:
+            # Missing required parameter
+            self.last_error = f"Invalid arguments: {str(e)}"
+            return {
+                "success": False,
+                "error": self.last_error,
+                "expected_params": self.parameters["required"]
+            }
+        except Exception as e:
+            self.last_error = str(e)
+            return {
+                "success": False,
+                "error": self.last_error,
+                "error_type": type(e).__name__
+            }
+
+    def validate_args(self, **kwargs) -> tuple[bool, Optional[str]]:
+        """Validate arguments before execution."""
+        required = self.parameters.get("required", [])
+        
+        # Check all required params present
+        for param in required:
+            if param not in kwargs:
+                return False, f"Missing required parameter: {param}"
+        
+        # Check no unexpected params
+        valid_params = set(self.parameters["properties"].keys())
+        provided_params = set(kwargs.keys())
+        unexpected = provided_params - valid_params
+        if unexpected:
+            return False, f"Unexpected parameters: {unexpected}"
+        
+        return True, None
+
+# Example tools
+def search_documents(query: str, max_results: int = 5) -> List[Dict]:
+    """Search documents by keyword query."""
+    return [{"id": 1, "title": f"Result for {query}"}] * min(max_results, 5)
+
+def calculate_sum(a: float, b: float) -> float:
+    """Add two numbers and return the sum."""
+    return a + b
+
+def get_user_info(user_id: int) -> Dict[str, Any]:
+    """Get user information by ID."""
+    return {"id": user_id, "name": f"User {user_id}", "email": f"user{user_id}@example.com"}
+
+# Create tool instances
+tools = [
+    Tool("search", "Search documents with a keyword query", search_documents),
+    Tool("add", "Add two numbers together", calculate_sum),
+    Tool("get_user", "Retrieve user details by ID", get_user_info),
+]
+
+# Test tool
+search_tool = tools[0]
+print(f"Tool: {search_tool.name}")
+print(f"OpenAI Format: {json.dumps(search_tool.to_openai_format(), indent=2)}")
+print(f"Execution: {search_tool.execute(query='python agents', max_results=3)}")
+```
+
+#### Real-World Scenario
+
+A customer support platform defines tools: `query_order_history(customer_id: int)`, `send_email(email: str, subject: str, body: str)`, `create_refund(order_id: int, amount: float)`. When an agent receives a refund request, the system auto-generates JSON schemas for each tool, passes them to Claude, and Claude selects the appropriate tool chain: query_order_history → inspect order amount → create_refund → send_email confirmation. If Claude tries to call `create_refund` with non-integer order_id, the validation catches it and returns an error asking Claude to fix the argument types.
+
+#### Diagram
+
+```mermaid
+graph LR
+    A["Python Function"] --> B["inspect.signature<br/>Extract params"]
+    B --> C["get_type_hints<br/>Get types"]
+    C --> D["Map to JSON Schema<br/>str→string"]
+    D --> E["Build parameters<br/>object"]
+    E --> F["OpenAI Format<br/>or Claude Format"]
+    F --> G["Send to LLM"]
+    G --> H["LLM calls tool<br/>with arguments"]
+    H --> I["execute(**kwargs)"]
+    I --> J["Return result"]
+```
 
 
 def search_web(query: str) -> str:
@@ -315,6 +983,116 @@ class LLMWithTools:
 ## 4. Memory Systems
 
 ### 4.1 Short-Term Memory (Context Window)
+
+#### Step-by-Step
+
+1. **Message Recording**: Each agent interaction (user input, assistant response, tool output) is appended to the message list with role and content.
+2. **Token Estimation**: Periodically estimate total tokens in memory (rough: 1 token ≈ 3-4 characters) to track approaching context limits.
+3. **Overflow Detection**: When token count exceeds max_tokens threshold, trigger trimming to free space.
+4. **FIFO Removal**: Remove oldest non-system messages first to preserve recent context critical for coherent reasoning.
+5. **Repeat Until Fit**: Continue removing oldest messages until total tokens fall below threshold.
+6. **Context Retrieval**: Return messages in original or reverse order (recent-first) depending on use case (prepend recent for focus vs. chronological history).
+
+#### Code Example
+
+```python
+from collections import deque
+from typing import List, Dict, Optional
+from dataclasses import dataclass
+
+@dataclass
+class Message:
+    role: str  # "system", "user", "assistant", "tool"
+    content: str
+    tokens: Optional[int] = None
+    metadata: Optional[Dict] = None
+
+class ShortTermMemory:
+    """Sliding window memory with token-based trimming."""
+    
+    def __init__(self, max_tokens: int = 4096, min_messages: int = 2):
+        self.max_tokens = max_tokens
+        self.min_messages = min_messages  # Keep at least system + 1 other
+        self.messages: List[Message] = []
+        self.total_tokens = 0
+
+    def add(self, role: str, content: str, metadata: Dict = None):
+        """Add message and auto-trim if needed."""
+        tokens = self._estimate_tokens(content)
+        msg = Message(role=role, content=content, tokens=tokens, metadata=metadata)
+        self.messages.append(msg)
+        self.total_tokens += tokens
+        
+        # Trim if over limit
+        if self.total_tokens > self.max_tokens:
+            self._trim()
+
+    def _estimate_tokens(self, text: str) -> int:
+        """Rough token estimation: 1 token ≈ 3-4 chars."""
+        return max(1, len(text) // 4)
+
+    def _trim(self):
+        """Remove oldest non-system messages until under limit."""
+        while self.total_tokens > self.max_tokens and len(self.messages) > self.min_messages:
+            # Find first non-system message
+            for i, msg in enumerate(self.messages):
+                if msg.role != "system":
+                    removed = self.messages.pop(i)
+                    self.total_tokens -= removed.tokens
+                    print(f"Trimmed: {removed.role} message ({removed.tokens} tokens)")
+                    break
+
+    def get_context(self, recent_first: bool = False) -> List[Dict]:
+        """Return messages for LLM context."""
+        msgs = [(m.role, m.content) for m in self.messages]
+        if recent_first:
+            msgs = list(reversed(msgs))
+        return [{"role": r, "content": c} for r, c in msgs]
+
+    def get_summary(self) -> Dict:
+        """Return memory statistics."""
+        return {
+            "total_messages": len(self.messages),
+            "total_tokens": self.total_tokens,
+            "utilization": f"{self.total_tokens / self.max_tokens * 100:.1f}%",
+            "roles": {r: sum(1 for m in self.messages if m.role == r) for r in set(m.role for m in self.messages)}
+        }
+
+    def clear(self):
+        """Reset memory."""
+        self.messages = []
+        self.total_tokens = 0
+
+# Test
+memory = ShortTermMemory(max_tokens=200)
+memory.add("system", "You are a helpful assistant.")
+memory.add("user", "Tell me about climate change and its impacts on ecosystems around the world.")
+memory.add("assistant", "Climate change is causing significant warming...")
+memory.add("user", "What about polar regions?")
+print(memory.get_summary())
+```
+
+#### Real-World Scenario
+
+A chat application's agent handles customer support tickets. Each conversation appends: user message, agent thought process, tool calls (API queries), and responses. After 50 exchanges (~15KB), the context window (4K tokens) fills. The system auto-trims: removes oldest user message pair (5 exchanges from hour 1, 50 tokens), restoring capacity. Recent conversation (last hour) remains intact for coherence. When customer asks "What did you recommend earlier?", the agent only sees last 10 exchanges, but the trimmed context preserved enough for continuity.
+
+#### Diagram
+
+```mermaid
+graph LR
+    A["Add Message"] --> B["Estimate Tokens"]
+    B --> C["Append to List"]
+    C --> D{"Total Tokens<br/>Over Limit?"}
+    D -->|No| E["Keep All"]
+    D -->|Yes| F["Trim Loop"]
+    F --> G["Find Oldest<br/>Non-System"]
+    G --> H["Remove"]
+    H --> I{"Still Over?"}
+    I -->|Yes| F
+    I -->|No| J["Done"]
+    E --> K["Return Context"]
+    J --> K
+```
 
 ```python
 class ShortTermMemory:
@@ -482,6 +1260,217 @@ class ChainOfThought:
         if "Answer:" in response:
             return response.split("Answer:")[-1].strip()
         return response.strip()
+```
+
+#### Step-by-Step
+
+1. **Problem Framing**: Present the problem explicitly with clear context and ask the LLM to "think step by step" to trigger decomposition behavior.
+2. **Step Generation**: LLM generates numbered intermediate reasoning steps, breaking down the problem into smaller sub-problems with explicit intermediate conclusions.
+3. **Sequential Logic**: Each step builds on previous steps, creating a chain of logical dependencies that forces the model to maintain internal consistency.
+4. **Answer Extraction**: After all steps, extract the final answer from the LLM output (between "Answer:" marker or last logical conclusion).
+5. **Verification Loop**: Re-prompt LLM to check each step independently for correctness, detecting logical errors or unsupported claims.
+6. **Majority Voting**: Run multiple reasoning paths (5+ times) and return the most common answer, reducing impact of single reasoning errors.
+
+#### Code Example
+
+```python
+from typing import List, Dict, Optional
+from dataclasses import dataclass
+
+@dataclass
+class ReasoningStep:
+    number: int
+    content: str
+    conclusion: str
+    is_verified: bool = False
+
+@dataclass
+class CoTResult:
+    problem: str
+    reasoning_path: List[ReasoningStep]
+    final_answer: str
+    confidence: float
+    verification_passed: bool
+
+class ChainOfThought:
+    """Chain-of-Thought reasoning with verification and voting."""
+    
+    def __init__(self, llm_callable, num_paths: int = 5):
+        self.llm = llm_callable
+        self.num_paths = num_paths
+        self.results_history: List[CoTResult] = []
+
+    def solve(self, problem: str) -> str:
+        """Single reasoning path."""
+        prompt = f"""Solve this problem step by step.
+
+Problem: {problem}
+
+Think step by step:
+Step 1: """
+        response = self.llm(prompt)
+        return self._extract_answer(response)
+
+    def solve_with_verification(self, problem: str) -> CoTResult:
+        """Generate multiple paths, verify, and vote."""
+        paths: List[CoTResult] = []
+        
+        for i in range(self.num_paths):
+            # Step 1-4: Generate and extract one reasoning path
+            reasoning = self._generate_reasoning(problem)
+            steps = self._parse_steps(reasoning)
+            answer = self._extract_answer(reasoning)
+            
+            # Step 5: Verify the reasoning
+            verified = self._verify_reasoning(reasoning)
+            
+            path_result = CoTResult(
+                problem=problem,
+                reasoning_path=steps,
+                final_answer=answer,
+                confidence=0.9 if verified else 0.5,
+                verification_passed=verified
+            )
+            paths.append(path_result)
+        
+        # Step 6: Majority vote on answer
+        final_answer = self._majority_vote(paths)
+        
+        # Choose best reasoning path for return
+        best_path = max(
+            (p for p in paths if p.final_answer == final_answer),
+            key=lambda p: p.confidence,
+            default=paths[0]
+        )
+        
+        self.results_history.append(best_path)
+        return best_path
+
+    def _generate_reasoning(self, problem: str) -> str:
+        """Generate step-by-step reasoning."""
+        prompt = f"""Solve this step by step.
+
+Problem: {problem}
+
+Work through this methodically:
+Step 1:"""
+        return self.llm(prompt)
+
+    def _parse_steps(self, reasoning: str) -> List[ReasoningStep]:
+        """Extract numbered steps from reasoning."""
+        steps = []
+        lines = reasoning.split("\n")
+        current_step = None
+        
+        for line in lines:
+            if line.strip().startswith("Step "):
+                if current_step:
+                    steps.append(current_step)
+                # Parse "Step N: ..."
+                try:
+                    step_num = int(line.split(":")[0].split()[-1])
+                    content = ":".join(line.split(":")[1:]).strip()
+                    current_step = ReasoningStep(
+                        number=step_num,
+                        content=content,
+                        conclusion=content
+                    )
+                except (ValueError, IndexError):
+                    pass
+        
+        if current_step:
+            steps.append(current_step)
+        
+        return steps
+
+    def _extract_answer(self, reasoning: str) -> str:
+        """Extract final answer from reasoning."""
+        if "Answer:" in reasoning:
+            return reasoning.split("Answer:")[-1].strip()
+        elif "Final answer:" in reasoning.lower():
+            idx = reasoning.lower().index("final answer:")
+            return reasoning[idx + 12:].strip()
+        else:
+            # Last non-empty line is likely the answer
+            lines = [l.strip() for l in reasoning.split("\n") if l.strip()]
+            return lines[-1] if lines else ""
+
+    def _verify_reasoning(self, reasoning: str) -> bool:
+        """Verify correctness of reasoning."""
+        verification_prompt = f"""Review this reasoning for errors.
+
+Reasoning:
+{reasoning}
+
+Is this reasoning logically sound? Answer only YES or NO."""
+        
+        response = self.llm(verification_prompt)
+        return "YES" in response.upper()
+
+    def _majority_vote(self, paths: List[CoTResult]) -> str:
+        """Select most common answer."""
+        answers = {}
+        for path in paths:
+            answer = path.final_answer
+            # Weight by confidence
+            weight = path.confidence if path.verification_passed else path.confidence * 0.5
+            answers[answer] = answers.get(answer, 0) + weight
+        
+        return max(answers, key=answers.get) if answers else ""
+
+    def get_confidence_stats(self) -> Dict:
+        """Return statistics on reasoning confidence."""
+        if not self.results_history:
+            return {}
+        
+        verified_count = sum(1 for r in self.results_history if r.verification_passed)
+        avg_confidence = sum(r.confidence for r in self.results_history) / len(self.results_history)
+        
+        return {
+            "total_problems": len(self.results_history),
+            "verified_rate": verified_count / len(self.results_history),
+            "avg_confidence": avg_confidence
+        }
+
+# Usage
+def mock_llm(prompt: str) -> str:
+    """Mock LLM for testing."""
+    if "Step 1:" in prompt:
+        return """Step 1: First, identify what we know. We have apples and oranges.
+Step 2: Count the apples: 5 apples.
+Step 3: Count the oranges: 3 oranges.
+Step 4: Add them together: 5 + 3 = 8.
+Answer: 8 total fruits."""
+    return "YES"
+
+cot = ChainOfThought(mock_llm, num_paths=3)
+result = cot.solve_with_verification("If I have 5 apples and 3 oranges, how many fruits do I have?")
+print(f"Answer: {result.final_answer}")
+print(f"Verified: {result.verification_passed}")
+print(f"Confidence: {result.confidence}")
+```
+
+#### Real-World Scenario
+
+A financial analyst agent receives: "Company X spent $2M on R&D, $3M on marketing, $1M on ops. What's total spend and what % is R&D?" CoT generates: Step 1: List expenses (R&D=$2M, Marketing=$3M, Ops=$1M), Step 2: Sum = $2M+$3M+$1M = $6M, Step 3: R&D percentage = $2M/$6M = 33.3%. Verification checks: Are the numbers correct? Is the math correct? Yes to both. Majority voting (5 runs) all converge on $6M and 33.3%, confidence=0.95. Without CoT, the agent might jump to wrong answer; CoT forces step-by-step logic that's both more accurate and explainable to stakeholders.
+
+#### Diagram
+
+```mermaid
+graph TD
+    A["Problem"] --> B["Prompt: Think<br/>Step by Step"]
+    B --> C["Step 1"]
+    C --> D["Step 2"]
+    D --> E["Step 3"]
+    E --> F["Answer"]
+    F --> G["Verify<br/>Each Step"]
+    G --> H{"Valid?"}
+    H -->|Yes| I["Add to Votes"]
+    H -->|No| J["Low Weight"]
+    I --> K["Repeat 5x"]
+    J --> K
+    K --> L["Majority Vote"]
+    L --> M["Final Answer"]
 ```
 
 ### 5.2 Tree-of-Thoughts (ToT)

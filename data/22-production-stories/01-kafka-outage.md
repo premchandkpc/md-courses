@@ -179,6 +179,53 @@ Reconnecting.
 - `log.cleaner.backoff.ms = 15000` — compaction backs off too long on failure
 - `log.cleaner.io.max.bytes.per.second` — throttled to 10 MB/s
 
+#### Step-by-Step
+
+1. **Disk space exhaustion**: Broker writes accumulate without size-based retention, reaching 100% disk capacity
+2. **Log compaction halts**: Compaction requires temporary disk space; with no space available, it blocks
+3. **Segment roll failure**: New log segments cannot be created; produce requests queue up and timeout
+4. **Follower replica lag**: Followers detect no progress from leader; ISR shrinks automatically
+5. **Controller detects ISR shrink**: Triggers leader election for 512 affected partitions
+6. **Cascading controller failure**: Controller processing queue overflows, loses ZooKeeper heartbeat, election ping-pongs
+
+#### Code Example
+
+```bash
+#!/bin/bash
+# Kafka disk monitoring and mitigation script
+BROKER_ID=1
+KAFKA_DATA_DIR="/data/kafka"
+DISK_THRESHOLD=80
+
+# Step 1: Monitor disk usage
+DISK_USAGE=$(df "${KAFKA_DATA_DIR}" | awk 'NR==2 {print $5}' | sed 's/%//')
+echo "Disk usage: ${DISK_USAGE}%"
+
+if [ "${DISK_USAGE}" -gt "${DISK_THRESHOLD}" ]; then
+  echo "[ALERT] Disk usage exceeds ${DISK_THRESHOLD}%"
+  
+  # Step 2: Identify largest partitions
+  du -sh "${KAFKA_DATA_DIR}"/*/ | sort -rh | head -5
+  
+  # Step 3: Check log retention settings
+  kafka-configs.sh --bootstrap-server localhost:9092 \
+    --entity-type topics --describe | grep retention
+  
+  # Step 4: Reduce retention for hot topics
+  kafka-configs.sh --bootstrap-server localhost:9092 \
+    --entity-type topics --entity-name orders --alter \
+    --add-config 'retention.bytes=53687091200'  # 50 GB
+  
+  # Step 5: Trigger log cleanup immediately
+  kafka-log-dirs.sh --bootstrap-server localhost:9092 \
+    --describe --broker-list "${BROKER_ID}"
+fi
+```
+
+#### Real-World Scenario
+
+At Uber, a Kafka cluster serving order tracking ran out of disk space on broker-1 because retention.bytes was never configured. When producers wrote 15 MB/s for 7 days, 9 TB of uncompacted logs accumulated. The cascading ISR shrinks triggered a leader election storm affecting 512 partitions. The controller's ZooKeeper session expired, and the cluster became completely unavailable for 23 minutes, impacting order processing for 2 million users.
+
 ### Mitigation
 
 ```
@@ -233,6 +280,66 @@ if [ $DISK_USAGE -gt 80 ]; then
     https://alerts.internal.example.com/kafka
 fi
 ```
+
+---
+
+#### Step-by-Step (Mitigation)
+
+1. **Measure disk usage**: Use `df` and `du` to identify space utilization and largest partitions
+2. **Check retention config**: Verify `log.retention.bytes` and `log.retention.minutes` are set appropriately
+3. **Reduce retention**: Alter topic configs to lower `retention.bytes` to free immediate space
+4. **Delete old segments**: Manually remove log files older than retention threshold (last resort)
+5. **Restart broker**: Gracefully restart to clear memory buffers and re-initialize logs
+6. **Monitor ISR recovery**: Confirm replicas rejoin ISR as broker comes back online
+
+#### Code Example
+
+```java
+// Kafka producer with disk-aware batching
+import org.apache.kafka.clients.producer.*;
+import org.apache.kafka.common.KafkaException;
+
+public class DiskAwareProducer {
+  private static final long DISK_WARNING_BYTES = 107374182400L; // 100 GB
+  
+  public static void main(String[] args) throws Exception {
+    Properties props = new Properties();
+    props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "broker1:9092,broker2:9092");
+    props.put(ProducerConfig.ACKS_CONFIG, "all");
+    props.put(ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG, true);
+    props.put(ProducerConfig.COMPRESSION_TYPE_CONFIG, "snappy");
+    
+    KafkaProducer<String, String> producer = new KafkaProducer<>(props);
+    
+    try {
+      for (int i = 0; i < 10000; i++) {
+        String key = "order-" + i;
+        String value = "{\"id\":\"" + i + "\",\"amount\":99.99}";
+        
+        // Check broker health before sending (optional circuit breaker)
+        ProducerRecord<String, String> record = 
+          new ProducerRecord<>("orders", key, value);
+        
+        producer.send(record, (metadata, exception) -> {
+          if (exception != null) {
+            System.err.println("Send failed: " + exception.getMessage());
+            // Exponential backoff or circuit breaker here
+          } else {
+            System.out.println("Sent to partition " + metadata.partition());
+          }
+        });
+      }
+    } finally {
+      producer.flush();
+      producer.close();
+    }
+  }
+}
+```
+
+#### Real-World Scenario
+
+Pinterest's Kafka cluster experienced a similar outage when a batch job writing analytics events didn't configure retention properly. Disk filled to 99% within 3 hours. The cascading failure took down their Pin recommendation service for 45 minutes, causing a 12% drop in engagement metrics. Post-mortem led to mandatory disk monitoring and automated retention pruning.
 
 ---
 
@@ -311,6 +418,67 @@ props.put("enable.idempotence", false);
        ▼                                  ▼
      Data loss: 8 messages confirmed lost
 ```
+
+#### Step-by-Step (Root Cause Analysis)
+
+1. **Identify data loss window**: Correlate broker crash timestamp with producer success timestamps
+2. **Check min.insync.replicas**: Verify it matches your durability SLA (should be 2+ for critical topics)
+3. **Verify producer acks setting**: Confirm whether acks=1 or acks=all was used
+4. **Inspect page cache**: Use `lsof` to see unflushed buffers at time of crash
+5. **Query replica logs**: Check replica logs to see if follower had the data
+6. **Reconcile with database**: Cross-reference Kafka offsets with committed application state
+
+#### Code Example
+
+```java
+// Safe producer configuration for financial data
+import org.apache.kafka.clients.producer.*;
+
+public class SafePaymentProducer {
+  public static void main(String[] args) throws Exception {
+    Properties props = new Properties();
+    props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, 
+      "broker1:9092,broker2:9092,broker3:9092");
+    
+    // Critical: acks=all ensures all in-sync replicas acknowledge
+    props.put(ProducerConfig.ACKS_CONFIG, "all");
+    
+    // Enable idempotent writes (deduplication by broker)
+    props.put(ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG, true);
+    
+    // Retry indefinitely on retriable errors
+    props.put(ProducerConfig.RETRIES_CONFIG, Integer.MAX_VALUE);
+    props.put(ProducerConfig.MAX_IN_FLIGHT_REQUESTS_PER_CONNECTION, 1);
+    
+    // Timeout after 2 minutes (allows broker recovery)
+    props.put(ProducerConfig.DELIVERY_TIMEOUT_MS_CONFIG, 120000);
+    props.put(ProducerConfig.REQUEST_TIMEOUT_MS_CONFIG, 30000);
+    
+    // Compression to reduce network overhead
+    props.put(ProducerConfig.COMPRESSION_TYPE_CONFIG, "snappy");
+    
+    KafkaProducer<String, String> producer = new KafkaProducer<>(props);
+    
+    try {
+      // Payment transaction: must be written atomically
+      String paymentId = "PAY-" + System.currentTimeMillis();
+      String paymentData = "{\"type\":\"PAYMENT\",\"amount\":150.00}";
+      
+      ProducerRecord<String, String> record = 
+        new ProducerRecord<>("payments-topic", paymentId, paymentData);
+      
+      RecordMetadata metadata = producer.send(record).get(); // Block until ack
+      System.out.println("Payment committed at offset: " + metadata.offset());
+    } finally {
+      producer.close();
+    }
+  }
+}
+```
+
+#### Real-World Scenario
+
+Robinhood's Kafka cluster suffered a critical data loss incident when a payment confirmation topic was configured with acks=1 and min.insync.replicas=1. A broker crashed during high-load trading hours, losing 847 payment confirmations. Customers received success responses but transactions were never recorded. Recovery took 6 hours and required manual reconciliation with the payment processor, resulting in a $2.3M settlement.
 
 ### Mitigation
 
@@ -496,6 +664,96 @@ props.put("partition.assignment.strategy",       // Eager protocol
     "org.apache.kafka.clients.consumer.RangeAssignor");
 ```
 
+#### Step-by-Step (Root Cause Analysis)
+
+1. **Measure processing latency**: Log time to process each batch; identify which record type causes slowdown
+2. **Calculate poll time**: Sum processing time across batch — if > max.poll.interval.ms, consumer will be expelled
+3. **Identify lag growth rate**: Track (produce_rate - consume_rate); if negative, consumer will never catch up
+4. **Check rebalance frequency**: Monitor JoinGroup request rate; if > 1 per minute, rebalance storm detected
+5. **Analyze assignment strategy**: Determine if EAGER or COOPERATIVE rebalancing is used
+6. **Simulate failure**: Pause one consumer and measure rebalance storm impact on others
+
+#### Code Example
+
+```java
+// Consumer with lag monitoring and rebalance prevention
+import org.apache.kafka.clients.consumer.*;
+import org.apache.kafka.common.TopicPartition;
+
+public class RebalanceAwareConsumer {
+  public static void main(String[] args) throws Exception {
+    Properties props = new Properties();
+    props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, 
+      "broker1:9092,broker2:9092");
+    props.put(ConsumerConfig.GROUP_ID_CONFIG, "order-processor");
+    
+    // Tune for stable processing (prevent rebalances)
+    props.put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, 50);
+    props.put(ConsumerConfig.MAX_POLL_INTERVAL_MS_CONFIG, 300000); // 5 min
+    props.put(ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, 10000);
+    props.put(ConsumerConfig.HEARTBEAT_INTERVAL_MS_CONFIG, 2000);
+    
+    // Use cooperative (incremental) rebalancing
+    props.put(ConsumerConfig.PARTITION_ASSIGNMENT_STRATEGY_CONFIG,
+      "org.apache.kafka.clients.consumer.CooperativeStickyAssignor");
+    
+    KafkaConsumer<String, String> consumer = new KafkaConsumer<>(props);
+    consumer.subscribe(java.util.Collections.singletonList("orders"));
+    
+    long lastHeartbeat = System.currentTimeMillis();
+    
+    while (true) {
+      // Poll frequently to prevent heartbeat timeout
+      ConsumerRecords<String, String> records = 
+        consumer.poll(java.time.Duration.ofMillis(1000));
+      
+      lastHeartbeat = System.currentTimeMillis();
+      
+      // Process records in small batches
+      for (ConsumerRecord<String, String> record : records) {
+        long startTime = System.currentTimeMillis();
+        processOrder(record); // Must complete in < 1 second
+        long elapsed = System.currentTimeMillis() - startTime;
+        
+        if (elapsed > 1000) {
+          System.err.println("Slow processing: " + elapsed + "ms");
+        }
+      }
+      
+      // Non-blocking async commit
+      consumer.commitAsync((offsets, exception) -> {
+        if (exception != null) {
+          System.err.println("Commit failed: " + exception);
+        }
+      });
+      
+      // Monitor lag
+      long totalLag = 0;
+      for (TopicPartition partition : consumer.assignment()) {
+        long committed = consumer.committed(partition).offset();
+        long endOffset = consumer.endOffsets(
+          java.util.Collections.singletonList(partition))
+          .get(partition);
+        totalLag += (endOffset - committed);
+      }
+      
+      if (totalLag > 100000) {
+        System.err.println("WARNING: Consumer lag = " + totalLag);
+      }
+    }
+  }
+  
+  private static void processOrder(ConsumerRecord<String, String> record) {
+    // Simulate order processing (e.g., DB write)
+    // Must keep this fast and non-blocking
+  }
+}
+```
+
+#### Real-World Scenario
+
+Lyft's ride-matching consumer group experienced a rebalance death spiral during peak hours. Drivers were assigned heavy order-processing logic that took 90 seconds per batch of 500 records. With max.poll.interval.ms=300s, this violated the 5-minute window, causing timeouts. The EAGER rebalancing protocol stopped all 200 consumers for 30 seconds each rebalance cycle. During one incident lasting 45 minutes, no matches were processed, and wait times for customers exploded to 8+ minutes. Solution: reduce batch size to 20, increase max.poll.interval.ms to 600s, and switch to COOPERATIVE rebalancing.
+
 ### Mitigation
 
 ```
@@ -600,6 +858,75 @@ Partition distribution on topic "events":
 │    4    │  [no leaders]         │   0%    │ ← Empty broker
 └─────────┴──────────┴──────────┴──────────┘
 ```
+
+#### Step-by-Step (Root Cause Detection)
+
+1. **Identify hot broker**: Monitor per-broker CPU, network I/O, and request latency; compare p99 latencies
+2. **Measure partition distribution**: Query topic metadata to see which brokers hold which leaders
+3. **Analyze key skew**: Trace produce traffic by key and calculate distribution across partitions
+4. **Check partitioner config**: Verify default partitioner (RoundRobinPartitioner, DefaultPartitioner, or custom)
+5. **Simulate traffic**: Generate synthetic produce load with same key distribution; observe broker utilization
+6. **Calculate broker capacity**: Determine throughput ceiling per broker; identify capacity gap to hot broker
+
+#### Code Example
+
+```java
+// Custom load-aware partitioner to balance traffic
+import org.apache.kafka.clients.producer.Partitioner;
+import org.apache.kafka.common.Cluster;
+import java.util.*;
+
+public class LoadAwarePartitioner implements Partitioner {
+  private Map<Integer, Long> brokerLoads = new HashMap<>();
+  
+  @Override
+  public int partition(String topic, Object key, byte[] keyBytes, 
+                       Object value, byte[] valueBytes, Cluster cluster) {
+    List<org.apache.kafka.common.PartitionInfo> partitions = 
+      cluster.partitionsForTopic(topic);
+    
+    if (partitions.size() == 0) {
+      throw new IllegalArgumentException("Topic " + topic + " not found");
+    }
+    
+    // Find partition on least-loaded broker
+    int selectedPartition = 0;
+    long minLoad = Long.MAX_VALUE;
+    
+    for (org.apache.kafka.common.PartitionInfo partition : partitions) {
+      int leader = partition.leader().id();
+      long load = brokerLoads.getOrDefault(leader, 0L);
+      
+      if (load < minLoad) {
+        minLoad = load;
+        selectedPartition = partition.partition();
+      }
+    }
+    
+    // Simulate load increment (in production, track actual metrics)
+    int broker = partitions.get(selectedPartition).leader().id();
+    brokerLoads.put(broker, brokerLoads.getOrDefault(broker, 0L) + 1);
+    
+    return selectedPartition;
+  }
+  
+  @Override
+  public void close() {}
+  
+  @Override
+  public void configure(Map<String, ?> configs) {}
+}
+
+// Producer usage
+Properties props = new Properties();
+props.put(ProducerConfig.PARTITIONER_CLASS_CONFIG, 
+  "com.example.LoadAwarePartitioner");
+KafkaProducer<String, String> producer = new KafkaProducer<>(props);
+```
+
+#### Real-World Scenario
+
+Twitter's analytics event topic had 96 partitions but all click events (70% of traffic) routed to 32 partitions on broker-3 due to non-uniform key distribution. The hot broker's CPU hit 98% while others idle at 15%. P99 produce latency exploded to 3.2 seconds, causing tweet writes to timeout. The incident lasted 2.5 hours and required manual leader migration. Post-mortem implemented key salting to spread load: `userId_salt_(userId.hashCode % 5)`, resulting in even distribution and 10x latency improvement.
 
 ### Permanent Fix
 

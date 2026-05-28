@@ -59,6 +59,15 @@ graph LR
 
 ## Noob Explanation
 
+#### Step-by-Step: Unit Testing as LEGO Blocks
+
+1. **Identify the block** (function to test): `calculateTotal(items)`
+2. **Create test data** (valid input): `items = [10, 20, 30]`
+3. **Execute the block** (call function): `result = calculateTotal(items)`
+4. **Verify the result** (assertion): `assert result == 60`
+5. **Cleanup** (teardown): Release resources if needed
+6. **Repeat** for edge cases (empty list, negative numbers, null)
+
 ### Unit Testing as LEGO Blocks
 
 Imagine you're building a LEGO castle. Before you connect blocks together, you want to verify each individual block is the right color, has no cracks, and connects properly to neighboring blocks. A **unit test** is exactly this:
@@ -78,6 +87,36 @@ Block A (function)
 - Actual: 60 ✓
 
 If there's a bug, you immediately know it's in `calculateTotal()`, not in 50 other functions that call it.
+
+#### Code Example
+
+```java
+// Unit test for calculateTotal function (Java with JUnit)
+@Test
+public void testCalculateTotalWithPositiveNumbers() {
+    Calculator calc = new Calculator();
+    int result = calc.calculateTotal(Arrays.asList(10, 20, 30));
+    assertEquals(60, result);  // Assert expected = actual
+}
+
+@Test
+public void testCalculateTotalWithEmptyList() {
+    Calculator calc = new Calculator();
+    int result = calc.calculateTotal(new ArrayList<>());
+    assertEquals(0, result);  // Empty list should return 0
+}
+
+@Test
+public void testCalculateTotalWithNegativeNumbers() {
+    Calculator calc = new Calculator();
+    int result = calc.calculateTotal(Arrays.asList(-10, 20, 30));
+    assertEquals(40, result);  // Negative numbers should be included
+}
+```
+
+#### Real-World Scenario
+
+A payment processing service has a `calculateDiscount()` function that applies 10% off for orders over $100. The team shipped code without unit tests. In production, an edge case: an order for exactly $100.00 caused a rounding error (99.99 vs 100.00), resulting in $0.01 data loss per transaction. Across 1M daily transactions, $10K daily loss went undetected for 2 weeks. A simple unit test covering boundary conditions (99.99, 100.00, 100.01) would have caught this immediately.
 
 ### Integration Testing as LEGO Houses
 
@@ -104,6 +143,38 @@ Test: Wall + Floor Connection
 ```
 
 **Why separate**: Unit test verifies the API handler logic. Integration test verifies the database driver works correctly, the connection pool doesn't leak, and data flows correctly end-to-end.
+
+#### Code Example
+
+```python
+# Integration test for API + Database (Python with pytest + TestContainers)
+def test_user_creation_integration():
+    # Setup: Start real PostgreSQL in Docker container
+    with testcontainers.postgres.PostgresContainer() as db:
+        # Create connection
+        conn = psycopg2.connect(db.get_connection_url())
+        cursor = conn.cursor()
+        
+        # Create schema
+        cursor.execute("CREATE TABLE users (id SERIAL PRIMARY KEY, email VARCHAR(255), name VARCHAR(255))")
+        conn.commit()
+        
+        # Act: Create user via API handler + database
+        api = UserAPI(db_connection=conn)
+        result = api.create_user("alice@example.com", "Alice")
+        
+        # Assert: Data persisted in database
+        cursor.execute("SELECT * FROM users WHERE email = %s", ("alice@example.com",))
+        user = cursor.fetchone()
+        assert user is not None
+        assert user[2] == "Alice"
+        
+        conn.close()
+```
+
+#### Real-World Scenario
+
+A fintech company discovered in production that their user creation endpoint was successful (returned 200 OK to the API) but the database transaction wasn't committed due to a connection pool leak. New users could log in immediately (in-memory cache), but the data disappeared after server restart. Integration tests would have caught this: the test would verify that POST /users returns 200 AND the user exists in the database after the function returns, not just in memory.
 
 ### The Test Pyramid
 
@@ -169,6 +240,15 @@ Input: /src/test directory
   v
 Output: [Test("test_add"), Test("test_subtract"), ...]
 ```
+
+#### Step-by-Step: Test Discovery Process
+
+1. **Scan filesystem**: Walk `/src/test` directory recursively, find all `.java` files
+2. **Parse annotations**: Look for `@Test`, `@Before`, `@After`, `@Parameterized.Parameters` markers
+3. **Extract metadata**: Build a map of test class → test methods → method signature → annotations
+4. **Resolve dependencies**: If `@RunWith(Parameterized.class)`, load parameter sources
+5. **Build execution graph**: Order by `@FixMethodOrder` or default (alphabetical)
+6. **Return test list**: Framework now knows which tests to execute and in what order
 
 **JUnit Discovery Example** (Java):
 ```java
@@ -321,6 +401,52 @@ Thread 1: Test5 (after Test1) -----+
 ---
 
 ## Mocking Framework Internals
+
+#### Step-by-Step: Creating and Verifying a Mock
+
+1. **Define interface**: Create interface or class that the mock will implement (e.g., `PaymentProcessor`)
+2. **Create mock instance**: `PaymentProcessor mock = mock(PaymentProcessor.class)`
+3. **Configure behavior**: `when(mock.charge(100)).thenReturn(true)`
+4. **Inject into code under test**: `OrderService service = new OrderService(mock)`
+5. **Execute test logic**: `service.processOrder(order)`
+6. **Verify mock was called**: `verify(mock).charge(100)`
+7. **Assert on results**: Verify ordering, call count, arguments
+
+#### Code Example
+
+```java
+// Mock example with Mockito (Java)
+@Test
+public void testPaymentProcessingWithMock() {
+    // 1. Create mock
+    PaymentProcessor mockPayment = mock(PaymentProcessor.class);
+    NotificationService mockNotif = mock(NotificationService.class);
+    
+    // 2. Configure behavior
+    when(mockPayment.charge(100.0)).thenReturn(true);
+    when(mockNotif.send(anyString())).thenReturn(true);
+    
+    // 3. Inject and execute
+    OrderService service = new OrderService(mockPayment, mockNotif);
+    Order order = new Order(100.0, "user@example.com");
+    boolean result = service.processOrder(order);
+    
+    // 4. Verify mocks were called correctly
+    assertTrue(result);
+    verify(mockPayment).charge(100.0);  // Called exactly once
+    verify(mockPayment, never()).refund(anyDouble());  // Never called
+    verify(mockNotif).send("user@example.com");
+    
+    // 5. Verify call order
+    InOrder inOrder = inOrder(mockPayment, mockNotif);
+    inOrder.verify(mockPayment).charge(100.0);  // First
+    inOrder.verify(mockNotif).send("user@example.com");  // Second
+}
+```
+
+#### Real-World Scenario
+
+A team mocked out a credit card processor in unit tests but set `when(mock.charge(...)).thenReturn(true)` unconditionally. In production, the real processor started returning `false` for declined cards. Tests passed (mock always returned true), but production orders failed silently. The team added an integration test with a test credit card (that actually calls the processor's sandbox), catching the issue pre-deploy.
 
 ### What is a Mock?
 

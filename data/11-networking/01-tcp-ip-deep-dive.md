@@ -84,6 +84,50 @@ graph LR
 - **Payload** (46-1500 bytes): Minimum 46 bytes (padding added), maximum 1500 (MTU)
 - **FCS** (4 bytes): CRC-32 checksum covering dest MAC through payload
 
+### Step-by-Step
+
+1. **Physical layer transmission** NIC generates preamble and SFD for clock synchronization
+2. **MAC address lookup** sender queries ARP to resolve IP to destination MAC
+3. **Frame construction** payload (IP packet) is wrapped with layer-2 headers
+4. **Padding** if payload < 46 bytes, padding is added to meet minimum frame size
+5. **CRC calculation** FCS checksum computed over entire frame excluding preamble/SFD
+6. **Physical transmission** frame sent as electrical/optical signal over wire
+
+### Code Example
+
+```python
+# Python: Parse Ethernet frame with scapy
+from scapy.all import Ether, IP, TCP, Raw
+import struct
+
+# Capture raw bytes from wire (16 bytes Ethernet header + payload)
+raw_frame = bytes.fromhex(
+    "ffffffffffff"  # Broadcast dst MAC
+    "0800045e0054"  # Source MAC 08:00:04:5e:00:54
+    "0800"          # EtherType IPv4
+    "4500003c1c4640004006b0c7c0a80001c0a80002"  # IP header
+    "0050d31c123456781234567880101820e28e0000"  # TCP header + data
+)
+
+frame = Ether(raw_frame)
+print(f"Dst MAC: {frame.dst}")
+print(f"Src MAC: {frame.src}")
+print(f"EtherType: {hex(frame.type)}")
+print(f"Payload: {frame.payload}")
+
+# Calculate MTU for ethernet
+MTU = 1500
+IP_HEADER = 20
+TCP_HEADER = 20
+ETHERNET_HEADER = 14
+MAX_PAYLOAD = MTU - IP_HEADER - TCP_HEADER
+print(f"Max TCP payload per frame: {MAX_PAYLOAD} bytes")
+```
+
+### Real-World Scenario
+
+Facebook's internal data center fabric uses jumbo frames (9000 bytes MTU) for storage replication. When a single 1GB block is transferred, standard MTU would require 1M+ frames, generating millions of interrupts. With jumbo frames, it's only 111K frames—85% reduction in CPU overhead. Engineers discovered a misconfigured switch forcing standard MTU; replication bandwidth dropped from 40Gbps to 2Gbps until the jumbo frame config was restored.
+
 ### Jumbo Frames
 
 ```

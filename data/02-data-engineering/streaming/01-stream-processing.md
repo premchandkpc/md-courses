@@ -85,6 +85,103 @@ Session Window (dynamic, gap-based):
   Gap: > 5 minute inactivity
 ```
 
+#### Step-by-Step
+
+1. **Event Timestamp Extraction**: Each event is tagged with its event time (when it was generated, not processed).
+2. **Window Assignment**: Streaming engine assigns each event to one or more windows based on its timestamp (e.g., event at 10:03 → [10:00-10:05) tumbling window).
+3. **State Accumulation**: Events are accumulated in-memory state keyed by (window, group_key), building aggregates incrementally.
+4. **Watermark Tracking**: System tracks a "watermark"—a threshold indicating no more events before this time will arrive (used to detect late events).
+5. **Window Closure**: When watermark passes window end + allowed lateness, window is considered complete and results are emitted.
+6. **Result Emission**: Final aggregated result (sum, count, etc.) for the window is output to downstream system, state freed.
+
+#### Code Example
+
+```python
+from pyspark.sql import SparkSession
+from pyspark.sql.functions import col, window, sum as spark_sum, count, from_unixtime
+from pyspark.sql.types import StructType, StructField, IntegerType, LongType
+import time
+
+# Create SparkSession with streaming support
+spark = SparkSession.builder \
+    .appName("StreamWindowExample") \
+    .getOrCreate()
+
+spark.sparkContext.setLogLevel("ERROR")
+
+# Simulate Kafka source (in practice, read from Kafka)
+# Events: (timestamp, user_id, amount)
+events_schema = StructType([
+    StructField("timestamp", LongType()),
+    StructField("user_id", IntegerType()),
+    StructField("amount", IntegerType()),
+])
+
+# Step 1: Create streaming DataFrame from socket source (for demo)
+streaming_df = spark.readStream \
+    .format("socket") \
+    .option("host", "localhost") \
+    .option("port", 9999) \
+    .load()
+
+# For demo, use static data
+import pandas as pd
+df_static = pd.DataFrame({
+    "timestamp": [int(time.time() * 1000) + i * 1000 for i in range(10)],
+    "user_id": [1, 1, 2, 2, 1, 3, 3, 2, 3, 1],
+    "amount": [100, 200, 150, 175, 50, 300, 100, 80, 90, 70],
+})
+
+df = spark.createDataFrame(df_static)
+
+# Step 2-3: Assign events to 5-minute tumbling windows
+windowed_df = df \
+    .withColumn("event_time", from_unixtime(col("timestamp") / 1000)) \
+    .groupBy(
+        window(col("event_time"), "5 minutes"),  # Tumbling window
+        col("user_id")
+    ) \
+    .agg(
+        spark_sum("amount").alias("total_amount"),
+        count("*").alias("event_count")
+    )
+
+# Step 4-5: For streaming, set watermark for late data
+# (commented since we're using static data)
+# windowed_df_with_watermark = df \
+#     .withWatermark("event_time", "2 minutes") \
+#     .groupBy(window(col("event_time"), "5 minutes"), col("user_id")) \
+#     .agg(spark_sum("amount").alias("total_amount"))
+
+# Step 6: Display results
+windowed_df.show(truncate=False)
+
+print("\\nWindow statistics:")
+windowed_df.select("user_id", "total_amount", "event_count").show()
+
+spark.stop()
+```
+
+#### Real-World Scenario
+
+At Lyft, ride-request stream processes 500K+ events/second. Windowing: (1) each request event tagged with timestamp from mobile device, (2) engine assigns to 1-minute tumbling windows by location (geohash), (3) state accumulates requests per location: sum of requests, avg surge factor, (4) watermark tracks that events 2+ min old won't arrive (network is fast), (5) after 1 min + 30s allowed lateness, window closes and results sent to surge pricing engine, (6) state freed. If a late event arrives (rider had network blip), watermark already passed—event discarded to prevent re-computation.  System never waits more than 90s to emit pricing decisions, enabling real-time surges.
+
+#### Diagram
+
+```mermaid
+graph TD
+    A["Events arrive<br/>with timestamps"] --> B["Step 1: Extract<br/>event_time"]
+    B --> C["Step 2: Assign<br/>to window<br/>e.g., [10:00-10:05)"]
+    C --> D["Step 3: Accumulate<br/>in state<br/>sum, count"]
+    D --> E["Step 4: Track<br/>watermark"]
+    E --> F{"Step 5: Window<br/>complete?<br/>time >= end"}
+    F -->|No| G["Wait"]
+    G --> D
+    F -->|Yes| H["Step 6: Emit<br/>results"]
+    H --> I["Downstream<br/>processing"]
+    I --> J["Free state"]
+```
+
 ### Watermarks
 
 Watermarks track the progress of event time:

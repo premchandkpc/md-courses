@@ -130,6 +130,65 @@ blob 14\0Hello, World!
 ...
 ```
 
+#### Step-by-Step
+
+1. **Serialize object**: Create header with object type, size, and null byte terminator
+2. **Concatenate header and content**: Combine header with full object payload
+3. **Compute SHA-1 hash**: Hash the concatenated string to produce 40-character hex digest
+4. **Create object directory**: Extract first 2 hex characters; create `.git/objects/XX/` directory if needed
+5. **Compress and write**: Zlib-compress the serialized object and write to `.git/objects/XX/YYYYYY...`
+6. **Verify on read**: Decompress, deserialize, and re-hash to ensure integrity
+
+#### Code Example
+
+```python
+import hashlib
+import zlib
+import os
+
+class GitObject:
+    def __init__(self, obj_type, content):
+        self.obj_type = obj_type
+        self.content = content if isinstance(content, bytes) else content.encode('utf-8')
+    
+    def compute_sha1(self):
+        """Compute SHA-1 hash like Git does."""
+        header = f"{self.obj_type} {len(self.content)}\0".encode('utf-8')
+        full_content = header + self.content
+        return hashlib.sha1(full_content).hexdigest()
+    
+    def serialize(self):
+        """Serialize object for storage (header + content, then compress)."""
+        header = f"{self.obj_type} {len(self.content)}\0".encode('utf-8')
+        full_content = header + self.content
+        return zlib.compress(full_content)
+    
+    def write_to_git_dir(self, git_dir):
+        """Write object to .git/objects directory."""
+        sha1 = self.compute_sha1()
+        obj_dir = f"{git_dir}/objects/{sha1[:2]}"
+        obj_file = f"{obj_dir}/{sha1[2:]}"
+        
+        # Create directory if needed
+        os.makedirs(obj_dir, exist_ok=True)
+        
+        # Write compressed object
+        with open(obj_file, 'wb') as f:
+            f.write(self.serialize())
+        
+        return sha1
+
+# Example usage
+blob = GitObject("blob", "Hello, World!\n")
+sha = blob.write_to_git_dir(".git")
+print(f"Blob SHA-1: {sha}")
+# Output: Blob SHA-1: af5626b4a114abcb82d63db7c8082c3c4756e51b
+```
+
+#### Real-World Scenario
+
+When Google announced the SHAttered attack (SHA-1 collision) in 2017, it sparked a years-long effort to migrate Git to SHA-256. Linux kernel maintainers faced a critical decision: continue with SHA-1 (now cryptographically broken) or migrate 60+ million commits and risk compatibility. Git 2.31+ enabled transparent SHA-256 support while maintaining SHA-1 backward compatibility. The Kernel project planned a 3-year migration timeline, scheduled to complete in 2025.
+
 ---
 
 ## 2. SHA-1 Hashing & Content-Addressable Storage

@@ -60,6 +60,45 @@ Application security is not about memorizing rules—it's about understanding *t
 
 This guide assumes you understand networking (TCP/IP, HTTP, DNS) but not necessarily security. We'll build up from first principles to production-grade systems handling billions of users.
 
+### Step-by-Step
+
+1. **Identify the threat surface** — What data does your app handle, who wants it, and how can they attack?
+2. **Design threat models** — For each critical asset, assume attackers will try to compromise it
+3. **Implement defense layers** — Never rely on single defense; use multiple barriers (defense-in-depth)
+4. **Validate security controls** — Code review, penetration testing, security audits
+5. **Monitor and respond** — Log suspicious activity, detect breaches, respond to incidents
+
+### Code Example
+
+```python
+# Security threat model checklist
+threats = {
+    'credentials': ['phishing', 'brute_force', 'replay'],
+    'sessions': ['hijacking', 'fixation', 'timeout_bypass'],
+    'data_transit': ['MITM', 'packet_sniffing'],
+    'data_rest': ['database_breach', 'unauthorized_access']
+}
+
+# Defense layers for login
+security_checks = [
+    ('rate_limit', 'max 5 attempts per minute per IP'),
+    ('password_hash', 'use bcrypt with cost 12'),
+    ('https_only', 'encrypt credentials in transit'),
+    ('2fa', 'require TOTP after password'),
+    ('session_validation', 'verify session IP and user agent'),
+    ('audit_log', 'log all auth attempts')
+]
+
+for threat, defenses in threats.items():
+    for defense in defenses:
+        if defense not in [x[0] for x in security_checks]:
+            print(f"WARNING: {threat} has no defense for {defense}")
+```
+
+### Real-World Scenario
+
+Yahoo's 2014 breach compromised 3 billion accounts. Root cause: They stored passwords using unsecured hashing, had minimal rate-limiting, and took months to discover the breach. They lost $350M in acquisition value. With proper security layers (bcrypt, rate-limiting, anomaly detection), this would have been impossible.
+
 ---
 
 ## Noob Explanation: Building Intuition
@@ -104,6 +143,49 @@ Attacker breaks in, gets hash file
 Attacker cannot reverse bcrypt (computational cost: billions of attempts)
 ```
 
+#### Step-by-Step: Secure Password Handling
+
+1. **Enforce policy** — Minimum 12 chars, entropy check (use zxcvbn library)
+2. **Transmit over HTTPS** — Certificate pinning for mobile apps to prevent MITM
+3. **Hash with bcrypt** — Cost factor 12, unique random salt per password
+4. **Store hash only** — Never store plaintext, even encrypted
+5. **Compare safely** — Use constant-time comparison (hmac.compare_digest) to prevent timing attacks
+
+#### Code Example: Password Hashing
+
+```python
+import bcrypt
+import hmac
+
+def register_user(username, password):
+    # Enforce minimum length and complexity
+    if len(password) < 12:
+        raise ValueError("Password must be 12+ characters")
+    
+    # Hash password (bcrypt includes salt generation)
+    password_hash = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt(rounds=12))
+    
+    # Store hash in database (never the plaintext password)
+    db.create_user(username, password_hash.decode('utf-8'))
+    return True
+
+def login_user(username, password_input):
+    user = db.get_user(username)
+    if not user:
+        # Timing attack prevention: still hash to maintain consistent time
+        bcrypt.hashpw(password_input.encode('utf-8'), bcrypt.gensalt())
+        return False
+    
+    # Verify password (bcrypt.checkpw is constant-time)
+    if bcrypt.checkpw(password_input.encode('utf-8'), user.password_hash.encode('utf-8')):
+        return True
+    return False
+```
+
+#### Real-World Scenario: Ashley Madison Breach
+
+Ashley Madison (2015): 37 million users exposed. Passwords were bcrypt-hashed, so attacker couldn't use rainbow tables. However, weak passwords still got cracked via brute force. Lesson: bcrypt buys time (cost factor) but doesn't eliminate weak password risk. Mandatory password policy would have saved millions in reputation damage.
+
 ### SQL Injection: Tricking the Database
 
 Imagine a login form:
@@ -140,6 +222,38 @@ cursor.execute(query, (username, password))
 ```
 
 The database treats the parameters as *data*, not *code*. The attacker's input cannot change the query structure.
+
+#### Step-by-Step: SQL Injection Prevention
+
+1. **Never concatenate strings** — Don't use f-strings or string concatenation for SQL
+2. **Use parameterized queries** — Every database driver supports prepared statements
+3. **Validate on input** — Check type, length, format (defense-in-depth)
+4. **Escape on output** — Some ORMs handle this automatically
+5. **Test with fuzzing** — Use tools like SQLMap to verify parameterization
+
+#### Code Example: SQL Injection Prevention
+
+```python
+# VULNERABLE - Never do this
+username = request.form['username']
+password = request.form['password']
+query = f"SELECT * FROM users WHERE username = '{username}' AND password = '{password}'"
+cursor.execute(query)
+
+# SECURE - Always use parameters
+query = "SELECT * FROM users WHERE username = ? AND password = ?"
+cursor.execute(query, (username, password))
+
+# SECURE - ORM (SQLAlchemy)
+user = db.session.query(User).filter_by(username=username, password=password).first()
+# ORM automatically handles parameterization
+```
+
+#### Real-World Scenario: Heartbleed via SQL Injection
+
+In 2014, multiple sites suffered SQL injection → RCE chains. Attackers injected code to execute system commands (stacked queries), dumped entire databases with SELECT * INTO OUTFILE, read /etc/passwd. Parameterized queries would have prevented all of this.
+
+---
 
 ### Cross-Site Scripting (XSS): Injecting Malicious Code
 

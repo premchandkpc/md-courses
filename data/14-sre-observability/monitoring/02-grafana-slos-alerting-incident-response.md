@@ -42,6 +42,46 @@ SLO (Service Level Objective):
 - "We promise 99.9% uptime, or you get a refund"
 - Legal/financial consequence if we miss SLO
 
+#### Step-by-Step: Setting SLOs
+
+1. **Define business requirements** — What latency/uptime do customers need?
+2. **Measure SLI baseline** — What's our current performance? (Usually 90-99.9%)
+3. **Set SLO target** — 1-2% better than baseline (stretch goal, not arbitrary)
+4. **Calculate error budget** — (1 - SLO%) × total time. E.g., 99.9% = 43 minutes/month downtime
+5. **Build alerts** — Alert when burning error budget too fast (e.g., > 10% per week)
+
+#### Code Example: SLO Tracking
+
+```python
+# Define SLOs in code
+SLOS = {
+    'api_latency_p99': {
+        'metric': 'http_request_duration_seconds',
+        'quantile': 0.99,
+        'threshold': 0.2,  # 200ms
+        'window': '30d'
+    },
+    'api_error_rate': {
+        'metric': 'http_errors_total / http_requests_total',
+        'threshold': 0.001,  # 0.1% error rate
+        'window': '30d'
+    },
+    'availability': {
+        'metric': 'up{job="api"}',
+        'threshold': 0.9999,  # 99.99% uptime
+        'window': '30d'
+    }
+}
+
+# Prometheus query to check SLO compliance
+# PromQL:
+# (sum(rate(http_requests_total{status=~"2.."}[5m])) / sum(rate(http_requests_total[5m]))) >= 0.999
+```
+
+#### Real-World Scenario
+
+Google defined SLOs for Gmail (99.9% availability = 43min/month allowed downtime). During a major incident, team was hesitant to fix problem (feared worse outage). But SLO math showed: "We've already spent 30 minutes of budget this month. Fix it now and we stay within SLO, or delay and we miss SLO for whole month." Clear error budget focused teams on decisive action.
+
 ### Alert = Alarm
 
 ICU monitor beeps when:

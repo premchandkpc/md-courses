@@ -88,6 +88,65 @@ graph TD
 
 ## Phase 1: Foundation (0–6 Months)
 
+#### Step-by-Step: Your First CRUD API
+
+1. **Choose language**: Python (FastAPI) or Java (Spring Boot) — recommended for learning
+2. **Build data model**: Define entity (User, Post, Order) with attributes
+3. **Create database schema**: Tables with primary/foreign keys, indexes
+4. **Implement CRUD endpoints**: POST (create), GET (read), PUT (update), DELETE (delete)
+5. **Add validation**: Check required fields, valid email format, age >= 0
+6. **Write unit tests**: Mock database, test each endpoint
+7. **Deploy**: Docker + push to GitHub, deploy to Heroku/Railway
+
+#### Code Example
+
+```python
+# Phase 1 API: Simple Todo app (FastAPI + SQLAlchemy)
+from fastapi import FastAPI
+from sqlalchemy import create_engine, Column, Integer, String
+from sqlalchemy.orm import declarative_base, Session
+
+app = FastAPI()
+Base = declarative_base()
+engine = create_engine("sqlite:///todos.db")
+
+class Todo(Base):
+    __tablename__ = "todos"
+    id = Column(Integer, primary_key=True)
+    title = Column(String(100))
+    completed = Column(Boolean, default=False)
+
+Base.metadata.create_all(bind=engine)
+
+@app.post("/todos")
+def create_todo(title: str, db: Session):
+    todo = Todo(title=title)
+    db.add(todo)
+    db.commit()
+    return todo
+
+@app.get("/todos/{todo_id}")
+def read_todo(todo_id: int, db: Session):
+    return db.query(Todo).filter(Todo.id == todo_id).first()
+
+@app.put("/todos/{todo_id}")
+def update_todo(todo_id: int, title: str, db: Session):
+    todo = db.query(Todo).filter(Todo.id == todo_id).first()
+    todo.title = title
+    db.commit()
+    return todo
+
+@app.delete("/todos/{todo_id}")
+def delete_todo(todo_id: int, db: Session):
+    db.query(Todo).filter(Todo.id == todo_id).delete()
+    db.commit()
+    return {"deleted": True}
+```
+
+#### Real-World Scenario
+
+A junior engineer at a startup built a user API but forgot to add indexes on the email field. During launch, 100K users signed up, user login queries started scanning the entire table (10M rows), and p99 latency went from 10ms to 5000ms. A 1-minute fix (CREATE INDEX on email) brought it back to 10ms. Learning: think about query patterns upfront, measure latency under load (even locally).
+
 ### Objectives
 Write clean, testable code. Understand basic web request flow. Build & deploy a simple CRUD API.
 

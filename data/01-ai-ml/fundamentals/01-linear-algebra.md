@@ -26,6 +26,104 @@ A vector is an ordered n-tuple of numbers representing magnitude and direction i
 v = [v₁, v₂, ..., vₙ]ᵀ
 ```
 
+#### Step-by-Step
+
+1. **Vector Creation**: Initialize a vector with n scalar components, typically in NumPy as a 1D array.
+2. **Component Access**: Index individual elements using standard array indexing (e.g., v[0] for first element).
+3. **Vector Arithmetic**: Add, subtract, or scale vectors element-wise using broadcasting.
+4. **Norm Computation**: Calculate distance/magnitude using norm formulas (L1, L2, or L-infinity).
+5. **Dot Product**: Compute similarity/projection by multiplying corresponding elements and summing.
+6. **Interpretation**: Understand geometric meaning (angle between vectors, perpendicularity, etc.).
+
+#### Code Example
+
+```python
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Step 1-2: Vector creation and access
+v = np.array([1.0, 2.0, 3.0])
+w = np.array([4.0, 5.0, 6.0])
+
+print(f"v = {v}")
+print(f"First element of v: {v[0]}")
+
+# Step 3: Vector arithmetic
+v_plus_w = v + w  # [5, 7, 9]
+v_minus_w = v - w  # [-3, -3, -3]
+scaled_v = 2 * v  # [2, 4, 6]
+
+# Element-wise product (Hadamard)
+hadamard = v * w  # [4, 10, 18]
+
+# Step 4: Norm computations (magnitude)
+l1_norm = np.linalg.norm(v, ord=1)  # |1| + |2| + |3| = 6
+l2_norm = np.linalg.norm(v, ord=2)  # sqrt(1^2 + 2^2 + 3^2) = sqrt(14) ≈ 3.742
+linf_norm = np.linalg.norm(v, ord=np.inf)  # max(|1|, |2|, |3|) = 3
+
+print(f"\\nNorms of v:")
+print(f"  L1 norm: {l1_norm}")
+print(f"  L2 norm: {l2_norm}")
+print(f"  L∞ norm: {linf_norm}")
+
+# Step 5: Dot product (similarity)
+dot_prod = np.dot(v, w)  # 1*4 + 2*5 + 3*6 = 32
+dot_prod_alt = v @ w  # Same using @ operator
+
+# Geometric interpretation: cos(θ) = (v·w) / (||v|| * ||w||)
+cos_angle = dot_prod / (l2_norm * np.linalg.norm(w, ord=2))
+angle_rad = np.arccos(np.clip(cos_angle, -1, 1))
+angle_deg = np.degrees(angle_rad)
+
+print(f"\\nDot product v·w = {dot_prod}")
+print(f"Angle between v and w: {angle_deg:.2f} degrees")
+
+# Orthogonal vectors (dot product = 0)
+u1 = np.array([1.0, 0.0])
+u2 = np.array([0.0, 1.0])
+dot_orthogonal = np.dot(u1, u2)
+print(f"\\nOrthogonal vectors (u1·u2): {dot_orthogonal}")
+
+# Cross product (3D only, perpendicular vector)
+a = np.array([1.0, 0.0, 0.0])
+b = np.array([0.0, 1.0, 0.0])
+cross_prod = np.cross(a, b)  # [0, 0, 1]
+print(f"\\nCross product a × b = {cross_prod}")
+
+# Step 6: Visualization
+fig, axes = plt.subplots(1, 2, figsize=(12, 5))
+
+# Plot 1: Vectors in 2D space
+ax = axes[0]
+ax.quiver(0, 0, v[0], v[1], angles='xy', scale_units='xy', scale=1, color='blue', label='v')
+ax.quiver(0, 0, w[0], w[1], angles='xy', scale_units='xy', scale=1, color='red', label='w')
+ax.set_xlim(-1, 7)
+ax.set_ylim(-1, 7)
+ax.set_aspect('equal')
+ax.grid(True)
+ax.legend()
+ax.set_title('Vectors v and w (first 2 components)')
+ax.set_xlabel('x')
+ax.set_ylabel('y')
+
+# Plot 2: Vector norms
+ax = axes[1]
+norms = [l1_norm, l2_norm, linf_norm]
+norm_names = ['L1', 'L2', 'L∞']
+ax.bar(norm_names, norms, color=['blue', 'green', 'red'])
+ax.set_ylabel('Magnitude')
+ax.set_title('Vector Norms of v = [1, 2, 3]')
+ax.grid(axis='y')
+
+plt.tight_layout()
+plt.savefig('vector_operations.png', dpi=100)
+print("\\nVisualization saved to vector_operations.png")
+```
+
+#### Real-World Scenario
+
+In recommendation systems at Netflix, user preference is a vector of 500 dimensions (one per movie genre). User A's vector: [0.9, 0.2, 0.1, ...] (loves action, dislikes romance). Movie M is also a vector in same space: [0.85, 0.05, 0.1, ...]. Dot product A·M = 0.765 (high similarity → recommend). Computing millions of dot products in parallel using vector operations on GPUs makes recommendations real-time. Norm calculations help normalize vectors so magnitude doesn't bias similarity (unit vectors). Cross product doesn't directly apply here, but dot product between 2M users and 100K movies fills the 2M × 100K recommendation matrix per batch.
+
 **Vector Operations**:
 
 ```python

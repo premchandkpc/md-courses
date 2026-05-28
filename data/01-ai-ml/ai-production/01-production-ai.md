@@ -49,6 +49,188 @@ graph TB
     K --> L
 ```
 
+#### Step-by-Step
+
+1. **Request Entry**: Client request arrives at API Gateway, authenticated and rate-limited based on user tier and quota.
+2. **Load Balancing**: Load balancer distributes requests across available backend instances to prevent single-point overload.
+3. **Request Routing**: Router examines request metadata (model type, latency requirements) to determine optimal serving path.
+4. **Model Selection**: Model Router uses semantic understanding or rules to route text-davinci to one engine, embedding model to another.
+5. **Engine Assignment**: Request sent to appropriate serving engine (vLLM for text, Triton for multi-model, TensorRT for optimized inference).
+6. **Scheduling & Execution**: Scheduler batches requests, manages GPU memory, allocates KV cache, and executes on GPU pool with continuous batching optimization.
+
+#### Code Example
+
+```python
+from typing import Dict, List, Optional
+from dataclasses import dataclass
+from enum import Enum
+import time
+
+class ModelType(Enum):
+    TEXT_GENERATION = "text_gen"
+    EMBEDDING = "embedding"
+    CLASSIFICATION = "classification"
+
+@dataclass
+class ServingConfig:
+    model_name: str
+    model_type: ModelType
+    max_batch_size: int
+    max_tokens_per_batch: int
+    gpu_memory_gb: float
+    serving_engine: str  # "vllm", "triton", "tensorrt-llm"
+
+class LLMServingStack:
+    """Multi-layer serving stack for LLMs."""
+    
+    def __init__(self, config: ServingConfig):
+        self.config = config
+        self.auth_manager = AuthManager()
+        self.rate_limiter = RateLimiter()
+        self.load_balancer = LoadBalancer()
+        self.router = SemanticRouter()
+        self.engines = {}
+        self.scheduler = ContinuousBatchScheduler()
+        self.metrics = ServingMetrics()
+
+    def handle_request(self, request: Dict) -> Dict:
+        """Process request through entire serving stack."""
+        start_time = time.time()
+        
+        # Step 1: Authentication & Rate Limiting
+        user_id = request.get("user_id")
+        if not self.auth_manager.authenticate(user_id, request.get("api_key")):
+            return {"error": "Unauthorized", "code": 401}
+        
+        if not self.rate_limiter.check_quota(user_id, request.get("tokens", 100)):
+            return {"error": "Rate limit exceeded", "code": 429}
+        
+        # Step 2: Load Balancing
+        instance_id = self.load_balancer.select_instance()
+        
+        # Step 3-4: Request Routing & Model Selection
+        prompt = request.get("prompt", "")
+        model_choice = self.router.route(prompt, self.config.model_type)
+        
+        # Step 5: Engine Assignment
+        engine = self.engines.get(model_choice)
+        if not engine:
+            return {"error": f"Model {model_choice} not loaded", "code": 404}
+        
+        # Step 6: Schedule & Execute
+        batch_result = self.scheduler.add_request(
+            prompt=prompt,
+            sampling_params=request.get("sampling_params", {}),
+            engine=engine
+        )
+        
+        # Record metrics
+        latency_ms = (time.time() - start_time) * 1000
+        self.metrics.record_request(user_id, latency_ms, batch_result.get("tokens", 0))
+        
+        return {
+            "text": batch_result.get("text", ""),
+            "usage": batch_result.get("usage", {}),
+            "latency_ms": latency_ms
+        }
+
+class AuthManager:
+    def __init__(self):
+        self.valid_keys = {"user123": "secret-key-1"}  # Simplified
+    
+    def authenticate(self, user_id: str, api_key: str) -> bool:
+        return self.valid_keys.get(user_id) == api_key
+
+class RateLimiter:
+    def __init__(self, tokens_per_minute: int = 10000):
+        self.tpm_limit = tokens_per_minute
+        self.user_usage = {}
+    
+    def check_quota(self, user_id: str, tokens: int) -> bool:
+        current = self.user_usage.get(user_id, 0)
+        if current + tokens > self.tpm_limit:
+            return False
+        self.user_usage[user_id] = current + tokens
+        return True
+
+class LoadBalancer:
+    def __init__(self, num_instances: int = 4):
+        self.instances = list(range(num_instances))
+        self.current_idx = 0
+    
+    def select_instance(self) -> int:
+        instance = self.instances[self.current_idx % len(self.instances)]
+        self.current_idx += 1
+        return instance
+
+class SemanticRouter:
+    def route(self, prompt: str, model_type) -> str:
+        """Route based on prompt characteristics."""
+        if len(prompt) > 1000:
+            return "llama-70b-instruct"  # Longer prompts need larger model
+        else:
+            return "llama-7b-instruct"  # Short prompts can use smaller model
+
+class ContinuousBatchScheduler:
+    def add_request(self, prompt: str, sampling_params: Dict, engine) -> Dict:
+        return {
+            "text": f"Response to: {prompt[:20]}...",
+            "usage": {"tokens": 100},
+            "tokens": 100
+        }
+
+class ServingMetrics:
+    def __init__(self):
+        self.latencies = []
+    
+    def record_request(self, user_id: str, latency_ms: float, tokens: int):
+        self.latencies.append({
+            "user": user_id,
+            "latency_ms": latency_ms,
+            "tokens": tokens,
+            "throughput": tokens / (latency_ms / 1000) if latency_ms > 0 else 0
+        })
+
+# Usage
+config = ServingConfig(
+    model_name="llama-70b",
+    model_type=ModelType.TEXT_GENERATION,
+    max_batch_size=32,
+    max_tokens_per_batch=4096,
+    gpu_memory_gb=80,
+    serving_engine="vllm"
+)
+
+stack = LLMServingStack(config)
+request = {
+    "user_id": "user123",
+    "api_key": "secret-key-1",
+    "prompt": "Explain quantum computing",
+    "sampling_params": {"temperature": 0.7, "max_tokens": 256}
+}
+
+response = stack.handle_request(request)
+print(response)
+```
+
+#### Real-World Scenario
+
+At OpenAI, GPT-4 requests go through: (1) Gateway authenticates 500K+ daily API calls, rate-limits by tier (free=3.5K tokens/min, pro=500K tokens/min), (2) Load balancer routes to 200+ serving instances, (3) Semantic router sends complex reasoning tasks to GPU clusters, simple completions to CPU-backed vLLM, (4) Scheduler batches requests for 95% GPU utilization with <100ms p99 latency. When a viral app spike hits, rate limiter auto-throttles free users, semantic router shifts load to cheaper models, continuous batching ensures no request waits >50ms. Architecture absorbs 10x load spike without degradation.
+
+#### Diagram
+
+```mermaid
+graph LR
+    REQ["Client Request<br/>prompt + api_key"] --> AUTH["Auth Check<br/>API key"]
+    AUTH --> RATE["Rate Limit<br/>quota check"]
+    RATE --> LB["Load Balancer<br/>round robin"]
+    LB --> ROUTE["Semantic Router<br/>model selection"]
+    ROUTE --> ENGINE["Engine Select<br/>vLLM / Triton"]
+    ENGINE --> SCHED["Scheduler<br/>continuous batch"]
+    SCHED --> GPU["GPU Execution<br/>inference"]
+    GPU --> RESP["Response Stream<br/>tokens"]
+```
+
 ### 1.2 vLLM Architecture
 
 vLLM is the most widely adopted open-source LLM serving engine, built around **PagedAttention**:

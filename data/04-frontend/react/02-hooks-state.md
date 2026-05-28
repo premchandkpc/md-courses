@@ -78,6 +78,82 @@ function Counter() {
 setCount(c => c + 1); // ✅ Always gets latest state
 ```
 
+### Step-by-Step
+
+1. **Hook registration**: On mount, `useState` creates a hook node in the fiber's `memoizedState` linked list at position N
+2. **State retrieval**: On subsequent renders, React reads the hook at position N (position determined by call order)
+3. **Action queuing**: When `setState` is called, the action is added to the hook's update queue
+4. **Re-render scheduling**: React marks the fiber as dirty and schedules a render pass
+5. **Update application**: During render phase, React processes the action queue and computes new state
+6. **Commit**: New state is committed and component re-renders with the new state value
+
+### Code Example
+
+```javascript
+import React, { useState } from 'react';
+
+function Counter() {
+  // Hook index 0: Count state
+  const [count, setCount] = useState(0);
+  
+  // Hook index 1: Input state  
+  const [input, setInput] = useState('');
+
+  function handleIncrement() {
+    // Batched updates in React 18
+    setCount(c => c + 1);
+    setCount(c => c + 1);
+    // Result: count incremented by 2, only one re-render
+  }
+
+  function handleAsyncIncrement() {
+    // Callbacks work without batching in older versions
+    setTimeout(() => {
+      setCount(c => c + 1);
+    }, 100);
+  }
+
+  return (
+    <div>
+      <p>Count: {count}</p>
+      <button onClick={handleIncrement}>+2 (batched)</button>
+      <button onClick={handleAsyncIncrement}>+1 (async)</button>
+      <input value={input} onChange={e => setInput(e.target.value)} />
+    </div>
+  );
+}
+```
+
+### Real-World Scenario
+
+A form with 10 fields used `useState` for each field. When a user filled the form and submitted, 10 separate `setState` calls fired. In React 16, this triggered 10 separate re-renders (causing 500ms delay on slower devices). After upgrading to React 18, automatic batching merged all 10 updates into one re-render, reducing submission response time to 50ms.
+
+### Diagram
+
+```mermaid
+sequenceDiagram
+    participant C as Component
+    participant F as Fiber Node
+    participant HS as Hook State List
+    participant R as React Scheduler
+    
+    C->>+HS: useState(0) - hook[0]
+    HS-->>-C: [0, setCount]
+    C->>C: Render JSX
+    Note over C: User clicks button
+    C->>HS: setCount(prev => prev + 1)
+    HS->>HS: Add action to queue
+    HS->>R: Schedule render
+    R->>F: Begin render phase
+    F->>HS: Process action queue
+    HS->>HS: Apply action: 0 + 1 = 1
+    F->>C: Call component again
+    C->>HS: useState(0) reads hook[0]
+    HS-->>C: [1, setCount]
+    C->>C: Return new JSX
+    R->>F: Commit to DOM
+```
+
 ---
 
 ## 2. useEffect — Side Effects Engine

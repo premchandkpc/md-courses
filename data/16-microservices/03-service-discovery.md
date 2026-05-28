@@ -107,6 +107,96 @@ Service Registry — a dynamic phone book:
 
 ## 1. Client-Side Discovery
 
+#### Step-by-Step
+
+1. **Service Registration**: At startup, service registers itself with registry (hostname, port, health check URL)
+2. **Query Registry**: Client requests location of target service from registry
+3. **Load Balance Locally**: Client chooses instance using round-robin, random, or weighted strategy
+4. **Direct Connection**: Client sends request directly to chosen instance IP:port
+5. **Cache Results**: Client caches registry responses locally for resilience (registry down? use cache)
+6. **Health Monitoring**: Registry continuously health-checks registered instances, removes unhealthy ones
+
+#### Code Example
+
+```java
+// Spring Cloud Eureka client-side discovery example
+@Service
+public class UserServiceClient {
+    private final DiscoveryClient discoveryClient;
+
+    public UserServiceClient(DiscoveryClient discoveryClient) {
+        this.discoveryClient = discoveryClient;
+    }
+
+    public UserDTO getUser(String userId) {
+        // Step 1: Query Eureka for all instances of user-service
+        List<ServiceInstance> instances = discoveryClient.getInstances("user-service");
+        
+        if (instances.isEmpty()) {
+            throw new ServiceUnavailableException("user-service has no healthy instances");
+        }
+
+        // Step 2: Pick one using round-robin (or random)
+        ServiceInstance instance = pickInstance(instances);
+        
+        // Step 3: Build URL from instance info
+        String url = String.format("http://%s:%d/api/users/%s",
+            instance.getHost(),
+            instance.getPort(),
+            userId);
+
+        // Step 4: Call service directly
+        RestTemplate rest = new RestTemplate();
+        try {
+            return rest.getForObject(url, UserDTO.class);
+        } catch (RestClientException e) {
+            // Mark instance as unhealthy locally
+            markInstanceBad(instance);
+            // Retry with next instance
+            return getUser(userId);
+        }
+    }
+
+    private ServiceInstance pickInstance(List<ServiceInstance> instances) {
+        // Round-robin implementation
+        int index = Math.abs(counter.incrementAndGet()) % instances.size();
+        return instances.get(index);
+    }
+}
+
+// Better: Use Netflix Ribbon (client-side load balancer)
+@Configuration
+public class RibbonConfig {
+    @Bean
+    @LoadBalanced  // Enable client-side LB
+    public RestTemplate restTemplate() {
+        return new RestTemplate();
+    }
+}
+
+@Service
+public class UserServiceRibbonClient {
+    private final RestTemplate loadBalancedRest;
+
+    public UserServiceRibbonClient(@LoadBalanced RestTemplate rest) {
+        this.loadBalancedRest = rest;  // Uses Ribbon internally
+    }
+
+    public UserDTO getUser(String userId) {
+        // Ribbon handles discovery + load balancing automatically
+        // Just use service name, not IP
+        return loadBalancedRest.getForObject(
+            "http://user-service/api/users/{userId}",
+            UserDTO.class,
+            userId);
+    }
+}
+```
+
+#### Real-World Scenario
+
+Netflix created Eureka and client-side discovery because they needed services to discover each other in cloud environments (AWS instances constantly scale up/down). When an instance becomes unhealthy, Eureka propagates that to all clients within seconds. During the 2012 incident, AWS took down several instances unexpectedly; client-side discovery automatically routed traffic away from dead instances without a central load balancer being overwhelmed.
+
 ```text
 Client queries the registry and picks an instance directly.
 

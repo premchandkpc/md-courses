@@ -90,6 +90,149 @@ Input:  [The] [cat] [sat] [on]
 Output: [cat] [sat] [on] [the]
 ```
 
+#### Step-by-Step
+
+1. **Tokenization**: Input text is split into tokens (subwords/words), each mapped to an ID via vocabulary.
+2. **Embedding**: Token IDs are converted to dense vectors (embeddings) of dimension d_model (e.g., 4096 for 70B model).
+3. **Positional Encoding**: Positional information added to embeddings so model knows word order (position 0 vs position 100).
+4. **Attention Mechanism**: Each token attends to all previous tokens (causal mask prevents looking ahead), computing weighted context.
+5. **Feed-Forward Network**: Attention output passed through MLPs (dense layers + activation) for non-linear transformation.
+6. **Output Prediction**: Final layer logits over vocabulary, softmax produces probabilities for next token, argmax selects token.
+
+#### Code Example
+
+```python
+import numpy as np
+from typing import Tuple
+import torch
+import torch.nn as nn
+
+class DecoderOnlyLLM(nn.Module):
+    """Simplified Decoder-Only LLM Architecture."""
+    
+    def __init__(self, vocab_size: int = 50000, d_model: int = 768,
+                 n_heads: int = 12, n_layers: int = 12, d_ff: int = 3072):
+        super().__init__()
+        self.vocab_size = vocab_size
+        self.d_model = d_model
+        
+        # Step 1-2: Token embedding
+        self.embedding = nn.Embedding(vocab_size, d_model)
+        
+        # Step 3: Positional embedding (max 4096 tokens)
+        self.pos_embedding = nn.Embedding(4096, d_model)
+        
+        # Step 4-5: Decoder blocks (repeated N times)
+        self.decoder_blocks = nn.ModuleList([
+            DecoderBlock(d_model, n_heads, d_ff)
+            for _ in range(n_layers)
+        ])
+        
+        # Step 6: Output layer
+        self.output_norm = nn.RMSNorm(d_model)
+        self.output_proj = nn.Linear(d_model, vocab_size)
+    
+    def forward(self, token_ids: torch.Tensor) -> torch.Tensor:
+        """
+        Args:
+            token_ids: Shape (batch_size, seq_len)
+        Returns:
+            logits: Shape (batch_size, seq_len, vocab_size)
+        """
+        batch_size, seq_len = token_ids.shape
+        
+        # Step 1-3: Embedding + Positional encoding
+        x = self.embedding(token_ids)  # (batch, seq_len, d_model)
+        positions = torch.arange(seq_len, device=token_ids.device)
+        x = x + self.pos_embedding(positions)  # Broadcast positional
+        
+        # Step 4-5: Pass through decoder blocks
+        for decoder_block in self.decoder_blocks:
+            x = decoder_block(x)  # (batch, seq_len, d_model)
+        
+        # Step 6: Normalize and project to vocabulary
+        x = self.output_norm(x)  # (batch, seq_len, d_model)
+        logits = self.output_proj(x)  # (batch, seq_len, vocab_size)
+        
+        return logits
+
+class DecoderBlock(nn.Module):
+    """Single Decoder Block with Self-Attention + Feed-Forward."""
+    
+    def __init__(self, d_model: int, n_heads: int, d_ff: int):
+        super().__init__()
+        self.self_attention = MultiHeadSelfAttention(d_model, n_heads)
+        self.norm1 = nn.RMSNorm(d_model)
+        self.ff = FeedForwardNetwork(d_model, d_ff)
+        self.norm2 = nn.RMSNorm(d_model)
+    
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        # Self-attention with residual connection
+        x = x + self.self_attention(self.norm1(x))
+        # Feed-forward with residual connection
+        x = x + self.ff(self.norm2(x))
+        return x
+
+class MultiHeadSelfAttention(nn.Module):
+    def __init__(self, d_model: int, n_heads: int):
+        super().__init__()
+        assert d_model % n_heads == 0
+        self.n_heads = n_heads
+        self.d_head = d_model // n_heads
+        
+        self.W_q = nn.Linear(d_model, d_model)
+        self.W_k = nn.Linear(d_model, d_model)
+        self.W_v = nn.Linear(d_model, d_model)
+        self.W_out = nn.Linear(d_model, d_model)
+    
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        batch_size, seq_len, d_model = x.shape
+        
+        # Linear projections
+        Q = self.W_q(x).reshape(batch_size, seq_len, self.n_heads, self.d_head)
+        K = self.W_k(x).reshape(batch_size, seq_len, self.n_heads, self.d_head)
+        V = self.W_v(x).reshape(batch_size, seq_len, self.n_heads, self.d_head)
+        
+        # Scaled dot-product attention with causal mask
+        scores = torch.matmul(Q, K.transpose(-2, -1)) / (self.d_head ** 0.5)
+        
+        # Causal mask: prevent attending to future tokens
+        mask = torch.triu(torch.ones(seq_len, seq_len), diagonal=1).bool()
+        scores = scores.masked_fill(mask, float('-inf'))
+        
+        attn_weights = torch.softmax(scores, dim=-1)
+        attn_output = torch.matmul(attn_weights, V)
+        
+        # Reshape and project
+        attn_output = attn_output.reshape(batch_size, seq_len, d_model)
+        return self.W_out(attn_output)
+
+class FeedForwardNetwork(nn.Module):
+    def __init__(self, d_model: int, d_ff: int):
+        super().__init__()
+        self.linear1 = nn.Linear(d_model, d_ff)
+        self.linear2 = nn.Linear(d_ff, d_model)
+        self.activation = nn.GELU()
+    
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        return self.linear2(self.activation(self.linear1(x)))
+
+# Usage example
+model = DecoderOnlyLLM(vocab_size=50000, d_model=768, n_heads=12, n_layers=12)
+token_ids = torch.randint(0, 50000, (2, 100))  # (batch=2, seq=100)
+logits = model(token_ids)  # (batch=2, seq=100, vocab=50000)
+
+# Step 6: Sample next token
+last_token_logits = logits[:, -1, :]  # Get last position
+probs = torch.softmax(last_token_logits, dim=-1)
+next_token_id = torch.argmax(probs, dim=-1)
+print(f"Next token ID: {next_token_id}")
+```
+
+#### Real-World Scenario
+
+OpenAI's GPT-4 (decoder-only): User inputs "Tell me a joke." (1) Tokenized to [Tell, me, a, joke] → IDs [1234, 5678, 9012, 3456]. (2) Embeddings created (4096-dim vectors from 96-layer model). (3) Positional info added (token 0 vs token 3). (4) 96 decoder blocks process: "Tell" attends to "Tell", "me" attends to "Tell" + "me", "joke" attends to all 3 preceding tokens (causal). (5) FFNs expand 4096→10944 dims for reasoning, collapse back to 4096. (6) Output layer: logits over 100K tokens, softmax gives probs. Model predicts "Why" (91% prob). Repeat 100x to generate full joke. KV cache optimization skips recomputing past tokens' attention.
+
 ```python
 import numpy as np
 

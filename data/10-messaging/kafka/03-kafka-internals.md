@@ -16,7 +16,58 @@
 
 **Core insight**: Log replication = consensus problem. ISR (In-Sync Replicas) = quorum. Leader crashes, leader election happens, no data loss (if min.insync.replicas=2).
 
----
+### Step-by-Step
+
+1. **Partition creation** on broker 1 with replication factor 3; brokers 2, 3 become replicas
+2. **Producer publishes** message appends to broker 1's log as segment file (e.g., segment 0-4999.log)
+3. **Replica fetch** brokers 2, 3 poll leader's log, fetch new records, write to their own segments
+4. **In-sync check** if replica lag < replica.lag.time.max.ms (30s), mark as in-sync (ISR)
+5. **Producer ACK** only when min.insync.replicas members have written (acks=all)
+6. **Leader election** if broker 1 crashes, controller picks highest-offset replica from ISR
+
+### Code Example
+
+```bash
+#!/bin/bash
+# Monitor Kafka replication internals
+
+# Check partition leadership and ISR
+kafka-topics.sh --bootstrap-server localhost:9092 --describe --topic my-topic
+
+# Sample output:
+# Topic: my-topic  Partitions: 3  Replication: 3
+# Topic: my-topic  Partition: 0  Leader: 1  Replicas: 1,2,3  Isr: 1,2,3
+# Topic: my-topic  Partition: 1  Leader: 2  Replicas: 2,3,1  Isr: 2,3
+#                                                                  ^ replica 1 fell behind
+# Topic: my-topic  Partition: 2  Leader: 3  Replicas: 3,1,2  Isr: 3,1,2
+
+# Monitor replication lag per broker
+kafka-consumer-groups.sh --bootstrap-server localhost:9092 \
+  --group my-consumer-group --describe
+
+# Check broker replica lag via JMX metrics
+# kafka.server:type=ReplicaFetcherManager,name=MaxLag,clientId=Replica
+
+# Manually check replica lag programmatically
+python3 << 'EOF'
+from kafka.admin import KafkaAdminClient
+from kafka import KafkaConsumer
+
+admin = KafkaAdminClient(bootstrap_servers='localhost:9092')
+topics = admin.list_topics()
+
+for topic, partitions in topics.items():
+    for partition in partitions:
+        # Get leader and ISR
+        metadata = admin.describe_topics([topic])
+        for part in metadata[topic]['partitions']:
+            print(f"{topic} P{part['partition']}: Leader={part['leader']}, ISR={part['isr']}, Replicas={part['replicas']}")
+EOF
+```
+
+### Real-World Scenario
+
+Twitter's firehose (public stream of tweets) ingests 500K tweets/second across 10 Kafka clusters. During a datacenter outage in 2015, broker failure caused ISR to shrink from [1,2,3] to [1,2]. The replica on broker 3 (being rebuilt) had stale data from 30 minutes ago. When broker 1 also crashed 2 minutes later, broker 2 was elected leader but discovered its log was only 28 minutes complete. They lost 2 minutes of tweets—irreversible because retention had passed. Fix: deployed stricter replica.lag.time.max.ms (10s instead of 30s) and coordinated leader epochs. Next outage, zero data loss.
 
 ## Layer 4: Production Reality
 

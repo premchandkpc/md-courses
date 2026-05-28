@@ -76,6 +76,44 @@ Vertical Scaling (Scale Up):     Horizontal Scaling (Scale Out):
   SPOF: no (with proper replication)
 ```
 
+#### Step-by-Step: Horizontal Scaling Architecture
+
+1. **Make services stateless** — Move session/state to Redis or database
+2. **Add load balancer** — Distribute requests across servers (round-robin, least connections, etc.)
+3. **Use sticky sessions cautiously** — Only when necessary (gaming, WebSocket); prefer stateless
+4. **Replicate data** — Every server should access same database via read replicas
+5. **Monitor per-server metrics** — CPU, memory, network per instance to catch uneven distribution
+
+#### Code Example: Load Balancing Decision
+
+```python
+# Nginx config for horizontal scaling
+upstream api_servers {
+    # Hash by user_id to ensure same user hits same server (session affinity)
+    # But best practice: store session in Redis instead
+    round_robin;  # Simple round-robin balancing
+    
+    server api1.internal:8000 weight=1;
+    server api2.internal:8000 weight=1;
+    server api3.internal:8000 weight=1;
+    
+    # If server fails, automatically skip it
+    server api4.internal:8000 max_fails=3 fail_timeout=30s;
+}
+
+server {
+    listen 80;
+    location /api/ {
+        proxy_pass http://api_servers;
+        proxy_set_header X-Forwarded-For $remote_addr;
+    }
+}
+```
+
+#### Real-World Scenario
+
+Twitter grew from 1 server to 1000+ servers. Early mistake: storing session state in-memory on each server. When load balancer sent user's next request to different server, session was lost (timeout). Switched to Redis for all session state. Now any server can handle any user's request. Reduced session-related bugs by 90%.
+
 ### Stateless Design for Horizontal Scaling
 
 ```python
@@ -96,6 +134,67 @@ class GoodSession:
         # ... process ...
         redis.set(f"session:{user_id}", updated_session)
 ```
+
+#### Step-by-Step: Converting Stateful to Stateless
+
+1. **Audit in-memory state** — Find all instance variables holding user/request data
+2. **Move to external store** — Redis, database, or memcached (with TTL)
+3. **Add correlation IDs** — X-Request-ID header for tracing across servers
+4. **Test failover** — Kill one server mid-request, verify user session survives on different server
+5. **Monitor state store** — Alert on Redis/database latency (state lookups on every request)
+
+#### Code Example: Stateless Session Management
+
+```python
+from flask import Flask, request, jsonify
+import redis
+import json
+
+app = Flask(__name__)
+redis_client = redis.Redis(host='redis', port=6379)
+
+@app.route('/login', methods=['POST'])
+def login():
+    user_id = request.json['user_id']
+    password = request.json['password']
+    
+    # Verify password (simplified)
+    if not verify_password(user_id, password):
+        return {'error': 'Invalid credentials'}, 401
+    
+    # Store session in Redis (not in-memory)
+    session_id = generate_session_id()
+    session_data = {
+        'user_id': user_id,
+        'login_time': time.time(),
+        'ip_address': request.remote_addr
+    }
+    redis_client.setex(
+        f'session:{session_id}',
+        3600,  # TTL: 1 hour
+        json.dumps(session_data)
+    )
+    
+    return {'session_id': session_id}
+
+@app.route('/api/profile')
+def get_profile():
+    session_id = request.headers['Authorization'].split(' ')[1]
+    
+    # Retrieve session from Redis (works on any server)
+    session_json = redis_client.get(f'session:{session_id}')
+    if not session_json:
+        return {'error': 'Session expired'}, 401
+    
+    session = json.loads(session_json)
+    user_id = session['user_id']
+    
+    return {'user_id': user_id, 'profile': get_user_profile(user_id)}
+```
+
+#### Real-World Scenario
+
+Airbnb's early architecture: Python Flask server stored session in-memory. When user made request during server deployment (graceful shutdown), session was lost. Booking flow interrupted mid-transaction. Switched to Redis: now even during deployments, users hit different servers and maintain session seamlessly. Reduced deployment-related complaints by 75%.
 
 ### Data Partitioning Strategies
 

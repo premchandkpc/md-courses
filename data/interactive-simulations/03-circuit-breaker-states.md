@@ -13,6 +13,188 @@ graph TB
 
 Step-by-step walkthrough of circuit breaker states, transitions, and failure recovery.
 
+### Step-by-Step
+
+1. **CLOSED state**: All requests pass through to downstream service, track success/failure rates
+2. **Threshold detection**: When failures exceed threshold (e.g., 5 consecutive errors or 50% failure rate), transition to OPEN
+3. **OPEN state**: Immediately reject new requests without calling downstream, preventing cascading failures
+4. **HALF_OPEN state**: After timeout (e.g., 30 seconds), allow a test request through to check if downstream recovered
+5. **Recovery or fallback**: If test request succeeds, return to CLOSED; if it fails, go back to OPEN and extend timeout
+6. **Exponential backoff**: Increase timeout on repeated failures to avoid hammering a recovering service
+
+### Code Example
+
+```python
+# Circuit breaker implementation with state management
+import time
+from enum import Enum
+from dataclasses import dataclass, field
+
+class CircuitState(Enum):
+    CLOSED = "closed"
+    OPEN = "open"
+    HALF_OPEN = "half_open"
+
+@dataclass
+class CircuitBreakerConfig:
+    failure_threshold: int = 5  # Consecutive failures to open
+    success_threshold: int = 2  # Successes to close from half-open
+    timeout_seconds: int = 30
+    max_timeout_seconds: int = 300
+    failure_rate_threshold: float = 0.5  # 50% failure rate
+
+class CircuitBreaker:
+    def __init__(self, config: CircuitBreakerConfig, name: str = "default"):
+        self.config = config
+        self.name = name
+        self.state = CircuitState.CLOSED
+        self.failure_count = 0
+        self.success_count = 0
+        self.request_count = 0
+        self.last_failure_time = None
+        self.timeout = config.timeout_seconds
+        self.open_time = None
+
+    def call(self, func, *args, **kwargs):
+        """
+        Execute function with circuit breaker protection.
+        """
+        if self.state == CircuitState.OPEN:
+            if self._should_attempt_reset():
+                self.state = CircuitState.HALF_OPEN
+                print(f"[{self.name}] Transitioning to HALF_OPEN (testing recovery)")
+            else:
+                raise Exception(f"Circuit breaker is OPEN. Retry after {self.timeout}s")
+
+        try:
+            result = func(*args, **kwargs)
+            self._on_success()
+            return result
+        except Exception as e:
+            self._on_failure()
+            raise e
+
+    def _on_success(self):
+        """Record successful call."""
+        self.failure_count = 0
+        self.success_count += 1
+        self.request_count += 1
+
+        if self.state == CircuitState.HALF_OPEN:
+            if self.success_count >= self.config.success_threshold:
+                self._close()
+        elif self.state == CircuitState.CLOSED:
+            # Reset timeout to default when healthy
+            self.timeout = self.config.timeout_seconds
+
+    def _on_failure(self):
+        """Record failed call."""
+        self.failure_count += 1
+        self.success_count = 0
+        self.request_count += 1
+        self.last_failure_time = time.time()
+
+        # Check for transition to OPEN
+        if self.state == CircuitState.CLOSED:
+            if self.failure_count >= self.config.failure_threshold:
+                self._open()
+        elif self.state == CircuitState.HALF_OPEN:
+            # Failed test request - back to OPEN
+            self._open(exponential_backoff=True)
+
+    def _should_attempt_reset(self) -> bool:
+        """Check if timeout has expired to attempt recovery."""
+        if self.open_time is None:
+            return False
+        elapsed = time.time() - self.open_time
+        return elapsed >= self.timeout
+
+    def _open(self, exponential_backoff: bool = False):
+        """Transition to OPEN state."""
+        self.state = CircuitState.OPEN
+        self.open_time = time.time()
+        if exponential_backoff:
+            # Double timeout on repeated failures, cap at max
+            self.timeout = min(self.timeout * 2, self.config.max_timeout_seconds)
+        print(f"[{self.name}] OPEN: Rejecting requests for {self.timeout}s")
+
+    def _close(self):
+        """Transition to CLOSED state."""
+        self.state = CircuitState.CLOSED
+        self.failure_count = 0
+        self.success_count = 0
+        self.open_time = None
+        self.timeout = self.config.timeout_seconds
+        print(f"[{self.name}] CLOSED: Service recovered, accepting requests")
+
+# Usage example
+import random
+
+def unreliable_api_call():
+    """Simulates a downstream service that fails intermittently."""
+    if random.random() < 0.6:  # 60% failure rate
+        raise Exception("Service unavailable")
+    return "Success"
+
+# Create circuit breaker
+breaker = CircuitBreaker(
+    config=CircuitBreakerConfig(
+        failure_threshold=3,
+        timeout_seconds=5
+    ),
+    name="payment-api"
+)
+
+# Make calls through circuit breaker
+for i in range(20):
+    try:
+        result = breaker.call(unreliable_api_call)
+        print(f"Call {i}: {result} | State: {breaker.state.value}")
+    except Exception as e:
+        print(f"Call {i}: ERROR - {e} | State: {breaker.state.value}")
+    time.sleep(1)
+```
+
+### Real-World Scenario
+
+Netflix's Hystrix library implementing circuit breakers prevented an entire service outage during a database migration. When the recommendation service became slow (latency >1000ms), the circuit breaker tripped after 5 consecutive timeouts, immediately rejecting new requests instead of letting them queue up. This prevented thread pool exhaustion and allowed the frontend to fail fast and show cached recommendations. The database migration completed successfully, the circuit breaker tested the service via half-open state, and recovered automatically without manual intervention.
+
+### State Machine Diagram
+
+```mermaid
+stateDiagram-v2
+    [*] --> CLOSED
+    
+    CLOSED --> OPEN: failures exceed threshold<br/>or failure_rate > 50%
+    
+    OPEN --> HALF_OPEN: timeout expires<br/>attempt recovery
+    
+    HALF_OPEN --> CLOSED: test request succeeds<br/>success_count >= threshold
+    HALF_OPEN --> OPEN: test request fails<br/>exponential backoff
+    
+    CLOSED --> CLOSED: success<br/>reset counters
+    
+    note right of CLOSED
+        Normal operation
+        Track failures and successes
+        Evaluate failure rate
+    end note
+    
+    note right of OPEN
+        Fail fast
+        Reject all requests
+        Wait timeout before recovery
+        Increase timeout on repeated failures
+    end note
+    
+    note right of HALF_OPEN
+        Test recovery
+        Allow 1 request through
+        Check if downstream is healthy
+        Close on success, Open on failure
+    end note
+```
+
 ## The 3 States
 
 ```

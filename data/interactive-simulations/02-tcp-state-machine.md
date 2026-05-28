@@ -48,6 +48,141 @@ Client states:     SYN_SENT → ESTABLISHED
 
 **Goal**: Establish bidirectional communication.
 
+### Step-by-Step
+
+1. **Client initiates** by sending SYN packet with random sequence number (ISS), transitions to SYN_SENT state
+2. **Server listens** in LISTEN state, receives SYN, transitions to SYN_RCVD, sends back SYN-ACK with its own ISS
+3. **Acknowledgment** in SYN-ACK: server acknowledges client's sequence number + 1
+4. **Client acknowledges** by sending ACK with server's sequence number + 1, transitions to ESTABLISHED
+5. **Server confirms** receipt of ACK, transitions to ESTABLISHED
+6. **Bidirectional channel** is now open — both parties agreed on sequence numbers and window sizes
+
+### Code Example
+
+```python
+# TCP handshake state machine simulation
+from enum import Enum
+from dataclasses import dataclass
+from typing import Optional
+
+class TCPState(Enum):
+    CLOSED = "CLOSED"
+    LISTEN = "LISTEN"
+    SYN_SENT = "SYN_SENT"
+    SYN_RCVD = "SYN_RCVD"
+    ESTABLISHED = "ESTABLISHED"
+
+@dataclass
+class TCPPacket:
+    seq: int
+    ack: Optional[int]
+    flags: str  # "SYN", "ACK", "SYN-ACK", etc.
+    
+class TCPConnection:
+    def __init__(self, is_server=False):
+        self.is_server = is_server
+        self.state = TCPState.LISTEN if is_server else TCPState.CLOSED
+        self.send_seq = None
+        self.recv_ack = None
+    
+    def initiate_connection(self):
+        """Client initiates three-way handshake."""
+        if not self.is_server and self.state == TCPState.CLOSED:
+            self.send_seq = 1000  # Random ISS
+            self.state = TCPState.SYN_SENT
+            return TCPPacket(seq=self.send_seq, ack=None, flags="SYN")
+    
+    def receive_syn(self, packet: TCPPacket):
+        """Server receives SYN."""
+        if self.is_server and self.state == TCPState.LISTEN:
+            self.recv_ack = packet.seq + 1
+            self.send_seq = 2000  # Random ISS
+            self.state = TCPState.SYN_RCVD
+            return TCPPacket(seq=self.send_seq, ack=self.recv_ack, flags="SYN-ACK")
+    
+    def receive_syn_ack(self, packet: TCPPacket):
+        """Client receives SYN-ACK."""
+        if not self.is_server and self.state == TCPState.SYN_SENT:
+            self.recv_ack = packet.seq + 1
+            self.state = TCPState.ESTABLISHED
+            return TCPPacket(seq=packet.ack, ack=self.recv_ack, flags="ACK")
+    
+    def receive_ack(self, packet: TCPPacket):
+        """Server receives ACK."""
+        if self.is_server and self.state == TCPState.SYN_RCVD:
+            self.state = TCPState.ESTABLISHED
+
+# Simulate three-way handshake
+client = TCPConnection(is_server=False)
+server = TCPConnection(is_server=True)
+
+# Step 1: Client sends SYN
+syn_packet = client.initiate_connection()
+print(f"Client→Server: SYN(seq={syn_packet.seq})")
+
+# Step 2: Server receives SYN, sends SYN-ACK
+syn_ack = server.receive_syn(syn_packet)
+print(f"Server→Client: SYN-ACK(seq={syn_ack.seq}, ack={syn_ack.ack})")
+
+# Step 3: Client receives SYN-ACK, sends ACK
+ack_packet = client.receive_syn_ack(syn_ack)
+print(f"Client→Server: ACK(seq={ack_packet.seq}, ack={ack_packet.ack})")
+
+# Step 4: Server receives ACK
+server.receive_ack(ack_packet)
+
+print(f"\nFinal states:")
+print(f"Client: {client.state.value}")
+print(f"Server: {server.state.value}")
+```
+
+### Real-World Scenario
+
+During the 2016 Dyn DDoS attack affecting Twitter, GitHub, and Netflix, attackers exploited TCP's vulnerability by sending millions of SYN packets without completing handshakes, exhausting server SYN queues. The attacks revealed the importance of SYN cookies (cookies encoded in the ISS instead of storing all half-open connections), which became essential for DDoS mitigation. Modern systems now implement TCP SYN rate limiting and automatic backoff to prevent this attack vector.
+
+### State Transition Diagram
+
+```mermaid
+stateDiagram-v2
+    [*] --> CLOSED
+    
+    CLOSED --> LISTEN: server_listen()
+    CLOSED --> SYN_SENT: client_connect()
+    
+    LISTEN --> SYN_RCVD: receive_SYN
+    
+    SYN_SENT --> ESTABLISHED: receive_SYN-ACK<br/>send_ACK
+    
+    SYN_RCVD --> ESTABLISHED: receive_ACK
+    
+    ESTABLISHED --> FIN_WAIT_1: send_FIN
+    ESTABLISHED --> CLOSE_WAIT: receive_FIN
+    
+    FIN_WAIT_1 --> CLOSING: receive_FIN
+    FIN_WAIT_1 --> FIN_WAIT_2: receive_ACK
+    
+    CLOSE_WAIT --> LAST_ACK: send_FIN
+    
+    FIN_WAIT_2 --> TIME_WAIT: receive_FIN
+    
+    CLOSING --> TIME_WAIT: receive_ACK
+    LAST_ACK --> CLOSED: receive_ACK
+    
+    TIME_WAIT --> CLOSED: timeout_2MSL
+    
+    note right of ESTABLISHED
+        Data transmission
+        Both sides active
+    end note
+    
+    note right of TIME_WAIT
+        Prevents delayed packets
+        Waits 2 MSL (Max Segment Lifetime)
+    end note
+```
+
+---
+
 ```
 CLIENT                              SERVER
   │                                   │

@@ -98,6 +98,61 @@ Process Virtual Address Space (x86-64, 48-bit)
 - **Purpose**: Each process gets its own virtual address space; isolates processes, enables sparse mappings, simplifies memory allocation
 - **Page size**: 4KB default, 2MB (huge pages), 1GB (PUD-level)
 - **Mapping**: Virtual → Physical via page tables (multi-level translation)
+
+### Step-by-Step
+
+1. **Application accesses memory** at virtual address 0x7fff1234
+2. **TLB lookup** checks translation lookaside buffer (cache) for VA→PA mapping
+3. **TLB miss** triggers page walk through page table hierarchy (PGD → PUD → PMD → PTE)
+4. **PTE lookup** finds physical frame number and permission bits (read, write, execute)
+5. **Permission check** verifies process has access (SEGFAULT if not); if page not present, page fault
+6. **TLB update** on successful translation, TLB caches mapping for future lookups (~1ns latency vs 100+ cycles for page walk)
+
+### Code Example
+
+```python
+# Python: Virtual memory exploration
+import os
+import mmap
+
+def analyze_vm():
+    # Read /proc/self/maps to see virtual address layout
+    with open('/proc/self/maps', 'r') as f:
+        print("Virtual Address Space Map:")
+        for line in f:
+            print(line.rstrip())
+    
+    # Allocate different types of memory
+    stack_var = 0x12345678  # Stack allocation
+    
+    heap_mem = bytearray(4096)  # Heap allocation
+    heap_addr = id(heap_mem) & ~0xFFF  # Approximate address
+    
+    # mmap: demand-paged mapping
+    with open('/tmp/test.bin', 'wb') as f:
+        f.write(b'x' * 8192)
+    
+    with open('/tmp/test.bin', 'rb') as f:
+        # Map file into virtual address space
+        mmap_region = mmap.mmap(f.fileno(), 0, access=mmap.ACCESS_READ)
+        mmap_addr = id(mmap_region)
+        print(f"\nmmap region at: 0x{mmap_addr:x}")
+        
+        # Accessing causes page fault if not in memory
+        first_byte = mmap_region[0]
+        print(f"First byte: {first_byte}")
+        mmap_region.close()
+    
+    # Check TLB statistics (requires perf on Linux)
+    os.system("perf stat -e dTLB-load-misses,iTLB-load-misses sleep 1")
+
+if __name__ == '__main__':
+    analyze_vm()
+```
+
+### Real-World Scenario
+
+Google's Bigtable serving layer was experiencing 40% of CPU cycles in TLB misses (page table walks). Each cell server held 50GB working set with default 4KB pages, creating a 12.8M-entry page table. They switched to 2MB huge pages (52K page table entries), reducing TLB miss rate from 12% to 0.3%—throughput increased 23%, latency P99 dropped 15ms.
 - **Overcommit**: Kernel can allow allocating more virtual memory than physical RAM + swap
 
 ### Multi-Level Page Tables (x86-64 4-level)

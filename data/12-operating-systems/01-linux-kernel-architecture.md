@@ -95,6 +95,51 @@ graph LR
 - **Transition**: `syscall` instruction (x86-64) or `int 0x80` (legacy) — ~50-200 cycles
 - **vDSO**: Virtual Dynamic Shared Object — kernel maps a userspace-readable page with fast implementations of `clock_gettime`, `gettimeofday`, `getcpu` — no syscall needed
 
+### Step-by-Step
+
+1. **Application execution** runs in user space (Ring 3) with isolated virtual memory
+2. **System call invocation** app executes `syscall` instruction with syscall number in rax register
+3. **Context switch** CPU transitions to kernel space (Ring 0), saves user registers, loads kernel stack
+4. **Syscall dispatch** kernel finds handler in syscall table (arch/x86/entry/syscalls/syscall_64.tbl)
+5. **Syscall execution** handler accesses protected resources (disk, network, memory management)
+6. **Return to user space** kernel restores user registers, copies data to user buffer, returns control
+
+### Code Example
+
+```c
+// C example: Custom syscall and kernel space boundary crossing
+#include <unistd.h>
+#include <syscall.h>
+#include <stdio.h>
+#include <string.h>
+
+// User space function calling syscall
+long custom_write(int fd, const char *buf, size_t count) {
+    // Directly invoke syscall number 1 (write on x86-64)
+    return syscall(SYS_write, fd, buf, count);
+}
+
+// Kernel space handler (in kernel/fs/read_write.c)
+// SYSCALL_DEFINE3(write, unsigned int, fd, const char __user *, buf, size_t, count)
+// {
+//     return ksys_write(fd, buf, count);  // Calls VFS layer
+// }
+
+int main() {
+    const char *msg = "Hello from user space!\n";
+    
+    // This syscall transitions to kernel space
+    long bytes_written = custom_write(1, msg, strlen(msg));
+    
+    printf("Syscall returned: %ld bytes written\n", bytes_written);
+    return 0;
+}
+```
+
+### Real-World Scenario
+
+Google discovered that high-frequency trading firms were experiencing Spectre/Meltdown mitigations (KPTI: Kernel Page Table Isolation) adding 5-10% latency to syscalls due to TLB flushes on kernel entry/exit. They deployed vDSO clock_gettime to avoid syscalls for timestamps. Trading firms rewrote hot loops to use vDSO getcpu instead of sched_getcpu(), reducing syscall overhead from 10K/sec to <100/sec—latency P99 dropped by 2.3μs.
+
 ---
 
 ## 2. Source Tree Layout

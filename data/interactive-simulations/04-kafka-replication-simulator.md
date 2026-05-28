@@ -24,6 +24,171 @@ Simulate Kafka partition replication: leader election, ISR management, producer 
 - Compare durability guarantees of different acks settings
 - Observe leader election and its impact on availability
 
+### Step-by-Step
+
+1. **Producer sends message** to partition leader with configurable acks (0, 1, or all)
+2. **Leader appends to log** at offset N, waits for acknowledgments based on acks setting
+3. **Followers fetch** asynchronously, updating their log offsets with a configurable lag tolerance
+4. **ISR tracking**: If a follower falls behind the configured lag threshold (replica.lag.time.max.ms), it's removed from ISR
+5. **Acknowledgment logic**: acks=0 (no wait), acks=1 (leader only), acks=all (all ISR replicas)
+6. **Leader election**: If leader fails, the first follower in ISR becomes new leader, and replicas re-sync
+7. **Durability guarantee**: Message is safe when ISR size >= min.insync.replicas
+
+### Code Example
+
+```python
+# Kafka replication state machine simulation
+from enum import Enum
+from dataclasses import dataclass, field
+from typing import Set
+
+class ReplicaState(Enum):
+    ONLINE = "online"
+    SYNCING = "syncing"
+    OUT_OF_SYNC = "out_of_sync"
+    OFFLINE = "offline"
+
+@dataclass
+class KafkaReplica:
+    broker_id: int
+    partition_id: int
+    is_leader: bool
+    committed_offset: int = 0
+    fetched_offset: int = 0
+    state: ReplicaState = ReplicaState.ONLINE
+
+@dataclass
+class KafkaPartition:
+    partition_id: int
+    leader: KafkaReplica
+    replicas: list[KafkaReplica] = field(default_factory=list)
+    isr: Set[int] = field(default_factory=set)  # In-Sync Replicas
+    acks_config: str = "all"  # "all", "1", or "0"
+    min_insync_replicas: int = 2
+    replica_lag_threshold_ms: int = 10000
+
+    def __post_init__(self):
+        # Initialize ISR with leader
+        self.isr = {r.broker_id for r in [self.leader] + self.replicas}
+
+    def produce_message(self, offset: int) -> bool:
+        """
+        Append message to leader and replicate to followers.
+        Returns True if message is safely replicated.
+        """
+        # Leader appends
+        self.leader.committed_offset = offset
+        
+        # Determine required acks based on config
+        if self.acks_config == "0":
+            # Fire and forget
+            return True
+        elif self.acks_config == "1":
+            # Wait for leader only
+            return True
+        elif self.acks_config == "all":
+            # Wait for all ISR replicas
+            replicas_acked = 1  # Leader counts as 1
+            for replica in self.replicas:
+                if replica.broker_id in self.isr and replica.state == ReplicaState.ONLINE:
+                    replica.fetched_offset = offset
+                    replicas_acked += 1
+            
+            # Check if we have minimum required replicas
+            return replicas_acked >= self.min_insync_replicas
+        
+        return False
+
+    def check_isr_health(self, current_time_ms: int, last_fetch_time: dict):
+        """
+        Check each replica's lag and update ISR.
+        Replicas are removed if they fall behind the threshold.
+        """
+        new_isr = {self.leader.broker_id}
+        
+        for replica in self.replicas:
+            time_since_fetch = current_time_ms - last_fetch_time.get(replica.broker_id, 0)
+            lag = self.leader.committed_offset - replica.fetched_offset
+            
+            if lag > 0 and time_since_fetch > self.replica_lag_threshold_ms:
+                # Replica is lagging too far
+                replica.state = ReplicaState.OUT_OF_SYNC
+            else:
+                # Replica is caught up
+                replica.state = ReplicaState.SYNCING
+                new_isr.add(replica.broker_id)
+        
+        self.isr = new_isr
+
+    def elect_new_leader(self):
+        """
+        Elect a new leader from the ISR after current leader failure.
+        First broker in ISR becomes the new leader.
+        """
+        if not self.isr:
+            raise Exception("No replicas available for election")
+        
+        new_leader_id = sorted(self.isr)[0]
+        
+        # Find and promote the replica
+        for replica in self.replicas:
+            if replica.broker_id == new_leader_id:
+                replica.is_leader = True
+                self.leader = replica
+                break
+
+# Simulation example
+partition = KafkaPartition(
+    partition_id=0,
+    leader=KafkaReplica(broker_id=1, partition_id=0, is_leader=True),
+    replicas=[
+        KafkaReplica(broker_id=2, partition_id=0, is_leader=False),
+        KafkaReplica(broker_id=3, partition_id=0, is_leader=False),
+    ],
+    acks_config="all",
+    min_insync_replicas=2
+)
+
+# Produce with acks=all
+success = partition.produce_message(offset=0)
+print(f"Message 0 replicated: {success}, ISR size: {len(partition.isr)}")
+
+# Simulate lag on broker 2
+success = partition.produce_message(offset=1)
+print(f"Message 1 replicated: {success}, ISR size: {len(partition.isr)}")
+
+# Leader fails
+print(f"\nLeader {partition.leader.broker_id} fails")
+partition.elect_new_leader()
+print(f"New leader elected: {partition.leader.broker_id}")
+```
+
+### Real-World Scenario
+
+LinkedIn experienced a Kafka outage where a broker's disk filled up, causing it to fall out of the ISR. With min.insync.replicas=2 and only 2 other healthy replicas, producers with acks=all started blocking, causing cascading failures in upstream services. The Kafka cluster's availability directly impacted the entire recommendation engine. They fixed it by: 1) immediately evicting the disk-full broker, 2) temporarily lowering min.insync.replicas to 1, 3) adding a new broker and rebalancing partitions. This incident led to automated disk usage monitoring and alerting.
+
+### ISR Management Diagram
+
+```mermaid
+graph LR
+    A["Producer sends<br/>acks=all"] -->|Write| B["Leader<br/>Offset: N"]
+    B -->|Replicate| C["Follower 1<br/>Offset: N-1"]
+    B -->|Replicate| D["Follower 2<br/>Offset: N"]
+    
+    E["Lag Check"] -->|Fetched ≥ N-threshold| F["Add to ISR"]
+    E -->|Fetched < N-threshold| G["Remove from ISR"]
+    
+    F --> H["ISR = {L, F2}"]
+    G --> I["ISR = {L}"]
+    
+    H -->|Size ≥ min.insync| J["ACK producer<br/>Message safe"]
+    I -->|Size < min.insync| K["Hold until<br/>replicas catch up"]
+    
+    style B fill:#4caf50,color:#fff
+    style J fill:#2196f3,color:#fff
+    style K fill:#ff9800,color:#fff
+```
+
 ---
 
 ## Actors/Components

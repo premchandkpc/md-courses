@@ -85,6 +85,79 @@ A distributed message queue is a fault-tolerant, horizontally scalable platform 
 - **Broker**: A server in the cluster. Each broker hosts some partitions.
 - **Controller**: One broker acts as the controller, managing partition leader elections and cluster state.
 
+#### Step-by-Step
+
+1. **Topic creation**: Partition data across N brokers; designate partition leaders and followers from replicas
+2. **Producer routing**: Determine target partition via partitioner (round-robin, key-based, or sticky)
+3. **Leader write**: Producer sends message to partition leader; leader appends to log
+4. **Replication**: Leader replicates message to in-sync replicas (ISR) before returning ack
+5. **Consumer group assignment**: Coordinator assigns partitions to consumers; each partition has exactly one consumer
+6. **Offset tracking**: Consumer commits offset after processing; resumption starts from committed offset
+
+#### Code Example
+
+```python
+from kafka import KafkaProducer, KafkaConsumer
+from kafka.errors import KafkaError
+import json
+
+class MessageQueueExample:
+    def __init__(self, brokers):
+        self.producer = KafkaProducer(
+            bootstrap_servers=brokers,
+            value_serializer=lambda v: json.dumps(v).encode('utf-8'),
+            acks='all',  # Wait for all replicas to ack
+            retries=3,
+            max_in_flight_requests_per_connection=1,  # Guarantee ordering
+            compression_type='snappy'
+        )
+        
+        self.consumer = KafkaConsumer(
+            'orders',
+            bootstrap_servers=brokers,
+            group_id='order-processors',
+            value_deserializer=lambda m: json.loads(m.decode('utf-8')),
+            auto_offset_reset='earliest',
+            enable_auto_commit=False,  # Manual offset management
+            max_poll_records=100
+        )
+    
+    def produce_order(self, order_id, order_data):
+        """Publish order to partition determined by order_id key."""
+        future = self.producer.send(
+            'orders',
+            value=order_data,
+            key=str(order_id).encode('utf-8')  # Ensures same order_id → same partition
+        )
+        try:
+            metadata = future.get(timeout=10)
+            print(f"Order sent to partition {metadata.partition}, offset {metadata.offset}")
+        except KafkaError as e:
+            print(f"Failed to send order: {e}")
+    
+    def consume_orders(self):
+        """Consume orders in sequence, commit after processing."""
+        for message in self.consumer:
+            try:
+                order = message.value
+                print(f"Processing order {order['id']}")
+                # Process order (DB write, payment, etc.)
+                self.consumer.commit()  # Commit after successful processing
+            except Exception as e:
+                print(f"Failed to process order: {e}")
+                self.consumer.seek(message.offset)  # Retry from this offset
+
+# Usage
+queue = MessageQueueExample(['broker1:9092', 'broker2:9092', 'broker3:9092'])
+queue.produce_order('ORD-12345', {'id': 'ORD-12345', 'amount': 99.99})
+# In another thread:
+# queue.consume_orders()
+```
+
+#### Real-World Scenario
+
+Uber uses Kafka with 1,000+ topics and millions of messages per second. The "orders" topic has 256 partitions across 50 brokers. During surge pricing hours, order throughput spikes to 100K messages/second. Uber's order-processing consumer group has 1,000 consumer instances, each processing 100 messages/second from 4 partitions. When Uber adds new consumer instances (e.g., during Black Friday surge), cooperative rebalancing ensures only affected partitions are temporarily unavailable, not the entire group. Without this capability, adding capacity would have caused 30-second outages.
+
 ---
 
 ## 2. Topics, Partitions, Producers & Consumers

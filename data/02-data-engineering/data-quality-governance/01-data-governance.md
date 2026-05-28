@@ -17,6 +17,229 @@ Data quality is measured across multiple dimensions. Each dimension addresses a 
 
 ### The Six Core Dimensions
 
+#### Step-by-Step
+
+1. **Define Thresholds**: Establish acceptable ranges for each quality dimension (e.g., <1% nulls in critical columns, <5% duplicates).
+2. **Measure Baseline**: Collect statistics on current data quality across all dimensions to establish baseline metrics.
+3. **Implement Checks**: Deploy automated data quality tests in pipelines that run before/after processing steps.
+4. **Monitor Continuously**: Track metrics over time, alerting when thresholds are breached (>5% null rate, accuracy drops, etc.).
+5. **Investigate Anomalies**: When quality drops, trace root cause (bad upstream data, processing error, schema change).
+6. **Remediate**: Fix data quality issues via cleanup, quarantining bad data, or reworking transformations; document root cause.
+
+#### Code Example
+
+```python
+import pandas as pd
+import numpy as np
+from dataclasses import dataclass
+from typing import Dict, List, Optional
+from datetime import datetime
+
+@dataclass
+class QualityMetrics:
+    """Data quality metrics across six dimensions."""
+    table_name: str
+    row_count: int
+    completeness: Dict[str, float]  # {column: null_rate}
+    accuracy: Dict[str, float]  # {check_name: error_rate}
+    timeliness_seconds: float
+    consistency: Dict[str, float]  # {cross_table_check: mismatch_rate}
+    uniqueness: Dict[str, float]  # {column: duplicate_rate}
+    validity: Dict[str, float]  # {rule_name: violation_rate}
+    timestamp: datetime
+
+class DataQualityMonitor:
+    """Monitor data quality across six dimensions."""
+    
+    def __init__(self, threshold_config: Dict):
+        self.thresholds = threshold_config
+        self.metrics_history: List[QualityMetrics] = []
+    
+    def check_data_quality(self, df: pd.DataFrame, table_name: str) -> QualityMetrics:
+        """Comprehensive data quality check."""
+        
+        # Step 1-2: Define and measure baseline metrics
+        row_count = len(df)
+        
+        # Dimension 1: Completeness (null rates)
+        completeness = {
+            col: df[col].isnull().sum() / len(df) * 100
+            for col in df.columns
+        }
+        
+        # Dimension 2: Accuracy (check business rules)
+        accuracy = self._check_accuracy(df)
+        
+        # Dimension 3: Timeliness (check ingestion lag)
+        if 'ingestion_timestamp' in df.columns:
+            timeliness = (datetime.now() - df['ingestion_timestamp'].max()).total_seconds()
+        else:
+            timeliness = 0
+        
+        # Dimension 4: Consistency (cross-table if available)
+        consistency = self._check_consistency(df)
+        
+        # Dimension 5: Uniqueness (duplicate rates)
+        uniqueness = {
+            col: (df[col].duplicated().sum() / len(df) * 100) 
+            for col in df.select_dtypes(include='number').columns
+        }
+        
+        # Dimension 6: Validity (business rule violations)
+        validity = self._check_validity(df)
+        
+        metrics = QualityMetrics(
+            table_name=table_name,
+            row_count=row_count,
+            completeness=completeness,
+            accuracy=accuracy,
+            timeliness_seconds=timeliness,
+            consistency=consistency,
+            uniqueness=uniqueness,
+            validity=validity,
+            timestamp=datetime.now()
+        )
+        
+        # Step 3-4: Implement checks and monitor
+        self._validate_against_thresholds(metrics)
+        self.metrics_history.append(metrics)
+        
+        return metrics
+    
+    def _check_accuracy(self, df: pd.DataFrame) -> Dict[str, float]:
+        """Validate data accuracy against known rules."""
+        accuracy = {}
+        
+        # Email format check
+        if 'email' in df.columns:
+            valid_emails = df['email'].str.contains(r'^[\w\.-]+@[\w\.-]+\.\w+$', na=False)
+            accuracy['email_format'] = (1 - valid_emails.sum() / len(df)) * 100
+        
+        # Age validity
+        if 'age' in df.columns:
+            valid_ages = (df['age'] >= 0) & (df['age'] <= 120)
+            accuracy['age_validity'] = (1 - valid_ages.sum() / len(df)) * 100
+        
+        # Zip code format (US)
+        if 'zip_code' in df.columns:
+            valid_zips = df['zip_code'].str.match(r'^\d{5}(-\d{4})?$')
+            accuracy['zip_format'] = (1 - valid_zips.sum() / len(df)) * 100
+        
+        return accuracy
+    
+    def _check_consistency(self, df: pd.DataFrame) -> Dict[str, float]:
+        """Check consistency across systems."""
+        consistency = {}
+        
+        # Sum consistency check (if order and payment columns exist)
+        if 'order_total' in df.columns and 'payment_sum' in df.columns:
+            mismatch_rate = (abs(df['order_total'] - df['payment_sum']) > 0.01).sum() / len(df) * 100
+            consistency['order_vs_payment'] = mismatch_rate
+        
+        return consistency
+    
+    def _check_validity(self, df: pd.DataFrame) -> Dict[str, float]:
+        """Check business rule violations."""
+        validity = {}
+        
+        # Status in allowed set
+        if 'status' in df.columns:
+            valid_statuses = df['status'].isin(['pending', 'completed', 'cancelled'])
+            validity['status_validity'] = (1 - valid_statuses.sum() / len(df)) * 100
+        
+        # Transaction amount > 0
+        if 'amount' in df.columns:
+            valid_amounts = df['amount'] > 0
+            validity['amount_positive'] = (1 - valid_amounts.sum() / len(df)) * 100
+        
+        return validity
+    
+    def _validate_against_thresholds(self, metrics: QualityMetrics):
+        """Step 5: Investigate anomalies by comparing to thresholds."""
+        violations = []
+        
+        # Check completeness thresholds
+        for col, null_rate in metrics.completeness.items():
+            threshold = self.thresholds.get(f'completeness_{col}', 5)  # Default 5% null acceptable
+            if null_rate > threshold:
+                violations.append(f"ALERT: {col} null rate {null_rate:.2f}% exceeds threshold {threshold}%")
+        
+        # Check accuracy thresholds
+        for check_name, error_rate in metrics.accuracy.items():
+            threshold = self.thresholds.get(f'accuracy_{check_name}', 1)
+            if error_rate > threshold:
+                violations.append(f"ALERT: {check_name} error rate {error_rate:.2f}% exceeds threshold {threshold}%")
+        
+        # Check timeliness SLA
+        sla_seconds = self.thresholds.get('timeliness_sla', 300)
+        if metrics.timeliness_seconds > sla_seconds:
+            violations.append(f"ALERT: Data is {metrics.timeliness_seconds:.0f}s old, exceeds SLA of {sla_seconds}s")
+        
+        if violations:
+            print(f"\nData Quality Violations for {metrics.table_name}:")
+            for v in violations:
+                print(f"  {v}")
+    
+    def generate_report(self, table_name: str) -> str:
+        """Generate data quality report."""
+        recent_metrics = [m for m in self.metrics_history if m.table_name == table_name][-1]
+        
+        report = f"""
+        ==============================================
+        Data Quality Report: {table_name}
+        Timestamp: {recent_metrics.timestamp}
+        ==============================================
+        
+        Total Rows: {recent_metrics.row_count:,}
+        
+        COMPLETENESS:
+        {self._format_dict(recent_metrics.completeness, '%')}
+        
+        ACCURACY:
+        {self._format_dict(recent_metrics.accuracy, '%')}
+        
+        TIMELINESS:
+        Data Age: {recent_metrics.timeliness_seconds:.0f} seconds
+        
+        UNIQUENESS:
+        {self._format_dict(recent_metrics.uniqueness, '%')}
+        
+        VALIDITY:
+        {self._format_dict(recent_metrics.validity, '%')}
+        """
+        return report
+    
+    @staticmethod
+    def _format_dict(d: Dict, suffix: str = '') -> str:
+        return '\n'.join([f"  {k}: {v:.2f}{suffix}" for k, v in d.items()])
+
+# Usage
+config = {
+    'completeness_email': 5,  # Max 5% nulls
+    'completeness_phone': 50,  # Max 50% nulls (optional field)
+    'accuracy_email_format': 1,  # Max 1% invalid
+    'accuracy_age_validity': 0.5,  # Max 0.5% invalid
+    'timeliness_sla': 300,  # Max 5 min old
+}
+
+monitor = DataQualityMonitor(config)
+
+# Test data
+df_test = pd.DataFrame({
+    'customer_id': [1, 2, 3, None, 5],
+    'email': ['user@test.com', 'bad-email', 'test@ex.com', 'data@site.org', None],
+    'age': [25, 130, 35, 40, 28],  # One invalid age
+    'status': ['pending', 'completed', 'invalid', 'completed', 'pending'],
+})
+
+metrics = monitor.check_data_quality(df_test, 'customers')
+print(monitor.generate_report('customers'))
+```
+
+#### Real-World Scenario
+
+At Airbnb, the listings table has 7 dimensions monitored: Completeness (host_id 0% null, reviews 2% null allowed), Accuracy (listing_price > 0), Timeliness (SLA <2min from property update), Consistency (listings in main table match booking system), Uniqueness (listing_id no dupes), Validity (neighbourhood in allowed list). Daily metrics show: completeness within bounds, but accuracy drops to 3% invalid prices (10x spike). Engineer investigates: host uploaded prices in cents instead of dollars. Step 5: root cause = API client bug v3.2. Step 6: Deploy data fix to convert cents→dollars for affected listings, update API docs, version bump enforced.
+
 ```
 Completeness
   Are all required values present?

@@ -88,6 +88,57 @@ OpenTelemetry = "Use OTel SDK, export to any backend"
   (any backend)
 ```
 
+#### Step-by-Step: Instrumenting with OpenTelemetry
+
+1. **Add OTel SDK to app** — Import Python/Node/Go SDK, no vendor lock-in
+2. **Create tracer** — Tracer creates spans for each operation
+3. **Wrap function calls** — Use context propagation (W3C Trace Context)
+4. **Export spans** — Send to local Jaeger agent or OTLP endpoint
+5. **Query traces** — Use Jaeger UI to follow request flow
+
+#### Code Example: OpenTelemetry Instrumentation
+
+```python
+from opentelemetry import trace, metrics
+from opentelemetry.sdk.trace import TracerProvider
+from opentelemetry.exporter.jaeger.thrift import JaegerExporter
+from opentelemetry.sdk.trace.export import BatchSpanProcessor
+
+# Setup Jaeger exporter (can swap to Datadog, Tempo later)
+jaeger_exporter = JaegerExporter(
+    agent_host_name="localhost",
+    agent_port=6831,
+)
+trace.set_tracer_provider(TracerProvider())
+trace.get_tracer_provider().add_span_processor(
+    BatchSpanProcessor(jaeger_exporter)
+)
+
+tracer = trace.get_tracer(__name__)
+
+@app.route('/api/users/<user_id>')
+def get_user(user_id):
+    # Automatic: Flask middleware creates span for HTTP request
+    
+    with tracer.start_as_current_span("get_user") as span:
+        span.set_attribute("user.id", user_id)
+        
+        # Query database (library auto-instrumented with OTel)
+        user = db.query(User).filter_by(id=user_id).first()
+        
+        if user:
+            # Another span for serialization
+            with tracer.start_as_current_span("serialize_user"):
+                return jsonify(user.to_dict())
+        else:
+            span.set_attribute("http.status_code", 404)
+            return {"error": "Not found"}, 404
+```
+
+#### Real-World Scenario
+
+Uber's early tracing: each team used different tracing system (Zipkin, Jaeger, custom). Hard to correlate traces across services. Adopted OpenTelemetry: single instrumentation API, can swap backends. Found "phantom" latencies: seemingly fast microservices had slow dependencies buried in call stacks. Example: 100ms GET /users actually spent 95ms waiting for cache invalidation queue. Trace visualization revealed immediately.
+
 ---
 
 ## SECTION 2: TRACES & SPANS INTERNALS

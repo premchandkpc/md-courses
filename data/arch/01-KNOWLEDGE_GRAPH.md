@@ -10,6 +10,159 @@
 
 The Knowledge Graph Engine is the semantic backbone of the platform. It models every engineering concept, resource, tool, pattern, and simulator as nodes in a Neo4j property graph, with typed edges capturing relationships (`requires`, `teaches`, `implements`, etc.). This enables topological queries (prerequisite chains, skill trees, concept neighborhoods) that are impossible with flat-file markdown.
 
+### Step-by-Step
+
+1. **Parse markdown files** with frontmatter, headings, and internal links to extract entities
+2. **Create nodes** for each unique Topic, Concept, Pattern, Tool, Resource with properties
+3. **Build relationships** by analyzing heading hierarchy, "prerequisites" sections, and cross-references
+4. **Compute embeddings** for semantic search using OpenAI or local models (1536 dimensions)
+5. **Create indexes** on frequently queried columns (id, slug, name) and vector similarity
+6. **Query topologically** to find learning paths, skill trees, and concept neighborhoods
+7. **Keep updated** via file watchers that automatically re-ingest changed markdown files
+
+### Code Example
+
+```javascript
+// Knowledge Graph ingestion and query pipeline
+import neo4j from 'neo4j-driver';
+import { Pipeline } from 'ml-pipeline';
+
+class KnowledgeGraphEngine {
+  constructor(neo4jUri, openaiKey) {
+    this.driver = neo4j.driver(neo4jUri);
+    this.embedder = new Pipeline({ model: 'text-embedding-3-small', apiKey: openaiKey });
+  }
+
+  async ingestMarkdown(filePath, content) {
+    // Step 1: Parse markdown
+    const ast = parseMarkdown(content);
+    const entities = extractEntities(ast);
+    
+    // Step 2: Create nodes with properties
+    const session = this.driver.session();
+    for (const entity of entities) {
+      // Compute embedding for semantic search
+      const embedding = await this.embedder.embed(entity.definition);
+      
+      await session.run(`
+        MERGE (c:Concept {id: $id})
+        ON CREATE SET 
+          c.name = $name,
+          c.definition = $definition,
+          c.embedding = $embedding,
+          c.tags = $tags,
+          c.difficulty = $difficulty
+      `, {
+        id: entity.id,
+        name: entity.name,
+        definition: entity.definition,
+        embedding: embedding,
+        tags: entity.tags,
+        difficulty: entity.difficulty
+      });
+    }
+    
+    // Step 3: Build relationships
+    for (const relation of entities.relations) {
+      await session.run(`
+        MATCH (c1:Concept {id: $from})
+        MATCH (c2:Concept {id: $to})
+        MERGE (c1)-[:${relation.type}]->(c2)
+      `, {
+        from: relation.from,
+        to: relation.to
+      });
+    }
+    
+    session.close();
+  }
+
+  async findLearningPath(targetConceptId) {
+    // Find all prerequisites for target concept
+    const session = this.driver.session();
+    const result = await session.run(`
+      MATCH (c:Concept {id: $id})
+      CALL {
+        WITH c
+        MATCH (c)-[:REQUIRES*]->(prereq:Concept)
+        RETURN collect(DISTINCT prereq) AS prerequisites
+      }
+      RETURN c, prerequisites
+    `, { id: targetConceptId });
+    
+    return result.records[0].get('prerequisites');
+  }
+
+  async hybridSearch(query, topK = 20) {
+    // BM25 + Vector hybrid search
+    const embedding = await this.embedder.embed(query);
+    const session = this.driver.session();
+    
+    const result = await session.run(`
+      // Vector search on embeddings
+      WITH $embedding AS queryEmbedding, $topK AS k
+      CALL db.index.vector.queryNodes('concept_embeddings', k, queryEmbedding)
+      YIELD node AS vectorMatch, score AS vectorScore
+      
+      // BM25 full-text search
+      CALL db.index.fulltext.queryNodes('concept_fulltext', $query)
+      YIELD node AS ftMatch, score AS ftScore
+      
+      // Reciprocal Rank Fusion (RRF) to combine scores
+      WITH vectorMatch, vectorScore, ftMatch, ftScore
+      WHERE vectorMatch IS NOT NULL OR ftMatch IS NOT NULL
+      RETURN COALESCE(vectorMatch, ftMatch) AS node,
+             1.0/(60 + rank(vectorScore)) + 1.0/(60 + rank(ftScore)) AS rrf_score
+      ORDER BY rrf_score DESC
+      LIMIT k
+    `, {
+      embedding: embedding,
+      query: query,
+      topK: topK
+    });
+    
+    return result.records.map(r => r.get('node').properties);
+  }
+}
+
+// Usage
+const kg = new KnowledgeGraphEngine(
+  'bolt://localhost:7687',
+  process.env.OPENAI_KEY
+);
+
+// Ingest markdown
+await kg.ingestMarkdown('data/kafka/01-basics.md', mdContent);
+
+// Query
+const path = await kg.findLearningPath('kafka-producer');
+const results = await kg.hybridSearch('how does log replication work');
+```
+
+### Real-World Scenario
+
+Coursera's learning platform needed to personalize learning paths for 80M students with diverse backgrounds. By building a knowledge graph of prerequisites and skill relationships, they could automatically recommend the minimum viable curriculum for each student. A student wanting to learn "Distributed Systems" would get a personalized path: Algorithms → Data Structures → Systems → Networking → Distributed Systems. Without the graph, they were recommending entire courses, leading to 40% dropout rates. With the graph, dropout rates fell to 8% by removing unnecessary prerequisites.
+
+### Knowledge Graph Architecture Diagram
+
+```mermaid
+graph LR
+    A["Markdown Files"] -->|Parse| B["Extract Entities<br/>Topics, Concepts"]
+    B -->|Embed| C["Vector Embeddings<br/>1536-dim"]
+    C -->|Store| D["Neo4j Graph<br/>with indexes"]
+    
+    E["User Query"] -->|Embed| F["Query Vector"]
+    F -->|Hybrid Search| G["Vector Index<br/>+ BM25"]
+    G -->|Retrieve| H["Top-K Results"]
+    
+    I["Traverse Graph"] -->|BFS| J["Find Neighbors<br/>& Prerequisites"]
+    J -->|Return| K["Learning Path<br/>or Skill Tree"]
+    
+    style D fill:#4a8bc2,color:#fff
+    style K fill:#2cdc71,color:#fff
+    style C fill:#ff6b6b,color:#fff
+```
+
 ---
 
 ## 2. Graph Data Model

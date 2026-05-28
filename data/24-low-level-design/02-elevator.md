@@ -228,6 +228,48 @@ class FCFSAlgorithm implements SchedulingAlgorithm {
 
 **Problems**: Very inefficient. Elevator changes direction frequently. No optimization for grouped requests.
 
+#### Step-by-Step (FCFS)
+
+1. **Queue incoming requests**: Store all external and internal requests in FIFO order as they arrive
+2. **Select first request**: Dequeue the oldest request from the queue
+3. **Move elevator**: Update elevator position to source/target floor
+4. **Open/close doors**: Perform door operations and load/unload passengers
+5. **Process next request**: Dequeue and repeat until queue is empty
+6. **Handle starvation**: Monitor wait times; escalate ancient requests to high priority
+
+#### Code Example
+
+```java
+// FCFS with fairness check and starvation prevention
+class FairFCFSScheduler implements SchedulingAlgorithm {
+  private Queue<Request> queue = new LinkedList<>();
+  private static final long MAX_WAIT_MS = 300000;  // 5 min starvation limit
+  
+  @Override
+  synchronized void addRequest(Request request) {
+    request.setEnqueueTime(System.currentTimeMillis());
+    queue.offer(request);
+  }
+  
+  @Override
+  synchronized Request nextRequest() {
+    // Check for starved requests (waiting > 5 minutes)
+    for (Request req : queue) {
+      long waitTime = System.currentTimeMillis() - req.getEnqueueTime();
+      if (waitTime > MAX_WAIT_MS) {
+        queue.remove(req);  // Prioritize starved request
+        return req;
+      }
+    }
+    return queue.poll();  // Normal FIFO
+  }
+}
+```
+
+#### Real-World Scenario
+
+Early elevators used FCFS, causing frustrating experiences: A passenger at floor 2 requesting floor 20 would wait while the elevator serviced floors 3, 4, 5, etc. in arrival order, causing long wait times and inefficient movement patterns. Modern buildings switched to SCAN/LOOK to reduce average wait time from 30 seconds to 10 seconds.
+
 ### 4.2 SCAN (Elevator Algorithm)
 
 The elevator moves in one direction, servicing all requests in that direction, then reverses.

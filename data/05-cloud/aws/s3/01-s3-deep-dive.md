@@ -151,6 +151,87 @@ Upload large file
 └───────────────────┘
 ```
 
+### Step-by-Step
+
+1. **Bucket creation**: Create a globally-unique namespace to store objects
+2. **Object upload**: Send object data to bucket with a unique key (path)
+3. **Metadata assignment**: Attach system metadata (ETag, ContentType) and custom metadata
+4. **Storage location**: Data is distributed across AWS data centers for durability (11 9's)
+5. **Retrieval**: Objects are retrieved by bucket name + key combination
+6. **Versioning (optional)**: Each write creates a new version if versioning is enabled
+
+### Code Example
+
+```python
+import boto3
+import os
+
+# Initialize S3 client
+s3_client = boto3.client('s3')
+
+# 1. Create bucket
+bucket_name = 'my-app-data-bucket'
+try:
+    s3_client.create_bucket(Bucket=bucket_name)
+    print(f"Bucket {bucket_name} created")
+except Exception as e:
+    print(f"Bucket may already exist: {e}")
+
+# 2. Upload a file
+local_file = '/path/to/myfile.pdf'
+s3_key = 'documents/2024/myfile.pdf'
+s3_client.upload_file(local_file, bucket_name, s3_key)
+print(f"Uploaded to s3://{bucket_name}/{s3_key}")
+
+# 3. Add metadata
+s3_client.put_object(
+    Bucket=bucket_name,
+    Key=s3_key,
+    Body=open(local_file, 'rb'),
+    Metadata={'uploaded-by': 'app-v1', 'department': 'engineering'},
+    ContentType='application/pdf'
+)
+
+# 4. List objects with prefix
+response = s3_client.list_objects_v2(
+    Bucket=bucket_name,
+    Prefix='documents/2024/'
+)
+for obj in response.get('Contents', []):
+    print(f"- {obj['Key']} ({obj['Size']} bytes)")
+
+# 5. Retrieve object
+s3_client.download_file(bucket_name, s3_key, 'downloaded_file.pdf')
+print(f"Downloaded from S3")
+```
+
+### Real-World Scenario
+
+A SaaS company stored user documents in S3 without versioning. A data corruption bug deleted 5,000 customer files. Without versioning enabled, the files were permanently lost and unrecoverable. After adding versioning, similar incidents were detected within minutes and rolled back to the previous version. Versioning added ~30% to storage costs but saved the company from potential lawsuits due to data loss.
+
+### Diagram
+
+```mermaid
+graph LR
+    A["Client Code"] -->|upload| B["S3 API Endpoint"]
+    B -->|Distribute| C["Availability Zone 1"]
+    B -->|Distribute| D["Availability Zone 2"]
+    B -->|Distribute| E["Availability Zone 3"]
+    C -->|Replica| F["Data Center Copy"]
+    D -->|Replica| G["Data Center Copy"]
+    E -->|Replica| H["Data Center Copy"]
+    A -->|download| B
+    B -->|Retrieve| C
+    style A fill:#4a8bc2
+    style B fill:#2d5a7b
+    style C fill:#3fb950
+    style D fill:#3fb950
+    style E fill:#3fb950
+    style F fill:#3a7ca5
+    style G fill:#3a7ca5
+    style H fill:#3a7ca5
+```
+
 ---
 
 ## 2. Storage Classes

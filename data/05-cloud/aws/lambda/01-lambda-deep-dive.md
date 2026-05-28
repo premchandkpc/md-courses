@@ -151,6 +151,97 @@ def lambda_handler(event, context):
     }
 ```
 
+### Step-by-Step
+
+1. **Function deployment**: Upload code + dependencies to AWS Lambda and configure memory/timeout
+2. **Event arrival**: Event source (S3, API Gateway, SQS) sends event to Lambda
+3. **Container allocation**: AWS allocates a container (cold start creates new one) or reuses warm container
+4. **Handler invocation**: Lambda runtime loads code and calls your handler function with `event` and `context`
+5. **Execution**: Handler code runs with given memory and CPU allocation
+6. **Result return**: Handler returns response (must be JSON-serializable for API Gateway, can be any for async)
+
+### Code Example
+
+```python
+import json
+import boto3
+import time
+from datetime import datetime
+
+# Initialize AWS clients (reused across warm invocations)
+s3_client = boto3.client('s3')
+dynamodb = boto3.resource('dynamodb')
+table = dynamodb.Table('ProcessedEvents')
+
+def lambda_handler(event, context):
+    """
+    Process S3 events and store in DynamoDB
+    Triggered by S3 PUT events
+    """
+    print(f"Function: {context.function_name}, Version: {context.function_version}")
+    print(f"Memory: {context.memory_limit_in_mb}MB, Remaining: {context.get_remaining_time_in_millis()}ms")
+    
+    try:
+        # Parse S3 event
+        bucket = event['Records'][0]['s3']['bucket']['name']
+        key = event['Records'][0]['s3']['object']['key']
+        
+        # Download from S3
+        response = s3_client.get_object(Bucket=bucket, Key=key)
+        data = response['Body'].read().decode('utf-8')
+        
+        # Process data
+        processed = {
+            'event_id': context.aws_request_id,
+            'bucket': bucket,
+            'key': key,
+            'size': len(data),
+            'timestamp': datetime.utcnow().isoformat(),
+            'processed_at': int(time.time() * 1000)
+        }
+        
+        # Store in DynamoDB
+        table.put_item(Item=processed)
+        
+        return {
+            'statusCode': 200,
+            'body': json.dumps({'message': 'Processed', 'event_id': context.aws_request_id})
+        }
+        
+    except Exception as e:
+        print(f"Error processing event: {str(e)}")
+        return {
+            'statusCode': 500,
+            'body': json.dumps({'error': str(e)})
+        }
+```
+
+### Real-World Scenario
+
+A company had a Lambda that processed 100 events/second from SQS. With default 128MB memory (1% vCPU), JSON parsing took 500ms per event, causing timeouts. After increasing memory to 1792MB (1 vCPU), the same code executed in 50ms, reducing p99 latency from 15 seconds to 100ms and cutting invocation errors from 20% to 0.1%.
+
+### Diagram
+
+```mermaid
+sequenceDiagram
+    participant ES as Event Source
+    participant AWS as AWS Infrastructure
+    participant LR as Lambda Runtime
+    participant UH as User Handler
+    participant DDB as DynamoDB
+    
+    ES->>AWS: Send event
+    AWS->>LR: Allocate container (cold/warm)
+    LR->>LR: Load function code
+    LR->>UH: Invoke handler(event, context)
+    UH->>DDB: Call boto3 to write data
+    DDB-->>UH: Response
+    UH-->>LR: Return result
+    LR->>LR: Serialize response (JSON)
+    LR->>AWS: Return to caller
+    AWS-->>ES: Trigger complete
+```
+
 ---
 
 ## 2. Triggers

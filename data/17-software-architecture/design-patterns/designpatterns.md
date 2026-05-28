@@ -88,6 +88,58 @@ mindmap
 
 ## 🧠 One object globally
 
+#### Step-by-Step
+
+1. **Lazy Initialization**: Don't create instance until first request
+2. **Thread Safety**: Use synchronized or eager initialization to prevent race conditions
+3. **Access Method**: Provide static getInstance() method as single entry point
+4. **Private Constructor**: Prevent other classes from instantiating new instances
+5. **Return Same Instance**: Every call returns reference to same object in memory
+6. **Cleanup**: Implement proper shutdown hooks if resource needs cleanup
+
+#### Code Example
+
+```python
+# Thread-safe singleton in Python with lazy initialization
+import threading
+
+class DatabaseConnection:
+    _instance = None
+    _lock = threading.Lock()
+    
+    def __init__(self):
+        self.connection = None
+    
+    @staticmethod
+    def get_instance():
+        # Double-checked locking pattern
+        if DatabaseConnection._instance is None:
+            with DatabaseConnection._lock:
+                # Check again inside lock
+                if DatabaseConnection._instance is None:
+                    DatabaseConnection._instance = DatabaseConnection()
+                    DatabaseConnection._instance._connect()
+        return DatabaseConnection._instance
+    
+    def _connect(self):
+        # Expensive operation — happens once
+        print("Connecting to database...")
+        self.connection = "Connection established"
+    
+    def query(self, sql: str):
+        return f"Executing: {sql}"
+
+# Usage
+db1 = DatabaseConnection.get_instance()
+db2 = DatabaseConnection.get_instance()
+print(f"Same instance? {db1 is db2}")  # True
+print(db1.query("SELECT * FROM users"))
+```
+
+#### Real-World Scenario
+
+Java's java.lang.Runtime is a singleton — represents the JVM runtime environment. You never create new Runtime() instances because there's only one JVM per process. When you call Runtime.getRuntime(), it returns the same instance every time. This ensures all threads see consistent runtime state when querying heap memory or exiting the VM.
+
 ---
 
 # 📊 Flow

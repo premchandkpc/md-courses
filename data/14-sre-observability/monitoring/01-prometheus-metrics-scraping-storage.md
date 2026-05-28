@@ -60,6 +60,56 @@ A healthy patient has stable vital signs. A sick patient's vitals spike or drop.
 - Red lines = dangerous levels (alerts)
 - Trends = early warning signs
 
+#### Step-by-Step: Setting Up Prometheus Monitoring
+
+1. **Instrument application** — Add Prometheus client library (prometheus-py, prom-client)
+2. **Define metrics** — Choose Counter, Gauge, or Histogram for each measurement
+3. **Expose /metrics endpoint** — Prometheus scrapes this HTTP endpoint
+4. **Configure Prometheus** — Add scrape_configs with target addresses
+5. **Query and visualize** — Use PromQL queries in Grafana dashboards
+
+#### Code Example: Prometheus Instrumentation
+
+```python
+from prometheus_client import Counter, Gauge, Histogram, start_http_server
+
+# Define metrics
+http_requests_total = Counter(
+    'http_requests_total',
+    'Total HTTP requests',
+    ['method', 'endpoint', 'status']
+)
+
+http_request_duration = Histogram(
+    'http_request_duration_seconds',
+    'HTTP request latency',
+    ['method', 'endpoint'],
+    buckets=(0.001, 0.01, 0.1, 1.0)  # Latency buckets in seconds
+)
+
+active_connections = Gauge(
+    'active_connections',
+    'Active database connections'
+)
+
+# In your request handler:
+@app.route('/api/users')
+def get_users():
+    with http_request_duration.labels('GET', '/api/users').time():
+        # Your code here
+        users = db.query(User)
+    
+    http_requests_total.labels('GET', '/api/users', '200').inc()
+    return users
+
+# Start metrics server on port 8000
+start_http_server(8000)
+```
+
+#### Real-World Scenario
+
+A fintech platform's payment service had no request latency monitoring. During Black Friday, p99 latency hit 5 seconds (timeout threshold) but was hidden by low p50 (~50ms average). When they added histogram metrics, they discovered a database query doing full table scans on high-volume orders. Fix added index, latency dropped to 50ms p99. Lost $2M before monitoring caught it.
+
 ### The Pull Model vs Push Model
 
 **Pull (Prometheus):**
@@ -78,6 +128,45 @@ A healthy patient has stable vital signs. A sick patient's vitals spike or drop.
 1. Prometheus knows if a server is down (no response = dead server)
 2. Server doesn't need to maintain outbound connection
 3. Easy to rate-limit (don't scrape too aggressively)
+
+#### Step-by-Step: Pull vs Push Trade-offs
+
+1. **Pull Model (Prometheus)** — Prometheus initiates connection to target
+   - Advantage: automatic missing heartbeat detection
+   - Disadvantage: target must expose HTTP endpoint
+   - Best for: internal infrastructure with reliable networking
+
+2. **Push Model (PushGateway/StatsD)** — App sends metrics to collector
+   - Advantage: works through NAT/firewalls (short-lived jobs)
+   - Disadvantage: missing push = silent failure
+   - Best for: batch jobs, serverless functions
+
+#### Code Example: Prometheus Scrape Config
+
+```yaml
+# prometheus.yml
+global:
+  scrape_interval: 15s  # Scrape every 15 seconds
+  evaluation_interval: 15s
+
+scrape_configs:
+  - job_name: 'api-server'
+    static_configs:
+      - targets: ['localhost:8000']  # Scrape /metrics endpoint
+    scrape_interval: 15s
+    scrape_timeout: 10s
+  
+  - job_name: 'database'
+    static_configs:
+      - targets: ['postgres-exporter:9187']
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: instance
+```
+
+#### Real-World Scenario
+
+Uber's monitoring switched from push-based (StatsD) to Prometheus (pull). Push model meant jobs finishing silently without reporting metrics. During outages, they lost visibility into failed batch jobs. Pull model now auto-detects missing scrapes, alerting on infrastructure failures within seconds.
 
 ---
 

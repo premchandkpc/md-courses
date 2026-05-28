@@ -29,6 +29,83 @@ The driver is the process that runs the user's `main()` function, creates the `S
 - **Task scheduling**: Splitting stages into tasks and dispatching them to executors
 - **Result collection**: Gathering results from executors back to the driver
 
+#### Step-by-Step
+
+1. **SparkContext Creation**: User initializes SparkContext with configuration (cluster manager, number of executors, memory per executor).
+2. **Application Submission**: Application JAR/Python file is submitted to cluster manager, which allocates resources and launches driver process.
+3. **DAG Construction**: As user code executes transformations (map, filter, join), RDDs are created and linked, forming a logical DAG.
+4. **Stage Computation**: DAG Scheduler analyzes the RDD lineage, identifies shuffle boundaries, and partitions the DAG into stages.
+5. **Task Generation**: Each stage is split into tasks (one task per partition), and tasks are scheduled on executors respecting data locality.
+6. **Result Aggregation**: Driver collects results from executors as tasks complete, manages failures by rescheduling on healthy executors.
+
+#### Code Example
+
+```python
+from pyspark import SparkContext, SparkConf
+from pyspark.rdd import RDD
+from typing import List, Tuple
+
+# Step 1: SparkContext Creation
+conf = SparkConf() \
+    .setAppName("DriverExample") \
+    .setMaster("spark://localhost:7077") \
+    .set("spark.executor.memory", "4g") \
+    .set("spark.executor.cores", "4") \
+    .set("spark.cores.max", "32")
+
+sc = SparkContext(conf=conf)
+
+# Step 3: DAG Construction through transformations
+def parse_log_line(line: str) -> Tuple[str, int]:
+    """Parse web server log line."""
+    parts = line.split()
+    return (parts[0], 1)  # (ip, count)
+
+def add_counts(a: int, b: int) -> int:
+    """Combine two counts."""
+    return a + b
+
+# Read data (lazy) — Creates RDD
+raw_logs: RDD = sc.textFile("hdfs://namenode:9000/logs/2026-05-*.log")
+
+# Transform (lazy) — Creates new RDD based on raw_logs
+parsed: RDD = raw_logs.map(parse_log_line)
+
+# Transform (lazy) — Creates new RDD based on parsed
+aggregated: RDD = parsed.reduceByKey(add_counts)  # Shuffle boundary!
+
+# Transform (lazy) — Create new RDD
+filtered: RDD = aggregated.filter(lambda x: x[1] > 100)
+
+# Step 5: Action triggers execution
+# This is when DAG is submitted, stages computed, tasks scheduled
+result: List[Tuple[str, int]] = filtered.collect()  # TRIGGERS COMPUTATION
+
+print(f"IPs with >100 requests: {len(result)}")
+for ip, count in result[:5]:
+    print(f"  {ip}: {count} requests")
+
+sc.stop()
+```
+
+#### Real-World Scenario
+
+At Netflix, a data engineer submits a Spark job to analyze 2TB of streaming metrics. Driver initializes on a cluster manager (Kubernetes), creates SparkContext requesting 100 executors (8GB each). As Python code runs transformations, a DAG forms: read logs → parse JSON → filter by timestamp → group by user → compute statistics. DAG Scheduler identifies 3 stages (stage 0: map/filter, stage 1: shuffle for grouping, stage 2: reduce). Stage 0 tasks are scheduled to executors with local log data (PROCESS_LOCAL), stage 1 involves network shuffle (200MB between nodes). During execution, one executor crashes; driver rescheduling its tasks on live executors, job completes in 5 minutes instead of failing.
+
+#### Diagram
+
+```mermaid
+graph TD
+    A["User Code:<br/>sc.textFile...map...join"] --> B["SparkContext<br/>Config + Cluster"]
+    B --> C["DAG Scheduler<br/>Analyze lineage"]
+    C --> D["Identify Stages<br/>Cut at shuffles"]
+    D --> E["Task Scheduler<br/>Schedule tasks<br/>by locality"]
+    E --> F["Cluster Manager<br/>Allocate executors"]
+    F --> G["Executors Run Tasks<br/>Parallel computation"]
+    G --> H["Collect Results<br/>Back to Driver"]
+    H --> I["Action Complete<br/>Return to user"]
+```
+
 ```
 +---------------------------------------------------+
 |                   Driver Process                    |

@@ -48,6 +48,93 @@ graph LR
 
 ## JVM Memory Model
 
+#### Step-by-Step (Garbage Collection Process)
+
+1. **Allocation**: New objects created in Eden space (fast, no GC pause)
+2. **Eden Full**: When Eden fills up, minor GC triggers
+3. **Mark & Copy**: GC marks live objects, copies survivors to Survivor space (S0 or S1)
+4. **Age Increment**: Survivors age counter incremented (tracks GC cycles survived)
+5. **Promotion**: When age reaches threshold (usually 15), object promoted to Old Generation
+6. **Major GC**: When Old Gen fills (rare), full GC pauses entire JVM to reclaim space
+
+#### Code Example
+
+```java
+// Demonstrating GC behavior with memory monitoring
+import java.lang.management.*;
+import java.util.*;
+
+public class GCBehaviorDemo {
+    static class Person {
+        String name;
+        int age;
+        byte[] payload = new byte[1024];  // 1KB per object
+        
+        Person(String name, int age) {
+            this.name = name;
+            this.age = age;
+        }
+    }
+    
+    public static void main(String[] args) throws Exception {
+        // Run with: java -Xms64m -Xmx64m -XX:+PrintGCDetails GCBehaviorDemo
+        
+        MemoryMXBean memBean = ManagementFactory.getMemoryMXBean();
+        List<GarbageCollectorMXBean> gcBeans = ManagementFactory.getGarbageCollectorMXBeans();
+        
+        // Record baseline GC count
+        long initialMinorGC = gcBeans.get(0).getCollectionCount();
+        
+        System.out.println("=== Step 1: Allocate objects in Eden ===");
+        List<Person> people = new ArrayList<>();
+        for (int i = 0; i < 10000; i++) {
+            people.add(new Person("User" + i, 20 + (i % 50)));
+            if (i % 1000 == 0) {
+                printMemoryStats(memBean, gcBeans, initialMinorGC);
+            }
+        }
+        
+        System.out.println("\n=== Step 2: Clear half the objects (candidates for GC) ===");
+        for (int i = 0; i < 5000; i++) {
+            people.set(i, null);  // Nullify references
+        }
+        
+        System.out.println("\n=== Step 3: Trigger minor GC explicitly ===");
+        long gcsBeforeExplicit = gcBeans.get(0).getCollectionCount();
+        System.gc();  // Suggest garbage collection
+        Thread.sleep(100);
+        long gcsAfterExplicit = gcBeans.get(0).getCollectionCount();
+        System.out.println("Minor GC cycles: " + (gcsAfterExplicit - gcsBeforeExplicit));
+        
+        System.out.println("\n=== Step 4: Keep remaining objects (promote to Old Gen) ===");
+        // Keep 5000 objects alive through multiple GC cycles
+        for (int cycle = 0; cycle < 10; cycle++) {
+            System.gc();
+            Thread.sleep(50);
+            long heapUsed = memBean.getHeapMemoryUsage().getUsed();
+            System.out.println("Cycle " + cycle + ": Heap used = " + (heapUsed / 1024 / 1024) + " MB");
+        }
+        
+        System.out.println("\nObjects still in memory: " + people.size());
+    }
+    
+    static void printMemoryStats(MemoryMXBean memBean, 
+                                  List<GarbageCollectorMXBean> gcBeans,
+                                  long initialMinorGC) {
+        MemoryUsage heapUsage = memBean.getHeapMemoryUsage();
+        long minorGCs = gcBeans.get(0).getCollectionCount() - initialMinorGC;
+        System.out.printf("Heap: %d MB / %d MB, Minor GCs: %d\n",
+            heapUsage.getUsed() / 1024 / 1024,
+            heapUsage.getMax() / 1024 / 1024,
+            minorGCs);
+    }
+}
+```
+
+#### Real-World Scenario
+
+Stripe's payment processing service tuned GC aggressively for sub-millisecond latency. They set `-XX:MaxGCPauseMillis=10` (pause every 10ms) using G1GC. During peak transaction processing (Black Friday), this meant more frequent GC cycles but predictable latency. Without tuning, long Old Generation collection pauses (500ms+) would timeout payment requests, causing customers to see error screens.
+
 ### Heap Structure
 
 The JVM heap is divided into generations for efficient garbage collection:

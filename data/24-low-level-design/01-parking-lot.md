@@ -553,6 +553,71 @@ interface SpotAllocationStrategy {
 }
 ```
 
+#### Step-by-Step
+
+1. **Determine vehicle type and compatible spot types**: Map vehicle type to allowed spot types (e.g., COMPACT → COMPACT, REGULAR)
+2. **Iterate through all floors/zones**: Search for spots matching vehicle compatibility and occupancy status
+3. **Score each candidate spot**: Calculate distance to entrance, elevation (floor level), or reservation status
+4. **Select best-scoring spot**: Return spot with minimum score; optimize with priority queues for O(1) lookup
+5. **Occupy spot atomically**: Update spot occupancy and decrement zone availability in synchronized block
+6. **Handle fallback cases**: If no ideal spot, try lower-tier compatible spots or return null (lot full)
+
+#### Code Example
+
+```java
+// Multi-criteria spot allocation strategy with caching
+class SmartAllocationStrategy implements SpotAllocationStrategy {
+  private Map<SpotType, PriorityQueue<ParkingSpot>> spotsCache;
+  private static final double FLOOR_PENALTY = 0.5;  // Prefer ground floor
+  
+  @Override
+  public synchronized ParkingSpot findSpot(ParkingLot lot, Vehicle vehicle) {
+    // Step 1: Get compatible spot types for vehicle
+    List<SpotType> compatible = vehicle.getCompatibleSpotTypes();
+    
+    double bestScore = Double.MAX_VALUE;
+    ParkingSpot bestSpot = null;
+    
+    // Step 2: Iterate through spot types in order of preference
+    for (SpotType spotType : compatible) {
+      PriorityQueue<ParkingSpot> spots = spotsCache.get(spotType);
+      
+      for (ParkingSpot spot : spots) {
+        if (!spot.isOccupied() && spot.isAvailable()) {
+          // Step 3: Calculate multi-criteria score
+          double distance = spot.getDistanceToNearestEntrance();
+          double floorPenalty = spot.getFloor().getLevel() * FLOOR_PENALTY;
+          double score = distance + floorPenalty;
+          
+          if (score < bestScore) {
+            bestScore = score;
+            bestSpot = spot;
+            break;  // Found best spot of this type, move to next type
+          }
+        }
+      }
+      
+      if (bestSpot != null) break;  // Found best overall spot
+    }
+    
+    return bestSpot;
+  }
+  
+  void updateCache(ParkingSpot spot, boolean occupied) {
+    PriorityQueue<ParkingSpot> pq = spotsCache.get(spot.getType());
+    if (occupied) {
+      pq.remove(spot);
+    } else {
+      pq.add(spot);
+    }
+  }
+}
+```
+
+#### Real-World Scenario
+
+A large parking garage at an airport processes 2,000 vehicles per hour. Linear search through 5,000 spots took 300ms per allocation, causing ticket issuance queues. Implementing priority queues per spot type (REGULAR, COMPACT, EV, HANDICAP) reduced allocation to 10ms. Adding "prefer ground floor" scoring and caching further reduced latency to 5ms, enabling 200-spot allocations per second.
+
 ### 5.2 NearestToEntrance Strategy
 
 The most common strategy — assign the closest available compatible spot.

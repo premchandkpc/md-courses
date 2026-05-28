@@ -112,6 +112,131 @@ Raft decomposes consensus into five sub-problems, each independently solvable an
 
 **Leader:** Single active leader per term. Handles all client requests. Sends AppendEntries (heartbeat or log entries) to followers. If it discovers a higher term or cannot communicate with majority, steps down.
 
+### Server States: Deep Dive
+
+#### Step-by-Step
+
+1. **Follower starts with election timeout** — Followers await AppendEntries from leader (heartbeat resets timer every 50ms).
+2. **Timeout fires, follower becomes candidate** — Increments term, votes for itself, sends RequestVote to all peers.
+3. **Candidate collects votes** — Waits for responses; counts votes from followers + own vote = majority needed.
+4. **Wins election → becomes leader** — Sends immediate heartbeat to all followers (AppendEntries with no new entries) to reset their timeouts.
+5. **Leader sends log entries** — Clients submit commands; leader appends to its log, sends AppendEntries with new entries to followers.
+6. **Followers replicate** — Followers append entries to their logs, acknowledge; leader counts acks, commits when majority acked.
+7. **Leader steps down if detects higher term** — If RequestVote or AppendEntries received with higher term, leader becomes follower immediately.
+
+#### Code Example
+
+```go
+// Raft server state machine implementation (simplified)
+type RaftServer struct {
+    currentTerm int
+    votedFor   string
+    log        []LogEntry
+    commitIndex int
+    lastApplied int
+    state      string  // "follower", "candidate", "leader"
+    
+    // Leader state
+    nextIndex  map[string]int   // For each follower
+    matchIndex map[string]int   // For each follower
+}
+
+// Handle election timeout
+func (r *RaftServer) ElectionTimeout() {
+    r.currentTerm += 1
+    r.votedFor = r.self
+    r.state = "candidate"
+    
+    // Send RequestVote RPC to all peers
+    for peer := range r.peers {
+        go r.sendRequestVote(peer)
+    }
+    
+    // Start new election timeout
+    r.resetElectionTimer()
+}
+
+// Handle RequestVote RPC
+func (r *RaftServer) HandleRequestVote(req RequestVoteRPC) bool {
+    // Only vote if candidate's log is at least as up-to-date
+    if req.Term < r.currentTerm {
+        return false
+    }
+    
+    if req.Term > r.currentTerm {
+        r.currentTerm = req.Term
+        r.votedFor = ""
+    }
+    
+    if r.votedFor == "" || r.votedFor == req.CandidateID {
+        if req.LastLogTerm >= r.lastLogTerm() &&
+           req.LastLogIndex >= r.lastLogIndex() {
+            r.votedFor = req.CandidateID
+            return true
+        }
+    }
+    
+    return false
+}
+
+// Handle becoming leader
+func (r *RaftServer) BecomeLeader() {
+    r.state = "leader"
+    r.leader = r.self
+    
+    // Initialize nextIndex and matchIndex
+    for peer := range r.peers {
+        r.nextIndex[peer] = r.lastLogIndex() + 1
+        r.matchIndex[peer] = 0
+    }
+    
+    // Send initial empty heartbeat
+    for peer := range r.peers {
+        go r.sendAppendEntries(peer)
+    }
+    
+    // Start heartbeat timer (50ms)
+    r.resetHeartbeatTimer()
+}
+```
+
+#### Real-World Scenario
+
+At Etcd.io, a 5-node Raft cluster lost the leader due to network partition. The remaining 2 nodes couldn't elect a new leader (needed 3/5 majority). The other 3 nodes also couldn't reach each other, so they stayed as followers. The cluster was unavailable until the partition healed. They implemented a witness node (non-voting member) to reach 6 total nodes, so any 3 nodes could form quorum — only 2-node partitions would be unavailable.
+
+#### Diagram
+
+```mermaid
+stateDiagram-v2
+    [*] --> Follower
+    
+    Follower --> Candidate: Election timeout<br/>term++, vote for self
+    Follower --> Follower: AppendEntries<br/>received
+    
+    Candidate --> Leader: Wins majority<br/>of votes
+    Candidate --> Follower: Higher term<br/>discovered
+    Candidate --> Candidate: Split vote<br/>new term
+    
+    Leader --> Follower: Higher term<br/>discovered
+    Leader --> Leader: Heartbeat<br/>timer resets
+    
+    note right of Follower
+        Passive state
+        Waits for leader
+    end note
+    
+    note right of Candidate
+        Active election
+        Sends RequestVote
+    end note
+    
+    note right of Leader
+        One per term
+        Sends heartbeat
+        Replicates log
+    end note
+```
+
 ---
 
 ## 3. Terms & Elections
@@ -141,6 +266,143 @@ Leader A      Leader A       No leader       Leader B
 **Random Timeout:** Prevents split votes. If split occurs (multiple candidates in same term), each waits random interval before starting next election. Given randomness, one will likely win next round.
 
 **Pre-Vote:** Extension where candidate first checks if it can get votes before incrementing term. Prevents disrupted leaders from triggering new elections when rejoining.
+
+### Terms & Elections: Deep Dive
+
+#### Step-by-Step
+
+1. **Term begins with election** — Any follower/candidate can start election by incrementing term and sending RequestVote.
+2. **RequestVote RPC contains log info** — Candidate includes lastLogTerm and lastLogIndex so followers vote only for candidates with up-to-date logs.
+3. **Voter persists vote** — Follower saves `votedFor = candidateID` in persistent storage; won't change vote in this term (prevents duplicate votes).
+4. **Candidate counts votes** — Needs majority (3/5 nodes needs 3 votes including itself); any peer that votes for candidate acks the vote.
+5. **Timeout + random backoff** — If split vote (multiple candidates, no majority), each candidate waits random 150-300ms, then retries; prevents livelock.
+6. **Election safety guarantee** — Only one leader per term (majority requirement ensures no two candidates can both get majorities in same term).
+7. **Term number enforces ordering** — Higher term = newer election; servers reject requests from lower terms, preventing stale leaders from replicating.
+
+#### Code Example
+
+```python
+# Raft election with random timeout
+import random
+import time
+
+class RaftElection:
+    def __init__(self, node_id, peers, min_timeout=150, max_timeout=300):
+        self.node_id = node_id
+        self.peers = peers  # List of peer node IDs
+        self.current_term = 0
+        self.voted_for = None
+        self.election_timeout = random.randint(min_timeout, max_timeout) / 1000.0
+        self.last_heartbeat = time.time()
+    
+    def reset_election_timer(self):
+        """Reset timer with new random timeout"""
+        self.election_timeout = random.randint(150, 300) / 1000.0
+        self.last_heartbeat = time.time()
+    
+    def should_start_election(self):
+        """Check if election timeout has fired"""
+        return (time.time() - self.last_heartbeat) > self.election_timeout
+    
+    def start_election(self):
+        """Increment term, vote for self, send RequestVote"""
+        self.current_term += 1
+        self.voted_for = self.node_id
+        
+        votes = {self.node_id}  # Vote for self
+        
+        for peer in self.peers:
+            response = self.send_request_vote(peer, {
+                'term': self.current_term,
+                'candidate_id': self.node_id,
+                'last_log_term': self.get_last_log_term(),
+                'last_log_index': self.get_last_log_index()
+            })
+            
+            if response.get('vote_granted'):
+                votes.add(peer)
+        
+        # Check if we have majority
+        majority = len(self.peers) // 2 + 1
+        if len(votes) >= majority:
+            self.become_leader()
+        else:
+            # Split vote or lost election, retry with new term
+            self.reset_election_timer()
+    
+    def handle_request_vote(self, req):
+        """Handle incoming RequestVote RPC"""
+        # If requester has higher term, update
+        if req['term'] > self.current_term:
+            self.current_term = req['term']
+            self.voted_for = None
+        
+        # Vote only if we haven't voted and candidate log is up-to-date
+        can_vote = (
+            req['term'] >= self.current_term and
+            (self.voted_for is None or self.voted_for == req['candidate_id']) and
+            req['last_log_term'] >= self.get_last_log_term() and
+            req['last_log_index'] >= self.get_last_log_index()
+        )
+        
+        if can_vote:
+            self.voted_for = req['candidate_id']
+            return {'term': self.current_term, 'vote_granted': True}
+        
+        return {'term': self.current_term, 'vote_granted': False}
+    
+    def get_last_log_term(self):
+        """Get term of last log entry"""
+        return self.log[-1]['term'] if self.log else 0
+    
+    def get_last_log_index(self):
+        """Get index of last log entry"""
+        return len(self.log) - 1 if self.log else 0
+```
+
+#### Real-World Scenario
+
+A Consul cluster (Raft-based) experienced split-brain during network partition: 2 nodes on one side, 3 on other. Without quorum, the 2-node partition couldn't elect a leader. But after 3 random election timeouts, they tried to form leader anyway, creating split-brain. Fix: implement `check_quorum` mode where leader steps down if it can't reach majority in last election_timeout period, preventing minority partitions from electing leaders.
+
+#### Diagram
+
+```mermaid
+sequenceDiagram
+    participant F1 as Follower 1
+    participant F2 as Follower 2
+    participant F3 as Follower 3
+    
+    Note over F1,F3: Term 1: Leader healthy
+    Note over F1,F3: Heartbeat arrives, reset timeouts
+    
+    Note over F1,F3: Leader crashes (no heartbeat)
+    activate F1
+    Note over F1: Timeout fires after 250ms
+    
+    F1->>F1: Increment term to 2
+    F1->>F1: Vote for self
+    F1->>F2: RequestVote(term=2, lastLogIndex=100)
+    F1->>F3: RequestVote(term=2, lastLogIndex=100)
+    
+    activate F2
+    F2->>F2: term 2 > current (1), update
+    F2->>F2: Log up-to-date, grant vote
+    F2-->>F1: vote_granted=true
+    deactivate F2
+    
+    activate F3
+    F3->>F3: term 2 > current (1), update
+    F3->>F3: Log up-to-date, grant vote
+    F3-->>F1: vote_granted=true
+    deactivate F3
+    
+    F1->>F1: 3 votes (including self) = majority!
+    F1->>F1: Become leader of term 2
+    deactivate F1
+    
+    F1->>F2: AppendEntries(term=2, heartbeat)
+    F1->>F3: AppendEntries(term=2, heartbeat)
+```
 
 ---
 

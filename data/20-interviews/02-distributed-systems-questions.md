@@ -83,6 +83,53 @@ Cassandra (AP):                         Spanner (CP):
 
 **Follow-up**: "Can you achieve both C and A in a distributed system?" → Only if you can guarantee no partition (impossible in real-world async networks). FLP impossibility theorem.
 
+#### Step-by-Step: CAP Analysis for Your System
+
+1. **Identify partition risk**: Is your system distributed across networks? (Yes = partition possible)
+2. **Choose your priority**: What's the business requirement? Payment system → C. Social feed → A.
+3. **Analyze trade-offs**: 
+   - CP: Minority partition rejects writes (bad UX in one region)
+   - AP: Stale reads for days (bad data integrity)
+4. **Design conflict resolution**: LWW, CRDT, or manual reconciliation
+5. **Test partition scenarios**: Chaos test network partitions
+6. **Monitor divergence**: Track inconsistency window metrics
+
+#### Code Example
+
+```python
+# CAP demo: Cassandra (AP) vs etcd (CP)
+
+# Cassandra (AP) - Write succeeds on any partition
+def write_order(order_id, order_data):
+    try:
+        cassandra.write(order_id, order_data)  # Always succeeds (high availability)
+        return {"status": "success"}
+    except Exception:
+        pass  # Even on partition, local partition succeeds
+
+# Read may be stale
+def read_order(order_id):
+    return cassandra.read(order_id, consistency_level=ONE)  # Might be old version
+
+---
+
+# etcd (CP) - Write fails if no quorum
+def write_order(order_id, order_data):
+    try:
+        etcd.write(order_id, order_data)  # Requires majority quorum
+        return {"status": "success"}
+    except etcd.QuorumError:
+        return {"status": "unavailable"}  # Minority partition cannot write
+
+# Read always consistent
+def read_order(order_id):
+    return etcd.read(order_id)  # Always latest, never stale
+```
+
+#### Real-World Scenario
+
+LinkedIn chose AP (Cassandra) for their social graph because availability matters more than momentary inconsistency. User A follows User B — the follow might take 1 second to propagate globally. Acceptable tradeoff. But if LinkedIn chose CP (like a banking system), a network partition in one region would make that region unable to accept new follows for minutes, damaging user experience. Different problem domain = different CAP choice.
+
 ---
 
 ### Q2: What is PACELC? Give real-world systems for each quadrant.

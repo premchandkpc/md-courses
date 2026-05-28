@@ -61,6 +61,46 @@ graph LR
 
 ### Core Java
 
+#### Step-by-Step: Understanding Multiple Inheritance Problem
+
+1. **Define classes**: Class A has method `foo()`, Class B has method `foo()` with different implementation
+2. **Try to inherit both**: Class C extends A and B
+3. **Call method**: `c.foo()` — which implementation runs? A's or B's?
+4. **Ambiguity**: Compiler can't decide → compiler error or runtime error
+5. **Solution in Java**: Use interfaces (multiple type inheritance, not implementation inheritance)
+6. **Resolution**: Default methods in interfaces won by class implementation → no ambiguity
+
+#### Code Example
+
+```java
+// Diamond problem example (would be ambiguous without interfaces)
+interface Animal {
+    void sound();  // Abstract, no implementation
+}
+
+interface Dog extends Animal {
+    @Override
+    default void sound() { System.out.println("Woof"); }
+}
+
+interface Cat extends Animal {
+    @Override
+    default void sound() { System.out.println("Meow"); }
+}
+
+class Pet implements Dog, Cat {
+    @Override
+    public void sound() {
+        // Must explicitly choose or override
+        Dog.super.sound();  // Explicitly call Dog's version
+    }
+}
+```
+
+#### Real-World Scenario
+
+A junior developer at a gaming company tried to create a class that inherited from both `Weapon` and `Armor` (both had `takeDamage()` method). In C++, this caused a diamond problem bug where damage was applied twice. In Java, forced to use composition: `class Knight { Weapon weapon; Armor armor; }` and explicitly delegate method calls, making the code safer and more explicit.
+
 **Q1: Why is multiple inheritance not allowed in Java?**
 - **Diamond problem**: If class C extends A and B (both define method foo()), which foo() does C inherit?
 - Java allows multiple inheritance of *type* via interfaces (before Java 8, no default methods; Java 8+ has default methods → diamond resolution: class wins over interface, most specific interface wins).

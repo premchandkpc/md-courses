@@ -256,6 +256,68 @@ graph LR
 - **wal_sender**: Sends WAL to standbys
 - **wal_receiver** (standby): Receives WAL from primary
 
+### Process Architecture: Step-by-Step
+
+#### Step-by-Step
+
+1. **postmaster initializes** — Reads postgresql.conf, initializes shared memory (shared_buffers, CLOG, lock manager), creates PID file.
+2. **postmaster listens** — Binds to TCP 5432 (or unix socket), enters event loop with select()/poll().
+3. **Client connects** — postmaster accepts TCP connection, forks new backend process (copy of postmaster code).
+4. **Backend initializes** — Allocates PGPROC slot, initializes transaction state (xid=0, xmin=invalid), allocates work_mem.
+5. **Backend waits for commands** — Reads SQL from client, parses, plans, executes (see Query Processing section).
+6. **Background processes run** — wal_writer, checkpointer, autovacuum, archiver run independently via postmaster supervision.
+
+#### Code Example
+
+```bash
+# Check PostgreSQL processes
+ps aux | grep postgres
+# postmaster: parent
+# postgres: backend (one per connection)
+# postgres: wal writer     # Flush WAL every 200ms
+# postgres: autovacuum launcher
+
+# Monitor processes and memory
+ps aux --sort=-%mem | grep postgres | head -5
+
+# Check shared memory usage
+ipcs -m | grep postgres
+# Key: 0x12345678, Size: 2GB (shared_buffers + WAL + CLOG + etc.)
+
+# View max_connections setting
+psql -c "SHOW max_connections;"
+# Output: 100 (default)
+
+# Count active backends
+SELECT count(*) FROM pg_stat_activity WHERE state != 'idle';
+```
+
+#### Real-World Scenario
+
+A cloud database provider had max_connections=200 configured. Under load, 95% of connections were idle (in transaction holding locks). New connection attempts got "sorry, too many clients" errors. They investigated via `pg_stat_activity`, found 150 idle-in-transaction connections from a batch job, and reduced connection lifetime from 1 hour to 5 minutes via pgBouncer pooling, freeing up slots for real queries.
+
+#### Diagram
+
+```mermaid
+graph TD
+    Client1["Client 1<br/>TCP:5432"]
+    Client2["Client 2<br/>TCP:5432"]
+    PM["postmaster<br/>Listen & Fork"]
+    B1["Backend 1<br/>PID 1234"]
+    B2["Backend 2<br/>PID 1235"]
+    WW["wal_writer<br/>Flush WAL"]
+    CP["checkpointer<br/>Dirty buffers"]
+    AV["autovacuum<br/>launcher"]
+    
+    Client1 --> PM
+    Client2 --> PM
+    PM -->|fork()| B1
+    PM -->|fork()| B2
+    PM -->|fork()| WW
+    PM -->|fork()| CP
+    PM -->|fork()| AV
+```
+
 ---
 
 ## 2. Shared Memory
@@ -285,6 +347,74 @@ Key shared memory regions:
 - **CLOG**: Commit log — transaction status bits (2 bits per xid)
 - **Lock Manager**: LWLock hash table + heavyweight lock hash table
 - **ProcArray**: Array of PGPROC — tracks xmin, xid per backend for snapshot building
+
+### Shared Memory: Deep Dive
+
+#### Step-by-Step
+
+1. **Postmaster allocates shared_buffers** — At startup, requests SysV shared memory segment of size `shared_buffers` (default 128MB).
+2. **Each buffer is 8KB** — Matched to OS page size, one buffer header + one page (database page).
+3. **Clock-sweep eviction** — Each backend has a current position in buffer ring; advances to find clean page to evict.
+4. **WAL buffers allocated** — Separate 16MB shared region for WAL pages before flush to disk.
+5. **CLOG allocated** — 2 bits per transaction ID track status (in progress / committed / aborted / sub-committed).
+6. **Lock manager initializes** — LWLocks (lightweight locks) for buffer pins, CLOG access; heavyweight locks for row-level locks.
+7. **ProcArray created** — Array of PGPROC structures (one per max_connections), tracks xmin/xid for snapshot generation.
+
+#### Code Example
+
+```sql
+-- Check shared_buffers configuration
+SHOW shared_buffers;
+-- Output: 256MB (adjust to 25% of RAM for production)
+
+-- View buffer hit ratio
+SELECT 
+  sum(heap_blks_read) as disk_reads,
+  sum(heap_blks_hit) as cache_hits,
+  ROUND(
+    100.0 * sum(heap_blks_hit) / 
+    (sum(heap_blks_hit) + sum(heap_blks_read)), 2
+  ) as cache_hit_ratio
+FROM pg_statio_user_tables;
+-- Output: cache_hit_ratio > 99% is good (data is in RAM)
+
+-- Check CLOG size and wraparound status
+SELECT datname, age(datfrozenxid) as tx_age_days
+FROM pg_database
+WHERE datname NOT IN ('template0', 'template1');
+-- Output: tx_age_days < 2147483646 (2^31-1) or database goes read-only
+
+-- View shared memory allocation
+SELECT 
+  name,
+  setting,
+  unit
+FROM pg_settings
+WHERE name IN ('shared_buffers', 'wal_buffers', 'max_connections')
+ORDER BY name;
+```
+
+#### Real-World Scenario
+
+A fintech platform set shared_buffers=64MB on a 256GB server. Disk I/O was 40% (slow), cache hit ratio only 87%. They increased shared_buffers to 64GB (25% of RAM) and saw disk I/O drop to <5%, cache hit ratio jump to 99.8%, and query latency cut in half. Cost: zero (just a config change).
+
+#### Diagram
+
+```mermaid
+graph LR
+    SB["Shared Buffers<br/>256MB<br/>32K pages x 8KB"]
+    WB["WAL Buffers<br/>16MB<br/>2048 pages"]
+    CLOG["CLOG<br/>Transaction Status<br/>2 bits/xid"]
+    LOCK["Lock Manager<br/>LWLocks<br/>Heavyweight Locks"]
+    PA["ProcArray<br/>100 PGPROC slots<br/>xmin/xid tracking"]
+    SM["Shared Memory<br/>~350MB total"]
+    
+    SM --> SB
+    SM --> WB
+    SM --> CLOG
+    SM --> LOCK
+    SM --> PA
+```
 
 ---
 

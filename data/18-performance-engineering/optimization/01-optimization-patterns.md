@@ -64,6 +64,145 @@ graph LR
 
 ## CPU Optimization
 
+#### Step-by-Step (CPU Optimization Process)
+
+1. **Profile First**: Identify hot spots using CPU profilers (Linux perf, Java Flight Recorder, Instruments)
+2. **Analyze Algorithms**: Check BigO complexity — O(n²) sorts vs O(n log n) can differ 1000x at scale
+3. **Optimize Hot Loops**: Apply loop unrolling, eliminate bounds checks, minimize branches
+4. **Cache Locality**: Keep accessed data close in memory to maximize CPU cache hits
+5. **Vectorization**: Use SIMD instructions (AVX2, NEON) to process multiple data points in one instruction
+6. **Measure Impact**: Use benchmarks to verify optimization actually helps (sometimes CPU caching surprises)
+
+#### Code Example
+
+```java
+// CPU optimization example: comparing sort algorithms
+import java.util.Arrays;
+import java.util.Random;
+
+public class CPUOptimizationDemo {
+    static class Benchmark {
+        long timeNanos;
+        String name;
+        
+        Benchmark(String name, long timeNanos) {
+            this.name = name;
+            this.timeNanos = timeNanos;
+        }
+        
+        void print() {
+            System.out.printf("%s: %.2f ms\n", name, timeNanos / 1_000_000.0);
+        }
+    }
+    
+    public static void main(String[] args) {
+        int[] sizes = {1000, 10_000, 100_000};
+        
+        for (int size : sizes) {
+            System.out.println("\n=== Array size: " + size + " ===");
+            int[] data = generateRandomData(size);
+            
+            // Warm up JIT compiler
+            for (int i = 0; i < 100; i++) {
+                int[] warmup = data.clone();
+                Arrays.sort(warmup);
+            }
+            
+            // Benchmark bubble sort O(n²)
+            Benchmark bubble = benchmarkBubbleSort(data.clone());
+            bubble.print();
+            
+            // Benchmark merge sort O(n log n)
+            Benchmark merge = benchmarkMergeSort(data.clone());
+            merge.print();
+            
+            // Java's built-in sort (dual-pivot quicksort, O(n log n) avg)
+            Benchmark builtIn = benchmarkBuiltInSort(data.clone());
+            builtIn.print();
+            
+            // Show the performance gap
+            System.out.printf("Bubble vs Built-in: %.1fx slower\n", 
+                (double)bubble.timeNanos / builtIn.timeNanos);
+        }
+    }
+    
+    static Benchmark benchmarkBubbleSort(int[] arr) {
+        long start = System.nanoTime();
+        bubbleSort(arr);
+        long duration = System.nanoTime() - start;
+        return new Benchmark("Bubble Sort O(n²)", duration);
+    }
+    
+    static Benchmark benchmarkMergeSort(int[] arr) {
+        long start = System.nanoTime();
+        mergeSort(arr, 0, arr.length - 1);
+        long duration = System.nanoTime() - start;
+        return new Benchmark("Merge Sort O(n log n)", duration);
+    }
+    
+    static Benchmark benchmarkBuiltInSort(int[] arr) {
+        long start = System.nanoTime();
+        Arrays.sort(arr);
+        long duration = System.nanoTime() - start;
+        return new Benchmark("Java Arrays.sort (optimized)", duration);
+    }
+    
+    static void bubbleSort(int[] arr) {
+        int n = arr.length;
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n - i - 1; j++) {
+                if (arr[j] > arr[j + 1]) {
+                    // Swap
+                    int temp = arr[j];
+                    arr[j] = arr[j + 1];
+                    arr[j + 1] = temp;
+                }
+            }
+        }
+    }
+    
+    static void mergeSort(int[] arr, int left, int right) {
+        if (left < right) {
+            int mid = left + (right - left) / 2;
+            mergeSort(arr, left, mid);
+            mergeSort(arr, mid + 1, right);
+            merge(arr, left, mid, right);
+        }
+    }
+    
+    static void merge(int[] arr, int left, int mid, int right) {
+        int[] temp = new int[right - left + 1];
+        int i = left, j = mid + 1, k = 0;
+        
+        while (i <= mid && j <= right) {
+            if (arr[i] <= arr[j]) {
+                temp[k++] = arr[i++];
+            } else {
+                temp[k++] = arr[j++];
+            }
+        }
+        
+        while (i <= mid) temp[k++] = arr[i++];
+        while (j <= right) temp[k++] = arr[j++];
+        
+        System.arraycopy(temp, 0, arr, left, temp.length);
+    }
+    
+    static int[] generateRandomData(int size) {
+        int[] data = new int[size];
+        Random rand = new Random(42);  // Fixed seed for reproducibility
+        for (int i = 0; i < size; i++) {
+            data[i] = rand.nextInt();
+        }
+        return data;
+    }
+}
+```
+
+#### Real-World Scenario
+
+Google's BigTable team optimized column family compression by switching from O(n) linear scan to O(log n) binary search within compressed blocks. This single algorithmic improvement reduced CPU usage by 40% on their analytics cluster. The lesson: before optimizing code style, optimize algorithm choice — can make 10-100x difference.
+
 ### Algorithmic Complexity
 
 The first and most impactful optimization is choosing the right algorithm:

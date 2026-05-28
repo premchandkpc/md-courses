@@ -74,6 +74,187 @@ graph TD
 | View Logs | `kubectl logs <pod-name> -f` | Debug behavior | Application logs |
 | Execute Command | `kubectl exec -it <pod> -- bash` | Run in pod | Interactive shell |
 
+### Step-by-Step
+
+1. **Install kubectl** and configure kubeconfig with cluster credentials
+2. **Verify cluster connectivity** by running `kubectl cluster-info` to confirm API server access
+3. **Create/Apply manifests** using `kubectl apply -f deployment.yaml` to declare desired state
+4. **Monitor deployment** with `kubectl get pods --watch` to track pod startup and readiness
+5. **Troubleshoot issues** using `kubectl describe pod` to examine events and logs
+6. **Update running services** with `kubectl set image` for rolling updates, checking `kubectl rollout status` for progress
+
+### Code Example
+
+```bash
+# End-to-end Kubernetes deployment workflow
+# Deploy a web application with database backend
+
+# Step 1: Create namespace for isolation
+kubectl create namespace production
+kubectl config set-context --current --namespace=production
+
+# Step 2: Create ConfigMap for application configuration
+kubectl create configmap app-config \
+  --from-literal=LOG_LEVEL=info \
+  --from-literal=API_PORT=8080
+
+# Step 3: Create Secret for database credentials
+kubectl create secret generic db-credentials \
+  --from-literal=DB_USER=postgres \
+  --from-literal=DB_PASSWORD=$(openssl rand -base64 32)
+
+# Step 4: Deploy PostgreSQL StatefulSet
+cat > postgres.yaml << 'EOF'
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: postgres
+spec:
+  serviceName: postgres
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres
+  template:
+    metadata:
+      labels:
+        app: postgres
+    spec:
+      containers:
+      - name: postgres
+        image: postgres:16
+        ports:
+        - containerPort: 5432
+        env:
+        - name: POSTGRES_USER
+          valueFrom:
+            secretKeyRef:
+              name: db-credentials
+              key: DB_USER
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: db-credentials
+              key: DB_PASSWORD
+        volumeMounts:
+        - name: pgdata
+          mountPath: /var/lib/postgresql/data
+  volumeClaimTemplates:
+  - metadata:
+      name: pgdata
+    spec:
+      accessModes: ["ReadWriteOnce"]
+      resources:
+        requests:
+          storage: 10Gi
+EOF
+
+kubectl apply -f postgres.yaml
+
+# Step 5: Deploy web application Deployment
+cat > app.yaml << 'EOF'
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web-app
+spec:
+  replicas: 3
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: web-app
+  template:
+    metadata:
+      labels:
+        app: web-app
+    spec:
+      containers:
+      - name: app
+        image: myregistry.azurecr.io/web-app:v1.2.0
+        ports:
+        - containerPort: 8080
+        envFrom:
+        - configMapRef:
+            name: app-config
+        env:
+        - name: DATABASE_URL
+          value: "postgresql://postgres.production.svc.cluster.local:5432/mydb"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          initialDelaySeconds: 10
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: 8080
+          initialDelaySeconds: 5
+          periodSeconds: 5
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+EOF
+
+kubectl apply -f app.yaml
+
+# Step 6: Expose application with Service
+kubectl expose deployment web-app \
+  --port=80 \
+  --target-port=8080 \
+  --type=LoadBalancer \
+  --name=web-app-svc
+
+# Step 7: Monitor deployment progress
+kubectl rollout status deployment/web-app -w
+kubectl get pods -l app=web-app
+
+# Step 8: Check events and logs for troubleshooting
+kubectl describe deployment web-app
+kubectl logs -l app=web-app --tail=20 -f
+
+# Step 9: Update application to new version
+kubectl set image deployment/web-app \
+  app=myregistry.azurecr.io/web-app:v1.2.1 \
+  --record
+
+# Step 10: Rollback if needed
+kubectl rollout history deployment/web-app
+kubectl rollout undo deployment/web-app --to-revision=1
+```
+
+### Real-World Scenario
+
+At Airbnb, a misconfigured deployment caused all 50 web service replicas to crash simultaneously during a rolling update. The issue was that readiness probes were too strict and took 60 seconds to pass, while the `maxUnavailable: 0` setting prevented old pods from terminating, exhausting node capacity. By adjusting `maxSurge` to 2, increasing readiness probe timeouts, and using `minReadySeconds`, they ensured smooth rolling updates and prevented cascading failures during deployments.
+
+### Deployment Operations Diagram
+
+```mermaid
+graph LR
+    A["Apply YAML"] -->|Create| B["Deployment"]
+    B -->|Specify| C["Desired State<br/>3 replicas<br/>v1.2.0"]
+    C -->|Trigger| D["ReplicaSet"]
+    D -->|Generate| E["3 Pods"]
+    F["Update to<br/>v1.2.1"] -->|RollingUpdate| G["New ReplicaSet"]
+    G -->|Create| H["Pods v1.2.1"]
+    E -->|Terminate<br/>gradually| I["Pods v1.2.0"]
+    H -->|Ready| J["Traffic<br/>Switched"]
+    
+    style C fill:#fff3e0
+    style J fill:#4caf50,color:#fff
+    style I fill:#ef5350,color:#fff
+```
+
+---
+
 ## Deployment Workflow with Examples
 
 ```mermaid

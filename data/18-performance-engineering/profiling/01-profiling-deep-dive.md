@@ -39,6 +39,156 @@ graph LR
 
 ## Profiling Types
 
+#### Step-by-Step (Profiling Workflow)
+
+1. **Identify Performance Problem**: Is it CPU-bound? Memory-hungry? I/O blocked? Know what to measure
+2. **Choose Tool**: Sampling (low overhead, ~1%) for CPU; Instrumentation (higher overhead) for detailed call graphs
+3. **Capture Profile**: Run under profiler for representative workload (warm JIT, realistic traffic patterns)
+4. **Generate Visualization**: Create flame graph, timeline, or call tree for analysis
+5. **Find Hot Spots**: Identify functions consuming >5% of time — focus on those first (80/20 rule)
+6. **Verify Fix**: Re-profile after optimization to confirm improvement and detect regressions
+
+#### Code Example
+
+```python
+# Comprehensive profiling example comparing sampling vs instrumentation
+import signal
+import sys
+import time
+import functools
+from collections import defaultdict
+from typing import Dict, List
+
+# ===== SAMPLING PROFILER =====
+# Low overhead, periodic snapshots
+class SamplingProfiler:
+    def __init__(self, interval_ms: float = 1):
+        self.interval = interval_ms / 1000.0
+        self.stacks: Dict[str, int] = defaultdict(int)
+        self._running = False
+    
+    def _signal_handler(self, signum, frame):
+        # Capture call stack when signal fires
+        stack_frames = []
+        current_frame = frame
+        
+        while current_frame:
+            code = current_frame.f_code
+            stack_frames.append(f"{code.co_name}")
+            current_frame = current_frame.f_back
+        
+        # Store as string for deduplication
+        stack_key = " -> ".join(reversed(stack_frames))
+        self.stacks[stack_key] += 1
+    
+    def start(self):
+        signal.signal(signal.SIGPROF, self._signal_handler)
+        signal.setitimer(signal.ITIMER_PROF, self.interval)
+        self._running = True
+    
+    def stop(self):
+        signal.setitimer(signal.ITIMER_PROF, 0)
+        self._running = False
+    
+    def report(self, top_n: int = 5):
+        total = sum(self.stacks.values())
+        print(f"\n=== SAMPLING PROFILE (total samples: {total}) ===")
+        for stack, count in sorted(self.stacks.items(), 
+                                   key=lambda x: x[1], 
+                                   reverse=True)[:top_n]:
+            pct = count / total * 100
+            print(f"{pct:5.1f}% [{count:4d}] {stack}")
+
+# ===== INSTRUMENTATION PROFILER =====
+# High detail, tracks every call
+class InstrumentationProfiler:
+    def __init__(self):
+        self.call_times: Dict[str, List[float]] = defaultdict(list)
+        self.call_counts: Dict[str, int] = defaultdict(int)
+    
+    def profile(self, func):
+        """Decorator to instrument function"""
+        func_name = f"{func.__module__}.{func.__qualname__}"
+        
+        @functools.wraps(func)
+        def wrapper(*args, **kwargs):
+            start = time.perf_counter()
+            try:
+                return func(*args, **kwargs)
+            finally:
+                elapsed = time.perf_counter() - start
+                self.call_times[func_name].append(elapsed)
+                self.call_counts[func_name] += 1
+        
+        return wrapper
+    
+    def report(self, top_n: int = 5):
+        print(f"\n=== INSTRUMENTATION PROFILE ===")
+        print(f"{'Function':<50} {'Calls':>6} {'Total':>10} {'Avg':>10}")
+        print("-" * 80)
+        
+        # Sort by total time spent
+        sorted_funcs = sorted(
+            self.call_times.items(),
+            key=lambda x: sum(x[1]),
+            reverse=True
+        )[:top_n]
+        
+        for func_name, times in sorted_funcs:
+            total_time = sum(times)
+            avg_time = total_time / len(times)
+            print(f"{func_name:<50} {len(times):>6d} "
+                  f"{total_time:>10.4f}s {avg_time:>10.6f}s")
+
+# ===== DEMONSTRATION =====
+# Simulate realistic workload
+instrumentation_prof = InstrumentationProfiler()
+
+@instrumentation_prof.profile
+def fast_operation():
+    """Runs quickly"""
+    time.sleep(0.001)
+
+@instrumentation_prof.profile
+def slow_operation():
+    """CPU-intensive"""
+    result = 0
+    for i in range(1_000_000):
+        result += i
+    return result
+
+@instrumentation_prof.profile
+def normal_operation():
+    """Moderate work"""
+    return sum(range(100_000))
+
+# Profile with instrumentation
+print("Running instrumentation profile...")
+for _ in range(10):
+    fast_operation()
+    normal_operation()
+    slow_operation()
+
+instrumentation_prof.report(top_n=3)
+
+# Profile with sampling
+print("\nRunning sampling profile...")
+sampling_prof = SamplingProfiler(interval_ms=0.5)
+sampling_prof.start()
+
+for _ in range(10):
+    fast_operation()
+    normal_operation()
+    slow_operation()
+
+sampling_prof.stop()
+sampling_prof.report(top_n=3)
+```
+
+#### Real-World Scenario
+
+Uber debugged a mysterious 30% latency increase in their matching service using flame graphs. Sampling showed most CPU in `string_copy()`. Investigation revealed a logging statement was stringifying rider objects every request — changed to log only IDs instead. Single line fix (from sampling profiling) recovered 30% latency. Lesson: profiling finds non-obvious bottlenecks that code review misses.
+
 ### Sampling vs Instrumentation
 
 Sampling profiling periodically records the program counter (PC) or call stack, while instrumentation modifies code to track every function entry/exit:

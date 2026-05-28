@@ -80,6 +80,196 @@ graph LR
 
 ## 1. Core Responsibilities
 
+#### Step-by-Step (API Gateway Request Flow)
+
+1. **Accept Request**: Receive incoming HTTP/2 request from client
+2. **Authenticate**: Validate JWT token or API key, reject if invalid (fail fast)
+3. **Rate Limit**: Check token bucket, return 429 if quota exceeded
+4. **Route**: Lookup service location from registry based on path and method
+5. **Transform**: Add/modify headers (X-User-Id, X-Trace-Id), convert content-type if needed
+6. **Forward**: Send request to backend service with timeout and circuit breaker
+7. **Aggregate**: If needed, call multiple services and merge responses
+8. **Transform Response**: Convert response format, add security headers, compress
+9. **Cache**: Store response if cacheable (GET requests, Cache-Control header)
+10. **Return**: Send response to client
+
+#### Code Example
+
+```go
+// Go example: minimal API Gateway implementation
+package main
+
+import (
+    "fmt"
+    "net/http"
+    "net/http/httputil"
+    "time"
+)
+
+type APIGateway struct {
+    routes map[string]string  // Path → backend URL mapping
+    cache  map[string][]byte  // Simple cache
+}
+
+func NewAPIGateway() *APIGateway {
+    return &APIGateway{
+        routes: map[string]string{
+            "/api/users":  "http://user-service:8080",
+            "/api/orders": "http://order-service:8081",
+        },
+        cache: make(map[string][]byte),
+    }
+}
+
+// Step 1-2: Middleware for authentication
+func (gw *APIGateway) authMiddleware(next http.Handler) http.Handler {
+    return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+        token := r.Header.Get("Authorization")
+        if token == "" {
+            http.Error(w, "Missing authorization token", http.StatusUnauthorized)
+            return
+        }
+        if !isValidToken(token) {
+            http.Error(w, "Invalid token", http.StatusForbidden)
+            return
+        }
+        next.ServeHTTP(w, r)
+    })
+}
+
+// Step 3: Rate limiting
+type RateLimiter struct {
+    requests map[string]int
+    limit    int
+    window   time.Duration
+}
+
+func (rl *RateLimiter) Allow(clientIP string) bool {
+    count := rl.requests[clientIP]
+    if count >= rl.limit {
+        return false
+    }
+    rl.requests[clientIP]++
+    // In production, use sliding window + cleanup
+    return true
+}
+
+func (gw *APIGateway) rateLimitMiddleware(limiter *RateLimiter) func(http.Handler) http.Handler {
+    return func(next http.Handler) http.Handler {
+        return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+            clientIP := r.RemoteAddr
+            if !limiter.Allow(clientIP) {
+                http.Error(w, "Rate limit exceeded", http.StatusTooManyRequests)
+                return
+            }
+            next.ServeHTTP(w, r)
+        })
+    }
+}
+
+// Step 4-5-6: Routing and forwarding
+func (gw *APIGateway) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+    // Route request to backend
+    backendURL, ok := gw.routes[r.RequestURI[:len("/api/xxx")]]
+    if !ok {
+        http.NotFound(w, r)
+        return
+    }
+
+    // Add trace ID for observability
+    traceID := generateTraceID()
+    r.Header.Set("X-Trace-ID", traceID)
+    r.Header.Set("X-User-ID", extractUserID(r.Header.Get("Authorization")))
+
+    // Create reverse proxy with timeout
+    proxy := &httputil.ReverseProxy{
+        Director: func(req *http.Request) {
+            req.URL.Scheme = "http"
+            req.URL.Host = backendURL
+            req.RequestURI = ""
+        },
+        ModifyResponse: func(resp *http.Response) error {
+            // Step 8: Add security headers
+            resp.Header.Set("X-Content-Type-Options", "nosniff")
+            resp.Header.Set("X-Frame-Options", "DENY")
+            return nil
+        },
+    }
+
+    // Step 7: Timeout context
+    ctx, cancel := context.WithTimeout(r.Context(), 5*time.Second)
+    defer cancel()
+
+    proxy.ServeHTTP(w, r.WithContext(ctx))
+}
+
+// Step 9: Caching for GET requests
+func (gw *APIGateway) cacheMiddleware(next http.Handler) http.Handler {
+    return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+        if r.Method != "GET" {
+            next.ServeHTTP(w, r)
+            return
+        }
+
+        if cached, ok := gw.cache[r.RequestURI]; ok {
+            w.Header().Set("X-Cache", "HIT")
+            w.Write(cached)
+            return
+        }
+
+        // Capture response to cache it
+        wrapped := &responseWriter{ResponseWriter: w, body: []byte{}}
+        next.ServeHTTP(wrapped, r)
+
+        gw.cache[r.RequestURI] = wrapped.body
+        w.Header().Set("X-Cache", "MISS")
+    })
+}
+
+type responseWriter struct {
+    http.ResponseWriter
+    body []byte
+}
+
+func (rw *responseWriter) Write(b []byte) (int, error) {
+    rw.body = append(rw.body, b...)
+    return rw.ResponseWriter.Write(b)
+}
+
+// Helper functions
+func isValidToken(token string) bool {
+    // Validate JWT in production
+    return token != ""
+}
+
+func generateTraceID() string {
+    return fmt.Sprintf("trace-%d", time.Now().UnixNano())
+}
+
+func extractUserID(authHeader string) string {
+    // Parse JWT and extract user ID
+    return "user-123"
+}
+
+func main() {
+    gw := NewAPIGateway()
+    limiter := &RateLimiter{requests: make(map[string]int), limit: 100}
+
+    // Stack middleware
+    handler := gw
+    handler = gw.cacheMiddleware(handler).(http.Handler)
+    handler = gw.rateLimitMiddleware(limiter)(handler)
+    handler = gw.authMiddleware(handler)
+
+    http.Handle("/api/", handler)
+    http.ListenAndServe(":8000", nil)
+}
+```
+
+#### Real-World Scenario
+
+Netflix replaced their monolithic API Gateway with Zuul (Java-based) to handle 1M+ requests/second. Gateway enforces rate limiting per user tier: free users 1000 req/min, premium 100K req/min. This prevented single misbehaving client from DoS-ing services. When user exceeded quota, gateway immediately returned 429 without even calling backend services, saving billions of backend cycles.
+
 ```text
 ┌─────────────────────────────────────────────────────────────┐
 │                 API Gateway Responsibilities                 │

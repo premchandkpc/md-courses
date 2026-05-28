@@ -81,7 +81,97 @@ sequenceDiagram
 | Ordering | FIFO only | FIFO only |
 | Throughput | Standard: unlimited | Regional limits |
 
----
+### Step-by-Step
+
+1. **Producer publishes** message to SNS topic or sends directly to SQS queue
+2. **SNS fan-out** distributes message to all subscribed endpoints (SQS, Lambda, HTTP, email)
+3. **SQS buffering** queues messages persistently; consumers pull at their own pace
+4. **Consumer receives** polls queue, visibility timeout begins (message hidden from others)
+5. **Processing** consumer processes message; on success, deletes; on failure, message reappears after timeout
+6. **Dead-letter queue** if message fails multiple times (maxReceiveCount), moves to DLQ for investigation
+
+### Code Example
+
+```python
+# Python: SNS Publisher → SQS Consumer via boto3
+import boto3
+import json
+from datetime import datetime
+
+# Setup
+sns = boto3.client('sns', region_name='us-east-1')
+sqs = boto3.client('sqs', region_name='us-east-1')
+
+# Create queue and topic
+queue_resp = sqs.create_queue(QueueName='order-processing')
+queue_url = queue_resp['QueueUrl']
+
+topic_resp = sns.create_topic(Name='order-events')
+topic_arn = topic_resp['TopicArn']
+
+# Subscribe queue to topic (fan-out)
+subscription = sns.subscribe(
+    TopicArn=topic_arn,
+    Protocol='sqs',
+    Endpoint=sqs.get_queue_attributes(QueueUrl=queue_url, AttributeNames=['QueueArn'])['Attributes']['QueueArn']
+)
+
+# PRODUCER: Publish to SNS topic
+def publish_order_event(order_id, amount, status):
+    message = {
+        'order_id': order_id,
+        'amount': amount,
+        'status': status,
+        'timestamp': datetime.now().isoformat()
+    }
+    
+    sns.publish(
+        TopicArn=topic_arn,
+        Subject='Order Status Changed',
+        Message=json.dumps(message)
+    )
+    print(f"Published: {message}")
+
+# CONSUMER: Poll SQS queue
+def consume_order_events():
+    while True:
+        # Long poll with 20s wait (reduces empty responses)
+        response = sqs.receive_message(
+            QueueUrl=queue_url,
+            MaxNumberOfMessages=10,
+            WaitTimeSeconds=20,
+            VisibilityTimeout=300  # 5-minute timeout for processing
+        )
+        
+        for message in response.get('Messages', []):
+            try:
+                body = json.loads(json.loads(message['Body'])['Message'])
+                print(f"Processing order {body['order_id']}: {body['status']}")
+                
+                # Simulate processing
+                if body['amount'] > 10000:
+                    raise Exception("Amount exceeds limit")
+                
+                # On success, delete message
+                sqs.delete_message(
+                    QueueUrl=queue_url,
+                    ReceiptHandle=message['ReceiptHandle']
+                )
+                print(f"Processed and deleted message")
+            
+            except Exception as e:
+                print(f"Error processing: {e}")
+                # Message visibility timeout expires, will retry
+                # After maxReceiveCount (default 3), moves to DLQ
+
+# Run
+publish_order_event('ORD-123', 99.99, 'SHIPPED')
+consume_order_events()
+```
+
+### Real-World Scenario
+
+Shopify's order pipeline uses SNS to fan out OrderCreated events to 12 services: billing, recommendation, notification, analytics, fulfillment, tracking, etc. Each subscribes SQS queue to the topic. When notification service is slow (email API rate-limited), its queue backs up to 500K messages, but other services process normally. After 4 failed delivery attempts, messages move to DLQ; Shopify's ops team reviews manually the next day—zero impact to order flow.
 
 ## 2. SQS — Standard vs FIFO
 

@@ -290,6 +290,169 @@ Production-grade reference covering Redis event loop architecture, data structur
   └─────────────────────────────────────────────────────────────┘
 ```
 
+### Event Loop: Step-by-Step
+
+#### Step-by-Step
+
+1. **Redis server starts** — Creates aeEventLoop with epoll (Linux) or kqueue (BSD/macOS) based on OS.
+2. **Accept client connections** — Listen socket registered for AE_READABLE; new client accepted, fd added to event loop.
+3. **Client sends command** — Socket becomes readable (data arrives); epoll_wait returns, handler reads from socket buffer.
+4. **Command parser executes** — Single-threaded: one command at a time; no parallelism, no locks needed.
+5. **Handler calls command function** — GET/SET/LPUSH/etc. modifies data structure, updates memory, returns response.
+6. **Response queued for write** — Socket registered for AE_WRITABLE; response buffered (not written immediately).
+7. **epoll_wait checks write-ready** — Socket becomes writable; event loop sends buffered response to client.
+8. **Timers checked every loop** — Background tasks (expire TTLs, rewrite AOF, check memory) run on 10Hz cron (every 100ms).
+9. **Loop repeats** — epoll_wait blocks until next I/O or timer fires; microsecond-level throughput (1M ops/sec possible).
+
+#### Code Example
+
+```python
+# Simplified Redis event loop in Python (showing flow, not actual C code)
+import select
+import time
+
+class SimpleRedis:
+    def __init__(self):
+        self.data = {}
+        self.clients = {}  # fd -> socket
+        self.epoll = select.epoll()
+        self.running = True
+        self.last_cron = time.time()
+    
+    def accept_client(self, listen_fd):
+        """Accept new client connection"""
+        client_fd, addr = listen_fd.accept()
+        self.epoll.register(client_fd, select.EPOLLIN)
+        self.clients[client_fd] = {
+            'addr': addr,
+            'rbuf': b'',
+            'wbuf': b'',
+        }
+    
+    def read_command(self, fd):
+        """Read and execute command from client"""
+        try:
+            data = self.clients[fd]['socket'].recv(4096)
+            if not data:
+                return False  # Client disconnected
+            
+            self.clients[fd]['rbuf'] += data
+            
+            # Parse simple RESP protocol
+            lines = self.clients[fd]['rbuf'].split(b'\r\n')
+            if len(lines) >= 3:
+                cmd = lines[1].decode().upper()
+                
+                if cmd == 'GET':
+                    key = lines[2].decode()
+                    value = self.data.get(key, None)
+                    response = f"${len(value)}\r\n{value}\r\n".encode()
+                
+                elif cmd == 'SET':
+                    key = lines[2].decode()
+                    value = lines[3].decode()
+                    self.data[key] = value
+                    response = b"+OK\r\n"
+                
+                # Queue response for write
+                self.clients[fd]['wbuf'] += response
+                
+                # Register for write event
+                self.epoll.modify(fd, select.EPOLLIN | select.EPOLLOUT)
+                
+                # Clear read buffer
+                self.clients[fd]['rbuf'] = b''
+            
+            return True
+        except Exception as e:
+            return False
+    
+    def write_response(self, fd):
+        """Write buffered response to client"""
+        try:
+            if self.clients[fd]['wbuf']:
+                sent = self.clients[fd]['socket'].send(self.clients[fd]['wbuf'])
+                self.clients[fd]['wbuf'] = self.clients[fd]['wbuf'][sent:]
+                
+                # If buffer empty, unregister write event (only read)
+                if not self.clients[fd]['wbuf']:
+                    self.epoll.modify(fd, select.EPOLLIN)
+            return True
+        except:
+            return False
+    
+    def cron_task(self):
+        """Background task: expire TTLs, etc."""
+        now = time.time()
+        if now - self.last_cron > 0.1:  # 10Hz = every 100ms
+            # Check for expired keys
+            expired = [k for k, v in self.data.items() 
+                      if v.get('ttl') and v['ttl'] < now]
+            for k in expired:
+                del self.data[k]
+            self.last_cron = now
+    
+    def run(self):
+        """Main event loop (like aeMain)"""
+        while self.running:
+            # epoll_wait: block until I/O ready (1ms timeout)
+            events = self.epoll.poll(0.001)
+            
+            for fd, mask in events:
+                if mask & select.EPOLLIN:
+                    if not self.read_command(fd):
+                        self.epoll.unregister(fd)
+                        del self.clients[fd]
+                
+                if mask & select.EPOLLOUT:
+                    if not self.write_response(fd):
+                        self.epoll.unregister(fd)
+                        del self.clients[fd]
+            
+            # Run background tasks every 100ms
+            self.cron_task()
+```
+
+#### Real-World Scenario
+
+A Dropbox backend service using Redis for rate limiting experienced 100ms p99 latency spikes every 10 seconds. Investigation revealed a KEYS command (used for metrics) was being called every second, scanning 10M keys. Since Redis is single-threaded, the KEYS O(n) scan blocked all other commands for 50ms. They replaced KEYS with SCAN + pagination, spreading the scan across 10 queries over 1 second, reducing blocking time to <1ms per query and eliminating latency spikes.
+
+#### Diagram
+
+```mermaid
+graph TD
+    Client1["Client 1<br/>GET key1"]
+    Client2["Client 2<br/>SET key2 val2"]
+    
+    Client1 -->|write| Socket1["Socket 1<br/>readable"]
+    Client2 -->|write| Socket2["Socket 2<br/>readable"]
+    
+    Socket1 --> Epoll["epoll_wait<br/>timeout=1ms"]
+    Socket2 --> Epoll
+    
+    Epoll -->|socket1 ready| Read1["Read from<br/>socket1"]
+    Epoll -->|socket2 ready| Read2["Read from<br/>socket2"]
+    
+    Read1 --> Parse["Parse Command<br/>GET"]
+    Read2 --> Parse
+    
+    Parse -->|execute| Exec["Execute Handler<br/>Single-threaded!"]
+    
+    Exec -->|key=val| Queue1["Queue Response<br/>to socket1"]
+    Exec -->|+OK| Queue2["Queue Response<br/>to socket2"]
+    
+    Queue1 --> Epoll2["Register for<br/>write event"]
+    Queue2 --> Epoll2
+    
+    Epoll2 -->|socket1 writable| Write1["Write to<br/>socket1"]
+    Epoll2 -->|socket2 writable| Write2["Write to<br/>socket2"]
+    
+    Write1 --> Client1Resp["Response:<br/>val"]
+    Write2 --> Client2Resp["Response:<br/>+OK"]
+```
+
+---
+
 ### Event Loop Initialization
 
 ```c

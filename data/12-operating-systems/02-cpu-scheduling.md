@@ -85,7 +85,66 @@ graph LR
 - **Core scheduler**: `__schedule()` calls `pick_next_task()` which iterates classes in priority order
 - **Preemption**: `need_resched` flag (TIF_NEED_RESCHED) checked on return to userspace, interrupt exit, preempt_enable()
 
----
+### Step-by-Step
+
+1. **Task creation** new task enters runqueue with initial vruntime = min_vruntime of scheduler entity
+2. **Enqueue** task added to red-black tree, ordered by vruntime (or deadline for SCHED_DEADLINE)
+3. **Schedule tick** timer interrupt (10-1000 Hz depending on HZ config) updates vruntime and checks preemption
+4. **Preemption check** if current task's vruntime >> next task's vruntime, set TIF_NEED_RESCHED flag
+5. **Context switch** on next opportunity (interrupt return, syscall, preempt_enable), call __schedule()
+6. **Task selection** pick_next_task() traverses scheduler classes, CFS picks task with minimum vruntime
+
+### Code Example
+
+```c
+// C: Linux CPU scheduler mechanics
+#include <sched.h>
+#include <unistd.h>
+#include <stdio.h>
+#include <sys/syscall.h>
+
+int main() {
+    // Get current scheduling policy and priority
+    int policy = sched_getscheduler(0);  // 0 = current process
+    struct sched_param param;
+    sched_getparam(0, &param);
+    
+    printf("Current policy: ");
+    switch(policy) {
+        case SCHED_NORMAL: printf("SCHED_NORMAL\n"); break;
+        case SCHED_FIFO:   printf("SCHED_FIFO\n"); break;
+        case SCHED_RR:     printf("SCHED_RR\n"); break;
+        case SCHED_BATCH:  printf("SCHED_BATCH\n"); break;
+        case SCHED_IDLE:   printf("SCHED_IDLE\n"); break;
+    }
+    printf("Priority: %d\n", param.sched_priority);
+    
+    // Set SCHED_RR with priority 10
+    param.sched_priority = 10;
+    if (sched_setscheduler(0, SCHED_RR, &param) == -1) {
+        perror("sched_setscheduler failed (need CAP_SYS_NICE)");
+        return 1;
+    }
+    
+    // Set CPU affinity (bind to CPU 0 only)
+    cpu_set_t mask;
+    CPU_ZERO(&mask);
+    CPU_SET(0, &mask);
+    sched_setaffinity(0, sizeof(mask), &mask);
+    printf("Bound to CPU 0\n");
+    
+    // CPU-intensive loop (will run for configured time slice)
+    for (int i = 0; i < 1000000000; i++) {
+        __asm__("nop");  // Measure pure scheduler overhead
+    }
+    
+    return 0;
+}
+```
+
+### Real-World Scenario
+
+Cloudflare's DNS resolver handles 6 billion queries/day. They discovered that tail latency (P99) was 120ms due to scheduler latency variance. Culprit: SCHED_NORMAL tasks were being descheduled if their vruntime got too far ahead. They configured kernel with CONFIG_SCHED_EEVDF=y (Linux 6.6+, Extended Earliest Deadline First) which provides tighter latency bounds—tail latency dropped to 20ms. For sensitive UDP handlers, they use cgroup cpu.bvt_warp_ns to bias scheduling weights toward shorter bursts.
 
 ## 2. Scheduling Classes
 

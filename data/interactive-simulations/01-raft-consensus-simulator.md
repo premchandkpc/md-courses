@@ -27,6 +27,116 @@ Guarantees: Safety (never diverge) + Liveness (eventually progress)
 
 **Setup**: 3 servers (A, B, C). No leader. All in FOLLOWER state.
 
+### Step-by-Step
+
+1. **Initialization**: All servers start as FOLLOWERS with term=0 and random election timeouts (150-300ms)
+2. **Timeout trigger**: First server's timeout fires, it increments term to 1 and becomes CANDIDATE
+3. **Vote request**: CANDIDATE sends RequestVote RPC to all other servers with current term and log info
+4. **Vote granting**: Each server votes for the first candidate if the candidate's log is at least as up-to-date as their own
+5. **Majority check**: CANDIDATE wins election when receiving votes from a majority (N/2 + 1 servers)
+6. **Leadership assumption**: Winner becomes LEADER and immediately starts sending heartbeat AppendEntries RPC to all followers
+
+### Code Example
+
+```go
+// Raft server state machine during leader election
+package raft
+
+import "time"
+
+type RaftServer struct {
+    id              string
+    state           string     // "follower", "candidate", "leader"
+    term            int64
+    votedFor        string
+    log             []LogEntry
+    commitIndex     int
+    electionTimeout time.Duration
+    lastHeartbeat   time.Time
+}
+
+func (rs *RaftServer) handleElectionTimeout() {
+    // Step 1: Become candidate
+    rs.state = "candidate"
+    rs.term++
+    rs.votedFor = rs.id  // Vote for self
+    
+    // Step 2: Send RequestVote RPC to all peers
+    votes := 1  // Count self vote
+    for _, peer := range rs.allPeers {
+        if peer == rs.id {
+            continue
+        }
+        response := rs.sendRequestVote(peer, RaftVoteRequest{
+            Term:         rs.term,
+            CandidateID:  rs.id,
+            LastLogIndex: len(rs.log) - 1,
+            LastLogTerm:  rs.log[len(rs.log)-1].Term,
+        })
+        if response.VoteGranted && response.Term == rs.term {
+            votes++
+        }
+    }
+    
+    // Step 3: Check for majority
+    if votes > len(rs.allPeers)/2 {
+        // Step 4: Become leader
+        rs.state = "leader"
+        rs.broadcastHeartbeat()
+    }
+}
+
+func (rs *RaftServer) broadcastHeartbeat() {
+    // Send empty AppendEntries as heartbeat to maintain leadership
+    for _, peer := range rs.allPeers {
+        if peer == rs.id {
+            continue
+        }
+        go rs.sendAppendEntries(peer)
+    }
+}
+```
+
+### Real-World Scenario
+
+Cockroach Labs' distributed database uses Raft for consensus, and during their infrastructure upgrade, a cascading election storm occurred when 5 out of 9 nodes lost network connectivity. The election timeouts triggered rapidly, causing hundreds of election cycles per second. By implementing exponential backoff on election timeouts (a Raft optimization), they reduced the churn from 40% CPU to 2%, preventing production outages across their customer base.
+
+### Diagram
+
+```mermaid
+stateDiagram-v2
+    [*] --> Follower: Start (term=0)
+    
+    Follower --> Candidate: Election timeout\nIncrement term\nVote for self
+    
+    Candidate --> Leader: Receive majority votes
+    Candidate --> Follower: Receive AppendEntries\nfrom higher term
+    
+    Leader --> Follower: Discover higher term\nor lose heartbeat
+    
+    Follower --> Follower: Receive heartbeat
+    Leader --> Leader: Send heartbeat\nto followers
+    
+    note right of Follower
+        Respond to RPCs
+        Election timeout
+    end note
+    
+    note right of Candidate
+        Vote for self
+        Request votes
+        Election timeout reset
+    end note
+    
+    note right of Leader
+        Send heartbeats
+        Accept commands
+        Replicate logs
+    end note
+```
+
+---
+
 ```
 State at T=0:
 ┌─────────┬─────────┬─────────┐

@@ -79,7 +79,56 @@ Netflix Scale (2024):
 - Personalized home page per user
 - Fault-tolerant: survive region-level failures
 
----
+### Architecture Design Steps and Implementation
+
+#### Step-by-Step: Netflix Architecture Design
+
+1. **Content ingestion** — Studio uploads raw video files, metadata
+2. **Encoding pipeline** — Per-title encoding (optimize bitrate/quality for each title)
+3. **Packaging** — Create DASH/HLS segments with DRM (Widevine)
+4. **CDN distribution** — Deploy to Open Connect (Netflix-owned CDN appliances in ISPs)
+5. **Client adaptation** — Adaptive bitrate algorithm (BBA 2.0, MPC, Pensieve) adjusts quality
+6. **Personalization** — Recommendation engine (two-tower DNN) ranks content per user
+
+#### Code Example: Adaptive Bitrate Selection
+
+```python
+# Simplified BBA (Buffer-Based Algorithm)
+class ABRController:
+    def __init__(self, min_bitrate, max_bitrate):
+        self.min_bitrate = min_bitrate
+        self.max_bitrate = max_bitrate
+        self.buffer_level = 0  # seconds of buffered video
+    
+    def select_bitrate(self, network_bandwidth, buffer_level):
+        """
+        Netflix BBA: Choose bitrate based on buffer level, not just bandwidth
+        """
+        # Target buffer: 10 seconds
+        target_buffer = 10
+        
+        if buffer_level < target_buffer * 0.5:
+            # Buffer critically low, use minimum bitrate (fast recovery)
+            return self.min_bitrate
+        elif buffer_level > target_buffer * 1.5:
+            # Buffer has cushion, can use higher bitrate
+            bitrate = int(network_bandwidth * 0.85)  # Use 85% of available BW
+            return min(bitrate, self.max_bitrate)
+        else:
+            # Normal state, maintain current bitrate
+            return self.current_bitrate
+
+# Usage:
+abr = ABRController(min_bitrate=500e3, max_bitrate=25e6)  # 500kbps to 25Mbps
+selected_bitrate = abr.select_bitrate(
+    network_bandwidth=10e6,  # 10 Mbps measured
+    buffer_level=12  # 12 seconds buffered
+)
+```
+
+#### Real-World Scenario: Netflix's 2013 AWS Outage
+
+Netflix deployed content across AWS regions with multi-region failover. During AWS EC2 outage in US-East region, Netflix services in other regions failed too (shared microservice dependencies). Netflix discovered: "We designed for redundancy, but created hidden dependencies." Lesson: Chaos engineering (Chaos Monkey, FIT) caught this. Now Netflix regularly kills random instances/regions to verify true fault tolerance. This practice saved them from multiple production incidents.
 
 ## 2. High-Level Architecture
 

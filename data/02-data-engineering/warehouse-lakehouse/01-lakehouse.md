@@ -88,6 +88,113 @@ The lakehouse brings warehouse-grade reliability and ACID to cheap object storag
 - Time travel (query data as of any previous version)
 - Schema enforcement (reject bad data at write time)
 
+#### Step-by-Step
+
+1. **File Storage**: Write operations create new Parquet files in object storage (S3, ADLS) which are immutable once created.
+2. **Transaction Log Entry**: Each write creates a JSON file in `_delta_log/` containing metadata (files added/removed, commit timestamp, operation type).
+3. **Atomic Commit**: Rename the JSON file atomically to the next version number, making the entire transaction visible instantaneously (not final write to storage).
+4. **Snapshot Consistency**: Readers always read from a consistent transaction log snapshot, seeing only complete transactions, never partial writes.
+5. **Time Travel**: Query engine can read from any historical transaction log version, reconstructing the table state at that point in time.
+6. **Cleanup**: Older parquet files that have been removed via log entries are eventually deleted (after retention period) to save storage.
+
+#### Code Example
+
+```python
+from pyspark.sql import SparkSession
+from pyspark.sql.types import StructType, StructField, StringType, IntegerType, TimestampType
+import time
+from datetime import datetime
+
+# Initialize SparkSession with Delta support
+spark = SparkSession.builder \
+    .appName("LakehouseExample") \
+    .config("spark.sql.extensions", "io.delta.sql.DeltaSparkSessionExtension") \
+    .config("spark.sql.catalog.spark_catalog", "org.apache.spark.sql.delta.catalog.DeltaCatalog") \
+    .getOrCreate()
+
+# Step 1: Create initial Parquet files in lakehouse
+schema = StructType([
+    StructField("user_id", IntegerType()),
+    StructField("email", StringType()),
+    StructField("created_at", TimestampType()),
+])
+
+data = [
+    (1, "alice@example.com", datetime(2026, 1, 1)),
+    (2, "bob@example.com", datetime(2026, 1, 2)),
+]
+
+df = spark.createDataFrame(data, schema=schema)
+
+# Step 2: Write to Delta table (creates transaction log)
+table_path = "s3://my-bucket/users"
+df.write.format("delta").mode("overwrite").save(table_path)
+
+# Step 3: Verify transaction log created
+import os
+log_path = f"{table_path}/_delta_log"
+print(f"Transaction log entries created at: {log_path}")
+
+# Step 4: Read the current version (snapshot consistent)
+df_read = spark.read.format("delta").load(table_path)
+print(f"Current version users: {df_read.count()}")
+
+# Step 5: Time travel - query as of 5 minutes ago
+current_time = int(time.time() * 1000)
+five_min_ago = current_time - (5 * 60 * 1000)
+
+# Would need previous writes before this works
+try:
+    df_past = spark.read.format("delta") \
+        .option("versionAsOf", 0) \
+        .load(table_path)
+    print(f"Users at version 0: {df_past.count()}")
+except:
+    print("Version 0 only available if previous transaction exists")
+
+# Additional write to demonstrate transaction log growth
+new_data = [
+    (3, "charlie@example.com", datetime(2026, 2, 1)),
+]
+
+df_new = spark.createDataFrame(new_data, schema=schema)
+df_new.write.format("delta").mode("append").save(table_path)
+
+# Step 6: Verify cleanup (optimization)
+spark.sql(f"""
+OPTIMIZE delta.`{table_path}`
+""")
+
+print("Lakehouse table operations complete")
+spark.stop()
+```
+
+#### Real-World Scenario
+
+At Uber, the ride events lakehouse stores 50B+ events daily. Writer 1 (mobile app events) writes events for rides, Writer 2 (backend service) writes events for ride completions. Without ACID, writes could partially overlap, corrupting the table. With Delta Lake: (1) mobile app writes 100M parquet files, (2) transaction log creates entry "add file1, file2, file3" with atomic rename, (3) backend service reads the log—sees only complete file list (no partial), (4) 3 hours later, analyst queries "SELECT * FROM rides VERSION AS OF 2 hours ago" to debug a spike. Delta log tracks all versions, analyst gets exact state from 2h prior. Meanwhile, cleanup removes obsolete parquet files from version history >30 days old to manage storage costs.
+
+#### Diagram
+
+```mermaid
+graph TD
+    A["Write Op 1<br/>100M rows"] --> B["Create Parquet<br/>files part-00x"]
+    B --> C["Create JSON<br/>transaction"]
+    C --> D["Atomic Rename<br/>version 1"]
+    D --> E["Transaction Log<br/>00001.json"]
+    
+    F["Read Op A<br/>Current"] --> G["Read log<br/>latest version"]
+    G --> H["List files<br/>from log"]
+    H --> I["Read Parquet<br/>snapshot"]
+    I --> J["Consistent<br/>result"]
+    
+    K["Read Op B<br/>Historical"] --> L["Read log<br/>version 5"]
+    L --> M["List files<br/>at v5"]
+    M --> N["Read Parquet<br/>time travel"]
+    N --> O["Historical<br/>snapshot"]
+    
+    E --> L
+```
+
 ## Delta Lake
 
 ### Architecture

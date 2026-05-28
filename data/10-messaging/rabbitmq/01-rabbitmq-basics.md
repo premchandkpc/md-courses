@@ -96,6 +96,73 @@ graph LR
 └──────────────────────────────────────────────────────────────────┘
 ```
 
+### Step-by-Step
+
+1. **Producer connects** via AMQP and declares exchange (idempotent, survives reconnect)
+2. **Producer publishes** message with routing_key to exchange (fire-and-forget by default)
+3. **Exchange evaluates** bindings and decides which queues receive the message
+4. **Queue stores** message in memory/disk based on queue durability and persistence settings
+5. **Consumer subscribes** and pull/push receives messages from queue
+6. **Acknowledgment** consumer sends back, queue removes message from memory
+
+### Code Example
+
+```python
+# Python RabbitMQ producer-consumer
+import pika
+import json
+
+# Producer setup
+credentials = pika.PlainCredentials('guest', 'guest')
+parameters = pika.ConnectionParameters('localhost', 5672, '/', credentials)
+connection = pika.BlockingConnection(parameters)
+channel = connection.channel()
+
+# Declare exchange and queue
+channel.exchange_declare(exchange='orders', exchange_type='topic', durable=True)
+channel.queue_declare(queue='order_processing', durable=True)
+channel.queue_bind(exchange='orders', queue='order_processing', routing_key='order.*')
+
+# Publish message
+message = json.dumps({'order_id': '123', 'amount': 99.99, 'timestamp': 1234567890})
+channel.basic_publish(
+    exchange='orders',
+    routing_key='order.created',
+    body=message,
+    properties=pika.BasicProperties(
+        delivery_mode=2,  # persistent
+        content_type='application/json'
+    )
+)
+print(f"Published: {message}")
+connection.close()
+
+# Consumer setup
+connection = pika.BlockingConnection(parameters)
+channel = connection.channel()
+channel.basic_qos(prefetch_count=1)  # Process one message at a time
+
+def callback(ch, method, properties, body):
+    order = json.loads(body)
+    print(f"Processing order {order['order_id']}")
+    # Simulate processing
+    try:
+        # Business logic here
+        print(f"Order processed successfully")
+        ch.basic_ack(delivery_tag=method.delivery_tag)  # Acknowledge
+    except Exception as e:
+        print(f"Error: {e}")
+        ch.basic_nack(delivery_tag=method.delivery_tag, requeue=True)  # Retry
+
+channel.basic_consume(queue='order_processing', on_message_callback=callback)
+print("Waiting for messages...")
+channel.start_consuming()
+```
+
+### Real-World Scenario
+
+Getty Images uses RabbitMQ for image processing workflows: uploads trigger messages to "image.uploaded" topic, routed to resize, watermark, and thumbnail queues via topic exchange. If thumbnail processing fails 3 times, the message moves to dead-letter exchange for manual review. During peak upload times (10K images/min), RabbitMQ queues buffer to ~500K messages while processing catches up—no data loss.
+
 ---
 
 ## 🧭 Exchanges

@@ -63,6 +63,99 @@ timeline
 | Debugging | Simple stack trace | Distributed tracing needed |
 | Onboarding | Steep (big codebase) | Focused (small service) |
 
+#### Step-by-Step
+
+1. **Monolith Deployment**: All modules compiled into single WAR/JAR, deployed to one server, entire app restarts even for a bug fix in one feature
+2. **Decompose Services**: Identify domain boundaries using DDD, split into Order, Payment, Inventory services with separate code repos
+3. **Independent Deployment**: Each service has own CI/CD pipeline, deployment doesn't require coordination
+4. **Service Discovery**: Services register location (host:port), clients discover dynamically (Consul, Kubernetes DNS)
+5. **Event-Driven Communication**: Instead of synchronous calls, publish OrderCreated event → Payment Service consumes asynchronously
+6. **Database Per Service**: Each service owns its data store (PostgreSQL for Orders, MongoDB for Products) — no cross-service foreign keys
+
+#### Code Example
+
+```python
+# MONOLITH — Single Python Flask app
+from flask import Flask, request
+from models import User, Order, Payment
+
+app = Flask(__name__)
+
+@app.route('/api/checkout', methods=['POST'])
+def checkout():
+    # All logic tightly coupled in one function
+    user_id = request.json['user_id']
+    user = User.query.get(user_id)
+    order = Order(user=user, items=request.json['items'])
+    db.session.add(order)
+    db.session.commit()
+    
+    # Direct synchronous call to payment logic
+    payment = Payment(order_id=order.id, amount=order.total)
+    if process_payment(payment):  # Blocking call
+        notify_user(user, order)  # More blocking
+    return {'status': 'success', 'order_id': order.id}
+
+# MICROSERVICES — Decoupled services
+# Order Service (separate Flask app, separate Docker image)
+@app.route('/api/orders', methods=['POST'])
+def create_order():
+    order = Order(customer_id=request.json['customer_id'], 
+                  items=request.json['items'])
+    db.session.add(order)
+    db.session.commit()
+    
+    # Publish event asynchronously (non-blocking)
+    event_bus.publish('order.created', {
+        'order_id': order.id,
+        'customer_id': order.customer_id,
+        'total': order.total
+    })
+    return {'status': 'created', 'order_id': order.id}, 201
+
+# Payment Service (completely separate codebase)
+# Listens to 'order.created' events
+@event_handler('order.created')
+def handle_order_created(event):
+    payment = Payment(order_id=event['order_id'], 
+                     amount=event['total'])
+    result = process_payment(payment)  # Can fail/retry independently
+    event_bus.publish('payment.processed', {
+        'order_id': event['order_id'],
+        'status': 'success' if result else 'failed'
+    })
+```
+
+#### Real-World Scenario
+
+When DoorDash migrated from monolith to microservices, they discovered a single bug in restaurant listing was crashing the entire platform. With microservices, they now deploy Restaurant Service independently. A bug in payment processing doesn't restart the Order Service. This reduced deployment risk and allowed them to do 1000+ deployments daily vs. 2-3 daily in monolith era.
+
+#### Diagram
+
+```mermaid
+graph LR
+    subgraph Monolith["Monolith (Single Deployment)"]
+        A["🔴 Checkout Module"]
+        B["🔴 Payment Module"]
+        C["🔴 Notification Module"]
+    end
+    
+    subgraph Microservices["Microservices (Independent)"]
+        D["🟢 Order Service"]
+        E["🟢 Payment Service"]
+        F["🟢 Notification Service"]
+        G[("📬 Kafka/\nRabbitMQ")]
+    end
+    
+    D -->|publishes| G
+    E -->|consumes & publishes| G
+    F -->|consumes| G
+    
+    style Monolith fill:#ffe6e6
+    style Microservices fill:#e6ffe6
+    style G fill:#fff9e6
+```
+
 ### Code: Monolith vs Microservices
 
 ```java
@@ -118,6 +211,94 @@ public class PaymentEventHandler {
 
 ### Principle 1: Bounded Context
 
+#### Step-by-Step
+
+1. **Define Domain Boundaries**: Use Domain-Driven Design to identify bounded contexts (Order, Payment, Inventory, Notification)
+2. **One Service Per Context**: Each bounded context becomes one microservice with clear responsibility
+3. **Own Your Data**: Service owns its database schema — other services cannot access it directly
+4. **API Layer**: Expose data through REST/gRPC endpoints, never expose database directly
+5. **Avoid Shared Schemas**: Don't share tables between services — maintain local copies if needed via events or API composition
+6. **Service Isolation**: If one service's database goes down, others continue running independently
+
+#### Code Example
+
+```go
+// User Service (Golang) — owns user_db exclusively
+package main
+
+import "database/sql"
+
+type UserService struct {
+    db *sql.DB  // Private connection — order service cannot access
+}
+
+func (s *UserService) GetUser(userID string) (*User, error) {
+    var user User
+    err := s.db.QueryRow("SELECT id, name, email FROM users WHERE id = ?", userID).
+        Scan(&user.ID, &user.Name, &user.Email)
+    return &user, err
+}
+
+// Order Service (separate Golang service) — owns order_db exclusively
+type OrderService struct {
+    db         *sql.DB         // Order database only
+    userClient *http.Client    // Call User Service via HTTP
+}
+
+func (s *OrderService) CreateOrder(userID string, items []Item) (*Order, error) {
+    // WRONG: Direct database access violates bounded context
+    // var user User
+    // s.db.QueryRow("SELECT * FROM users WHERE id = ?", userID)  // ❌ Not your table!
+    
+    // RIGHT: Call User Service API
+    resp, err := s.userClient.Get("http://user-service/api/users/" + userID)
+    if err != nil {
+        return nil, err  // User service down? That's okay, we fail gracefully
+    }
+    defer resp.Body.Close()
+    var user User
+    json.NewDecoder(resp.Body).Decode(&user)
+    
+    // Create order in our own database
+    order := &Order{UserID: user.ID, Items: items}
+    _, err = s.db.Exec(
+        "INSERT INTO orders (user_id, items, created_at) VALUES (?, ?, ?)",
+        order.UserID, order.Items, time.Now())
+    return order, err
+}
+```
+
+#### Real-World Scenario
+
+Netflix has 600+ microservices (2024). When they defined bounded context boundaries, they separated membership (account details) from playback (watch history) despite both involving user data. This prevented conflicts: membership team could change how subscriptions work without coordinating with playback team, each scaling independently based on their traffic patterns.
+
+#### Diagram
+
+```mermaid
+graph TB
+    subgraph UserContext["User Service<br/>(Bounded Context)"]
+        UDB[("👤 users_db<br/>id, name, email<br/>subscription")]
+        UAPI["REST API<br/>GET /users/{id}"]
+    end
+    
+    subgraph OrderContext["Order Service<br/>(Bounded Context)"]
+        ODB[("📦 orders_db<br/>id, user_id, total<br/>status")]
+        OAPI["REST API<br/>POST /orders"]
+    end
+    
+    subgraph PaymentContext["Payment Service<br/>(Bounded Context)"]
+        PDB[("💳 payments_db<br/>id, order_id, amount<br/>status")]
+        PAPI["REST API<br/>POST /payments"]
+    end
+    
+    OAPI -->|HTTP Call| UAPI
+    PAPI -->|HTTP Call| OAPI
+    
+    style UserContext fill:#e3f2fd
+    style OrderContext fill:#f3e5f5
+    style PaymentContext fill:#fce4ec
+```
+
 ```java
 // Each service owns its data and domain logic
 // NO shared database between services!
@@ -150,6 +331,126 @@ public class OrderService {
 
 ### Principle 2: Decentralized Data
 
+#### Step-by-Step
+
+1. **Database Isolation**: Each service has exclusive database, no shared tables or direct access from other services
+2. **Denormalization**: Service replicates data it needs locally (e.g., Order Service caches user name) to avoid repeated API calls
+3. **Event Propagation**: When User Service updates user name, it publishes UserUpdated event
+4. **Eventual Consistency**: Order Service eventually updates cached user data from event, may be seconds behind reality
+5. **Data Synchronization**: Use dual-write (dangerous) or transactional outbox pattern (safer) to ensure event publishing reliability
+6. **Conflict Resolution**: Design business logic to tolerate stale data (e.g., order can proceed with cached user info, reconcile later)
+
+#### Code Example
+
+```java
+// Order Service using CQRS (Command Query Responsibility Segregation)
+// Maintains local read model (cache) separate from write model
+@Service
+public class OrderService {
+    private final OrderRepository orderRepo;
+    private final UserCache userCache;              // Local cache of user data
+    private final TransactionalOutboxPublisher outbox;
+
+    public Order createOrder(Long userId, List<Item> items) {
+        // Get user from LOCAL cache (fast, might be stale)
+        UserReadModel cachedUser = userCache.get(userId);
+        if (cachedUser == null) {
+            // Cache miss — call remote service
+            cachedUser = userServiceClient.getUser(userId);
+            userCache.set(userId, cachedUser, Duration.ofMinutes(10));
+        }
+
+        // Create order with cached user data
+        Order order = new Order(userId, items, cachedUser.getName());
+        orderRepo.save(order);
+
+        // Publish OrderCreated event transactionally (all-or-nothing)
+        // If event publish fails, entire transaction rolls back
+        outbox.publish(new OrderCreatedEvent(
+            order.getId(), userId, order.getTotal()));
+
+        return order;
+    }
+}
+
+// Transactional Outbox pattern (ensures events are published)
+@Entity
+@Table(name = "outbox_events")
+public class OutboxEvent {
+    @Id private Long id;
+    @Lob private String eventData;
+    private String eventType;
+    @Enumerated(EnumType.STRING)
+    private EventStatus status;  // PENDING, PUBLISHED
+}
+
+@Service
+public class TransactionalOutboxPublisher {
+    private final EntityManager em;
+    private final KafkaTemplate<String, String> kafka;
+
+    @Transactional  // Same transaction as order creation
+    public void publish(DomainEvent event) {
+        // 1. Save event to outbox in same DB transaction
+        OutboxEvent outboxEvent = new OutboxEvent();
+        outboxEvent.setEventData(objectMapper.writeValueAsString(event));
+        outboxEvent.setEventType(event.getType());
+        outboxEvent.setStatus(EventStatus.PENDING);
+        em.persist(outboxEvent);
+        // Transaction commits — now outbox event is durably stored
+    }
+
+    // Separate process polls outbox and publishes to Kafka
+    @Scheduled(fixedRate = 1000)
+    public void publishPendingEvents() {
+        List<OutboxEvent> pending = em.createQuery(
+            "SELECT o FROM OutboxEvent o WHERE o.status = PENDING", 
+            OutboxEvent.class).getResultList();
+        
+        for (OutboxEvent event : pending) {
+            kafka.send("domain-events", event.getEventData());
+            event.setStatus(EventStatus.PUBLISHED);
+            em.merge(event);
+        }
+    }
+}
+
+// User Service publishes event when user updates
+@Service
+public class UserService {
+    private final UserRepository repo;
+    private final OutboxPublisher outbox;
+
+    @Transactional
+    public User updateUser(Long id, UpdateUserRequest req) {
+        User user = repo.findById(id).orElseThrow();
+        String oldName = user.getName();
+        user.setName(req.getName());
+        repo.save(user);
+
+        // Publish event so Order Service can update its cache
+        outbox.publish(new UserUpdatedEvent(id, oldName, req.getName()));
+        return user;
+    }
+}
+
+// Order Service listens to user updates
+@Component
+public class UserEventListener {
+    private final UserCache userCache;
+
+    @KafkaListener(topics = "user-events")
+    public void handleUserUpdated(UserUpdatedEvent event) {
+        // Update cache when user changes
+        userCache.invalidate(event.getUserId());  // Force cache refresh next request
+    }
+}
+```
+
+#### Real-World Scenario
+
+Amazon maintains separate databases for Orders (DynamoDB) and Inventory (S3-backed) teams. When inventory updates, Order Service doesn't read directly — it relies on cached data published every minute. During Black Friday, if inventory cache is 2 minutes stale, orders might use slightly outdated stock counts, but they reconcile hourly. This decoupling allowed Order Service to scale independently to 1M requests/sec while Inventory Service remained at normal load.
+
 ```text
 User Service            Order Service          Payment Service
 ┌─────────────┐        ┌─────────────┐        ┌─────────────┐
@@ -167,6 +468,82 @@ User Service            Order Service          Payment Service
 ```
 
 ### Principle 3: Automation
+
+#### Step-by-Step
+
+1. **Trigger on File Changes**: CI/CD only builds/tests changed services (e.g., modify order/ → only rebuild order-service)
+2. **Parallel Testing**: Run unit tests, integration tests, and contract tests in parallel without manual gates
+3. **Container Build**: Package service as Docker image with specific SHA tag for traceability
+4. **Registry Push**: Push to container registry (ECR, Docker Hub, Artifactory) atomically
+5. **Automated Deployment**: Use GitOps (Flux, ArgoCD) to deploy — declare desired state in git, system reconciles
+6. **Health Checks**: Wait for service readiness before marking deployment complete, rollback if health checks fail
+
+#### Code Example
+
+```yaml
+# GitOps-based CI/CD with ArgoCD (cloud-native approach)
+name: Build and Deploy Order Service
+on:
+  push:
+    paths: ['services/order/**']
+    branches: [main]
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    outputs:
+      image-tag: ${{ steps.image.outputs.tag }}
+    steps:
+      - uses: actions/checkout@v4
+      
+      # Test only changed service
+      - name: Run tests
+        run: |
+          cd services/order
+          ./gradlew test --parallel
+          ./gradlew contractTest  # Consumer-driven contract tests
+      
+      # Build and push Docker image
+      - name: Build and push
+        id: image
+        uses: docker/build-push-action@v4
+        with:
+          context: ./services/order
+          push: true
+          tags: |
+            registry.example.com/order-service:${{ github.sha }}
+            registry.example.com/order-service:latest
+      
+      # Update GitOps manifest (declarative deployment)
+      - name: Update deployment manifests
+        run: |
+          git clone https://github.com/company/gitops-repo
+          cd gitops-repo
+          
+          # Update image tag in Kustomization
+          cd overlays/production
+          kustomize edit set image order-service=registry.example.com/order-service:${{ github.sha }}
+          
+          git add kustomization.yaml
+          git commit -m "Deploy order-service:${{ github.sha }}"
+          git push
+          # ArgoCD automatically detects git change and reconciles cluster state
+
+  verify-deployment:
+    needs: build-and-push
+    runs-on: ubuntu-latest
+    steps:
+      - name: Wait for ArgoCD sync
+        run: |
+          # Poll until deployment is healthy
+          kubectl wait --for=condition=available \
+            --timeout=300s \
+            deployment/order-service -n production
+```
+
+#### Real-World Scenario
+
+Uber's microservices team automated testing in 2018 so thoroughly that deploying one service (e.g., matching-service) takes ~6 minutes from git push to production serving traffic. Contract tests verify the API signature with consumers before deployment — if a breaking change is detected, the deployment is blocked automatically. This prevents cascading failures that used to require war rooms.
 
 ```yaml
 # CI/CD Pipeline (GitHub Actions)
@@ -198,28 +575,322 @@ jobs:
 
 ### Principle 4: Design for Failure
 
-```java
-// Circuit Breaker — protect against cascading failures
-@Service
-public class ResilientUserClient {
-    private final RestTemplate restTemplate;
+#### Step-by-Step
 
-    @CircuitBreaker(name = "userService", fallbackMethod = "getUserFallback")
-    public UserDTO getUser(Long id) {
-        return restTemplate.getForObject(
-            "http://user-service/api/users/{id}", UserDTO.class, id);
+1. **Detect Failures**: Monitor error rates, timeouts, and unhealthy endpoints continuously
+2. **Circuit Breaker Opens**: After N consecutive failures, stop sending requests immediately (fail-fast)
+3. **Fallback Logic**: Serve cached response, default value, or queue for retry instead of cascading error
+4. **Half-Open State**: After cooldown period, test if service recovered with single request
+5. **Graceful Degradation**: Return partial data (e.g., order without user profile details) instead of total failure
+6. **Bulkheads**: Isolate thread pools per service so one service's overload doesn't starve others
+
+#### Code Example
+
+```java
+// Resilience4j circuit breaker with fallback and retry
+@Service
+public class PaymentServiceClient {
+    private final RestTemplate restTemplate;
+    private final CircuitBreakerRegistry cbRegistry;
+    private final RetryRegistry retryRegistry;
+
+    @PostConstruct
+    void setupResilience() {
+        // Circuit breaker: open after 5 failures, retry every 30s
+        cbRegistry.circuitBreaker("payment")
+            .getEventPublisher()
+            .onStateTransition(event -> log.warn("CB transitioned: {}", event));
     }
 
-    public UserDTO getUserFallback(Long id, Throwable t) {
-        log.warn("User service unavailable for id={}, using fallback", id);
-        return new UserDTO(id, "Unknown", "unknown@fallback.com");
+    // Combine circuit breaker + retry + timeout
+    @CircuitBreaker(name = "payment", fallbackMethod = "paymentFallback")
+    @Retry(name = "payment", maxAttempts = 3)
+    @Timeout(unit = ChronoUnit.SECONDS, duration = 5)
+    public PaymentResponse processPayment(PaymentRequest req) {
+        // If payment service is down, this throws exception
+        return restTemplate.postForObject(
+            "http://payment-service/api/pay", req, PaymentResponse.class);
+    }
+
+    // Fallback: called when circuit breaker is open or all retries exhausted
+    public PaymentResponse paymentFallback(PaymentRequest req, Throwable cause) {
+        log.error("Payment service unavailable, queuing for retry", cause);
+        
+        // Option 1: Queue message for async processing later
+        paymentQueue.enqueue(new PendingPayment(req, LocalDateTime.now()));
+        
+        // Option 2: Return "pending" response to client
+        return new PaymentResponse(
+            req.getOrderId(), 
+            PaymentStatus.PENDING,  // Not immediately failed
+            "Payment queued, will process when service recovers");
+    }
+}
+
+// Bulkhead isolation: separate thread pools
+@Configuration
+public class BulkheadConfig {
+    @Bean
+    public ThreadPoolTaskExecutor paymentExecutor() {
+        ThreadPoolTaskExecutor pool = new ThreadPoolTaskExecutor();
+        pool.setQueueCapacity(100);
+        pool.setCorePoolSize(5);
+        pool.setMaxPoolSize(10);
+        pool.setThreadNamePrefix("payment-");
+        return pool;
+    }
+
+    @Bean
+    public ThreadPoolTaskExecutor inventoryExecutor() {
+        ThreadPoolTaskExecutor pool = new ThreadPoolTaskExecutor();
+        pool.setQueueCapacity(100);
+        pool.setCorePoolSize(3);
+        pool.setMaxPoolSize(5);
+        pool.setThreadNamePrefix("inventory-");
+        return pool;
+    }
+}
+
+// Use bulkheads in services
+@Service
+public class OrderService {
+    @Autowired private ThreadPoolTaskExecutor paymentExecutor;
+    @Autowired private ThreadPoolTaskExecutor inventoryExecutor;
+
+    public Order createOrder(CreateOrderRequest req) {
+        Order order = new Order(req);
+        orderRepo.save(order);
+
+        // Payment processing on payment thread pool (isolated)
+        paymentExecutor.execute(() -> {
+            try {
+                paymentClient.processPayment(order);
+            } catch (Exception e) {
+                log.error("Payment failed for order {}", order.getId());
+                // Doesn't impact inventory processing
+            }
+        });
+
+        // Inventory on separate pool (won't be starved by payment)
+        inventoryExecutor.execute(() -> {
+            inventoryClient.reserveStock(order.getItems());
+        });
+
+        return order;
     }
 }
 ```
 
+#### Real-World Scenario
+
+During the 2012 Twitter incident, a single database connection pool exhaustion in one service (favorites) cascaded to the entire platform — all services queuing on that bottleneck. After implementing bulkheads, each service got its own connection pool. Now when favorites service overloads, timeline service continues serving traffic independently. This design change alone reduced cascading failures by 95%.
+
 ---
 
 ## 3. Architecture Styles
+
+#### Step-by-Step (Choosing a Style)
+
+1. **Analyze Communication Patterns**: Synchronous queries (REST/gRPC) → Layered; Async workflows → Event-Driven
+2. **Consider Team Structure**: If teams are organized by function → Layered; by features → Hexagonal
+3. **Data Flow Requirements**: Centralized read/write → Layered; Distributed reads with shared write → CQRS
+4. **Scalability Needs**: Heavy read load → Event-Driven with CQRS; Simple CRUD → Layered
+5. **Complexity Tolerance**: Start with Layered (simple), evolve to Hexagonal (testable), then Event-Driven (complex)
+6. **Evaluate Tradeoffs**: Layered (simple, coupled), Hexagonal (ports/adapters, testable), Event-Driven (decoupled, eventual consistency)
+
+#### Code Example
+
+```python
+# Comparison of architectural styles in order fulfillment
+from abc import ABC, abstractmethod
+from typing import List, Optional
+from dataclasses import dataclass
+
+# ===== LAYERED ARCHITECTURE =====
+# Pro: Simple, synchronous, easy to understand
+# Con: Tight coupling, monolithic feel
+
+class OrderService:
+    def __init__(self, db, payment_client, inventory_client):
+        self.db = db
+        self.payment = payment_client
+        self.inventory = inventory_client
+
+    def create_order(self, user_id: str, items: List[str]) -> dict:
+        # Orchestrates all layers synchronously
+        user = self.db.query("users").filter(id=user_id).first()
+        if not user:
+            raise Exception("User not found")
+        
+        # Tight coupling: directly calls other services
+        inventory_ok = self.inventory.check_stock(items)
+        if not inventory_ok:
+            raise Exception("Out of stock")
+        
+        # Waits for payment
+        payment_result = self.payment.charge(user, 100.00)
+        if not payment_result.success:
+            raise Exception("Payment failed")
+        
+        # Finally save order
+        order = {"user_id": user_id, "items": items, "status": "confirmed"}
+        self.db.save("orders", order)
+        return order
+
+# ===== HEXAGONAL (PORTS & ADAPTERS) ARCHITECTURE =====
+# Pro: Decoupled, testable, domain-focused
+# Con: More files, more indirection
+
+@dataclass
+class Order:
+    """Domain entity — pure business logic, no framework"""
+    id: str
+    user_id: str
+    items: List[str]
+    status: str  # pending, confirmed, shipped
+
+    def confirm(self):
+        """Domain logic — what can transition order to confirmed?"""
+        if self.status != "pending":
+            raise ValueError(f"Cannot confirm order in {self.status} state")
+        self.status = "confirmed"
+
+# PORT (interface) — what the domain needs
+class PaymentPort(ABC):
+    @abstractmethod
+    def charge(self, amount: float) -> bool:
+        pass
+
+class InventoryPort(ABC):
+    @abstractmethod
+    def reserve_stock(self, items: List[str]) -> bool:
+        pass
+
+class OrderRepository(ABC):
+    @abstractmethod
+    def save(self, order: Order) -> None:
+        pass
+
+# ADAPTER (implementation) — actual implementation
+class StripePaymentAdapter(PaymentPort):
+    def __init__(self, stripe_client):
+        self.stripe = stripe_client
+    
+    def charge(self, amount: float) -> bool:
+        try:
+            self.stripe.create_charge(amount)
+            return True
+        except:
+            return False
+
+class SQLOrderRepository(OrderRepository):
+    def __init__(self, db_connection):
+        self.db = db_connection
+    
+    def save(self, order: Order) -> None:
+        self.db.execute(
+            "INSERT INTO orders (id, user_id, status) VALUES (?, ?, ?)",
+            (order.id, order.user_id, order.status))
+
+# APPLICATION SERVICE — orchestrates ports
+class HexOrderService:
+    def __init__(self, payment_port: PaymentPort, 
+                 inventory_port: InventoryPort,
+                 order_repo: OrderRepository):
+        self.payment = payment_port
+        self.inventory = inventory_port
+        self.repo = order_repo
+
+    def create_order(self, user_id: str, items: List[str]) -> Order:
+        # Domain logic is testable with mock ports
+        order = Order(id="12345", user_id=user_id, items=items, status="pending")
+        
+        if not self.inventory.reserve_stock(items):
+            raise Exception("Stock reserved by another order")
+        
+        if not self.payment.charge(100.00):
+            raise Exception("Payment declined")
+        
+        order.confirm()  # Domain logic isolated
+        self.repo.save(order)
+        return order
+
+# ===== EVENT-DRIVEN ARCHITECTURE =====
+# Pro: Decoupled, scalable, extensible
+# Con: Eventually consistent, complex debugging
+
+from typing import Callable
+
+class DomainEvent:
+    """Base class for all domain events"""
+    def __init__(self, event_type: str, data: dict):
+        self.event_type = event_type
+        self.data = data
+        self.timestamp = time.time()
+
+class EventBus:
+    """Decoupled pub/sub"""
+    def __init__(self):
+        self.subscribers: dict[str, List[Callable]] = {}
+
+    def subscribe(self, event_type: str, handler: Callable):
+        if event_type not in self.subscribers:
+            self.subscribers[event_type] = []
+        self.subscribers[event_type].append(handler)
+
+    def publish(self, event: DomainEvent):
+        if event.event_type in self.subscribers:
+            for handler in self.subscribers[event.event_type]:
+                # Async: handler runs independently
+                asyncio.create_task(handler(event))
+
+# Order Service — publishes events (non-blocking)
+class EventDrivenOrderService:
+    def __init__(self, event_bus: EventBus, order_repo: OrderRepository):
+        self.bus = event_bus
+        self.repo = order_repo
+
+    def create_order(self, user_id: str, items: List[str]) -> Order:
+        order = Order(id="12345", user_id=user_id, items=items, status="pending")
+        self.repo.save(order)
+        
+        # Publish event — don't wait for consumers
+        self.bus.publish(DomainEvent(
+            "OrderCreated",
+            {"order_id": order.id, "user_id": user_id, "items": items}))
+        
+        return order  # Returns immediately
+
+# Separate services subscribe to events
+class PaymentEventHandler:
+    def __init__(self, payment_port: PaymentPort, event_bus: EventBus):
+        self.payment = payment_port
+        event_bus.subscribe("OrderCreated", self.handle_order_created)
+
+    async def handle_order_created(self, event: DomainEvent):
+        # Process asynchronously
+        order_id = event.data["order_id"]
+        amount = event.data.get("amount", 100.00)
+        
+        if self.payment.charge(amount):
+            self.event_bus.publish(DomainEvent(
+                "PaymentSucceeded",
+                {"order_id": order_id}))
+        else:
+            self.event_bus.publish(DomainEvent(
+                "PaymentFailed",
+                {"order_id": order_id}))
+
+class InventoryEventHandler:
+    async def handle_order_created(self, event: DomainEvent):
+        items = event.data["items"]
+        # Async inventory processing
+        self.inventory.reserve_stock(items)
+```
+
+#### Real-World Scenario
+
+LinkedIn started with Layered architecture (monolith), but as it scaled to 1M+ users, synchronous calls created bottlenecks. They migrated to Event-Driven for member updates: when a profile changes, an event publishes to Kafka. Services (recommendations, notifications, search) consume independently at their own pace. Search can lag by minutes, but member timeline updates within seconds. This decoupling let each team optimize their service without coordinating deployment.
 
 ### 3.1 Layered (Traditional)
 

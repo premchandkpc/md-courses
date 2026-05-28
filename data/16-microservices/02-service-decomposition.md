@@ -45,6 +45,59 @@ mindmap
 
 ## 1. Bounded Context
 
+#### Step-by-Step
+
+1. **Identify Domain Language**: In each context, determine what terms mean (Customer = buyer vs. support requester)
+2. **Define Aggregate Boundaries**: Group entities that change together (Order + OrderItems as one aggregate)
+3. **Separate Data Models**: Each context maintains its own Customer table with only relevant columns
+4. **API Contracts**: Define how contexts communicate (REST, gRPC, or events) without exposing internal models
+5. **Ubiquitous Language**: Use context-specific terminology in code (SalesContext uses "placeOrder", SupportContext uses "createTicket")
+6. **Test Boundaries**: Verify services can operate independently if communication fails
+
+#### Code Example
+
+```python
+# Python example showing bounded context separation
+# Sales context owns customer creditworthiness
+class SalesCustomer:
+    def __init__(self, id: str, name: str, credit_limit: float):
+        self.id = id
+        self.name = name
+        self.credit_limit = credit_limit
+    
+    def can_place_order(self, order_amount: float) -> bool:
+        """Business logic for sales"""
+        return order_amount <= self.credit_limit
+
+# Support context owns customer satisfaction
+class SupportCustomer:
+    def __init__(self, id: str, name: str):
+        self.id = id
+        self.name = name
+        self.open_tickets: List[str] = []
+        self.satisfaction_score = 100
+    
+    def add_ticket(self, ticket_id: str):
+        """Business logic for support"""
+        self.open_tickets.append(ticket_id)
+        # Support cares about tickets, not credit
+    
+    def rate_interaction(self, rating: int):
+        self.satisfaction_score = max(0, min(100, self.satisfaction_score + rating))
+
+# When Sales Service needs customer info, it queries its own Customer
+sales_db = {"customer_123": SalesCustomer("123", "Alice", 5000)}
+
+# When Support Service needs customer info, it queries its own Customer
+support_db = {"customer_123": SupportCustomer("123", "Alice")}
+
+# Both contexts are independent — neither depends on the other's schema
+```
+
+#### Real-World Scenario
+
+Spotify decomposed their monolith by bounded context: Playback team owns user listening history and recommendations (core domain — complex ML algorithms). Account team owns subscriptions and billing (supporting — somewhat commodity). These teams never shared tables; when Playback needed subscriber info, Account Service exposed a simple REST API. This allowed Playback to scale independently during peak listening hours without affecting billing operations.
+
 ### What is a Bounded Context?
 
 ```text
@@ -107,6 +160,163 @@ public class Customer {
 ---
 
 ## 2. Decomposition Strategies
+
+#### Step-by-Step (General Decomposition Process)
+
+1. **Map Business Capabilities**: List all business functions (ordering, payment, shipping, support)
+2. **Identify Boundaries**: Use Conway's Law — organization structure informs system structure
+3. **Define Data Ownership**: Which aggregate owns which data? Orders own items and total, Payment owns transaction records
+4. **Check Independence**: Can each service exist without others? Can one be deployed without coordinating with others?
+5. **Plan Communication**: What events/APIs connect services? Order → PaymentProcessed event → Invoice Service
+6. **Establish Teams**: Ideally one team owns one service (two-pizza rule — team size that can be fed with two pizzas)
+
+#### Code Example
+
+```go
+// Go example: decomposing an e-commerce system by business capability
+package main
+
+// STEP 1: Map Business Capabilities (domain model)
+type BusinessCapability struct {
+    Name        string
+    Ownership   string  // Team responsible
+    DataOwned   []string
+}
+
+var capabilities = []BusinessCapability{
+    {
+        Name:      "Product Catalog",
+        Ownership: "Product Team",
+        DataOwned: []string{"products", "categories", "descriptions"},
+    },
+    {
+        Name:      "Order Management",
+        Ownership: "Order Team",
+        DataOwned: []string{"orders", "order_items", "shipping_address"},
+    },
+    {
+        Name:      "Payment Processing",
+        Ownership: "Payments Team",
+        DataOwned: []string{"payments", "refunds", "transaction_logs"},
+    },
+    {
+        Name:      "Inventory Management",
+        Ownership: "Inventory Team",
+        DataOwned: []string{"stock_levels", "reservations", "warehouse_locations"},
+    },
+}
+
+// STEP 2: Define service boundaries
+type ProductService struct {
+    // Owns product_db exclusively
+    db *sql.DB
+}
+
+type OrderService struct {
+    // Owns order_db exclusively
+    db                *sql.DB
+    productServiceURL string  // Calls Product Service via HTTP
+    paymentClient     PaymentClient
+}
+
+type PaymentService struct {
+    // Owns payment_db exclusively
+    db *sql.DB
+}
+
+// STEP 3: Define boundaries with aggregates
+type Order struct {
+    ID       string
+    CustomerID string
+    Items    []OrderItem  // Order aggregate includes items
+    Total    float64
+}
+
+type OrderItem struct {
+    ProductID string     // Just the ID, not full Product entity
+    Quantity  int
+    Price     float64    // Denormalized price at order time
+}
+
+// STEP 4: Communication between services
+type OrderCreatedEvent struct {
+    OrderID    string
+    CustomerID string
+    Items      []OrderItem
+    Total      float64
+}
+
+func (os *OrderService) CreateOrder(req CreateOrderRequest) (*Order, error) {
+    // First, verify product exists and get current price
+    product, err := os.getProductFromCatalog(req.ProductID)
+    if err != nil {
+        return nil, err  // Fail if product service down
+    }
+
+    // Create order in our database
+    order := &Order{
+        ID:         generateID(),
+        CustomerID: req.CustomerID,
+        Items: []OrderItem{
+            {
+                ProductID: product.ID,
+                Quantity:  req.Quantity,
+                Price:     product.Price,  // Capture price at order time
+            },
+        },
+        Total: product.Price * float64(req.Quantity),
+    }
+
+    // Save to order_db
+    if err := os.saveOrder(order); err != nil {
+        return nil, err
+    }
+
+    // Publish event (async) — Payment Service will consume
+    eventBus.Publish("order.created", OrderCreatedEvent{
+        OrderID:    order.ID,
+        CustomerID: order.CustomerID,
+        Items:      order.Items,
+        Total:      order.Total,
+    })
+
+    return order, nil
+}
+
+// STEP 5: Define data ownership clearly
+func (is *InventoryService) ReserveStock(orderID string, items []OrderItem) error {
+    // Inventory owns stock_levels table
+    // It does NOT own orders — it gets notified via events
+    for _, item := range items {
+        stock, err := is.getCurrentStock(item.ProductID)
+        if err != nil || stock < item.Quantity {
+            return fmt.Errorf("insufficient stock for %s", item.ProductID)
+        }
+        // Deduct from inventory
+        is.deductStock(item.ProductID, item.Quantity)
+    }
+    return nil
+}
+
+// STEP 6: Team ownership
+type TeamService struct {
+    Name      string
+    Service   string
+    OnCall    string
+    SlackChannel string
+}
+
+var teamOwnership = []TeamService{
+    {"Product Team", "ProductService", "alice@company.com", "#product-oncall"},
+    {"Order Team", "OrderService", "bob@company.com", "#order-oncall"},
+    {"Payment Team", "PaymentService", "charlie@company.com", "#payment-oncall"},
+    {"Inventory Team", "InventoryService", "diana@company.com", "#inventory-oncall"},
+}
+```
+
+#### Real-World Scenario
+
+Amazon decomposed by business capability in the early 2000s: Customer Relationship Management, Order Processing, Fulfillment, and Payments became separate services. Each team built their own service using whatever tech they preferred. When order processing team needed to make Orders 100x faster, they rewrote their service in a faster language without coordinating with 8 other teams. This organizational structure enabled Amazon's rapid scaling.
 
 ### 2.1 Decompose by Business Capability
 

@@ -56,6 +56,102 @@ Hands you the list
 - Amazon: Product catalog queries billions of items instantly
 - Google: Search index queries across trillions of pages
 
+### Step-by-Step
+
+1. **Understand data model**: Map business domain to tables and relationships
+2. **Write SELECT with WHERE**: Filter rows matching criteria before processing
+3. **Use indexes on filter columns**: Ensure lookup columns (id, email, user_id) are indexed
+4. **JOIN tables strategically**: Use INNER JOIN for required matches, LEFT JOIN for optional
+5. **Aggregate with GROUP BY**: Combine multiple rows into summary statistics
+6. **Test execution plan**: Use EXPLAIN to verify indexes are being used (not sequential scans)
+7. **Optimize slow queries**: Add indexes, break complex queries, or denormalize strategically
+
+### Code Example
+
+```sql
+-- Example: E-commerce analytics query with optimizations
+
+-- Create indexed table schema
+CREATE TABLE users (
+    id BIGINT PRIMARY KEY,
+    email VARCHAR(255) NOT NULL UNIQUE,
+    country VARCHAR(2) NOT NULL,
+    created_at TIMESTAMP NOT NULL,
+    INDEX idx_country (country),
+    INDEX idx_created_at (created_at)
+);
+
+CREATE TABLE orders (
+    id BIGINT PRIMARY KEY,
+    user_id BIGINT NOT NULL REFERENCES users(id),
+    total_amount DECIMAL(10,2) NOT NULL,
+    order_date TIMESTAMP NOT NULL,
+    status VARCHAR(20) NOT NULL,
+    INDEX idx_user_id (user_id),
+    INDEX idx_order_date (order_date),
+    INDEX idx_status (status)
+);
+
+-- SLOW: O(n) full table scan
+SELECT user_id, COUNT(*) as order_count
+FROM orders
+WHERE status = 'completed';
+-- Problem: scans ALL rows, no index on status
+
+-- FAST: O(log n) with index
+CREATE INDEX idx_orders_status ON orders(status);
+
+SELECT user_id, COUNT(*) as order_count, SUM(total_amount) as total_spent
+FROM orders
+WHERE status = 'completed'
+  AND order_date >= DATE_SUB(NOW(), INTERVAL 30 DAY)
+GROUP BY user_id
+ORDER BY total_spent DESC
+LIMIT 10;
+
+-- EXPLANATION of execution:
+-- 1. Index lookup on orders(status='completed') → ~100K rows
+-- 2. Apply date filter → ~50K rows
+-- 3. GROUP BY user_id → aggregate into 20K unique users
+-- 4. ORDER BY total_spent DESC, LIMIT 10 → return top 10
+-- Total: ~0.05 seconds (vs. 5+ seconds without indexes)
+
+-- Real-world scenario: Find customers in USA who haven't ordered in 60 days
+SELECT u.id, u.email, COUNT(o.id) as order_count
+FROM users u
+LEFT JOIN orders o ON u.id = o.user_id
+  AND o.order_date >= DATE_SUB(NOW(), INTERVAL 60 DAY)
+WHERE u.country = 'US'
+GROUP BY u.id
+HAVING order_count = 0  -- customers with NO recent orders
+ORDER BY u.created_at DESC;
+
+-- Optimization tips:
+-- - Index on users(country) enables fast filtering
+-- - Index on orders(user_id, order_date) enables efficient join and filter
+-- - COUNT with condition gives ORDER stat in single scan
+```
+
+### Real-World Scenario
+
+Pinterest's user feed query was taking 30 seconds for newly-onboarded users due to a missing composite index. The query needed: `(user_id, created_at)` to find a user's pins efficiently. Without the index, the database scanned millions of rows. Adding this single index reduced query time to 50ms and prevented server timeouts. This taught them: always add indexes for columns used in WHERE, JOIN, and ORDER BY clauses together.
+
+### Query Optimization Diagram
+
+```mermaid
+graph LR
+    A["SQL Query<br/>SELECT...WHERE..."] -->|Check index| B["Index available?"]
+    B -->|No index| C["Sequential Scan<br/>O(n)"]
+    B -->|Index exists| D["Index Lookup<br/>O(log n)"]
+    C -->|Process all rows| E["Slow<br/>seconds"]
+    D -->|Process matched rows| F["Fast<br/>milliseconds"]
+    
+    style C fill:#ff9800
+    style D fill:#4caf50
+    style E fill:#ff5252,color:#fff
+    style F fill:#2cdc71,color:#fff
+```
+
 ---
 
 ## LAYER 2: How SQL Works (Intermediate) 🔧

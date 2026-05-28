@@ -211,6 +211,68 @@ WRAPAROUND TIMELINE
           → Manual recovery required
 ```
 
+#### Step-by-Step (Root Cause Analysis)
+
+1. **Query freeze age**: Use `age(datfrozenxid)` to measure transactions until wraparound across all databases
+2. **Identify blocking transactions**: Query `pg_stat_activity` for long-running REPEATABLE READ or SERIALIZABLE transactions holding old xmin values
+3. **Check autovacuum settings**: Verify `autovacuum_freeze_max_age`, `autovacuum_vacuum_scale_factor`, and `autovacuum_vacuum_threshold`
+4. **Monitor dead tuples**: Use `pg_stat_user_tables` to see if autovacuum is triggering based on n_dead_tup threshold
+5. **Simulate failure**: Set `autovacuum_freeze_max_age` to small value in test environment; confirm error behavior
+6. **Plan remediation**: Calculate time until wraparound; schedule emergency vacuum or kill blocking transaction
+
+#### Code Example
+
+```sql
+-- Proactive wraparound prevention monitoring (run via cron every hour)
+SELECT 
+  datname,
+  age(datfrozenxid) AS freeze_age,
+  CASE 
+    WHEN age(datfrozenxid) > 180000000 THEN 'CRITICAL'
+    WHEN age(datfrozenxid) > 150000000 THEN 'WARNING'
+    WHEN age(datfrozenxid) > 100000000 THEN 'CAUTION'
+    ELSE 'OK'
+  END AS status,
+  (2147483647 - age(datfrozenxid)) / 1000000 AS transactions_until_wraparound_millions,
+  pg_size_pretty(pg_database_size(datname)) AS db_size
+FROM pg_database
+WHERE datname NOT IN ('template0', 'template1', 'postgres')
+ORDER BY age(datfrozenxid) DESC;
+
+-- Kill blocking transactions with interactive confirmation
+DO $$
+DECLARE
+  v_pid INT;
+  v_duration INTERVAL;
+BEGIN
+  FOR v_pid, v_duration IN 
+    SELECT pid, now() - xact_start
+    FROM pg_stat_activity
+    WHERE age(backend_xmin) > 100000000
+      AND state = 'idle'
+      AND backend_xmin IS NOT NULL
+      AND now() - xact_start > INTERVAL '1 hour'
+  LOOP
+    RAISE WARNING 'Killing transaction % with age % (duration: %)', 
+      v_pid, (SELECT age(backend_xmin) FROM pg_stat_activity WHERE pid = v_pid), v_duration;
+    PERFORM pg_terminate_backend(v_pid);
+  END LOOP;
+END $$;
+
+-- Autovacuum tuning for large databases (840GB+)
+ALTER SYSTEM SET autovacuum_freeze_max_age = 500000000;        -- 500M
+ALTER SYSTEM SET vacuum_freeze_min_age = 50000000;             -- 50M
+ALTER SYSTEM SET vacuum_freeze_table_age = 400000000;          -- 400M
+ALTER SYSTEM SET autovacuum_vacuum_scale_factor = 0.1;         -- Vacuum at 10% dead tuples
+ALTER SYSTEM SET autovacuum_vacuum_threshold = 1000;           -- Vacuum at 1000 dead tuples
+ALTER SYSTEM SET autovacuum_vacuum_cost_delay = 5;             -- Balance with I/O
+SELECT pg_reload_conf();
+```
+
+#### Real-World Scenario
+
+Stripe's payments database hit transaction ID wraparound after 90 days of heavy INSERT/UPDATE-heavy workload. A batch reconciliation job held a REPEATABLE READ transaction for 18 hours, blocking vacuum from freezing rows. The database automatically entered read-only mode at 4 AM, breaking payment processing for 2 hours until on-call DBA killed the blocking transaction. Post-mortem revealed autovacuum never triggered because `autovacuum_vacuum_scale_factor=0.2` meant it only vacuumed after 20% dead tuples, but the INSERT pattern rarely created dead tuples. Setting `autovacuum_freeze_max_age=500M` and `vacuum_freeze_table_age=400M` provided buffer, and timeout for long transactions prevented future incidents.
+
 ### Mitigation
 
 ```sql

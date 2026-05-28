@@ -58,6 +58,78 @@ Stores state changes as an immutable event log.
 | Temporal query | Impossible | Replay any point |
 | Schema changes | Migrations | New event types |
 
+### Step-by-Step
+
+1. **Command execution** receives action request (PlaceOrder, ShipOrder)
+2. **Event creation** generates domain event (OrderPlaced, OrderShipped) capturing state change
+3. **Event storage** appends to Kafka compacted topic with key=aggregate_id
+4. **State projection** consumer builds current state by replaying all events from start
+5. **Temporal queries** restore state at any point by replaying events up to that timestamp
+6. **Schema evolution** new event types added without altering old events, supports migrations
+
+### Code Example
+
+```python
+# Python event sourcing implementation
+from dataclasses import dataclass, asdict
+from enum import Enum
+import json
+from kafka import KafkaProducer, KafkaConsumer
+
+class OrderEvent(Enum):
+    PLACED = "OrderPlaced"
+    PAID = "OrderPaid"
+    SHIPPED = "OrderShipped"
+    CANCELLED = "OrderCancelled"
+
+@dataclass
+class Event:
+    event_type: str
+    aggregate_id: str  # order_id
+    timestamp: int
+    data: dict
+
+producer = KafkaProducer(
+    bootstrap_servers=['localhost:9092'],
+    value_serializer=lambda v: json.dumps(v).encode('utf-8')
+)
+
+# Emit event
+event = Event(
+    event_type=OrderEvent.PLACED.value,
+    aggregate_id="order-123",
+    timestamp=1234567890,
+    data={"user_id": "user-456", "amount": 99.99, "items": [{"sku": "ABC", "qty": 1}]}
+)
+producer.send('orders-events', key=event.aggregate_id, value=asdict(event))
+
+# Replay events to reconstruct order state
+consumer = KafkaConsumer(
+    'orders-events',
+    bootstrap_servers=['localhost:9092'],
+    value_deserializer=lambda m: json.loads(m.decode('utf-8')),
+    auto_offset_reset='earliest'
+)
+
+order_state = {}
+for message in consumer:
+    event_data = message.value
+    if event_data['aggregate_id'] == 'order-123':
+        if event_data['event_type'] == OrderEvent.PLACED.value:
+            order_state['status'] = 'PLACED'
+            order_state['amount'] = event_data['data']['amount']
+        elif event_data['event_type'] == OrderEvent.PAID.value:
+            order_state['status'] = 'PAID'
+        elif event_data['event_type'] == OrderEvent.SHIPPED.value:
+            order_state['status'] = 'SHIPPED'
+    
+    print(f"Order {event_data['aggregate_id']}: {order_state}")
+```
+
+### Real-World Scenario
+
+Shopify uses event sourcing for orders: every state change (created, paid, packed, shipped, delivered) is immutable. If a customer disputes a charge, engineers replay the order's events to prove exact timing of payment and shipment. When implementing refunds, they add a RefundInitiated event instead of updating rows—full audit trail preserved for compliance.
+
 ---
 
 ## 1. CQRS with Kafka
@@ -80,6 +152,103 @@ consumer.run({
     },
 });
 ```
+
+### Step-by-Step
+
+1. **Command receipt** API accepts CreateOrder command with user, items, payment info
+2. **Command validation** checks business rules (user exists, inventory available)
+3. **Event emission** write DB (orders table) and publish OrderCreatedEvent to Kafka atomically
+4. **Projection consumption** read-side consumer receives event and denormalizes into order_summary
+5. **Query handling** API queries order_summary (no JOINs needed, optimized for reads)
+6. **Eventual consistency** read DB may lag write DB by milliseconds, acceptable for UI
+
+### Code Example
+
+```javascript
+// Node.js CQRS pattern with Kafka
+const express = require('express');
+const { Kafka } = require('kafkajs');
+const pg = require('pg');
+
+const app = express();
+const kafka = new Kafka({ brokers: ['localhost:9092'] });
+const producer = kafka.producer();
+const consumer = kafka.consumer({ groupId: 'order-projector' });
+
+// WRITE SIDE: Command handler
+app.post('/api/orders', async (req, res) => {
+    const { userId, items, total } = req.body;
+    const client = new pg.Client();
+    
+    try {
+        await client.connect();
+        await client.query('BEGIN');
+        
+        // Write to database
+        const { rows } = await client.query(
+            'INSERT INTO orders (user_id, items, total, status) VALUES ($1, $2, $3, $4) RETURNING id',
+            [userId, JSON.stringify(items), total, 'PENDING']
+        );
+        const orderId = rows[0].id;
+        
+        // Emit event
+        await producer.send({
+            topic: 'order-events',
+            messages: [{
+                key: orderId,
+                value: JSON.stringify({
+                    eventType: 'OrderCreated',
+                    aggregateId: orderId,
+                    data: { userId, items, total, timestamp: Date.now() }
+                })
+            }]
+        });
+        
+        await client.query('COMMIT');
+        res.json({ orderId });
+    } catch (err) {
+        await client.query('ROLLBACK');
+        res.status(500).json({ error: err.message });
+    } finally {
+        await client.end();
+    }
+});
+
+// READ SIDE: Projection
+consumer.run({
+    eachMessage: async ({ message }) => {
+        const event = JSON.parse(message.value);
+        const client = new pg.Client();
+        
+        try {
+            await client.connect();
+            if (event.eventType === 'OrderCreated') {
+                await client.query(
+                    `INSERT INTO order_summary (order_id, user_id, total, status, created_at)
+                     VALUES ($1, $2, $3, $4, NOW())`,
+                    [event.aggregateId, event.data.userId, event.data.total, 'CREATED']
+                );
+            }
+        } finally {
+            await client.end();
+        }
+    }
+});
+
+// QUERY: Read-optimized endpoint
+app.get('/api/orders/:orderId', async (req, res) => {
+    const client = new pg.Client();
+    const { rows } = await client.query(
+        'SELECT * FROM order_summary WHERE order_id = $1',
+        [req.params.orderId]
+    );
+    res.json(rows[0]);
+});
+```
+
+### Real-World Scenario
+
+Amazon Prime Video uses CQRS: write commands go to the order service database, OrderCreated events fan out to recommendation, billing, and notification services. Each service maintains its own read model optimized for its queries. When billing queries "total revenue by region," it queries its denormalized read DB (fast), not the shared write DB. Eventual consistency (100ms lag) acceptable for analytics.
 
 ---
 

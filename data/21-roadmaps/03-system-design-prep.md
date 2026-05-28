@@ -42,6 +42,56 @@ graph TD
 
 ## Interview Format & Timeline
 
+#### Step-by-Step: Ace a 45-Minute System Design Interview
+
+1. **First 5 min (Ask questions)**: What's the scope? DAU? Read/write ratio? Latency SLA?
+2. **Next 10 min (Plan)**: Map functional & non-functional requirements, identify bottlenecks
+3. **Next 15 min (Design)**: Draw HLD with boxes (client, LB, API, cache, DB, queue)
+4. **Last 15 min (Deep dive)**: Pick one interesting component (cache, sharding, leader election)
+5. **Throughout (Communicate)**: Explain your reasoning, invite feedback, adjust based on hints
+
+#### Code Example
+
+```
+System Design Interview Timing (Example: URL Shortener)
+
+00:00 - 05:00 REQUIREMENTS
+  Q: How many users?
+  Q: How long should short URL last?
+  Q: Need custom slugs?
+  A: 100M DAU, 1B total URLs, 10-year retention, yes custom slugs
+
+05:00 - 10:00 CORE ENTITIES & API
+  Entity: URL(id, original_url, short_code, created_at, expires_at)
+  API: POST /shorten (returns short_code)
+       GET /{short_code} (returns 301 redirect to original_url)
+
+10:00 - 20:00 HIGH-LEVEL DESIGN
+  [Client] → [LB] → [App Servers] → [Redis Cache] → [PostgreSQL]
+                        ↓
+                   [ID Generator] (Snowflake)
+                        ↓
+                   [Convert to Base62]
+
+20:00 - 35:00 DEEP DIVE: Collision Handling
+  Problem: Two users might generate the same short code
+  Solution 1: Check if exists, regenerate
+  Solution 2: Append counter to original URL before hashing
+  Solution 3: Use distributed ID generator (guarantees uniqueness)
+  
+  Chose Solution 3 (Snowflake → base62 encoding)
+
+35:00 - 45:00 TRADEOFFS & SCALING
+  Cache hit rate: 80% of reads hit 20% of URLs
+  Redis cluster for hot URLs
+  Database replication for reads
+  Bloom filter to prevent cache misses on nonexistent codes
+```
+
+#### Real-World Scenario
+
+A candidate at a FAANG interview spent 30 minutes on the HLD, leaving only 15 minutes for deep dive. Interviewer asked "How would you handle a hot URL receiving 100K requests per second?" The candidate panicked, couldn't think through multi-tier caching strategy in the remaining time, and got medium rating (expected: high). Post-interview feedback: "Paced too slowly on HLD; should have spent 15 min there, 20 min on deep dive."
+
 ```
 High-Level Design (HLD) — 45 minutes
 ─────────────────────────────────────

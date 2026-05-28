@@ -89,6 +89,46 @@ sequenceDiagram
 | **Offset** | Unique record ID within a partition |
 | **ISR** | In-Sync Replicas — caught up with leader |
 
+#### Step-by-Step
+
+1. **Producer serializes** the event (key-value) and determines target partition using a partitioner
+2. **Batch accumulation** occurs in producer memory until `batch.size` or `linger.ms` is reached
+3. **Compression** is applied (snappy, gzip, lz4, or zstd) to reduce network I/O
+4. **Leader broker receives** the batch and appends to partition log sequentially
+5. **Replicas fetch** from leader and apply the same records in order
+6. **Acknowledgment** is sent back based on `acks` setting (0, 1, or all)
+
+#### Code Example
+
+```python
+# Python Kafka producer core concepts
+from kafka import KafkaProducer
+import json
+
+producer = KafkaProducer(
+    bootstrap_servers=['localhost:9092'],
+    value_serializer=lambda v: json.dumps(v).encode('utf-8'),
+    acks='all',  # Wait for all ISR replicas
+    retries=3,
+    linger_ms=10  # Batch messages for 10ms
+)
+
+# Send event with key (determines partition)
+future = producer.send('orders', key='user-123', value={'order_id': 456, 'amount': 99.99})
+try:
+    metadata = future.get(timeout=10)
+    print(f"Sent to partition {metadata.partition}, offset {metadata.offset}")
+except Exception as e:
+    print(f"Failed: {e}")
+
+producer.flush()
+producer.close()
+```
+
+#### Real-World Scenario
+
+At Uber, Kafka handles 4 trillion events/day. Each event (ride request, location, payment) goes to a topic with partitions distributed across data centers. When a broker fails, replicas in the ISR automatically take over—the ride doesn't stop.
+
 ---
 
 ## 2. Topics & Partitions
@@ -111,6 +151,56 @@ retention.ms: 604800000
 min.insync.replicas: 2
 cleanup.policy: delete
 ```
+
+### Step-by-Step
+
+1. **Topic creation** defines immutable partition count and replication factor
+2. **Partitioner function** hashes the key and maps to a partition index (hash % num_partitions)
+3. **Records append** to the leader partition's log sequentially with monotonic offset numbers
+4. **Replicas sync** by fetching from leader and writing locally in the same order
+5. **Consumer offset tracking** records read position per partition in the `__consumer_offsets` topic
+6. **Partition expansion** adds new partitions (old records stay in original partitions indefinitely)
+
+### Code Example
+
+```go
+// Go example: Kafka topic partition mechanics
+package main
+
+import (
+	"fmt"
+	"github.com/segmentio/kafka-go"
+)
+
+func main() {
+	// Create a writer targeting a topic (partitioner chooses partition)
+	w := kafka.NewWriter(kafka.WriterConfig{
+		Brokers:   []string{"localhost:9092"},
+		Topic:     "orders",
+		Balancer:  &kafka.Hash{}, // Hash balancer: uses key for consistent partitioning
+		MaxBytes:  1000000,        // Max batch size in bytes
+	})
+
+	// Send messages; key-based routing sends same key to same partition
+	messages := []kafka.Message{
+		{Key: []byte("user-1"), Value: []byte("order-100")},
+		{Key: []byte("user-1"), Value: []byte("order-101")}, // Same partition as user-1
+		{Key: []byte("user-2"), Value: []byte("order-200")}, // Different partition
+	}
+
+	err := w.WriteMessages(nil, messages...)
+	if err != nil {
+		panic(err)
+	}
+
+	w.Close()
+	fmt.Println("All messages routed by partition key")
+}
+```
+
+### Real-World Scenario
+
+LinkedIn's Kafka cluster uses 8-16 partitions per topic for high-throughput streams. When scaling, they increase partitions without reprocessing: old partitions serve existing consumers, new partitions onboard new consumers. This avoids the "rebalance thundering herd" problem where all consumers pause simultaneously.
 
 ---
 
@@ -147,6 +237,44 @@ producer.close();
 | `enable.idempotence` | `false` | Exactly-once producer |
 | `max.in.flight.requests` | `5` | Unacknowledged requests |
 
+### Step-by-Step
+
+1. **Serialization** converts key and value objects to bytes using configured serializers
+2. **Partitioner selection** maps the key hash to a partition (0 to num_partitions-1)
+3. **Batch buffer accumulation** holds messages in producer's memory until batch.size bytes or linger.ms elapses
+4. **Compression** is applied (snappy, gzip, lz4) to reduce network bandwidth
+5. **Leader write** appends batch atomically to the partition log
+6. **Callback invocation** returns metadata (partition, offset) or exception to the producer
+
+### Code Example
+
+```bash
+#!/bin/bash
+# Bash/curl example: Kafka producer via REST Proxy
+set -e
+
+PROXY_URL="http://localhost:8082"
+TOPIC="orders"
+
+# Send a single message
+curl -X POST "$PROXY_URL/topics/$TOPIC" \
+  -H "Content-Type: application/vnd.kafka.json.v2+json" \
+  -d '{
+    "records": [
+      {
+        "key": "user-123",
+        "value": {"order_id": "ord-456", "amount": 99.99, "timestamp": "'$(date +%s)'"} 
+      }
+    ]
+  }' | jq '.offsets[0]'
+
+echo "Message sent to partition $(jq '.offsets[0].partition' <<< $RESPONSE), offset $(jq '.offsets[0].offset' <<< $RESPONSE)"
+```
+
+### Real-World Scenario
+
+Twitter's producer service handles 500K tweets/second. Each producer batches messages for 5ms before sending, achieving 100Mbps throughput. When a broker goes down, idempotent producers with enable.idempotence=true automatically retry without duplicating tweets—critical for feed consistency.
+
 ---
 
 ## 4. Consumers & Consumer Groups
@@ -180,6 +308,53 @@ await consumer.run({
 });
 ```
 
+### Step-by-Step
+
+1. **Consumer joins group** via group coordinator broker, triggering rebalance
+2. **Assignment strategy** (range, roundrobin, sticky) divides partitions among consumers
+3. **Offset fetch** reads last committed offset from `__consumer_offsets` topic
+4. **Poll and fetch** retrieves up to max.poll.records from assigned partitions
+5. **Process messages** synchronously or asynchronously (must call heartbeat() within session.timeout.ms)
+6. **Offset commit** records progress (auto or manual) for resumption after restart
+
+### Code Example
+
+```python
+# Python consumer with manual offset management
+from kafka import KafkaConsumer, OffsetAndMetadata
+from kafka.structs import TopicPartition
+import json
+
+consumer = KafkaConsumer(
+    'orders',
+    bootstrap_servers=['localhost:9092'],
+    group_id='order-processors',
+    enable_auto_commit=False,  # Manual commits for exactly-once
+    auto_offset_reset='earliest',
+    value_deserializer=lambda m: json.loads(m.decode('utf-8'))
+)
+
+for message in consumer:
+    try:
+        order = message.value
+        print(f"Processing order {order['id']}")
+        # Process the order...
+        process_order(order)
+        
+        # Commit offset only after successful processing
+        tp = TopicPartition(message.topic, message.partition)
+        offsets = {tp: OffsetAndMetadata(message.offset + 1, "committed")}
+        consumer.commit(offsets=offsets)
+        print(f"Offset {message.offset} committed")
+    except Exception as e:
+        print(f"Error: {e}, not committing offset")
+        # Retry will start from last committed offset
+```
+
+### Real-World Scenario
+
+Netflix uses consumer groups for parallel processing: a single "recommendations" topic with 100 partitions feeds 10 consumer instances, each handling 10 partitions. When an instance crashes, the remaining 9 instances rebalance and assume its partitions within seconds—recommendations don't stall.
+
 ---
 
 ## 5. Replication & ISR
@@ -200,6 +375,57 @@ replica.lag.time.max.ms: 30000
 unclean.leader.election.enable: false
 ```
 
+### Step-by-Step
+
+1. **Partition leadership** is assigned to a broker; follower replicas on other brokers fetch from it
+2. **Fetch loop** followers continuously fetch new records from the leader's log
+3. **In-sync tracking** broker monitors replica.lag.time.max.ms; lag > 30s removes replica from ISR
+4. **ACK threshold** producer waits for min.insync.replicas acknowledgments before returning success
+5. **Leader failure detection** controller notices leader unresponsive after heartbeat timeout
+6. **Leader election** promotes highest replica in ISR to become new leader (if unclean.leader.election.enable=false)
+
+### Code Example
+
+```c
+// C example: Monitoring ISR state via broker metrics
+#include <stdio.h>
+#include <librdkafka/rdkafka.h>
+
+void print_replica_lag(rd_kafka_t *rk) {
+    // Librdkafka exposes broker metadata
+    rd_kafka_metadata_t *metadata;
+    
+    int err = rd_kafka_metadata(rk, 0, NULL, &metadata, 5000);
+    if (err) {
+        fprintf(stderr, "Failed to fetch metadata: %s\n", rd_kafka_err2str(err));
+        return;
+    }
+    
+    // Iterate through partitions and their ISR
+    for (int i = 0; i < metadata->topic_cnt; i++) {
+        const rd_kafka_metadata_topic_t *t = &metadata->topics[i];
+        
+        for (int j = 0; j < t->partition_cnt; j++) {
+            const rd_kafka_metadata_partition_t *p = &t->partitions[j];
+            
+            printf("Topic: %s, Partition: %d, Leader: %d, ISR count: %d\n",
+                   t->topic, p->id, p->leader, p->isr_cnt);
+            
+            // ISR = in-sync replicas
+            for (int k = 0; k < p->isr_cnt; k++) {
+                printf("  ISR Replica[%d]: broker %d\n", k, p->isrs[k]);
+            }
+        }
+    }
+    
+    rd_kafka_metadata_destroy(metadata);
+}
+```
+
+### Real-World Scenario
+
+At Stripe, a partition with RF=3 had one replica fall behind due to GC pause. After 35 seconds, it was removed from ISR (replica.lag.time.max.ms=30s). With min.insync.replicas=2, writes still succeeded to the remaining 2 ISR members. When that lagged replica recovered, it caught up and rejoined ISR—no data loss, transparent recovery.
+
 ---
 
 ## 6. Leader Election
@@ -212,6 +438,44 @@ On leader failure, controller elects a new leader from ISR.
 
 `unclean.leader.election.enable=true` allows electing out-of-sync replicas (data loss risk).
 
+### Step-by-Step
+
+1. **Broker heartbeat loss** controller detects leader unresponsive (zookeeper.session.timeout.ms)
+2. **ISR validation** controller identifies highest-offset replica still in ISR
+3. **Election announcement** new leader is elected and metadata is updated
+4. **Broker notification** all brokers update their metadata cache
+5. **Recovery** partitions transition from URP (Under-Replicated) back to fully replicated
+6. **Client redirect** producers/consumers learn new leader and reconnect
+
+### Code Example
+
+```bash
+#!/bin/bash
+# Monitoring leader elections and ISR changes using kafka-topics.sh
+
+BROKERS="localhost:9092"
+TOPIC="critical-orders"
+
+# Watch for ISR changes and replica status
+kafka-topics.sh --bootstrap-server $BROKERS --describe --topic $TOPIC | while IFS= read -r line; do
+    echo "$line"
+    
+    # Parse ISR from output (format: Leader: X  Replicas: Y,Z,W  Isr: A,B)
+    if [[ $line =~ Isr:\ ([0-9,]+) ]]; then
+        isr="${BASH_REMATCH[1]}"
+        isr_count=$(echo "$isr" | tr ',' '\n' | wc -l)
+        
+        if [ "$isr_count" -lt 3 ]; then
+            echo "[WARNING] ISR degraded to $isr_count replicas"
+        fi
+    fi
+done
+```
+
+### Real-World Scenario
+
+Amazon's ElastiCache Kafka cluster had a broker crash in us-east-1a. Within 300ms, the controller detected heartbeat loss and elected a new leader from the 2 remaining ISR brokers. Writes continued with acks=all (waiting for 2 replicas). When the failed broker restarted 2 minutes later, it rejoined ISR automatically and caught up with the leader's log—customers saw zero disruption.
+
 ---
 
 ## 7. Delivery Semantics (Acks)
@@ -223,6 +487,62 @@ On leader failure, controller elects a new leader from ISR.
 | `all` | All ISR confirm | Financial, critical |
 
 `acks=all` is safest. No data loss as long as `min.insync.replicas > 1`.
+
+### Step-by-Step
+
+1. **acks=0**: Producer sends and does NOT wait; packet loss = silent data loss
+2. **acks=1**: Leader writes to disk, sends ACK; follower replicas fetch asynchronously
+3. **acks=all**: Leader waits for min.insync.replicas confirmations before sending ACK
+4. **Broker-side**: Each in-sync replica writes and flushes before confirming to leader
+5. **Timeout handling**: Producer retries if ACK not received within request.timeout.ms
+6. **Durability guarantee**: With RF=3, min.insync.replicas=2, acks=all guarantees survival of 1 broker failure
+
+### Code Example
+
+```go
+// Go example: Kafka producer acks behavior
+package main
+
+import (
+	"fmt"
+	"github.com/segmentio/kafka-go"
+)
+
+func main() {
+	configs := map[string]int{
+		"acks=0 (fire-and-forget)":        0,
+		"acks=1 (leader only)":            1,
+		"acks=-1/all (all ISR replicas)": -1,
+	}
+
+	for desc, acksValue := range configs {
+		writer := kafka.NewWriter(kafka.WriterConfig{
+			Brokers:     []string{"localhost:9092"},
+			Topic:       "orders",
+			RequiredAcks: kafka.RequiredAcks(acksValue),
+			Compression: kafka.Snappy,
+		})
+
+		msg := kafka.Message{
+			Key:   []byte("order-1"),
+			Value: []byte(`{"id": "123", "amount": 99.99}`),
+		}
+
+		err := writer.WriteMessages(nil, msg)
+		if err != nil {
+			fmt.Printf("%s - Error: %v\n", desc, err)
+		} else {
+			fmt.Printf("%s - Success\n", desc)
+		}
+
+		writer.Close()
+	}
+}
+```
+
+### Real-World Scenario
+
+DoorDash uses acks=all for order writes (financial critical) and acks=1 for delivery location updates (high throughput, acceptable loss). When testing, they set RequestTimingOut=true to simulate acks delays and verified retries don't duplicate orders—critical for billing accuracy.
 
 ---
 

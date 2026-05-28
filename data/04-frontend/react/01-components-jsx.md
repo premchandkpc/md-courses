@@ -76,6 +76,58 @@ import { jsx as _jsx } from "react/jsx-runtime";
 _jsx("div", { className: "container", children: "Hello" });
 ```
 
+### Step-by-Step
+
+1. **Babel parsing**: Babel's parser detects JSX syntax (`<tagName>`)
+2. **Token conversion**: JSX elements are tokenized into open tag, content, close tag
+3. **CreateElement transformation**: Tokens are converted to `React.createElement()` or `_jsx()` calls
+4. **Argument mapping**: Attributes become `props` object, children become additional arguments
+5. **Object creation**: Runtime wraps result in a fiber-compatible object with `type`, `props`, `key`, `ref`
+6. **Virtual tree building**: Multiple calls build a tree of element objects (not DOM nodes yet)
+
+### Code Example
+
+```javascript
+// Input: JSX with nested elements
+const header = (
+  <header className="nav">
+    <h1>{title}</h1>
+    <nav>Links here</nav>
+  </header>
+);
+
+// Step 1: Babel transpilation
+const header = React.createElement(
+  "header",
+  { className: "nav" },
+  React.createElement("h1", null, title),
+  React.createElement("nav", null, "Links here")
+);
+
+// Step 2: Runtime evaluation creates object tree
+// [
+//   { type: "header", props: { className: "nav", children: [...] }, key: null, ref: null },
+//   [
+//     { type: "h1", props: { children: "My App" }, key: null, ref: null },
+//     { type: "nav", props: { children: "Links here" }, key: null, ref: null }
+//   ]
+// ]
+```
+
+### Real-World Scenario
+
+A team migrated from React 16 to React 17 and removed all `import React from 'react'` statements. Initially, the build failed on older Babel configs that didn't have the new JSX transform enabled. After updating `.babelrc` to use `@babel/preset-react` with `runtime: 'automatic'`, the code worked without changes and bundle size dropped by 8KB (one less React import per file).
+
+### Diagram
+
+```mermaid
+graph LR
+    A["JSX Code<br/>&lt;div&gt;Hello&lt;/div&gt;"] -->|Babel| B["createElement Call<br/>React.createElement('div', ..., 'Hello')"]
+    B -->|Runtime| C["Element Object<br/>{type: 'div', props: {...}}"]
+    C -->|Reconciliation| D["Virtual Tree<br/>(no DOM yet)"]
+    D -->|Commit| E["Actual DOM Node<br/>&lt;div&gt;Hello&lt;/div&gt;"]
+```
+
 ---
 
 ## 2. Component Lifecycle — Functional (via Hooks)
@@ -143,6 +195,82 @@ class LifecycleDemo extends React.Component {
 | `shouldComponentUpdate` | `React.memo` or `useMemo` |
 | `componentDidCatch` | `ErrorBoundary` class component |
 | `getDerivedStateFromProps` | `useState` + conditional set |
+
+### Step-by-Step
+
+1. **Render phase**: Function body executes (component logic, JSX creation)
+2. **Commit phase begins**: React updates DOM if tree changed
+3. **Post-commit (useEffect)**: After browser paint, `useEffect` callbacks run
+4. **Dependency check**: On next render, dependencies array is compared to previous
+5. **Cleanup phase**: If deps changed or component unmounts, cleanup function runs first
+6. **Effect re-run**: New effect runs with new dependencies
+
+### Code Example
+
+```javascript
+// Complete lifecycle example with hooks
+import { useState, useEffect, useRef } from 'react';
+
+function DataFetcher({ userId }) {
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const abortRef = useRef(null);
+
+  // 1. Mount + Update on userId change
+  useEffect(() => {
+    setLoading(true);
+    abortRef.current = new AbortController();
+
+    // Async data fetch
+    fetch(`/api/users/${userId}`, { signal: abortRef.current.signal })
+      .then(res => res.json())
+      .then(data => {
+        setData(data);
+        setLoading(false);
+      })
+      .catch(err => {
+        if (err.name !== 'AbortError') setError(err);
+      });
+
+    // 2. Cleanup: abort request if userId changes or unmount
+    return () => {
+      abortRef.current?.abort();
+    };
+  }, [userId]); // Dependency: re-run if userId changes
+
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>Error: {error.message}</p>;
+  return <div>{JSON.stringify(data)}</div>;
+}
+```
+
+#### Real-World Scenario
+
+A chat application had memory leaks when users switched conversations. Each DataFetcher started a WebSocket connection in `useEffect` but didn't clean up. After 100 conversation switches, 100 sockets remained open. Adding the cleanup function (`return () => socket.close()`) fixed the leak. Monitoring showed heap usage dropping from 500MB to 50MB.
+
+#### Diagram
+
+```mermaid
+sequenceDiagram
+    participant R as React
+    participant C as Component
+    participant B as Browser
+    participant A as API
+    
+    R->>C: 1. Render function body
+    C->>C: Create JSX
+    R->>B: 2. Update DOM (commit)
+    B->>B: Paint to screen
+    R->>C: 3. useEffect callback runs
+    C->>A: Fetch data
+    Note over C: Dependency array [userId]
+    A-->>C: Data returned
+    C->>R: setState
+    R->>C: 4. New render (data changed)
+    C->>C: Render with new data
+    R->>B: Update DOM
+```
 
 ---
 

@@ -108,6 +108,69 @@ Union mount: all layers stacked, top layer is read-write.
 Copy-on-write: when container modifies a file, it's copied up to top layer.
 ```
 
+### Step-by-Step
+
+1. **Dockerfile creation**: Write instructions (FROM, RUN, COPY, CMD) to define how to build an image
+2. **Build process**: Docker reads Dockerfile line-by-line and creates a layer for each instruction
+3. **Layer caching**: Each layer is cached; unchanged layers are reused on rebuilds (faster builds)
+4. **Image finalization**: All layers are stacked (union mount with overlay2) to create final image
+5. **Image registry**: Image is tagged and pushed to Docker Registry (Docker Hub, ECR, etc.)
+6. **Container creation**: When `docker run` executes, a new writable layer is created on top of image layers
+
+### Code Example
+
+```dockerfile
+# Dockerfile - defines how to build a Docker image
+# Use official Python runtime as base image
+FROM python:3.11-slim
+
+# Set working directory inside container
+WORKDIR /app
+
+# Copy requirements.txt from host to container
+COPY requirements.txt .
+
+# Install dependencies (creates a layer)
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy application code
+COPY . .
+
+# Expose port (metadata, doesn't publish)
+EXPOSE 5000
+
+# Set environment variable
+ENV FLASK_APP=app.py
+
+# Define command to run when container starts
+CMD ["python", "app.py"]
+
+# Build: docker build -t myapp:1.0 .
+# Run: docker run -p 5000:5000 myapp:1.0
+```
+
+### Real-World Scenario
+
+A CI/CD pipeline built Docker images for every commit. Without layer caching, each build reinstalled all 500 dependencies (3 minutes). After optimizing the Dockerfile (put Dockerfile changes before COPY), unchanged dependencies were cached and reused. Build time dropped from 3 minutes to 15 seconds, allowing 100+ deployments per day instead of 5.
+
+### Diagram
+
+```mermaid
+graph TD
+    A["Dockerfile"] -->|docker build| B["Read Line 1: FROM"]
+    B -->|Create Layer 1| C["Base Image Layer<br/>python:3.11"]
+    C -->|Read Line 2: WORKDIR| D["Create Layer 2<br/>/app directory"]
+    D -->|Read Line 3: COPY| E["Create Layer 3<br/>requirements.txt"]
+    E -->|Read Line 4: RUN pip| F["Create Layer 4<br/>Dependencies installed"]
+    F -->|Read Line 5: COPY| G["Create Layer 5<br/>App source code"]
+    G -->|Read Line 6: CMD| H["Create Layer 6<br/>Entry point set"]
+    H -->|Stack layers| I["Final Image<br/>6 layers stacked"]
+    I -->|docker run| J["Container<br/>Writable layer on top"]
+    style A fill:#4a8bc2
+    style I fill:#2d5a7b
+    style J fill:#c73e1d
+```
+
 ### Key Commands
 
 ```bash

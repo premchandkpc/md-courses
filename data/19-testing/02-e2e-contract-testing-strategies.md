@@ -85,6 +85,59 @@ graph LR
 
 ## E2E Testing Fundamentals
 
+#### Step-by-Step: E2E Test Execution
+
+1. **Start browser**: Launch Chrome/Firefox in headless mode
+2. **Navigate to URL**: Load application homepage
+3. **Wait for page load**: JavaScript framework (React/Vue) boots, API calls complete
+4. **Interact with UI**: Simulate user actions (click, type, submit)
+5. **Wait for response**: Network request sent, backend processes, response received
+6. **Verify result**: Check page content, URL changed, element appears
+7. **Cleanup**: Close browser, clear data, reset state
+8. **Report**: Pass/fail with screenshot on failure for debugging
+
+#### Code Example
+
+```javascript
+// E2E test with Cypress (JavaScript)
+describe('Checkout Flow', () => {
+  it('should complete a purchase end-to-end', () => {
+    // 1. Navigate
+    cy.visit('http://localhost:3000');
+    
+    // 2. Interact: Search for product
+    cy.get('input[placeholder="Search"]')
+      .type('laptop')
+      .submit();
+    
+    // 3. Wait for results and click product
+    cy.get('.product-item')
+      .first()
+      .click();
+    
+    // 4. Verify product page loaded
+    cy.url().should('include', '/product/');
+    cy.get('h1').should('contain', 'laptop');
+    
+    // 5. Add to cart
+    cy.get('button').contains('Add to Cart').click();
+    cy.get('#cart-count').should('contain', '1');
+    
+    // 6. Checkout
+    cy.get('a').contains('Cart').click();
+    cy.get('button').contains('Checkout').click();
+    
+    // 7. Verify order confirmation
+    cy.url().should('include', '/confirmation');
+    cy.get('.success-message').should('be.visible');
+  });
+});
+```
+
+#### Real-World Scenario
+
+A payment company's checkout flow had a bug where the "Place Order" button was hidden off-screen due to CSS (position: absolute; left: -9999px) in production but visible in dev. Unit tests mocked the button and passed. Integration tests only checked the API response. E2E test with Cypress ran real browser, tried to click the hidden button, failed with "element not clickable", caught the bug before production.
+
 ### What is E2E Testing?
 
 ```
@@ -726,6 +779,73 @@ Or: Use isolated databases per test
 ---
 
 ## Contract Testing Deep Dive
+
+#### Step-by-Step: Contract Testing Process
+
+1. **Consumer defines expectations**: "I need GET /payments/{id} to return {status, amount, currency}"
+2. **Write contract test**: Create Pact file describing the interaction
+3. **Generate mock provider**: Pact creates a mock server that responds to the contract
+4. **Consumer test passes**: Consumer code works with the mock provider
+5. **Share contract**: Push Pact file to Pact Broker or share with provider team
+6. **Provider verifies contract**: Provider runs their code against the Pact, ensures real endpoint matches
+7. **Deploy safely**: Both teams can deploy independently — contract guarantees compatibility
+
+#### Code Example
+
+```java
+// Consumer (Order Service) writes contract with Pact (Java)
+@ExtendWith(PactConsumerTestExt.class)
+class OrderServiceContractTest {
+    
+    @Pact(consumer = "OrderService", provider = "PaymentService")
+    public RequestResponsePact createPact(PactBuilder builder) {
+        return builder
+            .given("payment 123 exists")
+            .uponReceiving("a request for payment details")
+            .path("/payments/123")
+            .method("GET")
+            .willRespondWith()
+            .status(200)
+            .body("""
+                {
+                  "status": "approved",
+                  "amount": 99.99,
+                  "currency": "USD"
+                }
+            """)
+            .toPact();
+    }
+    
+    @Test
+    void testOrderServiceCanGetPaymentDetails(MockServer mockServer) {
+        PaymentClient client = new PaymentClient(mockServer.getUrl());
+        Payment payment = client.getPayment(123);
+        
+        assertEquals("approved", payment.getStatus());
+        assertEquals(99.99, payment.getAmount());
+    }
+}
+
+// Provider (Payment Service) verifies contract (Java)
+@PactFolder("target/pacts")
+@Provider("PaymentService")
+class PaymentServiceProviderTest {
+    
+    @ProviderTestTemplate
+    void verifyContract(PactVerificationContext context) {
+        context.verifyInteraction();  // Run actual endpoint against Pact expectations
+    }
+    
+    @State("payment 123 exists")
+    void setupPaymentExists() {
+        paymentRepository.save(new Payment(123, "approved", 99.99, "USD"));
+    }
+}
+```
+
+#### Real-World Scenario
+
+Two teams at a fintech company: Order Service (consumer) and Payment Service (provider). Payment Service team upgraded their API, renaming `status` → `statusCode` and `amount` → `value`. No contract tests. In production, Order Service crashed when accessing the old field names (NullPointerException). Post-incident analysis: contract test would have failed during Payment Service's CI when their endpoint didn't match the contract, preventing the deployment.
 
 ### The Contract Problem
 

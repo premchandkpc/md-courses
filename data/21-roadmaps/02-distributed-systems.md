@@ -126,6 +126,37 @@ Before diving into distributed systems, you need solid fundamentals:
 
 ## Topic 1: CAP Theorem + Consistency Models
 
+#### Step-by-Step: Choosing Consistency Model for Your System
+
+1. **Identify the problem domain**: Payment system? Social graph? Analytics?
+2. **Assess partition likelihood**: Single datacenter (rare) vs multi-region (common)?
+3. **Prioritize business requirement**: Is data loss worse than unavailability?
+4. **Choose consistency**: 
+   - Strong (CP): Prevents stale reads but may reject writes during partition
+   - Eventual (AP): Accepts writes but users see stale data briefly
+5. **Plan conflict resolution**: If AP, how do you merge divergent updates?
+6. **Test under failure**: Chaos test network partitions, measure inconsistency window
+
+#### Code Example
+
+```java
+// Consistency model selector (pseudocode)
+if (domain.isPainfulIfDataLoss()) {
+    // Payment system → CP (strong consistency)
+    return new SpannerLikeDatabase();  // Blocks until majority ack
+} else if (domain.isPainfulIfUnavailable()) {
+    // Social media feed → AP (eventual consistency)
+    return new CassandraLikeDatabase();  // Always accepts, converges later
+} else if (domain.canTolerateStaleness(duration: "1 minute")) {
+    // Analytics dashboard → Causal consistency
+    return new DynamoDBLikeDatabase();  // Read your writes, but stale across regions
+}
+```
+
+#### Real-World Scenario
+
+A logistics company chose eventual consistency for package tracking (to avoid partitions blocking updates). During a network outage, parcels in transit showed "delivered" in one region and "in transit" in another for 30 minutes. When partition healed, data converged via timestamp, but customers saw conflicting statuses in the app, causing support tickets. They added a "last observed consistency timestamp" to the API response, helping users understand that data might be stale.
+
 ### Key Concepts
 - **C**onsistency: Every read receives the most recent write or an error (linearizability)
 - **A**vailability: Every request receives a (non-error) response, without guarantee it contains the most recent write

@@ -18,6 +18,88 @@ docker build --secret id=ssh_key,src=~/.ssh/id_rsa .  # BuildKit secrets
 docker build --squash -t app:v1 .       # Squash layers (experimental)
 ```
 
+### Step-by-Step
+
+1. **Prepare Dockerfile** with FROM, RUN, COPY instructions optimized for layer caching
+2. **Choose base image** balancing size, security, and functionality (distroless for production)
+3. **Execute build context** — Docker sends files to daemon, builder processes Dockerfile line by line
+4. **Cache layers** — Each RUN command creates a layer; unchanged layers reuse cached images
+5. **Tag image** with registry/name:version following naming conventions
+6. **Optimize layer size** by combining RUN statements, removing build artifacts, using multi-stage builds
+
+### Code Example
+
+```dockerfile
+# Optimized Dockerfile with layer caching strategy
+FROM golang:1.23-alpine AS builder
+
+# Layer 1: Install dependencies (changes rarely, cached well)
+RUN apk add --no-cache git ca-certificates
+
+# Layer 2: Copy go.mod/go.sum (changes when dependencies update)
+COPY go.mod go.sum ./
+RUN go mod download
+
+# Layer 3: Copy source code (changes frequently during development)
+COPY . .
+
+# Layer 4: Build binary
+RUN CGO_ENABLED=0 GOOS=linux go build -o app .
+
+# Final stage: minimal distroless image
+FROM gcr.io/distroless/base-debian12
+
+# Copy only the binary, reducing image size from 500MB to 10MB
+COPY --from=builder /app /app
+EXPOSE 8080
+CMD ["/app"]
+```
+
+```bash
+# Build with build arguments and cache busting
+docker build \
+  --build-arg VERSION=1.2.3 \
+  --build-arg BUILD_DATE=$(date -u +'%Y-%m-%dT%H:%M:%SZ') \
+  --tag myapp:1.2.3 \
+  --tag myapp:latest \
+  .
+
+# View layer history to debug cache issues
+docker history myapp:latest
+
+# Build and push to registry with BuildKit for better caching
+DOCKER_BUILDKIT=1 docker build -t registry.example.com/myapp:v1 .
+docker push registry.example.com/myapp:v1
+```
+
+### Real-World Scenario
+
+At Uber, a monolithic Go service had a 2GB Docker image due to embedding all dependencies and build tools. By switching to multi-stage builds and distroless base images, they reduced the image to 50MB, decreasing deployment time from 5 minutes to 15 seconds and saving 85% on image registry storage costs. Layer caching also reduced build times from 10 minutes to 2 minutes for incremental changes.
+
+### Build Optimization Diagram
+
+```mermaid
+graph LR
+    A["Dockerfile"] -->|Layer 1| B["Base image"]
+    B -->|Layer 2| C["Dependencies"]
+    C -->|Layer 3| D["Source code"]
+    D -->|Layer 4| E["Compiled binary"]
+    E -->|Multi-stage| F["Distroless image"]
+    
+    G["Code change"] -->|Reuse cache| B
+    G -->|Reuse cache| C
+    G -->|Rebuild| D
+    G -->|Rebuild| E
+    
+    F -->|Final| H["Production image<br/>10MB"]
+    
+    style H fill:#4caf50,color:#fff
+    style A fill:#e3f2fd
+    style G fill:#fff3e0
+```
+
+---
+
 ## Run
 
 ```bash

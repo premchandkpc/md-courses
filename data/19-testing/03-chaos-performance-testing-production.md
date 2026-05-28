@@ -62,6 +62,58 @@ graph LR
 
 ## Chaos Engineering Fundamentals
 
+#### Step-by-Step: Chaos Test Execution
+
+1. **Establish baseline**: Measure system metrics under normal load (latency, error rate, throughput)
+2. **Formulate hypothesis**: "System should handle payment service failure gracefully"
+3. **Inject failure**: Kill payment service, inject latency, drop 50% of packets
+4. **Monitor system**: Watch metrics, logs, traces for degradation
+5. **Verify assertions**: Check error handling, no data loss, recovery when failure ends
+6. **Analyze results**: If hypothesis wrong, investigate root cause and fix
+7. **Document findings**: Add to runbook, update alerts, train team
+
+#### Code Example
+
+```java
+// Chaos test with Gremlin + JUnit (Java)
+@Test
+public void testSystemHandlesPaymentServiceFailure() {
+    // 1. Baseline: Verify system is healthy
+    assertTrue(healthCheck.isPaymentServiceHealthy());
+    OrderService service = new OrderService();
+    
+    // 2. Create order successfully
+    Order order1 = service.createOrder(100);
+    assertEquals("completed", order1.getStatus());
+    
+    // 3. Inject chaos: Kill payment service
+    gremlin.killProcess("payment-service");
+    
+    // 4. Try to create order during outage
+    Order order2 = service.createOrder(200);
+    
+    // 5. Verify graceful degradation
+    assertEquals("payment_failed", order2.getStatus());  // Not null/crash
+    assertNull(order2.getPaymentTransactionId());  // No partial record
+    
+    // 6. Verify monitoring detected the failure
+    assertTrue(metrics.hasAlert("payment_service_unavailable"));
+    
+    // 7. Recovery: Restart payment service
+    gremlin.restartProcess("payment-service");
+    Thread.sleep(2000);
+    assertTrue(healthCheck.isPaymentServiceHealthy());
+    
+    // 8. Verify system recovered
+    Order order3 = service.createOrder(300);
+    assertEquals("completed", order3.getStatus());
+}
+```
+
+#### Real-World Scenario
+
+Netflix discovered via chaos testing that one of their microservices had a connection pool leak when calling a downstream service that was slow. Under normal conditions, connections returned quickly. Under chaos (latency injection on downstream), connections exhausted and service hung, causing cascading failure. Chaos test caught this before it happened in production. Fix: add connection timeout + circuit breaker.
+
 ### What is Chaos Testing?
 
 ```

@@ -169,6 +169,55 @@ kube-proxy
   └───────────────────────────────────────────────┘
 ```
 
+#### Step-by-Step
+
+1. **API Server validates request** — User runs `kubectl apply -f pod.yaml`, CLI sends HTTPS request to API server with pod manifest.
+2. **Admission controllers run** — Mutating webhooks (e.g., inject sidecar), then validating webhooks (reject invalid specs).
+3. **etcd persists desired state** — API server writes pod manifest to etcd (Raft consensus across 3-5 nodes).
+4. **Scheduler finds node** — Scheduler watches unscheduled pods, filters nodes by resource/constraints, scores by affinity/spread, binds pod to node.
+5. **kubelet pulls and starts container** — kubelet sees new pod via watch, calls container runtime (containerd), mounts volumes, runs readiness probes.
+6. **kube-proxy configures network** — iptables/IPVS rules created so Services route traffic to pod's IP.
+
+#### Code Example
+
+```bash
+# Trace a pod creation from kubectl to container start
+# 1. Create a deployment
+kubectl create deployment nginx --image=nginx --replicas=2
+
+# 2. Watch API server logs (control plane)
+kubectl logs -f deployment/kube-apiserver -n kube-system | grep "nginx"
+
+# 3. Check kubelet logs on the node where pod landed
+ssh node1
+journalctl -u kubelet -f | grep "nginx"
+
+# 4. Verify container runtime (containerd)
+crictl ps | grep nginx
+
+# 5. Query etcd directly (API server is the intermediary)
+etcdctl get /kubernetes.io/pods/default/nginx-xxxxx
+```
+
+#### Real-World Scenario
+
+At Uber, a misconfigured admission webhook caused all pod creation to hang for 3 minutes. The webhook was doing a synchronous DNS lookup to an external validation service that had high latency. Once identified via `kubectl describe pod` showing pending event "admission webhook timeout", they added a 5-second timeout to the webhook configuration, preventing future cascade failures.
+
+#### Diagram
+
+```mermaid
+sequenceDiagram
+    User->>API: kubectl apply pod.yaml
+    API->>Admission: Validate + Mutate
+    API->>etcd: Store desired state
+    Scheduler->>API: Watch unscheduled pods
+    Scheduler->>API: Bind pod to node1
+    kubelet->>API: Watch for new pods
+    kubelet->>containerd: Pull image, start container
+    kube-proxy->>iptables: Create NAT rules for Service
+    kubelet->>pod: Run readiness probe
+```
+
 ---
 
 ## 🧭 Pods
@@ -268,6 +317,78 @@ Container States within Pod:
   ├────────────────┤
   │ Terminated      │── Completed or Error
   └────────────────┘
+```
+
+#### Step-by-Step
+
+1. **API server creates pod object** — Pod manifest written to etcd in PENDING phase (no node assigned yet).
+2. **Scheduler assigns to node** — Scheduler finds available node, updates pod with `spec.nodeName`.
+3. **kubelet sees new pod** — kubelet watches API server, detects its node assignment, begins pulling image.
+4. **Container runtime starts container** — containerd pulls image layers, creates container, runs entrypoint command.
+5. **Startup probe runs** — Container initializing; kubelet runs startup probe every periodSeconds until success.
+6. **Pod transitions to RUNNING** — At least one container is running; liveness and readiness probes begin.
+7. **Pod terminates** — On deletion, gracefulTerminationPeriod (default 30s) given; SIGTERM sent; liveness probe disabled.
+
+#### Code Example
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pod-lifecycle-demo
+  namespace: default
+spec:
+  containers:
+    - name: myapp
+      image: nginx:1.25
+      lifecycle:
+        # Hook before pod starts serving
+        postStart:
+          exec:
+            command: ["/bin/sh", "-c", "echo 'Pod starting' > /tmp/started.log"]
+        # Hook before pod terminates
+        preStop:
+          exec:
+            command: ["/bin/sh", "-c", "sleep 15 && echo 'Pod stopping'"]
+      startupProbe:
+        httpGet:
+          path: /health
+          port: 80
+        failureThreshold: 30
+        periodSeconds: 10
+      readinessProbe:
+        httpGet:
+          path: /ready
+          port: 80
+        initialDelaySeconds: 5
+        periodSeconds: 5
+      livenessProbe:
+        httpGet:
+          path: /healthz
+          port: 80
+        initialDelaySeconds: 15
+        periodSeconds: 20
+  terminationGracePeriodSeconds: 30
+  restartPolicy: Always  # Always, OnFailure, Never
+```
+
+#### Real-World Scenario
+
+A Netflix team noticed pods were being killed by Kubernetes during deployments even though they were healthy. Investigation revealed that `terminationGracePeriodSeconds` was 30 seconds, but their application's graceful shutdown took 45 seconds to flush in-flight requests. They increased it to 60 seconds and added a preStop hook that blocked until all connections drained, preventing request loss during rolling updates.
+
+#### Diagram
+
+```mermaid
+stateDiagram-v2
+    [*] --> Pending
+    Pending --> ContainerCreating: kubelet pulls image
+    ContainerCreating --> Running: container starts
+    Running --> Succeeded: exit code 0
+    Running --> Failed: exit code non-0
+    Running --> CrashLoopBackOff: rapid failures
+    Succeeded --> [*]
+    Failed --> [*]
+    CrashLoopBackOff --> Running: after backoff delay
 ```
 
 ### Multi-Container Pods
@@ -382,6 +503,63 @@ spec:
               path: /healthz
               port: 80
       terminationGracePeriodSeconds: 30
+```
+
+#### Step-by-Step
+
+1. **Deployment controller creates ReplicaSet** — Deployment spec creates ReplicaSet with pod template.
+2. **ReplicaSet controller creates Pods** — ReplicaSet ensures desired number of pods (3) are running.
+3. **Scheduler assigns to nodes** — Scheduler distributes pods across nodes respecting affinity rules.
+4. **kubelet starts containers** — kubelet pulls images, runs readiness probes, adds pods to Service load balancer.
+5. **Rolling update triggered** — New image version set, ReplicaSet slowly scales down old pods (maxUnavailable=1) and up new pods (maxSurge=1).
+6. **Old ReplicaSet retained** — Previous ReplicaSet kept (revisionHistoryLimit=5) for quick rollback if issues detected.
+
+#### Code Example
+
+```bash
+# Create deployment
+kubectl create deployment web --image=nginx:1.25 --replicas=3
+
+# Check rollout status
+kubectl rollout status deployment/web
+# Output: Waiting for deployment "web" to complete: 1 out of 3 new replicas have been updated
+
+# Update image (triggers rolling update)
+kubectl set image deployment/web nginx=nginx:1.26 --record
+
+# Watch rolling update in real-time
+kubectl rollout history deployment/web
+# revision 1: image: nginx:1.25
+# revision 2: image: nginx:1.26
+
+# Pause/resume rollout (for canary testing)
+kubectl rollout pause deployment/web
+kubectl rollout resume deployment/web
+
+# Rollback to previous revision
+kubectl rollout undo deployment/web --to-revision=1
+```
+
+#### Real-World Scenario
+
+A fintech company performed a rolling update of their payment API but a new image had a memory leak. Within 5 minutes, pods were OOMKilled faster than new ones could start (maxSurge=1 meant only 1 pod restarted at a time). They had set `progressDeadlineSeconds: 600` (10 min), so Kubernetes aborted the rollout at 10 minutes. They used `kubectl rollout undo` to restore the previous version in seconds, preventing payment processing outages.
+
+#### Diagram
+
+```mermaid
+graph TB
+    subgraph Initial["Initial (v1): 3 pods"]
+        P1["Pod-v1"]
+        P2["Pod-v1"]
+        P3["Pod-v1"]
+    end
+    subgraph Update["Rolling Update (maxSurge=1, maxUnavailable=1)"]
+        US1["Step 1: Scale RS-v2 to 1, RS-v1 at 3"]
+        US2["Step 2: Scale RS-v1 to 2, RS-v2 at 2"]
+        US3["Step 3: Scale RS-v1 to 1, RS-v2 at 3"]
+        US4["Step 4: Scale RS-v1 to 0, RS-v2 at 3"]
+    end
+    Initial --> US1 --> US2 --> US3 --> US4
 ```
 
 ### Rolling Update
@@ -552,6 +730,91 @@ Service Traffic Flow:
 Service resolution (CoreDNS):
   <service>.<namespace>.svc.cluster.local
   web.default.svc.cluster.local → 10.96.0.1
+```
+
+#### Step-by-Step
+
+1. **Service object created** — User defines Service selector (e.g., `app: web`), port mapping (80→8080).
+2. **EndpointSlice controller watches pods** — Finds all pods matching selector, tracks their IPs and readiness status.
+3. **kube-proxy subscribes to changes** — Watches Service and EndpointSlice, writes iptables/IPVS rules locally on each node.
+4. **Client resolves DNS** — Pod A wants to reach `web.default.svc.cluster.local`, CoreDNS returns Service ClusterIP (10.96.0.1).
+5. **iptables performs DNAT** — Client connection to 10.96.0.1:80 is intercepted, NATted to random endpoint (10.0.1.2:8080).
+6. **kube-proxy load balances** — Round-robin or hash-based selection if using IPVS mode; scales gracefully with EndpointSlice updates.
+
+#### Code Example
+
+```yaml
+# Define Service to load-balance across pods
+apiVersion: v1
+kind: Service
+metadata:
+  name: web-service
+  namespace: production
+spec:
+  type: ClusterIP
+  selector:
+    app: web
+    tier: frontend
+  ports:
+    - name: http
+      port: 80
+      targetPort: 8080      # Pod container port
+      protocol: TCP
+  sessionAffinity: ClientIP # Optional: stick client to same pod
+  sessionAffinityConfig:
+    clientIP:
+      timeoutSeconds: 10800
+  publishNotReadyAddresses: false  # Only include Ready pods
+
+---
+# Create corresponding deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: web
+      tier: frontend
+  template:
+    metadata:
+      labels:
+        app: web
+        tier: frontend
+    spec:
+      containers:
+        - name: nginx
+          image: nginx:1.25
+          ports:
+            - containerPort: 8080
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: 8080
+            periodSeconds: 5
+```
+
+#### Real-World Scenario
+
+A Spotify team experienced intermittent request timeouts where some traffic would hit pods that were still shutting down gracefully. The issue: pods were marked NotReady but kube-proxy took ~10 seconds to update iptables rules. They set `preStop` hook to sleep 15 seconds before containers shut down, ensuring iptables rules converged before endpoints actually disconnected.
+
+#### Diagram
+
+```mermaid
+sequenceDiagram
+    participant Client
+    participant CoreDNS
+    participant kube-proxy
+    participant iptables
+    participant Pod1
+    Client->>CoreDNS: Resolve web.default.svc.cluster.local
+    CoreDNS-->>Client: 10.96.0.1
+    Client->>iptables: Connect to 10.96.0.1:80
+    kube-proxy->>iptables: DNAT rule: 10.96.0.1:80 -> Pod IP:8080
+    iptables-->>Pod1: Route to 10.0.1.2:8080
+    Pod1-->>Client: HTTP response
 ```
 
 ### Headless Services
@@ -905,6 +1168,86 @@ spec:
     matchLabels:
       type: nfs
   volumeMode: Filesystem                   # Filesystem (default) or Block
+```
+
+#### Step-by-Step
+
+1. **Admin creates PersistentVolume** — Provisions actual storage (NFS share, AWS EBS, GCP PD) and creates PV object in Kubernetes.
+2. **User creates PersistentVolumeClaim** — Pod requests storage via PVC (like a purchase order), specifies size and access mode.
+3. **Kubernetes binds PVC to PV** — Finds PV matching PVC's storageClassName, accessModes, size; creates binding.
+4. **Pod mounts volume** — kubelet mounts the bound PV to pod at specified mountPath (using storage driver/NFS client).
+5. **Application reads/writes** — Container sees mounted directory, can persist data across pod restarts.
+6. **Reclaim policy applied** — On PVC deletion, reclaim policy (Retain/Delete/Recycle) determines what happens to actual storage.
+
+#### Code Example
+
+```yaml
+# StorageClass for dynamic provisioning (CSI driver)
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: fast-ssd
+provisioner: ebs.csi.aws.com
+parameters:
+  type: gp3
+  iops: "3000"
+  throughput: "125"
+reclaimPolicy: Delete
+volumeBindingMode: WaitForFirstConsumer
+
+---
+# PVC requests storage dynamically (no manual PV needed)
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: data-pvc
+  namespace: production
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: fast-ssd
+  resources:
+    requests:
+      storage: 50Gi
+
+---
+# Pod uses PVC
+apiVersion: v1
+kind: Pod
+metadata:
+  name: app-with-storage
+spec:
+  containers:
+    - name: app
+      image: myapp
+      volumeMounts:
+        - name: data
+          mountPath: /data
+      command: ["/bin/sh", "-c"]
+      args:
+        - |
+          echo "Writing to persistent storage"
+          echo "timestamp: $(date)" >> /data/log.txt
+          sleep 3600
+  volumes:
+    - name: data
+      persistentVolumeClaim:
+        claimName: data-pvc
+```
+
+#### Real-World Scenario
+
+A DynamoDB team's backup job created thousands of PVCs daily, exhausting their storage quota. The issue: no reclaim policy cleanup occurred for failed job PVCs. They added a TTL controller (via Kubernetes Job cleanup or a custom operator) to delete PVCs older than 7 days, and set `reclaimPolicy: Delete` to auto-release backing storage.
+
+#### Diagram
+
+```mermaid
+graph LR
+    Admin["Admin<br/>Provisions Storage<br/>(AWS EBS/NFS)"] -->|Create PV| PV["PersistentVolume<br/>100Gi<br/>RWO"]
+    User["User<br/>Requests Storage"] -->|Create PVC| PVC["PersistentVolumeClaim<br/>50Gi<br/>RWO"]
+    PVC -->|Bind| PV
+    Pod["Pod<br/>volumeMounts:<br/>  /data"] -->|Mount| PV
+    PV -->|Actual Block Storage| Storage["AWS EBS Volume<br/>or NFS Share"]
 ```
 
 ### PV Lifecycle

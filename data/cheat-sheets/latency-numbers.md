@@ -32,6 +32,142 @@ Read 1 MB sequentially from disk:  20,000,000 ns (20 ms)
 Send packet CA -> Netherlands:  150,000,000 ns (150 ms)
 ```
 
+### Step-by-Step
+
+1. **Understand the magnitude scale** — each order of magnitude (ns → µs → ms → s) represents ~1000x slowdown
+2. **Profile your bottleneck** — measure actual latencies in your system before optimizing (avoid premature optimization)
+3. **Cache strategically** — L1/L2/L3 are exponentially faster than main memory; main memory is 100,000x faster than disk
+4. **Choose storage tier** — L1/L2 for hot data, RAM for working set, SSD for recent history, disk for cold storage
+5. **Optimize network calls** — one network round-trip (500µs in datacenter) = 500,000 L1 cache hits; minimize RTTs
+6. **Batch operations** — reduce number of disk seeks/network calls by combining requests
+
+### Code Example
+
+```python
+# Latency profiling and optimization example
+import time
+from functools import wraps
+
+def measure_latency(func):
+    """Decorator to measure function latency."""
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        start_ns = time.perf_counter_ns()
+        result = func(*args, **kwargs)
+        end_ns = time.perf_counter_ns()
+        latency_ms = (end_ns - start_ns) / 1_000_000
+        print(f"{func.__name__}: {latency_ms:.2f} ms")
+        return result
+    return wrapper
+
+# Naive approach: Individual database queries
+@measure_latency
+def fetch_users_slow(user_ids):
+    """SLOW: N database round-trips = N * 1ms = 100ms for 100 users."""
+    users = []
+    for user_id in user_ids:
+        user = db.query(f"SELECT * FROM users WHERE id = {user_id}")
+        users.append(user)
+    return users
+
+# Optimized approach: Batch database query
+@measure_latency
+def fetch_users_fast(user_ids):
+    """FAST: 1 database round-trip = 1ms regardless of count."""
+    return db.query(f"SELECT * FROM users WHERE id IN ({','.join(map(str, user_ids))})")
+
+# Memory vs Disk: Choosing storage tier
+@measure_latency
+def data_from_l1_cache():
+    """0.5 ns: Hot data in L1 cache."""
+    arr = [1] * 64
+    return sum(arr)  # All in cache
+
+@measure_latency
+def data_from_memory():
+    """100 ns: Main memory access."""
+    arr = [1] * 1_000_000
+    return sum(arr[:1000])
+
+@measure_latency
+def data_from_ssd():
+    """1 ms: SSD read."""
+    with open('data.bin', 'rb') as f:
+        return len(f.read(1024))
+
+@measure_latency
+def data_from_disk():
+    """10-20 ms: HDD read with seek."""
+    with open('data.bin', 'rb') as f:
+        f.seek(10_000_000)  # Seek cost
+        return len(f.read(1024))
+
+# Network optimization: Reduce round-trips
+@measure_latency
+def api_calls_sequential():
+    """SLOW: 3 calls * 500µs = 1.5ms in datacenter."""
+    user = requests.get('/api/user/123').json()
+    orders = requests.get('/api/orders/123').json()
+    payments = requests.get('/api/payments/123').json()
+    return {user, orders, payments}
+
+@measure_latency
+def api_calls_parallel():
+    """FAST: All 3 parallel = 500µs (1 RTT) instead of 1.5ms."""
+    import concurrent.futures
+    with concurrent.futures.ThreadPoolExecutor(max_workers=3) as executor:
+        future_user = executor.submit(requests.get, '/api/user/123')
+        future_orders = executor.submit(requests.get, '/api/orders/123')
+        future_payments = executor.submit(requests.get, '/api/payments/123')
+        return {
+            'user': future_user.result().json(),
+            'orders': future_orders.result().json(),
+            'payments': future_payments.result().json()
+        }
+
+# Usage
+print("=== Database Access ===")
+fetch_users_slow(range(100))      # 100ms
+fetch_users_fast(range(100))       # 1ms (100x faster!)
+
+print("\n=== Storage Tiers ===")
+data_from_l1_cache()               # < 1µs
+data_from_memory()                 # ~0.1ms
+data_from_ssd()                    # ~1ms
+data_from_disk()                   # ~10ms
+
+print("\n=== Network Optimization ===")
+api_calls_sequential()             # ~1.5ms
+api_calls_parallel()               # ~0.5ms (3x faster)
+```
+
+### Real-World Scenario
+
+LinkedIn's feed was timing out (p99 > 5 seconds) because the backend made 10 sequential database queries per feed request: 1 for user profile, 3 for recommendations, 4 for comments, 2 for engagements. Each query was 1-5ms individually. With sequential execution: 10 queries * 3ms = 30ms of actual work, but 10 * 500µs network overhead = 5ms latency added up to 35ms. By parallelizing queries and caching hot data in Redis (0.5ms lookups), they reduced feed latency from 5 seconds to 200ms and served 10x more concurrent users.
+
+### Latency Scaling Diagram
+
+```mermaid
+graph LR
+    A["L1 Cache<br/>0.5 ns"] -->|1000x slower| B["L2 Cache<br/>7 ns"]
+    B -->|15x slower| C["Main Memory<br/>100 ns"]
+    C -->|10,000x slower| D["SSD<br/>1 ms"]
+    D -->|10x slower| E["Disk<br/>10 ms"]
+    E -->|15x slower| F["Network DC<br/>500 µs<br/>(RTT)"]
+    
+    G["Rule of Thumb"] -->|Avoid| H["One network call<br/>= 5,000 cache hits"]
+    G -->|Avoid| I["One disk seek<br/>= 10,000 memory reads"]
+    G -->|Optimize| J["Batch requests<br/>Parallel calls<br/>Cache hot data"]
+    
+    style C fill:#ffeb3b
+    style D fill:#ff9800
+    style E fill:#f44336,color:#fff
+    style F fill:#2196f3,color:#fff
+    style J fill:#4caf50,color:#fff
+```
+
+---
+
 ## Interactive with Latency Analogies
 
 | Latency | Real-world Analogy |

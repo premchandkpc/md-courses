@@ -179,6 +179,84 @@ CACHE STAMPEDE SEQUENCE
                 recompute + no stale-while-revalidate
 ```
 
+#### Step-by-Step (Root Cause Detection)
+
+1. **Monitor cache miss spike**: Track `keyspace_misses` rate; alerts when > 100 misses/second or > 10x baseline
+2. **Correlate with DB impact**: Query database metrics; confirm CPU spike matches cache miss spike
+3. **Check TTL synchronization**: Query Redis to verify multiple keys expire at same time (same timestamp)
+4. **Analyze request pattern**: Review application logs to confirm 10K+ concurrent requests hitting cache
+5. **Identify recompute protection**: Check for mutex/lock patterns in application code
+6. **Load test scenario**: Simulate concurrent requests after cache expiration; measure DB impact
+
+#### Code Example
+
+```python
+# Instrumented cache layer with stampede prevention
+import redis
+import time
+import random
+import json
+from threading import Thread
+from functools import wraps
+
+class CacheWithStampedeProtection:
+  def __init__(self, redis_client):
+    self.redis = redis_client
+    
+  def get_or_compute(self, key, compute_fn, ttl=3600, lock_timeout=10):
+    """Get from cache or compute with mutex protection."""
+    # Step 1: Try to get from cache
+    cached = self.redis.get(key)
+    if cached:
+      return json.loads(cached)
+    
+    # Step 2: Acquire lock to be sole recomputer
+    lock_key = f"{key}:lock"
+    lock_id = str(time.time())
+    
+    # Only one request acquires the lock
+    acquired = self.redis.set(
+      lock_key, 
+      lock_id, 
+      nx=True,  # Only if doesn't exist
+      ex=lock_timeout
+    )
+    
+    if acquired:
+      try:
+        # Step 3: Recompute value
+        result = compute_fn()
+        # Add jitter to prevent synchronized re-expiry
+        ttl_with_jitter = ttl + random.randint(-300, 300)
+        self.redis.setex(key, ttl_with_jitter, json.dumps(result))
+        return result
+      finally:
+        # Step 4: Release lock
+        if self.redis.get(lock_key) == lock_id:
+          self.redis.delete(lock_key)
+    else:
+      # Step 5: Other requests wait and retry
+      for _ in range(50):  # Wait up to 5 seconds
+        time.sleep(0.1)
+        cached = self.redis.get(key)
+        if cached:
+          return json.loads(cached)
+      # Fallback: compute without cache (last resort)
+      return compute_fn()
+
+# Usage
+cache = CacheWithStampedeProtection(redis.Redis())
+products = cache.get_or_compute(
+  "products:featured",
+  lambda: db.query("SELECT * FROM products WHERE featured=true"),
+  ttl=3600
+)
+```
+
+#### Real-World Scenario
+
+DoorDash's restaurant recommendation cache stampede struck at 7 PM on Friday. The "featured_restaurants" key, cached at 6 PM and set to expire at 7 PM, expired exactly when order volume spiked to 50K requests/second. All 50K requests missed the cache and simultaneously queried the recommendation database, causing 100% CPU and 200-second query timeouts. The outage lasted 8 minutes and affected restaurant availability for customers. Post-incident, they implemented mutex locks with lock timeouts, added TTL jitter (±5 minutes), and probabilistic early recomputation, reducing cache stampede risk by 99%.
+
 ### Mitigation
 
 ```python

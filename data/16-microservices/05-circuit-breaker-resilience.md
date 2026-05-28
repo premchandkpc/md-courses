@@ -81,6 +81,134 @@ With circuit breaker:
 
 ## 1. Circuit Breaker Pattern
 
+#### Step-by-Step (Circuit Breaker Lifecycle)
+
+1. **CLOSED State**: Service healthy, requests pass through normally. Track failure count in sliding window.
+2. **Detect Failures**: Count consecutive failures (e.g., 5 in a row) or failure rate (>50% in last 100 requests)
+3. **Open Circuit**: When threshold hit, circuit opens. New requests immediately fail (fail-fast) without calling service
+4. **Fast-Fail**: Prevent cascading failures — threads don't wait on broken service, memory/connections freed
+5. **Half-Open**: After timeout (e.g., 30 seconds), allow single probe request to test if service recovered
+6. **Recovery**: If probe succeeds, close circuit (traffic flows again). If fails, reopen and wait another 30s
+
+#### Code Example
+
+```python
+# Circuit breaker implementation in Python
+from enum import Enum
+from datetime import datetime, timedelta
+import threading
+
+class CircuitState(Enum):
+    CLOSED = "closed"      # Normal operation
+    OPEN = "open"         # Failing, reject requests
+    HALF_OPEN = "half_open"  # Testing recovery
+
+class CircuitBreaker:
+    def __init__(self, failure_threshold: int = 5, 
+                 timeout_seconds: int = 30,
+                 window_size: int = 100):
+        self.state = CircuitState.CLOSED
+        self.failure_count = 0
+        self.success_count = 0
+        self.failure_threshold = failure_threshold
+        self.timeout_seconds = timeout_seconds
+        self.window_size = window_size
+        self.last_open_time = None
+        self.lock = threading.Lock()
+    
+    def call(self, func, *args, **kwargs):
+        """Execute function with circuit breaker protection"""
+        with self.lock:
+            if self.state == CircuitState.OPEN:
+                # Check if timeout elapsed
+                if self._should_attempt_reset():
+                    self.state = CircuitState.HALF_OPEN
+                    print(f"Circuit opened, entering HALF_OPEN after {self.timeout_seconds}s")
+                else:
+                    # Still in timeout period
+                    raise CircuitBreakerOpenException(
+                        f"Circuit open, will retry in "
+                        f"{self._time_until_retry()}s")
+            
+            # Try the call
+            try:
+                result = func(*args, **kwargs)
+                self._on_success()
+                return result
+            except Exception as e:
+                self._on_failure()
+                raise
+    
+    def _on_success(self):
+        """Called when function executes successfully"""
+        self.failure_count = 0
+        if self.state == CircuitState.HALF_OPEN:
+            print("Health check passed, closing circuit")
+            self.state = CircuitState.CLOSED
+        self.success_count += 1
+    
+    def _on_failure(self):
+        """Called when function fails"""
+        self.failure_count += 1
+        
+        if self.state == CircuitState.HALF_OPEN:
+            # Failed during recovery attempt
+            print("Health check failed, reopening circuit")
+            self.state = CircuitState.OPEN
+            self.last_open_time = datetime.now()
+        elif self.failure_count >= self.failure_threshold:
+            # Too many consecutive failures
+            print(f"Failure threshold reached ({self.failure_count}), opening circuit")
+            self.state = CircuitState.OPEN
+            self.last_open_time = datetime.now()
+    
+    def _should_attempt_reset(self) -> bool:
+        """Check if timeout has elapsed"""
+        return datetime.now() - self.last_open_time >= timedelta(seconds=self.timeout_seconds)
+    
+    def _time_until_retry(self) -> int:
+        """Seconds until retry is allowed"""
+        elapsed = (datetime.now() - self.last_open_time).total_seconds()
+        return max(0, int(self.timeout_seconds - elapsed))
+
+# Usage example
+class CircuitBreakerOpenException(Exception):
+    pass
+
+# Simulate payment service
+def process_payment(amount: float) -> dict:
+    """Simulates a flaky payment service"""
+    import random
+    if random.random() < 0.6:  # 60% failure rate
+        raise Exception("Payment service timeout")
+    return {"status": "success", "amount": amount}
+
+# Wrap with circuit breaker
+payment_breaker = CircuitBreaker(failure_threshold=3, timeout_seconds=5)
+
+def safe_process_payment(amount: float) -> dict:
+    return payment_breaker.call(process_payment, amount)
+
+# Test the circuit breaker
+print("=== Testing Circuit Breaker ===")
+for i in range(15):
+    try:
+        result = safe_process_payment(100.0)
+        print(f"[{i}] ✓ Payment processed: {result}")
+    except CircuitBreakerOpenException as e:
+        print(f"[{i}] ✗ Circuit breaker: {e}")
+    except Exception as e:
+        print(f"[{i}] ✗ Service error: {e}")
+    
+    # Show circuit state
+    print(f"    State: {payment_breaker.state.value}, "
+          f"Failures: {payment_breaker.failure_count}")
+```
+
+#### Real-World Scenario
+
+AWS Lambda encountered cascading failures during 2017 outage: one service (metadata service) slowed down, all Lambda invocations waited indefinitely, thread pools exhausted. Teams implementing circuit breakers would have stopped calling the slow service after first few failures, allowing system to degrade gracefully instead of crashing. Netflix added circuit breakers to Hystrix library specifically to prevent this pattern.
+
 ### States
 
 ```text

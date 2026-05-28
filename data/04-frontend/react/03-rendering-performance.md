@@ -60,6 +60,75 @@ The Virtual DOM is a lightweight JavaScript object tree representing the real DO
 
 Shadow DOM is a browser specification for style/component encapsulation. Virtual DOM is a JavaScript pattern for efficient DOM updates. They are unrelated.
 
+### Step-by-Step
+
+1. **JSX to element objects**: Components return JSX which compiles to `React.createElement()` calls, producing plain JS objects
+2. **Tree construction**: React builds a tree of these objects in memory (not touching DOM)
+3. **Diff comparison**: React compares new VDOM tree to previous VDOM tree to find differences
+4. **Patch calculation**: React calculates minimal DOM operations needed (add node, update property, remove node)
+5. **Batching**: Multiple updates are grouped together before applying to real DOM
+6. **Commit**: All DOM mutations are applied in a single batch, then browser paints
+
+### Code Example
+
+```javascript
+import React, { useState } from 'react';
+
+function Dashboard() {
+  const [count, setCount] = useState(0);
+  const [theme, setTheme] = useState('light');
+
+  // Multiple state updates trigger ONE re-render and ONE DOM batch
+  const handleMultipleUpdates = () => {
+    setCount(c => c + 1);
+    setTheme(theme === 'light' ? 'dark' : 'light');
+    // In React 18+, both setState calls are automatically batched
+    // Only ONE render pass, ONE VDOM diff, ONE DOM update
+  };
+
+  return (
+    <div className={`container ${theme}`}>
+      {/* Only the necessary DOM nodes are updated */}
+      <p>Count: {count}</p>
+      <button onClick={handleMultipleUpdates}>Update</button>
+    </div>
+  );
+}
+
+// WITHOUT Virtual DOM (imperative):
+// const div = document.querySelector('.container');
+// div.classList.remove('light', 'dark');
+// div.classList.add('dark');
+// div.querySelector('p').textContent = 'Count: 1';
+// // Multiple DOM operations, no automatic batching
+
+// WITH Virtual DOM (declarative):
+// React calculates all changes, batches them, applies once
+```
+
+### Real-World Scenario
+
+A dashboard component updates 20 different state values in response to a WebSocket message. Without batching, each `setState` would trigger a re-render and DOM update (20 repaints). With React 18's automatic batching, all 20 updates are grouped into one re-render. Frame time dropped from 150ms (20 separate renders) to 16ms (one batched render), preventing jank and improving UX responsiveness.
+
+### Diagram
+
+```mermaid
+sequenceDiagram
+    participant C as Component Code
+    participant VDOM as Virtual DOM
+    participant D as Real DOM
+    participant B as Browser
+    
+    C->>VDOM: setState() × 5 calls
+    VDOM->>VDOM: Batch updates
+    VDOM->>VDOM: Build new VDOM tree
+    VDOM->>VDOM: Diff with old tree
+    VDOM->>D: Calculate minimal changes
+    D->>D: Apply mutations (one batch)
+    D->>B: Trigger single repaint
+    B->>B: Paint pixels (16.67ms frame)
+```
+
 ---
 
 ## 2. Reconciliation Algorithm

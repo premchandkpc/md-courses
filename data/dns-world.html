@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DNS World - Hierarchical Cache Pressure</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: linear-gradient(135deg, #0a0e1a 0%, #1a1f2e 100%);
+      color: #e3eaf0;
+      font-family: 'Monaco', 'Menlo', monospace;
+      overflow: hidden;
+      height: 100vh;
+    }
+    .container {
+      display: flex;
+      height: 100vh;
+      padding: 16px;
+      gap: 16px;
+    }
+    .canvas-area {
+      flex: 1;
+      background: #0b0e14;
+      border: 1px solid #1e3a5f;
+      border-radius: 8px;
+    }
+    .control-panel {
+      width: 330px;
+      background: #0b0e14;
+      border: 1px solid #1e3a5f;
+      border-radius: 8px;
+      padding: 16px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    h1, h3 {
+      color: #00d4ff;
+      letter-spacing: 1px;
+    }
+    h1 { font-size: 18px; margin-bottom: 8px; }
+    h3 { font-size: 11px; text-transform: uppercase; margin-bottom: 6px; color: #a3aab8; }
+    .control-group { display: flex; flex-direction: column; gap: 6px; }
+    button {
+      padding: 6px 10px;
+      background: #1e3a5f;
+      border: 1px solid #00d4ff;
+      color: #00d4ff;
+      border-radius: 4px;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 10px;
+      transition: all 0.2s;
+    }
+    button:hover { background: #2a5a8f; box-shadow: 0 0 8px #00d4ff; }
+    .slider-container { display: flex; flex-direction: column; gap: 2px; }
+    label { font-size: 10px; color: #a3aab8; }
+    input[type="range"] {
+      width: 100%;
+      height: 3px;
+      border-radius: 2px;
+      background: #1e3a5f;
+      outline: none;
+      -webkit-appearance: none;
+    }
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: #00d4ff;
+      cursor: pointer;
+      box-shadow: 0 0 4px #00d4ff;
+    }
+    .metric {
+      background: #1a2332;
+      border: 1px solid #1e3a5f;
+      border-radius: 4px;
+      padding: 6px;
+      font-size: 10px;
+    }
+    .metric-value {
+      color: #34d399;
+      font-weight: bold;
+      font-size: 12px;
+    }
+    canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+    .title-bar {
+      background: #1a2332;
+      border-bottom: 1px solid #1e3a5f;
+      padding: 10px 16px;
+    }
+    .title-bar h1 { margin: 0; }
+  </style>
+</head>
+<body>
+  <div class="title-bar">
+    <h1>DNS World - Hierarchical Cache Pressure</h1>
+  </div>
+
+  <div class="container">
+    <div class="canvas-area">
+      <canvas id="canvas"></canvas>
+    </div>
+
+    <div class="control-panel">
+      <div>
+        <h3>Query Control</h3>
+        <div class="control-group">
+          <button id="startQueries">Start Queries</button>
+          <button id="stopQueries">Stop Queries</button>
+        </div>
+      </div>
+
+      <div>
+        <h3>Load Control</h3>
+        <div class="slider-container">
+          <label>Query Rate (q/s)</label>
+          <input type="range" id="queryRate" min="10" max="500" value="50">
+          <span style="font-size: 9px; color: #34d399;" id="rateValue">50</span>
+        </div>
+        <div class="slider-container">
+          <label>Domain Diversity</label>
+          <input type="range" id="diversity" min="1" max="100" value="30">
+          <span style="font-size: 9px; color: #34d399;" id="diversityValue">30</span>
+        </div>
+      </div>
+
+      <div>
+        <h3>Failure Modes</h3>
+        <div class="control-group">
+          <button id="flushCache">Flush Cache</button>
+          <button id="slowResolver">Slow Root</button>
+          <button id="recover">Recover</button>
+        </div>
+      </div>
+
+      <div>
+        <h3>Cache Metrics</h3>
+        <div class="metric">
+          <div class="metric-label">Local Cache HitRate</div>
+          <div class="metric-value" id="localHitRate">0%</div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">Recursive HitRate</div>
+          <div class="metric-value" id="recursiveHitRate">0%</div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">Root Pressure</div>
+          <div class="metric-value" id="rootPressure">0%</div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">Avg Latency</div>
+          <div class="metric-value" id="avgLatency">0ms</div>
+        </div>
+      </div>
+
+      <div>
+        <h3>How Pressure Works</h3>
+        <div style="font-size: 9px; color: #a3aab8; line-height: 1.5;">
+          • Low cache hit → queries go deep<br/>
+          • Deep queries → root pressure<br/>
+          • Root pressure → slow responses<br/>
+          → Cascades back to resolvers<br/>
+          → User sees high latency
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+
+    function resizeCanvas() {
+      const rect = canvas.parentElement.getBoundingClientRect();
+      canvas.width = rect.width;
+      canvas.height = rect.height;
+    }
+    resizeCanvas();
+
+    const sim = {
+      caches: [
+        { name: 'Browser Cache', x: 50, y: 200, capacity: 20, entries: 0, hitCount: 0, missCount: 0, pressure: 0 },
+        { name: 'Recursive Resolver', x: 200, y: 150, capacity: 100, entries: 0, hitCount: 0, missCount: 0, pressure: 0 },
+        { name: 'TLD Server', x: 350, y: 100, capacity: 500, entries: 0, hitCount: 0, missCount: 0, pressure: 0 },
+        { name: 'Root Server', x: 500, y: 50, capacity: 1000, entries: 0, hitCount: 0, missCount: 0, pressure: 0 }
+      ],
+      queryRate: 50,
+      diversity: 30,
+      queriesActive: false,
+      totalQueries: 0,
+      latencies: [],
+      cacheFlushed: false,
+      rootSlowed: false
+    };
+
+    function resolveQuery() {
+      let query = { domain: Math.floor(Math.random() * sim.diversity), latency: 0, path: [] };
+      let cacheHit = false;
+
+      for (let i = 0; i < sim.caches.length; i++) {
+        const cache = sim.caches[i];
+
+        // Check cache hit (higher caches have lower hit rates due to smaller size)
+        const hitRate = i === 0 ? 0.9 : i === 1 ? 0.6 : i === 2 ? 0.4 : 0.1;
+        if (Math.random() < hitRate) {
+          cache.hitCount++;
+          cacheHit = true;
+          query.path.push(i);
+          break;
+        } else {
+          cache.missCount++;
+          query.latency += (i + 1) * 5;
+          if (sim.rootSlowed && i === 3) query.latency += 50;
+          query.path.push(i);
+        }
+      }
+
+      // Update cache entries (simulate entry storage)
+      sim.caches.forEach((cache, idx) => {
+        if (query.path.includes(idx)) {
+          if (cache.entries < cache.capacity) {
+            cache.entries++;
+          }
+          cache.pressure = (cache.entries / cache.capacity) * 100;
+        }
+      });
+
+      sim.latencies.push(query.latency);
+      if (sim.latencies.length > 100) sim.latencies.shift();
+
+      return query;
+    }
+
+    function update() {
+      if (sim.queriesActive) {
+        for (let i = 0; i < sim.queryRate / 60; i++) {
+          resolveQuery();
+          sim.totalQueries++;
+        }
+      }
+
+      if (sim.cacheFlushed) {
+        sim.caches.forEach(c => {
+          c.entries = 0;
+          c.pressure = 0;
+        });
+        sim.cacheFlushed = false;
+      }
+    }
+
+    function draw() {
+      ctx.fillStyle = '#0b0e14';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // Draw DNS hierarchy
+      sim.caches.forEach((cache, idx) => {
+        const color = cache.pressure > 80 ? '#ef4444' :
+                     cache.pressure > 50 ? '#fbbf24' : '#34d399';
+
+        // Pressure glow
+        ctx.fillStyle = color;
+        ctx.globalAlpha = (cache.pressure / 100) * 0.5;
+        ctx.beginPath();
+        ctx.arc(cache.x, cache.y, 60, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.globalAlpha = 1;
+
+        // Cache node
+        ctx.fillStyle = color;
+        ctx.beginPath();
+        ctx.arc(cache.x, cache.y, 40, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.fillStyle = '#0b0e14';
+        ctx.font = 'bold 9px monospace';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(cache.name.split(' ')[0], cache.x, cache.y - 8);
+        ctx.font = '8px monospace';
+        ctx.fillText(`${cache.entries}/${cache.capacity}`, cache.x, cache.y + 2);
+        ctx.fillText(`${cache.pressure.toFixed(0)}%P`, cache.x, cache.y + 12);
+      });
+
+      // Draw connections (hierarchy)
+      ctx.strokeStyle = '#1e3a5f';
+      ctx.lineWidth = 1;
+      for (let i = 0; i < sim.caches.length - 1; i++) {
+        ctx.beginPath();
+        ctx.moveTo(sim.caches[i].x, sim.caches[i].y);
+        ctx.lineTo(sim.caches[i + 1].x, sim.caches[i + 1].y);
+        ctx.stroke();
+      }
+
+      // Draw queries in flight
+      const numQueries = Math.min(10, Math.floor(sim.queryRate / 10));
+      for (let i = 0; i < numQueries; i++) {
+        const progress = ((sim.totalQueries * 3 + i * 30) % 200) / 200;
+        const cacheIdx = Math.floor(progress * 4);
+        const cache = sim.caches[Math.min(cacheIdx, 3)];
+
+        ctx.fillStyle = progress > 0.5 ? '#60a5fa' : '#34d399';
+        ctx.beginPath();
+        ctx.arc(cache.x, cache.y - 50, 3, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      // Stats
+      ctx.fillStyle = '#a3aab8';
+      ctx.font = '10px monospace';
+      ctx.textAlign = 'left';
+      const avgLatency = sim.latencies.length > 0 ?
+        (sim.latencies.reduce((a, b) => a + b) / sim.latencies.length).toFixed(0) : 0;
+      ctx.fillText(`Total Queries: ${sim.totalQueries} | Avg Latency: ${avgLatency}ms`, 20, 30);
+
+      // Latency graph
+      const graphX = 700;
+      const graphY = 40;
+      const graphW = canvas.width - graphX - 20;
+      const graphH = 100;
+
+      ctx.strokeStyle = '#1e3a5f';
+      ctx.lineWidth = 1;
+      ctx.strokeRect(graphX, graphY, graphW, graphH);
+
+      if (sim.latencies.length > 1) {
+        ctx.strokeStyle = '#00d4ff';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        for (let i = 0; i < sim.latencies.length; i++) {
+          const x = graphX + (i / sim.latencies.length) * graphW;
+          const y = graphY + graphH - (sim.latencies[i] / 200) * graphH;
+          if (i === 0) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
+        }
+        ctx.stroke();
+      }
+
+      ctx.fillStyle = '#a3aab8';
+      ctx.font = '10px monospace';
+      ctx.fillText('Latency', graphX, graphY - 5);
+    }
+
+    function animate() {
+      update();
+      draw();
+      requestAnimationFrame(animate);
+    }
+    animate();
+
+    // Event listeners
+    document.getElementById('startQueries').addEventListener('click', () => {
+      sim.queriesActive = true;
+    });
+
+    document.getElementById('stopQueries').addEventListener('click', () => {
+      sim.queriesActive = false;
+    });
+
+    document.getElementById('queryRate').addEventListener('input', (e) => {
+      sim.queryRate = parseInt(e.target.value);
+      document.getElementById('rateValue').textContent = sim.queryRate;
+    });
+
+    document.getElementById('diversity').addEventListener('input', (e) => {
+      sim.diversity = parseInt(e.target.value);
+      document.getElementById('diversityValue').textContent = sim.diversity;
+    });
+
+    document.getElementById('flushCache').addEventListener('click', () => {
+      sim.caches.forEach(c => {
+        c.entries = 0;
+        c.hitCount = 0;
+        c.missCount = 0;
+      });
+    });
+
+    document.getElementById('slowResolver').addEventListener('click', () => {
+      sim.rootSlowed = true;
+    });
+
+    document.getElementById('recover').addEventListener('click', () => {
+      sim.rootSlowed = false;
+    });
+
+    // Update metrics
+    setInterval(() => {
+      const localCache = sim.caches[0];
+      const recursiveCache = sim.caches[1];
+      const rootCache = sim.caches[3];
+
+      const localHitRate = localCache.hitCount + localCache.missCount > 0 ?
+        ((localCache.hitCount / (localCache.hitCount + localCache.missCount)) * 100).toFixed(0) : 0;
+      const recursiveHitRate = recursiveCache.hitCount + recursiveCache.missCount > 0 ?
+        ((recursiveCache.hitCount / (recursiveCache.hitCount + recursiveCache.missCount)) * 100).toFixed(0) : 0;
+      const avgLatency = sim.latencies.length > 0 ?
+        (sim.latencies.reduce((a, b) => a + b) / sim.latencies.length).toFixed(0) : 0;
+
+      document.getElementById('localHitRate').textContent = localHitRate + '%';
+      document.getElementById('recursiveHitRate').textContent = recursiveHitRate + '%';
+      document.getElementById('rootPressure').textContent = rootCache.pressure.toFixed(0) + '%';
+      document.getElementById('avgLatency').textContent = avgLatency + 'ms';
+    }, 100);
+  </script>
+</body>
+</html>

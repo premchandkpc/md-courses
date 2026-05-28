@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>gRPC World - Circuit Breaker Cascades</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: linear-gradient(135deg, #0a0e1a 0%, #1a1f2e 100%);
+      color: #e3eaf0;
+      font-family: 'Monaco', 'Menlo', monospace;
+      overflow: hidden;
+      height: 100vh;
+    }
+    .container {
+      display: flex;
+      height: 100vh;
+      padding: 16px;
+      gap: 16px;
+    }
+    .canvas-area {
+      flex: 1;
+      background: #0b0e14;
+      border: 1px solid #1e3a5f;
+      border-radius: 8px;
+    }
+    .control-panel {
+      width: 330px;
+      background: #0b0e14;
+      border: 1px solid #1e3a5f;
+      border-radius: 8px;
+      padding: 16px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    h1, h3 {
+      color: #00d4ff;
+      letter-spacing: 1px;
+    }
+    h1 { font-size: 18px; margin-bottom: 8px; }
+    h3 { font-size: 11px; text-transform: uppercase; margin-bottom: 6px; color: #a3aab8; }
+    .control-group { display: flex; flex-direction: column; gap: 6px; }
+    button {
+      padding: 6px 10px;
+      background: #1e3a5f;
+      border: 1px solid #00d4ff;
+      color: #00d4ff;
+      border-radius: 4px;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 10px;
+      transition: all 0.2s;
+    }
+    button:hover { background: #2a5a8f; box-shadow: 0 0 8px #00d4ff; }
+    button.failure { background: #ef4444; border-color: #ef4444; color: #0b0e14; }
+    .slider-container { display: flex; flex-direction: column; gap: 2px; }
+    label { font-size: 10px; color: #a3aab8; }
+    input[type="range"] {
+      width: 100%;
+      height: 3px;
+      border-radius: 2px;
+      background: #1e3a5f;
+      outline: none;
+      -webkit-appearance: none;
+    }
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: #00d4ff;
+      cursor: pointer;
+      box-shadow: 0 0 4px #00d4ff;
+    }
+    .metric {
+      background: #1a2332;
+      border: 1px solid #1e3a5f;
+      border-radius: 4px;
+      padding: 6px;
+      font-size: 10px;
+    }
+    .metric-value {
+      color: #34d399;
+      font-weight: bold;
+      font-size: 12px;
+    }
+    canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+    .title-bar {
+      background: #1a2332;
+      border-bottom: 1px solid #1e3a5f;
+      padding: 10px 16px;
+    }
+    .title-bar h1 { margin: 0; }
+  </style>
+</head>
+<body>
+  <div class="title-bar">
+    <h1>gRPC World - Circuit Breaker State Cascades</h1>
+  </div>
+
+  <div class="container">
+    <div class="canvas-area">
+      <canvas id="canvas"></canvas>
+    </div>
+
+    <div class="control-panel">
+      <div>
+        <h3>Service Control</h3>
+        <div class="control-group">
+          <button id="startTraffic">Start Traffic</button>
+          <button id="stopTraffic">Stop Traffic</button>
+        </div>
+      </div>
+
+      <div>
+        <h3>Failure Injection</h3>
+        <div class="control-group">
+          <button id="failDownstream" class="failure">Fail Downstream Service</button>
+          <button id="recover">Recover</button>
+        </div>
+      </div>
+
+      <div>
+        <h3>Circuit Breaker Config</h3>
+        <div class="slider-container">
+          <label>Failure Threshold (%)</label>
+          <input type="range" id="failureThreshold" min="10" max="90" value="50">
+          <span style="font-size: 9px; color: #34d399;" id="thresholdValue">50%</span>
+        </div>
+        <div class="slider-container">
+          <label>Request Rate (req/s)</label>
+          <input type="range" id="requestRate" min="10" max="200" value="50">
+          <span style="font-size: 9px; color: #34d399;" id="rateValue">50</span>
+        </div>
+      </div>
+
+      <div>
+        <h3>Service States</h3>
+        <div class="metric">
+          <div class="metric-label">Upstream CB</div>
+          <div class="metric-value" id="upstreamCB">CLOSED</div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">Downstream SVC</div>
+          <div class="metric-value" id="downstreamSVC">HEALTHY</div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">Success Rate</div>
+          <div class="metric-value" id="successRate">100%</div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">Cascaded Failures</div>
+          <div class="metric-value" id="cascades">0</div>
+        </div>
+      </div>
+
+      <div>
+        <h3>How It Works</h3>
+        <div style="font-size: 9px; color: #a3aab8; line-height: 1.5;">
+          • CLOSED: Normal operation<br/>
+          • OPEN: Rejecting requests<br/>
+          • HALF-OPEN: Testing recovery<br/>
+          → Cascades to upstream<br/>
+          → Pressure spreads
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+
+    function resizeCanvas() {
+      const rect = canvas.parentElement.getBoundingClientRect();
+      canvas.width = rect.width;
+      canvas.height = rect.height;
+    }
+    resizeCanvas();
+
+    const sim = {
+      services: [
+        { name: 'Upstream', x: 100, y: canvas.height / 2, circuitState: 'CLOSED', health: 100 },
+        { name: 'Downstream', x: canvas.width - 100, y: canvas.height / 2, circuitState: 'CLOSED', health: 100 }
+      ],
+      requests: [],
+      totalRequests: 0,
+      successfulRequests: 0,
+      failedRequests: 0,
+      trafficActive: false,
+      requestRate: 50,
+      failureThreshold: 50,
+      failureInjected: false,
+      cascadeCount: 0,
+      time: 0
+    };
+
+    function updateCircuitBreaker() {
+      const upstream = sim.services[0];
+      const downstream = sim.services[1];
+
+      // Calculate failure rate
+      const failureRate = sim.totalRequests > 0 ? (sim.failedRequests / sim.totalRequests) * 100 : 0;
+
+      // Upstream CB state based on downstream health
+      if (downstream.health < 20) {
+        if (upstream.circuitState === 'CLOSED') {
+          upstream.circuitState = 'OPEN';
+          sim.cascadeCount++;
+        }
+      } else if (downstream.health > 70) {
+        upstream.circuitState = 'CLOSED';
+      }
+
+      // Half-open state (temporary retry)
+      if (upstream.circuitState === 'OPEN' && sim.time % 120 === 0) {
+        upstream.circuitState = 'HALF_OPEN';
+      }
+
+      if (upstream.circuitState === 'HALF_OPEN' && downstream.health > 60) {
+        upstream.circuitState = 'CLOSED';
+      }
+
+      // Health tracks state
+      upstream.health = upstream.circuitState === 'CLOSED' ? 100 :
+                       upstream.circuitState === 'OPEN' ? 20 : 50;
+
+      downstream.health = sim.failureInjected ? 15 : Math.min(100, downstream.health + 1);
+    }
+
+    function update() {
+      // Send requests
+      if (sim.trafficActive && sim.services[0].circuitState === 'CLOSED') {
+        if (Math.random() < sim.requestRate / 60) {
+          const shouldFail = sim.failureInjected && Math.random() < (sim.failureThreshold / 100);
+          sim.totalRequests++;
+
+          if (shouldFail) {
+            sim.failedRequests++;
+            sim.services[1].health -= 5;
+          } else {
+            sim.successfulRequests++;
+            sim.services[1].health = Math.min(100, sim.services[1].health + 0.5);
+          }
+        }
+      }
+
+      updateCircuitBreaker();
+      sim.time++;
+    }
+
+    function draw() {
+      ctx.fillStyle = '#0b0e14';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // Draw services
+      sim.services.forEach((service, idx) => {
+        const stateColors = {
+          'CLOSED': '#34d399',
+          'OPEN': '#ef4444',
+          'HALF_OPEN': '#fbbf24',
+          'HEALTHY': '#34d399',
+          'DEGRADED': '#fbbf24',
+          'FAILED': '#ef4444'
+        };
+
+        const stateColor = stateColors[service.circuitState] || stateColors['HEALTHY'];
+
+        // Health glow
+        ctx.fillStyle = stateColor;
+        ctx.globalAlpha = (service.health / 100) * 0.4;
+        ctx.beginPath();
+        ctx.arc(service.x, service.y, 80, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.globalAlpha = 1;
+
+        // Service node
+        ctx.fillStyle = stateColor;
+        ctx.beginPath();
+        ctx.arc(service.x, service.y, 50, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.fillStyle = '#0b0e14';
+        ctx.font = 'bold 12px monospace';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(service.name, service.x, service.y - 15);
+
+        ctx.font = '10px monospace';
+        ctx.fillText(service.circuitState, service.x, service.y + 5);
+        ctx.fillText(`${service.health}%`, service.x, service.y + 20);
+      });
+
+      // Draw request arrows
+      const successRate = sim.totalRequests > 0 ? (sim.successfulRequests / sim.totalRequests) * 100 : 100;
+
+      // Animated request flow
+      for (let i = 0; i < 5; i++) {
+        const progress = ((sim.time * 2 + i * 12) % 100) / 100;
+        const x = sim.services[0].x + (sim.services[1].x - sim.services[0].x) * progress;
+        const y = sim.services[0].y;
+
+        ctx.fillStyle = progress * 100 < successRate ? '#34d399' : '#ef4444';
+        ctx.beginPath();
+        ctx.arc(x, y, 4, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      // Stats
+      ctx.fillStyle = '#a3aab8';
+      ctx.font = '10px monospace';
+      ctx.textAlign = 'left';
+      ctx.fillText(`Requests: ${sim.totalRequests} | Success: ${successRate.toFixed(0)}%`, 20, 30);
+      ctx.fillText(`Cascades: ${sim.cascadeCount}`, 20, 50);
+
+      // Title
+      ctx.fillStyle = '#00d4ff';
+      ctx.font = 'bold 12px monospace';
+      ctx.fillText('Circuit Breaker State Machine', canvas.width / 2 - 60, 30);
+    }
+
+    function animate() {
+      update();
+      draw();
+      requestAnimationFrame(animate);
+    }
+    animate();
+
+    // Event listeners
+    document.getElementById('startTraffic').addEventListener('click', () => {
+      sim.trafficActive = true;
+    });
+
+    document.getElementById('stopTraffic').addEventListener('click', () => {
+      sim.trafficActive = false;
+    });
+
+    document.getElementById('failDownstream').addEventListener('click', () => {
+      sim.failureInjected = true;
+      sim.services[1].health = 15;
+    });
+
+    document.getElementById('recover').addEventListener('click', () => {
+      sim.failureInjected = false;
+      sim.services[1].health = 100;
+      sim.services[0].circuitState = 'CLOSED';
+    });
+
+    document.getElementById('failureThreshold').addEventListener('input', (e) => {
+      sim.failureThreshold = parseInt(e.target.value);
+      document.getElementById('thresholdValue').textContent = sim.failureThreshold + '%';
+    });
+
+    document.getElementById('requestRate').addEventListener('input', (e) => {
+      sim.requestRate = parseInt(e.target.value);
+      document.getElementById('rateValue').textContent = sim.requestRate;
+    });
+
+    // Update display
+    setInterval(() => {
+      const successRate = sim.totalRequests > 0 ? ((sim.successfulRequests / sim.totalRequests) * 100).toFixed(0) : 100;
+      document.getElementById('upstreamCB').textContent = sim.services[0].circuitState;
+      document.getElementById('downstreamSVC').textContent = sim.services[1].health > 70 ? 'HEALTHY' :
+                                                           sim.services[1].health > 30 ? 'DEGRADED' : 'FAILED';
+      document.getElementById('successRate').textContent = successRate + '%';
+      document.getElementById('cascades').textContent = sim.cascadeCount;
+    }, 100);
+  </script>
+</body>
+</html>

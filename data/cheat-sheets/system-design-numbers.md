@@ -5,10 +5,28 @@
 
 
 ```mermaid
-graph LR
-    A["Command"] -->|Parse| B["Execute"]
-    B -->|Output| C["Result"]
-    style A fill:#4a8bc2
+graph TB
+    subgraph "Latency Hierarchy"
+        L1["L1 Cache: ~1ns<br/>4 cycles"] --> L2["L2 Cache: ~3ns<br/>10 cycles"]
+        L2 --> L3["L3 Cache: ~15ns<br/>40-75 cycles"]
+        L3 --> RAM["RAM: ~100ns<br/>(100-300 cycles)"]
+        RAM --> SSD["SSD: ~100μs<br/>(1000x slower than RAM)"]
+        SSD --> HDD["HDD: ~10ms<br/>(100x slower than SSD)"]
+        HDD --> NET["Network: ~50ms<br/>(5x slower than HDD)"]
+    end
+    subgraph "Key Insight"
+        I1["1 CPU cycle = 0.4ns"]
+        I2["RAM is 250x slower than L1 cache"]
+        I3["Disk is 100,000x slower than RAM"]
+        I4["Network is 50,000,000x slower than L1"]
+    end
+    style L1 fill:#3fb950
+    style L2 fill:#4a8bc2
+    style L3 fill:#2d5a7b
+    style RAM fill:#58a6ff
+    style SSD fill:#e8912e
+    style HDD fill:#c73e1d
+    style NET fill:#f85149
 ```
 
 

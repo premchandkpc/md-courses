@@ -256,3 +256,25 @@ High-performance RPC using HTTP/2 and Protocol Buffers. Default for microservice
 | [09 — Distributed Systems](../09-distributed-systems/) | Microservice communication, consistency, distributed transactions, consensus for coordination |
 | [10 — Messaging](../10-messaging/) | Async integration of services, event-driven patterns, message queues for decoupling |
 | [11 — Networking](../11-networking/) | HTTP/gRPC protocol details, TCP tuning, DNS resolution, TLS termination |
+
+## Language Comparison
+
+| Feature | Java | Go | Python | TypeScript |
+|---|---|---|---|---|
+| **Typing** | Static, strong | Static, strong | Dynamic, duck | Static, gradual (any) |
+| **Concurrency** | Threads + Loom (virtual threads) | Goroutines + channels (built-in) | asyncio (library) | event loop (Node.js) |
+| **Compilation** | JIT (JVM) | AOT (native binary) | Interpreted (C Python) | JIT (V8) / transpiled |
+| **Memory** | GC (G1/ZGC/Shenandoah) | GC (concurrent) | GC (ref counting + generational) | GC (V8 Orinoco) |
+| **Startup** | Slow (JVM warmup) | Fast (native binary) | Fast (interpreted) | Fast (but V8 warmup) |
+| **Deployment** | JAR/WAR (JRE needed) | Single binary | pip + interpreter | npm + Node.js |
+| **Ecosystem** | Maven/Gradle, Spring | Go modules, stdlib rich | pip, Django/FastAPI | npm, React/Next.js |
+| **Best For** | Enterprise, big data, Android | CLI, networking, microservices | Data science, scripting, web | Web frontend, full-stack |
+
+## Key Topics by Language
+
+| Language | Architecture | Concurrency | Performance | Testing |
+|---|---|---|---|---|
+| Java | `01-oop-concepts` → `12-spring-boot` | `04-multithreading` + `15-concurrency-deep-dive` | `19-performance-tuning` | `18-testing-advanced` |
+| Go | `01-goroutines-channels` | `01-goroutines-channels` (built-in) | `03-go-profiling` | Testing (std `testing` pkg) |
+| Python | `01-python-internals` | `03-python-concurrency-async` | `01-python-internals` (GIL) | `04-python-testing-packaging` |
+| TypeScript | `01-types-system-deep-dive` | Event loop (Node.js eventemitter) | `03-internals-performance` | Jest / Vitest |

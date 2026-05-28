@@ -368,3 +368,28 @@ Compile-time framework. Minimal runtime, reactive by default.
 - [Backend](../../03-backend/) — API design and contracts
 - [Performance Engineering](../../18-performance-engineering/) — Browser rendering
 - [Testing](../../19-testing/) — E2E and component testing
+
+## Frontend Technology Comparison
+
+| Layer | React | Vue | Svelte | Solid |
+|---|---|---|---|---|
+| **Rendering** | Virtual DOM (reconciliation) | Virtual DOM (snapshot) | Compiler (no VDOM) | Compiled (no VDOM) |
+| **State Mgmt** | useState/Reducer + Context | ref/reactive + Pinia | writable/stores | createSignal/createEffect |
+| **Bundle Size** | ~40KB (min+gzip) | ~20KB | ~5KB | ~7KB |
+| **Learning Curve** | Medium (JSX) | Low (templates) | Low (declarative) | Medium (JSX-like) |
+| **Ecosystem** | Massive (Next.js, Remix) | Large (Nuxt, Vuetify) | Growing (SvelteKit) | Growing (SolidStart) |
+| **Rendering** | CSR/SSR/SSG (Next.js) | CSR/SSR/SSG (Nuxt) | SSR/SSG (SvelteKit) | CSR/SSR (SolidStart) |
+| **Performance** | Good (virtual DOM diff) | Good | Excellent (no VDOM) | Excellent (fine-grained) |
+| **TypeScript** | Excellent | Good | Good | Excellent |
+
+## Performance Optimization Patterns
+
+| Pattern | Technique | Impact |
+|---|---|---|
+| **Code Splitting** | `React.lazy()` + Suspense | Reduce initial JS bundle by 30-60% |
+| **Memoization** | `React.memo`, `useMemo`, `useCallback` | Prevent unnecessary re-renders |
+| **Virtualization** | `react-window`, `react-virtuoso` | Render only visible items in lists |
+| **Image Optimization** | lazy loading, WebP, srcset | Reduce image payload by 50-80% |
+| **Bundle Analysis** | `webpack-bundle-analyzer` | Identify large dependencies |
+| **Caching** | Service Worker, CDN, HTTP caching | Eliminate network requests for repeat visits |
+| **Preloading** | `<link rel=preload>`, DNS prefetch | Reduce perceived latency |

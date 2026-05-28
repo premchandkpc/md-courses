@@ -265,3 +265,33 @@ Study resources: CLRS (Introduction to Algorithms), SICP, Structure and Interpre
 | [17 — Software Architecture](../17-software-architecture/) | Design patterns, architectural styles, and system decomposition are applied OOP and modularity principles |
 | [18 — Performance Engineering](../18-performance-engineering/) | Complexity analysis, memory hierarchy, cache behavior, algorithmic optimization all rooted here |
 | [24 — Low Level Design](../24-low-level-design/) | LLD applies OOP, design patterns, and data structure selection to real-world component design |
+
+## Domain Map: From Theory to Practice
+
+```mermaid
+graph LR
+    Math["Mathematics<br/>Discrete + Linear + Prob"] --> CS["CS Core<br/>Automata + Complexity"]
+    CS --> DSA["Data Structures<br/>& Algorithms"]
+    DSA --> OOP["OOP / FP<br/>Paradigms"]
+    OOP --> DB["Databases"]
+    OOP --> SYS["Systems"]
+    SYS --> DIST["Distributed<br/>Systems"]
+    DIST --> AI["AI / ML"]
+    style Math fill:#4a8bc2
+    style CS fill:#2d5a7b
+    style DSA fill:#e8912e
+    style OOP fill:#3fb950
+    style DIST fill:#a78bfa
+    style AI fill:#f472b6
+```
+
+## Topic Readiness by Layer
+
+| Topic | L1 (Understand) | L2 (Apply) | L3 (Master) | Key Resource |
+|---|---|---|---|---|
+| **Discrete Math** | Sets, functions, logic | Proofs, induction, combinatorics | Graph theory, generating functions | `01-discrete-mathematics.md` |
+| **Linear Algebra** | Vectors, matrices, dot product | Eigenvalues, SVD, PCA | Tensors, matrix calculus | `01-linear-algebra.md` |
+| **Probability** | Basic probability, Bayes | Distributions, CLT, MLE | Bayesian inference, HMM | `02-statistics-probability.md` |
+| **Complexity** | Big-O, Big-Θ, Big-Ω | Master theorem, recurrence | NP-completeness, reductions | Standard references |
+| **DSA** | Arrays, lists, hash tables | Trees, graphs, sorting | Segment trees, tries, DP | LeetCode + algorithm texts |
+| **Automata** | DFA/NFA, regex | Turing machines, decidability | Halting problem, P=NP | `01-computer-science-core.md` |

@@ -211,3 +211,43 @@ Each file includes content at multiple depth levels:
 - [Kubernetes](../../07-kubernetes/) — Pod security, RBAC
 - [Backend](../../03-backend/) — Input validation, auth
 - [Databases](../../08-databases/) — Encryption, access control
+
+## Security Domain Map
+
+```mermaid
+graph TB
+    WEB["Web Security<br/>OWASP Top 10"] --> AUTH["AuthN/AuthZ<br/>OAuth 2.0 + OIDC"]
+    WEB --> INPUT["Input Validation<br/>XSS + SQLi + CSRF"]
+    CRYPTO["Cryptography<br/>Symmetric + Asymmetric"] --> TLS["TLS 1.3"]
+    CRYPTO --> SECRETS["Secrets Mgmt<br/>Vault"]
+    INFRA["Infrastructure<br/>Security"] --> NET["Network Policy<br/>K8s + Firewalls"]
+    INFRA --> ZT["Zero Trust<br/>Never Trust, Always Verify"]
+    INFRA --> PENETEST["Pentesting<br/>AppSec + Red Team"]
+    OPS["Operational<br/>Security"] --> LOG["Logging + SIEM"]
+    OPS --> INCIDENT["Incident Response<br/>Playbooks"]
+    style WEB fill:#c73e1d
+    style CRYPTO fill:#4a8bc2
+    style INFRA fill:#2d5a7b
+    style OPS fill:#e8912e
+    style ZT fill:#3fb950
+```
+
+## Controls by Layer
+
+| OSI Layer | Security Control | Example |
+|---|---|---|
+| **Application (7)** | WAF, input validation, CSP | Cloudflare WAF, DOMPurify |
+| **Presentation (6)** | TLS encryption | HTTPS, mTLS |
+| **Session (5)** | Authentication + authorization | OAuth 2.0, OIDC, SAML |
+| **Transport (4)** | Network segmentation, mTLS | Calico NetworkPolicy, Istio mTLS |
+| **Network (3)** | Firewall rules, IP allowlisting | Security Groups, NACL |
+| **Data Link (2)** | MAC filtering, VLANs | 802.1X, private VLANs |
+| **Physical (1)** | Data center access control | Badge access, CCTV |
+
+## Key Files
+
+| File | Topics | Priority |
+|---|---|---|
+| `01-owasp-top-10-authentication-authorization.md` | OWASP Top 10, OAuth 2.0, OIDC, JWT, SSO | 🔴 Critical |
+| `02-cryptography-tls-secrets-management.md` | Symmetric/asymmetric crypto, TLS 1.3, Vault, KMS | 🔴 Critical |
+| `03-zero-trust-penetration-testing-security-culture.md` | Zero Trust, pentesting, AppSec | 🟡 Important |

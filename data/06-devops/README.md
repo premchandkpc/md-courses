@@ -383,3 +383,41 @@ Integrating security into the DevOps lifecycle—shifting left, automating secur
 | [10 — Messaging](../10-messaging/) | Event-driven CI/CD triggers, pipeline notification systems |
 | [11 — Networking](../11-networking/) | Network IaC, TLS automation, DNS automation in pipelines |
 | [14 — SRE/Observability](../14-sre-observability/) | Monitoring infrastructure, observability pipeline, alerting systems |
+
+## DevOps Pipeline Stages
+
+```mermaid
+graph LR
+    CODE["Code<br/>Git"] --> BUILD["Build<br/>CI Pipeline"]
+    BUILD --> TEST["Test<br/>Unit + Integration"]
+    TEST --> PACKAGE["Package<br/>Docker Image"]
+    PACKAGE --> SCAN["Security Scan<br/>Trivy + SAST"]
+    SCAN --> DEPLOY["Deploy<br/>CD Pipeline"]
+    DEPLOY --> MONITOR["Monitor<br/>Prometheus + Grafana"]
+    MONITOR --> INCIDENT["Incident<br/>PagerDuty"]
+    INCIDENT --> CODE
+    style CODE fill:#4a8bc2
+    style BUILD fill:#2d5a7b
+    style SCAN fill:#c73e1d
+    style DEPLOY fill:#3fb950
+    style MONITOR fill:#e8912e
+```
+
+## Toolchain Comparison
+
+| Category | Tool A | Tool B | Tool C | Key Differentiator |
+|---|---|---|---|---|
+| **IaC** | Terraform (HCL) | Pulumi (TypeScript/Python/Go) | CloudFormation (YAML/JSON) | Pulumi uses real programming languages |
+| **Config Mgmt** | Ansible (agentless, YAML) | Chef (Ruby DSL, agent) | Puppet (declarative, agent) | Ansible = SSH, no agent needed |
+| **CI/CD** | GitLab CI (YAML, integrated) | GitHub Actions (YAML, matrix) | Jenkins (UI, plugin ecosystem) | Actions = closest to git events |
+| **Containers** | Docker (OCI standard) | Podman (daemonless) | containerd (runtime) | Podman = rootless by default |
+| **K8s Deployment** | Helm (charts + templates) | Kustomize (overlays + patches) | ArgoCD (GitOps) | ArgoCD = sync to desired state |
+| **Secrets** | HashiCorp Vault (dynamic) | AWS Secrets Manager | SOPS (encrypted files) | Vault = dynamic + leasing |
+
+## Key Files by Role
+
+| Role | Primary Files |
+|---|---|
+| **Infrastructure Engineer** | `01-infrastructure-as-code.md`, `03-terraform-infrastructure-as-code-config-management.md` |
+| **CI/CD Engineer** | `02-argo-gitops-deployment-automation.md`, `01-docker` series |
+| **SRE** | `03-devops-sre-practices.md`, `ci-cd/` |

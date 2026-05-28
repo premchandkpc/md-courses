@@ -940,3 +940,114 @@ sequenceDiagram
     B-->>C: FetchResponse (records)
     C->>C: Process + Commit offset
 ```
+
+---
+
+## Interactive Components
+
+### Kafka Message Flow Pipeline
+
+<div style="display:flex;flex-direction:column;align-items:center;gap:8px;padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>@keyframes flow-pulse{0%,100%{opacity:.3;transform:translateY(0)}50%{opacity:1;transform:translateY(-2px)}}.flow-title{color:#00d4ff;font-family:monospace;font-size:14px;font-weight:bold;margin-bottom:8px;letter-spacing:1px}.flow-node{display:inline-block;padding:8px 16px;border-radius:4px;font-size:12px;font-family:monospace;color:#e3eaf0;background:#1e3a5f;border:1px solid #00d4ff}.flow-arrow{color:#00d4ff;font-size:16px;animation:flow-pulse 1.5s infinite;font-weight:bold}</style>
+  <div class="flow-title">Kafka Message Lifecycle</div>
+  <div style="display:flex;flex-direction:column;align-items:center;gap:6px">
+    <div class="flow-node">Producer (serializes)</div>
+    <div class="flow-arrow">↓ Produce Request</div>
+    <div class="flow-node">Broker Leader (appends log)</div>
+    <div class="flow-arrow">↓ Replicates to ISR</div>
+    <div class="flow-node">Followers (catch up)</div>
+    <div class="flow-arrow">↓ Acknowledge (acks=all)</div>
+    <div class="flow-node">Producer Gets Offset</div>
+    <div class="flow-arrow">↓ Offset Committed</div>
+    <div class="flow-node">Consumer Group Reads</div>
+  </div>
+</div>
+
+### Kafka Cluster Topology
+
+<div style="padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>.topology-title{color:#00d4ff;font-family:monospace;font-size:14px;font-weight:bold;margin-bottom:12px;letter-spacing:1px}.topology-svg{width:100%;max-width:600px;height:280px;background:#1a2332;border:1px solid #1e3a5f;border-radius:4px}.topo-edge{stroke:#1e3a5f;stroke-width:2}.topo-legend{display:flex;gap:16px;margin-top:12px;font-size:12px;color:#e3eaf0;font-family:monospace;flex-wrap:wrap}.legend-item{display:flex;align-items:center;gap:6px}</style>
+  <div class="topology-title">Kafka Cluster with Replicas</div>
+  <svg class="topology-svg" viewBox="0 0 600 280">
+    <defs>
+      <marker id="arrow-kafka" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+        <polygon points="0 0, 10 3, 0 6" fill="#1e3a5f"/>
+      </marker>
+    </defs>
+    <!-- Controller/ZK -->
+    <circle cx="300" cy="30" r="22" fill="#f59e0b" stroke="#f59e0b" stroke-width="1"/>
+    <text x="300" y="35" text-anchor="middle" fill="#0b0e14" font-size="10" font-family="monospace" font-weight="bold">KRaft</text>
+    <!-- Brokers -->
+    <g><rect x="60" y="110" width="80" height="50" rx="4" fill="#1e3a5f" stroke="#00d4ff" stroke-width="1"/>
+      <text x="100" y="140" text-anchor="middle" fill="#e3eaf0" font-size="11" font-family="monospace">Broker-1</text></g>
+    <g><rect x="260" y="110" width="80" height="50" rx="4" fill="#1e3a5f" stroke="#00d4ff" stroke-width="1"/>
+      <text x="300" y="140" text-anchor="middle" fill="#e3eaf0" font-size="11" font-family="monospace">Broker-2</text></g>
+    <g><rect x="460" y="110" width="80" height="50" rx="4" fill="#1e3a5f" stroke="#00d4ff" stroke-width="1"/>
+      <text x="500" y="140" text-anchor="middle" fill="#e3eaf0" font-size="11" font-family="monospace">Broker-3</text></g>
+    <!-- Producer/Consumer -->
+    <circle cx="120" cy="230" r="18" fill="#34d399" stroke="#34d399" stroke-width="1"/>
+    <text x="120" y="235" text-anchor="middle" fill="#0b0e14" font-size="10" font-family="monospace" font-weight="bold">P</text>
+    <circle cx="480" cy="230" r="18" fill="#60a5fa" stroke="#60a5fa" stroke-width="1"/>
+    <text x="480" y="235" text-anchor="middle" fill="#0b0e14" font-size="10" font-family="monospace" font-weight="bold">C</text>
+    <!-- Edges -->
+    <line class="topo-edge" x1="300" y1="52" x2="100" y2="110" marker-end="url(#arrow-kafka)"/>
+    <line class="topo-edge" x1="300" y1="52" x2="300" y2="110" marker-end="url(#arrow-kafka)"/>
+    <line class="topo-edge" x1="300" y1="52" x2="500" y2="110" marker-end="url(#arrow-kafka)"/>
+    <line class="topo-edge" x1="120" y1="160" x2="100" y2="212" marker-end="url(#arrow-kafka)"/>
+    <line class="topo-edge" x1="500" y1="160" x2="480" y2="212" marker-end="url(#arrow-kafka)"/>
+  </svg>
+  <div class="topo-legend">
+    <div class="legend-item"><div style="width:14px;height:14px;background:#f59e0b;border-radius:50%"></div><span>Controller/ZK</span></div>
+    <div class="legend-item"><div style="width:14px;height:14px;background:#1e3a5f;border:1px solid #00d4ff"></div><span>Broker</span></div>
+    <div class="legend-item"><div style="width:14px;height:14px;background:#34d399;border-radius:50%"></div><span>Producer</span></div>
+    <div class="legend-item"><div style="width:14px;height:14px;background:#60a5fa;border-radius:50%"></div><span>Consumer</span></div>
+  </div>
+</div>
+
+### Consumer Group & Rebalancing
+
+<div style="padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>.state-machine-title{color:#00d4ff;font-family:monospace;font-size:14px;font-weight:bold;margin-bottom:16px}.state-demo{text-align:center}.state-display{font-size:16px;font-family:monospace;padding:12px;border-radius:4px;margin:12px 0;color:#0b0e14;font-weight:bold;min-height:40px;display:flex;align-items:center;justify-content:center;border:2px solid currentColor}.state-stable{background:#34d399;border-color:#22c55e}.state-rebalancing{background:#fbbf24;border-color:#f59e0b}.state-buttons{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:16px}.state-button{padding:8px 16px;border:1px solid #00d4ff;background:#1e3a5f;color:#00d4ff;border-radius:4px;cursor:pointer;font-family:monospace;font-size:11px;transition:all 0.2s}.state-button:hover{background:#2a5a8f;box-shadow:0 0 8px #00d4ff}</style>
+  <div class="state-machine-title">Consumer Group State</div>
+  <div class="state-demo">
+    <div class="state-display state-stable" id="cg-display">STABLE</div>
+    <div class="state-buttons">
+      <button class="state-button" onclick="setConsumerState('STABLE')">Stable</button>
+      <button class="state-button" onclick="setConsumerState('REBALANCING')">Rebalance</button>
+      <button class="state-button" onclick="setConsumerState('SYNCING')">Syncing</button>
+    </div>
+  </div>
+  <script>
+    const cgMap = {
+      'STABLE': { label: 'STABLE (assigning partitions)', class: 'state-stable' },
+      'REBALANCING': { label: 'REBALANCING (member joined/left)', class: 'state-rebalancing' },
+      'SYNCING': { label: 'SYNCING (offsets committed)', class: 'state-stable' }
+    };
+    function setConsumerState(state) {
+      const display = document.getElementById('cg-display');
+      const info = cgMap[state];
+      display.textContent = info.label;
+      display.className = 'state-display ' + info.class;
+    }
+  </script>
+</div>
+
+### Replication Factor & Durability
+
+<div style="padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>.slider-title{color:#00d4ff;font-family:monospace;font-size:14px;font-weight:bold;margin-bottom:12px}.slider-container{display:flex;flex-direction:column;gap:12px}.slider-label{color:#e3eaf0;font-family:monospace;font-size:12px}.slider-wrapper{display:flex;align-items:center;gap:12px}.slider-input{flex:1;height:6px;border-radius:3px;background:#1e3a5f;outline:none;-webkit-appearance:none;appearance:none}.slider-input::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:18px;height:18px;border-radius:50%;background:#00d4ff;cursor:pointer;box-shadow:0 0 8px #00d4ff;border:2px solid #0b0e14}.slider-input::-moz-range-thumb{width:18px;height:18px;border-radius:50%;background:#00d4ff;cursor:pointer;box-shadow:0 0 8px #00d4ff;border:2px solid #0b0e14}.slider-value{font-family:monospace;color:#34d399;min-width:80px;text-align:right;font-size:12px;font-weight:bold}</style>
+  <div class="slider-title">Kafka Replication Configuration</div>
+  <div class="slider-container">
+    <label class="slider-label">Replication Factor:</label>
+    <div class="slider-wrapper">
+      <input type="range" min="1" max="5" value="3" class="slider-input" id="rf-kafka-slider">
+      <span class="slider-value" id="rf-kafka-value">3 replicas</span>
+    </div>
+  </div>
+  <script>
+    const slider = document.getElementById('rf-kafka-slider');
+    const value = document.getElementById('rf-kafka-value');
+    slider.addEventListener('input', (e) => { value.textContent = e.target.value + ' replicas'; });
+  </script>
+</div>
+```

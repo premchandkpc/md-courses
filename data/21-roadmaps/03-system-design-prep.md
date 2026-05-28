@@ -530,3 +530,76 @@ Week 11-12: Mock interviews with FAANG engineers. Capacity estimation drills. Tr
 - [Distributed Transactions](/09-distributed-systems/02-distributed-transactions.md) — Saga vs 2PC tradeoffs
 - [Distributed Storage](/09-distributed-systems/03-distributed-storage.md) — Consistent hashing, quorum, replication
 - [Stream Processing](/09-distributed-systems/04-stream-processing.md) — Event-time processing, watermarks, exactly-once
+
+---
+
+## Interactive: System Design Topology Map
+
+<div style="padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>
+    .topology-title {
+      color:#00d4ff;
+      font-family:monospace;
+      font-size:14px;
+      font-weight:bold;
+      margin-bottom:12px;
+      letter-spacing:1px;
+    }
+    .topology-svg {
+      width:100%;
+      max-width:600px;
+      height:340px;
+      background:#1a2332;
+      border:1px solid #1e3a5f;
+      border-radius:4px;
+    }
+  </style>
+
+  <div class="topology-title">Typical System Design Architecture</div>
+  <svg class="topology-svg" viewBox="0 0 600 340">
+    <!-- Client -->
+    <circle cx="300" cy="30" r="20" fill="#34d399" stroke="#34d399" stroke-width="1"/>
+    <text x="300" y="35" text-anchor="middle" fill="#0b0e14" font-size="10" font-family="monospace" font-weight="bold">Client</text>
+    
+    <!-- CDN -->
+    <rect x="380" y="80" width="100" height="50" rx="4" fill="#1e3a5f" stroke="#00d4ff" stroke-width="1"/>
+    <text x="430" y="110" text-anchor="middle" fill="#e3eaf0" font-size="11" font-family="monospace">CDN</text>
+    
+    <!-- LB -->
+    <rect x="150" y="80" width="100" height="50" rx="4" fill="#1e3a5f" stroke="#00d4ff" stroke-width="1"/>
+    <text x="200" y="110" text-anchor="middle" fill="#e3eaf0" font-size="11" font-family="monospace">LB</text>
+    
+    <!-- API Servers -->
+    <rect x="50" y="170" width="80" height="50" rx="4" fill="#1e3a5f" stroke="#60a5fa" stroke-width="1"/>
+    <text x="90" y="200" text-anchor="middle" fill="#60a5fa" font-size="10" font-family="monospace">API-1</text>
+    
+    <rect x="170" y="170" width="80" height="50" rx="4" fill="#1e3a5f" stroke="#60a5fa" stroke-width="1"/>
+    <text x="210" y="200" text-anchor="middle" fill="#60a5fa" font-size="10" font-family="monospace">API-2</text>
+    
+    <rect x="290" y="170" width="80" height="50" rx="4" fill="#1e3a5f" stroke="#60a5fa" stroke-width="1"/>
+    <text x="330" y="200" text-anchor="middle" fill="#60a5fa" font-size="10" font-family="monospace">API-3</text>
+    
+    <!-- Cache -->
+    <rect x="420" y="170" width="100" height="50" rx="4" fill="#1e3a5f" stroke="#f59e0b" stroke-width="1"/>
+    <text x="470" y="200" text-anchor="middle" fill="#f59e0b" font-size="10" font-family="monospace">Cache</text>
+    
+    <!-- DB -->
+    <rect x="150" y="270" width="120" height="50" rx="4" fill="#1e3a5f" stroke="#a78bfa" stroke-width="1"/>
+    <text x="210" y="300" text-anchor="middle" fill="#a78bfa" font-size="11" font-family="monospace">Primary DB</text>
+    
+    <!-- Replica -->
+    <rect x="350" y="270" width="120" height="50" rx="4" fill="#1e3a5f" stroke="#a78bfa" stroke-width="1"/>
+    <text x="410" y="300" text-anchor="middle" fill="#a78bfa" font-size="11" font-family="monospace">Replica DB</text>
+    
+    <!-- Edges -->
+    <line x1="300" y1="50" x2="200" y2="80" stroke="#1e3a5f" stroke-width="1"/>
+    <line x1="300" y1="50" x2="430" y2="80" stroke="#1e3a5f" stroke-width="1"/>
+    <line x1="200" y1="130" x2="90" y2="170" stroke="#1e3a5f" stroke-width="1"/>
+    <line x1="200" y1="130" x2="210" y2="170" stroke="#1e3a5f" stroke-width="1"/>
+    <line x1="200" y1="130" x2="330" y2="170" stroke="#1e3a5f" stroke-width="1"/>
+    <line x1="90" y1="220" x2="210" y2="270" stroke="#1e3a5f" stroke-width="1"/>
+    <line x1="210" y1="220" x2="210" y2="270" stroke="#1e3a5f" stroke-width="1"/>
+    <line x1="330" y1="220" x2="210" y2="270" stroke="#1e3a5f" stroke-width="1"/>
+    <line x1="210" y1="320" x2="410" y2="270" stroke="#1e3a5f" stroke-width="1" stroke-dasharray="5,5"/>
+  </svg>
+</div>

@@ -1,0 +1,134 @@
+<!-- STATE MACHINE VISUALIZER TEMPLATE
+Usage: Copy into markdown as html-live block, customize {{TITLE}}, {{STATES}}, {{INITIAL_STATE}}
+States format: [{"name": "STATE_NAME", "label": "Display", "color": "#color", "transitions": ["OTHER_STATE"]}]
+Example: Circuit Breaker with CLOSED, OPEN, HALF_OPEN states
+-->
+<div style="padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>
+    .state-machine-title {
+      color:#00d4ff;
+      font-family:monospace;
+      font-size:14px;
+      font-weight:bold;
+      margin-bottom:16px;
+      letter-spacing:1px;
+    }
+    .state-demo {
+      text-align:center;
+    }
+    .state-display {
+      font-size:18px;
+      font-family:monospace;
+      padding:16px;
+      border-radius:4px;
+      margin:16px 0;
+      color:#0b0e14;
+      font-weight:bold;
+      min-height:50px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      border:2px solid currentColor;
+    }
+    .state-closed { background:#34d399;border-color:#22c55e }
+    .state-open { background:#ef4444;border-color:#dc2626 }
+    .state-half-open { background:#fbbf24;border-color:#f59e0b }
+    .state-buttons {
+      display:flex;
+      gap:8px;
+      justify-content:center;
+      flex-wrap:wrap;
+      margin-top:16px;
+    }
+    .state-button {
+      padding:8px 16px;
+      border:1px solid #00d4ff;
+      background:#1e3a5f;
+      color:#00d4ff;
+      border-radius:4px;
+      cursor:pointer;
+      font-family:monospace;
+      font-size:12px;
+      transition:all 0.2s;
+    }
+    .state-button:hover {
+      background:#2a5a8f;
+      box-shadow:0 0 8px #00d4ff;
+    }
+  </style>
+
+  <div class="state-machine-title">{{TITLE}}</div>
+  <div class="state-demo">
+    <div class="state-display state-closed" id="state-display">{{INITIAL_STATE}}</div>
+    <div class="state-buttons" id="state-buttons">
+      {{BUTTON_GROUP}}
+    </div>
+  </div>
+
+  <script>
+    function setState(state, stateMap) {
+      const display = document.getElementById('state-display');
+      const info = stateMap[state];
+      display.textContent = info.label;
+      display.className = 'state-display ' + info.class;
+    }
+  </script>
+</div>
+
+<!-- EXAMPLES:
+
+Example 1 - Circuit Breaker:
+<div style="padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>.state-machine-title{color:#00d4ff;font-family:monospace;font-size:14px;font-weight:bold;margin-bottom:16px}.state-demo{text-align:center}.state-display{font-size:18px;font-family:monospace;padding:16px;border-radius:4px;margin:16px 0;color:#0b0e14;font-weight:bold;min-height:50px;display:flex;align-items:center;justify-content:center;border:2px solid currentColor}.state-closed{background:#34d399;border-color:#22c55e}.state-open{background:#ef4444;border-color:#dc2626}.state-half-open{background:#fbbf24;border-color:#f59e0b}.state-buttons{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:16px}.state-button{padding:8px 16px;border:1px solid #00d4ff;background:#1e3a5f;color:#00d4ff;border-radius:4px;cursor:pointer;font-family:monospace;font-size:12px;transition:all 0.2s}.state-button:hover{background:#2a5a8f;box-shadow:0 0 8px #00d4ff}</style>
+  <div class="state-machine-title">Circuit Breaker State Machine</div>
+  <div class="state-demo">
+    <div class="state-display state-closed" id="state-display">CLOSED</div>
+    <div class="state-buttons">
+      <button class="state-button" onclick="setState('CLOSED', stateMap); this.parentElement.parentElement.parentElement.style.opacity=1">Closed (Healthy)</button>
+      <button class="state-button" onclick="setState('OPEN', stateMap); this.parentElement.parentElement.parentElement.style.opacity=0.6">Open (Failing)</button>
+      <button class="state-button" onclick="setState('HALF_OPEN', stateMap); this.parentElement.parentElement.parentElement.style.opacity=0.8">Half-Open (Retry)</button>
+    </div>
+  </div>
+  <script>
+    const stateMap = {
+      'CLOSED': { label: 'CLOSED', class: 'state-closed' },
+      'OPEN': { label: 'OPEN', class: 'state-open' },
+      'HALF_OPEN': { label: 'HALF-OPEN', class: 'state-half-open' }
+    };
+    function setState(state, sm) {
+      const display = document.getElementById('state-display');
+      const info = sm[state];
+      display.textContent = info.label;
+      display.className = 'state-display ' + info.class;
+    }
+  </script>
+</div>
+
+Example 2 - TCP Connection States:
+<div style="padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>.state-machine-title{color:#00d4ff;font-family:monospace;font-size:14px;font-weight:bold;margin-bottom:16px}.state-demo{text-align:center}.state-display{font-size:18px;font-family:monospace;padding:16px;border-radius:4px;margin:16px 0;color:#0b0e14;font-weight:bold;min-height:50px;display:flex;align-items:center;justify-content:center;border:2px solid currentColor}.state-listen{background:#9333ea;border-color:#7e22ce}.state-established{background:#34d399;border-color:#22c55e}.state-closing{background:#fbbf24;border-color:#f59e0b}.state-buttons{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:16px}.state-button{padding:8px 16px;border:1px solid #00d4ff;background:#1e3a5f;color:#00d4ff;border-radius:4px;cursor:pointer;font-family:monospace;font-size:12px;transition:all 0.2s}.state-button:hover{background:#2a5a8f;box-shadow:0 0 8px #00d4ff}</style>
+  <div class="state-machine-title">TCP Connection State Machine</div>
+  <div class="state-demo">
+    <div class="state-display state-listen" id="tcp-display">LISTEN</div>
+    <div class="state-buttons">
+      <button class="state-button" onclick="setTcpState('LISTEN')">Listen</button>
+      <button class="state-button" onclick="setTcpState('ESTABLISHED')">Established</button>
+      <button class="state-button" onclick="setTcpState('FIN_WAIT')">Closing</button>
+    </div>
+  </div>
+  <script>
+    const tcpMap = {
+      'LISTEN': { label: 'LISTEN', class: 'state-listen' },
+      'ESTABLISHED': { label: 'ESTABLISHED', class: 'state-established' },
+      'FIN_WAIT': { label: 'FIN_WAIT', class: 'state-closing' }
+    };
+    function setTcpState(state) {
+      const display = document.getElementById('tcp-display');
+      const info = tcpMap[state];
+      display.textContent = info.label;
+      display.className = 'state-display ' + info.class;
+    }
+  </script>
+</div>
+
+-->

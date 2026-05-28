@@ -2811,6 +2811,89 @@ and the control plane makes it happen, continuously reconciling.
 
 ---
 
+## Interactive Components
+
+### Pod Lifecycle State Machine
+
+<div style="padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>.state-machine-title{color:#00d4ff;font-family:monospace;font-size:14px;font-weight:bold;margin-bottom:16px}.state-demo{text-align:center}.state-display{font-size:18px;font-family:monospace;padding:16px;border-radius:4px;margin:16px 0;color:#0b0e14;font-weight:bold;min-height:50px;display:flex;align-items:center;justify-content:center;border:2px solid currentColor}.state-pending{background:#fbbf24;border-color:#f59e0b}.state-running{background:#34d399;border-color:#22c55e}.state-succeeded{background:#60a5fa;border-color:#3b82f6}.state-failed{background:#ef4444;border-color:#dc2626}.state-buttons{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:16px}.state-button{padding:8px 16px;border:1px solid #00d4ff;background:#1e3a5f;color:#00d4ff;border-radius:4px;cursor:pointer;font-family:monospace;font-size:12px;transition:all 0.2s}.state-button:hover{background:#2a5a8f;box-shadow:0 0 8px #00d4ff}</style>
+  <div class="state-machine-title">Pod Lifecycle Phases</div>
+  <div class="state-demo">
+    <div class="state-display state-pending" id="pod-state">PENDING</div>
+    <div class="state-buttons">
+      <button class="state-button" onclick="setPodState('PENDING')">Pending</button>
+      <button class="state-button" onclick="setPodState('RUNNING')">Running</button>
+      <button class="state-button" onclick="setPodState('SUCCEEDED')">Succeeded</button>
+      <button class="state-button" onclick="setPodState('FAILED')">Failed</button>
+    </div>
+  </div>
+  <script>
+    const podStates = {
+      'PENDING': { label: 'PENDING', class: 'state-pending', desc: 'API accepted, containers not running' },
+      'RUNNING': { label: 'RUNNING', class: 'state-running', desc: 'At least one container running' },
+      'SUCCEEDED': { label: 'SUCCEEDED', class: 'state-succeeded', desc: 'All containers exited code 0' },
+      'FAILED': { label: 'FAILED', class: 'state-failed', desc: 'At least one container exited non-zero' }
+    };
+    function setPodState(state) {
+      const display = document.getElementById('pod-state');
+      const info = podStates[state];
+      display.textContent = info.label;
+      display.className = 'state-display ' + info.class;
+    }
+  </script>
+</div>
+
+### Cluster Request Flow
+
+<div style="display:flex;flex-direction:column;align-items:center;gap:8px;padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>@keyframes flow-pulse{0%,100%{opacity:.3;transform:translateY(0)}50%{opacity:1;transform:translateY(-2px)}}.flow-title{color:#00d4ff;font-family:monospace;font-size:14px;font-weight:bold;margin-bottom:8px;letter-spacing:1px}.flow-node{display:inline-block;padding:8px 16px;border-radius:4px;font-size:12px;font-family:monospace;color:#e3eaf0;background:#1e3a5f;border:1px solid #00d4ff}.flow-arrow{color:#00d4ff;font-size:16px;animation:flow-pulse 1.5s infinite;font-weight:bold}</style>
+  <div class="flow-title">kubectl apply → Container Started</div>
+  <div style="display:flex;flex-direction:column;align-items:center;gap:6px">
+    <div class="flow-node">kubectl apply</div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-node">API Server (Validate)</div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-node">etcd (Persist)</div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-node">Scheduler (Assign Node)</div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-node">kubelet (Pull Image)</div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-node">Container Running</div>
+  </div>
+</div>
+
+### Cluster Health Metrics
+
+<div style="padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>.obs-title{color:#00d4ff;font-family:monospace;font-size:14px;font-weight:bold;margin-bottom:16px;letter-spacing:1px}.obs-grid{display:grid;grid-template-columns:repeat(auto-fit, minmax(150px, 1fr));gap:12px}.obs-card{padding:12px;background:#1a2332;border:1px solid #1e3a5f;border-radius:4px;display:flex;flex-direction:column;align-items:center;transition:all 0.3s}.obs-card:hover{border-color:#00d4ff;box-shadow:0 0 8px rgba(0, 212, 255, 0.3)}.obs-label{color:#a3aab8;font-family:monospace;font-size:11px;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px}.obs-value{font-family:monospace;font-size:20px;font-weight:bold;margin-bottom:4px;letter-spacing:0.5px}.obs-unit{color:#a3aab8;font-family:monospace;font-size:10px;text-transform:uppercase}.metric-healthy{color:#34d399}.metric-warning{color:#fbbf24}.metric-critical{color:#ef4444}</style>
+  <div class="obs-title">Kubernetes Cluster Health</div>
+  <div class="obs-grid">
+    <div class="obs-card">
+      <div class="obs-label">Nodes Ready</div>
+      <div class="obs-value metric-healthy">12</div>
+      <div class="obs-unit">of 12</div>
+    </div>
+    <div class="obs-card">
+      <div class="obs-label">Pods Running</div>
+      <div class="obs-value metric-healthy">487</div>
+      <div class="obs-unit">active</div>
+    </div>
+    <div class="obs-card">
+      <div class="obs-label">API Latency</div>
+      <div class="obs-value metric-healthy">25</div>
+      <div class="obs-unit">ms</div>
+    </div>
+    <div class="obs-card">
+      <div class="obs-label">etcd Health</div>
+      <div class="obs-value metric-healthy">OK</div>
+      <div class="obs-unit">operational</div>
+    </div>
+  </div>
+</div>
+
+---
+
 ## Interview Questions
 
 ### Beginner Level

@@ -519,6 +519,69 @@ K8s storage = shipping container warehouse
 
 **Answer**: `emptyDir` volumes are **ephemeral** — tied to the pod's lifecycle. When a node fails, the kubelet is unreachable, so pods enter `Unknown` state. After `--pod-eviction-timeout` (default 5 minutes), the controller manager evicts them. But `emptyDir` doesn't persist — the replacement pod gets a fresh empty directory. However, the **PodDisruptionBudget** (PDB) might prevent scheduling more than 1 replacement (if `minAvailable: 2` was set). Or: **DaemonSet** with `emptyDir` for logs — when the node comes back, the original pod may still be in `Terminating` state, consuming its UID/port/IP, and the new pod gets a different IP, confusing clients that cache DNS. Fix: use `persistentVolumeClaim` with `ReadWriteMany` for logs that must survive node failures.
 
+## Interactive Components
+
+### Storage Failure Cascade
+
+<div style="padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>.cascade-title{color:#00d4ff;font-family:monospace;font-size:14px;font-weight:bold;margin-bottom:16px;letter-spacing:1px}.cascade-stages{display:flex;flex-direction:column;gap:12px;margin-bottom:16px}.cascade-stage{display:flex;align-items:center;gap:12px}.cascade-label{color:#e3eaf0;font-family:monospace;font-size:12px;min-width:140px}.cascade-indicator{width:24px;height:24px;border-radius:4px;background:#34d399;border:2px solid #22c55e;transition:all 0.3s}.cascade-indicator.failing{background:#ef4444;border-color:#dc2626;box-shadow:0 0 12px #ef4444;animation:cascade-fail 0.6s ease-out}@keyframes cascade-fail{0%{transform:scale(1);opacity:1}100%{transform:scale(1.2);opacity:0.8}}.cascade-controls{display:flex;gap:8px;flex-wrap:wrap}.cascade-button{padding:8px 16px;border:1px solid #00d4ff;background:#1e3a5f;color:#00d4ff;border-radius:4px;cursor:pointer;font-family:monospace;font-size:12px;transition:all 0.2s}.cascade-button:hover{background:#2a5a8f;box-shadow:0 0 8px #00d4ff}</style>
+  <div class="cascade-title">PVC Failure Cascade</div>
+  <div class="cascade-stages">
+    <div class="cascade-stage"><span class="cascade-label">Storage Backend</span><div class="cascade-indicator" data-stage="storage"></div></div>
+    <div class="cascade-stage"><span class="cascade-label">CSI Driver</span><div class="cascade-indicator" data-stage="csi"></div></div>
+    <div class="cascade-stage"><span class="cascade-label">Volume Mount</span><div class="cascade-indicator" data-stage="mount"></div></div>
+    <div class="cascade-stage"><span class="cascade-label">Pod I/O</span><div class="cascade-indicator" data-stage="io"></div></div>
+  </div>
+  <div class="cascade-controls">
+    <button class="cascade-button" onclick="startStorFail()">Storage Fails</button>
+    <button class="cascade-button" onclick="resetStorFail()">Recovery</button>
+  </div>
+  <script>
+    function startStorFail() {
+      const stages = ['storage', 'csi', 'mount', 'io'];
+      let delay = 0;
+      stages.forEach((id) => {
+        setTimeout(() => {
+          document.querySelector('[data-stage="'+id+'"]').classList.add('failing');
+        }, delay);
+        delay += 350;
+      });
+    }
+    function resetStorFail() {
+      document.querySelectorAll('[data-stage]').forEach(s => s.classList.remove('failing'));
+    }
+  </script>
+</div>
+
+### Storage Metrics
+
+<div style="padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>.obs-title{color:#00d4ff;font-family:monospace;font-size:14px;font-weight:bold;margin-bottom:16px;letter-spacing:1px}.obs-grid{display:grid;grid-template-columns:repeat(auto-fit, minmax(150px, 1fr));gap:12px}.obs-card{padding:12px;background:#1a2332;border:1px solid #1e3a5f;border-radius:4px;display:flex;flex-direction:column;align-items:center;transition:all 0.3s}.obs-card:hover{border-color:#00d4ff;box-shadow:0 0 8px rgba(0, 212, 255, 0.3)}.obs-label{color:#a3aab8;font-family:monospace;font-size:11px;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px}.obs-value{font-family:monospace;font-size:20px;font-weight:bold;margin-bottom:4px;letter-spacing:0.5px}.obs-unit{color:#a3aab8;font-family:monospace;font-size:10px;text-transform:uppercase}.metric-healthy{color:#34d399}.metric-warning{color:#fbbf24}.metric-critical{color:#ef4444}</style>
+  <div class="obs-title">Storage Performance</div>
+  <div class="obs-grid">
+    <div class="obs-card">
+      <div class="obs-label">PVC Bound</div>
+      <div class="obs-value metric-healthy">34</div>
+      <div class="obs-unit">of 34</div>
+    </div>
+    <div class="obs-card">
+      <div class="obs-label">Avg Latency</div>
+      <div class="obs-value metric-healthy">2.1</div>
+      <div class="obs-unit">ms</div>
+    </div>
+    <div class="obs-card">
+      <div class="obs-label">IOPS</div>
+      <div class="obs-value metric-healthy">12K</div>
+      <div class="obs-unit">ops/s</div>
+    </div>
+    <div class="obs-card">
+      <div class="obs-label">Capacity Used</div>
+      <div class="obs-value metric-warning">78</div>
+      <div class="obs-unit">%</div>
+    </div>
+  </div>
+</div>
+
 ## Related
 
 - [Readme](/05-cloud/README.md)

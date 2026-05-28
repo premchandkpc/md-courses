@@ -2081,3 +2081,179 @@ With E2E test:
 - [Terraform Infrastructure As Code Config Management](/06-devops/03-terraform-infrastructure-as-code-config-management.md)
 - [Readme](/06-devops/README.md)
 - [Github Actions Gitlab Ci Pipeline Design](/06-devops/ci-cd/01-github-actions-gitlab-ci-pipeline-design.md)
+
+---
+
+## Interactive: E2E Component Topology
+
+<div style="padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>
+    .topology-title {
+      color:#00d4ff;
+      font-family:monospace;
+      font-size:14px;
+      font-weight:bold;
+      margin-bottom:12px;
+      letter-spacing:1px;
+    }
+    .topology-svg {
+      width:100%;
+      max-width:600px;
+      height:300px;
+      background:#1a2332;
+      border:1px solid #1e3a5f;
+      border-radius:4px;
+    }
+    .topo-edge {
+      stroke:#1e3a5f;
+      stroke-width:2;
+    }
+  </style>
+
+  <div class="topology-title">E2E Test Architecture</div>
+  <svg class="topology-svg" viewBox="0 0 600 300">
+    <defs>
+      <marker id="arrow-e2e" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+        <polygon points="0 0, 10 3, 0 6" fill="#1e3a5f"/>
+      </marker>
+    </defs>
+    <g>
+      <rect x="200" y="20" width="200" height="50" rx="4" fill="#1e3a5f" stroke="#00d4ff" stroke-width="1"/>
+      <text x="300" y="50" text-anchor="middle" fill="#e3eaf0" font-size="12" font-family="monospace" font-weight="bold">Test Runner</text>
+    </g>
+    <g>
+      <rect x="50" y="120" width="140" height="50" rx="4" fill="#1e3a5f" stroke="#00d4ff" stroke-width="1"/>
+      <text x="120" y="150" text-anchor="middle" fill="#e3eaf0" font-size="12" font-family="monospace">UI Automation</text>
+    </g>
+    <g>
+      <rect x="230" y="120" width="140" height="50" rx="4" fill="#1e3a5f" stroke="#00d4ff" stroke-width="1"/>
+      <text x="300" y="150" text-anchor="middle" fill="#e3eaf0" font-size="12" font-family="monospace">API Contract</text>
+    </g>
+    <g>
+      <rect x="410" y="120" width="140" height="50" rx="4" fill="#1e3a5f" stroke="#00d4ff" stroke-width="1"/>
+      <text x="480" y="150" text-anchor="middle" fill="#e3eaf0" font-size="12" font-family="monospace">DB State</text>
+    </g>
+    <g>
+      <circle cx="120" cy="260" r="25" fill="#1e3a5f" stroke="#00d4ff" stroke-width="1"/>
+      <text x="120" y="265" text-anchor="middle" fill="#e3eaf0" font-size="10" font-family="monospace" font-weight="bold">APP</text>
+    </g>
+    <g>
+      <circle cx="300" cy="260" r="25" fill="#1e3a5f" stroke="#00d4ff" stroke-width="1"/>
+      <text x="300" y="265" text-anchor="middle" fill="#e3eaf0" font-size="10" font-family="monospace" font-weight="bold">API</text>
+    </g>
+    <g>
+      <circle cx="480" cy="260" r="25" fill="#1e3a5f" stroke="#00d4ff" stroke-width="1"/>
+      <text x="480" y="265" text-anchor="middle" fill="#e3eaf0" font-size="10" font-family="monospace" font-weight="bold">DB</text>
+    </g>
+    <line class="topo-edge" x1="300" y1="70" x2="120" y2="120" marker-end="url(#arrow-e2e)"/>
+    <line class="topo-edge" x1="300" y1="70" x2="300" y2="120" marker-end="url(#arrow-e2e)"/>
+    <line class="topo-edge" x1="300" y1="70" x2="480" y2="120" marker-end="url(#arrow-e2e)"/>
+    <line class="topo-edge" x1="120" y1="170" x2="120" y2="235" marker-end="url(#arrow-e2e)"/>
+    <line class="topo-edge" x1="300" y1="170" x2="300" y2="235" marker-end="url(#arrow-e2e)"/>
+    <line class="topo-edge" x1="480" y1="170" x2="480" y2="235" marker-end="url(#arrow-e2e)"/>
+  </svg>
+  <div style="display:flex;gap:16px;margin-top:12px;font-size:12px;color:#e3eaf0;font-family:monospace;flex-wrap:wrap">
+    <div style="display:flex;align-items:center;gap:6px"><div style="width:16px;height:16px;background:#1e3a5f;border:1px solid #00d4ff"></div>Service</div>
+    <div style="display:flex;align-items:center;gap:6px"><div style="width:16px;height:16px;background:#1e3a5f;border-radius:50%;border:1px solid #00d4ff"></div>System</div>
+  </div>
+</div>
+
+---
+
+## Interactive: Test Failure Cascade
+
+<div style="padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>
+    .cascade-title {
+      color:#00d4ff;
+      font-family:monospace;
+      font-size:14px;
+      font-weight:bold;
+      margin-bottom:16px;
+      letter-spacing:1px;
+    }
+    .cascade-stages {
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+      margin-bottom:16px;
+    }
+    .cascade-stage {
+      display:flex;
+      align-items:center;
+      gap:12px;
+    }
+    .cascade-label {
+      color:#e3eaf0;
+      font-family:monospace;
+      font-size:12px;
+      min-width:120px;
+    }
+    .cascade-indicator {
+      width:24px;
+      height:24px;
+      border-radius:4px;
+      background:#34d399;
+      border:2px solid #22c55e;
+      transition:all 0.3s;
+    }
+    .cascade-indicator.failing {
+      background:#ef4444;
+      border-color:#dc2626;
+      box-shadow:0 0 12px #ef4444;
+      animation:cascade-fail 0.6s ease-out;
+    }
+    @keyframes cascade-fail {
+      0%{transform:scale(1);opacity:1}
+      100%{transform:scale(1.2);opacity:0.8}
+    }
+    .cascade-controls {
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+    }
+    .cascade-button {
+      padding:8px 16px;
+      border:1px solid #00d4ff;
+      background:#1e3a5f;
+      color:#00d4ff;
+      border-radius:4px;
+      cursor:pointer;
+      font-family:monospace;
+      font-size:12px;
+      transition:all 0.2s;
+    }
+    .cascade-button:hover {
+      background:#2a5a8f;
+      box-shadow:0 0 8px #00d4ff;
+    }
+  </style>
+
+  <div class="cascade-title">Test Failure Cascade</div>
+  <div class="cascade-stages">
+    <div class="cascade-stage"><span class="cascade-label">API Response</span><div class="cascade-indicator" data-stage="api"></div></div>
+    <div class="cascade-stage"><span class="cascade-label">Contract Assertion</span><div class="cascade-indicator" data-stage="contract"></div></div>
+    <div class="cascade-stage"><span class="cascade-label">UI Rendering</span><div class="cascade-indicator" data-stage="ui"></div></div>
+    <div class="cascade-stage"><span class="cascade-label">E2E Flow</span><div class="cascade-indicator" data-stage="e2e"></div></div>
+  </div>
+  <div class="cascade-controls">
+    <button class="cascade-button" onclick="testCascade()">Simulate Failure</button>
+    <button class="cascade-button" onclick="resetTest()">Reset</button>
+  </div>
+
+  <script>
+    function testCascade() {
+      const stages = ['api', 'contract', 'ui', 'e2e'];
+      let delay = 0;
+      stages.forEach((id) => {
+        setTimeout(() => {
+          document.querySelector('[data-stage="'+id+'"]').classList.add('failing');
+        }, delay);
+        delay += 300;
+      });
+    }
+    function resetTest() {
+      document.querySelectorAll('[data-stage]').forEach(s => s.classList.remove('failing'));
+    }
+  </script>
+</div>

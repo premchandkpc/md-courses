@@ -1728,6 +1728,56 @@ The lint rule is a static analysis that runs at build time — it does not rely 
 - [ ] All hooks called unconditionally at top level
 - [ ] `useTransition` or `useDeferredValue` for expensive re-renders
 
+## Interactive Component 1: Hook Lifecycle State
+
+```html-live
+<div style="padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>.state-machine-title{color:#00d4ff;font-family:monospace;font-size:14px;font-weight:bold;margin-bottom:16px;letter-spacing:1px}.state-demo{text-align:center}.state-display{font-size:18px;font-family:monospace;padding:16px;border-radius:4px;margin:16px 0;color:#0b0e14;font-weight:bold;min-height:50px;display:flex;align-items:center;justify-content:center;border:2px solid currentColor}.state-mount{background:#60a5fa;border-color:#3b82f6}.state-update{background:#fbbf24;border-color:#f59e0b}.state-unmount{background:#ef4444;border-color:#dc2626}.state-buttons{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:16px}.state-button{padding:8px 16px;border:1px solid #00d4ff;background:#1e3a5f;color:#00d4ff;border-radius:4px;cursor:pointer;font-family:monospace;font-size:12px;transition:all 0.2s}.state-button:hover{background:#2a5a8f;box-shadow:0 0 8px #00d4ff}</style>
+  <div class="state-machine-title">Hook Execution Lifecycle</div>
+  <div class="state-demo">
+    <div class="state-display state-mount" id="hook-display">MOUNT</div>
+    <div class="state-buttons">
+      <button class="state-button" onclick="setHookState('MOUNT', hookMap)">Mount</button>
+      <button class="state-button" onclick="setHookState('UPDATE', hookMap)">Update</button>
+      <button class="state-button" onclick="setHookState('CLEANUP', hookMap)">Cleanup</button>
+    </div>
+  </div>
+  <script>
+    const hookMap = {
+      'MOUNT': { label: 'MOUNT', class: 'state-mount' },
+      'UPDATE': { label: 'UPDATE', class: 'state-update' },
+      'CLEANUP': { label: 'CLEANUP', class: 'state-unmount' }
+    };
+    function setHookState(state, sm) {
+      const display = document.getElementById('hook-display');
+      const info = sm[state];
+      display.textContent = info.label;
+      display.className = 'state-display ' + info.class;
+    }
+  </script>
+</div>
+```
+
+## Interactive Component 2: Hook Dependencies Flow
+
+```html-live
+<div style="display:flex;flex-direction:column;align-items:center;gap:8px;padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>@keyframes flow-pulse{0%,100%{opacity:.3;transform:translateY(0)}50%{opacity:1;transform:translateY(-2px)}}.flow-title{color:#00d4ff;font-family:monospace;font-size:14px;font-weight:bold;margin-bottom:8px;letter-spacing:1px}.flow-node{display:inline-block;padding:8px 16px;border-radius:4px;font-size:12px;font-family:monospace;color:#e3eaf0;background:#1e3a5f;border:1px solid #00d4ff}.flow-arrow{color:#00d4ff;font-size:16px;animation:flow-pulse 1.5s infinite;font-weight:bold}</style>
+  <div class="flow-title">useEffect Hook Execution</div>
+  <div style="display:flex;flex-direction:column;align-items:center;gap:6px">
+    <div class="flow-node">Render Complete</div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-node">Check Dependencies</div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-node">Run Cleanup (prev)</div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-node">Execute Effect</div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-node">Return Cleanup Fn</div>
+  </div>
+</div>
+```
+
 ---
 
 ## Related

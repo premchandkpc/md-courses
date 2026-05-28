@@ -1362,6 +1362,101 @@ graph LR
 
 ---
 
+## Interactive Components
+
+### Pod Failure Cascade
+
+<div style="padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>.cascade-title{color:#00d4ff;font-family:monospace;font-size:14px;font-weight:bold;margin-bottom:16px;letter-spacing:1px}.cascade-stages{display:flex;flex-direction:column;gap:12px;margin-bottom:16px}.cascade-stage{display:flex;align-items:center;gap:12px}.cascade-label{color:#e3eaf0;font-family:monospace;font-size:12px;min-width:120px}.cascade-indicator{width:24px;height:24px;border-radius:4px;background:#34d399;border:2px solid #22c55e;transition:all 0.3s}.cascade-indicator.failing{background:#ef4444;border-color:#dc2626;box-shadow:0 0 12px #ef4444;animation:cascade-fail 0.6s ease-out}@keyframes cascade-fail{0%{transform:scale(1);opacity:1}100%{transform:scale(1.2);opacity:0.8}}.cascade-controls{display:flex;gap:8px;flex-wrap:wrap}.cascade-button{padding:8px 16px;border:1px solid #00d4ff;background:#1e3a5f;color:#00d4ff;border-radius:4px;cursor:pointer;font-family:monospace;font-size:12px;transition:all 0.2s}.cascade-button:hover{background:#2a5a8f;box-shadow:0 0 8px #00d4ff}</style>
+  <div class="cascade-title">Operator Failure Cascade</div>
+  <div class="cascade-stages">
+    <div class="cascade-stage"><span class="cascade-label">Operator Pod</span><div class="cascade-indicator" data-stage="op"></div></div>
+    <div class="cascade-stage"><span class="cascade-label">Reconcile Loop</span><div class="cascade-indicator" data-stage="recon"></div></div>
+    <div class="cascade-stage"><span class="cascade-label">CRD Resources</span><div class="cascade-indicator" data-stage="crd"></div></div>
+    <div class="cascade-stage"><span class="cascade-label">App Deployment</span><div class="cascade-indicator" data-stage="app"></div></div>
+  </div>
+  <div class="cascade-controls">
+    <button class="cascade-button" onclick="startOpCascade()">Operator Fails</button>
+    <button class="cascade-button" onclick="resetOpCascade()">Recover</button>
+  </div>
+  <script>
+    function startOpCascade() {
+      const stages = ['op', 'recon', 'crd', 'app'];
+      let delay = 0;
+      stages.forEach((id) => {
+        setTimeout(() => {
+          document.querySelector('[data-stage="'+id+'"]').classList.add('failing');
+        }, delay);
+        delay += 300;
+      });
+    }
+    function resetOpCascade() {
+      document.querySelectorAll('[data-stage]').forEach(s => s.classList.remove('failing'));
+    }
+  </script>
+</div>
+
+### K8s Cluster Topology
+
+<div style="padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>.topology-title{color:#00d4ff;font-family:monospace;font-size:14px;font-weight:bold;margin-bottom:12px;letter-spacing:1px}.topology-svg{width:100%;max-width:600px;height:300px;background:#1a2332;border:1px solid #1e3a5f;border-radius:4px}.topo-edge{stroke:#1e3a5f;stroke-width:2}.topo-legend{display:flex;gap:16px;margin-top:12px;font-size:12px;color:#e3eaf0;font-family:monospace;flex-wrap:wrap}.legend-item{display:flex;align-items:center;gap:6px}.legend-color{width:16px;height:16px;border-radius:2px}</style>
+  <div class="topology-title">Advanced K8s Control Plane Topology</div>
+  <svg class="topology-svg" viewBox="0 0 600 300">
+    <defs>
+      <marker id="arrow-adv" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+        <polygon points="0 0, 10 3, 0 6" fill="#1e3a5f"/>
+      </marker>
+    </defs>
+    <!-- Istiod Control Plane -->
+    <g>
+      <rect x="200" y="20" width="200" height="50" rx="4" fill="#6f42c1" stroke="#00d4ff" stroke-width="1"/>
+      <text x="300" y="50" text-anchor="middle" fill="#e3eaf0" font-size="12" font-family="monospace" font-weight="bold">Istiod (Service Mesh)</text>
+    </g>
+    <!-- Operators -->
+    <g>
+      <rect x="50" y="120" width="100" height="50" rx="4" fill="#3a7ca5" stroke="#00d4ff" stroke-width="1"/>
+      <text x="100" y="150" text-anchor="middle" fill="#e3eaf0" font-size="12" font-family="monospace">Operators</text>
+    </g>
+    <!-- Webhooks -->
+    <g>
+      <rect x="250" y="120" width="100" height="50" rx="4" fill="#3a7ca5" stroke="#00d4ff" stroke-width="1"/>
+      <text x="300" y="150" text-anchor="middle" fill="#e3eaf0" font-size="12" font-family="monospace">Webhooks</text>
+    </g>
+    <!-- Custom Scheduler -->
+    <g>
+      <rect x="450" y="120" width="100" height="50" rx="4" fill="#3a7ca5" stroke="#00d4ff" stroke-width="1"/>
+      <text x="500" y="150" text-anchor="middle" fill="#e3eaf0" font-size="12" font-family="monospace">Scheduler</text>
+    </g>
+    <!-- Envoy Sidecars -->
+    <g>
+      <circle cx="100" cy="250" r="20" fill="#1e5f3f" stroke="#34d399" stroke-width="1"/>
+      <text x="100" y="255" text-anchor="middle" fill="#e3eaf0" font-size="10" font-family="monospace" font-weight="bold">Envoy</text>
+    </g>
+    <g>
+      <circle cx="300" cy="250" r="20" fill="#1e5f3f" stroke="#34d399" stroke-width="1"/>
+      <text x="300" y="255" text-anchor="middle" fill="#e3eaf0" font-size="10" font-family="monospace" font-weight="bold">Envoy</text>
+    </g>
+    <g>
+      <circle cx="500" cy="250" r="20" fill="#1e5f3f" stroke="#34d399" stroke-width="1"/>
+      <text x="500" y="255" text-anchor="middle" fill="#e3eaf0" font-size="10" font-family="monospace" font-weight="bold">Envoy</text>
+    </g>
+    <!-- Edges -->
+    <line class="topo-edge" x1="300" y1="70" x2="100" y2="120" marker-end="url(#arrow-adv)"/>
+    <line class="topo-edge" x1="300" y1="70" x2="300" y2="120" marker-end="url(#arrow-adv)"/>
+    <line class="topo-edge" x1="300" y1="70" x2="500" y2="120" marker-end="url(#arrow-adv)"/>
+    <line class="topo-edge" x1="100" y1="170" x2="100" y2="230" marker-end="url(#arrow-adv)"/>
+    <line class="topo-edge" x1="300" y1="170" x2="300" y2="230" marker-end="url(#arrow-adv)"/>
+    <line class="topo-edge" x1="500" y1="170" x2="500" y2="230" marker-end="url(#arrow-adv)"/>
+  </svg>
+  <div class="topo-legend">
+    <div class="legend-item"><div class="legend-color" style="background:#6f42c1;border:1px solid #00d4ff"></div><span>Mesh Control</span></div>
+    <div class="legend-item"><div class="legend-color" style="background:#3a7ca5;border:1px solid #00d4ff"></div><span>Controllers</span></div>
+    <div class="legend-item"><div class="legend-color" style="background:#1e5f3f;border:1px solid #34d399"></div><span>Sidecars</span></div>
+  </div>
+</div>
+
+---
+
 ## 🧠 Simplest Mental Model
 
 

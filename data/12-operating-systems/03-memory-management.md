@@ -1352,6 +1352,126 @@ Cache bandwidth (per core):
 
 > **Memory management is like a hotel. Virtual memory is the room numbers (addresses) that every guest believes is their own suite. The MMU is the front desk clerk who translates room numbers to actual rooms. The page table is the registration book. The buddy allocator is the housekeeping that groups small rooms into conference halls (big pages). Swap is the storage closet—when the hotel fills up, luggage goes to the closet (disk) and comes back when space opens. The OOM killer is the bouncer who kicks out the loudest guest when the hotel is totally full. Slab/SLUB is the drawer organizer at the front desk — tiny objects (pens, forms) are kept pre-organized. Everything is about giving each process the illusion of owning the whole hotel while actually sharing the real rooms efficiently.**
 
+## Interactive Components
+
+### Memory Layout Topology
+<div style="padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>.topology-title{color:#00d4ff;font-family:monospace;font-size:14px;font-weight:bold;margin-bottom:12px;letter-spacing:1px}.topology-svg{width:100%;max-width:600px;height:350px;background:#1a2332;border:1px solid #1e3a5f;border-radius:4px}.topo-edge{stroke:#1e3a5f;stroke-width:2}.topo-legend{display:flex;gap:16px;margin-top:12px;font-size:12px;color:#e3eaf0;font-family:monospace;flex-wrap:wrap}.legend-item{display:flex;align-items:center;gap:6px}</style>
+  <div class="topology-title">Process Memory Layout (x86-64)</div>
+  <svg class="topology-svg" viewBox="0 0 400 350">
+    <g><rect x="20" y="10" width="360" height="30" rx="4" fill="#1e3a5f" stroke="#00d4ff" stroke-width="1"/><text x="200" y="30" text-anchor="middle" fill="#e3eaf0" font-size="12" font-family="monospace" font-weight="bold">Kernel Space</text></g>
+    <g><rect x="20" y="50" width="360" height="40" rx="4" fill="#1e3a5f" stroke="#f59e0b" stroke-width="1"/><text x="200" y="75" text-anchor="middle" fill="#e3eaf0" font-size="12" font-family="monospace">Stack (↓)</text></g>
+    <g><line class="topo-edge" x1="200" y1="100" x2="200" y2="120" stroke="#666"/><text x="200" y="115" text-anchor="middle" fill="#999" font-size="10">Gap (guard page)</text></g>
+    <g><rect x="20" y="130" width="360" height="40" rx="4" fill="#1e3a5f" stroke="#34d399" stroke-width="1"/><text x="200" y="155" text-anchor="middle" fill="#e3eaf0" font-size="12" font-family="monospace">Mmap Area (libs)</text></g>
+    <g><line class="topo-edge" x1="200" y1="180" x2="200" y2="200" stroke="#666"/><text x="200" y="195" text-anchor="middle" fill="#999" font-size="10">Gap</text></g>
+    <g><rect x="20" y="210" width="360" height="40" rx="4" fill="#1e3a5f" stroke="#60a5fa" stroke-width="1"/><text x="200" y="235" text-anchor="middle" fill="#e3eaf0" font-size="12" font-family="monospace">Heap (↑)</text></g>
+    <g><rect x="20" y="260" width="360" height="20" rx="4" fill="#1e3a5f" stroke="#9333ea" stroke-width="1"/><text x="200" y="275" text-anchor="middle" fill="#e3eaf0" font-size="11" font-family="monospace">BSS + Data</text></g>
+    <g><rect x="20" y="290" width="360" height="30" rx="4" fill="#1e3a5f" stroke="#ef4444" stroke-width="1"/><text x="200" y="310" text-anchor="middle" fill="#e3eaf0" font-size="12" font-family="monospace">Code (Text)</text></g>
+  </svg>
+  <div class="topo-legend">
+    <div class="legend-item"><div style="width:14px;height:14px;background:#f59e0b;border-radius:2px"></div><span>Stack</span></div>
+    <div class="legend-item"><div style="width:14px;height:14px;background:#34d399;border-radius:2px"></div><span>Mmap</span></div>
+    <div class="legend-item"><div style="width:14px;height:14px;background:#60a5fa;border-radius:2px"></div><span>Heap</span></div>
+    <div class="legend-item"><div style="width:14px;height:14px;background:#ef4444;border-radius:2px"></div><span>Code</span></div>
+  </div>
+</div>
+
+### Memory Exhaustion Cascade
+<div style="padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>.cascade-title{color:#00d4ff;font-family:monospace;font-size:14px;font-weight:bold;margin-bottom:16px;letter-spacing:1px}.cascade-stages{display:flex;flex-direction:column;gap:12px;margin-bottom:16px}.cascade-stage{display:flex;align-items:center;gap:12px}.cascade-label{color:#e3eaf0;font-family:monospace;font-size:12px;min-width:140px}.cascade-indicator{width:24px;height:24px;border-radius:4px;background:#34d399;border:2px solid #22c55e;transition:all 0.3s}.cascade-indicator.failing{background:#ef4444;border-color:#dc2626;box-shadow:0 0 12px #ef4444;animation:cascade-fail 0.6s ease-out}@keyframes cascade-fail{0%{transform:scale(1);opacity:1}100%{transform:scale(1.2);opacity:0.8}}.cascade-controls{display:flex;gap:8px;flex-wrap:wrap}.cascade-button{padding:8px 16px;border:1px solid #00d4ff;background:#1e3a5f;color:#00d4ff;border-radius:4px;cursor:pointer;font-family:monospace;font-size:12px;transition:all 0.2s}.cascade-button:hover{background:#2a5a8f;box-shadow:0 0 8px #00d4ff}</style>
+  <div class="cascade-title">Out-of-Memory Cascade</div>
+  <div class="cascade-stages">
+    <div class="cascade-stage"><span class="cascade-label">Allocator Fails</span><div class="cascade-indicator" data-stage="alloc"></div></div>
+    <div class="cascade-stage"><span class="cascade-label">Direct Reclaim</span><div class="cascade-indicator" data-stage="reclaim"></div></div>
+    <div class="cascade-stage"><span class="cascade-label">Swap Full</span><div class="cascade-indicator" data-stage="swap"></div></div>
+    <div class="cascade-stage"><span class="cascade-label">OOM Killer Invoke</span><div class="cascade-indicator" data-stage="killer"></div></div>
+    <div class="cascade-stage"><span class="cascade-label">Process Killed</span><div class="cascade-indicator" data-stage="killed"></div></div>
+  </div>
+  <div class="cascade-controls">
+    <button class="cascade-button" onclick="memCascade()">Trigger OOM</button>
+    <button class="cascade-button" onclick="memReset()">Reset</button>
+  </div>
+  <script>
+    function memCascade() {
+      const stages = ['alloc', 'reclaim', 'swap', 'killer', 'killed'];
+      let delay = 0;
+      stages.forEach((id) => {
+        setTimeout(() => {
+          document.querySelector('[data-stage="'+id+'"]').classList.add('failing');
+        }, delay);
+        delay += 350;
+      });
+    }
+    function memReset() {
+      document.querySelectorAll('[data-stage]').forEach(s => s.classList.remove('failing'));
+    }
+  </script>
+</div>
+
+### Memory Metrics
+<div style="padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>.obs-title{color:#00d4ff;font-family:monospace;font-size:14px;font-weight:bold;margin-bottom:16px;letter-spacing:1px}.obs-grid{display:grid;grid-template-columns:repeat(auto-fit, minmax(150px, 1fr));gap:12px}.obs-card{padding:12px;background:#1a2332;border:1px solid #1e3a5f;border-radius:4px;display:flex;flex-direction:column;align-items:center;transition:all 0.3s}.obs-card:hover{border-color:#00d4ff;box-shadow:0 0 8px rgba(0, 212, 255, 0.3)}.obs-label{color:#a3aab8;font-family:monospace;font-size:11px;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px}.obs-value{font-family:monospace;font-size:20px;font-weight:bold;margin-bottom:4px;letter-spacing:0.5px}.obs-unit{color:#a3aab8;font-family:monospace;font-size:10px;text-transform:uppercase}.metric-healthy{color:#34d399}.metric-warning{color:#fbbf24}.metric-critical{color:#ef4444}</style>
+  <div class="obs-title">Memory Status</div>
+  <div class="obs-grid">
+    <div class="obs-card">
+      <div class="obs-label">Total RAM</div>
+      <div class="obs-value metric-healthy">32</div>
+      <div class="obs-unit">GB</div>
+    </div>
+    <div class="obs-card">
+      <div class="obs-label">Used</div>
+      <div class="obs-value metric-healthy">18.4</div>
+      <div class="obs-unit">GB</div>
+    </div>
+    <div class="obs-card">
+      <div class="obs-label">Page Faults</div>
+      <div class="obs-value metric-healthy">1,234</div>
+      <div class="obs-unit">per sec</div>
+    </div>
+    <div class="obs-card">
+      <div class="obs-label">TLB Misses</div>
+      <div class="obs-value metric-warning">523</div>
+      <div class="obs-unit">per sec</div>
+    </div>
+    <div class="obs-card">
+      <div class="obs-label">Page Cache</div>
+      <div class="obs-value metric-healthy">8.2</div>
+      <div class="obs-unit">GB</div>
+    </div>
+    <div class="obs-card">
+      <div class="obs-label">Swap Used</div>
+      <div class="obs-value metric-warning">2.1</div>
+      <div class="obs-unit">GB</div>
+    </div>
+  </div>
+</div>
+
+### Page Size Configuration
+<div style="padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>.slider-title{color:#00d4ff;font-family:monospace;font-size:14px;font-weight:bold;margin-bottom:12px;letter-spacing:1px}.slider-container{display:flex;flex-direction:column;gap:12px}.slider-label{color:#e3eaf0;font-family:monospace;font-size:12px}.slider-wrapper{display:flex;align-items:center;gap:12px}.slider-input{flex:1;height:6px;border-radius:3px;background:#1e3a5f;outline:none;-webkit-appearance:none;appearance:none}.slider-input::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:18px;height:18px;border-radius:50%;background:#00d4ff;cursor:pointer;box-shadow:0 0 8px #00d4ff;border:2px solid #0b0e14}.slider-input::-moz-range-thumb{width:18px;height:18px;border-radius:50%;background:#00d4ff;cursor:pointer;box-shadow:0 0 8px #00d4ff;border:2px solid #0b0e14}.slider-value{font-family:monospace;color:#34d399;min-width:80px;text-align:right;font-size:12px;font-weight:bold}</style>
+  <div class="slider-title">Virtual Memory Parameters</div>
+  <div class="slider-container">
+    <label class="slider-label">Cache Size (MB):</label>
+    <div class="slider-wrapper">
+      <input type="range" min="64" max="8192" value="512" class="slider-input" id="cache-slider">
+      <span class="slider-value" id="cache-value">512 MB</span>
+    </div>
+    <label class="slider-label">Swap Ratio (%):</label>
+    <div class="slider-wrapper">
+      <input type="range" min="0" max="100" value="50" class="slider-input" id="swap-slider">
+      <span class="slider-value" id="swap-value">50 %</span>
+    </div>
+  </div>
+  <script>
+    const cacheSlider = document.getElementById('cache-slider');
+    const cacheValue = document.getElementById('cache-value');
+    cacheSlider.addEventListener('input', (e) => { cacheValue.textContent = e.target.value + ' MB'; });
+    const swapSlider = document.getElementById('swap-slider');
+    const swapValue = document.getElementById('swap-value');
+    swapSlider.addEventListener('input', (e) => { swapValue.textContent = e.target.value + ' %'; });
+  </script>
+</div>
+
 ## Related
 
 - [Tcp Ip Deep Dive](/11-networking/01-tcp-ip-deep-dive.md)

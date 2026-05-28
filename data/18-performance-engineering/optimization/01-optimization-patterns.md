@@ -1707,6 +1707,63 @@ def autoscaling_strategy(workload_type: str):
     for key, value in strat.items():
         print(f"  {key:15s}: {value}")
 
+## Interactive Components
+
+### Optimization Impact Flow
+<div style="display:flex;flex-direction:column;align-items:center;gap:8px;padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>@keyframes flow-pulse{0%,100%{opacity:.3;transform:translateY(0)}50%{opacity:1;transform:translateY(-2px)}}.flow-title{color:#00d4ff;font-family:monospace;font-size:14px;font-weight:bold;margin-bottom:8px;letter-spacing:1px}.flow-node{display:inline-block;padding:8px 16px;border-radius:4px;font-size:12px;font-family:monospace;color:#e3eaf0;background:#1e3a5f;border:1px solid #00d4ff}.flow-arrow{color:#00d4ff;font-size:16px;animation:flow-pulse 1.5s infinite;font-weight:bold}</style>
+  <div class="flow-title">Optimization Path</div>
+  <div style="display:flex;flex-direction:column;align-items:center;gap:6px">
+    <div class="flow-node">Profile</div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-node">Find bottleneck</div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-node">Apply optimization</div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-node">Measure gain</div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-node">Compare baseline</div>
+  </div>
+</div>
+
+### Optimization Parameters
+<div style="padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>.slider-title{color:#00d4ff;font-family:monospace;font-size:14px;font-weight:bold;margin-bottom:12px;letter-spacing:1px}.slider-container{display:flex;flex-direction:column;gap:12px}.slider-label{color:#e3eaf0;font-family:monospace;font-size:12px}.slider-wrapper{display:flex;align-items:center;gap:12px}.slider-input{flex:1;height:6px;border-radius:3px;background:#1e3a5f;outline:none;-webkit-appearance:none;appearance:none}.slider-input::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:18px;height:18px;border-radius:50%;background:#00d4ff;cursor:pointer;box-shadow:0 0 8px #00d4ff;border:2px solid #0b0e14}.slider-input::-moz-range-thumb{width:18px;height:18px;border-radius:50%;background:#00d4ff;cursor:pointer;box-shadow:0 0 8px #00d4ff;border:2px solid #0b0e14}.slider-value{font-family:monospace;color:#34d399;min-width:80px;text-align:right;font-size:12px;font-weight:bold}</style>
+  <div class="slider-title">Performance Tuning</div>
+  <div class="slider-container">
+    <label class="slider-label">Cache Line Size (bytes):</label>
+    <div class="slider-wrapper">
+      <input type="range" min="32" max="256" value="64" class="slider-input" id="cache-line-slider">
+      <span class="slider-value" id="cache-line-value">64 bytes</span>
+    </div>
+    <label class="slider-label">Batch Size:</label>
+    <div class="slider-wrapper">
+      <input type="range" min="1" max="1024" value="128" class="slider-input" id="batch-slider">
+      <span class="slider-value" id="batch-value">128 items</span>
+    </div>
+  </div>
+  <script>
+    const cacheSlider = document.getElementById('cache-line-slider');
+    const cacheValue = document.getElementById('cache-line-value');
+    cacheSlider.addEventListener('input', (e) => { cacheValue.textContent = e.target.value + ' bytes'; });
+    const batchSlider = document.getElementById('batch-slider');
+    const batchValue = document.getElementById('batch-value');
+    batchSlider.addEventListener('input', (e) => { batchValue.textContent = e.target.value + ' items'; });
+  </script>
+</div>
+
+### Optimization Metrics
+<div style="padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>.obs-title{color:#00d4ff;font-family:monospace;font-size:14px;font-weight:bold;margin-bottom:16px;letter-spacing:1px}.obs-grid{display:grid;grid-template-columns:repeat(auto-fit, minmax(150px, 1fr));gap:12px}.obs-card{padding:12px;background:#1a2332;border:1px solid #1e3a5f;border-radius:4px;display:flex;flex-direction:column;align-items:center;transition:all 0.3s}.obs-card:hover{border-color:#00d4ff;box-shadow:0 0 8px rgba(0, 212, 255, 0.3)}.obs-label{color:#a3aab8;font-family:monospace;font-size:11px;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px}.obs-value{font-family:monospace;font-size:20px;font-weight:bold;margin-bottom:4px;letter-spacing:0.5px}.obs-unit{color:#a3aab8;font-family:monospace;font-size:10px;text-transform:uppercase}.metric-healthy{color:#34d399}</style>
+  <div class="obs-title">Before vs After</div>
+  <div class="obs-grid">
+    <div class="obs-card"><div class="obs-label">Throughput Before</div><div class="obs-value metric-healthy">50K</div><div class="obs-unit">ops/s</div></div>
+    <div class="obs-card"><div class="obs-label">Throughput After</div><div class="obs-value metric-healthy">175K</div><div class="obs-unit">ops/s</div></div>
+    <div class="obs-card"><div class="obs-label">Improvement</div><div class="obs-value metric-healthy">3.5x</div><div class="obs-unit">faster</div></div>
+    <div class="obs-card"><div class="obs-label">Memory Saved</div><div class="obs-value metric-healthy">42</div><div class="obs-unit">%</div></div>
+  </div>
+</div>
+
 autoscaling_strategy("variable")
 autoscaling_strategy("spiky")
 ```

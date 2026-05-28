@@ -1,0 +1,166 @@
+<!-- FAILURE CASCADE SIMULATOR TEMPLATE
+Usage: Copy into markdown as html-live block, customize {{TITLE}}, {{STAGES}}
+Stages format: [{"id": "stage1", "name": "Service", "color": "#34d399"}]
+Example: Circuit breaker cascade showing healthy → degraded → failed
+-->
+<div style="padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>
+    .cascade-title {
+      color:#00d4ff;
+      font-family:monospace;
+      font-size:14px;
+      font-weight:bold;
+      margin-bottom:16px;
+      letter-spacing:1px;
+    }
+    .cascade-stages {
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+      margin-bottom:16px;
+    }
+    .cascade-stage {
+      display:flex;
+      align-items:center;
+      gap:12px;
+    }
+    .cascade-label {
+      color:#e3eaf0;
+      font-family:monospace;
+      font-size:12px;
+      min-width:120px;
+    }
+    .cascade-indicator {
+      width:24px;
+      height:24px;
+      border-radius:4px;
+      background:#34d399;
+      border:2px solid #22c55e;
+      transition:all 0.3s;
+    }
+    .cascade-indicator.failing {
+      background:#ef4444;
+      border-color:#dc2626;
+      box-shadow:0 0 12px #ef4444;
+      animation:cascade-fail 0.6s ease-out;
+    }
+    @keyframes cascade-fail {
+      0%{transform:scale(1);opacity:1}
+      100%{transform:scale(1.2);opacity:0.8}
+    }
+    .cascade-controls {
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+    }
+    .cascade-button {
+      padding:8px 16px;
+      border:1px solid #00d4ff;
+      background:#1e3a5f;
+      color:#00d4ff;
+      border-radius:4px;
+      cursor:pointer;
+      font-family:monospace;
+      font-size:12px;
+      transition:all 0.2s;
+    }
+    .cascade-button:hover {
+      background:#2a5a8f;
+      box-shadow:0 0 8px #00d4ff;
+    }
+  </style>
+
+  <div class="cascade-title">{{TITLE}}</div>
+  <div class="cascade-stages" id="cascade-stages">
+    {{STAGE_INDICATORS}}
+  </div>
+  <div class="cascade-controls">
+    <button class="cascade-button" onclick="startCascade()">Inject Failure</button>
+    <button class="cascade-button" onclick="resetCascade()">Reset</button>
+  </div>
+
+  <script>
+    function startCascade() {
+      const stages = document.querySelectorAll('[data-stage]');
+      let delay = 0;
+      stages.forEach((stage) => {
+        setTimeout(() => {
+          stage.classList.add('failing');
+        }, delay);
+        delay += 300;
+      });
+    }
+    function resetCascade() {
+      document.querySelectorAll('[data-stage]').forEach((stage) => {
+        stage.classList.remove('failing');
+      });
+    }
+  </script>
+</div>
+
+<!-- EXAMPLES:
+
+Example 1 - Database Cascade:
+<div style="padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>.cascade-title{color:#00d4ff;font-family:monospace;font-size:14px;font-weight:bold;margin-bottom:16px}.cascade-stages{display:flex;flex-direction:column;gap:12px;margin-bottom:16px}.cascade-stage{display:flex;align-items:center;gap:12px}.cascade-label{color:#e3eaf0;font-family:monospace;font-size:12px;min-width:120px}.cascade-indicator{width:24px;height:24px;border-radius:4px;background:#34d399;border:2px solid #22c55e;transition:all 0.3s}.cascade-indicator.failing{background:#ef4444;border-color:#dc2626;box-shadow:0 0 12px #ef4444;animation:cascade-fail 0.6s ease-out}@keyframes cascade-fail{0%{transform:scale(1);opacity:1}100%{transform:scale(1.2);opacity:0.8}}.cascade-controls{display:flex;gap:8px;flex-wrap:wrap}.cascade-button{padding:8px 16px;border:1px solid #00d4ff;background:#1e3a5f;color:#00d4ff;border-radius:4px;cursor:pointer;font-family:monospace;font-size:12px;transition:all 0.2s}.cascade-button:hover{background:#2a5a8f;box-shadow:0 0 8px #00d4ff}</style>
+  <div class="cascade-title">Database Outage Cascade</div>
+  <div class="cascade-stages">
+    <div class="cascade-stage"><span class="cascade-label">Primary DB</span><div class="cascade-indicator" data-stage="primary"></div></div>
+    <div class="cascade-stage"><span class="cascade-label">Connection Pool</span><div class="cascade-indicator" data-stage="pool"></div></div>
+    <div class="cascade-stage"><span class="cascade-label">API Service</span><div class="cascade-indicator" data-stage="api"></div></div>
+    <div class="cascade-stage"><span class="cascade-label">Cache Layer</span><div class="cascade-indicator" data-stage="cache"></div></div>
+    <div class="cascade-stage"><span class="cascade-label">Load Balancer</span><div class="cascade-indicator" data-stage="lb"></div></div>
+  </div>
+  <div class="cascade-controls">
+    <button class="cascade-button" onclick="dbCascade()">Inject DB Failure</button>
+    <button class="cascade-button" onclick="resetDb()">Reset</button>
+  </div>
+  <script>
+    function dbCascade() {
+      const stages = ['primary', 'pool', 'api', 'cache', 'lb'];
+      let delay = 0;
+      stages.forEach((id) => {
+        setTimeout(() => {
+          document.querySelector('[data-stage="'+id+'"]').classList.add('failing');
+        }, delay);
+        delay += 300;
+      });
+    }
+    function resetDb() {
+      document.querySelectorAll('[data-stage]').forEach(s => s.classList.remove('failing'));
+    }
+  </script>
+</div>
+
+Example 2 - Network Partition Cascade:
+<div style="padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>.cascade-title{color:#00d4ff;font-family:monospace;font-size:14px;font-weight:bold;margin-bottom:16px}.cascade-stages{display:flex;flex-direction:column;gap:12px;margin-bottom:16px}.cascade-stage{display:flex;align-items:center;gap:12px}.cascade-label{color:#e3eaf0;font-family:monospace;font-size:12px;min-width:120px}.cascade-indicator{width:24px;height:24px;border-radius:4px;background:#34d399;border:2px solid #22c55e;transition:all 0.3s}.cascade-indicator.failing{background:#ef4444;border-color:#dc2626;box-shadow:0 0 12px #ef4444;animation:cascade-fail 0.6s ease-out}@keyframes cascade-fail{0%{transform:scale(1);opacity:1}100%{transform:scale(1.2);opacity:0.8}}.cascade-controls{display:flex;gap:8px;flex-wrap:wrap}.cascade-button{padding:8px 16px;border:1px solid #00d4ff;background:#1e3a5f;color:#00d4ff;border-radius:4px;cursor:pointer;font-family:monospace;font-size:12px;transition:all 0.2s}.cascade-button:hover{background:#2a5a8f;box-shadow:0 0 8px #00d4ff}</style>
+  <div class="cascade-title">Network Partition Effect</div>
+  <div class="cascade-stages">
+    <div class="cascade-stage"><span class="cascade-label">DC A ↔ DC B</span><div class="cascade-indicator" data-stage="link"></div></div>
+    <div class="cascade-stage"><span class="cascade-label">Quorum Lost</span><div class="cascade-indicator" data-stage="quorum"></div></div>
+    <div class="cascade-stage"><span class="cascade-label">Election Timeout</span><div class="cascade-indicator" data-stage="election"></div></div>
+    <div class="cascade-stage"><span class="cascade-label">Read Unavailable</span><div class="cascade-indicator" data-stage="reads"></div></div>
+  </div>
+  <div class="cascade-controls">
+    <button class="cascade-button" onclick="netCascade()">Partition Network</button>
+    <button class="cascade-button" onclick="resetNet()">Heal</button>
+  </div>
+  <script>
+    function netCascade() {
+      const stages = ['link', 'quorum', 'election', 'reads'];
+      let delay = 0;
+      stages.forEach((id) => {
+        setTimeout(() => {
+          document.querySelector('[data-stage="'+id+'"]').classList.add('failing');
+        }, delay);
+        delay += 400;
+      });
+    }
+    function resetNet() {
+      document.querySelectorAll('[data-stage]').forEach(s => s.classList.remove('failing'));
+    }
+  </script>
+</div>
+
+-->

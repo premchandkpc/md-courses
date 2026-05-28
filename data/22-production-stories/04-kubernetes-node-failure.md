@@ -1182,3 +1182,169 @@ description: "Priority for production workloads."
 - [Kubernetes](/07-kubernetes/) — Cluster failures
 - [Networking](/11-networking/) — DNS, TCP issues
 - [SRE](/14-sre-observability/) — Incident response
+
+---
+
+## Interactive: Kubernetes Failure Cascade
+
+<div style="padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>
+    .cascade-title {
+      color:#00d4ff;
+      font-family:monospace;
+      font-size:14px;
+      font-weight:bold;
+      margin-bottom:16px;
+      letter-spacing:1px;
+    }
+    .cascade-stages {
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+      margin-bottom:16px;
+    }
+    .cascade-stage {
+      display:flex;
+      align-items:center;
+      gap:12px;
+    }
+    .cascade-label {
+      color:#e3eaf0;
+      font-family:monospace;
+      font-size:12px;
+      min-width:140px;
+    }
+    .cascade-indicator {
+      width:24px;
+      height:24px;
+      border-radius:4px;
+      background:#34d399;
+      border:2px solid #22c55e;
+      transition:all 0.3s;
+    }
+    .cascade-indicator.failing {
+      background:#ef4444;
+      border-color:#dc2626;
+      box-shadow:0 0 12px #ef4444;
+      animation:cascade-fail 0.6s ease-out;
+    }
+    @keyframes cascade-fail {
+      0%{transform:scale(1);opacity:1}
+      100%{transform:scale(1.2);opacity:0.8}
+    }
+    .cascade-controls {
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+    }
+    .cascade-button {
+      padding:8px 16px;
+      border:1px solid #00d4ff;
+      background:#1e3a5f;
+      color:#00d4ff;
+      border-radius:4px;
+      cursor:pointer;
+      font-family:monospace;
+      font-size:12px;
+      transition:all 0.2s;
+    }
+    .cascade-button:hover {
+      background:#2a5a8f;
+      box-shadow:0 0 8px #00d4ff;
+    }
+  </style>
+
+  <div class="cascade-title">Kubernetes Node Failure Cascade</div>
+  <div class="cascade-stages">
+    <div class="cascade-stage"><span class="cascade-label">Node Unresponsive</span><div class="cascade-indicator" data-stage="node"></div></div>
+    <div class="cascade-stage"><span class="cascade-label">Kubelet Lost</span><div class="cascade-indicator" data-stage="kubelet"></div></div>
+    <div class="cascade-stage"><span class="cascade-label">Pod Eviction</span><div class="cascade-indicator" data-stage="pods"></div></div>
+    <div class="cascade-stage"><span class="cascade-label">DNS Pods Lost</span><div class="cascade-indicator" data-stage="dns"></div></div>
+    <div class="cascade-stage"><span class="cascade-label">Cluster Degraded</span><div class="cascade-indicator" data-stage="cluster"></div></div>
+  </div>
+  <div class="cascade-controls">
+    <button class="cascade-button" onclick="k8sCascade()">Simulate Node Failure</button>
+    <button class="cascade-button" onclick="resetK8s()">Reset</button>
+  </div>
+
+  <script>
+    function k8sCascade() {
+      const stages = ['node', 'kubelet', 'pods', 'dns', 'cluster'];
+      let delay = 0;
+      stages.forEach((id) => {
+        setTimeout(() => {
+          document.querySelector('[data-stage="'+id+'"]').classList.add('failing');
+        }, delay);
+        delay += 400;
+      });
+    }
+    function resetK8s() {
+      document.querySelectorAll('[data-stage]').forEach(s => s.classList.remove('failing'));
+    }
+  </script>
+</div>
+
+---
+
+## Interactive: Cluster Topology
+
+<div style="padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>
+    .topology-title {
+      color:#00d4ff;
+      font-family:monospace;
+      font-size:14px;
+      font-weight:bold;
+      margin-bottom:12px;
+      letter-spacing:1px;
+    }
+    .topology-svg {
+      width:100%;
+      max-width:600px;
+      height:300px;
+      background:#1a2332;
+      border:1px solid #1e3a5f;
+      border-radius:4px;
+    }
+  </style>
+
+  <div class="topology-title">Kubernetes Cluster Nodes</div>
+  <svg class="topology-svg" viewBox="0 0 600 300">
+    <!-- Control Plane -->
+    <g>
+      <rect x="150" y="20" width="300" height="50" rx="4" fill="#1a2332" stroke="#fbbf24" stroke-width="2"/>
+      <text x="300" y="50" text-anchor="middle" fill="#fbbf24" font-size="12" font-family="monospace" font-weight="bold">Control Plane</text>
+    </g>
+    <!-- Worker Nodes -->
+    <g>
+      <rect x="30" y="120" width="120" height="60" rx="4" fill="#1e3a5f" stroke="#00d4ff" stroke-width="1"/>
+      <text x="90" y="155" text-anchor="middle" fill="#e3eaf0" font-size="11" font-family="monospace">Node 1</text>
+    </g>
+    <g>
+      <rect x="240" y="120" width="120" height="60" rx="4" fill="#1e3a5f" stroke="#00d4ff" stroke-width="1"/>
+      <text x="300" y="155" text-anchor="middle" fill="#e3eaf0" font-size="11" font-family="monospace">Node 2</text>
+    </g>
+    <g>
+      <rect x="450" y="120" width="120" height="60" rx="4" fill="#1e3a5f" stroke="#00d4ff" stroke-width="1"/>
+      <text x="510" y="155" text-anchor="middle" fill="#e3eaf0" font-size="11" font-family="monospace">Node 3</text>
+    </g>
+    <!-- Pods -->
+    <circle cx="60" cy="240" r="15" fill="#60a5fa" stroke="#60a5fa" stroke-width="1"/>
+    <text x="60" y="245" text-anchor="middle" fill="#0b0e14" font-size="9" font-family="monospace" font-weight="bold">Pod</text>
+    
+    <circle cx="120" cy="240" r="15" fill="#60a5fa" stroke="#60a5fa" stroke-width="1"/>
+    <text x="120" y="245" text-anchor="middle" fill="#0b0e14" font-size="9" font-family="monospace" font-weight="bold">Pod</text>
+    
+    <circle cx="270" cy="240" r="15" fill="#60a5fa" stroke="#60a5fa" stroke-width="1"/>
+    <text x="270" y="245" text-anchor="middle" fill="#0b0e14" font-size="9" font-family="monospace" font-weight="bold">Pod</text>
+    
+    <circle cx="330" cy="240" r="15" fill="#60a5fa" stroke="#60a5fa" stroke-width="1"/>
+    <text x="330" y="245" text-anchor="middle" fill="#0b0e14" font-size="9" font-family="monospace" font-weight="bold">Pod</text>
+    
+    <circle cx="480" cy="240" r="15" fill="#60a5fa" stroke="#60a5fa" stroke-width="1"/>
+    <text x="480" y="245" text-anchor="middle" fill="#0b0e14" font-size="9" font-family="monospace" font-weight="bold">Pod</text>
+    
+    <circle cx="540" cy="240" r="15" fill="#60a5fa" stroke="#60a5fa" stroke-width="1"/>
+    <text x="540" y="245" text-anchor="middle" fill="#0b0e14" font-size="9" font-family="monospace" font-weight="bold">Pod</text>
+  </svg>
+</div>

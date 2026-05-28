@@ -1,0 +1,77 @@
+<!-- REQUEST FLOW ANIMATION TEMPLATE
+Usage: Copy into markdown as html-live block, customize {{STEPS}} and {{TITLE}}
+Example: {{TITLE}} = "API Request Flow", {{STEPS}} = ["Client", "Load Balancer", "API Server", "Cache", "Database"]
+-->
+<div style="display:flex;flex-direction:column;align-items:center;gap:8px;padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>
+    @keyframes flow-pulse {
+      0%,100%{opacity:.3;transform:translateY(0)}
+      50%{opacity:1;transform:translateY(-2px)}
+    }
+    .flow-title {
+      color:#00d4ff;
+      font-family:monospace;
+      font-size:14px;
+      font-weight:bold;
+      margin-bottom:8px;
+      letter-spacing:1px;
+    }
+    .flow-node {
+      display:inline-block;
+      padding:8px 16px;
+      border-radius:4px;
+      font-size:12px;
+      font-family:monospace;
+      color:#e3eaf0;
+      background:#1e3a5f;
+      border:1px solid #00d4ff;
+    }
+    .flow-arrow {
+      color:#00d4ff;
+      font-size:16px;
+      animation:flow-pulse 1.5s infinite;
+      font-weight:bold;
+    }
+  </style>
+
+  <div class="flow-title">{{TITLE}}</div>
+  <div style="display:flex;flex-direction:column;align-items:center;gap:6px">
+    {{FLOW_STEPS}}
+  </div>
+</div>
+
+<!-- EXAMPLES:
+
+Example 1 - API Request:
+<div style="display:flex;flex-direction:column;align-items:center;gap:8px;padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>@keyframes flow-pulse{0%,100%{opacity:.3;transform:translateY(0)}50%{opacity:1;transform:translateY(-2px)}}.flow-title{color:#00d4ff;font-family:monospace;font-size:14px;font-weight:bold;margin-bottom:8px}.flow-node{display:inline-block;padding:8px 16px;border-radius:4px;font-size:12px;font-family:monospace;color:#e3eaf0;background:#1e3a5f;border:1px solid #00d4ff}.flow-arrow{color:#00d4ff;font-size:16px;animation:flow-pulse 1.5s infinite}</style>
+  <div class="flow-title">HTTP Request Flow</div>
+  <div style="display:flex;flex-direction:column;align-items:center;gap:6px">
+    <div class="flow-node">Client Browser</div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-node">DNS Resolver</div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-node">Load Balancer</div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-node">API Server</div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-node">Database</div>
+  </div>
+</div>
+
+Example 2 - Kafka Pipeline:
+<div style="display:flex;flex-direction:column;align-items:center;gap:8px;padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>@keyframes flow-pulse{0%,100%{opacity:.3;transform:translateY(0)}50%{opacity:1;transform:translateY(-2px)}}.flow-title{color:#00d4ff;font-family:monospace;font-size:14px;font-weight:bold;margin-bottom:8px}.flow-node{display:inline-block;padding:8px 16px;border-radius:4px;font-size:12px;font-family:monospace;color:#e3eaf0;background:#1e3a5f;border:1px solid #00d4ff}.flow-arrow{color:#00d4ff;font-size:16px;animation:flow-pulse 1.5s infinite}</style>
+  <div class="flow-title">Kafka Message Flow</div>
+  <div style="display:flex;flex-direction:column;align-items:center;gap:6px">
+    <div class="flow-node">Producer</div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-node">Broker (Topic Partition)</div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-node">Consumer Group</div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-node">Application</div>
+  </div>
+</div>
+
+-->

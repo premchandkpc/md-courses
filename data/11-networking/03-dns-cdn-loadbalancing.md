@@ -530,4 +530,101 @@ Client                     L7 LB (TLS termination)         Server
 - [Linux Process Memory](/12-operating-systems/02-linux-process-memory.md)
 - [Linux Io Storage](/12-operating-systems/03-linux-io-storage.md)
 - [Memory Management](/12-operating-systems/03-memory-management.md)
+
+---
+
+## Interactive Components
+
+### DNS Resolution Query Flow
+
+<div style="display:flex;flex-direction:column;align-items:center;gap:8px;padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>@keyframes flow-pulse{0%,100%{opacity:.3;transform:translateY(0)}50%{opacity:1;transform:translateY(-2px)}}.flow-title{color:#00d4ff;font-family:monospace;font-size:14px;font-weight:bold;margin-bottom:8px;letter-spacing:1px}.flow-node{display:inline-block;padding:8px 16px;border-radius:4px;font-size:12px;font-family:monospace;color:#e3eaf0;background:#1e3a5f;border:1px solid #00d4ff}.flow-arrow{color:#00d4ff;font-size:16px;animation:flow-pulse 1.5s infinite;font-weight:bold}</style>
+  <div class="flow-title">DNS Resolution Chain (Recursive)</div>
+  <div style="display:flex;flex-direction:column;align-items:center;gap:6px">
+    <div class="flow-node">Client: example.com?</div>
+    <div class="flow-arrow">↓ Query</div>
+    <div class="flow-node">Recursive Resolver (ISP/8.8.8.8)</div>
+    <div class="flow-arrow">↓ Query to</div>
+    <div class="flow-node">Root Server (.)</div>
+    <div class="flow-arrow">↓ Referral to</div>
+    <div class="flow-node">TLD Server (.com)</div>
+    <div class="flow-arrow">↓ Referral to</div>
+    <div class="flow-node">Authoritative (example.com)</div>
+    <div class="flow-arrow">↓ Response (A=93.184.216.34)</div>
+    <div class="flow-node">Client Gets IP</div>
+  </div>
+</div>
+
+### CDN & LoadBalancer Topology
+
+<div style="padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>.topology-title{color:#00d4ff;font-family:monospace;font-size:14px;font-weight:bold;margin-bottom:12px;letter-spacing:1px}.topology-svg{width:100%;max-width:600px;height:280px;background:#1a2332;border:1px solid #1e3a5f;border-radius:4px}.topo-edge{stroke:#1e3a5f;stroke-width:2}.topo-legend{display:flex;gap:16px;margin-top:12px;font-size:12px;color:#e3eaf0;font-family:monospace;flex-wrap:wrap}.legend-item{display:flex;align-items:center;gap:6px}</style>
+  <div class="topology-title">CDN + Load Balancer Architecture</div>
+  <svg class="topology-svg" viewBox="0 0 600 280">
+    <defs>
+      <marker id="arrow3" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+        <polygon points="0 0, 10 3, 0 6" fill="#1e3a5f"/>
+      </marker>
+    </defs>
+    <!-- User -->
+    <circle cx="50" cy="40" r="20" fill="#60a5fa" stroke="#60a5fa" stroke-width="1"/>
+    <text x="50" y="45" text-anchor="middle" fill="#0b0e14" font-size="10" font-family="monospace" font-weight="bold">User</text>
+    <!-- DNS -->
+    <rect x="200" y="20" width="80" height="50" rx="4" fill="#f59e0b" stroke="#f59e0b" stroke-width="1"/>
+    <text x="240" y="50" text-anchor="middle" fill="#0b0e14" font-size="11" font-family="monospace">DNS</text>
+    <!-- CDN Edges -->
+    <rect x="50" y="130" width="70" height="40" rx="4" fill="#1e3a5f" stroke="#00d4ff" stroke-width="1"/>
+    <text x="85" y="155" text-anchor="middle" fill="#e3eaf0" font-size="11" font-family="monospace">Edge 1</text>
+    <rect x="180" y="130" width="70" height="40" rx="4" fill="#1e3a5f" stroke="#00d4ff" stroke-width="1"/>
+    <text x="215" y="155" text-anchor="middle" fill="#e3eaf0" font-size="11" font-family="monospace">Edge 2</text>
+    <rect x="310" y="130" width="70" height="40" rx="4" fill="#1e3a5f" stroke="#00d4ff" stroke-width="1"/>
+    <text x="345" y="155" text-anchor="middle" fill="#e3eaf0" font-size="11" font-family="monospace">Origin</text>
+    <!-- Load Balancer -->
+    <rect x="420" y="140" width="90" height="50" rx="4" fill="#6f42c1" stroke="#00d4ff" stroke-width="1"/>
+    <text x="465" y="170" text-anchor="middle" fill="#e3eaf0" font-size="11" font-family="monospace">LB</text>
+    <!-- Backend Servers -->
+    <circle cx="480" cy="240" r="18" fill="#34d399" stroke="#34d399" stroke-width="1"/>
+    <text x="480" y="245" text-anchor="middle" fill="#0b0e14" font-size="10" font-family="monospace" font-weight="bold">S1</text>
+    <circle cx="540" cy="240" r="18" fill="#34d399" stroke="#34d399" stroke-width="1"/>
+    <text x="540" y="245" text-anchor="middle" fill="#0b0e14" font-size="10" font-family="monospace" font-weight="bold">S2</text>
+    <!-- Edges -->
+    <line class="topo-edge" x1="70" y1="60" x2="210" y2="20" marker-end="url(#arrow3)"/>
+    <line class="topo-edge" x1="100" y1="70" x2="85" y2="130" marker-end="url(#arrow3)"/>
+    <line class="topo-edge" x1="230" y1="70" x2="215" y2="130" marker-end="url(#arrow3)"/>
+    <line class="topo-edge" x1="280" y1="50" x2="345" y2="130" marker-end="url(#arrow3)"/>
+    <line class="topo-edge" x1="380" y1="150" x2="420" y2="165" marker-end="url(#arrow3)"/>
+    <line class="topo-edge" x1="465" y1="190" x2="480" y2="220" marker-end="url(#arrow3)"/>
+    <line class="topo-edge" x1="465" y1="190" x2="540" y2="220" marker-end="url(#arrow3)"/>
+  </svg>
+  <div class="topo-legend">
+    <div class="legend-item"><div style="width:14px;height:14px;background:#60a5fa;border-radius:50%"></div><span>User</span></div>
+    <div class="legend-item"><div style="width:14px;height:14px;background:#f59e0b;border-radius:50%"></div><span>DNS</span></div>
+    <div class="legend-item"><div style="width:14px;height:14px;background:#1e3a5f;border:1px solid #00d4ff"></div><span>Edge/Origin</span></div>
+    <div class="legend-item"><div style="width:14px;height:14px;background:#6f42c1;border:1px solid #00d4ff"></div><span>LB</span></div>
+    <div class="legend-item"><div style="width:14px;height:14px;background:#34d399;border-radius:50%"></div><span>Backend</span></div>
+  </div>
+</div>
+
+### DNS TTL & Cache Configuration
+
+<div style="padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>.slider-title{color:#00d4ff;font-family:monospace;font-size:14px;font-weight:bold;margin-bottom:12px}.slider-container{display:flex;flex-direction:column;gap:12px}.slider-label{color:#e3eaf0;font-family:monospace;font-size:12px}.slider-wrapper{display:flex;align-items:center;gap:12px}.slider-input{flex:1;height:6px;border-radius:3px;background:#1e3a5f;outline:none;-webkit-appearance:none;appearance:none}.slider-input::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:18px;height:18px;border-radius:50%;background:#00d4ff;cursor:pointer;box-shadow:0 0 8px #00d4ff;border:2px solid #0b0e14}.slider-input::-moz-range-thumb{width:18px;height:18px;border-radius:50%;background:#00d4ff;cursor:pointer;box-shadow:0 0 8px #00d4ff;border:2px solid #0b0e14}.slider-value{font-family:monospace;color:#34d399;min-width:80px;text-align:right;font-size:12px;font-weight:bold}</style>
+  <div class="slider-title">DNS TTL Tuning</div>
+  <div class="slider-container">
+    <label class="slider-label">Time To Live (TTL):</label>
+    <div class="slider-wrapper">
+      <input type="range" min="30" max="3600" value="300" class="slider-input" id="ttl-slider">
+      <span class="slider-value" id="ttl-value">300 sec (5 min)</span>
+    </div>
+  </div>
+  <script>
+    const slider = document.getElementById('ttl-slider');
+    const value = document.getElementById('ttl-value');
+    slider.addEventListener('input', (e) => { 
+      const sec = e.target.value;
+      const mins = Math.round(sec / 60);
+      value.textContent = sec + ' sec (' + mins + ' min)'; 
+    });
+  </script>
+</div>
 - [Io Models](/12-operating-systems/04-io-models.md)

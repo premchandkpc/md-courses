@@ -777,4 +777,36 @@ Page fault (file cache): ~500ns (page cache hit) / ~5ms (disk read)
 - [Http Protocols](/11-networking/02-http-protocols.md)
 - [Tls Http Grpc](/11-networking/02-tls-http-grpc.md)
 - [Dns Cdn Loadbalancing](/11-networking/03-dns-cdn-loadbalancing.md)
+
+## Interactive Components
+
+### Kernel Architecture Overview
+<div style="padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>.topology-title{color:#00d4ff;font-family:monospace;font-size:14px;font-weight:bold;margin-bottom:12px;letter-spacing:1px}.topology-svg{width:100%;max-width:600px;height:300px;background:#1a2332;border:1px solid #1e3a5f;border-radius:4px}.topo-legend{display:flex;gap:16px;margin-top:12px;font-size:12px;color:#e3eaf0;font-family:monospace;flex-wrap:wrap}</style>
+  <div class="topology-title">Linux Kernel Layers</div>
+  <svg class="topology-svg" viewBox="0 0 400 300">
+    <g><rect x="10" y="10" width="380" height="40" rx="4" fill="#1e3a5f" stroke="#00d4ff" stroke-width="1"/><text x="200" y="35" text-anchor="middle" fill="#e3eaf0" font-size="12" font-family="monospace" font-weight="bold">Applications</text></g>
+    <g><rect x="10" y="60" width="380" height="40" rx="4" fill="#1e3a5f" stroke="#34d399" stroke-width="1"/><text x="200" y="85" text-anchor="middle" fill="#e3eaf0" font-size="12" font-family="monospace">System Call Interface</text></g>
+    <g><rect x="10" y="110" width="380" height="40" rx="4" fill="#1e3a5f" stroke="#60a5fa" stroke-width="1"/><text x="200" y="135" text-anchor="middle" fill="#e3eaf0" font-size="12" font-family="monospace">VFS, IPC, Process Mgmt</text></g>
+    <g><rect x="10" y="160" width="180" height="40" rx="4" fill="#1e3a5f" stroke="#fbbf24" stroke-width="1"/><text x="100" y="185" text-anchor="middle" fill="#e3eaf0" font-size="11" font-family="monospace">Memory Mgmt</text></g>
+    <g><rect x="210" y="160" width="180" height="40" rx="4" fill="#1e3a5f" stroke="#f59e0b" stroke-width="1"/><text x="300" y="185" text-anchor="middle" fill="#e3eaf0" font-size="11" font-family="monospace">Scheduler</text></g>
+    <g><rect x="10" y="210" width="380" height="40" rx="4" fill="#1e3a5f" stroke="#ef4444" stroke-width="1"/><text x="200" y="235" text-anchor="middle" fill="#e3eaf0" font-size="12" font-family="monospace">Hardware (CPU, Memory, I/O)</text></g>
+  </svg>
+  <div class="topo-legend">
+    <div style="display:flex;align-items:center;gap:6px"><div style="width:14px;height:14px;background:#1e3a5f;border:1px solid #00d4ff"></div><span>User Space</span></div>
+    <div style="display:flex;align-items:center;gap:6px"><div style="width:14px;height:14px;background:#1e3a5f;border:1px solid #34d399"></div><span>Kernel Space</span></div>
+  </div>
+</div>
+
+### Kernel Statistics
+<div style="padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>.obs-title{color:#00d4ff;font-family:monospace;font-size:14px;font-weight:bold;margin-bottom:16px;letter-spacing:1px}.obs-grid{display:grid;grid-template-columns:repeat(auto-fit, minmax(150px, 1fr));gap:12px}.obs-card{padding:12px;background:#1a2332;border:1px solid #1e3a5f;border-radius:4px;display:flex;flex-direction:column;align-items:center;transition:all 0.3s}.obs-card:hover{border-color:#00d4ff;box-shadow:0 0 8px rgba(0, 212, 255, 0.3)}.obs-label{color:#a3aab8;font-family:monospace;font-size:11px;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px}.obs-value{font-family:monospace;font-size:20px;font-weight:bold;margin-bottom:4px;letter-spacing:0.5px}.obs-unit{color:#a3aab8;font-family:monospace;font-size:10px;text-transform:uppercase}.metric-healthy{color:#34d399}</style>
+  <div class="obs-title">Kernel Performance</div>
+  <div class="obs-grid">
+    <div class="obs-card"><div class="obs-label">Uptime</div><div class="obs-value metric-healthy">45</div><div class="obs-unit">days</div></div>
+    <div class="obs-card"><div class="obs-label">Processes</div><div class="obs-value metric-healthy">487</div><div class="obs-unit">total</div></div>
+    <div class="obs-card"><div class="obs-label">Page Faults</div><div class="obs-value metric-healthy">2.3M</div><div class="obs-unit">total</div></div>
+    <div class="obs-card"><div class="obs-label">Interrupts</div><div class="obs-value metric-healthy">45.2M</div><div class="obs-unit">total</div></div>
+  </div>
+</div>
 - [Readme](/11-networking/README.md)

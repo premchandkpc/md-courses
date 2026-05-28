@@ -1,0 +1,144 @@
+<!-- SLIDER CONTROL TEMPLATE
+Usage: Copy into markdown as html-live block, customize {{TITLE}}, {{LABEL}}, {{MIN}}, {{MAX}}, {{VALUE}}, {{UNIT}}
+Example: {{LABEL}} = "Throughput (requests/sec)", {{MIN}} = 10, {{MAX}} = 1000, {{VALUE}} = 100, {{UNIT}} = "req/s"
+-->
+<div style="padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>
+    .slider-title {
+      color:#00d4ff;
+      font-family:monospace;
+      font-size:14px;
+      font-weight:bold;
+      margin-bottom:12px;
+      letter-spacing:1px;
+    }
+    .slider-container {
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+    }
+    .slider-label {
+      color:#e3eaf0;
+      font-family:monospace;
+      font-size:12px;
+    }
+    .slider-wrapper {
+      display:flex;
+      align-items:center;
+      gap:12px;
+    }
+    .slider-input {
+      flex:1;
+      height:6px;
+      border-radius:3px;
+      background:#1e3a5f;
+      outline:none;
+      -webkit-appearance:none;
+      appearance:none;
+    }
+    .slider-input::-webkit-slider-thumb {
+      -webkit-appearance:none;
+      appearance:none;
+      width:18px;
+      height:18px;
+      border-radius:50%;
+      background:#00d4ff;
+      cursor:pointer;
+      box-shadow:0 0 8px #00d4ff;
+      border:2px solid #0b0e14;
+    }
+    .slider-input::-moz-range-thumb {
+      width:18px;
+      height:18px;
+      border-radius:50%;
+      background:#00d4ff;
+      cursor:pointer;
+      box-shadow:0 0 8px #00d4ff;
+      border:2px solid #0b0e14;
+    }
+    .slider-value {
+      font-family:monospace;
+      color:#34d399;
+      min-width:80px;
+      text-align:right;
+      font-size:12px;
+      font-weight:bold;
+    }
+  </style>
+
+  <div class="slider-title">{{TITLE}}</div>
+  <div class="slider-container">
+    <label class="slider-label">{{LABEL}}</label>
+    <div class="slider-wrapper">
+      <input type="range" min="{{MIN}}" max="{{MAX}}" value="{{VALUE}}" class="slider-input" id="param-slider">
+      <span class="slider-value" id="param-value">{{VALUE}} {{UNIT}}</span>
+    </div>
+  </div>
+
+  <script>
+    const slider = document.getElementById('param-slider');
+    const valueDisplay = document.getElementById('param-value');
+    const unit = '{{UNIT}}';
+    slider.addEventListener('input', (e) => {
+      valueDisplay.textContent = e.target.value + ' ' + unit;
+    });
+  </script>
+</div>
+
+<!-- EXAMPLES:
+
+Example 1 - Request Throughput:
+<div style="padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>.slider-title{color:#00d4ff;font-family:monospace;font-size:14px;font-weight:bold;margin-bottom:12px}.slider-container{display:flex;flex-direction:column;gap:12px}.slider-label{color:#e3eaf0;font-family:monospace;font-size:12px}.slider-wrapper{display:flex;align-items:center;gap:12px}.slider-input{flex:1;height:6px;border-radius:3px;background:#1e3a5f;outline:none;-webkit-appearance:none;appearance:none}.slider-input::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:18px;height:18px;border-radius:50%;background:#00d4ff;cursor:pointer;box-shadow:0 0 8px #00d4ff;border:2px solid #0b0e14}.slider-input::-moz-range-thumb{width:18px;height:18px;border-radius:50%;background:#00d4ff;cursor:pointer;box-shadow:0 0 8px #00d4ff;border:2px solid #0b0e14}.slider-value{font-family:monospace;color:#34d399;min-width:80px;text-align:right;font-size:12px;font-weight:bold}</style>
+  <div class="slider-title">Load Testing</div>
+  <div class="slider-container">
+    <label class="slider-label">Request Throughput (req/s):</label>
+    <div class="slider-wrapper">
+      <input type="range" min="10" max="10000" value="100" class="slider-input" id="tput-slider">
+      <span class="slider-value" id="tput-value">100 req/s</span>
+    </div>
+  </div>
+  <script>
+    const slider = document.getElementById('tput-slider');
+    const value = document.getElementById('tput-value');
+    slider.addEventListener('input', (e) => { value.textContent = e.target.value + ' req/s'; });
+  </script>
+</div>
+
+Example 2 - Memory Cache Size:
+<div style="padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>.slider-title{color:#00d4ff;font-family:monospace;font-size:14px;font-weight:bold;margin-bottom:12px}.slider-container{display:flex;flex-direction:column;gap:12px}.slider-label{color:#e3eaf0;font-family:monospace;font-size:12px}.slider-wrapper{display:flex;align-items:center;gap:12px}.slider-input{flex:1;height:6px;border-radius:3px;background:#1e3a5f;outline:none;-webkit-appearance:none;appearance:none}.slider-input::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:18px;height:18px;border-radius:50%;background:#00d4ff;cursor:pointer;box-shadow:0 0 8px #00d4ff;border:2px solid #0b0e14}.slider-input::-moz-range-thumb{width:18px;height:18px;border-radius:50%;background:#00d4ff;cursor:pointer;box-shadow:0 0 8px #00d4ff;border:2px solid #0b0e14}.slider-value{font-family:monospace;color:#34d399;min-width:80px;text-align:right;font-size:12px;font-weight:bold}</style>
+  <div class="slider-title">Cache Configuration</div>
+  <div class="slider-container">
+    <label class="slider-label">Cache Size (MB):</label>
+    <div class="slider-wrapper">
+      <input type="range" min="64" max="8192" value="512" class="slider-input" id="cache-slider">
+      <span class="slider-value" id="cache-value">512 MB</span>
+    </div>
+  </div>
+  <script>
+    const slider = document.getElementById('cache-slider');
+    const value = document.getElementById('cache-value');
+    slider.addEventListener('input', (e) => { value.textContent = e.target.value + ' MB'; });
+  </script>
+</div>
+
+Example 3 - Replication Factor:
+<div style="padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>.slider-title{color:#00d4ff;font-family:monospace;font-size:14px;font-weight:bold;margin-bottom:12px}.slider-container{display:flex;flex-direction:column;gap:12px}.slider-label{color:#e3eaf0;font-family:monospace;font-size:12px}.slider-wrapper{display:flex;align-items:center;gap:12px}.slider-input{flex:1;height:6px;border-radius:3px;background:#1e3a5f;outline:none;-webkit-appearance:none;appearance:none}.slider-input::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:18px;height:18px;border-radius:50%;background:#00d4ff;cursor:pointer;box-shadow:0 0 8px #00d4ff;border:2px solid #0b0e14}.slider-input::-moz-range-thumb{width:18px;height:18px;border-radius:50%;background:#00d4ff;cursor:pointer;box-shadow:0 0 8px #00d4ff;border:2px solid #0b0e14}.slider-value{font-family:monospace;color:#34d399;min-width:80px;text-align:right;font-size:12px;font-weight:bold}</style>
+  <div class="slider-title">Replication Settings</div>
+  <div class="slider-container">
+    <label class="slider-label">Replication Factor:</label>
+    <div class="slider-wrapper">
+      <input type="range" min="1" max="7" value="3" class="slider-input" id="rf-slider">
+      <span class="slider-value" id="rf-value">3 replicas</span>
+    </div>
+  </div>
+  <script>
+    const slider = document.getElementById('rf-slider');
+    const value = document.getElementById('rf-value');
+    slider.addEventListener('input', (e) => { value.textContent = e.target.value + ' replicas'; });
+  </script>
+</div>
+
+-->

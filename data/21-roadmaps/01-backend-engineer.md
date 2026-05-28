@@ -459,3 +459,53 @@ Markdown Notes       CI/CD Canary Deploy     Multi-region Active-Active   SLO Au
 - [Distributed Transactions](/09-distributed-systems/02-distributed-transactions.md) — Phase 3 distributed systems
 - [Kubernetes Networking](/07-kubernetes/03-kubernetes-networking.md) — Phase 2-3 container orchestration
 - [Stream Processing](/09-distributed-systems/04-stream-processing.md) — Phase 3 streaming fundamentals
+
+---
+
+## Interactive: Backend Engineer Career Progression
+
+<div style="display:flex;flex-direction:column;align-items:center;gap:8px;padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>
+    @keyframes flow-pulse {
+      0%,100%{opacity:.3;transform:translateY(0)}
+      50%{opacity:1;transform:translateY(-2px)}
+    }
+    .flow-title {
+      color:#00d4ff;
+      font-family:monospace;
+      font-size:14px;
+      font-weight:bold;
+      margin-bottom:8px;
+      letter-spacing:1px;
+    }
+    .flow-node {
+      display:inline-block;
+      padding:8px 16px;
+      border-radius:4px;
+      font-size:12px;
+      font-family:monospace;
+      color:#e3eaf0;
+      background:#1e3a5f;
+      border:1px solid #00d4ff;
+    }
+    .flow-arrow {
+      color:#00d4ff;
+      font-size:16px;
+      animation:flow-pulse 1.5s infinite;
+      font-weight:bold;
+    }
+  </style>
+
+  <div class="flow-title">Roadmap Progression Path</div>
+  <div style="display:flex;flex-direction:column;align-items:center;gap:6px">
+    <div class="flow-node">Phase 1: Foundations</div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-node">Phase 2: Databases & Caching</div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-node">Phase 3: Distributed Systems</div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-node">Phase 4: System Architecture</div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-node">Phase 5: Production Mastery</div>
+  </div>
+</div>

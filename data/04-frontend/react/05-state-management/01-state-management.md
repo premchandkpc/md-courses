@@ -1176,6 +1176,94 @@ Normalizing a todo app with 10 todos is unnecessary. Normalization starts paying
 - [ ] Redux DevTools disabled in production middleware
 - [ ] URL state used for shareable/app-state (search, filters, page)
 
+## Interactive Component 1: State Mutation Flow
+
+```html-live
+<div style="display:flex;flex-direction:column;align-items:center;gap:8px;padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>@keyframes flow-pulse{0%,100%{opacity:.3;transform:translateY(0)}50%{opacity:1;transform:translateY(-2px)}}.flow-title{color:#00d4ff;font-family:monospace;font-size:14px;font-weight:bold;margin-bottom:8px;letter-spacing:1px}.flow-node{display:inline-block;padding:8px 16px;border-radius:4px;font-size:12px;font-family:monospace;color:#e3eaf0;background:#1e3a5f;border:1px solid #00d4ff}.flow-arrow{color:#00d4ff;font-size:16px;animation:flow-pulse 1.5s infinite;font-weight:bold}</style>
+  <div class="flow-title">Redux State Update Flow</div>
+  <div style="display:flex;flex-direction:column;align-items:center;gap:6px">
+    <div class="flow-node">Component Dispatch</div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-node">Middleware Chain</div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-node">Reducer Function</div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-node">New State Object</div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-node">Subscribers Notified</div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-node">Component Re-render</div>
+  </div>
+</div>
+```
+
+## Interactive Component 2: State Transitions Machine
+
+```html-live
+<div style="padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>.state-machine-title{color:#00d4ff;font-family:monospace;font-size:14px;font-weight:bold;margin-bottom:16px;letter-spacing:1px}.state-demo{text-align:center}.state-display{font-size:18px;font-family:monospace;padding:16px;border-radius:4px;margin:16px 0;color:#0b0e14;font-weight:bold;min-height:50px;display:flex;align-items:center;justify-content:center;border:2px solid currentColor}.state-idle{background:#60a5fa;border-color:#3b82f6}.state-loading{background:#fbbf24;border-color:#f59e0b}.state-error{background:#ef4444;border-color:#dc2626}.state-success{background:#34d399;border-color:#22c55e}.state-buttons{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:16px}.state-button{padding:8px 16px;border:1px solid #00d4ff;background:#1e3a5f;color:#00d4ff;border-radius:4px;cursor:pointer;font-family:monospace;font-size:12px;transition:all 0.2s}.state-button:hover{background:#2a5a8f;box-shadow:0 0 8px #00d4ff}</style>
+  <div class="state-machine-title">Async State Machine</div>
+  <div class="state-demo">
+    <div class="state-display state-idle" id="async-display">IDLE</div>
+    <div class="state-buttons">
+      <button class="state-button" onclick="setAsyncState('IDLE', asyncMap)">Idle</button>
+      <button class="state-button" onclick="setAsyncState('LOADING', asyncMap)">Loading</button>
+      <button class="state-button" onclick="setAsyncState('SUCCESS', asyncMap)">Success</button>
+      <button class="state-button" onclick="setAsyncState('ERROR', asyncMap)">Error</button>
+    </div>
+  </div>
+  <script>
+    const asyncMap = {
+      'IDLE': { label: 'IDLE', class: 'state-idle' },
+      'LOADING': { label: 'LOADING', class: 'state-loading' },
+      'SUCCESS': { label: 'SUCCESS', class: 'state-success' },
+      'ERROR': { label: 'ERROR', class: 'state-error' }
+    };
+    function setAsyncState(state, sm) {
+      const display = document.getElementById('async-display');
+      const info = sm[state];
+      display.textContent = info.label;
+      display.className = 'state-display ' + info.class;
+    }
+  </script>
+</div>
+```
+
+## Interactive Component 3: Error Handling Cascade
+
+```html-live
+<div style="padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>.cascade-title{color:#00d4ff;font-family:monospace;font-size:14px;font-weight:bold;margin-bottom:16px;letter-spacing:1px}.cascade-stages{display:flex;flex-direction:column;gap:12px;margin-bottom:16px}.cascade-stage{display:flex;align-items:center;gap:12px}.cascade-label{color:#e3eaf0;font-family:monospace;font-size:12px;min-width:140px}.cascade-indicator{width:24px;height:24px;border-radius:4px;background:#34d399;border:2px solid #22c55e;transition:all 0.3s}.cascade-indicator.failing{background:#ef4444;border-color:#dc2626;box-shadow:0 0 12px #ef4444;animation:cascade-fail 0.6s ease-out}@keyframes cascade-fail{0%{transform:scale(1);opacity:1}100%{transform:scale(1.2);opacity:0.8}}.cascade-controls{display:flex;gap:8px;flex-wrap:wrap}.cascade-button{padding:8px 16px;border:1px solid #00d4ff;background:#1e3a5f;color:#00d4ff;border-radius:4px;cursor:pointer;font-family:monospace;font-size:12px;transition:all 0.2s}.cascade-button:hover{background:#2a5a8f;box-shadow:0 0 8px #00d4ff}</style>
+  <div class="cascade-title">State Update Error Chain</div>
+  <div class="cascade-stages">
+    <div class="cascade-stage"><span class="cascade-label">API Request Fails</span><div class="cascade-indicator" data-stage="api"></div></div>
+    <div class="cascade-stage"><span class="cascade-label">Reducer Handles Error</span><div class="cascade-indicator" data-stage="reducer"></div></div>
+    <div class="cascade-stage"><span class="cascade-label">Subscribers Notified</span><div class="cascade-indicator" data-stage="subs"></div></div>
+    <div class="cascade-stage"><span class="cascade-label">UI Shows Error</span><div class="cascade-indicator" data-stage="ui"></div></div>
+  </div>
+  <div class="cascade-controls">
+    <button class="cascade-button" onclick="stateErrorCascade()">Trigger Error</button>
+    <button class="cascade-button" onclick="resetStateError()">Reset</button>
+  </div>
+  <script>
+    function stateErrorCascade() {
+      const stages = ['api', 'reducer', 'subs', 'ui'];
+      let delay = 0;
+      stages.forEach((id) => {
+        setTimeout(() => {
+          document.querySelector('[data-stage="'+id+'"]').classList.add('failing');
+        }, delay);
+        delay += 300;
+      });
+    }
+    function resetStateError() {
+      document.querySelectorAll('[data-stage]').forEach(s => s.classList.remove('failing'));
+    }
+  </script>
+</div>
+```
+
 ---
 
 ## Related

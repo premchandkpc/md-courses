@@ -1717,6 +1717,72 @@ graph TD
 - [ ] Error boundaries don't cause cascading re-renders
 - [ ] React.memo wrapped on exported components in shared library
 
+## Interactive Component 1: Render Lifecycle State
+
+```html-live
+<div style="padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>.state-machine-title{color:#00d4ff;font-family:monospace;font-size:14px;font-weight:bold;margin-bottom:16px;letter-spacing:1px}.state-demo{text-align:center}.state-display{font-size:18px;font-family:monospace;padding:16px;border-radius:4px;margin:16px 0;color:#0b0e14;font-weight:bold;min-height:50px;display:flex;align-items:center;justify-content:center;border:2px solid currentColor}.state-mount{background:#60a5fa;border-color:#3b82f6}.state-update{background:#fbbf24;border-color:#f59e0b}.state-unmount{background:#ef4444;border-color:#dc2626}.state-buttons{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:16px}.state-button{padding:8px 16px;border:1px solid #00d4ff;background:#1e3a5f;color:#00d4ff;border-radius:4px;cursor:pointer;font-family:monospace;font-size:12px;transition:all 0.2s}.state-button:hover{background:#2a5a8f;box-shadow:0 0 8px #00d4ff}</style>
+  <div class="state-machine-title">Component Render Lifecycle</div>
+  <div class="state-demo">
+    <div class="state-display state-mount" id="lc-display">MOUNT</div>
+    <div class="state-buttons">
+      <button class="state-button" onclick="setLcState('MOUNT', lcMap)">Mount</button>
+      <button class="state-button" onclick="setLcState('UPDATE', lcMap)">Update</button>
+      <button class="state-button" onclick="setLcState('UNMOUNT', lcMap)">Unmount</button>
+    </div>
+  </div>
+  <script>
+    const lcMap = {
+      'MOUNT': { label: 'MOUNT', class: 'state-mount' },
+      'UPDATE': { label: 'UPDATE', class: 'state-update' },
+      'UNMOUNT': { label: 'UNMOUNT', class: 'state-unmount' }
+    };
+    function setLcState(state, sm) {
+      const display = document.getElementById('lc-display');
+      const info = sm[state];
+      display.textContent = info.label;
+      display.className = 'state-display ' + info.class;
+    }
+  </script>
+</div>
+```
+
+## Interactive Component 2: Web Vitals Metrics
+
+```html-live
+<div style="padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>.obs-title{color:#00d4ff;font-family:monospace;font-size:14px;font-weight:bold;margin-bottom:16px;letter-spacing:1px}.obs-grid{display:grid;grid-template-columns:repeat(auto-fit, minmax(150px, 1fr));gap:12px}.obs-card{padding:12px;background:#1a2332;border:1px solid #1e3a5f;border-radius:4px;display:flex;flex-direction:column;align-items:center;transition:all 0.3s}.obs-card:hover{border-color:#00d4ff;box-shadow:0 0 8px rgba(0, 212, 255, 0.3)}.obs-label{color:#a3aab8;font-family:monospace;font-size:11px;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px}.obs-value{font-family:monospace;font-size:20px;font-weight:bold;margin-bottom:4px;letter-spacing:0.5px}.obs-unit{color:#a3aab8;font-family:monospace;font-size:10px;text-transform:uppercase}.metric-healthy{color:#34d399}.metric-warning{color:#fbbf24}.metric-critical{color:#ef4444}</style>
+  <div class="obs-title">Web Vitals Metrics</div>
+  <div class="obs-grid">
+    <div class="obs-card"><div class="obs-label">FCP</div><div class="obs-value metric-healthy">1.2</div><div class="obs-unit">sec</div></div>
+    <div class="obs-card"><div class="obs-label">LCP</div><div class="obs-value metric-healthy">2.1</div><div class="obs-unit">sec</div></div>
+    <div class="obs-card"><div class="obs-label">CLS</div><div class="obs-value metric-healthy">0.08</div><div class="obs-unit">score</div></div>
+    <div class="obs-card"><div class="obs-label">TTI</div><div class="obs-value metric-healthy">3.4</div><div class="obs-unit">sec</div></div>
+  </div>
+</div>
+```
+
+## Interactive Component 3: Render Batch Size Control
+
+```html-live
+<div style="padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>.slider-title{color:#00d4ff;font-family:monospace;font-size:14px;font-weight:bold;margin-bottom:12px;letter-spacing:1px}.slider-container{display:flex;flex-direction:column;gap:12px}.slider-label{color:#e3eaf0;font-family:monospace;font-size:12px}.slider-wrapper{display:flex;align-items:center;gap:12px}.slider-input{flex:1;height:6px;border-radius:3px;background:#1e3a5f;outline:none;-webkit-appearance:none;appearance:none}.slider-input::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:18px;height:18px;border-radius:50%;background:#00d4ff;cursor:pointer;box-shadow:0 0 8px #00d4ff;border:2px solid #0b0e14}.slider-input::-moz-range-thumb{width:18px;height:18px;border-radius:50%;background:#00d4ff;cursor:pointer;box-shadow:0 0 8px #00d4ff;border:2px solid #0b0e14}.slider-value{font-family:monospace;color:#34d399;min-width:80px;text-align:right;font-size:12px;font-weight:bold}</style>
+  <div class="slider-title">Render Batch Configuration</div>
+  <div class="slider-container">
+    <label class="slider-label">Items per batch:</label>
+    <div class="slider-wrapper">
+      <input type="range" min="1" max="100" value="10" class="slider-input" id="batch-slider">
+      <span class="slider-value" id="batch-value">10 items</span>
+    </div>
+  </div>
+  <script>
+    const slider = document.getElementById('batch-slider');
+    const value = document.getElementById('batch-value');
+    slider.addEventListener('input', (e) => { value.textContent = e.target.value + ' items'; });
+  </script>
+</div>
+```
+
 ---
 
 ## Related

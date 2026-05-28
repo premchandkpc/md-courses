@@ -1119,3 +1119,108 @@ Service Mesh
  ↓
 Microservices
 ```
+
+---
+
+## Interactive Components
+
+### Load Balancer Topology
+
+<div style="padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>.topology-title{color:#00d4ff;font-family:monospace;font-size:14px;font-weight:bold;margin-bottom:12px;letter-spacing:1px}.topology-svg{width:100%;max-width:600px;height:320px;background:#1a2332;border:1px solid #1e3a5f;border-radius:4px}.topo-edge{stroke:#1e3a5f;stroke-width:2}.topo-legend{display:flex;gap:16px;margin-top:12px;font-size:12px;color:#e3eaf0;font-family:monospace;flex-wrap:wrap}.legend-item{display:flex;align-items:center;gap:6px}</style>
+  <div class="topology-title">Load Balancer + Backend Servers</div>
+  <svg class="topology-svg" viewBox="0 0 600 320">
+    <defs>
+      <marker id="arrow-lb" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+        <polygon points="0 0, 10 3, 0 6" fill="#1e3a5f"/>
+      </marker>
+    </defs>
+    <!-- Clients -->
+    <circle cx="100" cy="40" r="20" fill="#60a5fa" stroke="#60a5fa" stroke-width="1"/>
+    <text x="100" y="45" text-anchor="middle" fill="#0b0e14" font-size="10" font-family="monospace" font-weight="bold">C1</text>
+    <circle cx="300" cy="40" r="20" fill="#60a5fa" stroke="#60a5fa" stroke-width="1"/>
+    <text x="300" y="45" text-anchor="middle" fill="#0b0e14" font-size="10" font-family="monospace" font-weight="bold">C2</text>
+    <circle cx="500" cy="40" r="20" fill="#60a5fa" stroke="#60a5fa" stroke-width="1"/>
+    <text x="500" y="45" text-anchor="middle" fill="#0b0e14" font-size="10" font-family="monospace" font-weight="bold">C3</text>
+    <!-- Load Balancer -->
+    <rect x="250" y="100" width="100" height="60" rx="4" fill="#6f42c1" stroke="#00d4ff" stroke-width="2"/>
+    <text x="300" y="135" text-anchor="middle" fill="#e3eaf0" font-size="12" font-family="monospace" font-weight="bold">LB</text>
+    <!-- Backend Servers -->
+    <g>
+      <rect x="50" y="220" width="80" height="50" rx="4" fill="#1e3a5f" stroke="#00d4ff" stroke-width="1"/>
+      <text x="90" y="250" text-anchor="middle" fill="#e3eaf0" font-size="11" font-family="monospace">Backend-1</text>
+    </g>
+    <g>
+      <rect x="260" y="220" width="80" height="50" rx="4" fill="#1e3a5f" stroke="#00d4ff" stroke-width="1"/>
+      <text x="300" y="250" text-anchor="middle" fill="#e3eaf0" font-size="11" font-family="monospace">Backend-2</text>
+    </g>
+    <g>
+      <rect x="470" y="220" width="80" height="50" rx="4" fill="#1e3a5f" stroke="#00d4ff" stroke-width="1"/>
+      <text x="510" y="250" text-anchor="middle" fill="#e3eaf0" font-size="11" font-family="monospace">Backend-3</text>
+    </g>
+    <!-- Edges -->
+    <line class="topo-edge" x1="100" y1="60" x2="270" y2="100" marker-end="url(#arrow-lb)"/>
+    <line class="topo-edge" x1="300" y1="60" x2="300" y2="100" marker-end="url(#arrow-lb)"/>
+    <line class="topo-edge" x1="500" y1="60" x2="330" y2="100" marker-end="url(#arrow-lb)"/>
+    <line class="topo-edge" x1="280" y1="160" x2="90" y2="220" marker-end="url(#arrow-lb)"/>
+    <line class="topo-edge" x1="300" y1="160" x2="300" y2="220" marker-end="url(#arrow-lb)"/>
+    <line class="topo-edge" x1="320" y1="160" x2="510" y2="220" marker-end="url(#arrow-lb)"/>
+  </svg>
+  <div class="topo-legend">
+    <div class="legend-item"><div style="width:14px;height:14px;background:#60a5fa;border-radius:50%"></div><span>Client</span></div>
+    <div class="legend-item"><div style="width:14px;height:14px;background:#6f42c1;border:1px solid #00d4ff"></div><span>LB</span></div>
+    <div class="legend-item"><div style="width:14px;height:14px;background:#1e3a5f;border:1px solid #00d4ff"></div><span>Backend</span></div>
+  </div>
+</div>
+
+### Backend Failure Detection Cascade
+
+<div style="padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>.cascade-title{color:#00d4ff;font-family:monospace;font-size:14px;font-weight:bold;margin-bottom:16px;letter-spacing:1px}.cascade-stages{display:flex;flex-direction:column;gap:12px;margin-bottom:16px}.cascade-stage{display:flex;align-items:center;gap:12px}.cascade-label{color:#e3eaf0;font-family:monospace;font-size:12px;min-width:140px}.cascade-indicator{width:24px;height:24px;border-radius:4px;background:#34d399;border:2px solid #22c55e;transition:all 0.3s}.cascade-indicator.failing{background:#ef4444;border-color:#dc2626;box-shadow:0 0 12px #ef4444;animation:cascade-fail 0.6s ease-out}@keyframes cascade-fail{0%{transform:scale(1);opacity:1}100%{transform:scale(1.2);opacity:0.8}}.cascade-controls{display:flex;gap:8px;flex-wrap:wrap}.cascade-button{padding:8px 16px;border:1px solid #00d4ff;background:#1e3a5f;color:#00d4ff;border-radius:4px;cursor:pointer;font-family:monospace;font-size:12px;transition:all 0.2s}.cascade-button:hover{background:#2a5a8f;box-shadow:0 0 8px #00d4ff}</style>
+  <div class="cascade-title">Health Check Failure Cascade</div>
+  <div class="cascade-stages">
+    <div class="cascade-stage"><span class="cascade-label">Backend Unhealthy</span><div class="cascade-indicator" data-stage="backend"></div></div>
+    <div class="cascade-stage"><span class="cascade-label">LB Removes from Pool</span><div class="cascade-indicator" data-stage="lb"></div></div>
+    <div class="cascade-stage"><span class="cascade-label">Traffic Shifted</span><div class="cascade-indicator" data-stage="traffic"></div></div>
+    <div class="cascade-stage"><span class="cascade-label">Others Overloaded</span><div class="cascade-indicator" data-stage="overload"></div></div>
+  </div>
+  <div class="cascade-controls">
+    <button class="cascade-button" onclick="lbFailure()">Fail Backend</button>
+    <button class="cascade-button" onclick="lbRecover()">Recover</button>
+  </div>
+  <script>
+    function lbFailure() {
+      const stages = ['backend', 'lb', 'traffic', 'overload'];
+      let delay = 0;
+      stages.forEach((id) => {
+        setTimeout(() => {
+          document.querySelector('[data-stage="'+id+'"]').classList.add('failing');
+        }, delay);
+        delay += 250;
+      });
+    }
+    function lbRecover() {
+      document.querySelectorAll('[data-stage]').forEach(s => s.classList.remove('failing'));
+    }
+  </script>
+</div>
+
+### Load Balancing Algorithm Simulator
+
+<div style="padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>.slider-title{color:#00d4ff;font-family:monospace;font-size:14px;font-weight:bold;margin-bottom:12px}.slider-container{display:flex;flex-direction:column;gap:12px}.slider-label{color:#e3eaf0;font-family:monospace;font-size:12px}.slider-wrapper{display:flex;align-items:center;gap:12px}.slider-input{flex:1;height:6px;border-radius:3px;background:#1e3a5f;outline:none;-webkit-appearance:none;appearance:none}.slider-input::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:18px;height:18px;border-radius:50%;background:#00d4ff;cursor:pointer;box-shadow:0 0 8px #00d4ff;border:2px solid #0b0e14}.slider-input::-moz-range-thumb{width:18px;height:18px;border-radius:50%;background:#00d4ff;cursor:pointer;box-shadow:0 0 8px #00d4ff;border:2px solid #0b0e14}.slider-value{font-family:monospace;color:#34d399;min-width:100px;text-align:right;font-size:12px;font-weight:bold}</style>
+  <div class="slider-title">Connection Pool Settings</div>
+  <div class="slider-container">
+    <label class="slider-label">Max Connections per Backend:</label>
+    <div class="slider-wrapper">
+      <input type="range" min="10" max="1000" value="100" class="slider-input" id="conn-slider">
+      <span class="slider-value" id="conn-value">100 conns</span>
+    </div>
+  </div>
+  <script>
+    const slider = document.getElementById('conn-slider');
+    const value = document.getElementById('conn-value');
+    slider.addEventListener('input', (e) => { value.textContent = e.target.value + ' conns'; });
+  </script>
+</div>
+```

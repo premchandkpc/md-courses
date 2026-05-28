@@ -1321,6 +1321,122 @@ Result: High priority tasks get better response time
 Risk: Low priority starvation
 ```
 
+## Interactive Components
+
+### CPU Scheduling State Machine
+<div style="padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>.state-machine-title{color:#00d4ff;font-family:monospace;font-size:14px;font-weight:bold;margin-bottom:16px}.state-demo{text-align:center}.state-display{font-size:18px;font-family:monospace;padding:16px;border-radius:4px;margin:16px 0;color:#0b0e14;font-weight:bold;min-height:50px;display:flex;align-items:center;justify-content:center;border:2px solid currentColor}.state-new{background:#60a5fa;border-color:#3b82f6}.state-ready{background:#34d399;border-color:#22c55e}.state-running{background:#fbbf24;border-color:#f59e0b}.state-blocked{background:#ef4444;border-color:#dc2626}.state-terminated{background:#9333ea;border-color:#7e22ce}.state-buttons{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:16px}.state-button{padding:8px 16px;border:1px solid #00d4ff;background:#1e3a5f;color:#00d4ff;border-radius:4px;cursor:pointer;font-family:monospace;font-size:12px;transition:all 0.2s}.state-button:hover{background:#2a5a8f;box-shadow:0 0 8px #00d4ff}</style>
+  <div class="state-machine-title">Process Lifecycle States</div>
+  <div class="state-demo">
+    <div class="state-display state-new" id="state-display">NEW</div>
+    <div class="state-buttons">
+      <button class="state-button" onclick="setProcessState('NEW')">New</button>
+      <button class="state-button" onclick="setProcessState('READY')">Ready</button>
+      <button class="state-button" onclick="setProcessState('RUNNING')">Running</button>
+      <button class="state-button" onclick="setProcessState('BLOCKED')">Blocked</button>
+      <button class="state-button" onclick="setProcessState('TERMINATED')">Terminated</button>
+    </div>
+  </div>
+  <script>
+    const processStateMap = {
+      'NEW': { label: 'NEW', class: 'state-new' },
+      'READY': { label: 'READY', class: 'state-ready' },
+      'RUNNING': { label: 'RUNNING', class: 'state-running' },
+      'BLOCKED': { label: 'BLOCKED', class: 'state-blocked' },
+      'TERMINATED': { label: 'TERMINATED', class: 'state-terminated' }
+    };
+    function setProcessState(state) {
+      const display = document.getElementById('state-display');
+      const info = processStateMap[state];
+      display.textContent = info.label;
+      display.className = 'state-display ' + info.class;
+    }
+  </script>
+</div>
+
+### Context Switch Flow
+<div style="display:flex;flex-direction:column;align-items:center;gap:8px;padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>@keyframes flow-pulse{0%,100%{opacity:.3;transform:translateY(0)}50%{opacity:1;transform:translateY(-2px)}}.flow-title{color:#00d4ff;font-family:monospace;font-size:14px;font-weight:bold;margin-bottom:8px;letter-spacing:1px}.flow-node{display:inline-block;padding:8px 16px;border-radius:4px;font-size:12px;font-family:monospace;color:#e3eaf0;background:#1e3a5f;border:1px solid #00d4ff}.flow-arrow{color:#00d4ff;font-size:16px;animation:flow-pulse 1.5s infinite;font-weight:bold}</style>
+  <div class="flow-title">Context Switch Sequence</div>
+  <div style="display:flex;flex-direction:column;align-items:center;gap:6px">
+    <div class="flow-node">Save Task State (regs)</div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-node">Update Run Queue</div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-node">Pick Next Task</div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-node">Switch Stack (SP)</div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-node">TLB Flush (if needed)</div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-node">Restore Task State</div>
+  </div>
+</div>
+
+### Scheduler Metrics
+<div style="padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>.obs-title{color:#00d4ff;font-family:monospace;font-size:14px;font-weight:bold;margin-bottom:16px;letter-spacing:1px}.obs-grid{display:grid;grid-template-columns:repeat(auto-fit, minmax(150px, 1fr));gap:12px}.obs-card{padding:12px;background:#1a2332;border:1px solid #1e3a5f;border-radius:4px;display:flex;flex-direction:column;align-items:center;transition:all 0.3s}.obs-card:hover{border-color:#00d4ff;box-shadow:0 0 8px rgba(0, 212, 255, 0.3)}.obs-label{color:#a3aab8;font-family:monospace;font-size:11px;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px}.obs-value{font-family:monospace;font-size:20px;font-weight:bold;margin-bottom:4px;letter-spacing:0.5px}.obs-unit{color:#a3aab8;font-family:monospace;font-size:10px;text-transform:uppercase}.metric-healthy{color:#34d399}.metric-warning{color:#fbbf24}.metric-critical{color:#ef4444}</style>
+  <div class="obs-title">CPU Scheduling Metrics</div>
+  <div class="obs-grid">
+    <div class="obs-card">
+      <div class="obs-label">Context Switches</div>
+      <div class="obs-value metric-healthy">847</div>
+      <div class="obs-unit">per sec</div>
+    </div>
+    <div class="obs-card">
+      <div class="obs-label">Avg Latency</div>
+      <div class="obs-value metric-healthy">5.2</div>
+      <div class="obs-unit">ms</div>
+    </div>
+    <div class="obs-card">
+      <div class="obs-label">P99 Latency</div>
+      <div class="obs-value metric-healthy">18</div>
+      <div class="obs-unit">ms</div>
+    </div>
+    <div class="obs-card">
+      <div class="obs-label">Runnable Tasks</div>
+      <div class="obs-value metric-healthy">12</div>
+      <div class="obs-unit">tasks</div>
+    </div>
+    <div class="obs-card">
+      <div class="obs-label">CPU Utilization</div>
+      <div class="obs-value metric-healthy">78</div>
+      <div class="obs-unit">%</div>
+    </div>
+    <div class="obs-card">
+      <div class="obs-label">Load Average</div>
+      <div class="obs-value metric-healthy">3.4</div>
+      <div class="obs-unit">tasks</div>
+    </div>
+  </div>
+</div>
+
+### Time Slice Configuration
+<div style="padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>.slider-title{color:#00d4ff;font-family:monospace;font-size:14px;font-weight:bold;margin-bottom:12px;letter-spacing:1px}.slider-container{display:flex;flex-direction:column;gap:12px}.slider-label{color:#e3eaf0;font-family:monospace;font-size:12px}.slider-wrapper{display:flex;align-items:center;gap:12px}.slider-input{flex:1;height:6px;border-radius:3px;background:#1e3a5f;outline:none;-webkit-appearance:none;appearance:none}.slider-input::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:18px;height:18px;border-radius:50%;background:#00d4ff;cursor:pointer;box-shadow:0 0 8px #00d4ff;border:2px solid #0b0e14}.slider-input::-moz-range-thumb{width:18px;height:18px;border-radius:50%;background:#00d4ff;cursor:pointer;box-shadow:0 0 8px #00d4ff;border:2px solid #0b0e14}.slider-value{font-family:monospace;color:#34d399;min-width:80px;text-align:right;font-size:12px;font-weight:bold}</style>
+  <div class="slider-title">Scheduling Parameters</div>
+  <div class="slider-container">
+    <label class="slider-label">Time Quantum (ms):</label>
+    <div class="slider-wrapper">
+      <input type="range" min="1" max="100" value="10" class="slider-input" id="quantum-slider">
+      <span class="slider-value" id="quantum-value">10 ms</span>
+    </div>
+    <label class="slider-label">Number of Tasks:</label>
+    <div class="slider-wrapper">
+      <input type="range" min="1" max="64" value="12" class="slider-input" id="tasks-slider">
+      <span class="slider-value" id="tasks-value">12 tasks</span>
+    </div>
+  </div>
+  <script>
+    const quantumSlider = document.getElementById('quantum-slider');
+    const quantumValue = document.getElementById('quantum-value');
+    quantumSlider.addEventListener('input', (e) => { quantumValue.textContent = e.target.value + ' ms'; });
+    const tasksSlider = document.getElementById('tasks-slider');
+    const tasksValue = document.getElementById('tasks-value');
+    tasksSlider.addEventListener('input', (e) => { tasksValue.textContent = e.target.value + ' tasks'; });
+  </script>
+</div>
+
 ## Related
 
 - [Tcp Ip Deep Dive](/11-networking/01-tcp-ip-deep-dive.md)

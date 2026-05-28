@@ -749,6 +749,13 @@ function renderContent(container, text) {
 
   const blocks = [];
   const diagrams = [];
+  const htmlLiveBlocks = [];
+
+  // Extract html-live blocks FIRST (before any other processing)
+  text = text.replace(/```html-live\n([\s\S]*?)```/g, (m, c) => {
+    htmlLiveBlocks.push(c.trim());
+    return `__HTMLLIVE${htmlLiveBlocks.length - 1}__`;
+  });
 
   // Extract code blocks and diagrams
   text = text.replace(/```mermaid\n([\s\S]*?)```/g, (m, c) => {
@@ -820,6 +827,11 @@ function renderContent(container, text) {
   text = text.replace(/^(?!<[hHh]|<ul|<ol|<blockquote|<table|<pre|<hr|<\/div|$)(.+)$/gm, '<p>$1</p>');
   text = text.replace(/<p>\s*<\/p>/g, '');
 
+  // Insert html-live blocks (as placeholders, will reinsert after innerHTML)
+  for (let i = 0; i < htmlLiveBlocks.length; i++) {
+    text = text.replace(`__HTMLLIVE${i}__`, `<div data-htmllive-placeholder="${i}"></div>`);
+  }
+
   // Insert code blocks and diagrams
   for (let i = 0; i < blocks.length; i++) {
     const { lang, code } = blocks[i];
@@ -841,6 +853,25 @@ function renderContent(container, text) {
 
   container.innerHTML = text;
   applyLayers();
+
+  // Reinject html-live blocks as live DOM (after innerHTML, so scripts can execute)
+  htmlLiveBlocks.forEach((code, i) => {
+    const placeholder = container.querySelector(`[data-htmllive-placeholder="${i}"]`);
+    if (placeholder) {
+      const wrapper = document.createElement('div');
+      wrapper.className = 'html-live-block';
+      wrapper.innerHTML = code;
+      placeholder.replaceWith(wrapper);
+
+      // Execute scripts in the html-live block
+      wrapper.querySelectorAll('script').forEach(s => {
+        const ns = document.createElement('script');
+        ns.textContent = s.textContent;
+        ns.async = false;
+        document.head.appendChild(ns);
+      });
+    }
+  });
 
   // Image lightbox
   container.querySelectorAll('img').forEach(img => {

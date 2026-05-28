@@ -702,4 +702,83 @@ def resolve(domain, record_type, resolver_cache, servers):
 - [Consensus Raft](/09-distributed-systems/02-consensus-raft.md)
 - [Distributed Transactions](/09-distributed-systems/02-distributed-transactions.md)
 - [Distributed Caching](/09-distributed-systems/03-distributed-caching.md)
+
+---
+
+## Interactive Components
+
+### Recursive DNS Query Sequence
+
+<div style="display:flex;flex-direction:column;align-items:center;gap:8px;padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>@keyframes flow-pulse{0%,100%{opacity:.3;transform:translateY(0)}50%{opacity:1;transform:translateY(-2px)}}.flow-title{color:#00d4ff;font-family:monospace;font-size:14px;font-weight:bold;margin-bottom:8px;letter-spacing:1px}.flow-node{display:inline-block;padding:8px 16px;border-radius:4px;font-size:12px;font-family:monospace;color:#e3eaf0;background:#1e3a5f;border:1px solid #00d4ff}.flow-arrow{color:#00d4ff;font-size:16px;animation:flow-pulse 1.5s infinite;font-weight:bold}</style>
+  <div class="flow-title">Full Recursive DNS Resolution</div>
+  <div style="display:flex;flex-direction:column;align-items:center;gap:6px">
+    <div class="flow-node">Stub Resolver (Browser)</div>
+    <div class="flow-arrow">↓ example.com?</div>
+    <div class="flow-node">Recursive Resolver (ISP)</div>
+    <div class="flow-arrow">↓ Query Root (.)</div>
+    <div class="flow-node">Root Nameserver</div>
+    <div class="flow-arrow">↓ Refer to .com TLD</div>
+    <div class="flow-node">TLD Nameserver (.com)</div>
+    <div class="flow-arrow">↓ Refer to Auth NS</div>
+    <div class="flow-node">Authoritative (example.com)</div>
+    <div class="flow-arrow">↓ A Record: 93.184.216.34</div>
+    <div class="flow-node">Cached & Returned to Client</div>
+  </div>
+</div>
+
+### DNS Resolver Cascade Failure
+
+<div style="padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>.cascade-title{color:#00d4ff;font-family:monospace;font-size:14px;font-weight:bold;margin-bottom:16px;letter-spacing:1px}.cascade-stages{display:flex;flex-direction:column;gap:12px;margin-bottom:16px}.cascade-stage{display:flex;align-items:center;gap:12px}.cascade-label{color:#e3eaf0;font-family:monospace;font-size:12px;min-width:140px}.cascade-indicator{width:24px;height:24px;border-radius:4px;background:#34d399;border:2px solid #22c55e;transition:all 0.3s}.cascade-indicator.failing{background:#ef4444;border-color:#dc2626;box-shadow:0 0 12px #ef4444;animation:cascade-fail 0.6s ease-out}@keyframes cascade-fail{0%{transform:scale(1);opacity:1}100%{transform:scale(1.2);opacity:0.8}}.cascade-controls{display:flex;gap:8px;flex-wrap:wrap}.cascade-button{padding:8px 16px;border:1px solid #00d4ff;background:#1e3a5f;color:#00d4ff;border-radius:4px;cursor:pointer;font-family:monospace;font-size:12px;transition:all 0.2s}.cascade-button:hover{background:#2a5a8f;box-shadow:0 0 8px #00d4ff}</style>
+  <div class="cascade-title">DNS Resolver Failure Impact</div>
+  <div class="cascade-stages">
+    <div class="cascade-stage"><span class="cascade-label">Primary Resolver</span><div class="cascade-indicator" data-stage="primary"></div></div>
+    <div class="cascade-stage"><span class="cascade-label">Recursive Queries Timeout</span><div class="cascade-indicator" data-stage="recursive"></div></div>
+    <div class="cascade-stage"><span class="cascade-label">Application DNS Errors</span><div class="cascade-indicator" data-stage="app"></div></div>
+    <div class="cascade-stage"><span class="cascade-label">Service Unavailable</span><div class="cascade-indicator" data-stage="service"></div></div>
+  </div>
+  <div class="cascade-controls">
+    <button class="cascade-button" onclick="dnsFailure()">Resolver Failure</button>
+    <button class="cascade-button" onclick="dnsReset()">Recover</button>
+  </div>
+  <script>
+    function dnsFailure() {
+      const stages = ['primary', 'recursive', 'app', 'service'];
+      let delay = 0;
+      stages.forEach((id) => {
+        setTimeout(() => {
+          document.querySelector('[data-stage="'+id+'"]').classList.add('failing');
+        }, delay);
+        delay += 300;
+      });
+    }
+    function dnsReset() {
+      document.querySelectorAll('[data-stage]').forEach(s => s.classList.remove('failing'));
+    }
+  </script>
+</div>
+
+### Query Response Time Distribution
+
+<div style="padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>.slider-title{color:#00d4ff;font-family:monospace;font-size:14px;font-weight:bold;margin-bottom:12px}.slider-container{display:flex;flex-direction:column;gap:12px}.slider-label{color:#e3eaf0;font-family:monospace;font-size:12px}.slider-wrapper{display:flex;align-items:center;gap:12px}.slider-input{flex:1;height:6px;border-radius:3px;background:#1e3a5f;outline:none;-webkit-appearance:none;appearance:none}.slider-input::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:18px;height:18px;border-radius:50%;background:#00d4ff;cursor:pointer;box-shadow:0 0 8px #00d4ff;border:2px solid #0b0e14}.slider-input::-moz-range-thumb{width:18px;height:18px;border-radius:50%;background:#00d4ff;cursor:pointer;box-shadow:0 0 8px #00d4ff;border:2px solid #0b0e14}.slider-value{font-family:monospace;color:#34d399;min-width:80px;text-align:right;font-size:12px;font-weight:bold}</style>
+  <div class="slider-title">DNS Query Timeout Configuration</div>
+  <div class="slider-container">
+    <label class="slider-label">Resolution Timeout (ms):</label>
+    <div class="slider-wrapper">
+      <input type="range" min="100" max="5000" value="2000" class="slider-input" id="dns-timeout-slider">
+      <span class="slider-value" id="dns-timeout-value">2000 ms (2 sec)</span>
+    </div>
+  </div>
+  <script>
+    const slider = document.getElementById('dns-timeout-slider');
+    const value = document.getElementById('dns-timeout-value');
+    slider.addEventListener('input', (e) => { 
+      const ms = e.target.value;
+      const sec = (ms / 1000).toFixed(1);
+      value.textContent = ms + ' ms (' + sec + ' sec)'; 
+    });
+  </script>
+</div>
 - [Distributed Storage](/09-distributed-systems/03-distributed-storage.md)

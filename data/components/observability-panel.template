@@ -1,0 +1,181 @@
+<!-- OBSERVABILITY DASHBOARD PANEL TEMPLATE
+Usage: Copy into markdown as html-live block, customize {{TITLE}}, {{METRICS}}
+Metrics format: [{"label": "Requests/sec", "value": "1,234", "unit": "req/s", "color": "#34d399"}]
+Example: API health dashboard with throughput, latency, error rate
+-->
+<div style="padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>
+    .obs-title {
+      color:#00d4ff;
+      font-family:monospace;
+      font-size:14px;
+      font-weight:bold;
+      margin-bottom:16px;
+      letter-spacing:1px;
+    }
+    .obs-grid {
+      display:grid;
+      grid-template-columns:repeat(auto-fit, minmax(150px, 1fr));
+      gap:12px;
+    }
+    .obs-card {
+      padding:12px;
+      background:#1a2332;
+      border:1px solid #1e3a5f;
+      border-radius:4px;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      transition:all 0.3s;
+    }
+    .obs-card:hover {
+      border-color:#00d4ff;
+      box-shadow:0 0 8px rgba(0, 212, 255, 0.3);
+    }
+    .obs-label {
+      color:#a3aab8;
+      font-family:monospace;
+      font-size:11px;
+      text-transform:uppercase;
+      letter-spacing:0.5px;
+      margin-bottom:8px;
+    }
+    .obs-value {
+      font-family:monospace;
+      font-size:20px;
+      font-weight:bold;
+      margin-bottom:4px;
+      letter-spacing:0.5px;
+    }
+    .obs-unit {
+      color:#a3aab8;
+      font-family:monospace;
+      font-size:10px;
+      text-transform:uppercase;
+    }
+    .metric-healthy { color:#34d399 }
+    .metric-warning { color:#fbbf24 }
+    .metric-critical { color:#ef4444 }
+  </style>
+
+  <div class="obs-title">{{TITLE}}</div>
+  <div class="obs-grid">
+    {{METRIC_CARDS}}
+  </div>
+</div>
+
+<!-- EXAMPLES:
+
+Example 1 - API Service Health:
+<div style="padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>.obs-title{color:#00d4ff;font-family:monospace;font-size:14px;font-weight:bold;margin-bottom:16px}.obs-grid{display:grid;grid-template-columns:repeat(auto-fit, minmax(150px, 1fr));gap:12px}.obs-card{padding:12px;background:#1a2332;border:1px solid #1e3a5f;border-radius:4px;display:flex;flex-direction:column;align-items:center;transition:all 0.3s}.obs-card:hover{border-color:#00d4ff;box-shadow:0 0 8px rgba(0, 212, 255, 0.3)}.obs-label{color:#a3aab8;font-family:monospace;font-size:11px;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px}.obs-value{font-family:monospace;font-size:20px;font-weight:bold;margin-bottom:4px;letter-spacing:0.5px}.obs-unit{color:#a3aab8;font-family:monospace;font-size:10px;text-transform:uppercase}.metric-healthy{color:#34d399}.metric-warning{color:#fbbf24}.metric-critical{color:#ef4444}</style>
+  <div class="obs-title">API Service Metrics</div>
+  <div class="obs-grid">
+    <div class="obs-card">
+      <div class="obs-label">Requests/sec</div>
+      <div class="obs-value metric-healthy">1,234</div>
+      <div class="obs-unit">req/s</div>
+    </div>
+    <div class="obs-card">
+      <div class="obs-label">Latency p99</div>
+      <div class="obs-value metric-healthy">45</div>
+      <div class="obs-unit">ms</div>
+    </div>
+    <div class="obs-card">
+      <div class="obs-label">Error Rate</div>
+      <div class="obs-value metric-healthy">0.02</div>
+      <div class="obs-unit">%</div>
+    </div>
+    <div class="obs-card">
+      <div class="obs-label">Availability</div>
+      <div class="obs-value metric-healthy">99.99</div>
+      <div class="obs-unit">%</div>
+    </div>
+  </div>
+</div>
+
+Example 2 - Database Performance:
+<div style="padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>.obs-title{color:#00d4ff;font-family:monospace;font-size:14px;font-weight:bold;margin-bottom:16px}.obs-grid{display:grid;grid-template-columns:repeat(auto-fit, minmax(150px, 1fr));gap:12px}.obs-card{padding:12px;background:#1a2332;border:1px solid #1e3a5f;border-radius:4px;display:flex;flex-direction:column;align-items:center;transition:all 0.3s}.obs-card:hover{border-color:#00d4ff;box-shadow:0 0 8px rgba(0, 212, 255, 0.3)}.obs-label{color:#a3aab8;font-family:monospace;font-size:11px;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px}.obs-value{font-family:monospace;font-size:20px;font-weight:bold;margin-bottom:4px;letter-spacing:0.5px}.obs-unit{color:#a3aab8;font-family:monospace;font-size:10px;text-transform:uppercase}.metric-healthy{color:#34d399}.metric-warning{color:#fbbf24}.metric-critical{color:#ef4444}</style>
+  <div class="obs-title">Database Performance</div>
+  <div class="obs-grid">
+    <div class="obs-card">
+      <div class="obs-label">Queries/sec</div>
+      <div class="obs-value metric-healthy">5,678</div>
+      <div class="obs-unit">q/s</div>
+    </div>
+    <div class="obs-card">
+      <div class="obs-label">Avg Latency</div>
+      <div class="obs-value metric-healthy">3.2</div>
+      <div class="obs-unit">ms</div>
+    </div>
+    <div class="obs-card">
+      <div class="obs-label">Connections</div>
+      <div class="obs-value metric-warning">189</div>
+      <div class="obs-unit">active</div>
+    </div>
+    <div class="obs-card">
+      <div class="obs-label">Cache Hit</div>
+      <div class="obs-value metric-healthy">87</div>
+      <div class="obs-unit">%</div>
+    </div>
+  </div>
+</div>
+
+Example 3 - Kubernetes Cluster Status:
+<div style="padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>.obs-title{color:#00d4ff;font-family:monospace;font-size:14px;font-weight:bold;margin-bottom:16px}.obs-grid{display:grid;grid-template-columns:repeat(auto-fit, minmax(150px, 1fr));gap:12px}.obs-card{padding:12px;background:#1a2332;border:1px solid #1e3a5f;border-radius:4px;display:flex;flex-direction:column;align-items:center;transition:all 0.3s}.obs-card:hover{border-color:#00d4ff;box-shadow:0 0 8px rgba(0, 212, 255, 0.3)}.obs-label{color:#a3aab8;font-family:monospace;font-size:11px;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px}.obs-value{font-family:monospace;font-size:20px;font-weight:bold;margin-bottom:4px;letter-spacing:0.5px}.obs-unit{color:#a3aab8;font-family:monospace;font-size:10px;text-transform:uppercase}.metric-healthy{color:#34d399}.metric-warning{color:#fbbf24}.metric-critical{color:#ef4444}</style>
+  <div class="obs-title">Kubernetes Cluster</div>
+  <div class="obs-grid">
+    <div class="obs-card">
+      <div class="obs-label">Nodes Ready</div>
+      <div class="obs-value metric-healthy">12</div>
+      <div class="obs-unit">of 12</div>
+    </div>
+    <div class="obs-card">
+      <div class="obs-label">Pods Running</div>
+      <div class="obs-value metric-healthy">487</div>
+      <div class="obs-unit">pods</div>
+    </div>
+    <div class="obs-card">
+      <div class="obs-label">CPU Usage</div>
+      <div class="obs-value metric-warning">72</div>
+      <div class="obs-unit">%</div>
+    </div>
+    <div class="obs-card">
+      <div class="obs-label">Memory Usage</div>
+      <div class="obs-value metric-healthy">58</div>
+      <div class="obs-unit">%</div>
+    </div>
+  </div>
+</div>
+
+Example 4 - Cache Layer Metrics:
+<div style="padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>.obs-title{color:#00d4ff;font-family:monospace;font-size:14px;font-weight:bold;margin-bottom:16px}.obs-grid{display:grid;grid-template-columns:repeat(auto-fit, minmax(150px, 1fr));gap:12px}.obs-card{padding:12px;background:#1a2332;border:1px solid #1e3a5f;border-radius:4px;display:flex;flex-direction:column;align-items:center;transition:all 0.3s}.obs-card:hover{border-color:#00d4ff;box-shadow:0 0 8px rgba(0, 212, 255, 0.3)}.obs-label{color:#a3aab8;font-family:monospace;font-size:11px;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px}.obs-value{font-family:monospace;font-size:20px;font-weight:bold;margin-bottom:4px;letter-spacing:0.5px}.obs-unit{color:#a3aab8;font-family:monospace;font-size:10px;text-transform:uppercase}.metric-healthy{color:#34d399}.metric-warning{color:#fbbf24}.metric-critical{color:#ef4444}</style>
+  <div class="obs-title">Redis Cache Metrics</div>
+  <div class="obs-grid">
+    <div class="obs-card">
+      <div class="obs-label">Hit Rate</div>
+      <div class="obs-value metric-healthy">94</div>
+      <div class="obs-unit">%</div>
+    </div>
+    <div class="obs-card">
+      <div class="obs-label">Keys Stored</div>
+      <div class="obs-value metric-healthy">2.1M</div>
+      <div class="obs-unit">keys</div>
+    </div>
+    <div class="obs-card">
+      <div class="obs-label">Memory Used</div>
+      <div class="obs-value metric-warning">4.8</div>
+      <div class="obs-unit">GB</div>
+    </div>
+    <div class="obs-card">
+      <div class="obs-label">Operations/sec</div>
+      <div class="obs-value metric-healthy">45K</div>
+      <div class="obs-unit">ops/s</div>
+    </div>
+  </div>
+</div>
+
+-->

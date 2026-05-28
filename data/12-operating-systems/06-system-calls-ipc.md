@@ -1392,4 +1392,35 @@ futex(FUTEX_WAIT):         ~200ns (uncontended, returns immediately)
 - [Http Protocols](/11-networking/02-http-protocols.md)
 - [Tls Http Grpc](/11-networking/02-tls-http-grpc.md)
 - [Dns Cdn Loadbalancing](/11-networking/03-dns-cdn-loadbalancing.md)
+
+## Interactive Components
+
+### System Call Execution Flow
+<div style="display:flex;flex-direction:column;align-items:center;gap:8px;padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>@keyframes flow-pulse{0%,100%{opacity:.3;transform:translateY(0)}50%{opacity:1;transform:translateY(-2px)}}.flow-title{color:#00d4ff;font-family:monospace;font-size:14px;font-weight:bold;margin-bottom:8px;letter-spacing:1px}.flow-node{display:inline-block;padding:8px 16px;border-radius:4px;font-size:12px;font-family:monospace;color:#e3eaf0;background:#1e3a5f;border:1px solid #00d4ff}.flow-arrow{color:#00d4ff;font-size:16px;animation:flow-pulse 1.5s infinite;font-weight:bold}</style>
+  <div class="flow-title">Syscall Execution Path</div>
+  <div style="display:flex;flex-direction:column;align-items:center;gap:6px">
+    <div class="flow-node">User syscall</div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-node">sysenter/syscall</div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-node">Kernel entry point</div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-node">Dispatch syscall</div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-node">Return to user</div>
+  </div>
+</div>
+
+### IPC Performance Metrics
+<div style="padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>.obs-title{color:#00d4ff;font-family:monospace;font-size:14px;font-weight:bold;margin-bottom:16px;letter-spacing:1px}.obs-grid{display:grid;grid-template-columns:repeat(auto-fit, minmax(150px, 1fr));gap:12px}.obs-card{padding:12px;background:#1a2332;border:1px solid #1e3a5f;border-radius:4px;display:flex;flex-direction:column;align-items:center;transition:all 0.3s}.obs-card:hover{border-color:#00d4ff;box-shadow:0 0 8px rgba(0, 212, 255, 0.3)}.obs-label{color:#a3aab8;font-family:monospace;font-size:11px;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px}.obs-value{font-family:monospace;font-size:20px;font-weight:bold;margin-bottom:4px;letter-spacing:0.5px}.obs-unit{color:#a3aab8;font-family:monospace;font-size:10px;text-transform:uppercase}.metric-healthy{color:#34d399}</style>
+  <div class="obs-title">Syscall Overhead</div>
+  <div class="obs-grid">
+    <div class="obs-card"><div class="obs-label">Syscall Time</div><div class="obs-value metric-healthy">0.8</div><div class="obs-unit">µs</div></div>
+    <div class="obs-card"><div class="obs-label">Context Switches</div><div class="obs-value metric-healthy">1,234</div><div class="obs-unit">per sec</div></div>
+    <div class="obs-card"><div class="obs-label">Message Queue</div><div class="obs-value metric-healthy">4096</div><div class="obs-unit">bytes</div></div>
+    <div class="obs-card"><div class="obs-label">Throughput</div><div class="obs-value metric-healthy">125K</div><div class="obs-unit">msg/s</div></div>
+  </div>
+</div>
 - [Readme](/11-networking/README.md)

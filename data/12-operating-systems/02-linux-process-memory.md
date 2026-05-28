@@ -641,3 +641,34 @@ Each region is randomly shifted at exec time. Controlled by `/proc/sys/kernel/ra
 - [Tls Http Grpc](/11-networking/02-tls-http-grpc.md)
 - [Dns Cdn Loadbalancing](/11-networking/03-dns-cdn-loadbalancing.md)
 - [Readme](/11-networking/README.md)
+
+## Interactive Components
+
+### Process Memory Layout Visualization
+<div style="display:flex;flex-direction:column;align-items:center;gap:8px;padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>@keyframes flow-pulse{0%,100%{opacity:.3;transform:translateY(0)}50%{opacity:1;transform:translateY(-2px)}}.flow-title{color:#00d4ff;font-family:monospace;font-size:14px;font-weight:bold;margin-bottom:8px;letter-spacing:1px}.flow-node{display:inline-block;padding:8px 16px;border-radius:4px;font-size:12px;font-family:monospace;color:#e3eaf0;background:#1e3a5f;border:1px solid #00d4ff}.flow-arrow{color:#00d4ff;font-size:16px;animation:flow-pulse 1.5s infinite;font-weight:bold}</style>
+  <div class="flow-title">Memory Allocation Flow</div>
+  <div style="display:flex;flex-direction:column;align-items:center;gap:6px">
+    <div class="flow-node">malloc() call</div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-node">Glibc allocator</div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-node">mmap() / brk()</div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-node">Kernel page allocator</div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-node">Physical memory</div>
+  </div>
+</div>
+
+### Memory Metrics
+<div style="padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>.obs-title{color:#00d4ff;font-family:monospace;font-size:14px;font-weight:bold;margin-bottom:16px;letter-spacing:1px}.obs-grid{display:grid;grid-template-columns:repeat(auto-fit, minmax(150px, 1fr));gap:12px}.obs-card{padding:12px;background:#1a2332;border:1px solid #1e3a5f;border-radius:4px;display:flex;flex-direction:column;align-items:center;transition:all 0.3s}.obs-card:hover{border-color:#00d4ff;box-shadow:0 0 8px rgba(0, 212, 255, 0.3)}.obs-label{color:#a3aab8;font-family:monospace;font-size:11px;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px}.obs-value{font-family:monospace;font-size:20px;font-weight:bold;margin-bottom:4px;letter-spacing:0.5px}.obs-unit{color:#a3aab8;font-family:monospace;font-size:10px;text-transform:uppercase}.metric-healthy{color:#34d399}.metric-warning{color:#fbbf24}.metric-critical{color:#ef4444}</style>
+  <div class="obs-title">Process Memory Stats</div>
+  <div class="obs-grid">
+    <div class="obs-card"><div class="obs-label">RSS</div><div class="obs-value metric-healthy">256</div><div class="obs-unit">MB</div></div>
+    <div class="obs-card"><div class="obs-label">VSZ</div><div class="obs-value metric-healthy">1024</div><div class="obs-unit">MB</div></div>
+    <div class="obs-card"><div class="obs-label">Heap Size</div><div class="obs-value metric-healthy">128</div><div class="obs-unit">MB</div></div>
+    <div class="obs-card"><div class="obs-label">Shared</div><div class="obs-value metric-healthy">32</div><div class="obs-unit">MB</div></div>
+  </div>
+</div>

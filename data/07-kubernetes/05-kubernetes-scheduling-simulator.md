@@ -720,6 +720,92 @@ def preempt(pod, nodes):
 
 **Simulation loop:** Each tick (configurable, e.g., 10ms simulated), check for new pods in the queue, invoke scheduler cycle, and update node/pod states accordingly.
 
+## Interactive Components
+
+### Node Scheduling Topology
+
+<div style="padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>.topology-title{color:#00d4ff;font-family:monospace;font-size:14px;font-weight:bold;margin-bottom:12px;letter-spacing:1px}.topology-svg{width:100%;max-width:600px;height:300px;background:#1a2332;border:1px solid #1e3a5f;border-radius:4px}.topo-edge{stroke:#1e3a5f;stroke-width:2}.topo-legend{display:flex;gap:16px;margin-top:12px;font-size:12px;color:#e3eaf0;font-family:monospace;flex-wrap:wrap}.legend-item{display:flex;align-items:center;gap:6px}</style>
+  <div class="topology-title">Pod Scheduling on Nodes</div>
+  <svg class="topology-svg" viewBox="0 0 600 300">
+    <defs>
+      <marker id="arrow-sched" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+        <polygon points="0 0, 10 3, 0 6" fill="#1e3a5f"/>
+      </marker>
+    </defs>
+    <!-- Scheduler -->
+    <g>
+      <rect x="200" y="20" width="200" height="50" rx="4" fill="#3a7ca5" stroke="#00d4ff" stroke-width="1"/>
+      <text x="300" y="50" text-anchor="middle" fill="#e3eaf0" font-size="12" font-family="monospace" font-weight="bold">Scheduler</text>
+    </g>
+    <!-- Node 1 -->
+    <g>
+      <rect x="50" y="130" width="120" height="80" rx="4" fill="#1a2332" stroke="#00d4ff" stroke-width="1"/>
+      <text x="110" y="150" text-anchor="middle" fill="#e3eaf0" font-size="11" font-family="monospace" font-weight="bold">Node 1</text>
+      <rect x="60" y="165" width="40" height="30" rx="2" fill="#1e5f3f" stroke="#34d399" stroke-width="1"/>
+      <text x="80" y="185" text-anchor="middle" fill="#e3eaf0" font-size="9" font-family="monospace">Pod</text>
+      <rect x="110" y="165" width="40" height="30" rx="2" fill="#1e5f3f" stroke="#34d399" stroke-width="1"/>
+      <text x="130" y="185" text-anchor="middle" fill="#e3eaf0" font-size="9" font-family="monospace">Pod</text>
+    </g>
+    <!-- Node 2 -->
+    <g>
+      <rect x="240" y="130" width="120" height="80" rx="4" fill="#1a2332" stroke="#00d4ff" stroke-width="1"/>
+      <text x="300" y="150" text-anchor="middle" fill="#e3eaf0" font-size="11" font-family="monospace" font-weight="bold">Node 2</text>
+      <rect x="250" y="165" width="40" height="30" rx="2" fill="#1e5f3f" stroke="#34d399" stroke-width="1"/>
+      <text x="270" y="185" text-anchor="middle" fill="#e3eaf0" font-size="9" font-family="monospace">Pod</text>
+    </g>
+    <!-- Node 3 -->
+    <g>
+      <rect x="430" y="130" width="120" height="80" rx="4" fill="#1a2332" stroke="#00d4ff" stroke-width="1"/>
+      <text x="490" y="150" text-anchor="middle" fill="#e3eaf0" font-size="11" font-family="monospace" font-weight="bold">Node 3</text>
+      <rect x="440" y="165" width="40" height="30" rx="2" fill="#1e5f3f" stroke="#34d399" stroke-width="1"/>
+      <text x="460" y="185" text-anchor="middle" fill="#e3eaf0" font-size="9" font-family="monospace">Pod</text>
+      <rect x="490" y="165" width="40" height="30" rx="2" fill="#fbbf24" stroke="#f59e0b" stroke-width="1"/>
+      <text x="510" y="185" text-anchor="middle" fill="#0b0e14" font-size="9" font-family="monospace">New</text>
+    </g>
+    <!-- Edges -->
+    <line class="topo-edge" x1="250" y1="70" x2="110" y2="130" marker-end="url(#arrow-sched)"/>
+    <line class="topo-edge" x1="300" y1="70" x2="300" y2="130" marker-end="url(#arrow-sched)"/>
+    <line class="topo-edge" x1="350" y1="70" x2="490" y2="130" marker-end="url(#arrow-sched)"/>
+  </svg>
+  <div class="topo-legend">
+    <div class="legend-item"><div style="width:14px;height:14px;background:#3a7ca5;border:1px solid #00d4ff"></div><span>Scheduler</span></div>
+    <div class="legend-item"><div style="width:14px;height:14px;background:#1e5f3f;border:1px solid #34d399"></div><span>Running Pod</span></div>
+    <div class="legend-item"><div style="width:14px;height:14px;background:#fbbf24;border:1px solid #f59e0b"></div><span>Scheduled</span></div>
+  </div>
+</div>
+
+### Scheduler Parameters
+
+<div style="padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>.slider-title{color:#00d4ff;font-family:monospace;font-size:14px;font-weight:bold;margin-bottom:12px;letter-spacing:1px}.slider-container{display:flex;flex-direction:column;gap:12px}.slider-label{color:#e3eaf0;font-family:monospace;font-size:12px}.slider-wrapper{display:flex;align-items:center;gap:12px}.slider-input{flex:1;height:6px;border-radius:3px;background:#1e3a5f;outline:none;-webkit-appearance:none;appearance:none}.slider-input::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:18px;height:18px;border-radius:50%;background:#00d4ff;cursor:pointer;box-shadow:0 0 8px #00d4ff;border:2px solid #0b0e14}.slider-input::-moz-range-thumb{width:18px;height:18px;border-radius:50%;background:#00d4ff;cursor:pointer;box-shadow:0 0 8px #00d4ff;border:2px solid #0b0e14}.slider-value{font-family:monospace;color:#34d399;min-width:80px;text-align:right;font-size:12px;font-weight:bold}</style>
+  <div class="slider-title">Pod Request Resources</div>
+  <div class="slider-container">
+    <label class="slider-label">CPU Request (millicores):</label>
+    <div class="slider-wrapper">
+      <input type="range" min="50" max="2000" value="500" class="slider-input" id="cpu-slider">
+      <span class="slider-value" id="cpu-value">500 m</span>
+    </div>
+    <label class="slider-label">Memory Request (MB):</label>
+    <div class="slider-wrapper">
+      <input type="range" min="64" max="4096" value="512" class="slider-input" id="mem-slider">
+      <span class="slider-value" id="mem-value">512 MB</span>
+    </div>
+  </div>
+  <script>
+    const cpuSlider = document.getElementById('cpu-slider');
+    const memSlider = document.getElementById('mem-slider');
+    const cpuValue = document.getElementById('cpu-value');
+    const memValue = document.getElementById('mem-value');
+    cpuSlider.addEventListener('input', (e) => {
+      cpuValue.textContent = e.target.value + ' m';
+    });
+    memSlider.addEventListener('input', (e) => {
+      memValue.textContent = e.target.value + ' MB';
+    });
+  </script>
+</div>
+
 ## Related
 
 - [Cap Consistency](/09-distributed-systems/01-cap-consistency.md)

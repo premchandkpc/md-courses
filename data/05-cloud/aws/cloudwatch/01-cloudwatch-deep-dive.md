@@ -984,3 +984,38 @@ INSIGHTS         Top 10 IPs by error count, top 5 endpoints
 ---
 
 **Next**: [S3 Deep Dive](/05-cloud/aws/s3/01-s3-deep-dive.md) — Object storage
+
+## Interactive Component 1: CloudWatch Metrics Dashboard
+
+```html-live
+<div style="padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>.obs-title{color:#00d4ff;font-family:monospace;font-size:14px;font-weight:bold;margin-bottom:16px;letter-spacing:1px}.obs-grid{display:grid;grid-template-columns:repeat(auto-fit, minmax(150px, 1fr));gap:12px}.obs-card{padding:12px;background:#1a2332;border:1px solid #1e3a5f;border-radius:4px;display:flex;flex-direction:column;align-items:center;transition:all 0.3s}.obs-card:hover{border-color:#00d4ff;box-shadow:0 0 8px rgba(0, 212, 255, 0.3)}.obs-label{color:#a3aab8;font-family:monospace;font-size:11px;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px}.obs-value{font-family:monospace;font-size:20px;font-weight:bold;margin-bottom:4px;letter-spacing:0.5px}.obs-unit{color:#a3aab8;font-family:monospace;font-size:10px;text-transform:uppercase}.metric-healthy{color:#34d399}.metric-warning{color:#fbbf24}.metric-critical{color:#ef4444}</style>
+  <div class="obs-title">Application Health Monitoring</div>
+  <div class="obs-grid">
+    <div class="obs-card"><div class="obs-label">Active Alarms</div><div class="obs-value metric-warning">3</div><div class="obs-unit">alarms</div></div>
+    <div class="obs-card"><div class="obs-label">Log Events/min</div><div class="obs-value metric-healthy">1,245</div><div class="obs-unit">logs</div></div>
+    <div class="obs-card"><div class="obs-label">Metrics/min</div><div class="obs-value metric-healthy">5,678</div><div class="obs-unit">points</div></div>
+    <div class="obs-card"><div class="obs-label">Synthetics Pass</div><div class="obs-value metric-healthy">98.5</div><div class="obs-unit">%</div></div>
+  </div>
+</div>
+```
+
+## Interactive Component 2: Log Query Flow
+
+```html-live
+<div style="display:flex;flex-direction:column;align-items:center;gap:8px;padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>@keyframes flow-pulse{0%,100%{opacity:.3;transform:translateY(0)}50%{opacity:1;transform:translateY(-2px)}}.flow-title{color:#00d4ff;font-family:monospace;font-size:14px;font-weight:bold;margin-bottom:8px;letter-spacing:1px}.flow-node{display:inline-block;padding:8px 16px;border-radius:4px;font-size:12px;font-family:monospace;color:#e3eaf0;background:#1e3a5f;border:1px solid #00d4ff}.flow-arrow{color:#00d4ff;font-size:16px;animation:flow-pulse 1.5s infinite;font-weight:bold}</style>
+  <div class="flow-title">CloudWatch Insights Query Flow</div>
+  <div style="display:flex;flex-direction:column;align-items:center;gap:6px">
+    <div class="flow-node">Log Groups</div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-node">CloudWatch Logs</div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-node">Insights Parser</div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-node">Query Execution</div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-node">Results (JSON)</div>
+  </div>
+</div>
+```

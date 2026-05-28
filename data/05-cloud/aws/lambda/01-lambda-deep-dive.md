@@ -1003,3 +1003,89 @@ VERSIONS        =  Frozen recipe cards. V1 = original snacks.
 
 **Answer**: **VPC cold start ENI creation delay**. Lambda creates an Elastic Network Interface (ENI) in your VPC on cold start — this takes 5-15 seconds. If the Lambda timeout is 3 seconds, the function times out before the ENI is ready. Also: **NAT Gateway** required for internet access from VPC Lambda (needs public subnet + NAT). The cold start + ENI setup + NAT route propagation + RDS connection creates a multi-second delay. Fix: 1) Increase Lambda timeout to 30+ seconds. 2) Use **RDS Proxy** — maintains connection pool so Lambda doesn't need to open new connections on each invocation. 3) Use **Provisioned Concurrency** to keep environments warm. 4) Use `Lambda-VPC` with managed NAT Gateway (not NAT instance). 5) Alternatively: move function outside VPC and use Secrets Manager + IAM database auth instead of direct VPC access.
 
+## Interactive Component 1: Lambda Container State Machine
+
+```html-live
+<div style="padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>.state-machine-title{color:#00d4ff;font-family:monospace;font-size:14px;font-weight:bold;margin-bottom:16px;letter-spacing:1px}.state-demo{text-align:center}.state-display{font-size:18px;font-family:monospace;padding:16px;border-radius:4px;margin:16px 0;color:#0b0e14;font-weight:bold;min-height:50px;display:flex;align-items:center;justify-content:center;border:2px solid currentColor}.state-closed{background:#34d399;border-color:#22c55e}.state-open{background:#ef4444;border-color:#dc2626}.state-half-open{background:#fbbf24;border-color:#f59e0b}.state-buttons{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:16px}.state-button{padding:8px 16px;border:1px solid #00d4ff;background:#1e3a5f;color:#00d4ff;border-radius:4px;cursor:pointer;font-family:monospace;font-size:12px;transition:all 0.2s}.state-button:hover{background:#2a5a8f;box-shadow:0 0 8px #00d4ff}</style>
+  <div class="state-machine-title">Lambda Container State</div>
+  <div class="state-demo">
+    <div class="state-display state-closed" id="state-display">CLOSED</div>
+    <div class="state-buttons">
+      <button class="state-button" onclick="setState('CLOSED', stateMap)">Healthy</button>
+      <button class="state-button" onclick="setState('OPEN', stateMap)">Failing</button>
+      <button class="state-button" onclick="setState('HALF_OPEN', stateMap)">Recovery</button>
+    </div>
+  </div>
+  <script>
+    const stateMap = {
+      'CLOSED': { label: 'CLOSED', class: 'state-closed' },
+      'OPEN': { label: 'OPEN', class: 'state-open' },
+      'HALF_OPEN': { label: 'HALF-OPEN', class: 'state-half-open' }
+    };
+    function setState(state, sm) {
+      const display = document.getElementById('state-display');
+      const info = sm[state];
+      display.textContent = info.label;
+      display.className = 'state-display ' + info.class;
+    }
+  </script>
+</div>
+```
+
+## Interactive Component 2: Lambda Invocation Path
+
+```html-live
+<div style="display:flex;flex-direction:column;align-items:center;gap:8px;padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>@keyframes flow-pulse{0%,100%{opacity:.3;transform:translateY(0)}50%{opacity:1;transform:translateY(-2px)}}.flow-title{color:#00d4ff;font-family:monospace;font-size:14px;font-weight:bold;margin-bottom:8px;letter-spacing:1px}.flow-node{display:inline-block;padding:8px 16px;border-radius:4px;font-size:12px;font-family:monospace;color:#e3eaf0;background:#1e3a5f;border:1px solid #00d4ff}.flow-arrow{color:#00d4ff;font-size:16px;animation:flow-pulse 1.5s infinite;font-weight:bold}</style>
+  <div class="flow-title">Lambda Invocation Path</div>
+  <div style="display:flex;flex-direction:column;align-items:center;gap:6px">
+    <div class="flow-node">Request Event</div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-node">Cold Start Check</div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-node">Container Init</div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-node">Handler Invocation</div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-node">Warm Container Reuse</div>
+  </div>
+</div>
+```
+
+## Interactive Component 3: Lambda Configuration Tuning
+
+```html-live
+<div style="padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>.slider-title{color:#00d4ff;font-family:monospace;font-size:14px;font-weight:bold;margin-bottom:12px;letter-spacing:1px}.slider-container{display:flex;flex-direction:column;gap:12px}.slider-label{color:#e3eaf0;font-family:monospace;font-size:12px}.slider-wrapper{display:flex;align-items:center;gap:12px}.slider-input{flex:1;height:6px;border-radius:3px;background:#1e3a5f;outline:none;-webkit-appearance:none;appearance:none}.slider-input::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:18px;height:18px;border-radius:50%;background:#00d4ff;cursor:pointer;box-shadow:0 0 8px #00d4ff;border:2px solid #0b0e14}.slider-input::-moz-range-thumb{width:18px;height:18px;border-radius:50%;background:#00d4ff;cursor:pointer;box-shadow:0 0 8px #00d4ff;border:2px solid #0b0e14}.slider-value{font-family:monospace;color:#34d399;min-width:80px;text-align:right;font-size:12px;font-weight:bold}</style>
+  <div class="slider-title">Lambda Memory Configuration</div>
+  <div class="slider-container">
+    <label class="slider-label">Memory Allocation:</label>
+    <div class="slider-wrapper">
+      <input type="range" min="128" max="10240" value="1024" class="slider-input" id="lambda-mem">
+      <span class="slider-value" id="lambda-val">1024 MB</span>
+    </div>
+  </div>
+  <script>
+    const slider = document.getElementById('lambda-mem');
+    const value = document.getElementById('lambda-val');
+    slider.addEventListener('input', (e) => { value.textContent = e.target.value + ' MB'; });
+  </script>
+</div>
+```
+
+## Interactive Component 4: Lambda Performance Metrics
+
+```html-live
+<div style="padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>.obs-title{color:#00d4ff;font-family:monospace;font-size:14px;font-weight:bold;margin-bottom:16px;letter-spacing:1px}.obs-grid{display:grid;grid-template-columns:repeat(auto-fit, minmax(150px, 1fr));gap:12px}.obs-card{padding:12px;background:#1a2332;border:1px solid #1e3a5f;border-radius:4px;display:flex;flex-direction:column;align-items:center;transition:all 0.3s}.obs-card:hover{border-color:#00d4ff;box-shadow:0 0 8px rgba(0, 212, 255, 0.3)}.obs-label{color:#a3aab8;font-family:monospace;font-size:11px;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px}.obs-value{font-family:monospace;font-size:20px;font-weight:bold;margin-bottom:4px;letter-spacing:0.5px}.obs-unit{color:#a3aab8;font-family:monospace;font-size:10px;text-transform:uppercase}.metric-healthy{color:#34d399}.metric-warning{color:#fbbf24}.metric-critical{color:#ef4444}</style>
+  <div class="obs-title">Lambda Performance Dashboard</div>
+  <div class="obs-grid">
+    <div class="obs-card"><div class="obs-label">Invocations/sec</div><div class="obs-value metric-healthy">345</div><div class="obs-unit">inv/s</div></div>
+    <div class="obs-card"><div class="obs-label">Cold Start %</div><div class="obs-value metric-warning">8.2</div><div class="obs-unit">%</div></div>
+    <div class="obs-card"><div class="obs-label">Avg Duration</div><div class="obs-value metric-healthy">187</div><div class="obs-unit">ms</div></div>
+    <div class="obs-card"><div class="obs-label">Error Rate</div><div class="obs-value metric-healthy">0.1</div><div class="obs-unit">%</div></div>
+  </div>
+</div>
+```
+

@@ -579,3 +579,139 @@ Footprint:     Minimize heap -Xmx (but frequency of GC increases)
 ---
 
 > **Practice strategy:** Master all Junior questions first (Q1–Q10). Move to Mid-level (Q11–Q23) for depth. Senior questions (Q24–Q38) require deep JVM/Spring knowledge — study these with code examples. Staff questions (Q39–Q45) test architectural decision-making and expertise boundaries.
+
+---
+
+## Interactive: Interview Progression State Machine
+
+<div style="padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>
+    .state-machine-title {
+      color:#00d4ff;
+      font-family:monospace;
+      font-size:14px;
+      font-weight:bold;
+      margin-bottom:16px;
+      letter-spacing:1px;
+    }
+    .state-demo {
+      text-align:center;
+    }
+    .state-display {
+      font-size:18px;
+      font-family:monospace;
+      padding:16px;
+      border-radius:4px;
+      margin:16px 0;
+      color:#0b0e14;
+      font-weight:bold;
+      min-height:50px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      border:2px solid currentColor;
+    }
+    .state-junior { background:#fbbf24;border-color:#f59e0b }
+    .state-mid { background:#60a5fa;border-color:#3b82f6 }
+    .state-senior { background:#a78bfa;border-color:#8b5cf6 }
+    .state-staff { background:#34d399;border-color:#22c55e }
+    .state-buttons {
+      display:flex;
+      gap:8px;
+      justify-content:center;
+      flex-wrap:wrap;
+      margin-top:16px;
+    }
+    .state-button {
+      padding:8px 16px;
+      border:1px solid #00d4ff;
+      background:#1e3a5f;
+      color:#00d4ff;
+      border-radius:4px;
+      cursor:pointer;
+      font-family:monospace;
+      font-size:12px;
+      transition:all 0.2s;
+    }
+    .state-button:hover {
+      background:#2a5a8f;
+      box-shadow:0 0 8px #00d4ff;
+    }
+  </style>
+
+  <div class="state-machine-title">Interview Level Progression</div>
+  <div class="state-demo">
+    <div class="state-display state-junior" id="level-state">JUNIOR (Q1-Q10)</div>
+    <div class="state-buttons">
+      <button class="state-button" onclick="setLevel('JUNIOR')">Junior</button>
+      <button class="state-button" onclick="setLevel('MID')">Mid-level</button>
+      <button class="state-button" onclick="setLevel('SENIOR')">Senior</button>
+      <button class="state-button" onclick="setLevel('STAFF')">Staff</button>
+    </div>
+  </div>
+
+  <script>
+    const levelMap = {
+      'JUNIOR': { label: 'JUNIOR (Q1-Q10)', class: 'state-junior' },
+      'MID': { label: 'MID-LEVEL (Q11-Q23)', class: 'state-mid' },
+      'SENIOR': { label: 'SENIOR (Q24-Q38)', class: 'state-senior' },
+      'STAFF': { label: 'STAFF (Q39-Q45)', class: 'state-staff' }
+    };
+    function setLevel(level) {
+      const display = document.getElementById('level-state');
+      const info = levelMap[level];
+      display.textContent = info.label;
+      display.className = 'state-display ' + info.class;
+    }
+  </script>
+</div>
+
+---
+
+## Interactive: Core Java Concept Flow
+
+<div style="display:flex;flex-direction:column;align-items:center;gap:8px;padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>
+    @keyframes flow-pulse {
+      0%,100%{opacity:.3;transform:translateY(0)}
+      50%{opacity:1;transform:translateY(-2px)}
+    }
+    .flow-title {
+      color:#00d4ff;
+      font-family:monospace;
+      font-size:14px;
+      font-weight:bold;
+      margin-bottom:8px;
+      letter-spacing:1px;
+    }
+    .flow-node {
+      display:inline-block;
+      padding:8px 16px;
+      border-radius:4px;
+      font-size:12px;
+      font-family:monospace;
+      color:#e3eaf0;
+      background:#1e3a5f;
+      border:1px solid #00d4ff;
+    }
+    .flow-arrow {
+      color:#00d4ff;
+      font-size:16px;
+      animation:flow-pulse 1.5s infinite;
+      font-weight:bold;
+    }
+  </style>
+
+  <div class="flow-title">Object Creation and Lifecycle</div>
+  <div style="display:flex;flex-direction:column;align-items:center;gap:6px">
+    <div class="flow-node">new Keyword</div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-node">Memory Allocation</div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-node">Constructor Invoked</div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-node">Object Reference</div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-node">Finalize on GC</div>
+  </div>
+</div>

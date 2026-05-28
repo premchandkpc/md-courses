@@ -1579,4 +1579,80 @@ OpenSSL speed comparison:
 - [Linux Process Memory](/12-operating-systems/02-linux-process-memory.md)
 - [Linux Io Storage](/12-operating-systems/03-linux-io-storage.md)
 - [Memory Management](/12-operating-systems/03-memory-management.md)
+
+---
+
+## Interactive Components
+
+### TLS Handshake Flow
+
+<div style="display:flex;flex-direction:column;align-items:center;gap:8px;padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>@keyframes flow-pulse{0%,100%{opacity:.3;transform:translateY(0)}50%{opacity:1;transform:translateY(-2px)}}.flow-title{color:#00d4ff;font-family:monospace;font-size:14px;font-weight:bold;margin-bottom:8px;letter-spacing:1px}.flow-node{display:inline-block;padding:8px 16px;border-radius:4px;font-size:12px;font-family:monospace;color:#e3eaf0;background:#1e3a5f;border:1px solid #00d4ff}.flow-arrow{color:#00d4ff;font-size:16px;animation:flow-pulse 1.5s infinite;font-weight:bold}</style>
+  <div class="flow-title">TLS 1.3 Handshake (RTT)</div>
+  <div style="display:flex;flex-direction:column;align-items:center;gap:6px">
+    <div class="flow-node">Client (0-RTT)</div>
+    <div class="flow-arrow">↓ ClientHello + PSK</div>
+    <div class="flow-node">Server (RTT 0)</div>
+    <div class="flow-arrow">↓ ServerHello + Certificate</div>
+    <div class="flow-node">Client Encrypts Data</div>
+    <div class="flow-arrow">↓ Finished (encrypted)</div>
+    <div class="flow-node">Server Decrypts & Verifies</div>
+    <div class="flow-arrow">↓ Finished (encrypted)</div>
+    <div class="flow-node">Secure Channel Ready (RTT 1)</div>
+  </div>
+</div>
+
+### Cryptographic Performance
+
+<div style="padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>.obs-title{color:#00d4ff;font-family:monospace;font-size:14px;font-weight:bold;margin-bottom:16px;letter-spacing:1px}.obs-grid{display:grid;grid-template-columns:repeat(auto-fit, minmax(140px, 1fr));gap:12px}.obs-card{padding:12px;background:#1a2332;border:1px solid #1e3a5f;border-radius:4px;display:flex;flex-direction:column;align-items:center;transition:all 0.3s}.obs-card:hover{border-color:#00d4ff;box-shadow:0 0 8px rgba(0, 212, 255, 0.3)}.obs-label{color:#a3aab8;font-family:monospace;font-size:11px;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px}.obs-value{font-family:monospace;font-size:20px;font-weight:bold;margin-bottom:4px;letter-spacing:0.5px}.obs-unit{color:#a3aab8;font-family:monospace;font-size:10px;text-transform:uppercase}.metric-healthy{color:#34d399}.metric-warning{color:#fbbf24}.metric-critical{color:#ef4444}</style>
+  <div class="obs-title">Cipher Suite Performance</div>
+  <div class="obs-grid">
+    <div class="obs-card">
+      <div class="obs-label">ChaCha20-Poly1305</div>
+      <div class="obs-value metric-healthy">180K</div>
+      <div class="obs-unit">ops/s</div>
+    </div>
+    <div class="obs-card">
+      <div class="obs-label">AES-128-GCM</div>
+      <div class="obs-value metric-healthy">150K</div>
+      <div class="obs-unit">ops/s</div>
+    </div>
+    <div class="obs-card">
+      <div class="obs-label">ECDSA P-256 Verify</div>
+      <div class="obs-value metric-warning">15K</div>
+      <div class="obs-unit">ops/s</div>
+    </div>
+    <div class="obs-card">
+      <div class="obs-label">Ed25519 Verify</div>
+      <div class="obs-value metric-healthy">30K</div>
+      <div class="obs-unit">ops/s</div>
+    </div>
+  </div>
+</div>
+
+### Session Resumption Timeout
+
+<div style="padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>.slider-title{color:#00d4ff;font-family:monospace;font-size:14px;font-weight:bold;margin-bottom:12px}.slider-container{display:flex;flex-direction:column;gap:12px}.slider-label{color:#e3eaf0;font-family:monospace;font-size:12px}.slider-wrapper{display:flex;align-items:center;gap:12px}.slider-input{flex:1;height:6px;border-radius:3px;background:#1e3a5f;outline:none;-webkit-appearance:none;appearance:none}.slider-input::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:18px;height:18px;border-radius:50%;background:#00d4ff;cursor:pointer;box-shadow:0 0 8px #00d4ff;border:2px solid #0b0e14}.slider-input::-moz-range-thumb{width:18px;height:18px;border-radius:50%;background:#00d4ff;cursor:pointer;box-shadow:0 0 8px #00d4ff;border:2px solid #0b0e14}.slider-value{font-family:monospace;color:#34d399;min-width:80px;text-align:right;font-size:12px;font-weight:bold}</style>
+  <div class="slider-title">TLS Session Ticket Lifetime</div>
+  <div class="slider-container">
+    <label class="slider-label">Session Age Limit:</label>
+    <div class="slider-wrapper">
+      <input type="range" min="300" max="604800" value="86400" class="slider-input" id="ticket-slider">
+      <span class="slider-value" id="ticket-value">86400 sec (1 day)</span>
+    </div>
+  </div>
+  <script>
+    const slider = document.getElementById('ticket-slider');
+    const value = document.getElementById('ticket-value');
+    slider.addEventListener('input', (e) => { 
+      const sec = e.target.value;
+      const hours = Math.round(sec / 3600);
+      const days = Math.round(sec / 86400);
+      const display = days > 1 ? days + ' days' : (hours > 1 ? hours + ' hrs' : sec + ' sec');
+      value.textContent = sec + ' sec (' + display + ')'; 
+    });
+  </script>
+</div>
 - [Io Models](/12-operating-systems/04-io-models.md)

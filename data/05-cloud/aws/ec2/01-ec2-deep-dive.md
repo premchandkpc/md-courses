@@ -874,4 +874,53 @@ PLACEMENT GROUP  =  Seating arrangements:
 
 ---
 
+## Interactive Component 1: EC2 Instance State Machine
+
+```html-live
+<div style="padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>.state-machine-title{color:#00d4ff;font-family:monospace;font-size:14px;font-weight:bold;margin-bottom:16px;letter-spacing:1px}.state-demo{text-align:center}.state-display{font-size:18px;font-family:monospace;padding:16px;border-radius:4px;margin:16px 0;color:#0b0e14;font-weight:bold;min-height:50px;display:flex;align-items:center;justify-content:center;border:2px solid currentColor}.state-pending{background:#60a5fa;border-color:#3b82f6}.state-running{background:#34d399;border-color:#22c55e}.state-stopping{background:#fbbf24;border-color:#f59e0b}.state-stopped{background:#ef4444;border-color:#dc2626}.state-buttons{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:16px}.state-button{padding:8px 16px;border:1px solid #00d4ff;background:#1e3a5f;color:#00d4ff;border-radius:4px;cursor:pointer;font-family:monospace;font-size:12px;transition:all 0.2s}.state-button:hover{background:#2a5a8f;box-shadow:0 0 8px #00d4ff}</style>
+  <div class="state-machine-title">EC2 Instance Lifecycle</div>
+  <div class="state-demo">
+    <div class="state-display state-pending" id="ec2-display">PENDING</div>
+    <div class="state-buttons">
+      <button class="state-button" onclick="setEc2State('PENDING', ec2Map)">Pending</button>
+      <button class="state-button" onclick="setEc2State('RUNNING', ec2Map)">Running</button>
+      <button class="state-button" onclick="setEc2State('STOPPING', ec2Map)">Stopping</button>
+      <button class="state-button" onclick="setEc2State('STOPPED', ec2Map)">Stopped</button>
+    </div>
+  </div>
+  <script>
+    const ec2Map = {
+      'PENDING': { label: 'PENDING', class: 'state-pending' },
+      'RUNNING': { label: 'RUNNING', class: 'state-running' },
+      'STOPPING': { label: 'STOPPING', class: 'state-stopping' },
+      'STOPPED': { label: 'STOPPED', class: 'state-stopped' }
+    };
+    function setEc2State(state, sm) {
+      const display = document.getElementById('ec2-display');
+      const info = sm[state];
+      display.textContent = info.label;
+      display.className = 'state-display ' + info.class;
+    }
+  </script>
+</div>
+```
+
+## Interactive Component 2: EC2 Resource Metrics
+
+```html-live
+<div style="padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>.obs-title{color:#00d4ff;font-family:monospace;font-size:14px;font-weight:bold;margin-bottom:16px;letter-spacing:1px}.obs-grid{display:grid;grid-template-columns:repeat(auto-fit, minmax(150px, 1fr));gap:12px}.obs-card{padding:12px;background:#1a2332;border:1px solid #1e3a5f;border-radius:4px;display:flex;flex-direction:column;align-items:center;transition:all 0.3s}.obs-card:hover{border-color:#00d4ff;box-shadow:0 0 8px rgba(0, 212, 255, 0.3)}.obs-label{color:#a3aab8;font-family:monospace;font-size:11px;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px}.obs-value{font-family:monospace;font-size:20px;font-weight:bold;margin-bottom:4px;letter-spacing:0.5px}.obs-unit{color:#a3aab8;font-family:monospace;font-size:10px;text-transform:uppercase}.metric-healthy{color:#34d399}.metric-warning{color:#fbbf24}.metric-critical{color:#ef4444}</style>
+  <div class="obs-title">EC2 Instance Metrics</div>
+  <div class="obs-grid">
+    <div class="obs-card"><div class="obs-label">CPU Util</div><div class="obs-value metric-warning">68</div><div class="obs-unit">%</div></div>
+    <div class="obs-card"><div class="obs-label">Memory Used</div><div class="obs-value metric-healthy">52</div><div class="obs-unit">%</div></div>
+    <div class="obs-card"><div class="obs-label">Network I/O</div><div class="obs-value metric-healthy">234</div><div class="obs-unit">Mbps</div></div>
+    <div class="obs-card"><div class="obs-label">Status Checks</div><div class="obs-value metric-healthy">2/2</div><div class="obs-unit">pass</div></div>
+  </div>
+</div>
+```
+
+---
+
 **Next**: [Lambda](/05-cloud/aws/lambda/01-lambda-deep-dive.md) — Serverless compute

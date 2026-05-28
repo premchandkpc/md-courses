@@ -1186,3 +1186,189 @@ props.put(ProducerConfig.BUFFER_MEMORY_CONFIG, 33554432);  // 32 MB
 - [Kubernetes](/07-kubernetes/) — Cluster failures
 - [Networking](/11-networking/) — DNS, TCP issues
 - [SRE](/14-sre-observability/) — Incident response
+
+---
+
+## Interactive: Kafka Outage Failure Cascade
+
+<div style="padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>
+    .cascade-title {
+      color:#00d4ff;
+      font-family:monospace;
+      font-size:14px;
+      font-weight:bold;
+      margin-bottom:16px;
+      letter-spacing:1px;
+    }
+    .cascade-stages {
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+      margin-bottom:16px;
+    }
+    .cascade-stage {
+      display:flex;
+      align-items:center;
+      gap:12px;
+    }
+    .cascade-label {
+      color:#e3eaf0;
+      font-family:monospace;
+      font-size:12px;
+      min-width:140px;
+    }
+    .cascade-indicator {
+      width:24px;
+      height:24px;
+      border-radius:4px;
+      background:#34d399;
+      border:2px solid #22c55e;
+      transition:all 0.3s;
+    }
+    .cascade-indicator.failing {
+      background:#ef4444;
+      border-color:#dc2626;
+      box-shadow:0 0 12px #ef4444;
+      animation:cascade-fail 0.6s ease-out;
+    }
+    @keyframes cascade-fail {
+      0%{transform:scale(1);opacity:1}
+      100%{transform:scale(1.2);opacity:0.8}
+    }
+    .cascade-controls {
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+    }
+    .cascade-button {
+      padding:8px 16px;
+      border:1px solid #00d4ff;
+      background:#1e3a5f;
+      color:#00d4ff;
+      border-radius:4px;
+      cursor:pointer;
+      font-family:monospace;
+      font-size:12px;
+      transition:all 0.2s;
+    }
+    .cascade-button:hover {
+      background:#2a5a8f;
+      box-shadow:0 0 8px #00d4ff;
+    }
+  </style>
+
+  <div class="cascade-title">Kafka Cluster Outage Cascade</div>
+  <div class="cascade-stages">
+    <div class="cascade-stage"><span class="cascade-label">Disk Full</span><div class="cascade-indicator" data-stage="disk"></div></div>
+    <div class="cascade-stage"><span class="cascade-label">Broker Unresponsive</span><div class="cascade-indicator" data-stage="broker"></div></div>
+    <div class="cascade-stage"><span class="cascade-label">ISR Shrink</span><div class="cascade-indicator" data-stage="isr"></div></div>
+    <div class="cascade-stage"><span class="cascade-label">Rebalance Storm</span><div class="cascade-indicator" data-stage="rebalance"></div></div>
+    <div class="cascade-stage"><span class="cascade-label">Consumer Lag</span><div class="cascade-indicator" data-stage="lag"></div></div>
+    <div class="cascade-stage"><span class="cascade-label">Service Degradation</span><div class="cascade-indicator" data-stage="service"></div></div>
+  </div>
+  <div class="cascade-controls">
+    <button class="cascade-button" onclick="kafkaCascade()">Simulate Outage</button>
+    <button class="cascade-button" onclick="resetKafka()">Reset</button>
+  </div>
+
+  <script>
+    function kafkaCascade() {
+      const stages = ['disk', 'broker', 'isr', 'rebalance', 'lag', 'service'];
+      let delay = 0;
+      stages.forEach((id) => {
+        setTimeout(() => {
+          document.querySelector('[data-stage="'+id+'"]').classList.add('failing');
+        }, delay);
+        delay += 400;
+      });
+    }
+    function resetKafka() {
+      document.querySelectorAll('[data-stage]').forEach(s => s.classList.remove('failing'));
+    }
+  </script>
+</div>
+
+---
+
+## Interactive: Kafka Cluster Metrics
+
+<div style="padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>
+    .obs-title {
+      color:#00d4ff;
+      font-family:monospace;
+      font-size:14px;
+      font-weight:bold;
+      margin-bottom:16px;
+      letter-spacing:1px;
+    }
+    .obs-grid {
+      display:grid;
+      grid-template-columns:repeat(auto-fit, minmax(150px, 1fr));
+      gap:12px;
+    }
+    .obs-card {
+      padding:12px;
+      background:#1a2332;
+      border:1px solid #1e3a5f;
+      border-radius:4px;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      transition:all 0.3s;
+    }
+    .obs-card:hover {
+      border-color:#00d4ff;
+      box-shadow:0 0 8px rgba(0, 212, 255, 0.3);
+    }
+    .obs-label {
+      color:#a3aab8;
+      font-family:monospace;
+      font-size:11px;
+      text-transform:uppercase;
+      letter-spacing:0.5px;
+      margin-bottom:8px;
+    }
+    .obs-value {
+      font-family:monospace;
+      font-size:20px;
+      font-weight:bold;
+      margin-bottom:4px;
+      letter-spacing:0.5px;
+    }
+    .obs-unit {
+      color:#a3aab8;
+      font-family:monospace;
+      font-size:10px;
+      text-transform:uppercase;
+    }
+    .metric-healthy { color:#34d399 }
+    .metric-warning { color:#fbbf24 }
+    .metric-critical { color:#ef4444 }
+  </style>
+
+  <div class="obs-title">Kafka Health Metrics</div>
+  <div class="obs-grid">
+    <div class="obs-card">
+      <div class="obs-label">Brokers Alive</div>
+      <div class="obs-value metric-healthy">3</div>
+      <div class="obs-unit">of 3</div>
+    </div>
+    <div class="obs-card">
+      <div class="obs-label">Disk Usage</div>
+      <div class="obs-value metric-critical">98</div>
+      <div class="obs-unit">%</div>
+    </div>
+    <div class="obs-card">
+      <div class="obs-label">Rebalance Rate</div>
+      <div class="obs-value metric-warning">12</div>
+      <div class="obs-unit">/min</div>
+    </div>
+    <div class="obs-card">
+      <div class="obs-label">Avg Consumer Lag</div>
+      <div class="obs-value metric-critical">50K</div>
+      <div class="obs-unit">msgs</div>
+    </div>
+  </div>
+</div>

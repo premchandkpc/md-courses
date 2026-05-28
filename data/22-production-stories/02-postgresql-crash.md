@@ -1395,3 +1395,189 @@ groups:
 - [Kubernetes](/07-kubernetes/) — Cluster failures
 - [Networking](/11-networking/) — DNS, TCP issues
 - [SRE](/14-sre-observability/) — Incident response
+
+---
+
+## Interactive: PostgreSQL Failure Cascade
+
+<div style="padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>
+    .cascade-title {
+      color:#00d4ff;
+      font-family:monospace;
+      font-size:14px;
+      font-weight:bold;
+      margin-bottom:16px;
+      letter-spacing:1px;
+    }
+    .cascade-stages {
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+      margin-bottom:16px;
+    }
+    .cascade-stage {
+      display:flex;
+      align-items:center;
+      gap:12px;
+    }
+    .cascade-label {
+      color:#e3eaf0;
+      font-family:monospace;
+      font-size:12px;
+      min-width:140px;
+    }
+    .cascade-indicator {
+      width:24px;
+      height:24px;
+      border-radius:4px;
+      background:#34d399;
+      border:2px solid #22c55e;
+      transition:all 0.3s;
+    }
+    .cascade-indicator.failing {
+      background:#ef4444;
+      border-color:#dc2626;
+      box-shadow:0 0 12px #ef4444;
+      animation:cascade-fail 0.6s ease-out;
+    }
+    @keyframes cascade-fail {
+      0%{transform:scale(1);opacity:1}
+      100%{transform:scale(1.2);opacity:0.8}
+    }
+    .cascade-controls {
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+    }
+    .cascade-button {
+      padding:8px 16px;
+      border:1px solid #00d4ff;
+      background:#1e3a5f;
+      color:#00d4ff;
+      border-radius:4px;
+      cursor:pointer;
+      font-family:monospace;
+      font-size:12px;
+      transition:all 0.2s;
+    }
+    .cascade-button:hover {
+      background:#2a5a8f;
+      box-shadow:0 0 8px #00d4ff;
+    }
+  </style>
+
+  <div class="cascade-title">PostgreSQL Crash Cascade</div>
+  <div class="cascade-stages">
+    <div class="cascade-stage"><span class="cascade-label">Dead Tuples Accumulate</span><div class="cascade-indicator" data-stage="tuples"></div></div>
+    <div class="cascade-stage"><span class="cascade-label">Autovacuum Lag</span><div class="cascade-indicator" data-stage="vacuum"></div></div>
+    <div class="cascade-stage"><span class="cascade-label">Bloat Increases</span><div class="cascade-indicator" data-stage="bloat"></div></div>
+    <div class="cascade-stage"><span class="cascade-label">Memory Pressure</span><div class="cascade-indicator" data-stage="memory"></div></div>
+    <div class="cascade-stage"><span class="cascade-label">Query Slowdown</span><div class="cascade-indicator" data-stage="queries"></div></div>
+    <div class="cascade-stage"><span class="cascade-label">Out of Memory</span><div class="cascade-indicator" data-stage="oom"></div></div>
+  </div>
+  <div class="cascade-controls">
+    <button class="cascade-button" onclick="pgCascade()">Simulate Crash</button>
+    <button class="cascade-button" onclick="resetPg()">Reset</button>
+  </div>
+
+  <script>
+    function pgCascade() {
+      const stages = ['tuples', 'vacuum', 'bloat', 'memory', 'queries', 'oom'];
+      let delay = 0;
+      stages.forEach((id) => {
+        setTimeout(() => {
+          document.querySelector('[data-stage="'+id+'"]').classList.add('failing');
+        }, delay);
+        delay += 350;
+      });
+    }
+    function resetPg() {
+      document.querySelectorAll('[data-stage]').forEach(s => s.classList.remove('failing'));
+    }
+  </script>
+</div>
+
+---
+
+## Interactive: Database Health Metrics
+
+<div style="padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>
+    .obs-title {
+      color:#00d4ff;
+      font-family:monospace;
+      font-size:14px;
+      font-weight:bold;
+      margin-bottom:16px;
+      letter-spacing:1px;
+    }
+    .obs-grid {
+      display:grid;
+      grid-template-columns:repeat(auto-fit, minmax(150px, 1fr));
+      gap:12px;
+    }
+    .obs-card {
+      padding:12px;
+      background:#1a2332;
+      border:1px solid #1e3a5f;
+      border-radius:4px;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      transition:all 0.3s;
+    }
+    .obs-card:hover {
+      border-color:#00d4ff;
+      box-shadow:0 0 8px rgba(0, 212, 255, 0.3);
+    }
+    .obs-label {
+      color:#a3aab8;
+      font-family:monospace;
+      font-size:11px;
+      text-transform:uppercase;
+      letter-spacing:0.5px;
+      margin-bottom:8px;
+    }
+    .obs-value {
+      font-family:monospace;
+      font-size:20px;
+      font-weight:bold;
+      margin-bottom:4px;
+      letter-spacing:0.5px;
+    }
+    .obs-unit {
+      color:#a3aab8;
+      font-family:monospace;
+      font-size:10px;
+      text-transform:uppercase;
+    }
+    .metric-healthy { color:#34d399 }
+    .metric-warning { color:#fbbf24 }
+    .metric-critical { color:#ef4444 }
+  </style>
+
+  <div class="obs-title">PostgreSQL Performance Metrics</div>
+  <div class="obs-grid">
+    <div class="obs-card">
+      <div class="obs-label">Dead Tuples %</div>
+      <div class="obs-value metric-critical">42</div>
+      <div class="obs-unit">%</div>
+    </div>
+    <div class="obs-card">
+      <div class="obs-label">Bloat Size</div>
+      <div class="obs-value metric-warning">8.3</div>
+      <div class="obs-unit">GB</div>
+    </div>
+    <div class="obs-card">
+      <div class="obs-label">Memory Used</div>
+      <div class="obs-value metric-warning">87</div>
+      <div class="obs-unit">%</div>
+    </div>
+    <div class="obs-card">
+      <div class="obs-label">Replica Lag</div>
+      <div class="obs-value metric-critical">45</div>
+      <div class="obs-unit">sec</div>
+    </div>
+  </div>
+</div>

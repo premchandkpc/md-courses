@@ -1063,3 +1063,104 @@ $ echo "show stat" | socat /var/run/haproxy.sock stdio | \
 - [Kubernetes](/07-kubernetes/) — Cluster failures
 - [Networking](/11-networking/) — DNS, TCP issues
 - [SRE](/14-sre-observability/) — Incident response
+
+---
+
+## Interactive: Load Balancer Failure Cascade
+
+<div style="padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>
+    .cascade-title {
+      color:#00d4ff;
+      font-family:monospace;
+      font-size:14px;
+      font-weight:bold;
+      margin-bottom:16px;
+      letter-spacing:1px;
+    }
+    .cascade-stages {
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+      margin-bottom:16px;
+    }
+    .cascade-stage {
+      display:flex;
+      align-items:center;
+      gap:12px;
+    }
+    .cascade-label {
+      color:#e3eaf0;
+      font-family:monospace;
+      font-size:12px;
+      min-width:140px;
+    }
+    .cascade-indicator {
+      width:24px;
+      height:24px;
+      border-radius:4px;
+      background:#34d399;
+      border:2px solid #22c55e;
+      transition:all 0.3s;
+    }
+    .cascade-indicator.failing {
+      background:#ef4444;
+      border-color:#dc2626;
+      box-shadow:0 0 12px #ef4444;
+      animation:cascade-fail 0.6s ease-out;
+    }
+    @keyframes cascade-fail {
+      0%{transform:scale(1);opacity:1}
+      100%{transform:scale(1.2);opacity:0.8}
+    }
+    .cascade-controls {
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+    }
+    .cascade-button {
+      padding:8px 16px;
+      border:1px solid #00d4ff;
+      background:#1e3a5f;
+      color:#00d4ff;
+      border-radius:4px;
+      cursor:pointer;
+      font-family:monospace;
+      font-size:12px;
+      transition:all 0.2s;
+    }
+    .cascade-button:hover {
+      background:#2a5a8f;
+      box-shadow:0 0 8px #00d4ff;
+    }
+  </style>
+
+  <div class="cascade-title">Load Balancer Failure Cascade</div>
+  <div class="cascade-stages">
+    <div class="cascade-stage"><span class="cascade-label">Connection Exhaustion</span><div class="cascade-indicator" data-stage="conn"></div></div>
+    <div class="cascade-stage"><span class="cascade-label">Health Check Fails</span><div class="cascade-indicator" data-stage="health"></div></div>
+    <div class="cascade-stage"><span class="cascade-label">Backends Removed</span><div class="cascade-indicator" data-stage="backends"></div></div>
+    <div class="cascade-stage"><span class="cascade-label">Queue Buildup</span><div class="cascade-indicator" data-stage="queue"></div></div>
+    <div class="cascade-stage"><span class="cascade-label">Timeout Cascade</span><div class="cascade-indicator" data-stage="timeout"></div></div>
+  </div>
+  <div class="cascade-controls">
+    <button class="cascade-button" onclick="lbCascade()">Simulate Failure</button>
+    <button class="cascade-button" onclick="resetLb()">Reset</button>
+  </div>
+
+  <script>
+    function lbCascade() {
+      const stages = ['conn', 'health', 'backends', 'queue', 'timeout'];
+      let delay = 0;
+      stages.forEach((id) => {
+        setTimeout(() => {
+          document.querySelector('[data-stage="'+id+'"]').classList.add('failing');
+        }, delay);
+        delay += 350;
+      });
+    }
+    function resetLb() {
+      document.querySelectorAll('[data-stage]').forEach(s => s.classList.remove('failing'));
+    }
+  </script>
+</div>

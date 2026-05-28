@@ -2289,3 +2289,225 @@ Real numbers:
 - [Terraform Infrastructure As Code Config Management](/06-devops/03-terraform-infrastructure-as-code-config-management.md)
 - [Readme](/06-devops/README.md)
 - [Github Actions Gitlab Ci Pipeline Design](/06-devops/ci-cd/01-github-actions-gitlab-ci-pipeline-design.md)
+
+---
+
+## Interactive: Test Execution Flow
+
+<div style="display:flex;flex-direction:column;align-items:center;gap:8px;padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>
+    @keyframes flow-pulse {
+      0%,100%{opacity:.3;transform:translateY(0)}
+      50%{opacity:1;transform:translateY(-2px)}
+    }
+    .flow-title {
+      color:#00d4ff;
+      font-family:monospace;
+      font-size:14px;
+      font-weight:bold;
+      margin-bottom:8px;
+      letter-spacing:1px;
+    }
+    .flow-node {
+      display:inline-block;
+      padding:8px 16px;
+      border-radius:4px;
+      font-size:12px;
+      font-family:monospace;
+      color:#e3eaf0;
+      background:#1e3a5f;
+      border:1px solid #00d4ff;
+    }
+    .flow-arrow {
+      color:#00d4ff;
+      font-size:16px;
+      animation:flow-pulse 1.5s infinite;
+      font-weight:bold;
+    }
+  </style>
+
+  <div class="flow-title">Test Execution Pipeline</div>
+  <div style="display:flex;flex-direction:column;align-items:center;gap:6px">
+    <div class="flow-node">Test Class Loaded</div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-node">@BeforeEach Setup</div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-node">@Test Execute</div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-node">@AfterEach Teardown</div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-node">Assert Results</div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-node">Report Pass/Fail</div>
+  </div>
+</div>
+
+---
+
+## Interactive: Test State Machine
+
+<div style="padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>
+    .state-machine-title {
+      color:#00d4ff;
+      font-family:monospace;
+      font-size:14px;
+      font-weight:bold;
+      margin-bottom:16px;
+      letter-spacing:1px;
+    }
+    .state-demo {
+      text-align:center;
+    }
+    .state-display {
+      font-size:18px;
+      font-family:monospace;
+      padding:16px;
+      border-radius:4px;
+      margin:16px 0;
+      color:#0b0e14;
+      font-weight:bold;
+      min-height:50px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      border:2px solid currentColor;
+    }
+    .state-pending { background:#fbbf24;border-color:#f59e0b }
+    .state-running { background:#60a5fa;border-color:#3b82f6 }
+    .state-passed { background:#34d399;border-color:#22c55e }
+    .state-failed { background:#ef4444;border-color:#dc2626 }
+    .state-buttons {
+      display:flex;
+      gap:8px;
+      justify-content:center;
+      flex-wrap:wrap;
+      margin-top:16px;
+    }
+    .state-button {
+      padding:8px 16px;
+      border:1px solid #00d4ff;
+      background:#1e3a5f;
+      color:#00d4ff;
+      border-radius:4px;
+      cursor:pointer;
+      font-family:monospace;
+      font-size:12px;
+      transition:all 0.2s;
+    }
+    .state-button:hover {
+      background:#2a5a8f;
+      box-shadow:0 0 8px #00d4ff;
+    }
+  </style>
+
+  <div class="state-machine-title">Test Life Cycle States</div>
+  <div class="state-demo">
+    <div class="state-display state-pending" id="test-state">PENDING</div>
+    <div class="state-buttons">
+      <button class="state-button" onclick="setTestState('PENDING')">Pending</button>
+      <button class="state-button" onclick="setTestState('RUNNING')">Running</button>
+      <button class="state-button" onclick="setTestState('PASSED')">Passed</button>
+      <button class="state-button" onclick="setTestState('FAILED')">Failed</button>
+    </div>
+  </div>
+
+  <script>
+    const testStateMap = {
+      'PENDING': { label: 'PENDING', class: 'state-pending' },
+      'RUNNING': { label: 'RUNNING', class: 'state-running' },
+      'PASSED': { label: 'PASSED', class: 'state-passed' },
+      'FAILED': { label: 'FAILED', class: 'state-failed' }
+    };
+    function setTestState(state) {
+      const display = document.getElementById('test-state');
+      const info = testStateMap[state];
+      display.textContent = info.label;
+      display.className = 'state-display ' + info.class;
+    }
+  </script>
+</div>
+
+---
+
+## Interactive: Test Metrics Dashboard
+
+<div style="padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>
+    .obs-title {
+      color:#00d4ff;
+      font-family:monospace;
+      font-size:14px;
+      font-weight:bold;
+      margin-bottom:16px;
+      letter-spacing:1px;
+    }
+    .obs-grid {
+      display:grid;
+      grid-template-columns:repeat(auto-fit, minmax(150px, 1fr));
+      gap:12px;
+    }
+    .obs-card {
+      padding:12px;
+      background:#1a2332;
+      border:1px solid #1e3a5f;
+      border-radius:4px;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      transition:all 0.3s;
+    }
+    .obs-card:hover {
+      border-color:#00d4ff;
+      box-shadow:0 0 8px rgba(0, 212, 255, 0.3);
+    }
+    .obs-label {
+      color:#a3aab8;
+      font-family:monospace;
+      font-size:11px;
+      text-transform:uppercase;
+      letter-spacing:0.5px;
+      margin-bottom:8px;
+    }
+    .obs-value {
+      font-family:monospace;
+      font-size:20px;
+      font-weight:bold;
+      margin-bottom:4px;
+      letter-spacing:0.5px;
+    }
+    .obs-unit {
+      color:#a3aab8;
+      font-family:monospace;
+      font-size:10px;
+      text-transform:uppercase;
+    }
+    .metric-healthy { color:#34d399 }
+    .metric-warning { color:#fbbf24 }
+    .metric-critical { color:#ef4444 }
+  </style>
+
+  <div class="obs-title">Test Suite Metrics</div>
+  <div class="obs-grid">
+    <div class="obs-card">
+      <div class="obs-label">Pass Rate</div>
+      <div class="obs-value metric-healthy">96.5</div>
+      <div class="obs-unit">%</div>
+    </div>
+    <div class="obs-card">
+      <div class="obs-label">Code Coverage</div>
+      <div class="obs-value metric-healthy">84</div>
+      <div class="obs-unit">%</div>
+    </div>
+    <div class="obs-card">
+      <div class="obs-label">Avg Duration</div>
+      <div class="obs-value metric-healthy">2.3</div>
+      <div class="obs-unit">sec</div>
+    </div>
+    <div class="obs-card">
+      <div class="obs-label">Flaky Tests</div>
+      <div class="obs-value metric-warning">3</div>
+      <div class="obs-unit">tests</div>
+    </div>
+  </div>
+</div>

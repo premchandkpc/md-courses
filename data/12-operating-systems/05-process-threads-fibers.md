@@ -1249,6 +1249,37 @@ Fix: Use `__sync_fetch_and_add` (x86 LOCK prefix) or compare-and-swap loop. With
 | **MLFQ** | Multi-level with promotion/demotion | Low | High | BSD, Windows |
 | **O(1)** | Expired/active arrays | Low | O(1) constant | Legacy Linux (pre-2.6.23) |
 
+## Interactive Components
+
+### Process Creation Flow
+<div style="display:flex;flex-direction:column;align-items:center;gap:8px;padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>@keyframes flow-pulse{0%,100%{opacity:.3;transform:translateY(0)}50%{opacity:1;transform:translateY(-2px)}}.flow-title{color:#00d4ff;font-family:monospace;font-size:14px;font-weight:bold;margin-bottom:8px;letter-spacing:1px}.flow-node{display:inline-block;padding:8px 16px;border-radius:4px;font-size:12px;font-family:monospace;color:#e3eaf0;background:#1e3a5f;border:1px solid #00d4ff}.flow-arrow{color:#00d4ff;font-size:16px;animation:flow-pulse 1.5s infinite;font-weight:bold}</style>
+  <div class="flow-title">fork() → exec() Path</div>
+  <div style="display:flex;flex-direction:column;align-items:center;gap:6px">
+    <div class="flow-node">fork()</div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-node">Copy task_struct</div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-node">Duplicate memory</div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-node">execve()</div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-node">Load binary</div>
+  </div>
+</div>
+
+### Process/Thread Metrics
+<div style="padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>.obs-title{color:#00d4ff;font-family:monospace;font-size:14px;font-weight:bold;margin-bottom:16px;letter-spacing:1px}.obs-grid{display:grid;grid-template-columns:repeat(auto-fit, minmax(150px, 1fr));gap:12px}.obs-card{padding:12px;background:#1a2332;border:1px solid #1e3a5f;border-radius:4px;display:flex;flex-direction:column;align-items:center;transition:all 0.3s}.obs-card:hover{border-color:#00d4ff;box-shadow:0 0 8px rgba(0, 212, 255, 0.3)}.obs-label{color:#a3aab8;font-family:monospace;font-size:11px;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px}.obs-value{font-family:monospace;font-size:20px;font-weight:bold;margin-bottom:4px;letter-spacing:0.5px}.obs-unit{color:#a3aab8;font-family:monospace;font-size:10px;text-transform:uppercase}.metric-healthy{color:#34d399}</style>
+  <div class="obs-title">Process Statistics</div>
+  <div class="obs-grid">
+    <div class="obs-card"><div class="obs-label">Threads</div><div class="obs-value metric-healthy">32</div><div class="obs-unit">total</div></div>
+    <div class="obs-card"><div class="obs-label">Fork Time</div><div class="obs-value metric-healthy">2.1</div><div class="obs-unit">ms</div></div>
+    <div class="obs-card"><div class="obs-label">Exec Time</div><div class="obs-value metric-healthy">15</div><div class="obs-unit">ms</div></div>
+    <div class="obs-card"><div class="obs-label">Stack Size</div><div class="obs-value metric-healthy">8.2</div><div class="obs-unit">MB</div></div>
+  </div>
+</div>
+
 ## Related
 
 - [Tcp Ip Deep Dive](/11-networking/01-tcp-ip-deep-dive.md)

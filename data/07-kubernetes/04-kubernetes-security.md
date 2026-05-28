@@ -791,6 +791,69 @@ See code examples above for practical usage patterns.
 
 **Answer**: Detection: (1) Falco rules: "Spawned process outside container", "Write below binary directory", "Shell in container with host network". (2) Audit log: suspicious `exec` into pod, unexpected `create pod` with privileged settings. (3) Cilium Hubble: anomalous network connections from pod to external hosts. (4) Node-level: kernel auditd detects syscall anomalies. Response: (1) Immediately cordon node: `kubectl cordon node`. (2) Drain affected pods: `kubectl drain node --ignore-daemonsets --delete-emptydir-data`. (3) Capture forensic data: container filesystem snapshot, node memory dump (via /proc/kcore), network connections (tcpdump/pcap). (4) Isolate node from cluster network (security group, iptables). (5) Revoke all service account tokens on compromised node. (6) Rotate all secrets the pod had access to (DB passwords, API keys). (7) Analyze: check if lateral movement occurred via same service account in other namespaces. (8) Deploy new node with updated kernel. Prevention: AppArmor profiles, seccomp, `readOnlyRootFilesystem: true`, no privileged containers, `allowPrivilegeEscalation: false`.
 
+## Interactive Components
+
+### Container Escape Failure Cascade
+
+<div style="padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>.cascade-title{color:#00d4ff;font-family:monospace;font-size:14px;font-weight:bold;margin-bottom:16px;letter-spacing:1px}.cascade-stages{display:flex;flex-direction:column;gap:12px;margin-bottom:16px}.cascade-stage{display:flex;align-items:center;gap:12px}.cascade-label{color:#e3eaf0;font-family:monospace;font-size:12px;min-width:140px}.cascade-indicator{width:24px;height:24px;border-radius:4px;background:#34d399;border:2px solid #22c55e;transition:all 0.3s}.cascade-indicator.failing{background:#ef4444;border-color:#dc2626;box-shadow:0 0 12px #ef4444;animation:cascade-fail 0.6s ease-out}@keyframes cascade-fail{0%{transform:scale(1);opacity:1}100%{transform:scale(1.2);opacity:0.8}}.cascade-controls{display:flex;gap:8px;flex-wrap:wrap}.cascade-button{padding:8px 16px;border:1px solid #00d4ff;background:#1e3a5f;color:#00d4ff;border-radius:4px;cursor:pointer;font-family:monospace;font-size:12px;transition:all 0.2s}.cascade-button:hover{background:#2a5a8f;box-shadow:0 0 8px #00d4ff}</style>
+  <div class="cascade-title">Security Breach Cascade</div>
+  <div class="cascade-stages">
+    <div class="cascade-stage"><span class="cascade-label">Container Escape</span><div class="cascade-indicator" data-stage="escape"></div></div>
+    <div class="cascade-stage"><span class="cascade-label">Host Compromised</span><div class="cascade-indicator" data-stage="host"></div></div>
+    <div class="cascade-stage"><span class="cascade-label">Cluster Access</span><div class="cascade-indicator" data-stage="cluster"></div></div>
+    <div class="cascade-stage"><span class="cascade-label">Data Exfiltration</span><div class="cascade-indicator" data-stage="data"></div></div>
+  </div>
+  <div class="cascade-controls">
+    <button class="cascade-button" onclick="startSecBreach()">Trigger Breach</button>
+    <button class="cascade-button" onclick="resetSecBreach()">Mitigate</button>
+  </div>
+  <script>
+    function startSecBreach() {
+      const stages = ['escape', 'host', 'cluster', 'data'];
+      let delay = 0;
+      stages.forEach((id) => {
+        setTimeout(() => {
+          document.querySelector('[data-stage="'+id+'"]').classList.add('failing');
+        }, delay);
+        delay += 400;
+      });
+    }
+    function resetSecBreach() {
+      document.querySelectorAll('[data-stage]').forEach(s => s.classList.remove('failing'));
+    }
+  </script>
+</div>
+
+### Security Posture Metrics
+
+<div style="padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>.obs-title{color:#00d4ff;font-family:monospace;font-size:14px;font-weight:bold;margin-bottom:16px;letter-spacing:1px}.obs-grid{display:grid;grid-template-columns:repeat(auto-fit, minmax(150px, 1fr));gap:12px}.obs-card{padding:12px;background:#1a2332;border:1px solid #1e3a5f;border-radius:4px;display:flex;flex-direction:column;align-items:center;transition:all 0.3s}.obs-card:hover{border-color:#00d4ff;box-shadow:0 0 8px rgba(0, 212, 255, 0.3)}.obs-label{color:#a3aab8;font-family:monospace;font-size:11px;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px}.obs-value{font-family:monospace;font-size:20px;font-weight:bold;margin-bottom:4px;letter-spacing:0.5px}.obs-unit{color:#a3aab8;font-family:monospace;font-size:10px;text-transform:uppercase}.metric-healthy{color:#34d399}.metric-warning{color:#fbbf24}.metric-critical{color:#ef4444}</style>
+  <div class="obs-title">K8s Security Posture</div>
+  <div class="obs-grid">
+    <div class="obs-card">
+      <div class="obs-label">RBAC Policies</div>
+      <div class="obs-value metric-healthy">24</div>
+      <div class="obs-unit">active</div>
+    </div>
+    <div class="obs-card">
+      <div class="obs-label">Network Policies</div>
+      <div class="obs-value metric-healthy">18</div>
+      <div class="obs-unit">rules</div>
+    </div>
+    <div class="obs-card">
+      <div class="obs-label">Pod Security</div>
+      <div class="obs-value metric-warning">12</div>
+      <div class="obs-unit">violations</div>
+    </div>
+    <div class="obs-card">
+      <div class="obs-label">Image Scans</div>
+      <div class="obs-value metric-healthy">100%</div>
+      <div class="obs-unit">coverage</div>
+    </div>
+  </div>
+</div>
+
 ## Cross-References
 
 

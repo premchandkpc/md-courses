@@ -2077,3 +2077,189 @@ Total: **2450+ lines** of deep, production-grade testing knowledge with real cod
 - [Terraform Infrastructure As Code Config Management](/06-devops/03-terraform-infrastructure-as-code-config-management.md)
 - [Readme](/06-devops/README.md)
 - [Github Actions Gitlab Ci Pipeline Design](/06-devops/ci-cd/01-github-actions-gitlab-ci-pipeline-design.md)
+
+---
+
+## Interactive: Load Test Parameter Tuning
+
+<div style="padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>
+    .slider-title {
+      color:#00d4ff;
+      font-family:monospace;
+      font-size:14px;
+      font-weight:bold;
+      margin-bottom:12px;
+      letter-spacing:1px;
+    }
+    .slider-container {
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+    }
+    .slider-label {
+      color:#e3eaf0;
+      font-family:monospace;
+      font-size:12px;
+    }
+    .slider-wrapper {
+      display:flex;
+      align-items:center;
+      gap:12px;
+    }
+    .slider-input {
+      flex:1;
+      height:6px;
+      border-radius:3px;
+      background:#1e3a5f;
+      outline:none;
+      -webkit-appearance:none;
+      appearance:none;
+    }
+    .slider-input::-webkit-slider-thumb {
+      -webkit-appearance:none;
+      appearance:none;
+      width:18px;
+      height:18px;
+      border-radius:50%;
+      background:#00d4ff;
+      cursor:pointer;
+      box-shadow:0 0 8px #00d4ff;
+      border:2px solid #0b0e14;
+    }
+    .slider-input::-moz-range-thumb {
+      width:18px;
+      height:18px;
+      border-radius:50%;
+      background:#00d4ff;
+      cursor:pointer;
+      box-shadow:0 0 8px #00d4ff;
+      border:2px solid #0b0e14;
+    }
+    .slider-value {
+      font-family:monospace;
+      color:#34d399;
+      min-width:80px;
+      text-align:right;
+      font-size:12px;
+      font-weight:bold;
+    }
+  </style>
+
+  <div class="slider-title">Load Test Configuration</div>
+  <div class="slider-container">
+    <label class="slider-label">Request Throughput (req/s):</label>
+    <div class="slider-wrapper">
+      <input type="range" min="10" max="10000" value="500" class="slider-input" id="throughput-slider">
+      <span class="slider-value" id="throughput-value">500 req/s</span>
+    </div>
+    <label class="slider-label">Concurrent Users:</label>
+    <div class="slider-wrapper">
+      <input type="range" min="1" max="1000" value="100" class="slider-input" id="users-slider">
+      <span class="slider-value" id="users-value">100 users</span>
+    </div>
+    <label class="slider-label">Test Duration (seconds):</label>
+    <div class="slider-wrapper">
+      <input type="range" min="10" max="3600" value="300" class="slider-input" id="duration-slider">
+      <span class="slider-value" id="duration-value">300 sec</span>
+    </div>
+  </div>
+
+  <script>
+    const tSlider = document.getElementById('throughput-slider');
+    const tValue = document.getElementById('throughput-value');
+    tSlider.addEventListener('input', (e) => { tValue.textContent = e.target.value + ' req/s'; });
+    
+    const uSlider = document.getElementById('users-slider');
+    const uValue = document.getElementById('users-value');
+    uSlider.addEventListener('input', (e) => { uValue.textContent = e.target.value + ' users'; });
+    
+    const dSlider = document.getElementById('duration-slider');
+    const dValue = document.getElementById('duration-value');
+    dSlider.addEventListener('input', (e) => { dValue.textContent = e.target.value + ' sec'; });
+  </script>
+</div>
+
+---
+
+## Interactive: Performance Metrics
+
+<div style="padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>
+    .obs-title {
+      color:#00d4ff;
+      font-family:monospace;
+      font-size:14px;
+      font-weight:bold;
+      margin-bottom:16px;
+      letter-spacing:1px;
+    }
+    .obs-grid {
+      display:grid;
+      grid-template-columns:repeat(auto-fit, minmax(150px, 1fr));
+      gap:12px;
+    }
+    .obs-card {
+      padding:12px;
+      background:#1a2332;
+      border:1px solid #1e3a5f;
+      border-radius:4px;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      transition:all 0.3s;
+    }
+    .obs-card:hover {
+      border-color:#00d4ff;
+      box-shadow:0 0 8px rgba(0, 212, 255, 0.3);
+    }
+    .obs-label {
+      color:#a3aab8;
+      font-family:monospace;
+      font-size:11px;
+      text-transform:uppercase;
+      letter-spacing:0.5px;
+      margin-bottom:8px;
+    }
+    .obs-value {
+      font-family:monospace;
+      font-size:20px;
+      font-weight:bold;
+      margin-bottom:4px;
+      letter-spacing:0.5px;
+    }
+    .obs-unit {
+      color:#a3aab8;
+      font-family:monospace;
+      font-size:10px;
+      text-transform:uppercase;
+    }
+    .metric-healthy { color:#34d399 }
+    .metric-warning { color:#fbbf24 }
+    .metric-critical { color:#ef4444 }
+  </style>
+
+  <div class="obs-title">Load Test Results</div>
+  <div class="obs-grid">
+    <div class="obs-card">
+      <div class="obs-label">Throughput</div>
+      <div class="obs-value metric-healthy">4,850</div>
+      <div class="obs-unit">req/s</div>
+    </div>
+    <div class="obs-card">
+      <div class="obs-label">Latency p95</div>
+      <div class="obs-value metric-healthy">125</div>
+      <div class="obs-unit">ms</div>
+    </div>
+    <div class="obs-card">
+      <div class="obs-label">Latency p99</div>
+      <div class="obs-value metric-warning">450</div>
+      <div class="obs-unit">ms</div>
+    </div>
+    <div class="obs-card">
+      <div class="obs-label">Error Rate</div>
+      <div class="obs-value metric-critical">0.8</div>
+      <div class="obs-unit">%</div>
+    </div>
+  </div>
+</div>

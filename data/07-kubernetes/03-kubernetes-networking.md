@@ -441,6 +441,74 @@ iptables-save | grep $SVC_NAME | head -20
 
 ---
 
+## Interactive Components
+
+### Network Traffic Flow
+
+<div style="display:flex;flex-direction:column;align-items:center;gap:8px;padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>@keyframes flow-pulse{0%,100%{opacity:.3;transform:translateY(0)}50%{opacity:1;transform:translateY(-2px)}}.flow-title{color:#00d4ff;font-family:monospace;font-size:14px;font-weight:bold;margin-bottom:8px;letter-spacing:1px}.flow-node{display:inline-block;padding:8px 16px;border-radius:4px;font-size:12px;font-family:monospace;color:#e3eaf0;background:#1e3a5f;border:1px solid #00d4ff}.flow-arrow{color:#00d4ff;font-size:16px;animation:flow-pulse 1.5s infinite;font-weight:bold}</style>
+  <div class="flow-title">Service DNS Resolution Flow</div>
+  <div style="display:flex;flex-direction:column;align-items:center;gap:6px">
+    <div class="flow-node">Pod (Request)</div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-node">CoreDNS (Resolve Name)</div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-node">Service ClusterIP</div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-node">kube-proxy (iptables/IPVS)</div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-node">Pod Network (Ready Endpoint)</div>
+  </div>
+</div>
+
+### Service Topology Map
+
+<div style="padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>.topology-title{color:#00d4ff;font-family:monospace;font-size:14px;font-weight:bold;margin-bottom:12px;letter-spacing:1px}.topology-svg{width:100%;max-width:600px;height:300px;background:#1a2332;border:1px solid #1e3a5f;border-radius:4px}.topo-edge{stroke:#1e3a5f;stroke-width:2}.topo-legend{display:flex;gap:16px;margin-top:12px;font-size:12px;color:#e3eaf0;font-family:monospace;flex-wrap:wrap}.legend-item{display:flex;align-items:center;gap:6px}</style>
+  <div class="topology-title">Pod-to-Pod Network Topology</div>
+  <svg class="topology-svg" viewBox="0 0 600 300">
+    <defs>
+      <marker id="arrow-net" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+        <polygon points="0 0, 10 3, 0 6" fill="#1e3a5f"/>
+      </marker>
+    </defs>
+    <!-- Pod A -->
+    <g>
+      <rect x="50" y="50" width="100" height="60" rx="4" fill="#1e5f3f" stroke="#34d399" stroke-width="1"/>
+      <text x="100" y="70" text-anchor="middle" fill="#e3eaf0" font-size="12" font-family="monospace" font-weight="bold">Pod A</text>
+      <text x="100" y="90" text-anchor="middle" fill="#a3aab8" font-size="10" font-family="monospace">10.0.1.2</text>
+    </g>
+    <!-- Pod B -->
+    <g>
+      <rect x="450" y="50" width="100" height="60" rx="4" fill="#1e5f3f" stroke="#34d399" stroke-width="1"/>
+      <text x="500" y="70" text-anchor="middle" fill="#e3eaf0" font-size="12" font-family="monospace" font-weight="bold">Pod B</text>
+      <text x="500" y="90" text-anchor="middle" fill="#a3aab8" font-size="10" font-family="monospace">10.0.2.3</text>
+    </g>
+    <!-- CNI Layer -->
+    <g>
+      <rect x="200" y="150" width="200" height="50" rx="4" fill="#3a7ca5" stroke="#00d4ff" stroke-width="1"/>
+      <text x="300" y="165" text-anchor="middle" fill="#e3eaf0" font-size="12" font-family="monospace" font-weight="bold">CNI (Calico/Cilium)</text>
+      <text x="300" y="185" text-anchor="middle" fill="#a3aab8" font-size="10" font-family="monospace">L3 Routing / Encapsulation</text>
+    </g>
+    <!-- CoreDNS -->
+    <g>
+      <circle cx="300" cy="250" r="25" fill="#f59e0b" stroke="#f59e0b" stroke-width="1"/>
+      <text x="300" y="255" text-anchor="middle" fill="#0b0e14" font-size="10" font-family="monospace" font-weight="bold">DNS</text>
+    </g>
+    <!-- Edges -->
+    <line class="topo-edge" x1="100" y1="110" x2="250" y2="150" marker-end="url(#arrow-net)"/>
+    <line class="topo-edge" x1="500" y1="110" x2="350" y2="150" marker-end="url(#arrow-net)"/>
+    <line class="topo-edge" x1="300" y1="200" x2="300" y2="225" marker-end="url(#arrow-net)"/>
+  </svg>
+  <div class="topo-legend">
+    <div class="legend-item"><div style="width:14px;height:14px;background:#1e5f3f;border:1px solid #34d399"></div><span>Pod</span></div>
+    <div class="legend-item"><div style="width:14px;height:14px;background:#3a7ca5;border:1px solid #00d4ff"></div><span>CNI Layer</span></div>
+    <div class="legend-item"><div style="width:14px;height:14px;background:#f59e0b;border-radius:50%"></div><span>CoreDNS</span></div>
+  </div>
+</div>
+
+---
+
 ## Interview Questions
 
 

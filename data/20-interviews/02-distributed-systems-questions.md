@@ -740,3 +740,147 @@ Consistency Models Hierarchy:
 ---
 
 > **Strategy**: Focus on Q1 (CAP), Q5 (Raft), Q9 (Dynamo KV), Q15 (Rate limiter), Q18 (ID generator) — these cover 80% of distributed system interview fundamentals. Practice explaining the approach with the 9-step framework (Requirements → Entities → API → Data Model → HLD → Deep Dive → Tradeoffs → Scaling → Failure Analysis). Draw the diagrams above on a whiteboard until you can do them from memory.
+
+---
+
+## Interactive: Distributed System Architecture
+
+<div style="padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>
+    .topology-title {
+      color:#00d4ff;
+      font-family:monospace;
+      font-size:14px;
+      font-weight:bold;
+      margin-bottom:12px;
+      letter-spacing:1px;
+    }
+    .topology-svg {
+      width:100%;
+      max-width:600px;
+      height:320px;
+      background:#1a2332;
+      border:1px solid #1e3a5f;
+      border-radius:4px;
+    }
+  </style>
+
+  <div class="topology-title">Distributed Consensus (Raft)</div>
+  <svg class="topology-svg" viewBox="0 0 600 320">
+    <defs>
+      <marker id="raft-arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+        <polygon points="0 0, 10 3, 0 6" fill="#1e3a5f"/>
+      </marker>
+    </defs>
+    <!-- Leader -->
+    <g>
+      <rect x="220" y="20" width="160" height="60" rx="4" fill="#1e3a5f" stroke="#34d399" stroke-width="2"/>
+      <text x="300" y="55" text-anchor="middle" fill="#34d399" font-size="13" font-family="monospace" font-weight="bold">LEADER</text>
+    </g>
+    <!-- Followers -->
+    <g>
+      <rect x="30" y="140" width="140" height="60" rx="4" fill="#1e3a5f" stroke="#60a5fa" stroke-width="1"/>
+      <text x="100" y="175" text-anchor="middle" fill="#60a5fa" font-size="12" font-family="monospace">FOLLOWER 1</text>
+    </g>
+    <g>
+      <rect x="230" y="140" width="140" height="60" rx="4" fill="#1e3a5f" stroke="#60a5fa" stroke-width="1"/>
+      <text x="300" y="175" text-anchor="middle" fill="#60a5fa" font-size="12" font-family="monospace">FOLLOWER 2</text>
+    </g>
+    <g>
+      <rect x="430" y="140" width="140" height="60" rx="4" fill="#1e3a5f" stroke="#60a5fa" stroke-width="1"/>
+      <text x="500" y="175" text-anchor="middle" fill="#60a5fa" font-size="12" font-family="monospace">FOLLOWER 3</text>
+    </g>
+    <!-- Quorum -->
+    <g>
+      <rect x="150" y="260" width="300" height="50" rx="4" fill="#1a2332" stroke="#fbbf24" stroke-width="2"/>
+      <text x="300" y="290" text-anchor="middle" fill="#fbbf24" font-size="12" font-family="monospace" font-weight="bold">Quorum: 2/3 ACK</text>
+    </g>
+    <!-- Edges: AppendEntries -->
+    <line x1="280" y1="80" x2="100" y2="140" stroke="#34d399" stroke-width="1.5" marker-end="url(#raft-arrow)"/>
+    <line x1="300" y1="80" x2="300" y2="140" stroke="#34d399" stroke-width="1.5" marker-end="url(#raft-arrow)"/>
+    <line x1="320" y1="80" x2="500" y2="140" stroke="#34d399" stroke-width="1.5" marker-end="url(#raft-arrow)"/>
+  </svg>
+</div>
+
+---
+
+## Interactive: Consensus State Machine
+
+<div style="padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>
+    .state-machine-title {
+      color:#00d4ff;
+      font-family:monospace;
+      font-size:14px;
+      font-weight:bold;
+      margin-bottom:16px;
+      letter-spacing:1px;
+    }
+    .state-demo {
+      text-align:center;
+    }
+    .state-display {
+      font-size:18px;
+      font-family:monospace;
+      padding:16px;
+      border-radius:4px;
+      margin:16px 0;
+      color:#0b0e14;
+      font-weight:bold;
+      min-height:50px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      border:2px solid currentColor;
+    }
+    .state-follower { background:#60a5fa;border-color:#3b82f6 }
+    .state-candidate { background:#fbbf24;border-color:#f59e0b }
+    .state-leader { background:#34d399;border-color:#22c55e }
+    .state-buttons {
+      display:flex;
+      gap:8px;
+      justify-content:center;
+      flex-wrap:wrap;
+      margin-top:16px;
+    }
+    .state-button {
+      padding:8px 16px;
+      border:1px solid #00d4ff;
+      background:#1e3a5f;
+      color:#00d4ff;
+      border-radius:4px;
+      cursor:pointer;
+      font-family:monospace;
+      font-size:12px;
+      transition:all 0.2s;
+    }
+    .state-button:hover {
+      background:#2a5a8f;
+      box-shadow:0 0 8px #00d4ff;
+    }
+  </style>
+
+  <div class="state-machine-title">Raft Node States</div>
+  <div class="state-demo">
+    <div class="state-display state-follower" id="raft-state">FOLLOWER</div>
+    <div class="state-buttons">
+      <button class="state-button" onclick="setRaftState('FOLLOWER')">Follower</button>
+      <button class="state-button" onclick="setRaftState('CANDIDATE')">Candidate</button>
+      <button class="state-button" onclick="setRaftState('LEADER')">Leader</button>
+    </div>
+  </div>
+
+  <script>
+    const raftMap = {
+      'FOLLOWER': { label: 'FOLLOWER', class: 'state-follower' },
+      'CANDIDATE': { label: 'CANDIDATE', class: 'state-candidate' },
+      'LEADER': { label: 'LEADER', class: 'state-leader' }
+    };
+    function setRaftState(state) {
+      const display = document.getElementById('raft-state');
+      const info = raftMap[state];
+      display.textContent = info.label;
+      display.className = 'state-display ' + info.class;
+    }
+  </script>
+</div>

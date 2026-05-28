@@ -8,42 +8,12 @@
 
 ## 1. Overview
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 The Visualization Engine transforms abstract data (graph relationships, simulation state, architecture models) into interactive, real-time visual representations. It uses a layered scene graph architecture with pluggable rendering backends (PixiJS for canvas, D3.js for SVG, Three.js for 3D), a declarative layout system, and a reactive data-binding layer powered by RxJS and Zustand.
 
 ---
 
 ## 2. Rendering Pipeline
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -69,38 +39,8 @@ This pattern is commonly used in production systems.
 
 ## 3. Scene Graph Model
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### 3.1 Core Types
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```typescript
@@ -140,21 +80,6 @@ type NodeType =
 
 ### 3.2 Scene Graph Example
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```
  Scene (root)
@@ -185,21 +110,6 @@ This pattern is commonly used in production systems.
 ---
 
 ## 4. Rendering Backends
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```typescript
@@ -242,21 +152,6 @@ function selectBackend(requirements: RenderRequirements): RenderBackend {
 
 ## 5. Layout Engines
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```typescript
 type LayoutEngine = {
@@ -277,21 +172,6 @@ type LayoutType =
 ```
 
 ### 5.1 Dagre Layout
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -317,21 +197,6 @@ This pattern is commonly used in production systems.
 
 ### 5.2 Force-Directed Layout
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```
  Simulation: Coulomb repulsion + Hooke spring attraction
@@ -353,21 +218,6 @@ This pattern is commonly used in production systems.
 
 ### 5.3 Layout Selection
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```typescript
 function layoutForContentType(type: ContentType): LayoutEngine {
@@ -386,21 +236,6 @@ function layoutForContentType(type: ContentType): LayoutEngine {
 ---
 
 ## 6. Animation System
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```typescript
@@ -439,21 +274,6 @@ const trafficParticles = particleSystem.create({
 
 ## 7. Interaction System
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```typescript
 interface InteractionSystem {
@@ -489,21 +309,6 @@ const gestures = {
 ---
 
 ## 8. Real-Time Data Binding
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -552,21 +357,6 @@ class SimulationDataBinding {
 
 ## 9. Architecture Map Renderer
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```
  ┌─────────────────────────────────────────────────────────────────────┐
@@ -602,21 +392,6 @@ This pattern is commonly used in production systems.
 ---
 
 ## 10. Protocol Flow Visualizer
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -662,21 +437,6 @@ This pattern is commonly used in production systems.
 
 ### 10.1 Packet Inspector
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```json
 {
@@ -703,21 +463,6 @@ This pattern is commonly used in production systems.
 ---
 
 ## 11. Dashboard Compositor
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -763,21 +508,6 @@ This pattern is commonly used in production systems.
 
 ## 12. Performance Targets
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 | Metric | Target | Strategy |
 |--------|--------|----------|
@@ -791,21 +521,6 @@ This pattern is commonly used in production systems.
 
 
 ## Workflow
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```mermaid

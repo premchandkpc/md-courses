@@ -6,21 +6,6 @@
 
 ## Table of Contents
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 - [Collection Hierarchy](#-collection-hierarchy)
 - [1. List Interface](#1-list-interface)
@@ -39,21 +24,6 @@ This pattern is commonly used in production systems.
 ---
 
 ## 🧭 Collection Hierarchy
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -133,40 +103,10 @@ mindmap
 
 ## 1. List Interface
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **Definition**: Ordered collection (sequence). Allows duplicates. Index-based access.
 
 ### ArrayList
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```java
@@ -183,21 +123,6 @@ list.size();             // 2
 ```
 
 ### ArrayList Internal Working
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -240,21 +165,6 @@ Initial: Object[] DEFAULTCAPACITY_EMPTY_ELEMENTDATA = {}
 
 ### LinkedList
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```java
 // Internal: doubly-linked list (Node objects)
@@ -269,21 +179,6 @@ list.removeFirst();               // remove "First"
 ```
 
 ### LinkedList Node Structure
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -309,21 +204,6 @@ Node structure:
 
 ### ArrayList vs LinkedList
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 | Operation | ArrayList | LinkedList |
 |-----------|-----------|------------|
@@ -340,40 +220,10 @@ This pattern is commonly used in production systems.
 
 ## 2. Set Interface
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **Definition**: Collection with no duplicates. At most one null.
 
 ### HashSet
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```java
@@ -388,21 +238,6 @@ set.size();           // 2
 ```
 
 ### HashSet Internal Flow
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```mermaid
@@ -459,21 +294,6 @@ graph TB
 
 ### TreeSet
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```java
 // Internal: Red-Black tree. Elements sorted by Comparator or natural order.
@@ -499,21 +319,6 @@ tree.subSet(3, 8);   // [3, 5, 7] (range view)
 
 ### LinkedHashSet
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```java
 // Hash table + linked list → insertion order preserved
@@ -527,21 +332,6 @@ System.out.println(set);  // [Z, A, M] — insertion order
 
 ### Set Comparison
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 | Set | Order | Null | Performance | Internal |
 |-----|-------|------|-------------|----------|
@@ -554,38 +344,8 @@ This pattern is commonly used in production systems.
 
 ## 3. Queue Interface
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### LinkedList (as Queue)
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```java
@@ -601,21 +361,6 @@ queue.element(); // "Second" (throws if empty)
 ```
 
 ### PriorityQueue (Min-Heap)
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```java
@@ -634,21 +379,6 @@ Queue<Integer> maxPq = new PriorityQueue<>(Comparator.reverseOrder());
 ```
 
 ### PriorityQueue Internal (Heap)
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -693,21 +423,6 @@ pq.add(3)
 
 ### Deque (Double-Ended Queue)
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```java
 Deque<String> deque = new ArrayDeque<>();
@@ -729,21 +444,6 @@ deque.pop();        // removeFirst
 
 ### Queue Comparison
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 | Queue | Order | Thread-safe? | Structure |
 |-------|-------|-------------|-----------|
@@ -760,38 +460,8 @@ This pattern is commonly used in production systems.
 
 ## 4. Map Interface
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### HashMap
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```java
@@ -818,21 +488,6 @@ map.merge("Apple", 5, Integer::sum);  // Apple = 20
 ```
 
 ### HashMap Internal (Java 8+)
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -893,21 +548,6 @@ Resizing:
 
 ### LinkedHashMap
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```java
 // Insertion order (default)
@@ -927,21 +567,6 @@ LinkedHashMap<String, Integer> lru = new LinkedHashMap<>(16, 0.75f, true) {
 ```
 
 ### TreeMap
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```java
@@ -966,21 +591,6 @@ TreeMap<Integer, String> custom = new TreeMap<>(Comparator.reverseOrder());
 
 ### Map Comparison
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 | Map | Order | Null keys | Null values | Performance | Internal |
 |-----|-------|-----------|-------------|-------------|----------|
@@ -997,38 +607,8 @@ This pattern is commonly used in production systems.
 
 ## 5. Comparable vs Comparator
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Comparable (Natural Ordering)
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```java
@@ -1065,21 +645,6 @@ Collections.sort(students);  // sorted by grade: [Charlie:78, Alice:85, Bob:92]
 
 ### Comparator (Custom Ordering)
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```java
 // Multiple comparators for different sort criteria
@@ -1109,21 +674,6 @@ students.sort(StudentComparators.BY_GRADE_THEN_NAME);
 
 ### Comparable vs Comparator
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 | Aspect | Comparable | Comparator |
 |--------|------------|------------|
@@ -1139,38 +689,8 @@ This pattern is commonly used in production systems.
 
 ## 6. Utility Methods
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Collections Class
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```java
@@ -1218,21 +738,6 @@ Collections.synchronizedMap(new HashMap<>());
 
 ### Arrays Class
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```java
 int[] arr = {3, 1, 4, 1, 5};
@@ -1272,38 +777,8 @@ Arrays.parallelSetAll(arr, i -> i * i);
 
 ## 7. Synchronized vs Concurrent Collections
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Legacy Synchronized Wrappers
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```java
@@ -1320,21 +795,6 @@ synchronized (syncList) {
 ```
 
 ### Modern Concurrent Collections
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```java
@@ -1362,21 +822,6 @@ String item = bq.take();  // blocks if empty
 
 ### Synchronized vs Concurrent
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 | Aspect | Synchronized Wrapper | Concurrent Collection |
 |--------|---------------------|----------------------|
@@ -1392,38 +837,8 @@ This pattern is commonly used in production systems.
 
 ## 8. Immutable Collections
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Java 9+ Factory Methods
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```java
@@ -1442,21 +857,6 @@ list.add("D");  // ❌
 
 ### Immutable via Collections.unmodifiable*
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```java
 List<String> mutable = new ArrayList<>(Arrays.asList("A", "B"));
@@ -1473,21 +873,6 @@ List<String> trulyImmutable = Collections.unmodifiableList(
 
 ### Immutable vs Unmodifiable
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 | Aspect | `List.of()` | `Collections.unmodifiableList()` |
 |--------|-------------|----------------------------------|
@@ -1501,38 +886,8 @@ This pattern is commonly used in production systems.
 
 ## 9. Performance Comparison
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Big-O Complexity
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 | Collection | Add | Get | Contains | Next | Remove |
@@ -1553,21 +908,6 @@ This pattern is commonly used in production systems.
 
 ### Memory Footprint
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 | Collection | Per-Element Overhead | Notes |
 |------------|---------------------|-------|
@@ -1584,38 +924,8 @@ This pattern is commonly used in production systems.
 
 ## 10. Internal Working Flows
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### HashMap Resize Flow
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -1655,21 +965,6 @@ Example:
 ```
 
 ### ArrayList Growth Flow
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -1717,21 +1012,6 @@ Growth formula: new = old + (old >> 1) = 1.5x
 
 ### TreeMap Put Flow (Red-Black Tree)
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```text
 put(K key, V value)
@@ -1772,38 +1052,8 @@ Rotation Types:
 
 ## HashMap Tree-ification (Java 8+)
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### When Lists Become Trees
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -1866,21 +1116,6 @@ Performance:
 
 ### Why Red-Black Trees?
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```
 Properties:
@@ -1903,38 +1138,8 @@ Benefit: Guaranteed performance
 
 ## ConcurrentHashMap: Lock-Striping
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Traditional synchronized HashMap Problem
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -1953,21 +1158,6 @@ Result: Single lock on 16 buckets = serialized!
 ```
 
 ### ConcurrentHashMap Solution: Segment/Bin Locking
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```java
@@ -2042,38 +1232,8 @@ do {
 
 ## Memory Layout & Overhead
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Object Size Breakdown
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -2131,21 +1291,6 @@ With 1,000,000 entries:
 
 ### Compression Technique: Compressed OOPs
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```
 Default: 64-bit JVM pointers (8 bytes each)
@@ -2170,21 +1315,6 @@ Trade-off:
 ---
 
 ## Production Incident: HashMap DOS Attack
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -2225,38 +1355,8 @@ Impact:
 
 ## Debugging Walkthroughs
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Finding Memory Leaks in HashMap
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```bash
@@ -2291,21 +1391,6 @@ WeakHashMap<String, Value> map = new WeakHashMap<>();
 ```
 
 ### Detecting Contention in ConcurrentHashMap
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```java
@@ -2355,38 +1440,8 @@ Map<String, Integer> map =
 
 ## Interview Questions: Collections Deep Dive
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Beginner Questions
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Q1: Why is HashMap faster than TreeMap for most use cases?**
@@ -2434,21 +1489,6 @@ A: Thrown when modifying collection while iterating.
 ```
 
 ### Intermediate Questions
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Q4: Explain HashMap capacity calculation and resizing**
@@ -2530,21 +1570,6 @@ A: Contract: if a.equals(b), then a.hashCode() == b.hashCode()
 ```
 
 ### Senior Questions
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Q7: How does ConcurrentHashMap achieve thread-safety without locking entire map?**
@@ -2744,21 +1769,6 @@ A: Choice depends on requirements:
 
 ## ⚠️ Common Pitfalls
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 | Pitfall | Issue | Fix |
 |---------|-------|-----|
@@ -2776,21 +1786,6 @@ This pattern is commonly used in production systems.
 ---
 
 ## 🧠 Simplest Mental Model
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text

@@ -7,21 +7,6 @@
 
 ## State Management Strategies Comparison
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```mermaid
 graph TB
@@ -50,21 +35,6 @@ graph TB
 
 ## 1. Local State (useState)
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 The simplest form — state belongs to a single component.
 
@@ -80,21 +50,6 @@ function Counter() {
 ---
 
 ## 2. Lifted State (Lifting State Up)
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 When multiple components share state, move it to their nearest common ancestor.
@@ -119,38 +74,8 @@ function Parent() {
 
 ## 3. Context API
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Provider Pattern
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```jsx
@@ -172,21 +97,6 @@ function AuthProvider({ children }) {
 
 ### Consumer Patterns
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```jsx
 // Hook (modern)
@@ -206,21 +116,6 @@ function Profile() {
 ```
 
 ### Context Value Memoization
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Critical**: Without `useMemo`, every re-render of the provider creates a new context value → all consumers re-render.
@@ -246,21 +141,6 @@ function AuthProvider({ children }) {
 
 ### Context Splitting
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **Problem**: A single context with many values causes all consumers to re-render when any value changes.
 
@@ -278,21 +158,6 @@ const LocaleContext = createContext('en');
 **Each consumer only re-renders when its specific context changes.**
 
 ### Provider Nesting Hell
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```jsx
@@ -327,21 +192,6 @@ function AppProviders({ children }) {
 ```
 
 ### Re-render Optimization with useMemo
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```jsx
@@ -388,21 +238,6 @@ function LoginButton() {
 
 ## 4. useReducer Pattern
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```jsx
 const initialState = { count: 0, step: 1 };
@@ -438,38 +273,8 @@ function Counter() {
 
 ## 5. Redux
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Core Concepts
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```javascript
@@ -502,21 +307,6 @@ dispatch(addTodo('Learn Redux'));
 
 ### Middleware Pipeline
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```mermaid
 flowchart LR
@@ -529,21 +319,6 @@ flowchart LR
 ```
 
 ### Thunk (async logic)
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```javascript
@@ -559,21 +334,6 @@ const fetchUser = (id) => async (dispatch) => {
 ```
 
 ### Saga (generator-based side effects)
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```javascript
@@ -593,21 +353,6 @@ function* watchFetchUser() {
 
 ### Observable (RxJS-based)
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```javascript
 const fetchUserEpic = (action$) =>
@@ -624,21 +369,6 @@ const fetchUserEpic = (action$) =>
 
 ### Thunk vs Saga vs Observable Comparison
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 | | Thunk | Saga | Observable |
 |---|---|---|---|
@@ -650,21 +380,6 @@ This pattern is commonly used in production systems.
 | Debugging | Easy | Hard | Medium |
 
 ### Normalized State
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```javascript
@@ -699,21 +414,6 @@ This pattern is commonly used in production systems.
 
 ### Reselect — Memoized Selectors
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```javascript
 import { createSelector } from '@reduxjs/toolkit';
@@ -734,21 +434,6 @@ const selectVisibleTodos = createSelector(
 ```
 
 ### createSlice (RTK)
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```javascript
@@ -774,21 +459,6 @@ export default todosSlice.reducer;
 ```
 
 ### RTK Query
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```javascript
@@ -816,21 +486,6 @@ export const { useGetPostsQuery, useAddPostMutation } = api;
 
 ## 6. Zustand
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```javascript
 import { create } from 'zustand';
@@ -857,21 +512,6 @@ function Counter() {
 
 ### Selector Optimization
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```javascript
 // ❌ Re-renders on ANY state change (no selector)
@@ -889,21 +529,6 @@ const { count, increment } = useStore(
 ```
 
 ### Interview Trick: Zustand Selector vs Redux connect
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Question**: "Why might Zustand cause extra re-renders compared to Redux connect?"
@@ -943,21 +568,6 @@ const visibleItems = useStore(state => {
 
 ## 7. Jotai (Atomic State)
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```javascript
 import { atom, useAtom } from 'jotai';
@@ -986,21 +596,6 @@ function Counter() {
 ---
 
 ## 8. XState (State Machines)
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```javascript
@@ -1036,21 +631,6 @@ function Toggle() {
 
 ## 9. URL State
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```jsx
 import { useSearchParams } from 'react-router-dom';
@@ -1082,38 +662,8 @@ function ProductList() {
 
 ## 10. Server State (TanStack Query / React Query)
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Core Concepts
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```javascript
@@ -1130,21 +680,6 @@ function Posts() {
 ```
 
 ### Stale-While-Revalidate
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 1. Return cached data immediately if exists
@@ -1170,21 +705,6 @@ sequenceDiagram
 
 ### Optimistic Updates
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```javascript
 const mutation = useMutation({
@@ -1206,21 +726,6 @@ const mutation = useMutation({
 
 ### Pagination & Infinite Queries
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```javascript
 function Todos() {
@@ -1240,21 +745,6 @@ function Todos() {
 ---
 
 ## 11. State Persistence
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```javascript
@@ -1289,21 +779,6 @@ const persistedReducer = persistReducer(
 ---
 
 ## 12. Undo/Redo Patterns
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```javascript
@@ -1354,21 +829,6 @@ function useUndoRedo(initialState) {
 
 ## 13. Optimistic vs Pessimistic Updates
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 | Strategy | UX | Risk | Implementation |
 |---|---|---|---|
@@ -1408,21 +868,6 @@ const updateTodoPessimistic = useMutation({
 
 ## 14. Production Failure: Redux Store 500MB+ OOM
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **Scenario**: A real-time analytics dashboard stores ALL events in Redux state.
 
@@ -1458,21 +903,6 @@ case 'ADD_EVENT':
 ---
 
 ## 15. Backpressure: Too Many Dispatches in Rapid Succession
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Scenario**: A collaborative document editor dispatches on every keystroke.
@@ -1520,21 +950,6 @@ sequenceDiagram
 
 ## 16. State Management Decision Matrix
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 | Feature | useState | useReducer | Context | Redux | Zustand | Jotai | TanStack Query |
 |---|---|---|---|---|---|---|---|
@@ -1550,21 +965,6 @@ This pattern is commonly used in production systems.
 ---
 
 ## 17. Mermaid: State Management Architecture Comparison
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```mermaid
@@ -1599,21 +999,6 @@ graph TB
 ---
 
 ## 18. Interview: Zustand Selector Extra Re-renders (Deep Dive)
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Question**: "Compare Zustand and Redux connect for re-render behavior."
@@ -1672,21 +1057,6 @@ const Parent = memo(function Parent() {
 
 ## 19. Mermaid: Redux Data Flow
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```mermaid
 sequenceDiagram
@@ -1713,21 +1083,6 @@ sequenceDiagram
 
 ## 20. Persistence Patterns
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 | Strategy | Pros | Cons | Use case |
 |---|---|---|---|
@@ -1742,38 +1097,8 @@ This pattern is commonly used in production systems.
 
 ## 21. Anti-Patterns
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Putting Everything in Redux
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```javascript
@@ -1795,21 +1120,6 @@ function Form() {
 
 ### Mutating State (Redux)
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```javascript
 // ❌ Mutates state directly — breaks time-travel debugging
@@ -1824,42 +1134,12 @@ reducer: {
 
 ### Over-Normalization
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 Normalizing a todo app with 10 todos is unnecessary. Normalization starts paying off at 10,000+ items with many-to-many relationships.
 
 ---
 
 ## 22. Server State vs Client State
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 | | Server State | Client State |
@@ -1877,42 +1157,12 @@ This pattern is commonly used in production systems.
 
 ## 23. Simplest Mental Model
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 > **State management = deciding WHERE state lives and HOW it flows.** useState = in the component. Context = in a provider above. Redux/Zustand = in a central store. TanStack Query = synced with server. URL = in the address bar. Pick the LEAST powerful tool that works. If two siblings need the same data, lift state up. If data comes from server, don't put it in Redux — use TanStack Query.
 
 ---
 
 ## 24. Production Checklist
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 - [ ] Context value memoized with `useMemo`
@@ -1929,21 +1179,6 @@ This pattern is commonly used in production systems.
 ---
 
 ## Related
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 - [Networking](../../11-networking/) — HTTP, performance, optimization

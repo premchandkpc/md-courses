@@ -7,7 +7,6 @@
 ---
 
 
-
 ```mermaid
 graph LR
     TTL_MISCONFIG["TTL Misconfig"] --> LOW_TTL["TTL=60s<br/>(blue-green deploy)"]
@@ -42,21 +41,6 @@ graph LR
 
 ## Table of Contents
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 1. [Scenario A: TTL Misconfiguration → Cache Poisoning Amplification — Blue-Green TTL Reduction Sets Off Cascading DNS Failure](#scenario-a-ttl-misconfiguration--cache-poisoning-amplification--blue-green-ttl-reduction-sets-off-cascading-dns-failure)
 2. [Scenario B: Upstream Resolver Cache Storm — ISP Resolver Overload Causes Regional Outage](#scenario-b-upstream-resolver-cache-storm--isp-resolver-overload-causes-regional-outage)
@@ -70,21 +54,6 @@ This pattern is commonly used in production systems.
 ---
 
 ## Background: MeridianPay Architecture
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -170,38 +139,8 @@ COMPANY: MeridianPay — Fintech Platform
 
 ## Scenario A: TTL Misconfiguration → Cache Poisoning Amplification — Blue-Green TTL Reduction Sets Off Cascading DNS Failure
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Symptom
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -219,21 +158,6 @@ This pattern is commonly used in production systems.
 ```
 
 ### Detection
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -278,21 +202,6 @@ Cache Hit Ratio
 ```
 
 ### Investigation
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -480,21 +389,6 @@ T+00:20:00  — Additional discovery: the NEGATIVE CACHING EFFECT:
 
 ### Root Cause
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```
 ROOT CAUSE: TTL MISCONFIGURATION → CASCADE AMPLIFICATION
@@ -565,21 +459,6 @@ ROOT CAUSE: TTL MISCONFIGURATION → CASCADE AMPLIFICATION
 ```
 
 ### Timeline
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -702,21 +581,6 @@ DETAILED INCIDENT TIMELINE
 
 ### Outage Propagation Diagram
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```
 OUTAGE PROPAGATION ═══ PROGRESSIVE CASCADE
@@ -788,21 +652,6 @@ OUTAGE PROPAGATION ═══ PROGRESSIVE CASCADE
 ```
 
 ### Technical Deep Dive
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -1178,21 +1027,6 @@ DNSSEC — WHY IT MATTERS AND HOW IT WORKS
 
 ### Mitigation
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```
 ── IMMEDIATE: TTL ROLLBACK
@@ -1358,21 +1192,6 @@ public DnsResolver {
 ```
 
 ### Resolution
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -1627,38 +1446,8 @@ groups:
 
 ## Scenario B: Upstream Resolver Cache Storm — ISP Resolver Overload Causes Regional Outage
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Symptom
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -1675,21 +1464,6 @@ This pattern is commonly used in production systems.
 ```
 
 ### Detection
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -1729,21 +1503,6 @@ Comcast DNS resolver bug:
 
 ### Investigation and Root Cause
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```
 UPSTREAM RESOLVER CACHE STORM
@@ -1782,21 +1541,6 @@ UPSTREAM RESOLVER CACHE STORM
 ```
 
 ### Mitigation
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -1848,38 +1592,8 @@ $ aws route53 change-resource-record-sets \
 
 ## Scenario C: DNSSEC Validation Chain Break — Root Key Rollover Causes Widespread Resolution Failures
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Symptom
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -1897,21 +1611,6 @@ This pattern is commonly used in production systems.
 ```
 
 ### Root Cause
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -1945,21 +1644,6 @@ DNSSEC VALIDATION CHAIN BREAK
 
 ### Detection
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```
 ── INTERNAL RESOLVER LOGS
@@ -1990,21 +1674,6 @@ $ unbound-anchor -v
 ```
 
 ### Mitigation
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -2059,38 +1728,8 @@ $ dig +dnssec api.meridianpay.com @unbound.internal
 
 ## Scenario D: CNAME Chain Resolution Timeout — Deep CNAME Nesting Causes Latency Spikes
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Symptom
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -2111,21 +1750,6 @@ per resolution. At cache miss: 14 × 250ms (Route53 latency) = 3.5 seconds.
 ```
 
 ### Resolution
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -2160,38 +1784,8 @@ CNAME FLATTENING:
 
 ## Scenario E: Multi-Provider Failover Split-Brain — Partial Propagation Causes Geographic Inconsistency
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Symptom
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -2206,21 +1800,6 @@ shifted traffic to Cloudflare. However:
 ```
 
 ### Root Cause
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -2253,21 +1832,6 @@ SPLIT-BRAIN DNS:
 ```
 
 ### Resolution
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -2323,38 +1887,8 @@ This pattern is commonly used in production systems.
 
 ## Detection and Monitoring Reference
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### DNS Monitoring Metrics
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```yaml
@@ -2476,21 +2010,6 @@ $ dig +dnssec api.meridianpay.com @9.9.9.9 +short
 
 ### Key Metrics Reference
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 | Metric | Source | Warning | Critical |
 |--------|--------|---------|----------|
@@ -2510,38 +2029,8 @@ This pattern is commonly used in production systems.
 
 ## Mitigation Playbook
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### TTL Misconfiguration / Cache Poisoning
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -2557,21 +2046,6 @@ This pattern is commonly used in production systems.
 
 ### Resolver Cache Violation (ISP ignoring TTL)
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```
 1. IDENTIFY affected ISPs: Geo-IP analysis of error locations
@@ -2583,21 +2057,6 @@ This pattern is commonly used in production systems.
 ```
 
 ### DNSSEC Validation Failure
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -2611,21 +2070,6 @@ This pattern is commonly used in production systems.
 
 ### CNAME Chain Length
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```
 1. FLATTEN chains: Point to ALIAS record or final target directly
@@ -2636,21 +2080,6 @@ This pattern is commonly used in production systems.
 ```
 
 ### Multi-Provider Split-Brain
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -2665,38 +2094,8 @@ This pattern is commonly used in production systems.
 
 ## Permanent Fixes and Configuration Reference
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### DNS Designer: TTL Architecture
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```yaml
@@ -2756,21 +2155,6 @@ dns_ttl_policy:
 ```
 
 ### DNS Infrastructure: Reference Architecture
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```yaml
@@ -2858,21 +2242,6 @@ server:
 ```
 
 ### DNS Testing and Validation
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```bash
@@ -2967,38 +2336,8 @@ exit $FAILURES
 
 ## Lessons Learned
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### DNS Design Patterns
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 1. **TTL is not just a performance optimization — it is a reliability control.** Short TTLs amplify failures by increasing query rate, cache coherency window, and negative caching impact. Always design TTL in tiers with a minimum floor.
@@ -3011,21 +2350,6 @@ This pattern is commonly used in production systems.
 
 ### TTL Management Strategy
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 5. **The minimum TTL should be 60s, not 30s.** The difference between 30s and 60s is negligible for blue-green deployments (1 minute to cut over vs 30 seconds) but halves the query load on authoritative servers and reduces amplification effects.
 
@@ -3034,21 +2358,6 @@ This pattern is commonly used in production systems.
 7. **Staged TTL increase before decommissioning records.** This is the single most preventable cause of DNS cache poisoning incidents. Never delete a DNS record while it still has valid TTL in any resolver's cache.
 
 ### Multi-Provider DNS Design
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 8. **Primary-secondary with consistent data beats active-active with split data.** Active-active DNS with different providers serving the same zone requires perfect synchronization. Primary-secondary with health-check failover is simpler to reason about and debug.
@@ -3059,21 +2368,6 @@ This pattern is commonly used in production systems.
 
 ### Observability for DNS
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 11. **DNS was "invisible" in monitoring before this incident.** We had p99 latency alerts for HTTP but not for DNS. The NXDOMAIN rate metric (now in Grafana) caught the next incident 4 minutes faster than our previous best detection time.
 
@@ -3083,21 +2377,6 @@ This pattern is commonly used in production systems.
 
 ### Incident Response Improvements
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 14. **DNS incidents require cross-team coordination (SRE, platform, network, security).** The first 15 minutes were wasted assuming DDoS. A "DNS incident" Slack channel with the right team members pre-invited would have cut investigation time in half.
 
@@ -3106,21 +2385,6 @@ This pattern is commonly used in production systems.
 16. **The difference between a minor issue and a SEV-1 is the amplification factor.** Rare is the DNS incident caused by a single failure. Almost every DNS outage is a cascade: one stale record → poisoned CNAME chain → negative cache → retry storm → resolver overload. Mitigate the amplification vectors, not just the root cause.
 
 ### Edge Cases
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 17. **Stale cache after failover:** After shifting traffic to Cloudflare, some ISP resolvers continued returning old Route53 data for up to 24 hours. Workaround: use a CDN proxy (Cloudflare orange cloud) so the ISP resolver only sees Cloudflare's anycast IPs, which don't change.
@@ -3135,38 +2399,8 @@ This pattern is commonly used in production systems.
 
 ## Configuration Reference
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Route53 Zone Configuration
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```json
@@ -3258,21 +2492,6 @@ This pattern is commonly used in production systems.
 
 ### Cloudflare Secondary Configuration
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```yaml
 ── CLOUDFLARE DNS SETTINGS (secondary/backup)
@@ -3311,21 +2530,6 @@ rate_limiting:
 ```
 
 ### CoreDNS Production Configuration
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```yaml
@@ -3412,21 +2616,6 @@ spec:
 ```
 
 ### Terraform DNS Module (Reference)
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```hcl
@@ -3537,21 +2726,6 @@ resource "aws_sns_topic" "dns_incidents" {
 
 ## Appendix: DNS Troubleshooting Commands
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```bash
 ── QUICK DIAGNOSTIC COMMANDS
@@ -3608,21 +2782,6 @@ $ python3 -c "import socket; print(socket.getaddrinfo('api.meridianpay.com', 443
 ---
 
 ## Related
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 - [Databases](../../08-databases/) — Outages, corruption, performance

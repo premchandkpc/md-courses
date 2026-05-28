@@ -5,7 +5,6 @@
 > **Related**: [05-youtube.md](./05-youtube.md) | [07-amazon.md](./07-amazon.md)
 
 
-
 ```mermaid
 graph LR
     USER_GS["Query"] --> QUERY_PROC["Query Processing<br/>(parsing + intent)"]
@@ -47,21 +46,6 @@ graph LR
 
 ## Table of Contents
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 1. Requirements & Scale
 2. High-Level Architecture
@@ -80,21 +64,6 @@ This pattern is commonly used in production systems.
 ---
 
 ## 1. Requirements & Scale
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -124,21 +93,6 @@ Key Requirements:
 ---
 
 ## 2. High-Level Architecture
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -212,21 +166,6 @@ This pattern is commonly used in production systems.
 ---
 
 ## 3. Crawling (Caffeine)
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -347,21 +286,6 @@ Duplicate detection (URL normalization):
 ---
 
 ## 4. Indexing Pipeline
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -519,21 +443,6 @@ Anchor text index:
 
 ## 5. Query Processing
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```text
 Query Flow:
@@ -688,21 +597,6 @@ Index server sharding:
 ---
 
 ## 6. Ranking System
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -879,21 +773,6 @@ Freshness scoring:
 
 ## 7. Serving Infrastructure
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```text
 Global Serving Topology:
@@ -1000,21 +879,6 @@ Index server (per shard):
 ---
 
 ## 8. Storage Systems
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -1152,21 +1016,6 @@ Borg (predecessor to Kubernetes):
 
 ## 9. Spam Detection
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```text
 Spam categories:
@@ -1268,21 +1117,6 @@ Panda algorithm:
 
 ## 10. Personalization
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```text
 Personalization signals:
@@ -1333,21 +1167,6 @@ Personalization application:
 
 ## 11. Freshness vs Quality Tradeoff
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```text
 The fundamental tradeoff:
@@ -1390,21 +1209,6 @@ Google's approach:
 ---
 
 ## 12. Failure Analysis
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Index Server Crash (Hot Shard):**
@@ -1560,21 +1364,6 @@ Mitigations:
 
 ## 13. Performance Considerations
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```text
 Latency Impact of 100ms Slowdown:
@@ -1623,21 +1412,6 @@ Infrastructure:
 ---
 
 ## Simplest Mental Model
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Google Search is like the world's most thorough librarian with three jobs: one librarian constantly runs around discovering every book ever written (Crawler), another meticulously creates a cross-reference card catalog where every word maps to every book page containing it (Inverted Index), and a third reads your question and instantly finds the right cards in the catalog (Query Service + Index Servers).** The ranking system is like having 200 experts vote on which books are most important: PageRank counts how many other books cite each book (like academic citations), RankBrain understands that when you say "car" you might also like books mentioning "automobile" (word embeddings), and BERT understands that "from" and "to" are not the same (preposition awareness). The whole system runs on a custom-built library with 20+ branch locations worldwide (data centers), where each branch has a copy of the most popular books (index shards), so no matter which branch you walk into, you get your answer in under 200ms — faster than you can snap your fingers.

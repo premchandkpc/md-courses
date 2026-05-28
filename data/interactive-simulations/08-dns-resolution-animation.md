@@ -2,21 +2,6 @@
 
 ## Overview
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```mermaid
 graph TB
@@ -48,21 +33,6 @@ Simulate the full DNS resolution flow: from browser to authoritative nameserver 
 
 ## Actors/Components
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 | Actor | Role |
 |-------|------|
@@ -79,38 +49,8 @@ This pattern is commonly used in production systems.
 
 ## State Machine
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### DNS Query State
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -156,21 +96,6 @@ This pattern is commonly used in production systems.
 
 ### Resolution failure states
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```
                     ┌──────────┐
@@ -195,21 +120,6 @@ This pattern is commonly used in production systems.
 
 ### Cache Entry State
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```
          ┌──────────┐
@@ -233,38 +143,8 @@ This pattern is commonly used in production systems.
 
 ## Animation Frames
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Frame 1: Browser to Cache Check
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -290,21 +170,6 @@ Result: CACHE MISS → Fire recursive DNS query to resolver (8.8.8.8)
 ```
 
 ### Frame 2: Resolver to Root Server
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -333,21 +198,6 @@ Step 1: Query root server for "www.example.com"
 
 ### Frame 3: Resolver to TLD Server
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```
 Step 2: Query .com TLD server
@@ -370,21 +220,6 @@ Step 2: Query .com TLD server
 ```
 
 ### Frame 4: Resolver to Authoritative NS
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -417,21 +252,6 @@ Total latency: 4 * RTT (e.g., 4 * 20ms = 80ms)
 
 ### Frame 5: CNAME Resolution
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```
 Domain: "blog.example.com" is a CNAME
@@ -460,21 +280,6 @@ Visual: dotted arrow from blog.example.com → example.com → IP
 
 ## User Interactions
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 | Control | Type | Range/Options | Effect |
 |---------|------|---------------|--------|
@@ -494,21 +299,6 @@ This pattern is commonly used in production systems.
 ---
 
 ## Visual Transitions
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 | Event | Visual Effect |
@@ -532,21 +322,6 @@ This pattern is commonly used in production systems.
 
 ## Edge Cases
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 | Edge Case | Behavior |
 |-----------|----------|
@@ -568,21 +343,6 @@ This pattern is commonly used in production systems.
 
 ## Failure Modes
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 | Failure | Symptom | Recovery |
 |---------|---------|----------|
@@ -602,21 +362,6 @@ This pattern is commonly used in production systems.
 ---
 
 ## Metrics to Display
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 | Metric | Unit | Source |
@@ -640,38 +385,8 @@ This pattern is commonly used in production systems.
 
 ## Scenario Walkthroughs
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Scenario 1: Fresh Resolution — No Cache
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Setup:** Browser never visited example.com, all caches empty, TTL=86400
@@ -731,21 +446,6 @@ First-byte latency (DNS + TCP handshake): ~82ms
 
 ### Scenario 2: Cached Resolution — Sub-ms Response
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **Setup:** Same site, 5 minutes later
 
@@ -772,21 +472,6 @@ Cascade benefit:
 ```
 
 ### Scenario 3: CNAME Chain — CDN Resolution
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Setup:** Domain uses CDN; CDN provides CNAME-based routing
@@ -835,21 +520,6 @@ CNAME adds one extra resolution hop.
 
 ### Scenario 4: NXDOMAIN — Domain Does Not Exist
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **Setup:** User typos a domain name
 
@@ -890,21 +560,6 @@ Important: NXDOMAIN for the whole zone (examplle.com)
 ```
 
 ### Scenario 5: SERVFAIL — Authoritative NS Failure
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Setup:** Authoritative NS is down or misconfigured
@@ -951,21 +606,6 @@ DNS retry strategy:
 ---
 
 ## Implementation Notes
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **State Management:**

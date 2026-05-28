@@ -5,7 +5,6 @@
 > **Related**: [02-consensus-raft.md](./02-consensus-raft.md) | [03-distributed-caching.md](./03-distributed-caching.md) | [04-distributed-transactions.md](./04-distributed-transactions.md)
 
 
-
 ```mermaid
 graph LR
     CAP["CAP Theorem"] --> C["Consistency<br/>(All nodes see same data)"]
@@ -37,21 +36,6 @@ graph LR
 
 ## Table of Contents
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 1. CAP Theorem Formal Proof
 2. CAP Tradeoffs: CP vs AP, PACELC
@@ -72,21 +56,6 @@ This pattern is commonly used in production systems.
 ---
 
 ## 1. CAP Theorem Formal Proof
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -115,21 +84,6 @@ This pattern is commonly used in production systems.
 
 ## 2. CAP Tradeoffs: CP vs AP, PACELC
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **CP (Consistency + Partition Tolerance):** When partition occurs, sacrifice availability. Block writes/reads until partition heals. Examples: Zookeeper, etcd, HBase.
 
@@ -151,21 +105,6 @@ If a partition occurs (P), choose between Consistency and Availability. Else (E,
 ---
 
 ## 3. Consistency Models Hierarchy
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -193,21 +132,6 @@ Each level sacrifices ordering guarantees for performance, scalability, or avail
 ---
 
 ## 4. Linearizability (Strict Consistency)
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Definition (Herlihy & Wing, 1990):** An execution is linearizable if there exists a total order of operations such that:
@@ -238,21 +162,6 @@ All reads return 2 after write completes. Real-time order preserved.
 
 ## 5. Sequential Consistency
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **Definition (Lamport, 1979):** The result of execution is the same as if all processors' operations were executed in some sequential order, and each processor's operations appear in the order specified by its program.
 
@@ -275,21 +184,6 @@ If P2 sees 2 before 1, program order is violated from P2's perspective.
 ---
 
 ## 6. Causal Consistency & Vector Clocks
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Definition:** Operations that are causally related must be seen by all processes in the same order. Concurrent operations may be seen in different orders.
@@ -321,21 +215,6 @@ Process B: [0,1,0] -> [0,2,0] -> [2,1,0] -> [2,2,0] -> [2,3,0]
 
 ## 7. PRAM & Processor Consistency
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **PRAM (Pipelined RAM) / FIFO Consistency:** Writes from a single processor are observed in the order they were issued by that processor. Writes from different processors can be seen in different orders. Weakest form of consistency that respects per-processor write order.
 
@@ -356,21 +235,6 @@ This VIOLATES processor consistency because they disagree on write order.
 ---
 
 ## 8. Eventual Consistency
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Definition:** Given sufficiently long time without updates, all replicas converge to the same value. No ordering guarantees during the convergence period.
@@ -404,21 +268,6 @@ Node A                    Node B
 
 ## 9. Monotonic Consistency Guarantees
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **Read-Your-Writes:** After a write, subsequent reads from the same client always reflect that write.
 
@@ -433,21 +282,6 @@ This pattern is commonly used in production systems.
 ---
 
 ## 10. CRDTs: Theory & Practice
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Conflict-Free Replicated Data Types:** Data types that converge across replicas without consensus. Operations commute — no conflict resolution needed.
@@ -500,38 +334,8 @@ After merge: A B X D (both converge)
 
 ## 11. Consistency in Practice
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Amazon Dynamo (Eventual + Vector Clocks + Read Repair)
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 - N = replication factor (default 3)
@@ -550,21 +354,6 @@ Read:  coordinator -> preference list
 ```
 
 ### Google Spanner (TrueTime + External Consistency)
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 - TrueTime API: `TT.now()` returns `[earliest, latest]` (clock uncertainty interval)
@@ -585,21 +374,6 @@ Transaction at Node B (TrueTime=[t3, t4]):
 
 ### Cassandra (Tunable Consistency)
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 - `ONE`: fastest, weakest. One node responds.
 - `QUORUM`: `(R + W) > RF`. Strong consistency if `R + W > RF`.
@@ -611,21 +385,6 @@ This pattern is commonly used in production systems.
 
 ### ZooKeeper (Linearizability via ZAB)
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 - ZAB (Zookeeper Atomic Broadcast): leader-based total order broadcast.
 - Linearizable writes: all writes go through leader, committed via ZAB.
@@ -635,21 +394,6 @@ This pattern is commonly used in production systems.
 
 ### etcd (Linearizability via Raft + Read Leases)
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 - Raft consensus for writes.
 - Read leases: leader responds to reads without Raft round-trip if within lease interval (clock-based).
@@ -657,21 +401,6 @@ This pattern is commonly used in production systems.
 - Revision-based MVCC for consistent snapshots.
 
 ### Cosmos DB (5 Consistency Levels)
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 1. **Strong:** Linearizable. Replicated synchronously to majority.
@@ -683,21 +412,6 @@ This pattern is commonly used in production systems.
 ---
 
 ## 12. Consistency vs Performance Tradeoffs
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -723,21 +437,6 @@ Key Tradeoff Parameters:
 
 ## 13. CAP in Real Systems
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **MongoDB:** Causal consistency in sessions. Configure `w: majority` / `j: true` for strong writes. Reads: linearizable read concern + `maxTimeMS`.
 
@@ -750,21 +449,6 @@ This pattern is commonly used in production systems.
 ---
 
 ## 14. Stale Reads & Staleness Bounds
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Bounded Staleness:**
@@ -781,21 +465,6 @@ This pattern is commonly used in production systems.
 
 ## 15. Split-Brain Detection
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **Lease Mechanism:** Leader holds a lease (time-bound permission). If lease expires, another node can become leader. Prevent two active leaders simultaneously.
 
@@ -810,21 +479,6 @@ This pattern is commonly used in production systems.
 ---
 
 ## Simplest Mental Model
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **CAP says:** When the network splits (which it will), you must choose between giving correct answers (consistency) or giving any answer at all (availability). You can never do both during a split. **PACELC adds:** Even without a split, you trade speed for correctness.

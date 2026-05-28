@@ -1,7 +1,6 @@
 # Go Goroutines, Channels, and Concurrency: The Complete Deep Dive
 
 
-
 ```mermaid
 graph LR
     GOR["Goroutine<br/>G"] --> LM["Local<br/>Run Queue"]
@@ -28,21 +27,6 @@ graph LR
 
 ## Table of Contents
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 1. [NOOB EXPLANATION: Concurrency for Beginners](#noob-explanation)
 2. [COMPLETE INTERNALS: The G/M/P Model](#complete-internals)
@@ -61,38 +45,8 @@ This pattern is commonly used in production systems.
 
 ## NOOB EXPLANATION
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Goroutines: Lightweight Tasks
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 Imagine you're a chef running a restaurant:
@@ -115,21 +69,6 @@ OS Threads (heavyweight):        Goroutines (lightweight):
 **Real numbers:** A machine can comfortably run millions of goroutines but only thousands of OS threads.
 
 ### Channels: Pipes Between Tasks
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 A channel is a typed pipe that goroutines use to send and receive data safely:
@@ -169,21 +108,6 @@ ch <- 6  // BLOCKS: buffer full
 
 ### Scheduler: The Fair Task Manager
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 Go's scheduler runs inside the Go program (not the OS). It's like an air traffic controller deciding which planes (goroutines) land (execute) on which runways (OS threads).
 
@@ -198,38 +122,8 @@ This is much cheaper than OS thread context switches which happen every millisec
 
 ## COMPLETE INTERNALS: The G/M/P Model
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### The Trinity: G, M, P
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 Go's runtime manages concurrency using three key entities:
@@ -276,21 +170,6 @@ type p struct {
 
 ### The Relationship
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```
 ┌────────────────────────────────────────────────────────┐
@@ -321,21 +200,6 @@ This pattern is commonly used in production systems.
 
 ### Processor Count
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 GOMAXPROCS controls how many P's exist (default = number of CPU cores):
 
@@ -363,21 +227,6 @@ If GOMAXPROCS=8:
 
 ### Goroutine Lifecycle
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```
 create go f()
@@ -402,21 +251,6 @@ _Gdead       = 6
 ```
 
 ### Work Stealing: The Scheduler's Secret Sauce
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 When M0 runs out of goroutines on P0:
@@ -472,21 +306,6 @@ func findrunnable() *g {
 
 ### Preemption: Fairness Without OS Help
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 In Go 1.14+, the runtime uses **asynchronous preemption** to fairly schedule goroutines even if they're CPU-bound:
 
@@ -531,38 +350,8 @@ void onSigurg(int sig) {
 
 ## CHANNEL IMPLEMENTATION: Deep Dive
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### The hchan Structure
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 Channels are surprisingly simple at the implementation level:
@@ -602,21 +391,6 @@ type sudog struct {
 ```
 
 ### Sending on a Channel
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -688,21 +462,6 @@ func send(c *hchan, ep unsafe.Pointer, block bool, callerpc uintptr) bool {
 
 ### Receiving from a Channel
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```
 Step 1: Acquire lock
@@ -713,21 +472,6 @@ Step 5: Block on recvq until sender available
 ```
 
 ### Buffered vs Unbuffered Performance
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```go
@@ -750,21 +494,6 @@ for i := 0; i < 10; i++ {
 ```
 
 ### Closed Channel Behavior
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 Once `close(ch)` is called:
@@ -797,21 +526,6 @@ func closechan(c *hchan) {
 ```
 
 ### Select Statement
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 The `select` statement picks a ready channel operation:
@@ -860,38 +574,8 @@ for _, ch := range cases {
 
 ## END-TO-END EXECUTION FLOWS
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Flow 1: Simple Goroutine Creation to Completion
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -931,21 +615,6 @@ main()
 
 ### Flow 2: Channel Send/Receive Sequence
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```
 Goroutine A (sender):                Goroutine B (receiver):
@@ -974,21 +643,6 @@ Next schedule, B wakes:           │
 ```
 
 ### Flow 3: Work Stealing on Multi-Processor
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -1024,21 +678,6 @@ Load is balanced! No processor idle while others overloaded.
 
 ### Flow 4: GC Interaction with Goroutine Scheduling
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```
 Mark phase (concurrent with goroutines):
@@ -1064,38 +703,8 @@ Sweep phase (concurrent or lazy):
 
 ## LARGE-SCALE SYSTEMS
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Goroutine Pool Pattern (Millions of Goroutines)
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 Real scenario: 10 million concurrent client connections (think: multiplayer game server)
@@ -1239,21 +848,6 @@ func main() {
 
 ### Channel Buffering Strategy
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```go
 // Strategy 1: UNBUFFERED - Tight synchronization
@@ -1312,38 +906,8 @@ work := make(chan *Request, calculateBuffer())  // Size based on CPU/RAM
 
 ## FAILURE ANALYSIS
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Goroutine Leak #1: Unclosed HTTP Response
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```go
@@ -1381,21 +945,6 @@ func fetchURL(url string) error {
 
 ### Goroutine Leak #2: Unbounded Goroutine Creation
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```go
 // WRONG: Unbounded creation
@@ -1422,21 +971,6 @@ func handleRequest(msg interface{}) {
 ```
 
 ### Goroutine Leak #3: Goroutine Waiting on Channel
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```go
@@ -1472,21 +1006,6 @@ case <-time.After(5 * time.Second):
 ```
 
 ### Deadlock #1: Circular Wait
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```go
@@ -1531,21 +1050,6 @@ func main() {
 
 ### Deadlock #2: Buffered Channel Capacity Exceeded
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```go
 // WRONG: Filling buffer without draining
@@ -1578,21 +1082,6 @@ ch <- 3  // Now OK, goroutine will drain
 ```
 
 ### Race Condition: Concurrent Map Access
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```go
@@ -1640,21 +1129,6 @@ func increment() {
 ```
 
 ### Stack Overflow from Deep Recursion
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```go
@@ -1709,38 +1183,8 @@ func factorialExplicit(n int) int {
 
 ## EDGE CASES
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Edge Case 1: Send on Closed Channel
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```go
@@ -1772,21 +1216,6 @@ func safeSend(ch chan int, val int) (panic bool) {
 
 ### Edge Case 2: Receive from Closed Channel
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```go
 func main() {
@@ -1809,21 +1238,6 @@ func main() {
 ```
 
 ### Edge Case 3: Select with Multiple Ready Channels
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```go
@@ -1852,21 +1266,6 @@ func main() {
 
 ### Edge Case 4: Channel Type Conversion with Interface{}
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```go
 func main() {
@@ -1883,21 +1282,6 @@ func main() {
 ```
 
 ### Edge Case 5: Goroutine Scheduling Fairness with CPU-Bound Work
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```go
@@ -1928,21 +1312,6 @@ func main() {
 
 ### Edge Case 6: Context Cancellation Propagation
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```go
 func main() {
@@ -1968,38 +1337,8 @@ func main() {
 
 ## INTERVIEW QUESTIONS
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Q1: Explain G/M/P Model
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Expected answer:**
@@ -2014,21 +1353,6 @@ Key insight: P is what matters. If GOMAXPROCS=8, we have 8 P's but might have 10
 
 ### Q2: Why Are Goroutines 1000x Lighter Than Threads?
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **Expected answer:**
 - Goroutines: ~2KB memory, context switch in userspace (~100 nanoseconds)
@@ -2038,21 +1362,6 @@ This pattern is commonly used in production systems.
 "OS threads require full kernel infrastructure: stack, registers, kernel TCB, TLB entry, etc. Goroutines are managed entirely by the Go runtime. When a goroutine yields (channel op, function call with preemption), the runtime just saves its stack pointer and switches to the next goroutine. No syscall, no TLB flush, no kernel overhead."
 
 ### Q3: How Are Channels Implemented? (Bonus: Why Can't You Send on a Closed Channel?)
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Expected answer:**
@@ -2068,21 +1377,6 @@ if c.closed != 0 {
 ```
 
 ### Q4: Deadlock Detection Strategies
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Expected answer:**
@@ -2104,21 +1398,6 @@ case <-time.After(5 * time.Second):
 
 ### Q5: What Happens During Goroutine Preemption?
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **Expected answer:**
 "Every ~10ms, the runtime scans all running M's. If a G has been running >10ms, it sends SIGURG. The signal handler saves the G's state and triggers the scheduler. The M picks a different G to run, giving fair scheduling even for CPU-bound goroutines.
@@ -2127,21 +1406,6 @@ Pre-1.14: Preemption only happened at function calls, so tight loops starved oth
 Go 1.14+: Asynchronous preemption fixes this."
 
 ### Q6: Goroutine Leak Detection
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Expected answer:**
@@ -2165,21 +1429,6 @@ func TestNoGoroutineLeaks(t *testing.T) {
 
 ### Q7: Design a Task Scheduler Matching Go's G/M/P
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **Expected answer:**
 ```
@@ -2197,21 +1446,6 @@ Result: All executors stay busy, fair scheduling.
 ```
 
 ### Q8: Race Condition in Channel Send
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Expected answer:**
@@ -2233,38 +1467,8 @@ Race condition happens if you access OUTSIDE the channel (e.g., shared map witho
 
 ## PERFORMANCE ANALYSIS
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Goroutine Creation Cost
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```go
@@ -2295,21 +1499,6 @@ func BenchmarkGoroutineCreation(b *testing.B) {
 ```
 
 ### Channel Operation Cost
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```go
@@ -2343,21 +1532,6 @@ func BenchmarkChannelBuffered(b *testing.B) {
 
 ### Context Switch Cost
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```go
 // Measure cost of switching between goroutines
@@ -2386,21 +1560,6 @@ func BenchmarkContextSwitch(b *testing.B) {
 
 ### Goroutine Stack Memory
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```go
 func main() {
@@ -2428,21 +1587,6 @@ func main() {
 ```
 
 ### Scheduler Overhead (GOMAXPROCS Impact)
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```go
@@ -2487,38 +1631,8 @@ func BenchmarkGOMXXPROCS(b *testing.B) {
 
 ## COMPLETE CODE EXAMPLES
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Example 1: Worker Pool with Graceful Shutdown
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```go
@@ -2672,21 +1786,6 @@ func main() {
 
 ### Example 2: Rate Limiter with Token Bucket
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```go
 package ratelimit
@@ -2787,21 +1886,6 @@ func main() {
 
 ### Example 3: Goroutine Leak Detection
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```go
 package main
@@ -2879,38 +1963,8 @@ func monitorGoroutines(ctx context.Context, threshold int) {
 
 ## PRODUCTION INCIDENT STORIES
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Incident #1: Goroutine Leak from Unclosed HTTP Responses (OOM Crash)
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Timeline:**
@@ -2956,21 +2010,6 @@ func checkHealth(url string) bool {
 **Lesson:** Every `http.Get()` or `io.Reader` must have `defer close()`. Use linters to enforce this.
 
 ### Incident #2: GC Pause Spike During Traffic Surge
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Timeline:**
@@ -3023,21 +2062,6 @@ fmt.Printf("GC pause: %d ms\n", m.PauseNs[(m.NumGC-1) % 256] / 1e6)
 **Lesson:** Default GOGC is not optimal for low-latency services. Tune for your SLO.
 
 ### Incident #3: Channel Deadlock in Distributed System
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Timeline:**
@@ -3105,21 +2129,6 @@ return result
 
 ### Incident #4: Memory Fragmentation in Long-Running Service
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **Timeline:**
 - Week 1: Service starts, steady 500MB memory
@@ -3185,38 +2194,8 @@ defer bufferPool.Put(buf)
 
 ## COMPARISON TABLES
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Goroutines vs Threads vs Coroutines vs Fibers
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 | Feature | Goroutine | OS Thread | Coroutine | Fiber |
@@ -3232,21 +2211,6 @@ This pattern is commonly used in production systems.
 
 ### Buffered vs Unbuffered Channels
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 | Property | Unbuffered | Buffered (cap 10) |
 |----------|-----------|------------------|
@@ -3261,21 +2225,6 @@ This pattern is commonly used in production systems.
 
 ### Mutex vs RWMutex vs sync.Map
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 | Feature | Mutex | RWMutex | sync.Map |
 |---------|-------|---------|----------|
@@ -3288,21 +2237,6 @@ This pattern is commonly used in production systems.
 | **Best for** | Balanced | 90% reads | Highly concurrent |
 
 ### Select vs Channels vs WaitGroup
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 | Use Case | Select | Channels | WaitGroup |
@@ -3317,21 +2251,6 @@ This pattern is commonly used in production systems.
 
 ### GC Algorithms Comparison
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 | Algorithm | Latency | Throughput | Memory | Use Case |
 |-----------|---------|-----------|--------|----------|
@@ -3344,21 +2263,6 @@ This pattern is commonly used in production systems.
 
 ## SUMMARY
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 Go's concurrency model (G/M/P + work stealing) enables millions of lightweight goroutines coordinated by a sophisticated runtime scheduler. Channels provide type-safe synchronization with clear semantics. Understanding internals—stack management, preemption, memory allocation, GC interaction—is critical for writing production systems.
 
@@ -3370,23 +2274,7 @@ Key takeaways:
 5. **Monitoring is essential:** Track goroutine count, GC metrics, latency percentiles
 
 
-
 ## Observability
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```mermaid
@@ -3405,21 +2293,6 @@ flowchart LR
 
 ### Key Metrics
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 | Metric | Unit | Threshold | Indicates |
 |--------|------|-----------|-----------|
@@ -3432,21 +2305,6 @@ This pattern is commonly used in production systems.
 
 ### Logs
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 - **ERROR**: Panic recoveries, request failures, connection drops
 - **WARN**: Slow shutdown, channel near capacity, retry attempts
@@ -3455,40 +2313,10 @@ This pattern is commonly used in production systems.
 
 ### Traces
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 Use OpenTelemetry Go SDK. Propagate trace context through `context.Context` across goroutine boundaries. Key spans: channel operations, WaitGroup waits, mutex acquisition.
 
 ### Alerts
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 | Severity | Condition | Response |
@@ -3499,59 +2327,14 @@ This pattern is commonly used in production systems.
 
 ### Dashboards
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **Go Runtime Dashboard**: goroutine count by state, GC duration phases, heap allocation rate, GC CPU fraction, mutex wait time, scheduler latency.
 
 
 ## Common Failures
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Failure: Goroutine Leak
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 - **Symptoms**: Memory grows unbounded, latency increases, OOM kills. goroutine count increases steadily.
@@ -3563,21 +2346,6 @@ This pattern is commonly used in production systems.
 
 ### Failure: Channel Deadlock
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 - **Symptoms**: App hangs completely, health checks fail. No error logs.
 - **Root Cause**: Send to unbuffered channel with no receiver. Missing `default` in `select`. Wrong channel direction in signature.
@@ -3586,21 +2354,6 @@ This pattern is commonly used in production systems.
 - **Prevention**: Use `select` with `ctx.Done()` and `default`. Use buffered channels. Run `go vet`.
 
 ### Failure: GC Pause Storm
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 - **Symptoms**: Latency spikes every few minutes. P99 rises 10x during GC.
@@ -3611,21 +2364,6 @@ This pattern is commonly used in production systems.
 
 ### Failure: Mutex Contention
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 - **Symptoms**: Low CPU, low throughput, requests queue. High `mutex_wait_time`.
 - **Root Cause**: Many goroutines competing for same mutex. Critical section too large (I/O while holding lock).
@@ -3634,21 +2372,6 @@ This pattern is commonly used in production systems.
 - **Prevention**: Use RWMutex for read-heavy. Shard with hash partitioning. Use atomic ops for counters.
 
 ### Failure: Memory Leak from Slice Substring
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 - **Symptoms**: Memory grows steadily, never released. OOM after days.

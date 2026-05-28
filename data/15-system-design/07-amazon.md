@@ -5,7 +5,6 @@
 > **Related**: [06-stripe.md](./06-stripe.md) | [09-google-search.md](./09-google-search.md)
 
 
-
 ```mermaid
 graph LR
     CUSTOMER["Customer"] --> FRONTEND["Amazon.com<br/>(Frontend)"]
@@ -48,21 +47,6 @@ graph LR
 
 ## Table of Contents
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 1. Requirements & Scale
 2. High-Level Architecture
@@ -83,21 +67,6 @@ This pattern is commonly used in production systems.
 ---
 
 ## 1. Requirements & Scale
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -127,21 +96,6 @@ Key Requirements:
 ---
 
 ## 2. High-Level Architecture
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -223,21 +177,6 @@ This pattern is commonly used in production systems.
 ---
 
 ## 3. Product Catalog
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -371,21 +310,6 @@ Display logic:
 ---
 
 ## 4. Search & Faceted Navigation
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -574,21 +498,6 @@ Facet query API:
 
 ## 5. Shopping Cart
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```text
 Cart Architecture:
@@ -718,21 +627,6 @@ Concurrent cart modification:
 ---
 
 ## 6. Order Management
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -908,21 +802,6 @@ Customer sees single order in UI, but fulfillment is parallelized.
 
 ## 7. Payment System
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```text
 Payment Service Architecture:
@@ -1091,21 +970,6 @@ Post-purchase monitoring:
 
 ## 8. Recommendation Engine
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```text
 Recommendation Architecture:
@@ -1255,21 +1119,6 @@ Experiment framework:
 
 ## 9. Seller Marketplace
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```text
 Seller Marketplace Architecture:
@@ -1404,21 +1253,6 @@ Buy Box algorithm:
 
 ## 10. Database Design
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```text
 Database Strategy (Polyglot Persistence):
@@ -1495,21 +1329,6 @@ Sharding strategy:
 
 ## 11. Caching Strategy
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```text
 Multi-Layer Caching:
@@ -1584,21 +1403,6 @@ Cache stampede prevention:
 
 ## 12. CDN & Content Delivery
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```text
 CloudFront Distribution:
@@ -1665,21 +1469,6 @@ Sub-100ms page load:
 ---
 
 ## 13. Event-Driven Architecture
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -1781,21 +1570,6 @@ Order-preserving events:
 ---
 
 ## 14. Failure Analysis
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Prime Day / Flash Sale Overload:**
@@ -1942,21 +1716,6 @@ Mitigations:
 
 ## 15. Performance Considerations
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```text
 Latency Targets:
@@ -2006,21 +1765,6 @@ Elasticsearch:
 
 ## Simplest Mental Model
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **Amazon is like a massive digital shopping mall with three layers: the storefront (product catalog + search + recommendations), the checkout counter (cart + order + payment), and the back warehouse (inventory + fulfillment + seller management).** The product catalog is like a giant library card catalog (Elasticsearch) that lets you find any product instantly and narrow down by color, brand, and price. The shopping cart follows you across devices like a personal shopper who remembers what you picked up on your phone and brings it to your desktop. The payment system is a paranoid accountant who checks every transaction for fraud three times before letting it through. When you click "Buy Now," it's like dropping a letter into a pneumatic tube that splits into multiple chutes — one for payment, one for the warehouse (pick the closest one to you), one for the seller's records — all happening in parallel within seconds.
 
@@ -2028,21 +1772,6 @@ This pattern is commonly used in production systems.
 
 
 ## Practical Example
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 See code examples above for practical usage patterns.

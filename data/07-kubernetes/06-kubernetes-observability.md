@@ -1,7 +1,6 @@
 # 📊 Kubernetes Observability — Complete Deep Dive
 
 
-
 ```mermaid
 graph LR
     METRIC["Metrics Server"] --> NODE["kubelet<br/>(cAdvisor)"]
@@ -30,41 +29,12 @@ graph LR
 
 ## ToC
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 - Metrics Server | kube-state-metrics | Prometheus Operator | VictoriaMetrics vs Prometheus | Grafana | Loki | OpenTelemetry | Jaeger/Tempo | cAdvisor | Eviction | Custom Metrics API
 
 ---
 
 ## Metrics Server
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -90,20 +60,6 @@ kubectl get --raw /apis/metrics.k8s.io/v1beta1/nodes | jq
 
 ### HPA Integration
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 ```yaml
 apiVersion: autoscaling/v2
@@ -124,21 +80,6 @@ spec:
 
 ## kube-state-metrics
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **Key metrics:**
 ```
@@ -152,21 +93,6 @@ kube_node_status_condition{condition="Ready"}
 ---
 
 ## Prometheus Operator
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -183,20 +109,6 @@ This pattern is commonly used in production systems.
 
 ### ServiceMonitor & Rules
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 ```yaml
 apiVersion: monitoring.coreos.com/v1
@@ -243,21 +155,6 @@ spec:
 
 ## VictoriaMetrics vs Prometheus
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 | Feature | Prometheus | VictoriaMetrics |
 |---------|-----------|----------------|
@@ -287,21 +184,6 @@ spec:
 
 ## Grafana Dashboards
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **Essential:** Cluster Overview (node/pod resources), Pod Details (per-pod metrics), Nodes (conditions, errors), etcd (leader changes, latency p99)
 
@@ -319,21 +201,6 @@ data:
 ---
 
 ## Loki
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -367,21 +234,6 @@ sum by(pod) (count_over_time({app="nginx"} |= "error" [5m]))
 ---
 
 ## OpenTelemetry
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -433,21 +285,6 @@ service:
 
 ## Jaeger/Tempo
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```
   Service A -> OTel Col -> Tempo/Jaeger -> S3 -> Grafana Explore Traces
@@ -460,21 +297,6 @@ This pattern is commonly used in production systems.
 ---
 
 ## cAdvisor
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Embedded in kubelet.** Exposes `/metrics/cadvisor`.
@@ -489,21 +311,6 @@ kubectl get --raw /api/v1/nodes/node-1/proxy/stats/summary
 ---
 
 ## Eviction Pressure
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Memory:** `--eviction-hard=memory.available<100Mi`. Eviction order: BestEffort > Burstable > Guaranteed.
@@ -520,21 +327,6 @@ increase(container_oom_events_total[5m]) > 0
 ---
 
 ## Custom Metrics API
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **prometheus-adapter:**
@@ -592,21 +384,6 @@ spec:
 
 ## Simplest Mental Model
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```
 K8s observability = hospital monitoring system
@@ -626,38 +403,8 @@ K8s observability = hospital monitoring system
 
 ## Production Failure Modes
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Failure 1: Prometheus Memory Exhaustion from High-Cardinality Metrics
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 | Aspect | Detail |
@@ -670,21 +417,6 @@ This pattern is commonly used in production systems.
 
 ### Failure 2: DaemonSet Log Shipper (Fluentd/Vector) Unable to Keep Up
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 | Aspect | Detail |
 |--------|--------|
@@ -695,21 +427,6 @@ This pattern is commonly used in production systems.
 | **Prevention** | Use file-based buffers (not memory). Set `total_limit_size: 10GB`. Drop unnecessary logs: ignore kubelet, SDN, audit logs. Use log sampling: 1:100 for debug, 1:1 for errors |
 
 ### Failure 3: kube-state-metrics Causing API Server Load
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 | Aspect | Detail |
@@ -722,21 +439,6 @@ This pattern is commonly used in production systems.
 
 ### Failure 4: Jaeger/Tempo Trace Sampling Overwhelming Storage
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 | Aspect | Detail |
 |--------|--------|
@@ -747,21 +449,6 @@ This pattern is commonly used in production systems.
 | **Prevention** | Start with 1% sampling. Use adaptive sampling (OpenTelemetry Collector): auto-adjusts sampling rate based on traffic. Store only error traces at 100%, success traces at 1% |
 
 ### Failure 5: Grafana Dashboard Permissions Inconsistency
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 | Aspect | Detail |
@@ -774,21 +461,6 @@ This pattern is commonly used in production systems.
 
 ## Edge Cases
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 | Scenario | Challenge | Solution |
 |----------|-----------|----------|
@@ -800,98 +472,23 @@ This pattern is commonly used in production systems.
 
 ## Interview Questions
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Q1 (Beginner): What are the four golden signals of monitoring and why do they matter?
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Answer**: The four golden signals from Google SRE: (1) Latency — time to service a request (average, p50, p95, p99). (2) Traffic — demand on the system (QPS, req/s, active users). (3) Errors — rate of failed requests (HTTP 5xx, exceptions, business errors). (4) Saturation — how "full" the service is (CPU, memory, disk I/O, queue depth). They matter because each signal covers a different failure mode: latency catches slowdowns, traffic catches load spikes, errors catch application bugs, saturation catches resource exhaustion. Without all four, you miss important failure types.
 
 ### Q2 (Mid-Level): How does Prometheus service discovery work in Kubernetes?
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **Answer**: Prometheus uses the Kubernetes API to discover scrape targets. It watches for pod/service/endpoint changes via the Kubernetes API server. For pods: annotations `prometheus.io/scrape: "true"` mark targets. prometheus-operator uses CRDs: ServiceMonitor (selects services by labels), PodMonitor (selects pods by labels), ProbeMonitor (for blackbox probing). The operator generates Prometheus configuration: each ServiceMonitor becomes a scrape job with relabeling rules. ServiceMonitor selects services with matching labels, then discovers endpoints (ready pods) via endpoints API. Relabeling adds metadata labels: `__meta_kubernetes_namespace`, `__meta_kubernetes_pod_name`, `__meta_kubernetes_service_name`. These become metric labels for filtering and grouping.
 
 ### Q3 (Senior): Design an observability platform for a 2000-service microservice architecture.
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **Answer**: Three pillars: metrics, logs, traces. Metrics: Prometheus (per-cluster) -> Thanos/Cortex (global view). 2000 services x 1000 metrics each = 2M active series. Thanos sidecar on each Prometheus, object storage (S3) for long-term retention. Query via Thanos Querier. Logs: Loki (per-cluster) with object storage backend. Structured logging (JSON, not free text). logql for querying. 2000 services x 100MB/s = 200GB/s log volume. Sampling at agent level: 1:100 for debug, 1:1 for errors. Traces: OpenTelemetry Collector (agent on each node) -> Tempo (per region). 1% sampling for success, 100% for errors. OTel Collector with batch processor. Storage: S3 for trace data. Correlation: use `trace_id` in logs, `service` label in metrics. Integration: Grafana as unified dashboard. Prometheus as alert source. Service graph: Tempo service graph shows dependency latency. Cost management: labels with high cardinality (user_id, request_id) are the #1 cost driver. Enforce label policy via OPA.
 
 ## Cross-References
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 - [Prometheus Deep Dive](../../05-cloud/prometheus/01-prometheus.md) — Alerting rules, recording rules, service discovery

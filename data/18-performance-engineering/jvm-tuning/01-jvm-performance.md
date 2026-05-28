@@ -1,7 +1,6 @@
 # JVM Performance Deep Dive
 
 
-
 ```mermaid
 graph LR
     JVM_MEM["JVM Memory<br/>Model"] --> HEAP["Heap<br/>(Young + Old)"]

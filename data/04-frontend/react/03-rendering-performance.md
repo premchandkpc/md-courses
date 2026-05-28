@@ -7,21 +7,6 @@
 
 ## Rendering Pipeline
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```mermaid
 graph LR
@@ -43,21 +28,6 @@ graph LR
 
 
 ## 1. Virtual DOM — What It Actually Is
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 The Virtual DOM is a lightweight JavaScript object tree representing the real DOM. It is **not** a virtual copy of the DOM — it's a tree of React element objects.
@@ -90,40 +60,10 @@ The Virtual DOM is a lightweight JavaScript object tree representing the real DO
 
 ### Virtual DOM ≠ Shadow DOM
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 Shadow DOM is a browser specification for style/component encapsulation. Virtual DOM is a JavaScript pattern for efficient DOM updates. They are unrelated.
 
 ### Step-by-Step
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 1. **JSX to element objects**: Components return JSX which compiles to `React.createElement()` calls, producing plain JS objects
@@ -134,21 +74,6 @@ This pattern is commonly used in production systems.
 6. **Commit**: All DOM mutations are applied in a single batch, then browser paints
 
 ### Code Example
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```javascript
@@ -188,40 +113,10 @@ function Dashboard() {
 
 ### Real-World Scenario
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 A dashboard component updates 20 different state values in response to a WebSocket message. Without batching, each `setState` would trigger a re-render and DOM update (20 repaints). With React 18's automatic batching, all 20 updates are grouped into one re-render. Frame time dropped from 150ms (20 separate renders) to 16ms (one batched render), preventing jank and improving UX responsiveness.
 
 ### Diagram
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```mermaid
@@ -245,40 +140,10 @@ sequenceDiagram
 
 ## 2. Reconciliation Algorithm
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 Reconciliation is the process of comparing two trees to determine what changed.
 
 ### The Two Assumptions (O(n) instead of O(n³))
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 React's diff algorithm makes two assumptions:
@@ -288,21 +153,6 @@ React's diff algorithm makes two assumptions:
 Without these assumptions, tree diffing is O(n³) — infeasible.
 
 ### Reconciliation Steps
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```mermaid
@@ -319,21 +169,6 @@ flowchart TD
 ```
 
 ### Type Change = Full Remount
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```jsx
@@ -359,40 +194,10 @@ function MyComponent({ isSpecial }) {
 
 ## 2b. Virtual DOM Diffing Algorithm — Deep Dive
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 React's diff algorithm is the core of reconciliation — it determines what changed between two VDOM trees with O(n) complexity (down from O(n³) by using two key heuristics).
 
 ### The Two Fundamental Heuristics
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 1. **Different element types produce different trees**: If `<div>` becomes `<span>`, React destroys the entire subtree and rebuilds
@@ -401,21 +206,6 @@ This pattern is commonly used in production systems.
 Without these assumptions, the general tree diff problem is O(n³) — three nested loops comparing every node to every other node at every tree level.
 
 ### How List Diffing Works (The `reconcileChildrenArray` Algorithm)
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 When diffing two lists of children, React uses a **double-index** approach:
@@ -460,21 +250,6 @@ flowchart TD
 
 ### Key-Based Matching
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 When keys are present, React builds a key→fiber map from the remaining old children:
 
@@ -502,21 +277,6 @@ newChildren.forEach(newChild => {
 
 ### The O(n²) Trap with Index Keys
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 When prepending to a list with index keys:
 
@@ -537,21 +297,6 @@ Every existing item's DOM node gets **updated with new content** instead of simp
 
 ### Reconciliation Heuristics Summary
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 | Scenario | React Behavior | Cost |
 |---|---|---|
@@ -568,40 +313,10 @@ This pattern is commonly used in production systems.
 
 ## 3. Fiber Architecture — React 16+
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 Fiber is a complete rewrite of React's reconciliation engine. Each component instance gets a "fiber node" — a JavaScript object that holds component state, props, and work to be done. The fiber tree is a **linked list** — not a recursive tree — enabling incremental (interruptible) rendering.
 
 ### Fiber Node Structure (simplified)
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```javascript
@@ -623,21 +338,6 @@ This pattern is commonly used in production systems.
 ```
 
 ### Why Fiber Was Created
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 Before Fiber (React ≤15), reconciliation was synchronous and recursive. Deep component trees blocked the main thread for hundreds of milliseconds:
@@ -673,21 +373,6 @@ sequenceDiagram
 
 ### Double Buffering (Work-in-Progress Tree)
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 React maintains two fiber trees:
 - **Current**: The tree currently displayed in DOM
@@ -705,21 +390,6 @@ root.current = finishedWork;
 ---
 
 ## 3b. Fiber Work Loop — Deep Dive
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 The work loop processes fiber nodes one at a time, yielding control back to the browser after each unit. This is what makes concurrent rendering possible.
@@ -762,21 +432,6 @@ function workLoopConcurrent(deadline) {
 **Cross-reference**: This is the same cooperative multitasking model used in OS kernel schedulers. See [Operating Systems](../../08-operating-systems/) for preemption and time-slicing concepts.
 
 ### Lane Priorities (Bitmask System)
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 React 18 assigns each update a **lane** — a bitmask that encodes priority. Multiple updates can be batched by OR-ing their lanes.
@@ -837,21 +492,6 @@ function ensureRootIsScheduled(root) {
 
 ### Effect List (Commit Phase Input)
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 During the "complete" phase of each fiber, React builds an effect list — a linked list of fibers that need DOM mutations, refs, or lifecycle methods during commit:
 
@@ -888,40 +528,10 @@ while (nextEffect) {
 
 ## 3c. Browser Rendering Pipeline
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 React's VDOM updates eventually reach the browser's rendering pipeline. Understanding this pipeline is essential for diagnosing layout thrashing, jank, and paint storms.
 
 ### The Critical Rendering Path
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```mermaid
@@ -944,21 +554,6 @@ flowchart LR
 
 ### Reflows vs Repaints
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 | Operation | What Changes | Cost | Triggered By |
 |---|---|---|---|
@@ -980,21 +575,6 @@ el.style.height = `${h + 10}px`;    // Write (batched reflow)
 
 ### React's Impact on the Pipeline
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```mermaid
 sequenceDiagram
@@ -1014,21 +594,6 @@ sequenceDiagram
 ```
 
 ### Production Scenario: Layout Thrashing from useLayoutEffect
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```jsx
@@ -1067,21 +632,6 @@ useLayoutEffect(() => {
 
 ### Production Optimizations Summary
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 | Technique | What It Prevents | Cost |
 |---|---|---|
@@ -1095,40 +645,10 @@ This pattern is commonly used in production systems.
 
 ## 4. Render Phases
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 React's render cycle has two major phases:
 
 ### Phase 1: Render (Reconciliation) — Can Be Interrupted
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```mermaid
@@ -1145,21 +665,6 @@ flowchart LR
 - This phase can be paused by higher-priority work
 
 ### Phase 2: Commit — Cannot Be Interrupted
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 1. **Before mutation**: `getSnapshotBeforeUpdate` runs
@@ -1187,21 +692,6 @@ sequenceDiagram
 
 ## 5. Batching
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 React groups multiple state updates into a single re-render.
 
@@ -1219,21 +709,6 @@ function BatchingDemo() {
 ```
 
 ### Automatic Batching in React 18
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 React 18 batches ALL updates by default, including:
@@ -1255,21 +730,6 @@ setTimeout(() => {
 
 ### flushSync — Opt out of batching
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```jsx
 import { flushSync } from 'react-dom';
@@ -1286,21 +746,6 @@ function handleClick() {
 ---
 
 ## 6. Concurrent Mode
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 React 18 concurrent mode enables **interruptible rendering**.
@@ -1344,21 +789,6 @@ flowchart LR
 
 ## 7. Transitions
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```jsx
 const [isPending, startTransition] = useTransition();
@@ -1382,38 +812,8 @@ function switchTab(tab) {
 
 ## 8. Suspense + Lazy Loading
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### React.lazy
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```jsx
@@ -1434,21 +834,6 @@ function App() {
 
 ### Code Splitting Strategy
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```mermaid
 graph TD
@@ -1468,21 +853,6 @@ graph TD
 - Legacy code paths
 
 ### Suspense + Data Fetching (React 18)
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```jsx
@@ -1507,21 +877,6 @@ function ProfileDetails() {
 
 ## 9. React.memo
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```jsx
 const ExpensiveList = memo(function ExpensiveList({ items, onSelect }) {
@@ -1532,40 +887,10 @@ const ExpensiveList = memo(function ExpensiveList({ items, onSelect }) {
 
 ### What memo Does
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 Shallow compares `prevProps` vs `nextProps`. If all props are equal (via `Object.is`), skip re-render.
 
 ### Custom Comparison
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```jsx
@@ -1577,21 +902,6 @@ const List = memo(ListComponent, (prevProps, nextProps) => {
 ```
 
 ### When memo Is Useless
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```jsx
@@ -1617,21 +927,6 @@ function Parent() {
 
 ## 10. PureComponent
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```jsx
 class PureList extends React.PureComponent {
@@ -1646,21 +941,6 @@ class PureList extends React.PureComponent {
 ---
 
 ## 11. shouldComponentUpdate
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```jsx
@@ -1683,38 +963,8 @@ class List extends React.Component {
 
 ## 12. Key Optimization
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Index as Key — The O(n²) Problem
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```jsx
@@ -1764,21 +1014,6 @@ flowchart TD
 
 ## 13. List Virtualization (react-window)
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```jsx
 import { FixedSizeList } from 'react-window';
@@ -1807,21 +1042,6 @@ function VirtualizedList({ items }) {
 
 ### Window vs Viewport
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 - **Window**: The scrollable container
 - **Overscan**: Extra rows rendered above/below viewport (prevents white flash during fast scroll)
@@ -1834,38 +1054,8 @@ This pattern is commonly used in production systems.
 
 ## 14. Profiling with React DevTools
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Flame Graph Interpretation
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```mermaid
@@ -1893,21 +1083,6 @@ graph TD
 
 ### Wasted Render Detection
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 React DevTools > Components > Highlight updates when components render. Components that flash unnecessarily are wasting cycles.
 
@@ -1915,40 +1090,10 @@ React DevTools > Components > Highlight updates when components render. Componen
 
 ## 15. Bailout Heuristics
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 React can skip rendering a component in several ways. Understanding these is critical for performance debugging.
 
 ### Bailout 1: Same Element Reference
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 If render returns the exact same element reference, React bails out:
@@ -1964,21 +1109,6 @@ When `Parent` re-renders, if `children` reference hasn't changed, React skips th
 
 ### Bailout 2: Same State (Object.is)
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 If `setState(newState)` receives a value equal to current state (via `Object.is`), React skips rendering:
 
@@ -1988,21 +1118,6 @@ setCount(5); // If count is already 5 → bailout
 ```
 
 ### Bailout 3: Same Props (memo/PureComponent)
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```jsx
@@ -2017,40 +1132,10 @@ If `items` reference is unchanged (same array), `MemoChild` skips rendering.
 
 ### Bailout 4: Same Key
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 If a component's key hasn't changed AND its parent renders the same type at the same position, React reuses the existing instance.
 
 ### Bailout 5: Same Element Type
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 If `render()` returns the same element type at the same position, React updates the existing DOM node instead of creating a new one.
@@ -2058,21 +1143,6 @@ If `render()` returns the same element type at the same position, React updates 
 ---
 
 ## 16. Commit Phase Waterfalls
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```mermaid
@@ -2102,21 +1172,6 @@ sequenceDiagram
 
 ## 17. Passive Effects (useEffect) vs Layout Effects (useLayoutEffect)
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 | | useEffect | useLayoutEffect |
 |---|---|---|
@@ -2131,21 +1186,6 @@ This pattern is commonly used in production systems.
 ---
 
 ## 18. N+1 Render Problem
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Pattern**: Multiple sequential state updates that should be batched but aren't.
@@ -2182,21 +1222,6 @@ fetchPosts(userId).then(p => setPosts(p)); // Also batched
 
 ## 19. Automatic Batching in React 18 — Deep Dive
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 React 18 batches by default inside:
 - Event handlers
@@ -2222,21 +1247,6 @@ fetch('/api/data').then(() => {
 
 ## 20. flushSync — Opting Out
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```jsx
 import { flushSync } from 'react-dom';
@@ -2259,21 +1269,6 @@ function handleClick() {
 ---
 
 ## 21. Production Failure: Missing memo — 500ms Frame Drops
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Scenario**: A financial dashboard renders a table with 10,000 rows. Each row has 10 cells. Parent component re-renders every 5 seconds (data refresh).
@@ -2347,21 +1342,6 @@ const TableRow = memo(function TableRow({ row }) {
 
 ## 22. Backpressure: Synchronous Renders Blocking User Input
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **Scenario**: A search input that renders 500 results synchronously on every keystroke.
 
@@ -2421,38 +1401,8 @@ function Search() {
 
 ## 23. Profiling with Chrome DevTools
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Performance Tab Analysis
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 1. Record interaction
@@ -2461,21 +1411,6 @@ This pattern is commonly used in production systems.
 4. Check "Summary" -> "Rendering" -> "Scripting" time
 
 ### React DevTools Profiler
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```mermaid
@@ -2492,21 +1427,6 @@ flowchart LR
 ---
 
 ## 24. Wasted Render Detection Patterns
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```javascript
@@ -2542,21 +1462,6 @@ function useWhyDidYouUpdate(name, props) {
 
 ## 25. Rendering Patterns Comparison
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 | Pattern | Re-render scope | Setup complexity | Performance |
 |---|---|---|---|
@@ -2571,21 +1476,6 @@ This pattern is commonly used in production systems.
 ---
 
 ## 26. Mermaid: Full Render Pipeline
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```mermaid
@@ -2612,21 +1502,6 @@ flowchart TD
 
 ## 27. Large List Rendering — Optimization Matrix
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 | Technique | Time (10k items) | Time (100k items) | Scroll perf |
 |---|---|---|---|
@@ -2639,21 +1514,6 @@ This pattern is commonly used in production systems.
 ---
 
 ## 28. Production Failure: Index Key with List Prepending
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Real story**: A collaborative document editor (like Google Docs) renders a list of sections. Sections can be inserted at any position.
@@ -2682,21 +1542,6 @@ This pattern is commonly used in production systems.
 
 ## 29. React.memo with Deep Props
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```jsx
 // ❌ memo doesn't help if parent creates new objects
@@ -2720,21 +1565,6 @@ function Parent() {
 
 ## 30. Element Type Optimization
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```jsx
 // ❌ Causes full teardown/rebuild every toggle
@@ -2754,21 +1584,6 @@ Type change = React destroys entire DOM subtree and rebuilds. Always use same el
 
 ## 31. Mermaid: React.memo Decision Flow
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```mermaid
 flowchart TD
@@ -2785,21 +1600,6 @@ flowchart TD
 ---
 
 ## 32. Interview: Index Key O(n²) — Full Analysis
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Question**: "Explain in detail why index as key causes O(n²) behavior with list prepend."
@@ -2829,21 +1629,6 @@ This pattern is commonly used in production systems.
 
 ## 33. Performance Debugging Checklist
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 - [ ] Profiled with React DevTools — identified slow components
 - [ ] `React.memo` applied to leaf components with stable props
@@ -2862,42 +1647,12 @@ This pattern is commonly used in production systems.
 
 ## 34. Simplest Mental Model — Rendering
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 > **Render = running all component functions to produce the new VDOM tree. Reconciliation = diffing old tree vs new tree. Fiber = the work list for reconciliation, split into interruptible units. Commit = actually poking the DOM. Memo = skip rendering if inputs look the same. Virtualization = only render what's on screen.**
 
 ---
 
 ## 35. Quick Reference Table
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 | Technique | Problem Solved | Cost |
@@ -2915,21 +1670,6 @@ This pattern is commonly used in production systems.
 ---
 
 ## 36. Mermaid: Fiber Tree Walk
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```mermaid
@@ -2952,21 +1692,6 @@ graph TD
 
 ## 37. When Not to Optimize
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 - Component renders in <1ms
 - Less than 50 instances on screen
@@ -2979,21 +1704,6 @@ This pattern is commonly used in production systems.
 ---
 
 ## 38. Production Checklist
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 - [ ] Bundle size < 250KB (gzipped) for initial load
@@ -3008,21 +1718,6 @@ This pattern is commonly used in production systems.
 ---
 
 ## Related
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 - [Networking](../../11-networking/) — HTTP, performance, optimization

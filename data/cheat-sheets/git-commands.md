@@ -4,21 +4,6 @@ Essential Git commands for daily development.
 
 ## Setup
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```bash
 git config --global user.name "Your Name"
@@ -27,21 +12,6 @@ git config --list                           # View all config
 ```
 
 ## Creating & Cloning
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```bash
@@ -52,21 +22,6 @@ git clone --depth 1 <url>                   # Shallow clone (faster)
 ```
 
 ## Basic Workflow
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```bash
@@ -84,21 +39,6 @@ git commit --amend --no-edit                # Amend without changing message
 
 ### Step-by-Step
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 1. **Modify files** in working directory (changes not tracked yet)
 2. **Stage changes** with `git add` to move them to the staging area (index)
@@ -108,21 +48,6 @@ This pattern is commonly used in production systems.
 6. **Pull before pushing** to handle any upstream changes and avoid conflicts
 
 ### Code Example
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```bash
@@ -184,40 +109,10 @@ git push -u origin feat/add-auth
 
 ### Real-World Scenario
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 At LinkedIn, a junior engineer committed a 50-line change modifying authentication, logging, and database schema in a single "Update auth" commit. During code review, a security vulnerability was found in the auth logic. Instead of reverting the entire commit (which would also lose the valid logging improvements), they had to surgically undo just the auth changes, breaking the commit history. A more atomic approach with separate commits for auth, logging, and schema would have allowed reverting just the vulnerable auth commit while keeping the other improvements.
 
 ### Workflow Diagram
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```mermaid
@@ -240,21 +135,6 @@ graph LR
 ---
 
 ## Viewing History
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```bash
@@ -281,21 +161,6 @@ git log -p <file>                           # Full history of file
 
 ## Branching
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```bash
 git branch                                  # List local branches
@@ -313,21 +178,6 @@ git switch -c <branch>                      # Create and switch (modern)
 
 ## Merging
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```bash
 git merge <branch>                          # Merge branch into current
@@ -342,21 +192,6 @@ git rebase --abort                          # Cancel rebase
 ```
 
 ## Remote Operations
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```bash
@@ -379,21 +214,6 @@ git fetch origin <branch>                   # Fetch specific branch
 
 ## Undoing Changes
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```bash
 git restore <file>                          # Discard changes in file
@@ -409,21 +229,6 @@ git checkout <commit> -- <file>             # Restore file from commit
 
 ## Stashing
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```bash
 git stash                                   # Save changes temporarily
@@ -436,21 +241,6 @@ git stash clear                             # Delete all stashes
 ```
 
 ## Tags
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```bash
@@ -466,21 +256,6 @@ git push origin :refs/tags/<tag-name>       # Delete remote tag
 
 ## Advanced
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```bash
 git cherry-pick <commit>                    # Apply specific commit to current branch
@@ -495,21 +270,6 @@ git rev-list --count HEAD                   # Count commits in current branch
 ```
 
 ## Useful Aliases
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 Add to `.gitconfig`:
@@ -529,38 +289,9 @@ Add to `.gitconfig`:
 
 ## Common Workflows
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Feature Branch Workflow
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 ```bash
 git checkout main
@@ -575,20 +306,6 @@ git push -u origin feature/my-feature
 
 ### Fix Last Commit Message
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 ```bash
 git commit --amend -m "new message"
@@ -597,20 +314,6 @@ git push origin <branch> --force-with-lease
 
 ### Undo Published Commit
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 ```bash
 git revert <commit-hash>
@@ -619,20 +322,6 @@ git push origin main
 
 ### Sync Fork with Upstream
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 ```bash
 git remote add upstream <original-repo-url>
@@ -643,21 +332,6 @@ git push origin main --force-with-lease
 ```
 
 ## Troubleshooting
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```bash
@@ -670,21 +344,6 @@ git log --all --oneline --graph             # Visualize all refs
 
 ## Comparison Table
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 | Aspect | Option A | Option B | Trade-off |
 | ---- | ---- | ---- | ---- |
@@ -694,21 +353,6 @@ This pattern is commonly used in production systems.
 | Cost | High | Low | Features vs Budget |
 
 ## Workflow
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```mermaid

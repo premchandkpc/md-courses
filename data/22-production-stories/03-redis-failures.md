@@ -7,7 +7,6 @@
 ---
 
 
-
 ```mermaid
 graph LR
     STAMPEDE_R["Cache Stampede"] --> KEY_EXPIRES["Key Expires<br/>(TTL=0)"]

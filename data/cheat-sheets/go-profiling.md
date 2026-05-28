@@ -6,21 +6,6 @@ Go performance profiling with pprof, tracing, escape analysis, and memory/CPU/go
 
 ## Quick Start
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```go
 import _ "net/http/pprof"   // register /debug/pprof/ handlers
@@ -39,21 +24,6 @@ go tool pprof http://localhost:6060/debug/pprof/allocs               # Memory (c
 ```
 
 ## pprof Interactive Commands
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```bash
@@ -77,21 +47,6 @@ go tool pprof -base base.prof new.prof   # Delta view
 
 ## CPU Profiling
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```bash
 # 30-second CPU profile
@@ -112,21 +67,6 @@ defer pprof.StopCPUProfile()
 ```
 
 ## Memory Profiling
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```bash
@@ -152,21 +92,6 @@ go tool pprof -base heap_start.prof heap_end.prof
 ```
 
 ## Goroutine Analysis
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```go
@@ -196,21 +121,6 @@ pprof.Lookup("goroutine").WriteTo(os.Stdout, 2)
 
 ## Block & Mutex Profiling
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```go
 import "runtime"
@@ -229,21 +139,6 @@ go tool pprof http://localhost:6060/debug/pprof/mutex
 ```
 
 ## Execution Tracer
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```go
@@ -275,21 +170,6 @@ go tool trace trace.out
 
 ## Benchstat
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```bash
 # Run benchmarks twice and compare
@@ -310,21 +190,6 @@ benchstat old.txt new.txt
 ```
 
 ## Escape Analysis
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```bash
@@ -354,21 +219,6 @@ go build -gcflags="-m -l" ./pkg 2>&1 | less
 ```
 
 ## Common Profile Workflows
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```bash
@@ -406,21 +256,6 @@ go tool pprof -http=:8080 block.prof
 
 ## Anti-Patterns
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 | Anti-Pattern | Why It Hurts | Fix |
 |-------------|-------------|-----|
@@ -434,21 +269,6 @@ This pattern is commonly used in production systems.
 | Not disabling inlining for `-m` output | Missing escape edges | Add `-l` flag with `-m` |
 
 ## Key Metrics
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 | Metric | Source | What It Tells |

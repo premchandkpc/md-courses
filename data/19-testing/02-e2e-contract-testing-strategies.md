@@ -1,7 +1,6 @@
 # E2E & Contract Testing Strategies
 
 
-
 ```mermaid
 graph LR
     E2E_STRAT["E2E Testing"] --> BROWSER_UI["Browser UI<br/>(Playwright/Cypress)"]

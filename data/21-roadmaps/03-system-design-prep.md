@@ -3,7 +3,6 @@
 > **Scope:** A comprehensive, battle-tested preparation guide for system design interviews at FAANG/top-tier companies. Covers the interview format, assessment criteria, the standard framework, common design patterns, database selection guide, consistency-availability tradeoff matrix, and the top 30 questions with difficulty ratings, key patterns, and black belt tradeoffs.
 
 
-
 ```mermaid
 graph TD
     REQ["Requirements<br/>Functional + Non-Functional"] --> ENT["Core Entities<br/>User, Tweet, Order, Video"]

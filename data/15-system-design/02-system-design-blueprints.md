@@ -1,7 +1,6 @@
 # 🏗️ System Design Blueprints — Complete Deep Dive
 
 
-
 ```mermaid
 graph LR
     URL_SHORT["URL Shortener"] --> KEY_GEN["Base62 Key Gen<br/>(7 chars = 3.5T)"]
@@ -36,20 +35,6 @@ graph LR
 
 ## 📋 Table of Contents
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 - [URL Shortener](#url-shortener)
 - [Chat System](#chat-system)
@@ -61,38 +46,8 @@ This pattern is commonly used in production systems.
 
 ## URL Shortener
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Requirements
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -107,21 +62,6 @@ Non-Functional:
 ```
 
 ### Key Generation
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```python
@@ -142,21 +82,6 @@ def snowflake_id(ts: int, dc: int, machine: int, seq: int) -> int:
 
 ### Redirect Flow
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```text
 Browser                          URL Shortener
@@ -170,21 +95,6 @@ Browser                          URL Shortener
 ```
 
 ### Data Model
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```sql
@@ -203,38 +113,8 @@ CREATE TABLE urls (
 
 ## Chat System
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Requirements
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -244,21 +124,6 @@ Scale: 500M DAU, 100B msg/day → ~1.2M msg/s peak
 ```
 
 ### Architecture
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -277,21 +142,6 @@ Reconnection: client sends last_message_id. Backpressure: drop if client lags.
 
 ### Message Flow
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```python
 def send_message(sender_id: str, receiver_id: str, content: str) -> Message:
@@ -309,21 +159,6 @@ def send_message(sender_id: str, receiver_id: str, content: str) -> Message:
 
 ### Group Chat Fanout
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```text
 Small Group (≤500) — Write Fanout:
@@ -337,21 +172,6 @@ WhatsApp: ≤256 = write fanout, >256 = read fanout. Inbox per user (time-ordere
 
 ### Presence Service
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```text
 Redis model:
@@ -364,21 +184,6 @@ Heartbeat 30s. No beat 90s→away, 300s→offline. Wait before marking offline (
 
 ### Message Ordering
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 - **Sequential ID per conversation**: Monotonic counter. Clients sort by ID.
 - **HLC**: Physical time + logical counter. Causal ordering without full vector clocks.
@@ -387,38 +192,8 @@ This pattern is commonly used in production systems.
 
 ## Video Streaming Service
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Encoding Pipeline
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -433,21 +208,6 @@ Raw Video ──┬─> 1080p ────┤
 ```
 
 ### HLS
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -466,21 +226,6 @@ medium.m3u8
 
 ### DASH
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```xml
 <MPD type="dynamic" availabilityStartTime="2025-05-27T00:00:00Z">
@@ -495,21 +240,6 @@ This pattern is commonly used in production systems.
 ```
 
 ### Adaptive Bitrate (ABR)
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```python
@@ -527,38 +257,8 @@ def select_bitrate(throughputs: list[float], bitrates: list[int],
 
 ## Rate Limiter
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Algorithms
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```python
@@ -601,21 +301,6 @@ Other algorithms: **Fixed Window** (burst at boundary), **Sliding Window Log** (
 
 ### Distributed Rate Limiting
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```text
 Single-node Redis + Lua: atomic INCR + PEXPIRE. SPOF but accurate.
@@ -624,21 +309,6 @@ Consistent hashing → user mapped to fixed limiter node. Exact per-node, rebala
 ```
 
 ### Headers & Layering
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```http
@@ -657,21 +327,6 @@ degraded response (stale data).
 
 ## Simplest Mental Model
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 > **These blueprints are specialized buildings to solve specific problems.**
 >
@@ -683,21 +338,6 @@ This pattern is commonly used in production systems.
 ---
 
 ## Code Examples
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```python
@@ -792,21 +432,6 @@ for i in $(seq 1 120); do curl -s -o /dev/null -w "%{http_code}\n" https://api.e
 
 ## Common Failure Modes
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **Problem**: Cache inconsistency in URL shortener — user gets 404 for valid short URLs
 
@@ -828,58 +453,13 @@ This pattern is commonly used in production systems.
 
 ## Interview Questions
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Q1: Walk through the design of a URL shortener at scale (100M URLs/month).
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Answer**: **Requirements**: Generate a 6-7 character key per URL, redirect to original URL, support custom aliases, and track analytics. Read:write ratio is 100:1. **Key generation**: Use Snowflake IDs (41-bit timestamp, 10-bit node, 12-bit sequence = 4096 IDs/sec per node). Encode with Base62 → 7 chars covers 3.5T URLs. **Storage**: Write to a SQL DB (sharded by key hash) and populate Redis cache. **Read path**: User hits `/abc123`. API gateway routes to a cache instance (consistent hashing). Cache hit → return 301. Cache miss → bloom filter check (fast reject if key doesn't exist). If bloom says possible, query DB → populate cache → return. **Write path**: POST /shorten → validate URL → generate unique ID → check for collision in cache bloom filter → write to DB → populate cache → return short URL. **Scale**: Redis cluster (20 nodes), DB sharded by key hash (10 MySQL instances), bloom filter rebuilt nightly from DB dump. CDN (CloudFront) at edge caches frequently accessed redirects. Analytics pipeline streams click events to a message queue → batch write to a data warehouse.
 
 ### Q2: How would you design a real-time chat system supporting 500M users?
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Answer**: **1-to-1 chat**: WebSocket connections from clients to a Gateway layer (Elastic Load Balancer routing by user hash). Gateway maintains a connection map (user_id → connection_id). Messages go through a Chat Service that writes to a message DB (Cassandra, keyed by conversation_id + message_id) and checks the Presence Service to see if receiver is online. If online, push via Gateway. If offline, send push notification. **Group chat**: For groups < 256 members, use write fanout — write one message to the group's timeline, then copy to each online member's inbox. For groups > 256, use read fanout — write once to group timeline, members pull (track last_read_id). **Presence**: Redis with heartbeat — each user sets a key with TTL, PUB/SUB notifies friends of status changes. **Ordering**: Use HLC (Hybrid Logical Clock) for causal ordering without vector clocks. **Scaling**: Each component horizontally scales. Gateway is stateless. Chat Service partitions by conversation hash. Message DB uses Cassandra (time-series model). Inbox is Redis sorted sets per user. **Delivery guarantees**: At-least-once with idempotency keys (message UUID). Gap detection: receiver tracks last_message_id and requests missing ones.

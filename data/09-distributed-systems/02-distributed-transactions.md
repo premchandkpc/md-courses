@@ -3,7 +3,6 @@
 > **Scope**: Two-Phase Commit (2PC) protocol and failure modes, Three-Phase Commit (3PC) non-blocking properties, Saga patterns (choreography vs orchestration), XA specification and Java transactions (JTA, JDBC XADataSource), TCC (Try-Confirm-Cancel), Outbox pattern with CDC (Debezium, Kafka Connect), practical pattern selection guide.
 
 
-
 ```mermaid
 graph LR
     COORD["Transaction<br/>Coordinator"] --> P1["Participant A<br/>(prepare → yes)"]
@@ -40,21 +39,6 @@ graph LR
 
 ## Table of Contents
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 1. Two-Phase Commit (2PC)
 2. 2PC Failure Modes
@@ -69,21 +53,6 @@ This pattern is commonly used in production systems.
 ---
 
 ## 1. Two-Phase Commit (2PC)
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -117,21 +86,6 @@ INSERT INTO tx_log (tx_id, state) VALUES ('txn-123', 'COMMITTED');
 
 ## 2. 2PC Failure Modes
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **Coordinator Crash in Phase 1:** Participants hold locks, blocked until coordinator recovers.
 
@@ -154,21 +108,6 @@ Heuristic Commit/Abort: unilateral decision by participant.
 ---
 
 ## 3. Three-Phase Commit (3PC)
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 3PC adds a timeout-based phase to avoid blocking.
@@ -197,21 +136,6 @@ Coordinator                 Coordinator               Coordinator
 ---
 
 ## 4. Saga: Choreography Pattern
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 Saga: long-lived business transaction decomposed into local transactions with compensating actions.
@@ -268,21 +192,6 @@ public class OrderSagaHandler {
 
 ## 5. Saga: Orchestration Pattern
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **Orchestrator (Saga Execution Coordinator):** Central state machine that tells each participant what to do.
 
@@ -325,21 +234,6 @@ class SagaOrchestrator:
 ---
 
 ## 6. XA Transactions & JTA
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **X/Open XA Standard:** Distributed transaction coordination across multiple resource managers.
@@ -388,21 +282,6 @@ xaRes.commit(xid, false);
 
 ## 7. TCC: Try-Confirm-Cancel
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 Three-phase protocol for resource reservation.
 
@@ -438,21 +317,6 @@ public interface PaymentTccService {
 ---
 
 ## 8. Outbox Pattern & CDC
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 Write domain event in the same DB transaction as the business change. Separate process publishes events reliably.
@@ -499,21 +363,6 @@ Debezium reads PostgreSQL WAL, streams changes to Kafka via Kafka Connect. Avoid
 
 ## 9. Distributed Transaction Pattern Guide
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 | Requirement | Best Pattern | Why |
 |---|---|---|
@@ -537,79 +386,19 @@ Latency / Scalability:
 
 ## Simplest Mental Model
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **2PC is like asking everyone to promise before telling them to go — if anyone says no, nobody moves.** Everyone waits until they hear the final decision. **Saga is the opposite:** do each step, and if one fails, run cleanup for the ones that succeeded. **Outbox ensures events aren't lost** by writing them in the same DB transaction as the business change. Pick 2PC for strict atomicity; Saga for long-running flows where perfect consistency isn't required.
 
 
 ## Practical Example
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 See code examples above for practical usage patterns.
 
 ## Production Failure Modes
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Failure 1: Coordinator Crash During 2PC — Orphaned Resources
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 | Aspect | Detail |
@@ -622,21 +411,6 @@ This pattern is commonly used in production systems.
 
 ### Failure 2: Saga Compensation Failure — Partial Success Can't Be Undone
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 | Aspect | Detail |
 |--------|--------|
@@ -647,21 +421,6 @@ This pattern is commonly used in production systems.
 | **Prevention** | Implement retry with exponential backoff for compensations. Design idempotent compensations (cancelling an already-cancelled booking is safe). Add timeout: after 10 retry failures, escalate to manual intervention. Use saga log (event store) to determine exact compensation actions needed |
 
 ### Failure 3: Outbox Polling Data Loss
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 | Aspect | Detail |
@@ -674,21 +433,6 @@ This pattern is commonly used in production systems.
 
 ### Failure 4: TCC Cancel Called Without Try
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 | Aspect | Detail |
 |--------|--------|
@@ -699,21 +443,6 @@ This pattern is commonly used in production systems.
 | **Prevention** | TCC Cancel and Confirm must be idempotent. Use transaction_id as key for dedup. Delay Cancel invocation: add 5-second grace period before sending Cancel. Use AT-least-once delivery for Cancel with dedup |
 
 ### Failure 5: XA Transaction Timeout Mismatch
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 | Aspect | Detail |
@@ -726,21 +455,6 @@ This pattern is commonly used in production systems.
 
 ## Edge Cases
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 | Scenario | Challenge | Solution |
 |----------|-----------|----------|
@@ -752,138 +466,33 @@ This pattern is commonly used in production systems.
 
 ## Interview Questions
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Q1 (Beginner): What is the difference between 2PC and Saga?
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Answer**: 2PC (Two-Phase Commit) is a synchronous, blocking protocol: Phase 1 asks all participants to prepare (vote), Phase 2 commits if all voted yes. Participants hold locks during prepare. If the coordinator crashes, participants are stuck with locks held. Saga is an asynchronous, compensating pattern: each step in a saga has a compensating action. If step 3 fails, the saga runs compensation for steps 2 and 1. Sagas don't hold locks between steps — each step commits its work immediately. 2PC is ACID (atomic, consistent), Sagas are BASE (basically available, soft state, eventually consistent). Use 2PC when consistency is critical and participants are fast (same data center). Use Saga when transactions are long-lived or span services.
 
 ### Q2 (Mid-Level): Design the Outbox Pattern for a payment service that needs to publish events to Kafka.
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **Answer**: On payment creation, the service does: (1) BEGIN TRANSACTION. (2) INSERT INTO payments (id, amount, status). (3) INSERT INTO outbox (event_id, aggregate_type, aggregate_id, event_type, payload, created_at). (4) COMMIT. A separate poller/Debezium reads the outbox table and publishes to Kafka. Debezium approach: uses PostgreSQL WAL (logical replication slot). When the outbox row is committed, Debezium captures the change. Kafka Connect sinks the change to a Kafka topic. This guarantees exactly-once capture: DB commit and outbox write are atomic (same transaction). Consumer receives the event and processes it. Consumer acknowledges: offset commit or at-least-once delivery. For exactly-once delivery to consumer, use idempotent processing: consumer tracks processed event_ids in a dedup table. Outbox table is compacted (DELETE old rows) to prevent unbounded growth. TTL: clean up rows older than 7 days.
 
 ### Q3 (Senior): How does Spanner achieve external consistency (linearizability) across global data centers?
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Answer**: Spanner uses TrueTime, a synchronized clock API backed by GPS and atomic clocks. TrueTime returns an interval [earliest, latest] — the true time is guaranteed to be within this interval. The interval is typically < 10ms. For a write, Spanner assigns a timestamp TT.now().latest (end of the TrueTime interval). For a read, Spanner ensures it reads at a timestamp >= TT.now().latest, guaranteeing it sees all writes committed before the read. This eliminates the "stale read" problem. For distributed transactions across regions, Spanner uses two-phase commit with leader leases and Paxos for each tablet. The commit timestamp is chosen using TrueTime to ensure causality: if transaction A happens-before transaction B, A's timestamp < B's timestamp. This gives external consistency (linearizability). Spanner is CP in the CAP theorem — it prioritizes consistency over availability during partitions. Latency: cross-region writes take 50-500ms depending on distance (RTT + Paxos). Reads from nearest replica can be fast (<10ms) if stale reads are acceptable.
 
 ### Q4 (Staff): Compare TCC, Saga, and 2PC for a travel booking system (flight + hotel + car rental).
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **Answer**: 2PC: Atomic, consistent, blocking. If the coordinator crashes after flight is booked, hotel and car are stuck in prepared state. All services must support XA. Lock contention could be hours. Not suitable for across-service transactions. TCC (Try-Confirm-Cancel): Each service exposes three endpoints: Try (reserve resource), Confirm (use it), Cancel (release). Try reserves the seat/room/car temporarily. Cancel releases if booking fails. Confirm finalizes when all Try succeed. TCC requires services to support reservation semantics (flight can hold a seat for 30 min). Good for short-lived resource reservations. Saga (choreography): Each service publishes events on completion. If hotel booking fails, flight service gets event and cancels flight. Compensation for each step. Best for multi-hour booking flows. Recommendation: Use TCC for the synchronous booking flow (all reservations held during user checkout), or Saga for async booking flow (email confirmation later). Never use 2PC across services. Use orchestrator Saga: one coordinator calls each service, knows the full flow, handles compensation. Easier to monitor and test. Consider CTM (Compensating Transaction Manager) from Java EE or Axon Framework.
 
 ### Q5 (Principal): Design a distributed transaction protocol that achieves serializability without 2PC blocking.
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **Answer**: Use Percolator (Google's protocol, used by TiDB). Percolator achieves ACID transactions across a distributed KV store without blocking coordinators. Key insight: use a distributed timestamp oracle (TSO) for monotonic timestamps, and a lock table stored alongside data. Transaction flow: (1) Read phase: read data + lock status. If lock exists, wait or clean stale lock. (2) Prewrite: write data to primary key with lock, write to secondary keys with pointers to primary. (3) Commit: write a write record at primary key's timestamp, release primary lock. Secondary locks cleaned asynchronously. Prewrite phase uses optimistic locking: if no lock conflict, proceed. If conflict, abort and retry. No locks are held across multiple participants simultaneously. The coordinator doesn't stay in critical path after prewrite. Conflict resolution: if a read encounters a lock, it checks if the lock's primary has been committed. If yes, the lock owner crashed, so the reader cleans up and retries. This is non-blocking because the reader never waits for the coordinator — it either finds committed data or cleans up stale locks. Scalability: TSO generates 2M timestamps/sec. Percolator used by Google F1 (ad serving DB) and TiDB. Tradeoff: Percolator requires a monotonic timestamp service (single point of failure without replication), and conflict resolution can cause cascading retries at high contention. Alternative: Calvin (FaunaDB) uses deterministic ordering of all transactions before execution — eliminates conflicts entirely but requires all participants to process transactions in same order.
 
 ## Cross-References
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 - [Distributed Storage](../03-distributed-storage.md) — Consistent hashing, quorum replication, gossip

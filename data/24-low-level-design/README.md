@@ -7,7 +7,6 @@ Low-level design (LLD) is the **detailed blueprint** of a software component —
 ---
 
 
-
 ```mermaid
 graph LR
     OOP["OOP Foundations"] --> ENCAP["Encapsulation<br/>(private state)"]

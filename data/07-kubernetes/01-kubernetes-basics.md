@@ -5,7 +5,6 @@
 ---
 
 
-
 ```mermaid
 graph LR
     API["API Server<br/>(kube-apiserver)"] --> ETCD["etcd<br/>(Cluster State)"]

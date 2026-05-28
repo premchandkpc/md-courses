@@ -5,7 +5,6 @@
 > **Related**: [01-cap-consistency.md](./01-cap-consistency.md) | [04-distributed-transactions.md](./04-distributed-transactions.md)
 
 
-
 ```mermaid
 graph LR
     APP["Application"] --> CACHE["Distributed<br/>Cache"]
@@ -41,21 +40,6 @@ graph LR
 
 ## Table of Contents
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 1. Caching Strategies
 2. Cache Eviction Policies
@@ -75,21 +59,6 @@ This pattern is commonly used in production systems.
 ---
 
 ## 1. Caching Strategies
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -151,21 +120,6 @@ Refresh-Ahead:
 ---
 
 ## 2. Cache Eviction Policies
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **LRU (Least Recently Used):**
@@ -251,21 +205,6 @@ Caffeine Architecture:
 
 ## 3. Redis Cluster Internals
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **Hash Slot:** 16384 slots total. Key -> CRC16(key) % 16384 -> slot.
 
@@ -312,21 +251,6 @@ redis-cli --cluster reshard <host>:<port>
 
 ## 4. Memcached Internals
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **Slab Allocator:** Prevents memory fragmentation by allocating slabs (1MB chunks) divided into slab classes with fixed chunk sizes.
 
@@ -359,21 +283,6 @@ Each slab class = N slabs (1MB) -> N * (chunk size) items per slab.
 ---
 
 ## 5. Cache Invalidation Patterns
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Explicit Delete/Invalidate:** On write to DB, delete corresponding cache key. Next read triggers cache miss and fresh load. Simplest and most reliable.
@@ -409,21 +318,6 @@ Real-time invalidation without application awareness. Used at scale for cross-se
 ---
 
 ## 6. Caching at Scale
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Netflix EVCache (memcached-based):**
@@ -479,21 +373,6 @@ Cache miss (TTL > staleness_tolerance):
 ---
 
 ## 7. Consistent Hashing & Variants
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -552,21 +431,6 @@ Classic Consistent Hashing Ring:
 
 ## 8. Cache Stampede / Thundering Herd
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **Problem:** Cache for popular key expires. Hundreds of concurrent requests all miss -> all hit DB simultaneously. DB overload, cascading failures.
 
@@ -621,21 +485,6 @@ Lock must be unique (prevents same-key unlocking across requests). TTL on lock p
 
 ## 9. Strategy Comparison
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 | Strategy | Read Latency | Write Latency | Stale Reads | Implementation Complexity |
 |----------|-------------|---------------|-------------|-------------------------|
@@ -648,21 +497,6 @@ This pattern is commonly used in production systems.
 ---
 
 ## 10. Cache Size Estimation
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Working Set Estimation:**
@@ -696,21 +530,6 @@ Goal: operate on the "knee" of the curve (diminishing returns).
 
 ## 11. Cache Monitoring
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **Key Metrics:**
 - **Hit Ratio:** `hits / (hits + misses)`. Target > 90%.
@@ -737,21 +556,6 @@ redis-cli SLOWLOG GET 10
 ---
 
 ## 12. Failure Modes
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Cache Node Down -> Request Storm to DB:**
@@ -797,21 +601,6 @@ Solutions:
 
 ## 13. Atomic Operations in Redis
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **Redis Pipeline:**
 ```text
@@ -848,21 +637,6 @@ Preferred over MULTI/EXEC for complex operations.
 ---
 
 ## 14. Cache-DB Consistency
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Dual Write Problem:** Application writes to both DB and cache. If one fails, they diverge.
@@ -906,21 +680,6 @@ Atomic DB update + outbox write in same transaction. CDC ensures cache update ev
 ---
 
 ## Simplest Mental Model
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Caching is like a whiteboard next to your filing cabinet.** You write popular files' contents on the whiteboard (cache) so you don't have to open the filing cabinet (DB) every time. The challenge is keeping the whiteboard updated when the filing cabinet changes — you either update both simultaneously (write-through), or let the whiteboard expire and re-fetch (TTL), or erase the whiteboard entry when you change the file (invalidate). The hard part is doing this in a distributed system without everyone overcrowding the filing cabinet at once (cache stampede).

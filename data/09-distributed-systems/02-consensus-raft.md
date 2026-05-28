@@ -5,7 +5,6 @@
 > **Related**: [01-cap-consistency.md](./01-cap-consistency.md) | [04-distributed-transactions.md](./04-distributed-transactions.md)
 
 
-
 ```mermaid
 graph LR
     STATES["Raft Server States"] --> F["Follower<br/>(Default)"]

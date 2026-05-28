@@ -1,7 +1,6 @@
 # 📡 HTTP & Application Protocols — Complete Deep Dive
 
 
-
 ```mermaid
 graph LR
     H1["HTTP/1.1"] --> REQ_RES["Request / Response<br/>(Text-based)"]

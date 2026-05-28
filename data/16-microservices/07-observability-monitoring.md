@@ -5,7 +5,6 @@
 ---
 
 
-
 ```mermaid
 graph LR
     THREE_PILLARS["Three Pillars<br/>of Observability"] --> METRICS_O["Metrics<br/>(aggregate)"]
@@ -47,21 +46,6 @@ graph LR
 
 ## 📑 Table of Contents
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 - [1. Three Pillars](#1-three-pillars)
 - [2. OpenTelemetry](#2-opentelemetry)
@@ -74,21 +58,6 @@ This pattern is commonly used in production systems.
 ---
 
 ## 1. Three Pillars
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -110,38 +79,8 @@ This pattern is commonly used in production systems.
 
 ## 2. OpenTelemetry
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Architecture
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -154,21 +93,6 @@ This pattern is commonly used in production systems.
 ```
 
 ### Collector Configuration
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```yaml
@@ -234,21 +158,6 @@ service:
 
 ### Auto-Instrumentation (Java)
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```bash
 # Java — attach agent
@@ -262,21 +171,6 @@ java -javaagent:opentelemetry-javaagent.jar \
 ```
 
 ### Sampling
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -295,21 +189,6 @@ Rate Limiting  ── Max spans/second
 
 ### W3C Trace Context Propagation
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```text
 Trace:       00-0af7651916cd43dd8448eb211c80319c-b7ad6b7169203331-01
@@ -321,38 +200,8 @@ Trace:       00-0af7651916cd43dd8448eb211c80319c-b7ad6b7169203331-01
 
 ## 3. Distributed Tracing
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Span Lifecycle
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```java
@@ -379,21 +228,6 @@ try (Scope scope = span.makeCurrent()) {
 
 ### Span Attributes
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```text
 Kind:      SERVER | CLIENT | PRODUCER | CONSUMER | INTERNAL
@@ -411,21 +245,6 @@ Trace flow (waterfall):
 ```
 
 ## 4. Structured Logging
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```yaml
@@ -459,38 +278,8 @@ MDC.clear();
 
 ## 5. Metrics & SLOs
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### RED Method (Services)
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -501,21 +290,6 @@ Duration: latency distribution (p50, p95, p99)
 
 ### USE Method (Infrastructure)
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```text
 Utilization:   CPU / memory / disk busy %
@@ -524,21 +298,6 @@ Errors:        hardware or OS errors
 ```
 
 ### Four Golden Signals (Google SRE)
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -549,21 +308,6 @@ This pattern is commonly used in production systems.
 ```
 
 ### SLO / Error Budget / Burn Rate
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -581,21 +325,6 @@ Alerting:
 ```
 
 ### Metric Types
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```java
@@ -627,21 +356,6 @@ summary.record(order.getTotal());
 
 ### Cardinality Warning
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```text
 Tags:    { service, method, status_code, region, instance_id }  ✅ OK
@@ -653,21 +367,6 @@ Limit: < 100,000 series per service is safe
 ```
 
 ## 6. Grafana
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```yaml
@@ -702,21 +401,6 @@ panels:
 **Variables**: `$service`, `$region`, `$environment` — dropdown filters. **Annotations**: deploy markers, incident timelines on panels. **Unified Alerting**: `group_wait: 30s`, `group_interval: 5m`, `repeat_interval: 4h`. **Explore**: ad-hoc PromQL/Loki/ Tempo queries.
 
 ## 7. Prometheus
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```yaml

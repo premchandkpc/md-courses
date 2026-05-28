@@ -5,7 +5,6 @@
 ---
 
 
-
 ```mermaid
 graph LR
     PROD["Producer"] --> TOPIC["Topic<br/>(Logical Stream)"]

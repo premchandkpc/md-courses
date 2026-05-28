@@ -4,21 +4,6 @@
 
 ## Layer 1: Beginner Mental Model
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **Analogy**: Like GPS navigation vs. "turn left here." GPS (GitOps) shows the destination (git), keeps you on track, and auto-corrects if you drift. Manual kubectl is like someone shouting directions — easy to miss, hard to repeat, no audit trail.
 
@@ -34,38 +19,8 @@ This pattern is commonly used in production systems.
 
 ## Layer 4: Production Reality
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### GitOps/ArgoCD Failure Modes
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 | Failure | Symptoms | Root Cause | Fix |
@@ -79,21 +34,6 @@ This pattern is commonly used in production systems.
 | **Memory Leak in Repo Sync** | Argo pod memory 500MB → 1.5GB over 3 days | Watcher holds references to old manifests, doesn't GC | Restart Argo pod weekly, upgrade version |
 
 ### Production Incident: Stripe Payment Rollout Cascade (2019)
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Context**: Stripe migrated 1000s of microservices from Jenkins push-deploy to ArgoCD GitOps. During peak holiday traffic.
@@ -183,38 +123,8 @@ patchesJson6902:
 
 ## Layer 5: Staff Engineer Perspective
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Deployment Strategy Tradeoffs
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 | Strategy | TTF | RTO | Blast | Cost | Use Case |
@@ -226,21 +136,6 @@ This pattern is commonly used in production systems.
 | **GitOps Drift** | 0min | 3min (auto-detect) | None | Low | Safe, automatic, audited |
 
 ### Scaling Pattern: From 10 to 10000 Services
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Stage 1 (10 services)**:
@@ -276,21 +171,6 @@ This pattern is commonly used in production systems.
 
 ### High-Availability ArgoCD
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```
 ┌─────────────────────────────────────────────────┐
@@ -323,38 +203,8 @@ This pattern is commonly used in production systems.
 
 ## Layer 5: Interview Questions
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Level 1 (Junior Engineer)
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Q1: What's the difference between push-based and pull-based deployment?**
@@ -368,21 +218,6 @@ A: Every 3 minutes (configurable), ArgoCD fetches git repo, renders manifests, c
 - Expected: Mentions comparison, periodic checking
 
 ### Level 2 (Mid-Level Engineer)
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Q3: You have 100 services in one git repo. ArgoCD sync is slow (2 minutes). What's wrong?**
@@ -400,21 +235,6 @@ A: Sync waves ensure resources deploy in order. Wave 0 deploys first (e.g., data
 - Expected: Real example (migration then app, namespace then roles)
 
 ### Level 3 (Senior Engineer)
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Q5: Design GitOps strategy for 500 microservices across 3 regions. How do you prevent cascade failures?**
@@ -441,21 +261,6 @@ A:
 - Expected: Phased approach, parallel testing, rollback plan
 
 ### Level 4 (Staff Engineer)
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Q7: A competitor uses GitOps and reports 99.99% uptime. Your team is at 99.9%. What's the ROI of migrating?**
@@ -494,21 +299,6 @@ A:
 
 ## Architecture Overview
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```mermaid
 graph TB
@@ -523,20 +313,6 @@ graph TB
 
 ## Table of Contents
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 1. NOOB Explanation
 2. GitOps Principles
@@ -555,38 +331,8 @@ This pattern is commonly used in production systems.
 
 ## Section 1: NOOB Explanation - Git as Source of Truth
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### The Traditional Deployment Model (IMPERATIVE)
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -603,21 +349,6 @@ Problems:
 - **Unauditable**: no history of who changed what
 
 ### The GitOps Model (DECLARATIVE)
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -642,21 +373,6 @@ Benefits:
 
 ### Argo CD as the Sync Engine
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 Argo CD is a **pull-based** continuous deployment operator that:
 
@@ -675,38 +391,8 @@ Unlike push-based CI/CD (Jenkins pushes to cluster), Argo **pulls from git**:
 
 ## Section 2: GitOps Principles
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### The Five Principles
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Principle 1: Declarative Description**
@@ -832,38 +518,8 @@ Application: myapp
 
 ## Section 3: Argo CD Architecture Internals
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### High-Level Architecture
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -939,21 +595,6 @@ This pattern is commonly used in production systems.
 
 ### Application CRD Definition
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```yaml
 apiVersion: argoproj.io/v1alpha1
@@ -1022,21 +663,6 @@ spec:
 
 ### Sync Engine Algorithm
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```
 Reconciliation Loop (runs every 3 minutes):
@@ -1079,21 +705,6 @@ Reconciliation Loop (runs every 3 minutes):
 
 ### State Machine for Application
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```
 ┌────────────────┐
@@ -1131,38 +742,8 @@ This pattern is commonly used in production systems.
 
 ## Section 4: Progressive Delivery Strategies
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Blue-Green Deployment with Argo Rollouts
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```yaml
@@ -1259,21 +840,6 @@ Canary Deployment:
 ```
 
 ### Kustomization for Environment Promotion
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -1402,38 +968,8 @@ spec:
 
 ## Section 5: Large-Scale Multi-Cluster Systems
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Multi-Cluster Architecture
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -1517,21 +1053,6 @@ spec:
 
 ### GitOps PR Workflow for Production Changes
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```
 Developer's workflow:
@@ -1594,40 +1115,10 @@ Developer's workflow:
 
 ## Section 6: Zero-Downtime Deployment Strategies
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 Achieving zero-downtime deployments requires combining deployment strategies, traffic management, and observability.
 
 ### Blue-Green Deployments
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```mermaid
@@ -1688,21 +1179,6 @@ spec:
 ```
 
 ### Canary Deployments
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```yaml
@@ -1784,21 +1260,6 @@ spec:
 
 ### Rolling Deployments
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```yaml
 # Kubernetes-native rolling update
@@ -1861,21 +1322,6 @@ Rolling Update Behavior:
 
 ### A/B Testing Deployments
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```yaml
 # Istio VirtualService for A/B testing
@@ -1922,21 +1368,6 @@ spec:
 
 ### Feature Flags
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```typescript
 // LaunchDarkly feature flag integration
@@ -1963,21 +1394,6 @@ async function handler(req: Request, res: Response) {
 
 ### Deployment Strategies Comparison
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 | Strategy | Complexity | Rollback Speed | Traffic Control | Infra Cost | Use Case |
 |----------|-----------|----------------|----------------|------------|----------|
@@ -1989,21 +1405,6 @@ This pattern is commonly used in production systems.
 | **Feature Flags** | Medium | Instant (toggle off) | Per-user/group | Normal | Progressive rollout, kill switches |
 
 ### Deployment Safety & Rollback Strategies
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```yaml
@@ -2048,21 +1449,6 @@ Rollback Strategies:
 ```
 
 ### Deployment Windows & Safety
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```yaml
@@ -2109,38 +1495,8 @@ deployment_policy:
 
 ## Section 7: Failure Scenarios & Recovery
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Incident 1: Sync Stuck in "Syncing" State
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Symptom**: Argo shows "Syncing" for 30 minutes, manual sync also hangs
@@ -2197,21 +1553,6 @@ $ argocd app sync myapp --retry-limit 1
 
 ### Incident 2: Split Brain (Cluster & Git Diverged)
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **Symptom**: Application shows "OutOfSync" but manual changes were made, Argo keeps reverting
 
@@ -2262,21 +1603,6 @@ syncPolicy:
 ```
 
 ### Incident 3: Rollback Failure
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Symptom**: New deployment broken, reverted commit, but cluster still broken
@@ -2348,21 +1674,6 @@ $ kubectl logs <pod>  # check version
 
 ### Incident 4: Cascade Failure Across Clusters
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **Symptom**: Change to shared base causes deployment failures in 3 clusters
 
@@ -2420,38 +1731,8 @@ $ kustomize build overlays/dev | kubectl apply -f - --dry-run=client
 
 ## Section 8: Kustomize & Helm Integration
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Kustomize Patches & Overlays
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```yaml
@@ -2519,21 +1800,6 @@ patchesJson6902:
 
 ### Helm Integration
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```yaml
 # Application using helm chart from registry
@@ -2598,21 +1864,6 @@ spec:
 ```
 
 ### Helm Values Composition
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -2684,38 +1935,8 @@ spec:
 
 ## Section 9: Production Incidents
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Incident 1: Image Tag Immutability Issue
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Symptom**: Deployed `latest` tag, new version pushed but pods don't update
@@ -2770,21 +1991,6 @@ image: myapp@sha256:def456789abc...
 ```
 
 ### Incident 2: Secret Rotation Causing Crashes
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Symptom**: Secret rotated in vault, pods immediately start failing auth
@@ -2885,21 +2091,6 @@ spec:
 
 ### Incident 3: Namespace Deletion Race
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **Symptom**: Developer deleted namespace, ArgoCD immediately recreated it, data loss
 
@@ -2954,38 +2145,8 @@ $ argocd app sync myapp
 
 ## Section 10: Security & RBAC
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### RBAC Model in Argo CD
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```yaml
@@ -3058,21 +2219,6 @@ subjects:
 
 ### Git Credentials & SSH Keys
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```yaml
 # HTTPS with Personal Access Token
@@ -3115,21 +2261,6 @@ spec:
 ```
 
 ### Secret Management for App Secrets
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```yaml
@@ -3185,38 +2316,8 @@ spec:
 
 ## Section 11: Code Examples
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Complete Argo CD Setup
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```yaml
@@ -3360,21 +2461,6 @@ data:
 
 ## Section 12: Comparison Tables
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 | Feature | Argo CD | Flux | Helm |
 |---------|---------|------|------|
@@ -3391,21 +2477,6 @@ This pattern is commonly used in production systems.
 ---
 
 ## Section 13: Best Practices Checklist
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 - [ ] **Source of Truth**: All manifests in git, never kubectl apply to prod
@@ -3424,21 +2495,6 @@ This pattern is commonly used in production systems.
 ---
 
 ## Conclusion
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 Argo CD enables declarative, auditable, automated deployments at any scale. Master the pull model, progressive delivery strategies, and multi-cluster architectures to build robust GitOps systems.

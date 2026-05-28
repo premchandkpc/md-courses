@@ -6,21 +6,6 @@ JVM tuning for production Java applications: GC algorithms, flags, heap analysis
 
 ## Quick Diagnostics
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```bash
 # Running JVM
@@ -46,21 +31,6 @@ jcmd <pid> Thread.print             # Same via jcmd
 
 ## GC Algorithms
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 | GC | Flags (JDK 17+) | Pause | Throughput | Use Case |
 |----|----------------|-------|-----------|----------|
@@ -72,21 +42,6 @@ This pattern is commonly used in production systems.
 | Epsilon | `-XX:+UseEpsilonGC` | None | Max | No GC (short-lived tasks) |
 
 ## Critical JVM Flags
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```bash
@@ -118,21 +73,6 @@ This pattern is commonly used in production systems.
 
 ## Troubleshooting OOM
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```bash
 # Enable heap dump on OOM
@@ -151,21 +91,6 @@ jmap -histo:live <pid>               # Live objects histogram
 ```
 
 ## Flight Recorder (JFR)
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```bash
@@ -191,21 +116,6 @@ jfr flush /tmp/recording.jfr         # Force write buffers
 ```
 
 ## Thread Dump Analysis
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```bash
@@ -234,21 +144,6 @@ kill -3 <pid>                        # Sends to stdout (check -Xlog)
 
 ## jcmd Tool Reference
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 | Command | Purpose |
 |---------|---------|
@@ -266,21 +161,6 @@ This pattern is commonly used in production systems.
 | `jcmd <pid> GC.run_finalization` | Run finalization |
 
 ## Production Debugging Workflow
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```bash
@@ -306,21 +186,6 @@ jcmd <pid> VM.native_memory summary.diff
 
 ## Anti-Patterns
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 | Anti-Pattern | Why It Hurts | Fix |
 |-------------|-------------|-----|
@@ -335,21 +200,6 @@ This pattern is commonly used in production systems.
 | Over-allocating heap (>RAM) | Swapping, OOM killed | Leave 20-30% for OS |
 
 ## Key Metrics to Watch
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```bash

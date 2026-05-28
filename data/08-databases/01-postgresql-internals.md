@@ -175,7 +175,6 @@ Challenge: PostgreSQL must handle payment scale reliably.
 ---
 
 
-
 ```mermaid
 graph LR
     CONN["Client<br/>Connection"] --> POST["Postmaster<br/>(Fork Backend)"]
@@ -1076,7 +1075,6 @@ Index bloat:
 > **PostgreSQL is a giant ledger book. Multiple scribes (backend processes) write entries simultaneously, each with their own inkwell (memory). The buffer pool is the open book on the desk — frequently read pages stay on the desk, old pages go back to the shelf (disk). MVCC means nobody crosses out entries — they write a new line and mark the old one as outdated, so a scribe who started reading sees the old entry while a new one writing sees the new one. WAL is a diary: before making any change, a scribe writes in the diary first. If the book is destroyed (crash), you reconstruct from the diary. Vacuum is a clerk who periodically comes by, tears out outdated pages, and compacts the remaining ones. Autovacuum is the same clerk but on a timer — cleaning before the book overflows. Indexes are the tabbed dividers: B-tree is alphabetical tabs, GiST is spatial dividers for maps, GIN is the index at the back of a textbook. Every design choice in PostgreSQL prioritizes data safety and correctness first, then performance — because a mistake in a database loses facts, not just time.**
 
 
-
 ## Query Execution Flow: Step-by-Step
 
 ```
@@ -1119,7 +1117,6 @@ SELECT * FROM orders o
 WHERE o.created > '2024-01-01'
 JOIN items i ON o.item_id = i.id;
 ```
-
 
 
 ## Observability

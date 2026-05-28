@@ -5,7 +5,6 @@
 ---
 
 
-
 ```mermaid
 graph LR
     HCL["Terraform<br/>HCL Config"] --> INIT["terraform init<br/>(Provider Download)"]
@@ -28,21 +27,6 @@ graph LR
 ```
 
 ## Table of Contents
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 - [IaC: The Core Idea](#iac-the-core-idea)
@@ -81,21 +65,6 @@ This pattern is commonly used in production systems.
 
 ## IaC: The Core Idea
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 Infrastructure as Code is the practice of managing infrastructure through machine-readable definition files rather than manual processes or interactive UIs. The key properties:
 
@@ -123,38 +92,8 @@ Four categories of IaC tools:
 
 ## Terraform Deep Dive
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### HCL — HashiCorp Configuration Language
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 HCL is a declarative configuration language designed for infrastructure. It is JSON-compatible and supports expressions, functions, and dynamic blocks.
@@ -205,21 +144,6 @@ This builds a **dependency graph** that Terraform uses to determine the order of
 ---
 
 ### Core Execution Flow
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -289,21 +213,6 @@ If ami changes:
 ---
 
 ### Terraform State: Heart of the System
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 State is the single most critical concept in Terraform. It is the mapping between your config and real-world infrastructure.
@@ -402,21 +311,6 @@ With Locking:
 
 ### State Storage Backends
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **S3 Backend (most common):**
 
@@ -489,21 +383,6 @@ Consul uses CAS (Compare-And-Swap) on KV entries for locking. More resilient tha
 
 ### State Corruption & Recovery
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **Common corruption patterns:**
 
@@ -574,21 +453,6 @@ terraform state replace-provider \
 ---
 
 ### Provider Architecture
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 Providers are plugins that Terraform uses to manage resources. They translate Terraform's generic resource lifecycle into API calls.
@@ -670,21 +534,6 @@ service Provider {
 
 ### Provider Bugs & Incidents
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **Case Study: AWS Provider — Security Group Rule Ordering (2018-2020)**
 
@@ -760,21 +609,6 @@ Fix: Split VNet management by region.
 ---
 
 ### Modules: Composition & Versioning
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 Modules are the fundamental unit of composition in Terraform. Every Terraform config is a module (the root module). Modules can be called from local paths or registries.
@@ -875,21 +709,6 @@ Pattern 3: Service per Module
 
 ### Remote State & Data Sources
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 Sharing outputs between Terraform configurations:
 
@@ -948,21 +767,6 @@ Workaround for plan/apply drift:
 ---
 
 ### Workspaces & Multi-Environment
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 Workspaces allow multiple state files under the same configuration.
@@ -1056,21 +860,6 @@ environments/
 ---
 
 ### Drift Detection & Remediation
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 Drift occurs when real-world infrastructure differs from Terraform state.
@@ -1180,21 +969,6 @@ jobs:
 ---
 
 ### Secrets in IaC
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **The golden rule: NEVER store secrets in Terraform config or state.**
@@ -1328,21 +1102,6 @@ output "api_key" {
 ---
 
 ### Testing IaC: Static Analysis to Integration
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Testing pyramid for IaC:**
@@ -1504,21 +1263,6 @@ func TestConcurrentApplies(t *testing.T) {
 ---
 
 ### Terraform Production Incidents
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Incident 1: The State Corruption Cascade**
@@ -1728,38 +1472,8 @@ Fix:
 
 ## Pulumi: Programmable IaC
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Architecture & Automation API
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 Pulumi uses general-purpose programming languages instead of a domain-specific language (DSL). This enables loops, conditionals, abstractions, and testing patterns that are harder in HCL.
@@ -1882,21 +1596,6 @@ Request: "Create preview environment for PR #1234"
 
 ### Pulumi State & Secrets
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```
 State Backends:
@@ -1929,21 +1628,6 @@ Secrets:
 ---
 
 ### Comparison to Terraform
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 | Dimension | Terraform | Pulumi |
@@ -1986,38 +1670,8 @@ Pulumi wins:
 
 ## AWS CDK: Cloud Development Kit
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Constructs, Stacks, Synthesis
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 AWS CDK lets you define AWS infrastructure using familiar programming languages. It synthesizes to CloudFormation templates.
@@ -2115,21 +1769,6 @@ Deployment:
 
 ### CDKTF — CDK for Terraform
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 CDKTF (CDK for Terraform) brings the CDK programming model to Terraform providers:
 
@@ -2188,38 +1827,8 @@ cdktf Architecture:
 
 ## Large-Scale Org Patterns
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Monorepo vs Multi-Repo
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -2283,21 +1892,6 @@ Cons: Duplication, version pinning complexity, cross-repo refactoring harder, dr
 ---
 
 ### Terragrunt Deep Dive
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 Terragrunt is a thin wrapper that adds DRY configuration, remote state management, and CLI enhancements to Terraform.
@@ -2439,21 +2033,6 @@ terragrunt run-all terraform state list
 
 ### Atlantis: Pull Request Automation
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 Atlantis integrates IaC with GitHub/GitLab/Bitbucket by running `terraform plan` on PRs and `terraform apply` on comments.
 
@@ -2550,21 +2129,6 @@ Mitigation:
 
 ### Policy as Code: Sentinel, OPA, CrossGuard
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **Sentinel (HashiCorp, Terraform Enterprise):**
 
@@ -2638,21 +2202,6 @@ const policies = new PolicyPack("aws-security", {
 
 ## Cross-Tool Comparison
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 | Category | Terraform | Pulumi | AWS CDK |
 |----------|-----------|--------|---------|
@@ -2700,21 +2249,6 @@ Q5: Policy requirements?
 
 ## Failure Analysis Reference
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **Common failure modes and mitigations:**
 
@@ -2757,38 +2291,8 @@ Infrastructure as Code — PRD Checklist
 
 ## Interview Questions
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Beginner Level
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Q1: What is Infrastructure as Code (IaC) and why is it important?**
@@ -2808,21 +2312,6 @@ This pattern is commonly used in production systems.
 
 ### Intermediate Level
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **Q3: Explain Terraform's state management. What happens when state is corrupted or out of sync?**
 
@@ -2833,21 +2322,6 @@ This pattern is commonly used in production systems.
 **Answer**: Terraform builds a directed acyclic graph (DAG) of resource dependencies. Implicit dependencies via references: `aws_instance.web` referencing `aws_security_group.sg.id`. Explicit dependencies via `depends_on`. The graph determines: creation order (parents first), destruction order (reverse), and parallel execution (independent resources in parallel). `terraform graph` outputs DOT format for visualization. The DAG enables Terraform to: minimize wait time (parallel independent resources), correctly sequence dependent resources (SG before EC2), and optimize destroy operations.
 
 ### Senior Level
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Q5: Your Terraform apply fails with "Error: Failed to acquire state lock". Another engineer is on PTO. What do you do?**
@@ -2862,21 +2336,6 @@ This pattern is commonly used in production systems.
 
 ### Staff/Principal Level
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **Q7: Your Terraform code has 5,000+ resources. A single `terraform plan` takes 30 minutes. Your developers are frustrated. Design a solution.**
 
@@ -2889,21 +2348,6 @@ This pattern is commonly used in production systems.
 **Answer**: 1) **Encrypt at rest**: S3 bucket with SSE-S3 (AES-256) or SSE-KMS. 2) **Encrypt in transit**: HTTPS for all API calls. 3) **Access control**: S3 bucket policy with `deny` for non-authorized roles. DynamoDB table for locking with restricted access. 4) **Sensitive values**: use Terraform's `sensitive = true` attribute (hides from CLI output, masks in logs). 5) **Secret management**: don't store secrets in state — use Vault/Secrets Manager/SSM Parameter Store with `data.aws_secretsmanager_secret`. 6) **Audit**: S3 access logs for state file reads. CloudTrail for `GetObject` on state bucket. 7) **State file backup**: versioning enabled on S3 bucket. 8) **Alternative**: Terraform Cloud (state encrypted, RBAC-controlled, no direct access).
 
 ### Tricky Edge Cases
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Q9**: Terraform reports "Resource already exists" but the resource is NOT in your state file. How did this happen and how do you fix it?

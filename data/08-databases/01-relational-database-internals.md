@@ -1,7 +1,6 @@
 # 🗄️ Relational Database Internals — Complete Deep Dive
 
 
-
 ```mermaid
 graph LR
     BTREE["B+Tree<br/>Index Structure"] --> ROOT["Root Node<br/>(Page N)"]
@@ -34,20 +33,6 @@ graph LR
 
 ## Table of Contents
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 1. [Storage Engines](#storage-engines)
 2. [B+tree Internals](#btree-internals)
@@ -61,21 +46,6 @@ This pattern is commonly used in production systems.
 ---
 
 ## Storage Engines
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -98,38 +68,8 @@ This pattern is commonly used in production systems.
 
 ## B+tree Internals
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Page Structure (PostgreSQL 8KB pages)
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -142,21 +82,6 @@ This pattern is commonly used in production systems.
 ```
 
 ### Internal vs Leaf Nodes
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -183,21 +108,6 @@ This pattern is commonly used in production systems.
 
 ### Split/Merge
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```python
 def btree_insert(tree, key, value):
@@ -220,21 +130,6 @@ def btree_delete(tree, key):
 ```
 
 ### Buffer Pool
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```python
@@ -263,21 +158,6 @@ class BufferPool:
 
 ## LSM-tree Internals
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```text
 Write Buffer → flush → L0 SST (overlapping keys)
@@ -296,42 +176,12 @@ Write Buffer → flush → L0 SST (overlapping keys)
 
 ### Compaction Strategies
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **Size-tiered (Cassandra):** N SSTables → compact → larger SST → next level. Triggers at file count threshold.
 
 **Leveled (LevelDB/RocksDB):** L0 overlapping, L1+ non-overlapping, 10x size ratio per level. Write amp ~10-40x, better space amp.
 
 ### Bloom Filter
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```python
@@ -355,38 +205,8 @@ No false negatives, configurable false positive rate (~0.1-5%).
 
 ## Indexing
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Primary vs Secondary
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 - **Clustered** (InnoDB): Data stored in index order (table = index)
@@ -418,38 +238,8 @@ CREATE INDEX idx_lower ON users (LOWER(email));
 
 ## Transaction Management
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### ACID
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 - **Atomicity**: All-or-nothing via WAL + UNDO
@@ -458,21 +248,6 @@ This pattern is commonly used in production systems.
 - **Durability**: Committed data survives crashes
 
 ### Isolation Levels
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -486,21 +261,6 @@ SERIALIZABLE       Safe        Safe            Safe
 ---
 
 ## MVCC
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 Each transaction sees the database as of its snapshot time. PostgreSQL tracks via XMIN/XMAX in tuple header:
@@ -526,21 +286,6 @@ def is_visible(tuple, snapshot):
 
 ## Concurrency Control
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **2PL (Two-Phase Locking):** Growing phase (acquire locks) → shrinking phase (release). SS2PL: hold all locks until commit.
 
@@ -553,21 +298,6 @@ This pattern is commonly used in production systems.
 ---
 
 ## Simplest Mental Model
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -588,21 +318,6 @@ WAL    = black box recorder for writes
 ---
 
 ## Code Examples
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```python
@@ -683,21 +398,6 @@ class WriteAheadLog:
 
 ## Common Failure Modes
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **Problem**: Index bloat from dead tuples and MVCC overhead
 
@@ -719,58 +419,13 @@ This pattern is commonly used in production systems.
 
 ## Interview Questions
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Q1: How does MVCC work in PostgreSQL versus MySQL InnoDB, and what are the trade-offs?
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Answer**: PostgreSQL stores old tuple versions in the same data page (dead tuples). Visibility is determined by comparing XMIN/XMAX in the tuple header against the transaction snapshot. This means no separate undo storage, but creates bloat that VACUUM must clean. InnoDB stores old versions in a separate undo tablespace (rollback segments), keeping the data page clean. This means no VACUUM equivalent, but undo logs grow large under long-running transactions. PostgreSQL's approach is better for read-heavy workloads (no undo lookup overhead), while InnoDB is better for write-heavy workloads (less bloat). PostgreSQL needs VACUUM tuning; InnoDB needs undo tablespace management.
 
 ### Q2: How would you implement ACID transactions across a distributed database?
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Answer**: Implement a two-phase commit (2PC) protocol or use a consensus-based approach. In 2PC, a coordinator asks all participants to PREPARE (write WAL, make data durable but uncommitted). If all PREPARE succeeds, the coordinator sends COMMIT; otherwise, it sends ABORT. The failure mode is the coordinator crashing after PREPARE but before COMMIT — participants hold locks until recovery. Modern distributed databases like Spanner use TrueTime (clock synchronization) + Paxos for external consistency. CockroachDB uses a combination of Raft for replication and a transaction coordinator with MVCC timestamps. The key trade-off is between consistency guarantees and latency — synchronous replication across multiple datacenters adds significant latency.

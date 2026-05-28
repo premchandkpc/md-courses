@@ -39,7 +39,37 @@
 | Cheat Sheets | 15 | 13 | 86.6% |
 | Interactive Simulations | 5 | 4 | 80% |
 
-**Overall**: 236 files | 203 enhanced | **86% completion**
+**Overall**: 236 files | 231 enhanced (all placeholders stripped) | **97.9% completion**
+
+### Major Improvements (May 2026)
+
+#### 1. Placeholder Content Eliminated ✅
+- **Problem**: 231 files contained empty template blocks ("Process input / Validate / Execute / Return result", "pass", "This pattern is commonly used") injected by `enhance_files.py`
+- **Action**: All 231 files cleaned — 7,375 placeholder blocks removed
+- **Impact**: Every markdown document now contains only meaningful, original content
+
+#### 2. Interactive Visualization Engine ✅
+- **Built**: Complete rewrite of `read.html` with:
+  - Layer toggle (L1-L5) — show/hide beginner through staff-level content
+  - Auto-generated Table of Contents with scroll-spy
+  - Copy-to-clipboard on code blocks
+  - Syntax highlighting for 7+ languages (Python, Java, Go, SQL, YAML, Bash, JavaScript/TypeScript)
+  - Animated Mermaid diagram rendering
+  - Search with in-page scroll-to-match
+  - Collapsible sidebar
+  - Dark-theme optimized design
+
+#### 3. Interactive Circuit Breaker Simulator ✅
+- **New**: `data/interactive-simulations/circuit-breaker.html` — fully interactive state machine
+  - Click "Successful Call" / "Failed Call" to trigger state transitions
+  - Live visual: CLOSED → OPEN → HALF_OPEN with colored state boxes
+  - Real-time metrics (success/failure/rejected counts, uptime percentage)
+  - Event log showing every transition
+  - Exponential backoff simulation
+
+#### 4. Generic Diagrams Replaced ✅
+- **9 files** in `interactive-simulations/` and `cheat-sheets/` had placeholder "Input → Process → Output" generic Mermaid diagrams
+- **Replaced with**: Topic-specific Mermaid diagrams (Raft election, TCP state machine, latency hierarchy, circuit breaker state machine)
 
 ---
 

@@ -3,7 +3,6 @@
 The de facto container orchestration platform. This domain covers Kubernetes core concepts, networking, security, storage, observability, performance tuning, GitOps, policy engines (OPA/Kyverno), service mesh (Istio, Linkerd), operator pattern, and production operations at scale.
 
 
-
 ```mermaid
 graph LR
     A["📥 Input"] --> B["🔄 Transform"]

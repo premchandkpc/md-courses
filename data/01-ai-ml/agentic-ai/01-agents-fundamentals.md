@@ -2666,7 +2666,6 @@ class AgentFrameworkSelector:
 - [Performance Engineering](../../18-performance-engineering/) — Model optimization
 
 
-
 ## Real-World Agent Example: Customer Support Bot
 
 ```javascript

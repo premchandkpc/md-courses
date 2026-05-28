@@ -1,7 +1,6 @@
 # 🎯 NoSQL Databases — Complete Deep Dive
 
 
-
 ```mermaid
 graph LR
     KV["Key-Value<br/>(Redis/Dynamo)"] --> HASH_R["Hash Partition<br/>→ O(1) Lookup"]
@@ -29,20 +28,6 @@ graph LR
 
 ## Table of Contents
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 1. [NoSQL Taxonomy](#nosql-taxonomy)
 2. [DynamoDB Internals](#dynamodb-internals)
@@ -55,21 +40,6 @@ This pattern is commonly used in production systems.
 
 ## NoSQL Taxonomy
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```text
 Key-Value → Redis, DynamoDB, Riak, Etcd
@@ -80,21 +50,6 @@ Search    → Elasticsearch, Meilisearch, Typesense, Solr
 ```
 
 ### CAP Tradeoffs
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -108,38 +63,8 @@ AP (Available + Partition-tolerant):
 
 ## DynamoDB Internals
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Data Model
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -151,21 +76,6 @@ Table: Orders
 ```
 
 ### Partitioning
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -180,21 +90,6 @@ WCU: 1 WCU = 1KB standard, 0.5KB transactional
 
 ### Streams & DAX
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```text
 DynamoDB Stream → Shards → Kinesis Adapter → Lambda/App
@@ -207,58 +102,13 @@ DAX (Accelerator): write-through cache → microsecond reads
 
 ## MongoDB Internals
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Document Model (BSON)
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 BSON: binary JSON with native types (Date, ObjectId, Decimal128). Max doc size: 16MB.
 
 ### WiredTiger Storage
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -271,21 +121,6 @@ Disk:   Checkpoint (consistent snapshot) + Journal (WAL)
 
 ### Replication (Replica Set)
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```text
 Primary (all writes, oplog) → Secondary (replicate oplog)
@@ -296,21 +131,6 @@ Optional: Arbiter (vote only, no data)
 **Oplog:** Capped collection. Idempotent operations. Election by majority.
 
 ### Sharding
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -323,21 +143,6 @@ mongos (router) → Config Servers (metadata, RS of 3)
 **Shard key types:** Range (physical proximity), Hashed (even distribution), Zone (geographic).
 
 ### Aggregation Pipeline
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```js
@@ -356,38 +161,8 @@ db.orders.aggregate([
 
 ## Cassandra Internals
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Data Model
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```sql
@@ -399,21 +174,6 @@ Row key `electronics|US` → partition. Clustering: `product_id ASC, created_at 
 
 ### Partitioner & VNodes
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```python
 def partition(key):
@@ -424,40 +184,10 @@ def partition(key):
 
 ### Gossip
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 Every 1s: pick random peer, exchange state (generation, version, heartbeat). Last-writer-wins merge.
 
 ### Read Path
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -470,21 +200,6 @@ Coordinator → digest from QUORUM replicas
 
 ### Tombstones
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```python
 # Delete = insert tombstone marker
@@ -495,21 +210,6 @@ def delete(pk, ck):
 Tombstones survive `gc_grace_seconds` (default 10 days). Compaction removes them after that.
 
 ### Consistency Levels
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -526,38 +226,8 @@ UPDATE products SET price = 200 WHERE id = 1 IF price = 100;
 
 ## Elasticsearch Internals
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Inverted Index
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -576,21 +246,6 @@ Each posting: doc_id + term frequency + positions
 
 ### Segment Structure
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```text
 Index → Shard → Segments (immutable)
@@ -606,40 +261,10 @@ Merge: combine small segments → delete old
 
 ### Cluster State
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 Metadata on all nodes: index settings, mappings, routing, allocation. Only master updates it. Published via Zen Discovery.
 
 ### Query DSL
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```json
@@ -662,21 +287,6 @@ This pattern is commonly used in production systems.
 
 ### BM25 Scoring
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```python
 def bm25(tf, doc_len, avg_dl, num_docs, df):
@@ -689,21 +299,6 @@ def bm25(tf, doc_len, avg_dl, num_docs, df):
 ---
 
 ## Simplest Mental Model
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -736,21 +331,6 @@ Elasticsearch = Google for your data
 ---
 
 ## Code Examples
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```python
@@ -802,21 +382,6 @@ results = db.events.aggregate(pipeline)
 
 ## Common Failure Modes
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **Problem**: Hot partition in DynamoDB throttling a subset of requests
 
@@ -838,79 +403,19 @@ This pattern is commonly used in production systems.
 
 ## Interview Questions
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Q1: How do you choose between DynamoDB, MongoDB, and Cassandra for a new project?
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Answer**: **DynamoDB** is best for AWS-native projects requiring single-digit-millisecond latency at any scale, with predictable access patterns and simple key-value or single-table design. Avoid it if you need complex queries, joins, or transactions across many items. **MongoDB** excels when you have flexible/document-shaped data, need ad-hoc queries, aggregations, and secondary indexes. Avoid it if you need strict consistency or very high write throughput. **Cassandra** is ideal for high-volume write-heavy workloads (time-series, IoT, event logging) where availability and partition tolerance matter more than consistency. Avoid it if you need joins, aggregations, or flexible query patterns — Cassandra requires query-driven data modeling.
 
 ### Q2: How does Elasticsearch achieve near-real-time search and what trade-offs does this involve?
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **Answer**: Elasticsearch achieves near-real-time (NRT) search by batching indexed documents into in-memory buffers. A refresh (default 1s) creates a new immutable segment from the buffer, making documents visible to search — but the segment is not yet fsynced to disk. A separate flush (triggered at 30min or 500MB) fsyncs the segment to disk and clears the translog. This design means recent writes can be lost if the node crashes before the flush. The trade-off: lower durability (1s window of potential data loss) in exchange for sub-second search visibility. For write-intensive workloads, increase the refresh interval to 30s for higher indexing throughput.
 
 
 ## Edge Cases
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 | Scenario | Challenge | Solution |
@@ -922,21 +427,6 @@ This pattern is commonly used in production systems.
 | **CockroachDB transaction retries** | Serialization failures under contention | Implement client-side retry with backoff. Use `SELECT FOR UPDATE` to reduce contention. Consider `SNAPSHOT` isolation for read-heavy workloads |
 
 ## Cross-References
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 - [PostgreSQL Architecture](../02-postgresql-architecture.md) — ACID, MVCC, replication comparison

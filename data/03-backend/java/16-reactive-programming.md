@@ -1,7 +1,6 @@
 # ⚡ Java Reactive Programming — Complete Deep Dive
 
 
-
 ```mermaid
 graph LR
     PUB["Publisher<br/>(Flux/Mono)"] --> OPS["Operators<br/>(map/flatMap/filter)"]
@@ -26,20 +25,6 @@ graph LR
 
 ## Table of Contents
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 - [Reactive Manifesto](#reactive-manifesto)
 - [Reactive Streams Spec](#reactive-streams-spec)
@@ -57,21 +42,6 @@ This pattern is commonly used in production systems.
 ---
 
 ## Reactive Manifesto
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -93,21 +63,6 @@ This pattern is commonly used in production systems.
 Message-driven → loose coupling + isolation → resilience + elasticity → responsiveness.
 
 ## Reactive Streams Spec
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -152,21 +107,6 @@ public interface Processor<T, R> extends Publisher<R>, Subscriber<T> {}
 
 ## Project Reactor: Core Types
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```text
 ┌─────────────────────────────────────────────────────┐
@@ -205,21 +145,6 @@ flux.subscribe(
 ```
 
 ## Reactor Operators by Category
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```java
@@ -262,21 +187,6 @@ flux.doOnCancel(() -> log.info("Cancelled"));
 
 ## Reactor Context
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```java
 // Context: per-subscriber state (like ThreadLocal but reactive)
@@ -292,21 +202,6 @@ flux.contextWrite(ctx -> ctx.put("user", "alice"))
 ```
 
 ## Reactor Backpressure
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -338,21 +233,6 @@ flux.onBackpressureError();                // error if downstream can't keep up
 ```
 
 ## Schedulers
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -388,21 +268,6 @@ flux.subscribeOn(Schedulers.boundedElastic())   // subscription on elastic
 
 ## Reactor Testing
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```java
 // StepVerifier
@@ -429,21 +294,6 @@ StepVerifier.create(publisher.flux())
 
 ## Reactor Debugging
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```java
 // Enable global operator stack traces
@@ -458,21 +308,6 @@ flux.tag("http.method", "GET")
 ```
 
 ## RxJava3 vs Reactor
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 | Concept | Reactor | RxJava3 |
@@ -498,21 +333,6 @@ Flowable.just("a", "b")
 ```
 
 ## Reactor Ecosystem
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```java
@@ -540,21 +360,6 @@ RSocketConnector.create()
 ```
 
 ## WebFlux
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```java
@@ -596,21 +401,6 @@ client.get()
 
 ## Simplest Mental Model
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 > **Reactive = async data pipelines with backpressure**
 >
@@ -624,38 +414,8 @@ This pattern is commonly used in production systems.
 
 ## Production Failure Modes
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Failure 1: Backpressure Mismanagement — Publisher Overwhelms Subscriber
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 | Aspect | Detail |
@@ -668,21 +428,6 @@ This pattern is commonly used in production systems.
 
 ### Failure 2: Blocking Code in Reactive Pipeline — Thread Starvation
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 | Aspect | Detail |
 |--------|--------|
@@ -693,21 +438,6 @@ This pattern is commonly used in production systems.
 | **Prevention** | Use `BlockHound.install()` in tests to detect blocking calls. Never use `block()` in reactive pipeline. Use reactive drivers (R2DBC, MongoDB Reactive Streams, Reactive Redis). Use `subscribeOn(Schedulers.boundedElastic())` for any unavoidable blocking operation. Configure `spring-boot-starter-webflux` instead of webmvc |
 
 ### Failure 3: Error Handling Gap — Exception in Stream Causes Silent Data Loss
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 | Aspect | Detail |
@@ -720,21 +450,6 @@ This pattern is commonly used in production systems.
 
 ### Failure 4: Reactive Context Loss Across Thread Boundaries
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 | Aspect | Detail |
 |--------|--------|
@@ -745,21 +460,6 @@ This pattern is commonly used in production systems.
 | **Prevention** | Use `Mono.deferContextual(ctx -> ...)` to access context reactively. For MDC: configure `spring-boot-starter-webflux` with `spring.webflux.mdc-propagation=ENABLED`. Use Kotlin Coroutines for simpler context propagation with `MDCContext` |
 
 ### Failure 5: WebClient Connection Pool Exhaustion
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 | Aspect | Detail |
@@ -772,21 +472,6 @@ This pattern is commonly used in production systems.
 
 ## Edge Cases
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 | Scenario | Challenge | Solution |
 |----------|-----------|----------|
@@ -798,138 +483,33 @@ This pattern is commonly used in production systems.
 
 ## Interview Questions
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Q1 (Beginner): What is reactive programming and when should you use it?
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Answer**: Reactive programming is a declarative programming paradigm where data flows through asynchronous pipelines. Key ideas: (1) Asynchronous — no blocking threads. (2) Event-driven — reacts to data/events as they arrive. (3) Backpressure — subscriber controls how much data it receives. (4) Composable — operators chain together (map, filter, flatMap). Use reactive programming for: I/O-bound workloads (HTTP calls, DB queries, file reads), high-concurrency services (10K+ concurrent requests), streaming data (WebSocket, Kafka, real-time events). Don't use for: CPU-bound computations (use virtual threads or parallel streams), simple CRUD APIs with low concurrency, applications where team doesn't know reactive (learning curve is steep).
 
 ### Q2 (Mid-Level): How does Project Reactor's backpressure work internally?
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **Answer**: Reactive Streams spec defines backpressure via `Subscription.request(N)`. Subscriber calls `request(N)` to demand N elements. Publisher produces at most N elements. When subscriber is ready for more, it calls `request(N)` again. Publisher's internal buffer limits how many elements can be in-flight. Flux operators: `limitRate(N)` splits demand into smaller batches (request N, then request N/2 when 75% consumed). `onBackpressureBuffer(N)` buffers up to N elements. When buffer full: `DROP_LATEST` (drop newest), `DROP_OLDEST` (drop oldest), `ERROR` (throw OverflowException). The core idea: slow consumer never forces fast producer to buffer unbounded data — the producer must slow down or drop data.
 
 ### Q3 (Senior): Design a reactive API gateway that proxies to 10 downstream microservices with circuit breaking.
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Answer**: Architecture: Spring Cloud Gateway with WebClient for downstream calls. Each route: (1) Parse request → extract auth token, rate limit key. (2) Auth: reactive call to auth service (OIDC token validation). (3) Rate limit: Redis-based token bucket via reactive Redis (Lettuce). (4) Route: WebClient call to downstream service with timeout (5s) + retry (1 attempt) + circuit breaker. (5) Circuit breaker: Resilience4j reactive. States: CLOSED (pass through), OPEN (fail fast), HALF_OPEN (allow probe request). (6) Aggregate response: merge multiple downstream calls with `Mono.zip()` (parallel). Example: `/user-profile` calls `user-service`, `preferences-service`, `notification-service` in parallel. Error handling: on circuit breaker OPEN → return cached response (from Redis) or degraded response (partial data). Backpressure: limit incoming requests with `requestRate(1000 req/s)` and buffer overflow `DROP_OLDEST`. Threading: event loop handles all I/O, no blocking threads. Monitoring: metrics per route: latency, errors, circuit breaker state. Tracing: propagate trace ID via reactive context.
 
 ### Q4 (Staff): Compare Reactive Streams (Project Reactor), Kotlin Coroutines, and Java Virtual Threads for building high-throughput services.
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **Answer**: Reactive Streams (Project Reactor): mature, battle-tested at Netflix/Pivotal. Full backpressure protocol. Rich operator library (flatMap, concatMap, window, buffer, groupBy). Downside: complex, hard to debug, thread-local context loss, steep learning curve. Kotlin Coroutines: structured concurrency, sequential-looking code. `suspend` functions are simpler than reactive operators. Channel provides backpressure. Flow is lazy, cold stream. Better error handling (try/catch works). Integration: Spring WebFlux supports Coroutines. Downside: Kotlin-only, smaller ecosystem, backpressure is manual (buffer, conflate, collect). Java Virtual Threads (Project Loom): simplest mental model — write blocking code, thousands of threads are cheap. Works with existing ThreadLocal, synchronized, and blocking APIs. Downside: no backpressure protocol (you just spin up another thread), pool exhaustion (thread-per-request doesn't limit concurrency), no streaming operators. Recommendation: use Virtual Threads for simple microservices with JDBC + HTTP (95% of services). Use Reactive Streams for streaming data pipelines, WebSocket services, and gateways with complex operator chains. Use Coroutines if already using Kotlin and want better readability than reactive.
 
 ### Q5 (Principal): Design a reactive system for a stock exchange order matching engine that must handle 1M orders/second with p99 < 100µs.
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **Answer**: Requirements: 1M orders/sec, p99 < 100µs end-to-end (from order receipt to confirmation). No GC pauses > 1ms. Zero tolerance for data loss. Architecture: (1) Network: io_uring (Linux) or DPDK for kernel bypass. Netty transport with io_uring for event loop. (2) Disruptor (LMAX) pattern for inter-thread communication: ring buffer with sequence numbers, no locks, no contention. Reactive wrapping: Project Reactor's Scheduler backed by Disruptor. (3) Order validation: in-memory, no I/O. Reactive pipeline: validate → enrich → match → publish. (4) Matching engine: purely in-memory (price-time priority order book). Data structure: skip list for price levels, HashMap for order-by-ID. (5) Persistence: reactive Kafka producer (non-blocking) for transaction log. Orders written to Kafka with acks=1 (leader only, no fsync). (6) State: fully in-memory, no DB reads during matching. Snapshot to disk every 1M orders (async, non-blocking). (7) GC: use ZGC with < 1ms pause target. Pre-allocate objects. Use off-heap memory (Netty ByteBuf, memory-mapped files). No object allocation in hot path. (8) Backpressure: if Kafka can't keep up, stall order intake (apply backpressure to the network layer). (9) Circuit breaker: if matching engine latency > 200µs, reject new orders with 503. (10) Testing: JHWasm (Java Hardware Performance Counter) for nanosecond measurements. We must prove p99 < 100µs before production. This is extreme low-latency design where practical: only essential services (HFT exchanges, ad exchanges, game servers) need this.
 
 ## Cross-References
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 - [Java Testing Advanced](../18-testing-advanced.md) — Reactive streams testing with StepVerifier, TestPublisher

@@ -5,7 +5,6 @@
 ---
 
 
-
 ```mermaid
 graph LR
     CONTROL["Control Node<br/>(Ansible Installed)"] --> INV["Inventory<br/>(hosts.ini)"]
@@ -32,21 +31,6 @@ graph LR
 ```
 
 ## Table of Contents
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 - [The Configuration Management Problem](#the-configuration-management-problem)
@@ -90,21 +74,6 @@ This pattern is commonly used in production systems.
 
 ## The Configuration Management Problem
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 Configuration Management (CM) tools ensure that a system's software, settings, and services are in a desired state. The fundamental problem:
 
@@ -138,38 +107,8 @@ State Machine of a Server:
 
 ## Ansible Deep Dive
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Architecture: Agentless via SSH/WinRM
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 Ansible is unique among major CM tools — it requires no agent on managed nodes. It uses SSH (Linux/macOS) or WinRM (Windows) to push modules to targets, execute them, and collect results.
@@ -223,21 +162,6 @@ Ansible Architecture (Push Model):
 ---
 
 ### Playbook Execution Engine
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -382,21 +306,6 @@ Per-Play Execution:
 
 ### Modules: The Building Blocks
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 Modules are Ansible's unit of work. Each module is a self-contained script (usually Python) that performs a specific task and returns JSON.
 
@@ -486,21 +395,6 @@ if __name__ == '__main__':
 ---
 
 ### Fact Gathering Internals
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 Facts are system properties collected from managed nodes via the `setup` module.
@@ -605,21 +499,6 @@ fact_caching_timeout = 3600
 ---
 
 ### Idempotency: How Ansible Guarantees It
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 Ansible's idempotency depends entirely on module implementation. The core principle:
@@ -736,21 +615,6 @@ web02 : ok=3    changed=1  unreachable=0 failed=0 skipped=0
 
 ### Ansible Vault & Secrets
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 Ansible Vault encrypts sensitive data at rest. Encrypted files can be decrypted at runtime.
 
@@ -844,21 +708,6 @@ ansible-playbook site.yml \
 ---
 
 ### Roles, Collections, and Large-Scale Organization
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Role directory structure:**
@@ -998,21 +847,6 @@ compose:
 
 ### AWX / Ansible Automation Platform
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 AWX is the open-source upstream of Red Hat Ansible Automation Platform. It provides a web UI, REST API, and task scheduler for Ansible.
 
@@ -1062,21 +896,6 @@ Workflows    → Multi-template workflows with branching
 ---
 
 ### Ansible Production Incidents
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Incident 1: The 2000-Node SSH Thundering Herd**
@@ -1276,38 +1095,8 @@ Lesson: Variable precedence is the #1 source of Ansible confusion.
 
 ## Puppet Deep Dive
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Declarative DSL & Resource Abstraction
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 Puppet uses a declarative DSL where you describe desired state, and Puppet computes the steps to achieve it.
@@ -1403,21 +1192,6 @@ Execution Order (topological sort):
 
 ### Puppet Server & Catalog Compilation
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```
 Puppet Architecture (Pull Model):
@@ -1512,21 +1286,6 @@ Puppet Architecture (Pull Model):
 ---
 
 ### Facts, Classes, and Environments
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Facter — system discovery (similar to Ansible facts):**
@@ -1625,21 +1384,6 @@ class nginx (
 
 ### PuppetDB & StoreConfigs
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 PuppetDB stores facts, reports, and resource data from all nodes. It enables cross-node queries.
 
@@ -1701,21 +1445,6 @@ file { '/etc/nginx/upstream.conf':
 ---
 
 ### Puppet Production Incidents
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Incident 1: The Catalog Compilation Meltdown**
@@ -1799,38 +1528,8 @@ Lesson: Certificate management is infrastructure-critical.
 
 ## Chef Deep Dive
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Cookbook/Resource/Recipe Architecture
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 Chef uses Ruby DSL with a three-tier resource model: Cookbooks (packages), Recipes (ordered collections), Resources (individual state declarations).
@@ -1920,21 +1619,6 @@ end
 ---
 
 ### Chef Server vs Chef Solo vs Chef Zero
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -2029,21 +1713,6 @@ Chef Deployments:
 
 ### Ohai, Search, and Data Bags
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **Ohai — Chef's fact-gathering tool:**
 
@@ -2114,21 +1783,6 @@ password = chef_vault_item('secrets', 'db_password')[node.chef_environment]
 
 ### Chef Production Incidents
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **Incident 1: The Convergent Race Condition**
 
@@ -2180,38 +1834,8 @@ Lesson: Concurrent resource management is a fundamental CM challenge.
 
 ## SaltStack Deep Dive
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Master/Minion Architecture
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 SaltStack uses a pub/sub message bus (ZeroMQ or TCP) for communication.
@@ -2287,21 +1911,6 @@ Master → Minion communication:
 ---
 
 ### States, Pillars, and Grains
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **States (SLS — Salt State files):**
@@ -2399,21 +2008,6 @@ def custom_app_grain():
 
 ### Reactors and Event-Driven Automation
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 Salt's event system enables reactive automation:
 
@@ -2470,21 +2064,6 @@ beacons:
 
 ### SaltStack Production Incidents
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **Incident 1: ZeroMQ Socket Flood**
 
@@ -2524,38 +2103,8 @@ Lesson: ZeroMQ has configurable backpressure limits.
 
 ## Idempotency Deep Dive
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### What Is True Idempotency?
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -2613,21 +2162,6 @@ In practice:
 ---
 
 ### Idempotency Failure Modes
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Mode 1: Timestamp-based modules**
@@ -2720,21 +2254,6 @@ end
 
 ## Convergence vs Push vs Pull
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 | Model | Tools | How It Works | When State Checked | Use Case |
 |-------|-------|-------------|-------------------|----------|
@@ -2817,21 +2336,6 @@ If you have:
 
 ## Secrets Management in CM
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 | Tool | Built-in Secret Storage | Integration Options |
 |------|------------------------|-------------------|
@@ -2863,21 +2367,6 @@ This pattern is commonly used in production systems.
 ---
 
 ## Scaling CM to 1000+ Nodes
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Infrastructure scaling checklist:**
@@ -2918,21 +2407,6 @@ Monitoring:
 ---
 
 ## Immutable Infrastructure: The Paradigm Shift
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Mutable vs Immutable:**
@@ -3006,21 +2480,6 @@ Hybrid approach:
 
 ## Cross-Tool Comparison
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 | Dimension | Ansible | Puppet | Chef | SaltStack |
 |-----------|---------|--------|------|-----------|
@@ -3075,21 +2534,6 @@ Choose SaltStack when:
 ---
 
 ## Failure Analysis Reference
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 | Failure | Symptom | Root Cause | Mitigation | Detection |

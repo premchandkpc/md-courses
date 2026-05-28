@@ -3,7 +3,6 @@
 This directory contains three comprehensive, production-grade deep dives into application security for elite engineering teams.
 
 
-
 ```mermaid
 graph LR
     APP["Application<br/>Security"] --> OWASP["OWASP Top 10<br/>(Vulnerabilities)"]

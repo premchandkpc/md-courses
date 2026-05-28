@@ -7,7 +7,6 @@
 ---
 
 
-
 ```mermaid
 graph LR
     A["📥 Input"] --> B["🔄 Transform"]
@@ -25,42 +24,12 @@ graph LR
 
 ## 1. Overview
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 The AI Tutor Engine is an LLM-powered interactive tutor that understands engineering concepts at depth, retrieves relevant knowledge from the platform's curated content, and responds with explanations, diagrams, simulations, and code examples. It uses a Retrieval-Augmented Generation (RAG) pipeline grounded in the Knowledge Graph, with tool-calling capabilities to execute simulations, generate visualizations, and run code.
 
 ---
 
 ## 2. AI Orchestration Architecture
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -103,21 +72,6 @@ This pattern is commonly used in production systems.
 
 ## 3. RAG Pipeline
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```
  ┌──────────┐    ┌──────────┐    ┌──────────┐    ┌──────────┐    ┌──────────┐
@@ -134,21 +88,6 @@ This pattern is commonly used in production systems.
 ```
 
 ### 3.1 Query Processing
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```typescript
@@ -172,21 +111,6 @@ interface QueryProcessor {
 
 ### 3.2 Retrieval Pipeline
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```typescript
 interface Retriever {
@@ -209,21 +133,6 @@ interface Retriever {
 ```
 
 ### 3.3 Context Assembly
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```typescript
@@ -258,38 +167,8 @@ function assembleContext(
 
 ## 4. LLM Integration
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### 4.1 Multi-Model Architecture
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -320,21 +199,6 @@ This pattern is commonly used in production systems.
 
 ### 4.2 Prompt Caching
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```typescript
 // System prompts cached by capability
@@ -357,21 +221,6 @@ async function getSystemPrompt(capability: Capability, context: Context): Promis
 ```
 
 ### 4.3 Context Window Management
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```typescript
@@ -402,21 +251,6 @@ function manageContextWindow(messages: Message[], maxTokens: number): Message[] 
 ---
 
 ## 5. Tool Calling System
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```typescript
@@ -535,38 +369,8 @@ const tools: Tool[] = [
 
 ## 6. Conversation Memory
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### 6.1 Memory Architecture
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -601,21 +405,6 @@ This pattern is commonly used in production systems.
 
 ### 6.2 Long-Term Memory Retrieval
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```typescript
 async function retrieveRelevantMemory(
@@ -646,21 +435,6 @@ async function retrieveRelevantMemory(
 ---
 
 ## 7. User Intent Classification
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```typescript
@@ -697,21 +471,6 @@ function classifyIntent(query: string, history: Message[]): Intent {
 ---
 
 ## 8. Prompt Templates
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```typescript
@@ -777,21 +536,6 @@ Types: {types}`,
 
 ## 9. Code Execution Sandbox
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```
  ┌─────────────────────────────────────────────────────────────────────┐
@@ -825,21 +569,6 @@ This pattern is commonly used in production systems.
 ---
 
 ## 10. Quality Assurance
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```typescript
@@ -884,21 +613,6 @@ async function selfConsistencyCheck(
 
 ## 11. Performance & Cost Management
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```typescript
 interface CostManager {
@@ -933,21 +647,6 @@ interface CostManager {
 ---
 
 ## 12. Response Streaming
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```

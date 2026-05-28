@@ -6,21 +6,6 @@
 
 ## Layer 1: Beginner Mental Model
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **Analogy**: Like a library with append-only books. You can only add pages (immutable log). Readers can start from any page (offset). Librarians copy pages to backup libraries (replication). Old pages get archived (compaction). You never erase, only add.
 
@@ -34,21 +19,6 @@ This pattern is commonly used in production systems.
 
 ### Step-by-Step
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 1. **Partition creation** on broker 1 with replication factor 3; brokers 2, 3 become replicas
 2. **Producer publishes** message appends to broker 1's log as segment file (e.g., segment 0-4999.log)
@@ -58,21 +28,6 @@ This pattern is commonly used in production systems.
 6. **Leader election** if broker 1 crashes, controller picks highest-offset replica from ISR
 
 ### Code Example
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```bash
@@ -115,58 +70,13 @@ EOF
 
 ### Real-World Scenario
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 Twitter's firehose (public stream of tweets) ingests 500K tweets/second across 10 Kafka clusters. During a datacenter outage in 2015, broker failure caused ISR to shrink from [1,2,3] to [1,2]. The replica on broker 3 (being rebuilt) had stale data from 30 minutes ago. When broker 1 also crashed 2 minutes later, broker 2 was elected leader but discovered its log was only 28 minutes complete. They lost 2 minutes of tweets—irreversible because retention had passed. Fix: deployed stricter replica.lag.time.max.ms (10s instead of 30s) and coordinated leader epochs. Next outage, zero data loss.
 
 ## Layer 4: Production Reality
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Kafka Replication Failure Modes
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 | Failure | Symptoms | Root Cause | Fix |
@@ -180,21 +90,6 @@ This pattern is commonly used in production systems.
 | **ISR Churn** | Partitions constantly shrink/expand | Network jitter, slow disks, high CPU → broker slow for 10s → ISR shrink → recover | Tune replica.lag.time.max.ms (default 10s), reduce jitter |
 
 ### Production Incident: LinkedIn Replication Cascade (2013)
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Context**: LinkedIn's Kafka cluster lost a broker during maintenance. ISR shrank from [1, 2, 3] to [1]. During recovery, broker 2 caught up, rejoined ISR.
@@ -235,38 +130,8 @@ if (fetchOffset > logEndOffset) {
 
 ## Layer 5: Staff Engineer Perspective
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Replication Strategy Tradeoffs
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 | Strategy | Throughput | Durability | Latency | Cost | Failover |
@@ -278,21 +143,6 @@ This pattern is commonly used in production systems.
 | **Geo-replication** | 100K msg/s | Global durable | 100ms | $$$$ | Manual |
 
 ### Scaling Pattern: Single Broker → Global Federation
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Stage 1 (Startup)**: 1 broker, no replication
@@ -327,38 +177,8 @@ This pattern is commonly used in production systems.
 
 ## Layer 5: Interview Questions
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Level 1 (Junior Engineer)
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Q1: What's replication factor? Why not just 1?**
@@ -372,21 +192,6 @@ A: ISR = replicas that are caught up with leader. Follower falls behind (network
 - Expected: Understand ISR as safety mechanism
 
 ### Level 2 (Mid-Level Engineer)
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Q3: A broker fails, partition loses leader. What happens?**
@@ -406,21 +211,6 @@ A: acks=all = wait for all ISR replicas to ack before success. Guarantees no dat
 - Expected: Understand acks tradeoff
 
 ### Level 3 (Senior Engineer)
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Q5: Design Kafka topic for 1B events/day, 100M users (1M users active). Target: <100ms latency, 0 data loss.**
@@ -449,21 +239,6 @@ A:
 - Expected: Know metrics, know common causes
 
 ### Level 4 (Staff Engineer)
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Q7: Migrate from replication factor 3 to 2 (cost savings). How do you do it safely?**
@@ -504,7 +279,6 @@ A:
 ---
 
 
-
 ```mermaid
 graph LR
     PROD_REQ["Produce<br/>Request"] --> PART_L["Partition Leader"]
@@ -534,21 +308,6 @@ graph LR
 
 ## Table of Contents
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 - [Log Segment Internals](#-log-segment-internals)
 - [Log Compaction Mechanics](#-log-compaction-mechanics)
@@ -567,38 +326,8 @@ This pattern is commonly used in production systems.
 
 ## 📚 Log Segment Internals
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### File Structure
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -631,21 +360,6 @@ A topic-partition is a directory of segments:
 
 ### Index File (Offset → Position)
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```text
   index is a sparse file: every 4KB of log data = 1 entry.
@@ -666,38 +380,8 @@ This pattern is commonly used in production systems.
 
 ## 🧹 Log Compaction Mechanics
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Overview
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -721,21 +405,6 @@ This pattern is commonly used in production systems.
 
 ### Compaction Process
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```text
   Cleaner thread traverses log:
@@ -757,21 +426,6 @@ This pattern is commonly used in production systems.
 
 ### Delete vs Compact Policy
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 | Policy | Behavior | Use Case |
 |---|---|---|
@@ -792,38 +446,8 @@ kafka-topics --create --topic user-profiles \
 
 ## 👑 Partition Leadership & Controller Election
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Controller State Machine
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -844,21 +468,6 @@ This pattern is commonly used in production systems.
 ```
 
 ### Leader Election Steps
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -885,21 +494,6 @@ This pattern is commonly used in production systems.
 ---
 
 ## 🔄 ISR Shrink / Expand
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -930,21 +524,6 @@ This pattern is commonly used in production systems.
 
 ### configs affecting ISR
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```bash
 # Legacy: max messages follower can lag (deprecated v0.9+)
@@ -961,38 +540,8 @@ min.insync.replicas=2
 
 ## 📥 Kafka Request Flow
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Full Pipeline
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -1041,38 +590,8 @@ This pattern is commonly used in production systems.
 
 ## 🔌 Kafka Wire Protocol
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Request/Response Header
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -1091,21 +610,6 @@ This pattern is commonly used in production systems.
 ```
 
 ### Record Batch Format v2
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -1138,38 +642,8 @@ This pattern is commonly used in production systems.
 
 ## 📤 Producer Internals
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Accumulator & Sender Thread
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -1206,21 +680,6 @@ This pattern is commonly used in production systems.
 
 ### Batch Sizing
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```bash
 # Batch tuning
@@ -1243,21 +702,6 @@ compression.type=zstd           # Best compression ratio
 
 ### Partitioner
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```text
   Default partitioner (since v2.4):
@@ -1272,38 +716,8 @@ This pattern is commonly used in production systems.
 
 ## 📥 Consumer Internals
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Fetch Request Flow
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -1331,21 +745,6 @@ This pattern is commonly used in production systems.
 
 ### Rebalance Protocol
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```text
   ┌─ Static Group ──────┐       ┌─ Dynamic Group ────┐
@@ -1360,21 +759,6 @@ This pattern is commonly used in production systems.
 ```
 
 ### Eager vs Cooperative Sticky
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -1404,38 +788,8 @@ partition.assignment.strategy=org.apache.kafka.clients.consumer.CooperativeStick
 
 ## 👥 Group Coordinator Protocol
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Protocol Flow
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -1471,38 +825,8 @@ This pattern is commonly used in production systems.
 
 ## 📝 Transaction Protocol
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Transaction Flow
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -1542,38 +866,8 @@ This pattern is commonly used in production systems.
 
 ## 🗳️ KRaft — Kafka Raft Meta(d)ology
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Architecture
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -1596,21 +890,6 @@ This pattern is commonly used in production systems.
 ```
 
 ### Metadata Topic
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -1636,21 +915,6 @@ This pattern is commonly used in production systems.
 
 ### Controller Quorum Votes
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```text
   Raft consensus with 3 controllers:
@@ -1672,21 +936,6 @@ This pattern is commonly used in production systems.
 
 ### ZooKeeper vs KRaft
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 | Feature | ZooKeeper | KRaft |
 |---|---|---|
@@ -1697,21 +946,6 @@ This pattern is commonly used in production systems.
 | **Migration** | N/A | ZK → KRaft migration tool |
 
 ### Migration Commands
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```bash
@@ -1731,21 +965,6 @@ kafka-features --bootstrap-server localhost:9092 --finalize-migration
 ---
 
 ## 🧠 Simplest Mental Model
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -1767,21 +986,6 @@ This pattern is commonly used in production systems.
 
 
 ## Practical Example
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 See code examples above for practical usage patterns.

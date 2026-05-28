@@ -5,7 +5,6 @@
 ---
 
 
-
 ```mermaid
 graph LR
     CB_STATES["Circuit Breaker<br/>States"] --> CLOSED["CLOSED<br/>(normal operation)"]

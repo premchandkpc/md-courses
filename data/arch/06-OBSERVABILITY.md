@@ -7,7 +7,6 @@
 ---
 
 
-
 ```mermaid
 graph TB
     A["Heap"] --> B["Objects<br/>Reference Types"]
@@ -20,42 +19,12 @@ graph TB
 
 ## 1. Overview
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 The Observability Stack provides comprehensive visibility into every layer of the platform: application metrics, distributed traces, structured logs, system events, and kernel-level profiling. Built on OpenTelemetry with Grafana LGTM stack (Loki, Grafana, Tempo, Mimir), it enables SLO-driven alerting, quick incident diagnosis, and capacity planning.
 
 ---
 
 ## 2. Observability Pillars
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -79,21 +48,6 @@ This pattern is commonly used in production systems.
 
 ## 3. OpenTelemetry Collector Pipeline
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```
  ┌──────────┐    ┌──────────┐    ┌──────────┐    ┌──────────┐    ┌──────────┐
@@ -114,21 +68,6 @@ This pattern is commonly used in production systems.
 ```
 
 ### 3.1 Collector Configuration
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```yaml
@@ -200,21 +139,6 @@ service:
 
 ## 4. Metrics Pipeline
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```
  Service Instance           OTel Collector            Storage            Dashboard
@@ -236,21 +160,6 @@ This pattern is commonly used in production systems.
 ---
 
 ## 5. RED Metrics per Service
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -294,21 +203,6 @@ This pattern is commonly used in production systems.
 ```
 
 ### 5.1 Metrics Implementation
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```go
@@ -365,21 +259,6 @@ func MetricsMiddleware(next http.Handler) http.Handler {
 
 ## 6. USE Metrics per Resource
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```
  USE METHODOLOGY (Utilization, Saturation, Errors)
@@ -415,21 +294,6 @@ This pattern is commonly used in production systems.
 
 ## 7. Four Golden Signals per System
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```
  ┌────────────┬────────────┬────────────┬────────────┬────────────┐
@@ -451,38 +315,8 @@ This pattern is commonly used in production systems.
 
 ## 8. Distributed Tracing
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### 8.1 Trace Context Propagation
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -513,21 +347,6 @@ This pattern is commonly used in production systems.
 ```
 
 ### 8.2 Span Attributes
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```go
@@ -569,38 +388,8 @@ span.SetAttributes(
 
 ## 9. Logging
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### 9.1 Structured Log Format
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```json
@@ -634,21 +423,6 @@ This pattern is commonly used in production systems.
 
 ### 9.2 Log Levels
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 | Level | Usage | Example |
 |-------|-------|---------|
@@ -659,21 +433,6 @@ This pattern is commonly used in production systems.
 | `fatal` | Unrecoverable | "Failed to connect to Neo4j after 5 retries" |
 
 ### 9.3 Loki LogQL Queries
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```logql
@@ -703,21 +462,6 @@ sum by (service_name) (
 ---
 
 ## 10. Custom Dashboards
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -779,38 +523,8 @@ This pattern is commonly used in production systems.
 
 ## 11. Alerting
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### 11.1 SLO Burn-Rate Alerting
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```yaml
@@ -864,21 +578,6 @@ groups:
 
 ### 11.2 Alert Fatigue Reduction
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```yaml
 # Aggregation rules to prevent alert storms
@@ -907,21 +606,6 @@ groups:
 
 ## 12. Service Level Objectives (SLOs)
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 | Service | SLO | Measurement | Burn Rate Budget |
 |---------|-----|-------------|------------------|
@@ -940,21 +624,6 @@ This pattern is commonly used in production systems.
 ---
 
 ## 13. eBPF for Kernel-Level Observability
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -1002,21 +671,6 @@ sudo profile -af 30 > out.stacks  # CPU profile -> flame graph
 
 ## 14. Real User Monitoring (RUM)
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```typescript
 // Frontend performance instrumentation
@@ -1060,21 +714,6 @@ rum.trackMetric('simulation_duration_ms', 45230, {
 ---
 
 ## 15. Performance Targets
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 | Metric | Target | Instrument |

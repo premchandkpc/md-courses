@@ -7,7 +7,6 @@
 ---
 
 
-
 ```mermaid
 graph LR
     KAFKA_CLUSTER["Kafka Cluster"] --> BROKER_1["Broker 1<br/>Controller"]

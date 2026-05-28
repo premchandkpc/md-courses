@@ -2,21 +2,6 @@
 
 ## Overview
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```mermaid
 graph TB
@@ -50,21 +35,6 @@ Simulate PostgreSQL-style MVCC: visualize tuple versions, transaction snapshots,
 
 ## Actors/Components
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 | Actor | Role |
 |-------|------|
@@ -82,38 +52,8 @@ This pattern is commonly used in production systems.
 
 ## State Machine
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Transaction State
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -139,21 +79,6 @@ This pattern is commonly used in production systems.
 ```
 
 ### Tuple Version Lifecycle
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -182,21 +107,6 @@ This pattern is commonly used in production systems.
 
 ### Snapshot State (per query)
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```
          ┌──────────────┐
@@ -224,38 +134,8 @@ This pattern is commonly used in production systems.
 
 ## Animation Frames
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Frame 1: Single Transaction — Insert and Read
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -297,21 +177,6 @@ After Transaction 103 commits:
 
 ### Frame 2: UPDATE Creating a New Tuple Version
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```
 Initial row: id=1, balance=1000, xmin=100, xmax=0
@@ -352,21 +217,6 @@ If Transaction 200 COMMITs:
 ```
 
 ### Frame 3: Concurrent Transactions — Snapshot Visibility
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -426,21 +276,6 @@ Key difference:
 
 ## User Interactions
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 | Control | Type | Range/Options | Effect |
 |---------|------|---------------|--------|
@@ -460,21 +295,6 @@ This pattern is commonly used in production systems.
 ---
 
 ## Visual Transitions
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 | Event | Visual Effect |
@@ -501,21 +321,6 @@ This pattern is commonly used in production systems.
 
 ## Edge Cases
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 | Edge Case | Behavior |
 |-----------|----------|
@@ -536,21 +341,6 @@ This pattern is commonly used in production systems.
 
 ## Failure Modes
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 | Failure | Symptom | Recovery |
 |---------|---------|----------|
@@ -568,21 +358,6 @@ This pattern is commonly used in production systems.
 ---
 
 ## Metrics to Display
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 | Metric | Unit | Source |
@@ -609,38 +384,8 @@ This pattern is commonly used in production systems.
 
 ## Scenario Walkthroughs
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Scenario 1: Lost Update Prevention (MVCC vs No MVCC)
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Setup:** 2 concurrent transactions updating the same balance
@@ -702,21 +447,6 @@ RESULT: MVCC with row-level locking prevents lost updates.
 ```
 
 ### Scenario 2: Repeatable Read — Snapshot Isolation
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Setup:** 3 concurrent transactions in REPEATABLE READ
@@ -784,21 +514,6 @@ vs. Read Committed:
 ```
 
 ### Scenario 3: Write Skew — Serializable Anomaly
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Setup:** Two doctors must be on call; at least one must be on duty
@@ -869,21 +584,6 @@ Forcing a real serial order:
 
 ### Scenario 4: Vacuum — Removing Dead Tuples
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **Setup:** 1 table, many updates, no active snapshots
 
@@ -945,21 +645,6 @@ If auto-vacuum is disabled:
 
 ### Scenario 5: UPDATE Chain + HOT Update
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **Setup:** Multiple updates to same row, same page
 
@@ -1008,21 +693,6 @@ HOT UPDATE (same page, no indexed column change):
 ---
 
 ## Implementation Notes
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **State Management:**

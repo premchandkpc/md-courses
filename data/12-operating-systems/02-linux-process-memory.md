@@ -1,7 +1,6 @@
 # 🖥️ Linux Process & Memory Management — Complete Deep Dive
 
 
-
 ```mermaid
 graph LR
     PROC["Process<br/>(task_struct)"] --> FORK["fork() →<br/>Copy-on-Write"]
@@ -34,20 +33,6 @@ graph LR
 
 ## Table of Contents
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 - [Process Lifecycle](#process-lifecycle)
 - [Process States](#process-states)
@@ -68,21 +53,6 @@ This pattern is commonly used in production systems.
 ---
 
 ## Process Lifecycle
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -109,21 +79,6 @@ This pattern is commonly used in production systems.
 ---
 
 ## Process States
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -159,21 +114,6 @@ TASK_TRACED ──── EXIT_ZOMBIE ──── EXIT_DEAD
 ---
 
 ## Scheduling (CFS)
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 Completely Fair Scheduler (CFS) replaced O(1) scheduler in Linux 2.6.23.
@@ -227,21 +167,6 @@ Completely Fair Scheduler (CFS) replaced O(1) scheduler in Linux 2.6.23.
 
 ## Context Switch
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```text
     Process A (running)           scheduler          Process B (running)
@@ -274,21 +199,6 @@ This pattern is commonly used in production systems.
 ---
 
 ## Virtual Memory
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -344,38 +254,8 @@ This pattern is commonly used in production systems.
 
 ## Memory Allocation
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Buddy Allocator
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -389,21 +269,6 @@ This pattern is commonly used in production systems.
 Allocates physically contiguous pages. Splits larger blocks; merges on free. Fragmentation tracked by `/proc/buddyinfo`.
 
 ### Slab Allocator
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -422,21 +287,6 @@ Replaces the old SLOB/SLUB allocators (SLUB is now default). Pre-allocates objec
 
 ### kmalloc vs vmalloc
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 | Feature | kmalloc | vmalloc |
 |---------|---------|---------|
@@ -448,21 +298,6 @@ This pattern is commonly used in production systems.
 | Use | Device drivers, small structs | Large buffers, modules |
 
 ### Page Cache
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -480,21 +315,6 @@ Pages mapped from files. Managed by LRU lists: active, inactive, unevictable. `/
 **OOM Killer**: When memory is exhausted and swap is full. `oom_badness()` scores processes. `/proc/pid/oom_score`, `/proc/pid/oom_adj`. Adj -1000 disables OOM kill. Adj +1000 always kills. `oom_reaper` reaps memory after kill.
 
 ### /proc/meminfo
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -527,21 +347,6 @@ HugePages_Free:       0
 
 ## Address Space Layout
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```text
   0x0 ──────────────────────────────── Top of memory
@@ -566,21 +371,6 @@ This pattern is commonly used in production systems.
 
 ### ASLR (Address Space Layout Randomization)
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 Each region is randomly shifted at exec time. Controlled by `/proc/sys/kernel/randomize_va_space`:
 - 0 = disabled
@@ -592,21 +382,6 @@ Each region is randomly shifted at exec time. Controlled by `/proc/sys/kernel/ra
 ---
 
 ## Stack
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Growth**: Downwards (from high to low addresses). `RSP` points to top of stack (lowest address in use). Push decrements RSP, pop increments.
@@ -634,21 +409,6 @@ This pattern is commonly used in production systems.
 ---
 
 ## Heap
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **glibc malloc (ptmalloc3)**: Based on Doug Lea's malloc (dlmalloc). Uses mmap for large allocations, sbrk for small.
@@ -683,21 +443,6 @@ This pattern is commonly used in production systems.
 
 ## NUMA
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **Non-Uniform Memory Access**: Access time depends on memory location relative to CPU.
 
@@ -725,21 +470,6 @@ This pattern is commonly used in production systems.
 ---
 
 ## Cgroups v2
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Control Groups v2** (unified hierarchy, since Linux 4.5).
@@ -778,21 +508,6 @@ This pattern is commonly used in production systems.
 
 ## Namespaces
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 | Namespace | `CLONE_NEW*` | Isolates | Since |
 |-----------|-------------|----------|-------|
@@ -814,21 +529,6 @@ This pattern is commonly used in production systems.
 ---
 
 ## Signals
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -867,21 +567,6 @@ This pattern is commonly used in production systems.
 ---
 
 ## /proc Filesystem
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Per-Process** (`/proc/[pid]/`):
@@ -932,21 +617,6 @@ This pattern is commonly used in production systems.
 ---
 
 ## Simplest Mental Model
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 > **A Linux process is like a person with a notebook.**

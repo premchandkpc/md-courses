@@ -5,7 +5,6 @@
 ---
 
 
-
 ```mermaid
 graph LR
     IS["InputStream<br/>Read bytes"] --> BR["Buffered<br/>Reader"]
@@ -28,21 +27,6 @@ graph LR
 
 ## Table of Contents
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 - [I/O vs NIO Overview](#-io-vs-nio-overview)
 - [1. InputStream & OutputStream](#1-inputstream--outputstream)
@@ -60,21 +44,6 @@ This pattern is commonly used in production systems.
 ---
 
 ## 🧭 I/O vs NIO Overview
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -113,38 +82,8 @@ This pattern is commonly used in production systems.
 
 ## 1. InputStream & OutputStream
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Hierarchy
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -168,21 +107,6 @@ OutputStream (abstract)
 ```
 
 ### Reading Bytes
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```java
@@ -208,21 +132,6 @@ try (BufferedInputStream bis = new BufferedInputStream(
 
 ### Writing Bytes
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```java
 // Basic FileOutputStream
@@ -246,21 +155,6 @@ try (BufferedOutputStream bos = new BufferedOutputStream(
 
 ### DataInputStream / DataOutputStream
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```java
 // Writing primitives
@@ -281,21 +175,6 @@ try (DataInputStream dis = new DataInputStream(
 ```
 
 ### ByteArrayInputStream / ByteArrayOutputStream
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```java
@@ -320,21 +199,6 @@ try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
 ```
 
 ### Stream Flow
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -372,38 +236,8 @@ Writing (BufferedOutputStream):
 
 ## 2. Reader & Writer
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Hierarchy
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -424,21 +258,6 @@ Writer (abstract)
 ```
 
 ### Reading Text
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```java
@@ -472,21 +291,6 @@ try (BufferedReader br = new BufferedReader(
 
 ### Writing Text
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```java
 // FileWriter
@@ -512,21 +316,6 @@ try (PrintWriter pw = new PrintWriter(new FileWriter("log.txt"))) {
 
 ### InputStreamReader / OutputStreamWriter (Bridges)
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```text
                     ┌─────────────────────────┐
@@ -550,21 +339,6 @@ This pattern is commonly used in production systems.
 
 ### Common Charsets
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```java
 Charset utf8 = StandardCharsets.UTF_8;
@@ -581,38 +355,8 @@ String str = new String(bytes, StandardCharsets.UTF_8);  // "Héllö"
 
 ## 3. File I/O (Legacy)
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### File Class
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```java
@@ -645,21 +389,6 @@ File[] filtered = dir.listFiles((d, name) -> name.endsWith(".txt"));  // filter
 
 ### RandomAccessFile
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```java
 // Read/write at arbitrary positions (not a stream!)
@@ -686,38 +415,8 @@ try (RandomAccessFile raf = new RandomAccessFile("file.dat", "rw")) {
 
 ## 4. NIO.2 Path & Files
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Path API
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```java
@@ -756,21 +455,6 @@ path.toUri();            // file:///usr/local/bin
 ```
 
 ### Files Utility Class
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```java
@@ -818,21 +502,6 @@ Files.setAttribute(path, "dos:hidden", true);
 
 ### Walking the File Tree
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```java
 // Walk directory tree (depth-first)
@@ -855,21 +524,6 @@ Files.find(Path.of("/home/user"),
 ```
 
 ### WatchService (File Change Monitoring)
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```java
@@ -915,38 +569,8 @@ public class FileWatcher {
 
 ## 5. NIO Channels & Buffers
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Channel Types
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```java
@@ -966,21 +590,6 @@ DatagramChannel datagramChannel = DatagramChannel.open();
 
 ### Buffer Operations
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```text
 Buffer (abstract)
@@ -994,21 +603,6 @@ Buffer (abstract)
 ```
 
 ### Buffer Anatomy
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -1034,21 +628,6 @@ Key methods:
 ```
 
 ### Using FileChannel
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```java
@@ -1089,21 +668,6 @@ try (FileChannel channel = FileChannel.open(
 
 ### Scatter / Gather
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```java
 // Scattering read — read into multiple buffers
@@ -1124,21 +688,6 @@ channel.write(new ByteBuffer[] {headerOut, bodyOut});
 ```
 
 ### Transfer Between Channels
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```java
@@ -1162,38 +711,8 @@ try (FileChannel source = FileChannel.open(Path.of("source.big"));
 
 ## 6. NIO Selectors (Non-blocking)
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Selector Architecture
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -1219,21 +738,6 @@ This pattern is commonly used in production systems.
 ```
 
 ### Non-blocking Server
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```java
@@ -1300,21 +804,6 @@ public class NonBlockingServer {
 
 ### Non-blocking vs Blocking
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 | Aspect | Blocking I/O | Non-blocking NIO |
 |--------|-------------|-------------------|
@@ -1328,38 +817,8 @@ This pattern is commonly used in production systems.
 
 ## 7. Serialization
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Serializable Interface
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```java
@@ -1391,21 +850,6 @@ try (ObjectInputStream ois = new ObjectInputStream(
 
 ### serialVersionUID
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```java
 // If not declared, JVM computes one from class structure
@@ -1420,21 +864,6 @@ private static final long serialVersionUID = 1L;  // same UID
 ```
 
 ### Custom Serialization
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```java
@@ -1483,21 +912,6 @@ public class SecureData implements Serializable {
 
 ### Externalizable
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```java
 // Full control over serialization (not just marker interface)
@@ -1528,38 +942,8 @@ public class CustomObject implements Externalizable {
 
 ## 8. Compression
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### GZIP
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```java
@@ -1579,21 +963,6 @@ try (GZIPInputStream gz = new GZIPInputStream(
 ```
 
 ### ZIP
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```java
@@ -1632,21 +1001,6 @@ try (ZipInputStream zis = new ZipInputStream(
 
 ## 9. Memory-Mapped Files
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```java
 // Map file directly into memory (zero-copy for OS)
@@ -1675,21 +1029,6 @@ try (RandomAccessFile file = new RandomAccessFile("large.dat", "rw");
 ```
 
 ### Memory Mapping Flow
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -1732,21 +1071,6 @@ Risks:
 
 ## ⚠️ Common Pitfalls
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 | Pitfall | Issue | Fix |
 |---------|-------|-----|
@@ -1764,21 +1088,6 @@ This pattern is commonly used in production systems.
 ---
 
 ## 🧠 Simplest Mental Model
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -1819,21 +1128,6 @@ TRANSIENT      =  "Don't take a photo of this field." Like a fingerprint
 
 
 ## Practical Example
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 See code examples above for practical usage patterns.

@@ -1,7 +1,6 @@
 # Zero Trust, Penetration Testing & Security Culture: Deep Dive
 
 
-
 ```mermaid
 graph LR
     ZT_MODEL["Zero Trust"] --> NEVER["Never Trust<br/>Always Verify"]
@@ -37,20 +36,6 @@ graph LR
 
 ## Table of Contents
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 1. [Introduction](#introduction)
 2. [Noob Explanation](#noob-explanation)
@@ -71,21 +56,6 @@ This pattern is commonly used in production systems.
 
 ## Introduction
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 Zero Trust is a radical shift in security thinking: **never trust, always verify**. Instead of trusting the network perimeter ("firewall protects us"), assume every user, device, and request is potentially malicious.
 
@@ -97,38 +67,8 @@ Security culture is the human element: policies, training, processes that make s
 
 ## Noob Explanation
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Traditional Security (Perimeter-Based)
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 Imagine a medieval castle:
@@ -151,21 +91,6 @@ If attacker gets through the wall:
 **Problem:** One breach = total compromise
 
 ### Zero Trust Security (Defense in Depth)
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 Same castle, better defense:
@@ -191,21 +116,6 @@ If attacker gets through the wall:
 
 ### Airport Security Analogy
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **Old way (perimeter):**
 - Checkpoint at entrance (TSA)
@@ -223,21 +133,6 @@ This pattern is commonly used in production systems.
 Multiple verification points, harder to compromise.
 
 ### Attack Flow Visualization
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Before Zero Trust:**
@@ -292,38 +187,8 @@ Attack unsuccessful
 
 ## Zero Trust Architecture
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Core Principles
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -349,21 +214,6 @@ This pattern is commonly used in production systems.
 ```
 
 ### The Five Pillars of Zero Trust
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -394,21 +244,6 @@ This pattern is commonly used in production systems.
 ```
 
 ### Microsegmentation Example
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Before Zero Trust (flat network):**
@@ -482,21 +317,6 @@ This pattern is commonly used in production systems.
 
 ### Continuous Verification Flow
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```
 User → Authenticate (username/password/MFA)
@@ -529,38 +349,8 @@ All access revoked immediately
 
 ## Penetration Testing
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Types of Tests
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -592,21 +382,6 @@ This pattern is commonly used in production systems.
 ```
 
 ### Penetration Test Phases
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -647,21 +422,6 @@ PHASE 5: REPORTING
 ```
 
 ### Real Penetration Test Example
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Target:** Startup's e-commerce platform
@@ -755,57 +515,14 @@ Step 4: Establish persistence
 
 ## Executive Summary
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 Multiple critical vulnerabilities found. Recommend immediate remediation.
 
 ## Findings
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### CRITICAL: PostgreSQL Exposed
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 - Port 5432 accessible without authentication
 - 100,000 customer records accessible
@@ -818,20 +535,6 @@ This pattern is commonly used in production systems.
 
 ### CRITICAL: SQL Injection in Login
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 - Username field vulnerable: admin' --
 - Attacker can login as any user without password
@@ -843,20 +546,6 @@ This pattern is commonly used in production systems.
 
 ### HIGH: XSS in Search
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 - Attacker can steal session cookies via malicious link
 - Impact: Account takeover
@@ -867,20 +556,6 @@ This pattern is commonly used in production systems.
 
 ### HIGH: CSRF in Admin Panel
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 - Account deletion possible without CSRF token
 - Attacker can trick admin into deleting accounts
@@ -892,20 +567,6 @@ This pattern is commonly used in production systems.
 
 ## Timeline
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 - June 1: Test began
 - June 3: All vulnerabilities exploited
@@ -915,20 +576,6 @@ This pattern is commonly used in production systems.
 
 ## Certification
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 [Tester signature]
 ```
@@ -937,38 +584,8 @@ This pattern is commonly used in production systems.
 
 ## Security Incident Response
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Incident Response Plan
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -1025,21 +642,6 @@ INCIDENT OCCURS
 ```
 
 ### Sample Incident Timeline
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **2024-05-27 02:15 AM**
@@ -1123,38 +725,8 @@ This pattern is commonly used in production systems.
 
 ## Building Security Culture
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### The Security Maturity Model
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -1197,21 +769,6 @@ LEVEL 5: WORLD-CLASS
 ```
 
 ### Security Training Program
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Tier 1: All Employees (Annual)**
@@ -1290,21 +847,6 @@ This pattern is commonly used in production systems.
 
 ### Phishing Simulation Program
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```
 MONTH 1: Baseline
@@ -1340,38 +882,8 @@ MONTH 12: Results
 
 ## Threat Modeling
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### STRIDE Methodology
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -1407,21 +919,6 @@ ELEVATION OF PRIVILEGE (Authorization)
 ```
 
 ### Threat Model Example: E-Commerce Platform
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -1465,38 +962,8 @@ MITIGATION: CSRF tokens, SameSite cookies
 
 ## Infrastructure Security
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Network Architecture
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -1558,21 +1025,6 @@ This pattern is commonly used in production systems.
 
 ### Security Groups (AWS)
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```
 Web Tier Security Group:
@@ -1613,38 +1065,8 @@ Result:
 
 ## Compliance & Standards
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### PCI-DSS (Payment Card Industry Data Security Standard)
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 Required for companies handling credit card data.
@@ -1732,21 +1154,6 @@ REQUIREMENT 12: Security policy
 
 ### HIPAA (Health Insurance Portability & Accountability Act)
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 Required for healthcare companies.
 
@@ -1783,38 +1190,8 @@ Breach Notification Rule:
 
 ## Failure Analysis
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Inadequate Monitoring → Months of Undetected Breach
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Scenario:**
@@ -1871,21 +1248,6 @@ class DataExfiltrationMonitor:
 
 ### Disabled Security Headers → XSS Compromise
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **Scenario:**
 ```javascript
@@ -1940,38 +1302,8 @@ def set_security_headers(response):
 
 ## Interview Questions
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Q1: Design Security for Startup with 1 Million Users
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Answer:**
@@ -2020,21 +1352,6 @@ INCIDENT RESPONSE
 ```
 
 ### Q2: Walk Through Penetration Test Methodology
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Answer:**
@@ -2086,38 +1403,8 @@ Total: 1-2 weeks for comprehensive test
 
 ## Production Strategies
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Security Checklist for Every Release
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -2173,38 +1460,8 @@ Don't deploy without all checkboxes!
 
 ## Incident Stories
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Story 1: Logging Disabled During Testing → Undetected Breach for 90 Days
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **The Setup:**
@@ -2254,21 +1511,6 @@ Company realizes: They've been breached for 90 days
 
 ### Story 2: Unpatched Dependency → Full Server Compromise
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **The Setup:**
 ```
@@ -2310,38 +1552,8 @@ Company realizes from unpatched library
 
 ## Comparison Tables
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Authentication Methods Comparison
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 | Method | Security | Speed | Cost | User Experience |
@@ -2354,21 +1566,6 @@ This pattern is commonly used in production systems.
 
 ### Authorization Models
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 | Model | Granularity | Scalability | Complexity | Use Case |
 |-------|-------------|-------------|-----------|----------|
@@ -2379,21 +1576,6 @@ This pattern is commonly used in production systems.
 
 ### Encryption Algorithms
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 | Algorithm | Key Size | Speed | Use Case |
 |-----------|----------|-------|----------|
@@ -2403,21 +1585,6 @@ This pattern is commonly used in production systems.
 | **ECDSA** | 256-bit | Medium | Digital signatures |
 
 ### Zero Trust Components
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 | Component | Purpose | Technology |
@@ -2435,21 +1602,6 @@ This pattern is commonly used in production systems.
 ---
 
 ## Related
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 - [Networking](../../11-networking/) — TLS, DNS security

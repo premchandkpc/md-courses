@@ -3,48 +3,32 @@
 
 ## Overview
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```mermaid
-graph TB
-    A["Input"] --> B["Process"]
-    B --> C["Output"]
-    style C fill:#3fb950
+graph LR
+    subgraph Cluster
+        N1["Node A<br/>Follower"] --> N1L["Term: 0<br/>Timeout: 180ms"]
+        N2["Node B<br/>Follower"] --> N2L["Term: 0<br/>Timeout: 230ms"]
+        N3["Node C<br/>Follower"] --> N3L["Term: 0<br/>Timeout: 270ms"]
+    end
+    
+    N1 -.->|"RequestVote"| N2
+    N1 -.->|"RequestVote"| N3
+    N2 -.->|"Vote Granted"| N1
+    N3 -.->|"Vote Granted"| N1
+    
+    style N1 fill:#4a8bc2
+    style N2 fill:#2d5a7b
+    style N3 fill:#2d5a7b
+    style N1L fill:#1a3a5c
+    style N2L fill:#1a3a5c
+    style N3L fill:#1a3a5c
 ```
 
 
 A step-by-step walkthrough of Raft leader election, log replication, and failure recovery.
 
 ## Quick Reference
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -57,40 +41,10 @@ Guarantees: Safety (never diverge) + Liveness (eventually progress)
 
 ## Scenario 1: Initial Leader Election
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **Setup**: 3 servers (A, B, C). No leader. All in FOLLOWER state.
 
 ### Step-by-Step
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 1. **Initialization**: All servers start as FOLLOWERS with term=0 and random election timeouts (150-300ms)
@@ -101,21 +55,6 @@ This pattern is commonly used in production systems.
 6. **Leadership assumption**: Winner becomes LEADER and immediately starts sending heartbeat AppendEntries RPC to all followers
 
 ### Code Example
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```go
@@ -179,40 +118,10 @@ func (rs *RaftServer) broadcastHeartbeat() {
 
 ### Real-World Scenario
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 Cockroach Labs' distributed database uses Raft for consensus, and during their infrastructure upgrade, a cascading election storm occurred when 5 out of 9 nodes lost network connectivity. The election timeouts triggered rapidly, causing hundreds of election cycles per second. By implementing exponential backoff on election timeouts (a Raft optimization), they reduced the churn from 40% CPU to 2%, preventing production outages across their customer base.
 
 ### Diagram
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```mermaid
@@ -295,21 +204,6 @@ T=12ms    B, C receive AppendEntries from A
 
 ## Scenario 2: Client Write with Replication
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **Setup**: A is LEADER (term 1). B, C are FOLLOWERS.
 
@@ -365,21 +259,6 @@ C: term 1, log: [SET x=100], x=100, commitIndex=1
 ---
 
 ## Scenario 3: Network Partition (Majority Side)
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Setup**: A is LEADER. Network splits: {A, B} vs {C}
@@ -454,21 +333,6 @@ T=610ms   A replicates on 2/3 (majority {A, B}) → safe to commit
 
 ## Scenario 4: Heal Partition + Leader Failure
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **Setup**: Partition heals. Then A fails.
 
@@ -528,21 +392,6 @@ A: CRASHED
 
 ## Scenario 5: Split-Brain Prevention (Why 3+ Servers)
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **Attempt with 2 servers:**
 
@@ -575,38 +424,8 @@ Majority partition continues operating ✓
 
 ## Common Raft Scenarios
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Scenario 6: Log Mismatch Recovery
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -632,21 +451,6 @@ Follower receives retry:
 
 ### Scenario 7: Uncommitted Entries Cannot Be Applied
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```
 Leader (term 2) replicates cmd to followers
@@ -659,21 +463,6 @@ Safety: clients waiting for response timeout (no ACK)
 ```
 
 ### Scenario 8: Election Safety
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -698,38 +487,8 @@ Only servers with most complete logs can become leaders
 
 ## Key Properties Visualized
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Property: Leader Completeness
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -746,21 +505,6 @@ Result: B cannot lose previously committed entries
 ```
 
 ### Property: State Machine Safety
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -779,38 +523,8 @@ Result: State machines apply same sequence → consistency
 
 ## Interview Questions
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Q1: Why does Raft require N/2+1 votes, not just 1?
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Answer**: Split-brain prevention.
@@ -829,21 +543,6 @@ With N=3: need 2 votes (not 1, not 3)
 
 ### Q2: If a leader sends heartbeats but crashes before ACK, is the command committed?
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **Answer**: No. Raft commits only when:
 1. Entry replicated to majority of servers
@@ -856,21 +555,6 @@ If leader crashes before confirming replication:
 - Safety: committed entries never lost, uncommitted might be
 
 ### Q3: Why 3 servers minimum, not 2?
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Answer**: With 2 servers:
@@ -887,38 +571,8 @@ Rule: 2F+1 servers tolerate F failures. (3 servers = 1 failure, 5 servers = 2 fa
 
 ## Testing Raft Implementation
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Test: Leader Election Under Partition
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -931,21 +585,6 @@ Verify: Commands sent to old leader A timeout (no quorum)
 
 ### Test: Log Replication
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```
 Setup: Leader A, followers B, C
@@ -957,21 +596,6 @@ Verify: Commit index advances (majority replication)
 ```
 
 ### Test: Safety After Failure
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -986,21 +610,6 @@ Verify: No command is lost (previously committed entries)
 
 ## Key Takeaways
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 1. **Quorum**: Majority ensures safety across failures and partitions
 2. **Term numbers**: Clock for detecting old leaders/candidates
@@ -1012,21 +621,6 @@ This pattern is commonly used in production systems.
 
 
 ## Practical Example
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 See code examples above for practical usage patterns.

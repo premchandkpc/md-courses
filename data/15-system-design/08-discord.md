@@ -5,7 +5,6 @@
 > **Related**: [03-twitter.md](./03-twitter.md) | [07-amazon.md](./07-amazon.md)
 
 
-
 ```mermaid
 graph LR
     USER_DC["Client"] --> WS_GATEWAY["WebSocket Gateway<br/>(400K conns/node)"]
@@ -43,21 +42,6 @@ graph LR
 
 ## Table of Contents
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 1. Requirements & Scale
 2. High-Level Architecture
@@ -76,21 +60,6 @@ This pattern is commonly used in production systems.
 ---
 
 ## 1. Requirements & Scale
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -120,21 +89,6 @@ Key Requirements:
 ---
 
 ## 2. High-Level Architecture
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -201,21 +155,6 @@ This pattern is commonly used in production systems.
 ---
 
 ## 3. WebSocket Gateway
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -318,21 +257,6 @@ Event delivery to connected clients:
 
 ## 4. Guild/Server Model
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```text
 Guild Data Model:
@@ -434,21 +358,6 @@ Large guild challenges (500K+ members):
 
 ## 5. Channels & Permissions
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```text
 Channel Types:
@@ -522,21 +431,6 @@ Permission cache (Redis):
 ---
 
 ## 6. Message System
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -706,21 +600,6 @@ Bulk Delete:
 
 ## 7. Voice/Video Architecture
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```text
 Voice Connection Flow:
@@ -888,21 +767,6 @@ Voice state management:
 
 ## 8. Presence & Typing Indicators
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```text
 Presence states:
@@ -985,21 +849,6 @@ Typing Indicators:
 ---
 
 ## 9. File Upload & CDN
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -1084,21 +933,6 @@ CDN Distribution:
 ---
 
 ## 10. Rate Limiting & Anti-Abuse
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -1192,21 +1026,6 @@ Content moderation:
 ---
 
 ## 11. Database Design
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -1421,21 +1240,6 @@ Guild shard map (for gateway routing):
 
 ## 12. Failure Analysis
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **WebSocket Connection Storm:**
 
@@ -1612,21 +1416,6 @@ Mitigations:
 
 ## 13. Performance Considerations
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```text
 Latency Targets:
@@ -1679,21 +1468,6 @@ ScyllaDB:
 ---
 
 ## Simplest Mental Model
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Discord is like a massive walkie-talkie network combined with a chatroom system, where every message is written in permanent ink (Cassandra) and delivered to everyone currently listening on that channel through a dedicated pneumatic tube (WebSocket).** The gateway is like a telephone switchboard operator who keeps a line open to every connected user — when someone speaks, the operator copies the message to everyone else in that room. Voice channels work like a high-tech party line: the SFU is a selective postman who only sends you the voices you need to hear (not everyone else's background noise). The permission system is a super-strict bouncer who checks your ID (roles) and a rulebook (permission overwrites) every time you try to do anything — send a message, join a voice channel, or even read a channel. Large guilds with thousands of members are like stadiums where the bouncer has to check every person at every entrance, so Discord precomputes who can go where and caches it (permission bitset in Redis) so the check takes microseconds instead of milliseconds.

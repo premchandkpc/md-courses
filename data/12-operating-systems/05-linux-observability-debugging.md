@@ -1,7 +1,6 @@
 # 🔍 Linux Observability & Debugging — Complete Deep Dive
 
 
-
 ```mermaid
 graph LR
     STRACE["strace<br/>(Syscall Tracer)"] --> SYSCALLS["syscall table<br/>(NR_read/write)"]
@@ -44,20 +43,6 @@ graph LR
 
 ## Table of Contents
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 - [strace](#strace)
 - [ltrace](#ltrace)
@@ -80,21 +65,6 @@ This pattern is commonly used in production systems.
 ---
 
 ## strace
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Syscall tracer** — intercepts and records all system calls made by a process.
@@ -139,21 +109,6 @@ strace -Z                     # failed calls only
 
 ## ltrace
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **Library call tracer** — intercepts dynamic library calls (uses `LD_PRELOAD` or `ptrace`).
 
@@ -173,21 +128,6 @@ ltrace -b ls                 # show signal arrival
 ---
 
 ## gdb
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **GNU Debugger** — full process introspection and control.
@@ -265,21 +205,6 @@ call func(42)                # call a function in inferior
 
 ## perf
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **Linux Performance Events** — uses hardware PMU counters and kernel tracepoints.
 
@@ -353,21 +278,6 @@ perf script                       # dump raw sample data
 
 ## ftrace
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **Function tracer** — built into the kernel (`/sys/kernel/debug/tracing/`).
 
@@ -416,38 +326,8 @@ trace-cmd stream -p function_graph      # live streaming
 
 ## BPF Tools (bpftrace & BCC)
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### bpftrace
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **One-liners**:
@@ -495,21 +375,6 @@ bpftrace -e 'uprobe:/lib/x86_64-linux-gnu/libc.so.6:malloc /arg0 > 1000000/ { pr
 
 ### BCC (BPF Compiler Collection)
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **Tools**:
 
@@ -533,21 +398,6 @@ This pattern is commonly used in production systems.
 
 ### bpftrace vs BCC vs perf
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 | Tool | Language | Ease | Granularity | Overhead |
 |------|----------|------|-------------|----------|
@@ -558,21 +408,6 @@ This pattern is commonly used in production systems.
 ---
 
 ## eBPF Observability Internals
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **bpf_trace_printk()**: Simple debug output. Writes to `/sys/kernel/debug/tracing/trace_pipe`. Max 3 args. Signed for early development.
@@ -590,21 +425,6 @@ This pattern is commonly used in production systems.
 ---
 
 ## /proc Filesystem Deep Dive
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **CPU**:
@@ -653,21 +473,6 @@ This pattern is commonly used in production systems.
 
 ## /sys Filesystem
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **Block**: `/sys/block/<dev>/` — `queue/` (scheduler, nr_requests, rotational, read_ahead_kb), `device/` (model, vendor, rev).
 
@@ -684,21 +489,6 @@ This pattern is commonly used in production systems.
 ---
 
 ## sar/sysstat
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **System Activity Report** — `sar`, `mpstat`, `iostat`, `pidstat`.
@@ -737,21 +527,6 @@ pidstat -t 1 5             # Per-thread
 
 ## top/htop/atop/btm
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 | Tool | Key Features |
 |------|-------------|
@@ -777,21 +552,6 @@ NET | eth0    10 Gbps |  pcki   12345  |  pcko   23456  | sp   12 Mbps |
 ---
 
 ## lsof
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **List Open Files** — everything is a file:
@@ -826,21 +586,6 @@ nginx    1246  www    5u   IPv4  12346               TCP 10.0.0.1:80->10.0.0.2:5
 ---
 
 ## valgrind
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 | Tool | Purpose | Command |
@@ -881,21 +626,6 @@ This pattern is commonly used in production systems.
 
 ## Heap Analysis
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **heaptrack** (KDE): Low-overhead heap profiler.
 
@@ -927,21 +657,6 @@ jeprof --svg ./a.out jeprof.out.0001.heap > heap.svg
 ---
 
 ## Hugepage & OOM Analysis
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Hugepage analysis**:
@@ -975,21 +690,6 @@ Out of memory: Killed process 12345 (mysqld) total-vm:12345678kB, anon-rss:45678
 ---
 
 ## Coredump Analysis
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Setup**:
@@ -1032,21 +732,6 @@ thread apply all bt      # backtrace for all threads
 ---
 
 ## Simplest Mental Model
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 > **Linux observability is like having cameras, counters, and inspectors throughout a factory.**

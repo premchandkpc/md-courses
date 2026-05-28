@@ -6,38 +6,8 @@
 
 ## LAYER 1: Beginner's Mental Model 🧠
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Real-World Analogy
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 Imagine your React component is a **restaurant ordering system**:
@@ -61,21 +31,6 @@ procedure greetCustomer():
 Now every waiter calls `greetCustomer()` — simpler, consistent, reusable.
 
 ### Why This Matters
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Without custom hooks:**
@@ -112,38 +67,8 @@ const admin = useAsync(() => api.getAdmin());
 
 ## LAYER 2: How Custom Hooks Work (Intermediate) 🔧
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### The Hook Contract
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 A custom hook is just a **JavaScript function that:**
@@ -169,21 +94,6 @@ function MyApp() {
 ```
 
 ### Composition Model
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 Hooks compose: custom hooks call other hooks.
@@ -221,21 +131,6 @@ graph TD
 
 ### Hook Lifecycle
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```jsx
 function useExample(dep) {
@@ -262,21 +157,6 @@ function useExample(dep) {
 
 ### Decision Tree: When to Use What
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```mermaid
 flowchart TD
@@ -295,23 +175,6 @@ flowchart TD
 ---
 
 ## Custom Hook Composition
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
-
 
 
 ```mermaid
@@ -344,21 +207,6 @@ graph LR
 
 ## 1. Custom Hooks Fundamentals
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 Custom hooks are functions that use built-in hooks and share stateful logic between components. They must start with `use`.
 
@@ -387,38 +235,8 @@ function Dashboard() {
 
 ## 2. Utility Hooks
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### useDebounce / useThrottle
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```jsx
@@ -451,21 +269,6 @@ function useThrottle(value, interval = 300) {
 
 ### usePrevious / useToggle / useCounter
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```jsx
 function usePrevious(value) {
@@ -490,21 +293,6 @@ function useCounter(initial = 0, step = 1) {
 ```
 
 ### useInterval / useTimeout
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```jsx
@@ -533,38 +321,8 @@ function useTimeout(callback, delay) {
 
 ## 3. Browser & DOM Hooks
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### useIntersectionObserver / useMediaQuery
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```jsx
@@ -600,21 +358,6 @@ function useMediaQuery(query) {
 ```
 
 ### useOnlineStatus / useClipboard / useIdleTimer
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```jsx
@@ -653,21 +396,6 @@ function useClipboard() {
 **Edge cases**: useMediaQuery must handle SSR by returning a default (usually false). useOnlineStatus falls back to `navigator.onLine`. useClipboard includes a fallback using `document.execCommand("copy")` for older browsers.
 
 ### useKeyPress / useEventListener / useLockBodyScroll
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```jsx
@@ -709,38 +437,8 @@ function useLockBodyScroll(locked = true) {
 
 ## 4. Storage Hooks
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### useLocalStorage / useDarkMode / useCookie
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```jsx
@@ -776,21 +474,6 @@ function useDarkMode() {
 
 ## 5. Async Hooks
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```jsx
 function useAsync(asyncFn, deps = []) {
@@ -816,38 +499,8 @@ function useAsync(asyncFn, deps = []) {
 
 ## 6. State Management Patterns
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### useReducer + Context
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```jsx
@@ -896,21 +549,6 @@ function useAuth() {
 
 ## 8. Controlled / Uncontrolled Pattern
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```jsx
 function useControllableState({ value: controlled, defaultValue, onChange }) {
@@ -940,21 +578,6 @@ function Input({ value, defaultValue, onChange }) {
 ```
 
 ## 9. Generic Components & forwardRef
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```jsx
@@ -988,21 +611,6 @@ const Select = React.forwardRef(function Select<T extends string>(
 ```
 
 ## 10. Compound Components
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```jsx
@@ -1049,21 +657,6 @@ Tabs.Panel = TabPanel;
 
 ## 11. Testing Hooks
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```jsx
 import { renderHook, act, waitFor } from "@testing-library/react";
@@ -1108,21 +701,6 @@ const { result } = renderHook(() => useAuth(), { wrapper });
 
 ## 12. Hooks Rules
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 - **Only call hooks at the top level** — never inside conditions, loops, or nested functions.
 - **Only call hooks from React function components or custom hooks**.
@@ -1135,38 +713,8 @@ This pattern is commonly used in production systems.
 
 ## LAYER 3: Deep Internals — How React Actually Executes Hooks ⚙️
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Hook Storage: The Fiber Architecture
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 React doesn't store hook state in the function itself. Instead:
@@ -1202,21 +750,6 @@ function MyComponent({ id }) {
 
 ### Fiber Hook Queue Diagram
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```
 Component Fiber
@@ -1234,21 +767,6 @@ useState call 3 → reads queue[3].value
 ```
 
 ### Closure Snapshots
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 Each render creates a new function closure with current props/state:
@@ -1292,21 +810,6 @@ useEffect(() => {
 
 ### Dependency Array Reconciliation
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```jsx
 useEffect(() => {
@@ -1344,38 +847,8 @@ useEffect(() => {
 
 ## LAYER 4: Production Challenges 🚨
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Common Failures & How to Debug
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 | Failure | Symptom | Root Cause | Detection | Recovery |
@@ -1388,21 +861,6 @@ This pattern is commonly used in production systems.
 | **Memory Spike** | Sudden OOM crash | Event listeners accumulate | memory profiler shows 500K listeners | Verify cleanup runs |
 
 ### Real Production Incident: Instagram Stories
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Problem:** User clicks next story rapidly (200ms intervals). Component unmounts/remounts story hook.
@@ -1452,21 +910,6 @@ function StoryViewer({ storyId }) {
 
 ### Observability: What to Monitor
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **Metrics:**
 - Hook state updates per second (should be stable)
@@ -1509,38 +952,8 @@ rate(react_effect_memory_leaked_bytes[5m])
 
 ## LAYER 5: Staff Engineer Perspective 👨‍💼
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Tradeoff Analysis
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 | Aspect | Custom Hooks | HOC | Render Props | Context |
@@ -1560,21 +973,6 @@ This pattern is commonly used in production systems.
 - Closures more intuitive than this-binding
 
 ### Migration Strategy: From HOCs to Hooks
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```jsx
@@ -1609,21 +1007,6 @@ function MyComponent({ id }) {
 - Fewer bugs from wrapper edge cases
 
 ### Scaling Patterns: 500+ Components
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 At Stripe scale (500+ components using hooks):
@@ -1667,21 +1050,6 @@ Tests for components:
 
 ### Evolution Path: Where Hooks Are Heading
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **Current (2026):** Custom hooks for almost everything.
 
@@ -1701,38 +1069,8 @@ This pattern is commonly used in production systems.
 
 ## Interview Questions 💼
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Level 1: Junior
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Q: What's the difference between a hook and a regular function?**
@@ -1791,21 +1129,6 @@ function useLocalStorage(key, initial) {
 ```
 
 ### Level 2: Intermediate
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Q: What's a stale closure? Show an example.**
@@ -1867,21 +1190,6 @@ function Parent() {
 
 ### Level 3: Senior
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **Q: Design a useAsync hook that handles race conditions.**
 
@@ -1939,21 +1247,6 @@ function ThemeProvider({ children }) {
 ```
 
 ### Level 4: Staff Engineer
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Q: You have 300 components using custom hooks. How do you prevent hook bloat?**
@@ -2023,21 +1316,6 @@ function Dashboard() {
 
 ## Production Story: Uber Surge Pricing Optimization ⚡
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **Challenge:** Surge pricing component re-rendering every 500ms caused 15% CPU spike during peak hours.
 
@@ -2090,38 +1368,8 @@ function useFetchPrice(location) {
 
 ## Common Debugging Patterns 🔍
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Pattern: "Why is my effect running too much?"
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```jsx
@@ -2151,21 +1399,6 @@ useDebugEffect(() => {
 
 ### Pattern: "Is my cleanup function running?"
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```jsx
 useEffect(() => {
@@ -2188,21 +1421,6 @@ useEffect(() => {
 
 ### Pattern: "Which hook caused re-render?"
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```jsx
 function WhyDidYouRender() {
@@ -2222,43 +1440,12 @@ function WhyDidYouRender() {
 ```
 
 
-
 ---
 
 ## Hands-On Lab: Build Your Own React Hook System
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Lab 1: Implement useAsync with Cancellation
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Goal:** Create a production-ready async hook that handles race conditions.
@@ -2296,21 +1483,6 @@ function App() {
 
 ### Lab 2: Build useLocalStorage with Sync Across Tabs
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **Goal:** Create a hook that shares state across browser tabs.
 
@@ -2331,21 +1503,6 @@ function useLocalStorage(key, initial) {
 
 ### Lab 3: Implement useControllableState for Flexible Components
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **Goal:** Create a hook that works both controlled AND uncontrolled.
 
@@ -2362,78 +1519,21 @@ function useControllableState({ value, defaultValue, onChange }) {
 
 ## Related Topics
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Prerequisites
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 - [React Fundamentals (01-jsx-vdom.md)](./01-jsx-vdom.md) — JSX and Virtual DOM
 - [State Management (02-state-management.md)](./02-state-management.md) — useState, useReducer basics
 
 ### Related Patterns
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 - [Component Architecture (03-component-patterns.md)](./03-component-patterns.md) — HOC vs Hooks vs Render Props
 - [Performance Optimization (07-performance-optimization.md)](./07-performance-optimization.md) — useMemo, useCallback, React.memo
 
 ### Cross-Domain
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 - [Testing (19-testing/)](../../19-testing/) — Testing hooks with renderHook
 - [Performance Engineering (18-performance-engineering/)](../../18-performance-engineering/) — Profiling React apps
@@ -2445,38 +1545,8 @@ This pattern is commonly used in production systems.
 
 ## Quick Reference: Hook Checklist
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Before Shipping a Custom Hook
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 - [ ] Follows Rules of Hooks (top-level, consistent order)
@@ -2492,21 +1562,6 @@ This pattern is commonly used in production systems.
 
 ### Performance Checklist
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 - [ ] useCallback for callbacks passed to memoized children
 - [ ] useMemo for expensive computations
@@ -2519,21 +1574,6 @@ This pattern is commonly used in production systems.
 ---
 
 ## Summary
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 This document covered **5 layers of custom hooks mastery**:

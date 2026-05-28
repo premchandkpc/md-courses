@@ -5,7 +5,6 @@
 > **Related**: [08-discord.md](./08-discord.md) | [05-youtube.md](./05-youtube.md)
 
 
-
 ```mermaid
 graph LR
     HOST["Host"] --> MEETING["Create Meeting<br/>(signaling)"]
@@ -43,21 +42,6 @@ graph LR
 
 ## Table of Contents
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 1. Requirements & Scale
 2. High-Level Architecture
@@ -76,21 +60,6 @@ This pattern is commonly used in production systems.
 ---
 
 ## 1. Requirements & Scale
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -122,21 +91,6 @@ Key Requirements:
 ---
 
 ## 2. High-Level Architecture
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -222,21 +176,6 @@ This pattern is commonly used in production systems.
 
 ## 3. SFU vs MCU Architecture
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```text
 Comparison of Multipoint Conferencing Approaches:
@@ -318,21 +257,6 @@ Zoom's hybrid approach:
 ---
 
 ## 4. Meeting Lifecycle
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -462,21 +386,6 @@ Meeting Lifecycle:
 ---
 
 ## 5. Media Pipeline
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -643,21 +552,6 @@ Screen sharing pipeline:
 
 ## 6. Signaling Layer
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```text
 Signaling Protocol:
@@ -721,21 +615,6 @@ Signaling server scaling:
 ---
 
 ## 7. Global Scaling
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -832,21 +711,6 @@ SFU node capacity planning:
 
 ## 8. Reliability & Fallback
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```text
 Fallback chain (highest quality -> lowest quality):
@@ -930,21 +794,6 @@ Degradation scenarios:
 
 ## 9. Security & E2EE
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```text
 Zoom Encryption History:
@@ -1027,21 +876,6 @@ Encryption overhead:
 
 ## 10. Recording & Breakout Rooms
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **Cloud Recording:**
 
@@ -1123,21 +957,6 @@ Breakout room architecture:
 ---
 
 ## 11. Database Design
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -1246,21 +1065,6 @@ Redis (Real-time State):
 ---
 
 ## 12. Failure Analysis
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **SFU Node Failure During Meeting:**
@@ -1420,21 +1224,6 @@ Mitigations:
 
 ## 13. Performance Considerations
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```text
 Latency Targets:
@@ -1490,21 +1279,6 @@ Server Infrastructure (estimated):
 ---
 
 ## Simplest Mental Model
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Zoom is like a global telephone exchange for video calls. The SFU is a super-efficient postal sorting center: everyone sends their letter (video stream) to the center, and the center puts the right letters into each recipient's mailbox — but unlike a traditional mail room, the SFU never opens the letters (E2EE).** If you're in a 3-person meeting, it's like three people in adjacent rooms with open doors (mesh topology). For a 50-person all-hands meeting, it's like a town hall where the active speaker is projected on a big screen while others are in the audience with name cards (SFU with thumbnail gallery). The signaling server is the town crier who announces who arrives, who leaves, who's talking, and who raised their hand — but the media itself (your actual voice and video) goes directly through the postal center. When your internet gets bad, the system smoothly downgrades from HD video to standard definition to audio-only to, if all else fails, a plain old telephone call (PSTN) — like a luxury car that turns into a bicycle when the road disappears, but never stops moving.

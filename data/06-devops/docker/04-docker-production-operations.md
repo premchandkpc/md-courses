@@ -6,21 +6,6 @@
 
 ## Layer 1: Beginner Mental Model
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **Analogy**: Like shipping containers. A container is a standardized box (Linux cgroups + namespaces) with your app inside. You can ship the box anywhere (dev, staging, prod) and it runs the same. Healthcheck = inspecting the box during transit. Logging = recording what happened in the box.
 
@@ -36,38 +21,8 @@ This pattern is commonly used in production systems.
 
 ## Layer 4: Production Reality
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Docker Production Failure Modes
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 | Failure | Symptoms | Root Cause | Fix |
@@ -82,21 +37,6 @@ This pattern is commonly used in production systems.
 | **Compose Port Conflict** | Port 8080 in use, can't start container | Multiple containers define same port, another service already running | Use dynamic port mapping, check docker ps for conflicts |
 
 ### Production Incident: Google Cloud Build OOM (2018)
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Context**: Google Cloud Build used Docker containers to build customer code. During peak hours, build containers hit OOM and crashed, causing build failures.
@@ -140,38 +80,8 @@ docker run -m 8gb -e _JAVA_OPTIONS="-Xmx6gb" ubuntu:18.04 /build.sh
 
 ## Layer 5: Staff Engineer Perspective
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Container Strategy Tradeoffs
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 | Strategy | Complexity | Performance | Cost | Security | Use Case |
@@ -183,21 +93,6 @@ This pattern is commonly used in production systems.
 | **Hybrid (VM + container)** | Very high | Excellent | $$$ | Excellent | Compliance-heavy (financial) |
 
 ### Scaling Pattern: Single Host → Global Infrastructure
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Stage 1 (Startup)**: Docker on single host
@@ -234,38 +129,8 @@ This pattern is commonly used in production systems.
 
 ## Layer 5: Interview Questions
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Level 1 (Junior Engineer)
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Q1: What's a Docker container? How is it different from a VM?**
@@ -279,21 +144,6 @@ A: Healthcheck = periodic command (e.g., curl localhost:8080). If fails N times,
 - Expected: Understand detection of "dead but running" containers
 
 ### Level 2 (Mid-Level Engineer)
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Q3: OOM killer hit your container. How do you debug?**
@@ -313,21 +163,6 @@ A: Docker caches layers. Layer N uses hash of layer N-1 content. If any Dockerfi
 - Expected: Understand layer dependency, cache invalidation
 
 ### Level 3 (Senior Engineer)
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Q5: Design Dockerfile for Java app (100MB jar, 500MB deps). Target: <200MB image, fast rebuild.**
@@ -356,21 +191,6 @@ A:
 - Expected: Network understanding, health checks, logging strategy
 
 ### Level 4 (Staff Engineer)
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Q7: Migrate 100 services from VMs to Docker. Plan the rollout.**
@@ -404,7 +224,6 @@ A:
 ---
 
 
-
 ```mermaid
 graph LR
     CONT["Container<br/>Runtime"] --> LIMIT["Resource Limits<br/>(--memory/--cpus)"]
@@ -433,21 +252,6 @@ graph LR
 
 ## Table of Contents
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 - [Logging Drivers](#-logging-drivers)
 - [Resource Constraints](#-resource-constraints)
@@ -469,38 +273,8 @@ This pattern is commonly used in production systems.
 
 ## 📝 Logging Drivers
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Driver Comparison
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```mermaid
@@ -539,38 +313,8 @@ docker logs --since 2024-01-01T00:00:00 container_name
 
 ## ⚖️ Resource Constraints
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### CPU
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -594,21 +338,6 @@ This pattern is commonly used in production systems.
 
 ### Memory & Swap
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```bash
 docker run --memory=512m --memory-swap=1g --memory-swappiness=0
@@ -620,21 +349,6 @@ docker run --memory=512m --memory-swap=1g --memory-swappiness=0
 ```
 
 ### OOM Killer Behavior
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -651,21 +365,6 @@ This pattern is commonly used in production systems.
 
 ### Block IO
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```bash
 # Read/Write bandwidth limits (bps)
@@ -678,21 +377,6 @@ docker run --device-read-iops=/dev/sda:100 --device-write-iops=/dev/sda:200
 ---
 
 ## ❤️ Healthcheck Best Practices
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```dockerfile
@@ -743,21 +427,6 @@ docker inspect --format='{{json .State.Health.Log}}' container_name | jq .
 
 ## 🔄 Restart Policies
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 | Policy | Behavior |
 |---|---|
@@ -785,21 +454,6 @@ docker events --filter 'event=die' --filter 'event=restart'
 ---
 
 ## ⏹️ Stop / Start / Signal Handling
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -833,21 +487,6 @@ docker wait mycontainer
 
 ### PID 1 Responsibility
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```text
   Container process is PID 1 — must:
@@ -871,38 +510,8 @@ CMD ["/app/start.sh"]
 
 ## 🏗️ Build Cache Optimization
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Layer Ordering
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```dockerfile
@@ -918,21 +527,6 @@ COPY . .
 ```
 
 ### Multi-Stage Build
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```dockerfile
@@ -955,21 +549,6 @@ CMD ["node", "dist/index.js"]
 
 ### BuildKit
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```bash
 # Enable BuildKit
@@ -987,21 +566,6 @@ docker build --secret id=npmrc,src=$HOME/.npmrc .
 
 ### --cache-from
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```bash
 # Use registry image as cache source
@@ -1015,21 +579,6 @@ docker build --cache-from myapp:cache --tag myapp:latest .
 ---
 
 ## 📜 Dockerfile Best Practices
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```dockerfile
@@ -1065,21 +614,6 @@ LABEL org.opencontainers.image.description="Production web service"
 
 ### .dockerignore
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```
 **/node_modules
@@ -1096,38 +630,8 @@ Dockerfile
 
 ## 📦 Docker Registry
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Push / Pull
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```bash
@@ -1151,21 +655,6 @@ services:
 ```
 
 ### Garbage Collection
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -1194,21 +683,6 @@ docker exec registry /bin/registry garbage-collect --dry-run /etc/docker/registr
 
 ### Storage Backends
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```bash
 # S3 backend
@@ -1228,21 +702,6 @@ echo '{
 
 ## 🔍 Registry Comparison
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 | Feature | Docker Hub | ECR | GCR | ACR | Harbor |
 |---|---|---|---|---|---|
@@ -1257,38 +716,8 @@ This pattern is commonly used in production systems.
 
 ## 📋 Compose Production Patterns
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### depends_on with Healthcheck
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```yaml
@@ -1311,21 +740,6 @@ services:
 
 ### Restart Policies
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```yaml
 services:
@@ -1347,38 +761,8 @@ services:
 
 ## 🎭 Compose Profiles & Watch
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Profiles
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```yaml
@@ -1406,21 +790,6 @@ docker compose --profile production --profile staging up
 
 ### Compose Watch (Hot Reload)
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```yaml
 services:
@@ -1445,21 +814,6 @@ docker compose watch
 ---
 
 ## 🔄 Docker Swarm Stack Deploy
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```yaml
@@ -1518,38 +872,8 @@ docker service update --rollback web_web
 
 ## 📦 OCI Runtime Spec & Containerd Snapshotters
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### OCI Runtime Spec
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -1567,21 +891,6 @@ runtime.json fields:
 ```
 
 ### Containerd Snapshotters
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -1612,21 +921,6 @@ nerdctl info --format '{{.Driver}}'
 
 ### Stargz Lazy Pulling
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```text
 Standard pull: Download ALL layers → mount → start
@@ -1641,21 +935,6 @@ Stargz pull:   Download metadata + start → lazy-load blocks on access
 ---
 
 ## 🔭 Docker Scout
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```bash
@@ -1686,21 +965,6 @@ Docker Scout workflow:
 
 ## 🧠 Simplest Mental Model
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```text
 ┌──────────────────────────────────────────────────────────────────┐
@@ -1722,21 +986,6 @@ This pattern is commonly used in production systems.
 
 ## Observability
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```mermaid
 flowchart LR
@@ -1751,21 +1000,6 @@ flowchart LR
 
 ### Key Metrics
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 | Metric | Unit | Threshold | Indicates |
 |--------|------|-----------|-----------|
@@ -1779,42 +1013,12 @@ This pattern is commonly used in production systems.
 
 ### Logs
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 - **ERROR**: Container exit code != 0, OOMKilled, daemon errors, storage driver errors
 - **WARN**: Image pull slow, container restart, resource limit approaching, DNS resolution slow
 - **INFO**: Container start/stop, image pull complete, daemon ready, network created
 
 ### Alerts
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 | Severity | Condition | Response |
@@ -1825,21 +1029,6 @@ This pattern is commonly used in production systems.
 | P2 | Image pull > 60s | Check registry mirror |
 
 ### Dashboards
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Docker Host Dashboard**: container count, CPU/memory/disk per container, restart rate, image size distribution, layer usage.

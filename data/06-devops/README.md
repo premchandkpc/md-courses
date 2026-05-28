@@ -3,7 +3,6 @@
 The intersection of development and operations—automating the build, test, deploy, and operate lifecycle. Covers infrastructure as code, CI/CD pipelines, configuration management, containerization, SRE practices, security integration (DevSecOps), and the cultural practices that enable rapid, reliable software delivery.
 
 
-
 ```mermaid
 graph LR
     A["📥 Input"] --> B["🔄 Transform"]

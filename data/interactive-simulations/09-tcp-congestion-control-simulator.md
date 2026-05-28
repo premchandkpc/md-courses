@@ -2,21 +2,6 @@
 
 ## Overview
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```mermaid
 graph TB
@@ -62,21 +47,6 @@ Simulate TCP congestion control algorithms: Reno, Cubic, and BBR. Visualize the 
 
 ## Actors/Components
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 | Actor | Role |
 |-------|------|
@@ -93,38 +63,8 @@ This pattern is commonly used in production systems.
 
 ## State Machine
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Congestion Control State (per algorithm)
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 #### Reno
@@ -216,38 +156,8 @@ This pattern is commonly used in production systems.
 
 ## Animation Frames
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Frame 1: Slow Start — Exponential Growth
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -279,21 +189,6 @@ When cwnd reaches ssthresh → transition to Congestion Avoidance
 
 ### Frame 2: Congestion Avoidance — AIMD
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```
 After slow start, cwnd ≥ ssthresh:
@@ -323,21 +218,6 @@ Until packet loss occurs:
 ```
 
 ### Frame 3: Fast Retransmit and Fast Recovery
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -382,21 +262,6 @@ Without Fast Recovery (old TCP):
 
 ### Frame 4: Timeout — Full Reset
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```
 Extreme loss: all packets in flight lost
@@ -422,21 +287,6 @@ Fast Retransmit/Fast Recovery avoid the full reset.
 ```
 
 ### Frame 5: Cubic vs Reno Comparison
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -481,21 +331,6 @@ Cubic advantage grows with BDP (bandwidth-delay product):
 
 ## User Interactions
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 | Control | Type | Range/Options | Effect |
 |---------|------|---------------|--------|
@@ -516,21 +351,6 @@ This pattern is commonly used in production systems.
 ---
 
 ## Visual Transitions
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 | Event | Visual Effect |
@@ -555,21 +375,6 @@ This pattern is commonly used in production systems.
 
 ## Edge Cases
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 | Edge Case | Behavior |
 |-----------|----------|
@@ -590,21 +395,6 @@ This pattern is commonly used in production systems.
 
 ## Failure Modes
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 | Failure | Symptom | Recovery |
 |---------|---------|----------|
@@ -623,21 +413,6 @@ This pattern is commonly used in production systems.
 ---
 
 ## Metrics to Display
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 | Metric | Unit | Source |
@@ -665,38 +440,8 @@ This pattern is commonly used in production systems.
 
 ## Scenario Walkthroughs
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Scenario 1: Basic Reno — Slow Start, Loss, AIMD Cycle
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Setup:** 100Mbps link, 50ms RTT, 0.1% random loss, Reno
@@ -769,21 +514,6 @@ Key insight: Reno suffers on high-BDP paths because
 
 ### Scenario 2: Cubic on High-BDP — Faster Recovery
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **Setup:** 1Gbps link, 100ms RTT, 0.01% loss, Cubic vs Reno
 
@@ -832,21 +562,6 @@ This is why Linux switched from Reno to Cubic as default.
 ```
 
 ### Scenario 3: BBR — Model-Based Congestion Control
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Setup:** 100Mbps link, 50ms RTT, no loss (clean channel)
@@ -909,21 +624,6 @@ Purpose: Prevent minRTT estimate from drifting upward
 ```
 
 ### Scenario 4: Bufferbloat — Reno vs BBR
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Setup:** 100Mbps link, 50ms RTT, large 1000-packet buffer
@@ -990,21 +690,6 @@ BBR wins: same throughput (100Mbps), 3.4x lower latency!
 
 ### Scenario 5: Competing Flows — Fairness
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **Setup:** 3 Reno flows + 1 Cubic flow, 1Gbps link, 20ms RTT
 
@@ -1052,21 +737,6 @@ Real-world impact:
 ---
 
 ## Implementation Notes
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **State Management:**

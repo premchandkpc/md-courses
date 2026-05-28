@@ -1,7 +1,6 @@
 # Testing Fundamentals: Unit & Integration Testing
 
 
-
 ```mermaid
 graph LR
     A["BEGIN"] --> B["Read"]

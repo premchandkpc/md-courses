@@ -7,7 +7,6 @@
 ---
 
 
-
 ```mermaid
 graph LR
     CFS["CFS / EEVDF<br/>Scheduler"] --> RUNQ["Run Queue<br/>(Red-Black Tree / vruntime)"]
@@ -40,21 +39,6 @@ graph LR
 
 ## Table of Contents
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 1. [Scheduling Overview](#1-scheduling-overview)
 2. [Scheduling Classes](#2-scheduling-classes)
@@ -80,21 +64,6 @@ This pattern is commonly used in production systems.
 
 ## 1. Scheduling Overview
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```
 ┌──────────────────────────────────────────────────────────┐
@@ -119,21 +88,6 @@ This pattern is commonly used in production systems.
 
 ### Step-by-Step
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 1. **Task creation** new task enters runqueue with initial vruntime = min_vruntime of scheduler entity
 2. **Enqueue** task added to red-black tree, ordered by vruntime (or deadline for SCHED_DEADLINE)
@@ -143,21 +97,6 @@ This pattern is commonly used in production systems.
 6. **Task selection** pick_next_task() traverses scheduler classes, CFS picks task with minimum vruntime
 
 ### Code Example
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```c
@@ -208,40 +147,10 @@ int main() {
 
 ### Real-World Scenario
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 Cloudflare's DNS resolver handles 6 billion queries/day. They discovered that tail latency (P99) was 120ms due to scheduler latency variance. Culprit: SCHED_NORMAL tasks were being descheduled if their vruntime got too far ahead. They configured kernel with CONFIG_SCHED_EEVDF=y (Linux 6.6+, Extended Earliest Deadline First) which provides tighter latency bounds—tail latency dropped to 20ms. For sensitive UDP handlers, they use cgroup cpu.bvt_warp_ns to bias scheduling weights toward shorter bursts.
 
 ## 2. Scheduling Classes
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -287,38 +196,8 @@ struct sched_class {
 
 ## 3. CFS — Completely Fair Scheduler
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### vruntime (Virtual Runtime)
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -334,21 +213,6 @@ vruntime += delta_exec * ──────────────────�
 ```
 
 ### Red-Black Tree
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -372,21 +236,6 @@ Search: O(log n) for insertion/removal, O(1) for leftmost (cached)
 
 ### Time Slice Calculation
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```
 sched_period = max(sched_latency_ns,          // default: 6ms * (1 + ncpus - 1)
@@ -404,21 +253,6 @@ Example: 100 tasks on 4 CPUs:
 ```
 
 ### Load Weight
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -441,21 +275,6 @@ static const int prio_to_weight[40] = {
 
 ### Sleeper Fairness
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```
 When a task wakes from sleep:
@@ -468,21 +287,6 @@ When a task wakes from sleep:
 ```
 
 ### Preemption
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -502,21 +306,6 @@ Also on wake:
 
 ## 4. EEVDF — Linux 6.6+
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```
 Earliest Eligible Virtual Deadline First
@@ -533,21 +322,6 @@ EEVDF replaces CFS's pure vruntime selection with:
 ```
 
 ### Key Concepts
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -567,21 +341,6 @@ Algorithm:
 
 ### Benefits over CFS
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 - Better latency isolation for interactive tasks
 - More predictable wake-up latency
@@ -591,21 +350,6 @@ This pattern is commonly used in production systems.
 ---
 
 ## 5. O(1) Scheduler
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -630,21 +374,6 @@ Two priority arrays per CPU:
 
 ### Algorithm
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```
 1. Find highest non-empty priority in active array via bitmap (bit_ffs → O(1))
@@ -662,21 +391,6 @@ Time slice per priority:
 
 ### Weaknesses
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 - Interactive vs batch heuristics complex and fragile
 - Power-hungry on idle due to frequent timer ticks
@@ -686,21 +400,6 @@ This pattern is commonly used in production systems.
 ---
 
 ## 6. SCHED_DEADLINE (EDF)
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -717,21 +416,6 @@ Guarantee: task will get runtime of CPU time every period,
 
 ### Admission Control
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```
 Before accepting a new SCHED_DEADLINE task:
@@ -745,21 +429,6 @@ This ensures:
 ```
 
 ### CBS (Constant Bandwidth Server)
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -778,21 +447,6 @@ If task blocks and wakes:
 
 ### Internal Data Structure
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```
 SCHED_DEADLINE uses a red-black tree of "root domains"
@@ -806,38 +460,8 @@ SCHED_DEADLINE uses a red-black tree of "root domains"
 
 ## 7. Real-Time Scheduling
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### SCHED_FIFO
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -857,21 +481,6 @@ Risk: Can lock up system if:
 
 ### SCHED_RR
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```
 Same as FIFO but with a time slice:
@@ -883,21 +492,6 @@ Use case: Round-robin among equal-priority RT tasks
 ```
 
 ### Priority Inversion
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -922,21 +516,6 @@ H blocked on L, L preempted by M → H wait time = M runtime + L runtime
 ```
 
 ### Priority Inheritance Protocol
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -964,21 +543,6 @@ Protocol: When high-pri task blocks on a lock held by lower-pri,
 
 ### Priority Ceiling Protocol
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```
 Each lock has a priority ceiling (max priority of any task that may lock it).
@@ -990,21 +554,6 @@ Less common in Linux; priority inheritance is preferred.
 ---
 
 ## 8. Multi-Core Scheduling & Load Balancing
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -1031,21 +580,6 @@ This pattern is commonly used in production systems.
 
 ### Load Balancer Types
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```
 1. New idle balancing:
@@ -1065,21 +599,6 @@ This pattern is commonly used in production systems.
 
 ### Pull/Push Migration
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```
 Push (load balancer on busy CPU):
@@ -1096,21 +615,6 @@ Pull (idle CPU):
 ```
 
 ### sched_group & sched_domain
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -1132,21 +636,6 @@ struct sched_group {
 
 ### wake_affine
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```
 On wake-up of a task:
@@ -1163,21 +652,6 @@ SD_ASYM_PACKING: asymmetrical packing for certain architectures (e.g., Intel P/E
 
 ## 9. NUMA Awareness
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```
 NUMA Node 0                     NUMA Node 1
@@ -1190,21 +664,6 @@ NUMA Node 0                     NUMA Node 1
 ```
 
 ### NUMA in Scheduler
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -1223,21 +682,6 @@ numa_balancing (CONFIG_NUMA_BALANCING):
 
 ### NUMA Placement Policy
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```
 - AutoNUMA: automatic placement (default)
@@ -1252,21 +696,6 @@ Each VMA can have its own policy via set_mempolicy() / mbind()
 ---
 
 ## 10. Context Switch Cost
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -1288,21 +717,6 @@ Components of cost:
 
 ### Measurement
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```
 Thread context switch (same process):
@@ -1320,21 +734,6 @@ Cross-NUMA context switch:
 
 ### Impact on Performance
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```
 1000 context switches/sec: negligible
@@ -1347,38 +746,8 @@ This pattern is commonly used in production systems.
 
 ## 11. CPU Affinity
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### taskset
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```bash
@@ -1392,21 +761,6 @@ taskset -c 0-3 ./myapp
 
 ### cgroups cpuset
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```bash
 # Create cpuset
@@ -1418,21 +772,6 @@ echo $PID  > /sys/fs/cgroup/cpuset/myapp/cgroup.procs
 
 ### IRQ Affinity
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```bash
 # Set IRQ affinity for NIC queue
@@ -1441,21 +780,6 @@ echo "0-1" > /proc/irq/77/smp_affinity_list  # CPU range
 ```
 
 ### API
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```c
@@ -1474,38 +798,8 @@ sched_getaffinity(0, sizeof(set), &set);
 
 ## 12. Scheduling Latency & PREEMPT_RT
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Preemption Models
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -1536,21 +830,6 @@ CONFIG_PREEMPT_RT (PREEMPT_RT_FULL):
 
 ### nohz_full (Adaptive Ticks)
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```
 nohz_full=2-7 (kernel boot parameter)
@@ -1569,21 +848,6 @@ Requirements:
 
 ### Latency Measurement
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```
 Using cyclictest (rt-tests):
@@ -1600,38 +864,8 @@ Using cyclictest (rt-tests):
 
 ## 13. Scheduler Debugging
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### trace_sched_switch
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```bash
@@ -1643,21 +877,6 @@ perf script -e sched:sched_switch -- -g
 ```
 
 ### /proc/schedstat
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -1682,21 +901,6 @@ domain<N>:
 
 ### perf sched
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```bash
 perf sched record -- sleep 5
@@ -1707,21 +911,6 @@ perf sched timehist   # Time history of task CPU usage
 ```
 
 ### ftrace
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```bash
@@ -1739,38 +928,8 @@ cat /sys/kernel/tracing/trace
 
 ## 14. Cgroup CPU Controller
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Key Files
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -1785,21 +944,6 @@ This pattern is commonly used in production systems.
 ```
 
 ### cpu.weight
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -1816,21 +960,6 @@ Example:
 ```
 
 ### cpu.max (CFS Quota/Period)
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -1854,21 +983,6 @@ Limitations:
 
 ### cpu.shares (Legacy)
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```
 Same weight concept as cpu.weight but on different scale:
@@ -1882,38 +996,8 @@ Conversion: cpu.weight = (cpu.shares / 1024) * 100
 
 ## 15. Internals
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### __schedule() — The Core
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```c
@@ -1953,21 +1037,6 @@ static void __sched notrace __schedule(unsigned int sched_mode)
 
 ### context_switch()
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```c
 // kernel/sched/core.c
@@ -2000,21 +1069,6 @@ context_switch(struct rq *rq, struct task_struct *prev,
 
 ### wake_up_new_task()
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```c
 // kernel/sched/core.c
@@ -2043,38 +1097,8 @@ void wake_up_new_task(struct task_struct *p)
 
 ## 16. Failure Analysis
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Starvation
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -2093,21 +1117,6 @@ Detection:
 
 ### RT Throttling
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```
 /sys/kernel/debug/sched_debug shows "rt_throttled=1"
@@ -2120,21 +1129,6 @@ When RT tasks consume >95% of CPU within a sched_rt_period (1s):
 ```
 
 ### Priority Inversion (Unhandled)
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -2150,21 +1144,6 @@ Detection:
 ```
 
 ### Context Switch Storm
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -2185,21 +1164,6 @@ Mitigation:
 
 ## 17. Edge Cases
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 - **Thundering herd**: Multiple tasks wake on same event → all try to run, all but one go back to sleep → high context switch overhead → mitigated by `wake_affine`, `EPOLLEXCLUSIVE`
 - **Scheduler domain mismatch**: Hybrid CPU (P-cores + E-cores) → asymmetry causes suboptimal scheduling → `SD_ASYM_PACKING` flag needed
@@ -2218,38 +1182,8 @@ This pattern is commonly used in production systems.
 
 ## 18. Performance
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Key Tunables
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -2269,21 +1203,6 @@ sysctl kernel.sched_dl_period_min=100000      # 100μs
 ```
 
 ### Context Switch Benchmark
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```c
@@ -2342,21 +1261,6 @@ int main() {
 
 ### Throughput vs Latency Trade-off
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```
 High throughput:  CONFIG_PREEMPT_NONE, large sched_min_granularity
@@ -2378,60 +1282,15 @@ Optimal:          Depends on workload
 
 ## 19. Simplest Mental Model
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 > **The scheduler is a librarian who has many books to read (tasks) but only one desk (CPU core). CFS works like a book club rotation — everyone gets the same reading time, but important members (high priority) read slower vruntime clocks. On multi-core, it's multiple librarians who redistribute books when one desk is empty. EEVDF is the same librarian but with sticky notes: each task has a "due by" time and can't be assigned until its turn is fair. The goal is always the same — keep the desks busy, keep the wait short, and make sure nobody starves.**
 
 
-
 ## Scheduling Algorithms Compared
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ### FIFO (First-In-First-Out)
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 ```
 Timeline:
@@ -2443,20 +1302,6 @@ Avg wait: (0 + 10 + 15) / 3 = 8.3ms
 
 ### Round-Robin (RR) - Time Slice = 3ms
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 ```
 Timeline:
@@ -2467,20 +1312,6 @@ Avg wait: Better for interactive systems
 
 ### Priority-Based
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 ```
 High:  [A-high] |        [A-high]

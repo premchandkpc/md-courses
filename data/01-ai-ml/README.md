@@ -3,7 +3,6 @@
 The complete artificial intelligence and machine learning knowledge base—from mathematical foundations to production deployment. Covers classical ML, deep learning, large language models, agentic AI, MLOps, and the full lifecycle of building and operating AI systems at scale.
 
 
-
 ```mermaid
 graph LR
     A["Data<br/>Collection"] --> B["Data<br/>Preprocessing"]

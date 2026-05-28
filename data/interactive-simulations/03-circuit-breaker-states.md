@@ -1,50 +1,36 @@
 # Circuit Breaker Pattern — Interactive State Machine
 
+> **Run the live simulator**: [circuit-breaker.html](./circuit-breaker.html) — click buttons to trigger state transitions and watch the circuit breaker react in real-time.
 
 ## Overview
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
-
 ```mermaid
-graph TB
-    A["Input"] --> B["Process"]
-    B --> C["Output"]
-    style C fill:#3fb950
+stateDiagram-v2
+    direction LR
+    [*] --> CLOSED
+    CLOSED --> OPEN: failure_count >= threshold
+    OPEN --> HALF_OPEN: timeout expires
+    HALF_OPEN --> CLOSED: test succeeds
+    HALF_OPEN --> OPEN: test fails
+    OPEN --> OPEN: reject requests
+    
+    note right of CLOSED
+        Normal operation
+        Calls pass through
+    end note
+    note right of OPEN
+        Fail fast
+        All calls rejected
+    end note
+    note right of HALF_OPEN
+        Test mode
+        One probe request
+    end note
 ```
-
 
 Step-by-step walkthrough of circuit breaker states, transitions, and failure recovery.
 
 ### Step-by-Step
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 1. **CLOSED state**: All requests pass through to downstream service, track success/failure rates
@@ -55,21 +41,6 @@ This pattern is commonly used in production systems.
 6. **Exponential backoff**: Increase timeout on repeated failures to avoid hammering a recovering service
 
 ### Code Example
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```python
@@ -205,40 +176,10 @@ for i in range(20):
 
 ### Real-World Scenario
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 Netflix's Hystrix library implementing circuit breakers prevented an entire service outage during a database migration. When the recommendation service became slow (latency >1000ms), the circuit breaker tripped after 5 consecutive timeouts, immediately rejecting new requests instead of letting them queue up. This prevented thread pool exhaustion and allowed the frontend to fail fast and show cached recommendations. The database migration completed successfully, the circuit breaker tested the service via half-open state, and recovered automatically without manual intervention.
 
 ### State Machine Diagram
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```mermaid
@@ -277,21 +218,6 @@ stateDiagram-v2
 
 ## The 3 States
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```
 ┌─────────┐
@@ -321,21 +247,6 @@ This pattern is commonly used in production systems.
 ---
 
 ## Scenario 1: Normal Operation (CLOSED)
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -372,21 +283,6 @@ Thresholds (example):
 ---
 
 ## Scenario 2: Failures Accumulate (CLOSED → OPEN)
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -457,21 +353,6 @@ If failures were just 50% rate:
 
 ## Scenario 3: Open State (Fast Fail)
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```
 T=1000ms   Circuit opens (OPEN state)
@@ -519,21 +400,6 @@ Reason: Give downstream time to recover
 ---
 
 ## Scenario 4: Half-Open State (Testing)
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -596,21 +462,6 @@ Failure → OPEN
 ---
 
 ## Scenario 5: Recovery & Cascading Back to Normal
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -676,21 +527,6 @@ Without circuit breaker: cascading failures, manual restart needed
 
 ## Scenario 6: Flaky Service (Oscillation)
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **Problem**: Service is intermittently failing.
 
@@ -743,38 +579,8 @@ Reduces oscillation frequency
 
 ## Common Patterns
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Pattern 1: Fallback Response
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```python
@@ -793,21 +599,6 @@ When circuit open:
 
 ### Pattern 2: Bulkhead Pattern
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```
 Circuit breaker per dependency:
@@ -821,21 +612,6 @@ If Database fails:
 ```
 
 ### Pattern 3: Timeout + Circuit Breaker
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -857,38 +633,8 @@ Interaction:
 
 ## Interview Questions
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Q1: What's the purpose of the HALF_OPEN state?
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Answer**: To differentiate between "still broken" and "recovered".
@@ -911,21 +657,6 @@ This batches testing: max 1 test per timeout period
 
 ### Q2: Why reject requests in HALF_OPEN instead of queuing them?
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **Answer**: Fail fast principle.
 
@@ -939,21 +670,6 @@ Trade-off:
   - Reject in HALF_OPEN: fast feedback, protects downstream
 
 ### Q3: How does circuit breaker differ from retry?
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Answer**:
@@ -981,21 +697,6 @@ Optimal: retry once, then circuit breaker
 
 ### Q4: Can a circuit breaker cause cascading failures?
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **Answer**: No, it prevents them.
 
@@ -1022,21 +723,6 @@ Key: Circuit breaker + proper fallback handling.
 ---
 
 ## Real-World Configuration
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```python
@@ -1067,21 +753,6 @@ Common libraries:
 
 ## Key Takeaways
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 1. **CLOSED**: Normal operation, monitor failures
 2. **OPEN**: Downstream broken, fail fast (save resources)
@@ -1093,21 +764,6 @@ Real-world impact: Netflix estimates circuit breakers prevent ~30% of outages.
 
 
 ## Comparison Table
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 | Aspect | Option A | Option B | Trade-off |

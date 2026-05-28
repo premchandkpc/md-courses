@@ -1,7 +1,6 @@
 # Neural Networks and Deep Learning
 
 
-
 ```mermaid
 graph LR
     X["Input Vector<br/>x₁, x₂, ..., xₙ"] --> H1["Hidden Layer 1<br/>W₁x + b₁"]
@@ -25,38 +24,8 @@ graph LR
 
 ## 1. The Perceptron
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### 1.1 Single Perceptron
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 The perceptron is the fundamental building block of neural networks. It computes a weighted sum of inputs, adds a bias, and applies a step function.
@@ -93,21 +62,6 @@ print(f"XOR predictions: {p.forward(X)}")  # Will fail!
 ```
 
 ### 1.2 Multi-Layer Perceptron (MLP)
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 MLPs solve the XOR problem by adding hidden layers with non-linear activations:
@@ -148,38 +102,8 @@ print(f"MLP XOR output shape: {mlp.forward(X).shape}")
 
 ## 2. Activation Functions
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### 2.1 Common Activations
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```python
@@ -215,21 +139,6 @@ def selu(x, alpha=1.67326, scale=1.0507):
 ```
 
 ### 2.2 Modern Activation Functions
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **GELU** (Gaussian Error Linear Unit): Used in BERT, GPT, ViT
@@ -268,21 +177,6 @@ class GLUActivation:
 
 ### 2.3 Activation Function Comparison
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 | Function | Range | Gradient | Use Case |
 |----------|-------|----------|----------|
@@ -295,38 +189,8 @@ This pattern is commonly used in production systems.
 
 ## 3. Forward and Backward Propagation
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### 3.1 Forward Pass
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```python
@@ -349,21 +213,6 @@ def forward_pass(X, params):
 ```
 
 ### 3.2 Backward Pass (Manual Backprop)
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```python
@@ -415,38 +264,8 @@ def train_step(X, y, params, lr=0.01):
 
 ## 4. Automatic Differentiation
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### 4.1 Computation Graph
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```python
@@ -511,21 +330,6 @@ print(f"f = {f.data}, da = {a.grad}, db = {b.grad}, dc = {c.grad}")
 
 ### 4.2 PyTorch Autograd
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```python
 import torch
@@ -558,21 +362,6 @@ with torch.no_grad():
 
 ### 4.3 Higher-Order Gradients
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```python
 x = torch.tensor(2.0, requires_grad=True)
@@ -602,38 +391,8 @@ y = x ** 4  # dy/dx = 4x³, d²y/dx² = 12x², d³y/dx³ = 24x
 
 ## 5. Optimizers
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### 5.1 SGD with Momentum
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```python
@@ -651,21 +410,6 @@ class SGDMomentum:
 ```
 
 ### 5.2 Adam (Adaptive Moment Estimation)
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```python
@@ -700,21 +444,6 @@ class Adam:
 
 ### 5.3 AdamW (Adam with Decoupled Weight Decay)
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```python
 class AdamW:
@@ -747,21 +476,6 @@ class AdamW:
 ```
 
 ### 5.4 AdaFactor
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 Memory-efficient alternative to Adam that factors second-moment matrix:
@@ -819,21 +533,6 @@ class AdaFactor:
 
 ### 5.5 Lion (EvoLved Sign Momentum)
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```python
 class Lion:
@@ -862,21 +561,6 @@ class Lion:
 
 ### 5.6 Optimizer Comparison
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 | Optimizer | Adaptive LR | Momentum | Memory | Best For |
 |-----------|-------------|----------|--------|----------|
@@ -889,38 +573,8 @@ This pattern is commonly used in production systems.
 
 ## 6. Normalization Layers
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### 6.1 Batch Normalization
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 Normalizes activations across the batch dimension:
@@ -976,21 +630,6 @@ class BatchNorm2d:
 
 ### 6.2 Layer Normalization
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 Normalizes across the feature dimension (used in Transformers):
 
@@ -1011,21 +650,6 @@ class LayerNorm:
 
 ### 6.3 RMS Norm
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 Simplified layer norm without mean centering (used in Llama):
 
@@ -1043,21 +667,6 @@ class RMSNorm:
 
 ### 6.4 Normalization Comparison
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 | Method | Normalizes | Axis | Used In |
 |--------|-----------|------|---------|
@@ -1069,38 +678,8 @@ This pattern is commonly used in production systems.
 
 ## 7. Regularization
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### 7.1 Dropout
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```python
@@ -1127,21 +706,6 @@ class Dropout:
 
 ### 7.2 Weight Decay (L2 Regularization)
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```python
 def l2_regularization(params, lambda_reg=0.01):
@@ -1161,21 +725,6 @@ def l1_regularization(params, lambda_reg=0.01):
 ```
 
 ### 7.3 Label Smoothing
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```python
@@ -1201,21 +750,6 @@ def cross_entropy_with_label_smoothing(logits, targets, smoothing=0.1):
 
 ### 7.4 Stochastic Depth (DropPath)
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```python
 class DropPath:
@@ -1235,38 +769,8 @@ class DropPath:
 
 ## 8. Training Dynamics
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### 8.1 Learning Rate Schedules
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```python
@@ -1335,21 +839,6 @@ class WarmupCosineScheduler:
 
 ### 8.2 Gradient Clipping
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```python
 def clip_gradients(params, grads, max_norm=1.0):
@@ -1375,21 +864,6 @@ def clip_gradient_value(params, grads, clip_value=1.0):
 
 ### 8.3 Gradient Accumulation
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```python
 class GradientAccumulator:
@@ -1409,21 +883,6 @@ class GradientAccumulator:
 ```
 
 ### 8.4 Mixed Precision Training
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```python
@@ -1480,38 +939,8 @@ for epoch in range(epochs):
 
 ## 9. Advanced Architectures
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### 9.1 Residual Connections (ResNet)
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```python
@@ -1549,21 +978,6 @@ class ResidualBlock:
 
 ### 9.2 Dense Connections (DenseNet)
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```python
 class DenseBlock:
@@ -1592,21 +1006,6 @@ class DenseBlock:
 
 ### 9.3 Attention-Augmented Neural Network
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```python
 def scaled_dot_product_attention(Q, K, V, mask=None):
@@ -1622,21 +1021,6 @@ def scaled_dot_product_attention(Q, K, V, mask=None):
 ```
 
 ## 10. Weight Initialization
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```python
@@ -1676,21 +1060,6 @@ def init_weights(m):
 ```
 
 ## 11. Loss Functions
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```python
@@ -1732,21 +1101,6 @@ def contrastive_loss(embedding1, embedding2, label, margin=1.0):
 ```
 
 ## 12. Full Training Pipeline Example
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```python
@@ -1814,21 +1168,6 @@ def train_neural_network(model, X_train, y_train, X_val, y_val,
 
 ## 13. Exercise Problems
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **Problem 1**: Implement a 3-layer MLP from scratch (no autograd) for MNIST classification with ReLU activations, cross-entropy loss, and Adam optimizer. Achieve >97% test accuracy.
 
@@ -1843,21 +1182,6 @@ This pattern is commonly used in production systems.
 ---
 
 ## Related
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 - [Databases](../../08-databases/) — Vector search, embeddings storage

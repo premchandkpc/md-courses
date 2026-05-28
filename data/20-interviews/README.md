@@ -7,7 +7,6 @@ Technical interview preparation is a structured skill — combining deep system 
 ---
 
 
-
 ```mermaid
 graph LR
     INTERVIEW_PREP["Interview Prep"] --> PHONE_SCREEN["Phone Screen<br/>(resume + medium)"]

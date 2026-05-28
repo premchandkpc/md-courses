@@ -1,7 +1,6 @@
 # Git Internals — Deep Dive
 
 
-
 ```mermaid
 graph LR
     GIT_OBJECTS["Git Object Model"] --> BLOB_G["Blob<br/>(file content)"]

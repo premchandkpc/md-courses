@@ -6,21 +6,6 @@
 
 ## Table of Contents
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 - [Patterns Overview](#-patterns-overview)
 - [1. Singleton](#1-singleton)
@@ -40,21 +25,6 @@ This pattern is commonly used in production systems.
 ---
 
 ## 🧭 Patterns Overview
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```mermaid
@@ -84,40 +54,10 @@ mindmap
 
 ## 1. Singleton
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **Purpose**: Ensure a class has exactly one instance.
 
 ### Classic (Thread-Safe)
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```java
@@ -145,21 +85,6 @@ public class DatabaseConnectionPool {
 
 ### Holder Pattern (Best)
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```java
 public class ConfigManager {
@@ -181,21 +106,6 @@ public class ConfigManager {
 ```
 
 ### Enum Singleton
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```java
@@ -219,40 +129,10 @@ Logger.INSTANCE.log("Application started");
 
 ## 2. Factory Method
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **Purpose**: Delegate object creation to subclasses.
 
 ### Simple Factory
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```java
@@ -296,21 +176,6 @@ payment.pay(new BigDecimal("99.99"));
 
 ### Factory Method (GoF)
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```java
 abstract class DocumentGenerator {
@@ -344,40 +209,10 @@ class HTMLGenerator extends DocumentGenerator {
 
 ## 3. Builder
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **Purpose**: Construct complex objects step by step.
 
 ### Classic Builder
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```java
@@ -444,21 +279,6 @@ HttpRequest request = new HttpRequest.Builder("https://api.example.com")
 
 ### Java 8+ Functional Builder
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```java
 public class Person {
@@ -511,21 +331,6 @@ Person person = Person.builder()
 
 ## 4. Prototype
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **Purpose**: Create new objects by cloning existing ones.
 
@@ -566,21 +371,6 @@ newCircle.setX(20);  // modify copy independently
 
 ### Prototype Registry
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```java
 public class ShapeRegistry {
@@ -610,40 +400,10 @@ public class ShapeRegistry {
 
 ## 5. Adapter
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **Purpose**: Make incompatible interfaces work together.
 
 ### Class Adapter (extends)
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```java
@@ -679,21 +439,6 @@ class LoggerAdapter extends OldLoggerImpl implements Logger {
 ```
 
 ### Object Adapter (composition)
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```java
@@ -732,21 +477,6 @@ processor.pay("99.99", "USD");  // Same interface for any gateway
 
 ### Adapter in Java Standard Library
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```java
 // Arrays.asList — adapts array to List interface
@@ -762,40 +492,10 @@ Reader reader = new InputStreamReader(input, StandardCharsets.UTF_8);
 
 ## 6. Decorator
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **Purpose**: Add responsibilities to objects dynamically.
 
 ### Coffee Example
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```java
@@ -875,21 +575,6 @@ System.out.println(coffee.getCost());         // 3.5
 
 ### Decorator in Java I/O
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```java
 // Decorator pattern in Java's I/O classes
@@ -904,40 +589,10 @@ BufferedReader br = new BufferedReader(reader);             // decorator
 
 ## 7. Proxy
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **Purpose**: Provide a surrogate or placeholder for another object.
 
 ### Virtual Proxy (Lazy Loading)
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```java
@@ -991,21 +646,6 @@ image.display();  // Only displays (already loaded)
 
 ### Protection Proxy
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```java
 interface BankAccount {
@@ -1058,21 +698,6 @@ class ProtectionProxy implements BankAccount {
 
 ### Proxy in Spring (AOP)
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```java
 @Aspect
@@ -1095,40 +720,10 @@ public class LoggingAspect {
 
 ## 8. Observer
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **Purpose**: Define a one-to-many dependency between objects.
 
 ### Java's Observer Pattern (Built-in)
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```java
@@ -1187,21 +782,6 @@ agency.publishNews("Stock market hits record high!");
 
 ### PropertyChangeListener (Standard Java)
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```java
 import java.beans.PropertyChangeListener;
@@ -1238,21 +818,6 @@ apple.setPrice(155.0);  // triggers notification
 
 ### Observer in Java Standard Library
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```java
 // Swing/AWT event listeners
@@ -1270,40 +835,10 @@ rowSet.addRowSetListener(new RowSetAdapter() {
 
 ## 9. Strategy
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **Purpose**: Define a family of algorithms, make them interchangeable.
 
 ### Sorting Strategy Example
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```java
@@ -1359,21 +894,6 @@ context.executeSort(numbers);  // Using quick sort
 
 ### Strategy with Lambdas (Java 8+)
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```java
 // Instead of defining class for each strategy, use lambda/method reference
@@ -1408,21 +928,6 @@ var fixedDiscount = new ShoppingCart(this::employeeDiscount);
 
 ### Strategy in Java Standard Library
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```java
 // Comparator is a Strategy pattern
@@ -1444,40 +949,10 @@ ThreadPoolExecutor executor = new ThreadPoolExecutor(
 
 ## 10. Template Method
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **Purpose**: Define skeleton of an algorithm, let subclasses fill in steps.
 
 ### Data Exporter Example
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```java
@@ -1553,21 +1028,6 @@ class JSONExporter extends DataExporter {
 
 ### Hook Methods
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```java
 abstract class Game {
@@ -1598,21 +1058,6 @@ abstract class Game {
 
 ### Template Method in Java Standard Library
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```java
 // java.io.InputStream.read(byte[], int, int)
@@ -1629,40 +1074,10 @@ This pattern is commonly used in production systems.
 
 ## 11. Chain of Responsibility
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **Purpose**: Pass request along a chain of handlers.
 
 ### Logging Framework Example
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```java
@@ -1735,21 +1150,6 @@ chain.handle(LogLevel.ERROR, "Database connection lost"); // Console + File + Em
 
 ### Chain in Java Standard Library
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```java
 // Servlet filters
@@ -1777,38 +1177,8 @@ public class AuthFilter implements Filter {
 
 ## 🎯 Pattern Selection Guide
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### When to Use Which Pattern
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -1854,21 +1224,6 @@ Behavioral:
 
 ## 🧠 Simplest Mental Model
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```text
 SINGLETON      =  The single coffee machine in the office. One instance,
@@ -1910,21 +1265,6 @@ RESPONSIBILITY    then Level 3. If one can't solve it, it passes up.
 
 
 ## Comparison Table
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 | Aspect | Option A | Option B | Trade-off |

@@ -7,7 +7,6 @@
 ---
 
 
-
 ```mermaid
 graph TB
     A["Client"] --> B["Query"]

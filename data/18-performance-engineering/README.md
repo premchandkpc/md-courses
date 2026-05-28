@@ -7,7 +7,6 @@ Performance engineering is the systematic practice of **measuring, analyzing, an
 ---
 
 
-
 ```mermaid
 graph LR
     PERF_FUND["Performance<br/>Engineering"] --> MEASURE["Measure →<br/>(Latency / Throughput)"]

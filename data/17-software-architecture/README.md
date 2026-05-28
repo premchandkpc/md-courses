@@ -7,7 +7,6 @@ Software architecture is the **high-level structure** of a system — the set of
 ---
 
 
-
 ```mermaid
 graph LR
     STYLES["Architecture<br/>Styles"] --> LAYERED["Layered<br/>(N-tier)"]

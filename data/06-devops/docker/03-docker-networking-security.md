@@ -5,7 +5,6 @@
 ---
 
 
-
 ```mermaid
 graph LR
     BRIDGE["Bridge Network<br/>(docker0)"] --> CONT1["Container 1<br/>(veth pair)"]
@@ -36,21 +35,6 @@ graph LR
 
 ## Table of Contents
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 - [CNM / Libnetwork Model](#-cnm--libnetwork-model)
 - [Bridge Network Deep Dive](#-bridge-network-deep-dive)
@@ -74,21 +58,6 @@ This pattern is commonly used in production systems.
 ---
 
 ## 🧭 CNM / Libnetwork Model
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -121,38 +90,8 @@ Libnetwork drivers: `bridge`, `host`, `overlay`, `macvlan`, `ipvlan`, `none`, an
 
 ## 🔌 Bridge Network Deep Dive
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Default Bridge (docker0)
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -179,21 +118,6 @@ iptables -t nat -L DOCKER  # DNAT: host:8080 → container:80
 
 ### User-Defined Bridge
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```bash
 docker network create --driver bridge --subnet 10.5.0.0/16 --gateway 10.5.0.1 mynet
@@ -208,21 +132,6 @@ docker run --net mynet --ip 10.5.0.42 alpine
 | **Links** | Deprecated links | Automatic resolution |
 
 ### iptables & NAT
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -247,38 +156,9 @@ iptables -I FORWARD -i docker0 -o docker0 -j DROP
 
 ## 🏠 Host / None / Container Networking
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Host Mode
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 ```dockerfile
 docker run --net host nginx  # Shares host namespace, no isolation
@@ -293,20 +173,6 @@ docker run --net host nginx  # Shares host namespace, no isolation
 
 ### None Mode
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 ```dockerfile
 docker run --net none alpine  # Only loopback
@@ -319,20 +185,6 @@ docker run --net none alpine  # Only loopback
 
 ### Container Mode
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 ```dockerfile
 docker run --net container:other-container alpine
@@ -347,38 +199,8 @@ docker run --net container:other-container alpine
 
 ## 🏷️ Macvlan & Ipvlan
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Macvlan
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -402,21 +224,6 @@ docker network create -d macvlan \
 
 ### Ipvlan (L2 / L3)
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```text
 Host eth0
@@ -438,21 +245,6 @@ docker network create -d ipvlan \
 ---
 
 ## 🌉 Overlay Networking (VXLAN)
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -486,21 +278,6 @@ docker network create -d overlay --attachable my-overlay
 
 ### VXLAN Encapsulation
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```text
 Original Packet:
@@ -513,21 +290,6 @@ VNI = VXLAN Network Identifier (24-bit = 16M networks)
 ```
 
 ### Gossip Protocol
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -550,21 +312,6 @@ This pattern is commonly used in production systems.
 
 ## 🔌 Network Plugins (Calico, Weave, Flannel)
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 | Plugin | Model | Encryption | Network Policy | Best For |
 |---|---|---|---|---|
@@ -586,38 +333,8 @@ calicoctl get ipPool -o yaml
 
 ## 🚦 Ingress / Egress Traffic Control
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Ingress Traffic
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -629,21 +346,6 @@ This pattern is commonly used in production systems.
 
 ### Egress Traffic
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```text
   Container:80 ──► docker0 ──MASQUERADE──► Host:random_port ──► Internet
@@ -654,21 +356,6 @@ This pattern is commonly used in production systems.
 ---
 
 ## 🔄 Swarm Routing Mesh
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -698,38 +385,8 @@ docker service create --name web --publish mode=host,target=80,published=80 ngin
 
 ## 🛡️ Docker Security Fundamentals
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Security Layers
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -767,38 +424,8 @@ docker run --rm \
 
 ## 🔒 Seccomp & AppArmor Profiles
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Seccomp (Secure Computing Mode)
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -830,21 +457,6 @@ docker run --privileged  # Disables seccomp completely
 ```
 
 ### AppArmor (MAC)
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -884,38 +496,8 @@ docker run --security-opt apparmor=docker-custom nginx
 
 ## 🎯 Capabilities & Read-Only Rootfs
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Capability Dropping
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -940,21 +522,6 @@ docker run --rm -it alpine getpcaps 1
 
 ### Read-Only Rootfs
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```bash
 docker run --read-only --tmpfs /var/run --tmpfs /tmp nginx
@@ -975,21 +542,6 @@ docker run --read-only \
 ---
 
 ## 📝 Docker Content Trust & Notary
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```bash
@@ -1033,21 +585,6 @@ docker trust inspect --pretty myrepo/app:latest
 
 ## 🔐 Docker Secrets Management
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```bash
 # Swarm mode only for native secrets
@@ -1088,38 +625,8 @@ secrets:
 
 ## 👤 Rootless Docker & User Namespace Remapping
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Rootless Docker
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -1147,20 +654,6 @@ export DOCKER_HOST=unix:///run/user/$UID/docker.sock
 
 ### Caveats
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 ```text
 - Cannot share namespaces (--net=host, --pid=host) with host
@@ -1172,21 +665,6 @@ This pattern is commonly used in production systems.
 ---
 
 ## 🏖️ gVisor vs Kata Containers
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -1220,21 +698,6 @@ This pattern is commonly used in production systems.
 ---
 
 ## 📦 Container Isolation Primitives (Namespaces)
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -1275,21 +738,6 @@ nsenter -t $PID -n ip addr
 
 ## 🛡️ Docker Bench Security
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```bash
 # Run the security audit
@@ -1319,21 +767,6 @@ Sample findings:
 
 ## 🧠 Simplest Mental Model
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```text
 ┌──────────────────────────────────────────────────────────────────┐
@@ -1358,21 +791,6 @@ This pattern is commonly used in production systems.
 
 
 ## Practical Example
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 See code examples above for practical usage patterns.

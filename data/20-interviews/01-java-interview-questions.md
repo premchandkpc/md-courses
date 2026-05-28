@@ -3,7 +3,6 @@
 > **Scope:** 150+ Java interview questions organized by experience level (Junior, Mid, Senior, Staff/Principal) and category (Core Java, Collections, Concurrency, JVM, Spring/Spring Boot). Each question includes detailed answers, common mistakes, and interviewer expectations.
 
 
-
 ```mermaid
 graph LR
     JAVA_CORE["Core Java"] --> OOP_J["OOP<br/>(encaps/poly/inher)"]

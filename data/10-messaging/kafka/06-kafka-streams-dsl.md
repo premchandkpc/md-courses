@@ -7,7 +7,6 @@
 ---
 
 
-
 ```mermaid
 graph LR
     INPUT_TOPIC["Input Topic<br/>(Source)"] --> STREAM["KStream&lt;K,V&gt;<br/>(Record Stream)"]
@@ -38,21 +37,6 @@ graph LR
 
 ## Table of Contents
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 1. [Kafka Streams Overview](#1-kafka-streams-overview)
 2. [DSL Operators](#2-dsl-operators)
@@ -71,38 +55,8 @@ This pattern is commonly used in production systems.
 
 ## 1. Kafka Streams Overview
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### 1.1 What Is Kafka Streams?
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 Kafka Streams is a **lightweight client library** (not a cluster) for building stream-processing applications on top of Kafka. It runs inside your application JVM, communicates directly with Kafka brokers, and requires no separate processing cluster.
@@ -138,21 +92,6 @@ Key properties:
 
 ### 1.2 Stream-Processing Concepts
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 | Concept | Definition |
 |---|---|
@@ -178,21 +117,6 @@ Stream from table → capture all mutations
 ```
 
 ### 1.3 KStream vs KTable vs GlobalKTable
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 #### KStream (Record Stream)
@@ -258,21 +182,6 @@ Characteristics:
 
 ### 1.4 Serdes and Data Contract
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```java
 // Built-in serdes
@@ -308,38 +217,8 @@ public class JsonSerde<T> extends Serializer<T> implements Deserializer<T> {
 
 ## 2. DSL Operators
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### 2.1 Stateless Operators
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 #### map / mapValues
@@ -439,21 +318,6 @@ stream.print(Printed.toFile("/tmp/stream-trace.log"));
 
 ### 2.2 Stateful Operators
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 #### groupBy / groupByKey
 
@@ -541,21 +405,6 @@ KTable<String, Transaction> largestTxn = transactions
 ```
 
 ### 2.3 Join Operators
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 Joins are a major source of complexity. Understanding co-partitioning is essential.
@@ -694,21 +543,6 @@ KStream<String, Transaction> enriched = txns.join(
 
 ### 2.4 Windowed Operations
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 Windows group records with the same key within temporal boundaries for aggregation.
 
@@ -792,21 +626,6 @@ Session after event at t=25: [20, 25]  (merged, gap=3min)
 
 ### 2.5 Windowing Edge Cases
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 #### Late Arriving Events
 
@@ -872,21 +691,6 @@ rekeyed.groupByKey().count();              // no additional repartition
 
 ### 2.6 Suppress
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 Suppress **buffers** results and emits them at a controlled interval or after a threshold. Critical for reducing downstream traffic in windowed operations.
 
@@ -916,21 +720,6 @@ Suppress configs:
 **Production warning**: Using `.unbounded()` without `.shutDownWhenFull()` can cause OOM during high-traffic periods. Always set an upper bound or emit strategy.
 
 ### 2.7 Cogroup
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 Cogroup (introduced in Kafka 2.8) allows aggregating **multiple streams** with the same key together into a single state store.
@@ -966,38 +755,8 @@ Benefits:
 
 ## 3. State Stores
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### 3.1 Types of State Stores
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 | Store Type | Class | Persistence | Typical Use |
@@ -1010,21 +769,6 @@ This pattern is commonly used in production systems.
 | Timestamped WindowStore | `RocksDBTimestampedWindowStore` | Disk | Versioned window state |
 
 ### 3.2 RocksDB Store (Default)
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 RocksDB is an **LSM-tree** embedded key-value store. Kafka Streams uses it by default for persistent state.
@@ -1069,21 +813,6 @@ RocksDB reads: check memtable → block cache → SST files (bloom filter skips 
 
 ### 3.3 In-Memory Store
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```java
 Materialized.as("inmemory-store")
@@ -1101,21 +830,6 @@ Use only for: testing, caching, small reference data with changelog recovery.
 
 ### 3.4 Persistent Store
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```java
 // Explicit custom store
@@ -1130,21 +844,6 @@ builder.addStateStore(storeBuilder);
 ```
 
 ### 3.5 Window Store Internals
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 Window stores use a composite key: `(window_start_ms + key)`.
@@ -1178,21 +877,6 @@ while (iter.hasNext()) {
 ```
 
 ### 3.6 Store Querying / Interactive Queries
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 State stores can be queried at runtime via the **Interactive Queries API**.
@@ -1270,21 +954,6 @@ private HostInfo routeKey(String storeName, String key) {
 
 ### 3.7 Changelog Topics
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 Every state store has a corresponding **changelog topic** (internal `applicationId-<store>-changelog`).
 
@@ -1307,38 +976,8 @@ Recovery: replays changelog from earliest offset
 
 ## 4. Processor API
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### 4.1 When to Use the Processor API
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 The Processor API is a lower-level interface for cases where DSL operators are insufficient:
@@ -1350,21 +989,6 @@ The Processor API is a lower-level interface for cases where DSL operators are i
 - Custom window strategies not supported by DSL
 
 ### 4.2 Basic Processor
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```java
@@ -1417,21 +1041,6 @@ public class MyProcessor implements Processor<String, Transaction, String, Alert
 
 ### 4.3 Wiring into Topology
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```java
 Topology topology = new Topology();
@@ -1449,21 +1058,6 @@ topology.addSource("txn-source", "transactions")
 ```
 
 ### 4.4 Scheduled Punctuators
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 Two punctuation types:
@@ -1499,21 +1093,6 @@ context.schedule(
 
 ### 4.5 Custom Record Routing
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```java
 @Override
@@ -1527,21 +1106,6 @@ public void process(Record<String, Transaction> record) {
 ```
 
 ### 4.6 Processor Context API
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```java
@@ -1567,21 +1131,6 @@ context.getStateStore("store-name");
 ```
 
 ### 4.7 State Store Access from Processors
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```java
@@ -1614,38 +1163,8 @@ public class DedupProcessor implements Processor<String, Event, String, Event> {
 
 ## 5. Topology
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### 5.1 What is a Topology?
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 A **topology** is a directed acyclic graph (DAG) of processors connected by streams. Kafka Streams compiles the DSL into a processor topology internally.
@@ -1685,21 +1204,6 @@ A **topology** is a directed acyclic graph (DAG) of processors connected by stre
 
 ### 5.2 Subtopologies
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 Kafka Streams **splits** the topology at repartition nodes into **subtopologies**. Each subtopology is independently parallelizable.
 
@@ -1720,21 +1224,6 @@ Subtopology 2 (post-repartition):
 Each subtopology gets its own **tasks**. The number of tasks = max(partition count across input topics) per subtopology.
 
 ### 5.3 Tasks and Task Assignment
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -1760,21 +1249,6 @@ Key points:
 - Tasks are **not** Java threads; they run on StreamThreads
 
 ### 5.4 StreamsThread Model
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -1813,21 +1287,6 @@ Per-thread loop:
 
 ### 5.5 Topology Description (Human-Readable)
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```java
 System.out.println(topology.describe());
@@ -1861,21 +1320,6 @@ Topologies:
 
 ### 5.6 Internal Topics Created by Streams
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 | Prefix | Purpose | Cleanup Policy |
 |---|---|---|
@@ -1889,38 +1333,8 @@ This pattern is commonly used in production systems.
 
 ## 6. Exactly-Once Semantics
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### 6.1 Processing Guarantees
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 | Config `processing.guarantee` | Semantics | Behavior |
@@ -1930,21 +1344,6 @@ This pattern is commonly used in production systems.
 | `exactly_once_v1` (EOS v1) | Exactly-once (deprecated) | Transactional producer, older approach |
 
 ### 6.2 How Exactly-Once Works
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -1968,21 +1367,6 @@ Transaction boundaries:
 
 ### 6.3 EOS v1 vs EOS v2
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 | Aspect | v1 | v2 |
 |---|---|---|
@@ -1994,21 +1378,6 @@ This pattern is commonly used in production systems.
 | **Performance** | ~15-25% overhead vs at_least_once | ~5-10% overhead |
 
 ### 6.4 Configuring EOS
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```java
@@ -2024,21 +1393,6 @@ props.put(StreamsConfig.producerPrefix(ProducerConfig.TRANSACTION_TIMEOUT_CONFIG
 
 ### 6.5 Idempotence
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 When EOS is enabled, idempotence is **automatically** enabled (`enable.idempotence=true`). The producer attaches a producer ID (PID) and sequence number to each batch. Brokers deduplicate by (PID, partition, sequence number).
 
@@ -2051,21 +1405,6 @@ Producer retries (crash/network issue)
 ```
 
 ### 6.6 EOS and Idempotent Writes
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```java
@@ -2083,38 +1422,8 @@ producerProps.put(ProducerConfig.MAX_IN_FLIGHT_REQUESTS_PER_CONNECTION, 5);
 
 ## 7. Scaling
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### 7.1 Partition Assignment
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 When a Kafka Streams application starts, the consumer group protocol assigns partitions to tasks:
@@ -2128,21 +1437,6 @@ Group Coordinator ──▶ Assignor (Sticky/Range/Avg)
 ```
 
 ### 7.2 Rebalancing
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 Triggers for rebalance:
@@ -2187,21 +1481,6 @@ Mitigation:
 
 ### 7.3 Static Group Membership
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```java
 props.put(ConsumerConfig.GROUP_INSTANCE_ID_CONFIG, "instance-1");
@@ -2221,21 +1500,6 @@ With static membership:
 ```
 
 ### 7.4 Warm-Standby Replicas
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```java
@@ -2267,21 +1531,6 @@ With standbys:   task already has state → minimal recovery time.
 
 ### 7.5 max.task.idle.ms
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 Controls how long a task waits for all its input partition offsets to advance. Prevents tasks from processing partially.
 
@@ -2292,21 +1541,6 @@ props.put(StreamsConfig.MAX_TASK_IDLE_MS_CONFIG, 100);
 Default: unbounded (no idle). Setting this to a small value (e.g., 100ms) reduces join latency at the cost of possibly processing incomplete data.
 
 ### 7.6 num.stream.threads
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```java
@@ -2321,38 +1555,8 @@ Controls the number of threads per instance. Each thread runs a subset of tasks.
 
 ## 8. Failure Handling
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### 8.1 Task Crashes
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 When a task crashes (exception in process):
@@ -2374,21 +1578,6 @@ props.put(StreamsConfig.DEFAULT_DESERIALIZATION_EXCEPTION_HANDLER_CLASS_CONFIG,
 ```
 
 ### 8.2 State Store Corruption
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 Corruption scenarios:
@@ -2422,21 +1611,6 @@ Fix: Always test serde changes with old data. Use Schema Registry with compatibi
 
 ### 8.3 Rebalancing Scenarios
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 #### Slow Joiner
 
@@ -2466,21 +1640,6 @@ Runtime.getRuntime().addShutdownHook(new Thread(() -> {
 ```
 
 ### 8.4 Resiliency Patterns
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 #### Pattern 1: Idempotent Processing
@@ -2534,21 +1693,6 @@ KStream<String, Transaction> valid = stream
 
 ### 8.5 Out-of-Order Event Handling
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 Events with timestamps significantly in the past:
 
@@ -2582,38 +1726,8 @@ StreamsJoined<String, Transaction, Payment, OrderShipment> joined = ...
 
 ## 9. Production Operations
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### 9.1 Metrics
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 Kafka Streams exposes metrics via JMX (MBeans) with these groups:
@@ -2665,21 +1779,6 @@ for (String group : allMetrics.keySet()) {
 
 ### 9.2 Consumer Lag Monitoring
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 Lag between the source topic and the Streams consumer:
 
@@ -2707,21 +1806,6 @@ kafka-consumer-groups --bootstrap-server localhost:9092 \
 **Alert on MAX lag across partitions** (not average). A single partition with high lag indicates skew.
 
 ### 9.3 Streams Config
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 #### Essential Production Config
@@ -2778,21 +1862,6 @@ props.put(StreamsConfig.producerPrefix(ProducerConfig.BATCH_SIZE_CONFIG), 524288
 
 ### 9.4 JVM Tuning
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```bash
 # Heap: avoid too large (GC pauses kill throughput)
@@ -2819,21 +1888,6 @@ This pattern is commonly used in production systems.
 **GC pause > 1 second** → RocksDB stops responding → commit timeout → rebalance.
 
 ### 9.5 RocksDB Tuning
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```java
@@ -2907,21 +1961,6 @@ On a 4GB heap instance:
 ```
 
 ### 9.6 Deployment Patterns
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 #### Pattern A: Kubernetes Deployment
@@ -3009,21 +2048,6 @@ Risk: Both use same state directory → different dirs per version.
 
 ### 9.7 Monitoring Dashboard (Grafana)
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```
 Row 1: Throughput
@@ -3053,38 +2077,8 @@ Row 4: Rebalances
 
 ## 10. Comparison: Kafka Streams vs Flink vs Spark Structured Streaming
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### 10.1 Architecture Comparison
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 | Aspect | Kafka Streams | Apache Flink | Spark Structured Streaming |
@@ -3101,21 +2095,6 @@ This pattern is commonly used in production systems.
 | SQL | KSqlDB (separate) | Flink SQL (native) | Spark SQL (native) |
 
 ### 10.2 Detailed Head-to-Head
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 #### State Management
@@ -3187,21 +2166,6 @@ Spark:         Driver + Executors + Cluster Manager
 
 ### 10.3 When to Choose What
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 #### Choose Kafka Streams when:
 
@@ -3232,21 +2196,6 @@ This pattern is commonly used in production systems.
 
 ### 10.4 Performance Benchmark Mindset
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```
 Kafka Streams:   Throughput = function(partitions, threads, state size)
@@ -3272,38 +2221,8 @@ Spark:           Latency = function(batch interval) + shuffle overhead
 
 ## 11. Interview Questions
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### 11.1 Conceptual Questions
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Q1: What is the difference between KStream and KTable?**
@@ -3327,21 +2246,6 @@ A: Kafka Streams detects corruption during initialization (RocksDB checksum fail
 A: EOS uses Kafka transactions to atomically write both output records and consumer offsets. A transaction wraps: poll → process → produce → commitOffset. Either all succeed and become visible atomically, or none do. Streams uses a transactional producer with a unique `transactional.id` per task partition. On crash, the new task instance fences the old producer (via epoch), aborts any pending transaction, and starts fresh. `exactly_once_v2` (since Kafka 2.5) shares producer instances across tasks, reducing overhead compared to v1.
 
 ### 11.2 Design Questions
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Q6: Design a real-time fraud detection system using Kafka Streams.**
@@ -3398,21 +2302,6 @@ Edge cases:
 
 ### 11.3 Troubleshooting Questions
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **Q9: Your Streams app is stuck in a constant rebalance loop. Diagnose.**
 
@@ -3463,38 +2352,8 @@ A: Options in order of impact:
 
 ## 12. Appendices
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### 12.1 Production Stories
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 #### Story 1: State Store Corruption After Power Outage
@@ -3606,21 +2465,6 @@ KTable<String, User> safeTable = builder.table("users")
 
 ### 12.2 Common Pitfalls Checklist
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```
 ☐ State directory on fast local disk (not NFS, not EBS network volume)
@@ -3647,21 +2491,6 @@ This pattern is commonly used in production systems.
 ```
 
 ### 12.3 Cheat Sheet
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -3740,21 +2569,6 @@ This pattern is commonly used in production systems.
 ```
 
 ### 12.4 References
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 | Resource | Link |

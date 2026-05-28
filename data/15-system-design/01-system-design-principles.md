@@ -1,7 +1,6 @@
 # 🏛️ System Design Principles — Complete Deep Dive
 
 
-
 ```mermaid
 graph LR
     REQ["Requirements<br/>Functional + NFR"] --> SCALE["Scalability<br/>(Vertical vs Horizontal)"]

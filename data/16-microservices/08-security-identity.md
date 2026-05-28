@@ -1,7 +1,6 @@
 # 🔐 Microservices Security — Complete Deep Dive
 
 
-
 ```mermaid
 graph LR
     OAUTH_OIDC["OAuth 2.0 / OIDC"] --> AUTHZ_SRV["Authorization Server<br/>(Keycloak/Okta/Auth0)"]
@@ -41,20 +40,6 @@ graph LR
 
 ## Table of Contents
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 - [1. OAuth 2.0 & OIDC](#1-oauth-20--oidc)
 - [2. JWT Deep Dive](#2-jwt-deep-dive)
@@ -70,38 +55,8 @@ This pattern is commonly used in production systems.
 
 ## 1. OAuth 2.0 & OIDC
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Roles & Flows
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -127,21 +82,6 @@ This pattern is commonly used in production systems.
 
 ### Authorization Code + PKCE (SPAs)
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```text
 Browser → SPA:        Click login → generate code_verifier + code_challenge
@@ -154,21 +94,6 @@ AS → SPA:             access_token + id_token + refresh_token
 
 ### Client Credentials (M2M)
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```text
 Backend → AS:   POST /token with client_id + client_secret + grant_type
@@ -178,21 +103,6 @@ Backend → API:  GET /orders with Bearer token
 
 ### Device Code (TV/CLI)
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```text
 Device → AS:   POST /device_code → get user_code + verification_uri
@@ -201,21 +111,6 @@ Device → AS:   Poll POST /token until approved → get access_token
 ```
 
 ### OIDC (Identity Layer)
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```json
@@ -235,38 +130,8 @@ Scope `openid` is required for `id_token`. Userinfo endpoint returns additional 
 
 ## 2. JWT Deep Dive
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Structure
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -280,21 +145,6 @@ Signature: RSA(SHA256(base64(header) + "." + base64(payload)))
 
 ### Standard Claims
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 | Claim | Name          | Description                              |
 |-------|---------------|------------------------------------------|
@@ -307,21 +157,6 @@ This pattern is commonly used in production systems.
 | `kid` | Key ID        | Which JWK key signed this                |
 
 ### JWK Key Set & Rotation
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```json
@@ -339,38 +174,8 @@ Rotation: add new key to JWKS, start signing with it, remove old after TTL.
 
 ## 3. Token Security
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### HMAC vs RSA vs ECDSA
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -380,21 +185,6 @@ ECDSA (ES256):  EC private sign, EC public    — ✅ smaller keys, faster
 ```
 
 ### Attacks
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 | Attack               | Defense                                               |
@@ -406,21 +196,6 @@ This pattern is commonly used in production systems.
 
 ### Token Storage
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```text
 SPA:     httpOnly + Secure + SameSite=Strict cookie ✅
@@ -430,21 +205,6 @@ Backend: In-memory or encrypted DB, short expiry
 ```
 
 ### Revocation
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -458,38 +218,8 @@ This pattern is commonly used in production systems.
 
 ## 4. Zero Trust
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Principles
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -503,21 +233,6 @@ This pattern is commonly used in production systems.
 
 ### mTLS
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```text
 Standard TLS: Client verifies server cert only
@@ -526,21 +241,6 @@ mTLS:         Client + Server both present certs (mutual verification)
 
 ### SPIFFE/SPIRE
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```text
 Identity: spiffe://trust-domain/ns/default/sa/payment-service
@@ -548,21 +248,6 @@ Agent on each node → attests workload → Server issues SVID (X.509/JWT)
 ```
 
 ### Service Mesh Comparison
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 | Feature       | Istio          | Linkerd        | Consul        | Cilium       |
@@ -576,38 +261,8 @@ This pattern is commonly used in production systems.
 
 ## 5. API Gateway Security
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### WAF & OWASP Top 10
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```yaml
@@ -622,21 +277,6 @@ waf:
 
 ### Rate Limiting Algorithms
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```text
 Token Bucket:  Capacity=100, refill=10/s → burst up to 100, steady 10/s
@@ -645,21 +285,6 @@ Leaky Bucket:   Fixed queue + steady outflow, drop if full
 ```
 
 ### CORS, CSP, HSTS
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```yaml
@@ -672,38 +297,8 @@ Strict-Transport-Security: max-age=31536000; includeSubDomains
 
 ## 6. Secrets Management
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### HashiCorp Vault
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -721,21 +316,6 @@ Vault → App: secret value
 | `aws`       | Dynamic AWS IAM credentials                       |
 
 ### Kubernetes Secrets
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```yaml
@@ -755,21 +335,6 @@ spec:
 
 ### Password Hashing
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 | Algorithm  | Memory-hard | Recommended for     |
 |------------|-------------|---------------------|
@@ -788,38 +353,8 @@ String hash = argon2.hash(2, 65536, 1, password);
 
 ## 7. Access Control
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### RBAC vs ABAC
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -840,21 +375,6 @@ ABAC: Allow if user.department == resource.department
 
 ### API Keys
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```text
 Format: sk_live_a1b2c3d4e5f6g7h8i9j0k
@@ -867,38 +387,8 @@ Limit:  per-key rate limiting
 
 ## 8. API Security Special Topics
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### GraphQL Security
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```python
@@ -915,21 +405,6 @@ class UserLoader(DataLoader):
 ```
 
 ### gRPC Security
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```java
@@ -958,21 +433,6 @@ class AuthInterceptor implements ServerInterceptor {
 
 ## Simplest Mental Model
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **Security is a building with multiple locked doors.**
 
@@ -989,38 +449,8 @@ This pattern is commonly used in production systems.
 
 ## Production Failure Modes
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Failure 1: JWT Secret Rotation Causes Widespread 401 Errors
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 | Aspect | Detail |
@@ -1033,21 +463,6 @@ This pattern is commonly used in production systems.
 
 ### Failure 2: OAuth Token Leak Through Logs
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 | Aspect | Detail |
 |--------|--------|
@@ -1058,21 +473,6 @@ This pattern is commonly used in production systems.
 | **Prevention** | Never log Authorization header. Use structured logging with PII redaction (Logstash `fingerprint` filter, Fluentd `record_modifier`). Pre-commit hook to detect token patterns in test logs |
 
 ### Failure 3: API Gateway Rate Limiting Blocks Legitimate Traffic
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 | Aspect | Detail |
@@ -1085,21 +485,6 @@ This pattern is commonly used in production systems.
 
 ### Failure 4: mTLS Certificate Expiry in Production
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 | Aspect | Detail |
 |--------|--------|
@@ -1110,21 +495,6 @@ This pattern is commonly used in production systems.
 | **Prevention** | Use cert-manager with auto-renewal (30 days before expiry). Monitor cert expiry: `cert_expiry_days` metric. Alert at T-45 days. Use short-lived certs (7 days) rotated every 24h |
 
 ### Failure 5: RBAC Overly Permissive — Any Service Can Read Any Secret
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 | Aspect | Detail |
@@ -1137,21 +507,6 @@ This pattern is commonly used in production systems.
 
 ## Edge Cases
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 | Scenario | Challenge | Solution |
 |----------|-----------|----------|
@@ -1162,21 +517,6 @@ This pattern is commonly used in production systems.
 | **Service mesh cert revocation** | Compromised cert not propagated to all proxies | Use short-lived certs (24h) instead of CRLs. CRLs are slow and complex in mesh environments |
 
 ## Cross-References
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 - [OAuth2 & JWT](../../11-networking/02-http-protocols.md#oauth2--jwt) — Token exchange, introspection, revocation

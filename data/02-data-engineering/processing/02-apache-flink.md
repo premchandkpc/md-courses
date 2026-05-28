@@ -1,7 +1,6 @@
 # Apache Flink
 
 
-
 ```mermaid
 graph LR
     A["Thread 1"] --> D["Shared<br/>Resource"]
@@ -17,58 +16,13 @@ graph LR
 
 ## Overview
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 Apache Flink is a distributed stream processing framework designed for stateful computations over unbounded and bounded data streams. It provides high throughput, low latency (real-time), and exactly-once semantics. Flink originated from the Stratosphere research project at TU Berlin and became a top-level Apache project in 2015.
 
 ## Architecture
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Flink Cluster Components
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -151,21 +105,6 @@ The Checkpoint Coordinator is a JobManager component that:
 
 ### High Availability
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```yaml
 # HA configuration (ZooKeeper-based)
@@ -177,38 +116,8 @@ high-availability.zookeeper.path.root: "/flink"
 
 ## Stream Processing Model
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Dataflow Graph
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 A Flink application is a **Dataflow Graph**:
@@ -224,21 +133,6 @@ Physical Dataflow (ExecutionGraph) with parallelism=3:
 ```
 
 ### Basic Program Structure
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```java
@@ -265,21 +159,6 @@ env.execute("Flink Streaming Job");
 ```
 
 ### PyFlink (Python API)
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```python
@@ -309,21 +188,6 @@ env.execute("PyFlink WordCount")
 ```
 
 ### Operators
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```python
@@ -370,21 +234,6 @@ class MyProcessFunction(ProcessFunction):
 
 ### Parallelism and Chaining
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```python
 env = StreamExecutionEnvironment.get_execution_environment()
@@ -415,40 +264,10 @@ ds3 = ds2.key_by(lambda x: x).sum(0).name("sum").slot_sharing_group("default")
 
 ## State Management
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 State in Flink is what makes it stateful stream processing — intermediate data stored across events.
 
 ### State Types
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```python
@@ -504,21 +323,6 @@ class ReducingStateFunction(KeyedProcessFunction):
 
 ### Operator State
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 Operator state is state that is *not* partitioned by key. Useful for sources/sinks:
 
@@ -550,21 +354,6 @@ class BufferingSink(SinkFunction):
 ```
 
 ### State Backends
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 Backends determine how state is stored and checkpoints are managed.
@@ -624,21 +413,6 @@ state.backend.rocksdb.log.level: WARN
 
 ### State TTL
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```python
 from pyflink.api.common.state import StateTtlConfig
@@ -667,38 +441,8 @@ descriptor.enable_time_to_live(ttl_config)
 
 ## Checkpointing
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Checkpoint Mechanism
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 Flink's checkpointing implements the **Chandy-Lamport distributed snapshot** algorithm with barriers:
@@ -748,21 +492,6 @@ env.get_checkpoint_config().set_aligned_checkpoint_timeout(5000)  # Fall back to
 
 ### Checkpoint Storage
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```python
 # File-system based (default)
@@ -773,21 +502,6 @@ env.get_checkpoint_config().set_checkpoint_storage("jobmanager")
 ```
 
 ### Incremental Checkpoints
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 Only available with RocksDB backend. Instead of storing full state each time:
@@ -804,21 +518,6 @@ RocksDBStateBackend("hdfs:///flink/ckpt", incremental=True)
 ```
 
 ### Savepoints
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 Savepoints are manually triggered, fully stopped checkpoints used for:
@@ -851,38 +550,8 @@ Savepoints are manually triggered, fully stopped checkpoints used for:
 
 ## Time Semantics
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Time Domains
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -917,21 +586,6 @@ env.set_stream_time_characteristic(TimeCharacteristic.EventTime)
 ```
 
 ### Watermarks
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 Watermarks track the progress of event time and handle late data:
@@ -978,21 +632,6 @@ class LaggingWatermarkGenerator(WatermarkGenerator):
 
 ### Idle Sources
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 When a source stops sending data, watermarks won't advance, blocking downstream operations:
 
@@ -1005,38 +644,8 @@ watermark_strategy = WatermarkStrategy \
 
 ## Windowing
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Window Types
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```python
@@ -1063,21 +672,6 @@ keyed.window(GlobalWindows.create())
 ```
 
 ### Window Function Types
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```python
@@ -1116,21 +710,6 @@ windowed.process(MyProcessWindow(), Types.SOMETHING())
 ```
 
 ### Trigger API
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```python
@@ -1189,38 +768,8 @@ windowed.side_output_late_data(late_output_tag)
 
 ## Joins
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Window Join
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```python
@@ -1237,21 +786,6 @@ stream1.join(stream2) \
 
 ### Interval Join
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 Join stream1 events with stream2 events that fall in a time interval *around* the stream1 event:
 
@@ -1266,21 +800,6 @@ stream1.key_by(lambda e: e.key) \
 ```
 
 ### Regular Join (Table API)
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```python
@@ -1309,21 +828,6 @@ result.execute().print()
 
 ### Temporal Join
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 Joins a stream against a versioned table (changelog):
 
@@ -1345,38 +849,8 @@ result = t_env.sql_query("""
 
 ## Fault Tolerance
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Restart Strategies
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```python
@@ -1410,21 +884,6 @@ env.set_restart_strategy(
 ```
 
 ### Exactly-Once Sinks
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 Exactly-once sinks require a **two-phase commit** protocol:
@@ -1477,21 +936,6 @@ stream.add_sink(exactly_once_sink)
 
 ### Job Failure Handling
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 When a TaskManager fails:
 
@@ -1522,21 +966,6 @@ TM fails → JM detects → Cancel all tasks → Determine restart strategy
 
 ### End-to-End Exactly-Once
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 For true end-to-end exactly-once, all components must support it:
 
@@ -1563,38 +992,8 @@ source semantics   state          sink semantics
 
 ## Optimizations
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Operator Chaining
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 Chaining reduces serialization and network overhead:
@@ -1608,21 +1007,6 @@ stream.map(lambda x: x * 2).start_new_chain()
 ```
 
 ### Task Slot Configuration
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```yaml
@@ -1639,21 +1023,6 @@ parallelism.default: 20
 
 ### Buffer and Network Tuning
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```yaml
 # Network buffer tuning for high throughput
@@ -1668,21 +1037,6 @@ taskmanager.network.netty.transport: epoll  # Linux only
 ```
 
 ### Async I/O
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 Async I/O allows overlapping I/O operations (database lookups):
@@ -1711,38 +1065,8 @@ stream = AsyncDataStream.ordered_wait(
 
 ## Monitoring
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Flink Web UI
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 Accessible at `http://jobmanager:8081`:
@@ -1768,21 +1092,6 @@ Backpressure Monitoring:
 ```
 
 ### Metrics
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```yaml
@@ -1817,21 +1126,6 @@ numBytesInLocal / numBytesInRemote - Local vs remote data transfer
 
 ### Logging
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```xml
 <!-- log4j.properties -->
@@ -1846,21 +1140,6 @@ log4j.logger.org.apache.flink.runtime.state=DEBUG
 
 ## Related
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 - [Databases](../../08-databases/) — Data storage and querying
 - [Messaging](../../10-messaging/) — Event streaming (Kafka)
@@ -1871,38 +1150,8 @@ This pattern is commonly used in production systems.
 
 ## Interview Questions
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Beginner Level
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Q1: What is the difference between stream processing and batch processing?**
@@ -1923,21 +1172,6 @@ This pattern is commonly used in production systems.
 
 ### Intermediate Level
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **Q3: How do watermarks work in Flink and why are they necessary?**
 
@@ -1948,21 +1182,6 @@ This pattern is commonly used in production systems.
 **Answer**: **Flink**: Native streaming engine (records processed immediately), true event-time processing, stateful exactly-once, rich windowing (session, sliding, tumbling), fine-grained recovery (per-operator checkpoint). **Spark Streaming**: Micro-batch architecture (records processed in mini-batches), higher latency (sub-second to minutes), excellent ecosystem (MLlib, Spark SQL), easier for mixed batch+streaming workloads. **Choose Flink when**: sub-second latency needed, complex event-time semantics (session windows, custom watermarks), stateful operations at scale. **Choose Spark Streaming when**: tight Spark ecosystem integration, >1s latency is acceptable, teams already have Spark expertise, mixed batch-stream workloads.
 
 ### Senior Level
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Q5: Your Flink job has high backpressure. How do you diagnose and fix it?**
@@ -1977,21 +1196,6 @@ This pattern is commonly used in production systems.
 
 ### Staff/Principal Level
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **Q7: Your 200-parallelism Flink job processes 500K events/s but has widening checkpoint latency (from 10s to 5 minutes). Diagnose.**
 
@@ -2004,21 +1208,6 @@ This pattern is commonly used in production systems.
 **Answer**: 1) **Storage layer**: Object store (S3/ADLS/GCS) as data lake — Iceberg/Delta Lake tables for batch and streaming. 2) **Streaming writes**: Flink writes to Iceberg tables via `FlinkSink` — micro-batches that produce Iceberg manifests. 3) **Batch reads**: Spark reads Iceberg tables for historical analysis, ML training (no latency sensitivity). 4) **Streaming reads**: Flink reads Iceberg table's incremental changes via `IcebergSource` with streaming mode (reads new snapshots continuously). 5) **Catalog**: AWS Glue / Hive Metastore for unified metadata. 6) **Deployment**: Flink on Kubernetes (K8s operator), Spark on EMR/K8s (Spark Operator). 7) **Monitoring**: Prometheus metrics from both → Grafana. 8) **Schema evolution**: both engines support Iceberg schema evolution (add/drop columns) without downtime. 9) **Consistency**: Iceberg's snapshot isolation ensures batch reads don't see partial streaming writes.
 
 ### Tricky Edge Cases
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Q9**: A Flink job processes events from Kafka. After a checkpoint restore, all events from the last 5 minutes are reprocessed. Why?

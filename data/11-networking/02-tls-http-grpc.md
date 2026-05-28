@@ -8,21 +8,6 @@
 
 ## Layer 1: Beginner Mental Model
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **Analogy**: Like a secure phone call. You (client) call someone (server). Before talking, you verify they are who they claim (certificate check = checking caller ID). You agree on a secret code (key exchange), then everything you say is encrypted (TLS). HTTP/2 is like conference calling (multiple conversations on one call). gRPC is like using a shorthand language (protobuf).
 
@@ -38,38 +23,8 @@ This pattern is commonly used in production systems.
 
 ## Layer 4: Production Reality
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### TLS/HTTP/gRPC Failure Modes
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 | Failure | Symptoms | Root Cause | Fix |
@@ -84,21 +39,6 @@ This pattern is commonly used in production systems.
 | **ALPN Negotiation Failure** | Falls back to HTTP/1.1 instead of HTTP/2 | Server doesn't support h2 protocol | Verify ALPN list includes h2 for HTTP/2 |
 
 ### Production Incident: Google Search QUIC Rollout (2017)
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Context**: Google deployed QUIC (HTTP/3 precursor) to 1% of Chrome users. QUIC uses UDP instead of TCP.
@@ -132,38 +72,8 @@ But developers thought QUIC was broken, rolled back
 
 ## Layer 5: Staff Engineer Perspective
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Protocol Tradeoffs
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 | Protocol | Latency | Throughput | Complexity | Security | Use Case |
@@ -175,21 +85,6 @@ This pattern is commonly used in production systems.
 | **gRPC HTTP/3** | Lowest | Excellent | Very high | Excellent | Future internal services |
 
 ### Scaling Pattern: Startup → Global
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Stage 1 (Startup)**: HTTP/1.1, self-signed cert
@@ -223,38 +118,8 @@ This pattern is commonly used in production systems.
 
 ## Layer 5: Interview Questions
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Level 1 (Junior Engineer)
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Q1: What's a TLS handshake? Why does it take extra round trips?**
@@ -268,21 +133,6 @@ A: HTTP/1.1 = one request per connection (or pipelining = requests queue). HTTP/
 - Expected: Understand connection reuse, no HOL
 
 ### Level 2 (Mid-Level Engineer)
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Q3: Why use gRPC instead of REST?**
@@ -301,21 +151,6 @@ A: Client sends encrypted data (Early Data) in first message using cached PSK (p
 - Expected: Understand PSK, Early Data, replay risk
 
 ### Level 3 (Senior Engineer)
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Q5: Design API for 10M global users (North America, Europe, Asia). Which protocol? How do you optimize latency?**
@@ -342,21 +177,6 @@ A:
 - Expected: Multiple layers to check
 
 ### Level 4 (Staff Engineer)
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Q7: Migrate internal APIs from REST JSON to gRPC. Plan the rollout and estimated impact.**
@@ -391,7 +211,6 @@ A:
 ---
 
 
-
 ```mermaid
 graph LR
     CLI_HELLO["ClientHello<br/>(Ciphers + Key Share)"] --> SRV_HELLO["ServerHello<br/>(Cipher + Cert + Sig)"]
@@ -418,21 +237,6 @@ graph LR
 
 ## Table of Contents
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 1. [TLS 1.3 Handshake](#1-tls-13-handshake)
 2. [TLS 1.3 Key Schedule](#2-tls-13-key-schedule)
@@ -455,38 +259,8 @@ This pattern is commonly used in production systems.
 
 ## 1. TLS 1.3 Handshake
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Full 1-RTT Handshake
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -543,21 +317,6 @@ Client                                      Server
 
 ### 0-RTT Handshake (Early Data)
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```
 Client with cached PSK (from previous session):
@@ -598,21 +357,6 @@ Client with cached PSK (from previous session):
 
 ### HelloRetryRequest (HRR)
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```
 When server doesn't support client's key share group:
@@ -639,21 +383,6 @@ When server doesn't support client's key share group:
 ---
 
 ## 2. TLS 1.3 Key Schedule
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -701,21 +430,6 @@ PSK (from session ticket or external)    (EC)DHE (from key_share)
 
 ### Key Derivation Steps
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```
 Derive-Secret(Secret, Label, Messages) = HKDF-Expand-Label(Secret, Label,
@@ -729,21 +443,6 @@ Each is 256 bits (SHA-256) or 384 bits (SHA-384)
 ```
 
 ### 0-RTT Key Derivation
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -759,38 +458,8 @@ BUT this key is derived only from PSK — NOT from (EC)DHE
 
 ## 3. Cipher Suites & AEAD
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### TLS 1.3 Cipher Suites
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -800,21 +469,6 @@ TLS_CHACHA20_POLY1305_SHA256   (0x1303) — fast without AES-NI (mobile)
 ```
 
 ### AEAD (Authenticated Encryption with Associated Data)
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -841,21 +495,6 @@ AEAD provides:
 
 ### Perfect Forward Secrecy (PFS)
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```
 If private key is compromised:
@@ -872,21 +511,6 @@ In TLS 1.2: optional (DHE cipher suites)
 ---
 
 ## 4. Certificate Chain & Validation
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -927,21 +551,6 @@ Certificate Chain:
 
 ### Certificate Validation
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```
 1. Chain building:
@@ -969,21 +578,6 @@ This pattern is commonly used in production systems.
 
 ### OCSP Stapling
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```
 Without stapling:
@@ -998,21 +592,6 @@ With stapling:
 ```
 
 ### Certificate Pinning vs CAA
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -1032,38 +611,8 @@ CAA (DNS Certification Authority Authorization):
 
 ## 5. ALPN & SNI
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### SNI (Server Name Indication)
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -1083,21 +632,6 @@ Encrypted SNI (ESNI) / ECH (Encrypted Client Hello, TLS 1.3):
 
 ### ALPN (Application-Layer Protocol Negotiation)
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```
 Client sends in ClientHello:
@@ -1116,38 +650,8 @@ Avoids: HTTP/1.1 Upgrade: h2c (cleartext HTTP/2 upgrade)
 
 ## 6. Session Resumption & 0-RTT
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Session Ticket (PSK)
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -1186,21 +690,6 @@ Resumption handshake:
 
 ### Anti-Replay for 0-RTT
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```
 Since 0-RTT data can be intercepted and replayed:
@@ -1214,21 +703,6 @@ Since 0-RTT data can be intercepted and replayed:
 ---
 
 ## 7. TCP + TLS Overhead
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -1251,38 +725,8 @@ Transmitted bytes (handshake only):
 
 ## 8. HTTP/1.1
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Persistent Connections (Keep-Alive)
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -1300,21 +744,6 @@ Drawbacks:
 
 ### Pipelining
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```
 Request 1 ────► Request 2 ────► Request 3 ────►
@@ -1331,21 +760,6 @@ Pipelining support:
 ```
 
 ### Chunked Transfer Encoding
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -1372,21 +786,6 @@ Allows: streaming responses (SSE, real-time data)
 
 ### 100 Continue
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```
 Client sends:    Expect: 100-continue
@@ -1401,38 +800,8 @@ Purpose: Client checks if server accepts the request
 
 ## 9. HTTP/2
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Binary Framing
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -1463,21 +832,6 @@ Frame types:
 
 ### Multiplexing
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```
 HTTP/1.1 (one request at a time):
@@ -1499,21 +853,6 @@ Each stream is independent:
 
 ### Stream Priority (RFC 9218 — Extensible Priorities)
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```
 Old system (RFC 7540, deprecated):
@@ -1528,21 +867,6 @@ New system (RFC 9218):
 ```
 
 ### HPACK (Header Compression)
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -1579,21 +903,6 @@ HPACK Security:
 
 ### QPACK (HTTP/3 Header Compression)
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```
 HTTP/3/QUIC doesn't have ordering guarantees → HPACK broken on multiple streams
@@ -1608,21 +917,6 @@ QPACK is HPACK adapted for unordered delivery
 ```
 
 ### Server Push (Deprecated in RFC 9113)
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -1642,21 +936,6 @@ Replaced by: 103 Early Hints (HTTP status code 103)
 ```
 
 ### Flow Control
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -1680,21 +959,6 @@ Important: Flow control only applies to DATA frames
 
 ### HTTP/2 Head-of-Line Block (TCP Level)
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```
 HTTP/2 solves HTTP-level HOL (multiplexed streams)
@@ -1710,21 +974,6 @@ TCP HOL blocking is the main motivation for QUIC/HTTP/3
 ---
 
 ## 10. HTTP/3 & QUIC
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -1747,21 +996,6 @@ QUIC: Quick UDP Internet Connections
 
 ### QUIC Key Features
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```
 1. UDP-based: Works through NATs and firewalls (no kernel TCP stack needed)
@@ -1777,21 +1011,6 @@ This pattern is commonly used in production systems.
 ```
 
 ### QUIC Handshake
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -1827,21 +1046,6 @@ This pattern is commonly used in production systems.
 
 ### QUIC vs TCP + TLS + HTTP/2
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```
 Feature                TCP + TLS + HTTP/2        QUIC + HTTP/3
@@ -1860,38 +1064,8 @@ Userspace impl.        Needs kernel for TCP     Full userspace (quiche, lsquic)
 
 ## 11. gRPC & Protobuf
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Protobuf Wire Format
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -1931,21 +1105,6 @@ Zigzag encoding (signed int32/int64):
 
 ### gRPC over HTTP/2
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```
 gRPC uses HTTP/2 as transport:
@@ -1979,21 +1138,6 @@ gRPC-Web: gRPC over HTTP/1.1 (via proxy)
 
 ### gRPC Flow Control
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```
 gRPC uses HTTP/2 flow control (WINDOW_UPDATE)
@@ -2010,21 +1154,6 @@ Flow control in streaming:
 
 ### gRPC Deadlines & Timeouts
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```go
 // Client sets deadline
@@ -2037,21 +1166,6 @@ resp, err := client.SayHello(ctx, &pb.HelloRequest{Name: "Alice"})
 ```
 
 ### gRPC Metadata
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```go
@@ -2066,21 +1180,6 @@ token := md["authorization"][0]
 
 ### gRPC Cancellation
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```go
 // Client cancels
@@ -2094,21 +1193,6 @@ cancel() // → RST_STREAM with CANCEL error
 ```
 
 ### gRPC Retry & Hedging
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```yaml
@@ -2141,21 +1225,6 @@ Hedging:
 
 ### gRPC Performance (vs REST JSON)
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```
                 gRPC+Protobuf         REST+JSON
@@ -2176,38 +1245,8 @@ Zero-copy: Protobuf can avoid string copies in some languages
 
 ## 12. Internals
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### TLS 1.3 Record Layer
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -2234,21 +1273,6 @@ TLS 1.3 encrypts the content type too — no more "I can see this is a TLS recor
 ```
 
 ### HTTP/2 Frame Processing
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```c
@@ -2291,21 +1315,6 @@ void process_frame(struct h2_session *sess, uint8_t *data, size_t len) {
 
 ### Protobuf Encoding (C++ optimized)
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```cpp
 // Protobuf zero-copy string deserialization
@@ -2338,38 +1347,8 @@ bool Person::ParseFromArray(const void* data, int size) {
 
 ## 13. Failure Analysis
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### TLS Handshake Failures
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -2404,21 +1383,6 @@ This pattern is commonly used in production systems.
 
 ### HTTP/2 GOAWAY & Graceful Shutdown
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```
 Server sends GOAWAY:
@@ -2442,21 +1406,6 @@ Graceful shutdown:
 ```
 
 ### gRPC Status Codes
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -2483,21 +1432,6 @@ DATA_LOSS           = 15  — unrecoverable data loss
 
 ## 14. Edge Cases
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 - **TLS 1.3 + middleboxes**: Middleboxes don't understand encrypted handshake → may drop connections → use anti-rollback mechanism
 - **0-RTT replay**: Network middleware may replay 0-RTT data → server must detect and reject duplicates
@@ -2516,38 +1450,8 @@ This pattern is commonly used in production systems.
 
 ## 15. Performance
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### TLS Performance
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -2564,21 +1468,6 @@ TLS record overhead per 1KB         ~50 bytes (header + tag + padding)
 
 ### HTTP/2 vs HTTP/1.1 Performance
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```
 100 resources, 1 connection:
@@ -2594,21 +1483,6 @@ Resource priority:              No              Yes
 
 ### gRPC vs REST Benchmark
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```
 gRPC vs REST (1KB message, localhost):
@@ -2622,21 +1496,6 @@ Payload size:  ~150 bytes        ~450 bytes      ~300 bytes
 ```
 
 ### Optimizing HTTPS Performance
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -2663,21 +1522,6 @@ OpenSSL speed comparison:
 ---
 
 ## 16. Simplest Mental Model
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 > **TLS is a secure box that two parties build in plain sight. The handshake is: "Here's my lockbox half (public key), here's yours — now together we have a shared key that only we know." Everyone can see the boxes being built, but can't open them. HTTP/1.1 is a fax machine — you send one page, wait for the response, send the next. HTTP/2 is a single wire with multiple conversations (streams) — like a group chat where each person has their own color text — but if the wire breaks, everyone waits. HTTP/3/QUIC is multiple wires (UDP packets) each with their own conversation color — if one breaks, only that conversation is affected. gRPC + Protobuf is like FedEx with pre-labeled packages — you define exactly what goes in each package (protobuf schema), and FedEx (gRPC) handles packaging, addressing, tracking, retries, and delivery confirmations automatically. The whole stack is a series of layers: each layer trusts the layer below and simplifies complexity for the layer above.**

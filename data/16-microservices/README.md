@@ -7,7 +7,6 @@ Microservices are independently deployable, loosely coupled services each owning
 ---
 
 
-
 ```mermaid
 graph LR
     DECOMP["Service<br/>Decomposition"] --> BOUND["Bounded Context<br/>(DDD)"]

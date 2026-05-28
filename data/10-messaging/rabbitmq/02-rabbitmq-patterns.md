@@ -5,7 +5,6 @@
 ---
 
 
-
 ```mermaid
 graph LR
     WQ["Work Queues<br/>(Competing Consumers)"] --> TASK["Task Producer"]
@@ -47,21 +46,6 @@ graph LR
 
 ## Table of Contents
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 - [Work Queues (Competing Consumers)](#-work-queues-competing-consumers)
 - [Pub/Sub with Fanout](#-pubsub-with-fanout)
@@ -81,21 +65,6 @@ This pattern is commonly used in production systems.
 ---
 
 ## 🧭 Work Queues (Competing Consumers)
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -141,21 +110,6 @@ channel.basic_consume(queue="work_queue", on_message_callback=callback, auto_ack
 
 ## 🧭 Pub/Sub with Fanout
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```text
 ┌──────────────────────────────────────────────────────────────────┐
@@ -197,21 +151,6 @@ channel.basic_consume(queue=queue_name, on_message_callback=callback)
 
 ## 🧭 Routing with Direct Exchange
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```text
 ┌──────────────────────────────────────────────────────────────────┐
@@ -246,21 +185,6 @@ channel.queue_bind(queue="all", exchange="direct_logs", routing_key="error")
 
 ## 🧭 Topic-Based Subscriptions
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```text
 ┌──────────────────────────────────────────────────────────────────┐
@@ -292,21 +216,6 @@ channel.basic_publish(exchange="topic_logs", routing_key="log.error.auth", body=
 ---
 
 ## 🧭 RPC Pattern
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -373,21 +282,6 @@ class RPCClient:
 
 ## 🧭 Scatter-Gather
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```text
 ┌──────────────────────────────────────────────────────────────────┐
@@ -431,21 +325,6 @@ class Aggregator:
 
 ## 🧭 Routing Slip
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```text
 ┌──────────────────────────────────────────────────────────────────┐
@@ -472,21 +351,6 @@ This pattern is commonly used in production systems.
 
 ## 🧭 Wire Tap
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```text
 ┌──────────────────────────────────────────────────────────────────┐
@@ -510,21 +374,6 @@ channel.queue_bind(queue="audit", exchange="main_exchange", routing_key="#")
 
 ## 🧭 Message Sequencer
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```text
 ┌──────────────────────────────────────────────────────────────────┐
@@ -542,21 +391,6 @@ This pattern is commonly used in production systems.
 ---
 
 ## 🧭 Idempotent Receiver
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```python
@@ -584,21 +418,6 @@ class IdempotentConsumer:
 ---
 
 ## 🧭 Reliable Delivery
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -628,21 +447,6 @@ This pattern is commonly used in production systems.
 ---
 
 ## 🧭 Saga Orchestration
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -688,21 +492,6 @@ def handle_step_response(ch, method, properties, body):
 ---
 
 ## 🧭 Retry with DLX + TTL
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -761,21 +550,6 @@ def with_retry(max_retries=3, dlx="dlx", retry_ttls=[30_000, 60_000, 120_000]):
 
 ## 🧭 Simplest Mental Model
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```text
 RabbitMQ patterns = routing logic for message flows
@@ -801,21 +575,6 @@ RabbitMQ patterns = routing logic for message flows
 
 
 ## Practical Example
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 See code examples above for practical usage patterns.

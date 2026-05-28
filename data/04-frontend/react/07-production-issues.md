@@ -11,21 +11,6 @@
 
 ## Production Error Handling Strategy
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```mermaid
 graph TD
@@ -50,21 +35,6 @@ graph TD
 
 
 ## 1. React Error Boundaries — Full Coverage
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 Error boundaries catch JavaScript errors during **render, lifecycle methods, and constructors** of the entire tree below them.
@@ -101,21 +71,6 @@ class ErrorBoundary extends React.Component {
 
 ### What Error Boundaries Do NOT Catch
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```mermaid
 flowchart TD
@@ -132,21 +87,6 @@ flowchart TD
 ```
 
 ### Fallback UI Patterns
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```jsx
@@ -182,21 +122,6 @@ function Dashboard() {
 
 ### Recovery Patterns
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```jsx
 // Reset key strategy: remounts the tree
@@ -230,21 +155,6 @@ function App() {
 ---
 
 ## 2. Error Reporting — Sentry Integration
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```javascript
@@ -281,21 +191,6 @@ Sentry.init({
 
 ### Source Maps
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```javascript
 // webpack.config.js
@@ -315,21 +210,6 @@ module.exports = {
 ```
 
 ### Breadcrumbs
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```javascript
@@ -356,21 +236,6 @@ function apiRequest(method, url, data) {
 ---
 
 ## 3. Performance Monitoring — Web Vitals
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```javascript
@@ -404,21 +269,6 @@ onINP(sendToAnalytics);
 
 ### Web Vitals Targets
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 | Metric | Good | Needs Improvement | Poor |
 |---|---|---|---|
@@ -428,21 +278,6 @@ This pattern is commonly used in production systems.
 | INP (Interaction to Next Paint) | ≤200ms | 200ms–500ms | >500ms |
 
 ### INP (Interaction to Next Paint) — Core Web Vital 2024
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 INP measures responsiveness: the time from a user interaction (click, tap, keypress) to the next visual update.
@@ -471,21 +306,6 @@ sequenceDiagram
 
 ## 4. Bundle Analysis
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```javascript
 // webpack.config.js with webpack-bundle-analyzer
@@ -504,21 +324,6 @@ module.exports = {
 
 ### What to Look For
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 1. **Duplicate libraries** (e.g., two versions of moment.js)
 2. **Large dependencies** (chart libraries, moment.js → use date-fns or dayjs)
@@ -526,21 +331,6 @@ This pattern is commonly used in production systems.
 4. **Unused code** in bundles (tree shaking failures)
 
 ### Tree Shaking Pitfalls
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```javascript
@@ -564,21 +354,6 @@ import A from './components/A';
 ```
 
 ### Code Splitting Strategies
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```mermaid
@@ -616,21 +391,6 @@ const NewFeature = featureFlags.newDashboard
 
 ## 5. CDN Caching
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```javascript
 // Service Worker: cache-first for static assets
@@ -652,21 +412,6 @@ self.addEventListener('fetch', (event) => {
 
 ### Cache Headers
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```nginx
 # Static assets: long cache, content hash in filename
@@ -684,21 +429,6 @@ location / {
 
 ### Cache Invalidation
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 - **Content-hash filenames**: `main.a1b2c3.js` — new hash on change
 - **Cache-busting query params**: `main.js?v=2.1.0`
@@ -707,21 +437,6 @@ This pattern is commonly used in production systems.
 ---
 
 ## 6. Service Workers & PWA
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```javascript
@@ -766,21 +481,6 @@ self.addEventListener('fetch', (event) => {
 
 ### Offline Support Strategy
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 | Request Type | Strategy | Fallback |
 |---|---|---|
@@ -794,38 +494,8 @@ This pattern is commonly used in production systems.
 
 ## 7. Hydration Errors — Causes & Solutions
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Common Causes
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```jsx
@@ -855,21 +525,6 @@ function ResponsiveComponent() {
 
 ### Suppression Techniques
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```jsx
 // suppressHydrationWarning (use sparingly)
@@ -898,21 +553,6 @@ function useWindowWidth() {
 ```
 
 ### Production Case: GitHub's 2020 Hydration Bug (27M Users)
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Timeline**:
@@ -950,38 +590,8 @@ sequenceDiagram
 
 ## 8. Memory Leaks
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Event Listeners
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```jsx
@@ -1006,21 +616,6 @@ function ScrollTracker() {
 
 ### Subscriptions
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```jsx
 // ❌ LEAK: subscription never unsubscribed
@@ -1036,21 +631,6 @@ function useDataStream(channel) {
 
 ### Timers
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```jsx
 // ❌ LEAK: timer continues after unmount
@@ -1063,21 +643,6 @@ function AutoRefresh() {
 ```
 
 ### Closures Holding Large Objects
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```jsx
@@ -1100,21 +665,6 @@ function useLargeData() {
 
 ### Detection
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```javascript
 // Chrome DevTools:
@@ -1130,38 +680,8 @@ This pattern is commonly used in production systems.
 
 ## 9. Infinite Render Loop Detection
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Common Patterns
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```jsx
@@ -1189,21 +709,6 @@ useEffect(() => {
 ```
 
 ### Production Case: Reddit's 2023 Infinite Re-render P0 Outage
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **What happened**: Reddit deployed a React update that introduced a hook regression. A `useEffect` with a missing dependency array caused an infinite re-render loop.
@@ -1244,21 +749,6 @@ flowchart TD
 
 ### Detection Mechanisms
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```javascript
 // Runtime loop detection (custom hook)
@@ -1282,38 +772,8 @@ function useDetectInfiniteLoop(fn, deps, limit = 50) {
 
 ## 10. Runtime Error Tracking
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Global Error Handler
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```javascript
@@ -1349,21 +809,6 @@ console.error = (...args) => {
 
 ### React Error Boundary Integration
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```jsx
 class MonitoredErrorBoundary extends React.Component {
@@ -1387,21 +832,6 @@ class MonitoredErrorBoundary extends React.Component {
 ---
 
 ## 11. Unhandled Promise Rejections
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```javascript
@@ -1436,21 +866,6 @@ async function loadData() {
 
 ## 12. Render-Blocking Resources
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```html
 <!-- ❌ BAD: render-blocking JS/CSS in <head> -->
@@ -1475,21 +890,6 @@ This pattern is commonly used in production systems.
 
 ### Impact of Third-Party Scripts
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 | Script | Typical Impact | Mitigation |
 |---|---|---|
@@ -1502,21 +902,6 @@ This pattern is commonly used in production systems.
 ---
 
 ## 13. Loading States & Skeletons
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```jsx
@@ -1543,21 +928,6 @@ function PageSkeleton() {
 
 ### Skeleton vs Spinner Decision
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 | UX | When to Use |
 |---|---|
@@ -1569,21 +939,6 @@ This pattern is commonly used in production systems.
 ---
 
 ## 14. Progressive Enhancement
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```jsx
@@ -1609,21 +964,6 @@ function EnhancedLogin() {
 ```
 
 ### Graceful Degradation
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```jsx
@@ -1655,21 +995,6 @@ function MapComponent() {
 ---
 
 ## 15. A/B Testing Infrastructure
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```jsx
@@ -1712,21 +1037,6 @@ function Checkout() {
 
 ### Canary Releases
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 1. Deploy to 1% of users → monitor errors
 2. Increase to 5% → monitor performance
@@ -1749,21 +1059,6 @@ const flags = await fetch('/api/feature-flags', {
 ---
 
 ## 16. Monitoring Dashboards
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```mermaid
@@ -1790,21 +1085,6 @@ graph TD
 
 ### Key Dashboard Metrics
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 | Metric | Alert Threshold | Action |
 |---|---|---|
@@ -1819,21 +1099,6 @@ This pattern is commonly used in production systems.
 ---
 
 ## 17. Production Failure: Facebook Comment Composer Crash
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **What happened** (2017, React 15 era):
@@ -1877,21 +1142,6 @@ const handleEmojiSelect = async (emoji) => {
 ---
 
 ## 18. Recovery vs Failover Patterns
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 | Pattern | What It Does | When to Use |
@@ -1941,21 +1191,6 @@ function MapWidget() {
 
 ### Interview: Recovery vs Failover in SPAs
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **Question**: "What's the difference between recovery and failover in React SPAs?"
 
@@ -1970,21 +1205,6 @@ This pattern is commonly used in production systems.
 ---
 
 ## 19. Alerting on Error Budgets
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```javascript
@@ -2007,42 +1227,12 @@ if (errorRate > errorBudgetDaily * 2) { // Double daily budget = burn rate alert
 
 ## 20. Simplest Mental Model
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 > **Production React monitoring = watch 3 things: errors (Sentry), performance (Web Vitals), and bundle size. Error boundaries are seatbelts — place them per section, not one for the whole car. Hydration mismatches are the #1 SSR bug. Infinite re-render loops are the #1 React 18 bug. If you see "not wrapped in act" in your test, you'll see it in production too. Every third-party script costs seconds of load time. Always have a fallback for everything.**
 
 ---
 
 ## 21. Mermaid: Production Incident Response Flow
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```mermaid
@@ -2068,21 +1258,6 @@ flowchart TD
 
 ## 22. Deployment Safety Checklist
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 - [ ] Source maps uploaded to Sentry BEFORE deploying
 - [ ] Feature flags toggleable without deploy
@@ -2101,21 +1276,6 @@ This pattern is commonly used in production systems.
 
 ## 23. Quick Reference: Production Debugging
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 | Symptom | Diagnosis Tool | Likely Cause |
 |---|---|---|
@@ -2132,21 +1292,6 @@ This pattern is commonly used in production systems.
 ---
 
 ## 24. Production Monitoring Setup
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```javascript
@@ -2183,21 +1328,6 @@ performance.measure('time-to-interactive', 'app-ready');
 ---
 
 ## 25. Interview: React Error Boundaries Deep Dive
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Question**: "Can you implement an error boundary that catches async errors?"
@@ -2259,21 +1389,6 @@ function useAsyncWithError(errorBoundary) {
 
 ## 26. Mermaid: Full Production Monitoring Architecture
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```mermaid
 graph TB
@@ -2304,21 +1419,6 @@ graph TB
 
 ## 27. Feature Flag Kill Switches
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```javascript
 // Emergency kill switch for problematic features
@@ -2348,21 +1448,6 @@ async function getFeatureFlags(userId) {
 
 ## 28. Production Readiness Checklist
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 - [ ] All components wrapped in error boundaries (granular)
 - [ ] Sentry configured with source maps and breadcrumbs
@@ -2381,21 +1466,6 @@ This pattern is commonly used in production systems.
 ---
 
 ## Related
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 - [Networking](../../11-networking/) — HTTP, performance, optimization

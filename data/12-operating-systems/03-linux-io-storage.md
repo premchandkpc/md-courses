@@ -4,21 +4,6 @@
 
 ## Layer 1: Beginner Mental Model
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **Analogy**: Like mail delivery. Your letter (write) goes to the mailbox (page cache), a truck (writeback daemon) batches letters overnight, routes them (I/O scheduler), and delivers (physical disk). If you ask for a read, you first check the mailbox (cache hit = instant), only walk to the post office if not there (cache miss = slow).
 
@@ -34,38 +19,8 @@ This pattern is commonly used in production systems.
 
 ## Layer 4: Production Reality
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Linux I/O Failure Modes
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 | Failure | Symptoms | Root Cause | Fix |
@@ -80,21 +35,6 @@ This pattern is commonly used in production systems.
 | **Dentry Cache Leaks** | Memory slowly grows 1MB/day | Inode operations don't release dentry, memory pinned | Fix application (close file handles), monitor with `sar -B` |
 
 ### Production Incident: Airbnb Booking Slowdown (2015)
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Context**: Airbnb's booking database on ext4. Peak holiday season, 10x traffic. Search response time climbed from 50ms to 2 seconds.
@@ -137,38 +77,8 @@ echo "bfq" > /sys/block/sda/queue/scheduler
 
 ## Layer 5: Staff Engineer Perspective
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Storage Strategy Tradeoffs
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 | Strategy | Throughput | Latency | Durability | Cost | Use Case |
@@ -180,21 +90,6 @@ This pattern is commonly used in production systems.
 | **io_uring** | 1M op/s | 1ms | App dependent | $$ | High-performance servers (modern) |
 
 ### Scaling Pattern: From Small to Large
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Stage 1 (Startup — 10 GB data)**:
@@ -230,38 +125,8 @@ This pattern is commonly used in production systems.
 
 ## Layer 5: Interview Questions
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Level 1 (Junior Engineer)
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Q1: What's the page cache? Why does it help?**
@@ -275,21 +140,6 @@ A: fsync forces all buffered writes to disk. Ensures durability. Expensive (wait
 - Expected: Understand cost of fsync, batch strategies
 
 ### Level 2 (Mid-Level Engineer)
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Q3: Your database write latency is P99=500ms. How do you debug?**
@@ -308,21 +158,6 @@ A: Buffered = kernel manages caching (flexible, automatic). Direct I/O = app man
 - Expected: Understand tradeoff, real examples
 
 ### Level 3 (Senior Engineer)
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Q5: Design storage for a 10B row database. How do you balance throughput vs durability?**
@@ -349,21 +184,6 @@ A:
 - Expected: Specific tradeoffs (throughput, features, risk)
 
 ### Level 4 (Staff Engineer)
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Q7: Design I/O stack for 1M concurrent users, 10GB/second throughput. What limits do you hit?**
@@ -425,20 +245,6 @@ graph LR
 
 ## Table of Contents
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 - [Virtual File System (VFS)](#virtual-file-system-vfs)
 - [Filesystems: ext4](#filesystems-ext4)
@@ -459,21 +265,6 @@ This pattern is commonly used in production systems.
 ---
 
 ## Virtual File System (VFS)
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -516,21 +307,6 @@ This pattern is commonly used in production systems.
 
 ## Filesystems: ext4
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **Extent-based**: Replaces indirect block mapping (ext3). Extents are contiguous block ranges.
 
@@ -565,21 +341,6 @@ This pattern is commonly used in production systems.
 
 ## Filesystems: XFS
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **B+tree based**: All metadata structures (inodes, directories, free space) use B+trees. Scalable to large filesystems and many files.
 
@@ -609,21 +370,6 @@ This pattern is commonly used in production systems.
 ---
 
 ## Filesystems: Btrfs
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Copy-on-Write (COW)**: Every write creates new blocks. Metadata and data are COW by default.
@@ -657,21 +403,6 @@ This pattern is commonly used in production systems.
 
 ## Filesystems: ZFS
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **Storage Pools (zpools)**: Physical devices grouped into vdevs within a pool. Storage presented as datasets (filesystems, volumes, snapshots, clones).
 
@@ -700,21 +431,6 @@ This pattern is commonly used in production systems.
 ---
 
 ## io_uring
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Linux kernel async I/O framework** (since 5.1, by Jens Axboe). Replaces AIO with far lower overhead.
@@ -761,21 +477,6 @@ This pattern is commonly used in production systems.
 
 ## AIO vs io_uring
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 | Aspect | AIO (aio_read/aio_write) | io_uring |
 |--------|--------------------------|----------|
@@ -793,21 +494,6 @@ This pattern is commonly used in production systems.
 ---
 
 ## Direct I/O vs Buffered I/O
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 | Aspect | Buffered I/O | Direct I/O (O_DIRECT) |
@@ -836,21 +522,6 @@ This pattern is commonly used in production systems.
 ---
 
 ## Block Layer
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -913,21 +584,6 @@ Software queues per-CPU, hardware queues per-device queue. Mapping sw → hw via
 
 ## Disk Scheduling
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 | Scheduler | Type | Use Case | Notes |
 |-----------|------|----------|-------|
@@ -945,21 +601,6 @@ This pattern is commonly used in production systems.
 ---
 
 ## mmap vs read/write
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 | Aspect | mmap | read/write |
@@ -992,21 +633,6 @@ This pattern is commonly used in production systems.
 
 ## Huge Pages
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **2MB (x86-64)**: Reduces TLB entries from 512 (4KB) to 1. Level 2 page table entry maps 2MB directly. Also 1GB pages (level 3).
 
@@ -1037,21 +663,6 @@ This pattern is commonly used in production systems.
 ---
 
 ## Storage Stack
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -1097,21 +708,6 @@ This pattern is commonly used in production systems.
 
 ## NVMe
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **Non-Volatile Memory Express**: Protocol designed for flash SSDs over PCIe.
 
@@ -1151,21 +747,6 @@ This pattern is commonly used in production systems.
 
 ## Simplest Mental Model
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 > **Linux I/O is like a library with different reading rooms.**
 >
@@ -1181,21 +762,6 @@ This pattern is commonly used in production systems.
 
 
 ## Practical Example
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 See code examples above for practical usage patterns.

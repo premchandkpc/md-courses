@@ -1,7 +1,6 @@
 # Distributed Message Queue — Production-Grade Design
 
 
-
 ```mermaid
 graph TB
     A["Client"] --> B["Query"]

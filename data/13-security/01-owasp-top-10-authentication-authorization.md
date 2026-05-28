@@ -1,7 +1,6 @@
 # OWASP Top 10, Authentication & Authorization: Deep Dive
 
 
-
 ```mermaid
 graph LR
     WEB_APP["Web Application"] --> THREATS["Threat Surface"]

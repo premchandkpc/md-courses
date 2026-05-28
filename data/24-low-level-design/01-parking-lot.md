@@ -1,7 +1,6 @@
 # Parking Lot — Low Level Design
 
 
-
 ```mermaid
 graph LR
     A["Thread 1"] --> D["Shared<br/>Resource"]

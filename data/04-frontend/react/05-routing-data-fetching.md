@@ -7,21 +7,6 @@
 
 ## Router Navigation Flow
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```mermaid
 sequenceDiagram
@@ -46,21 +31,6 @@ sequenceDiagram
 
 
 ## 1. React Router Fundamentals
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 React Router v6 uses a nested route tree with the History API — no page reloads, only React re-renders.
@@ -88,21 +58,6 @@ function App() {
 
 ### Route Matching
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 | Path | URL | Match |
 |---|---|---|
@@ -112,21 +67,6 @@ This pattern is commonly used in production systems.
 | `/users/:id` | `/users/` | ❌ |
 
 ### useParams & useSearchParams
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```jsx
@@ -148,21 +88,6 @@ function Post() {
 **Key insight**: `useSearchParams` is ideal for filters, sort, and page — state survives navigation and is shareable via URL.
 
 ### Nested Routes & Outlet
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```jsx
@@ -187,21 +112,6 @@ function AppLayout() {
 ```
 
 ### useNavigate & useLocation
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```jsx
@@ -229,38 +139,8 @@ function Confirm() {
 
 ## 2. Advanced Routing Patterns
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Protected Routes
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```jsx
@@ -293,21 +173,6 @@ function LoginPage() {
 
 ### Lazy Loading & Code Splitting
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```jsx
 import { lazy, Suspense } from 'react';
@@ -331,21 +196,6 @@ function App() {
 
 ### Layout Routes & Error Boundaries Per Route
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```jsx
 // Auth vs App layout
@@ -365,38 +215,8 @@ This pattern is commonly used in production systems.
 
 ## 3. Data Fetching with useEffect
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Basic Pattern
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```jsx
@@ -425,21 +245,6 @@ function UserProfile({ userId }) {
 
 ### Race Conditions: The Classic Bug
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```jsx
 // BUG: "a" → "ab" → "abc" — responses can arrive out of order
@@ -453,21 +258,6 @@ useEffect(() => {
 **Timeline**: Fetch "a" starts, fetch "ab" starts, response "a" arrives AFTER "ab" → UI shows stale results for "a" instead of "ab".
 
 ### Fix with AbortController
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```jsx
@@ -486,21 +276,6 @@ useEffect(() => {
 **Key insight**: `AbortController` cancels the HTTP request at the network level. A boolean flag only prevents `setState` — the request still completes wastefully.
 
 ### Loading & Error Custom Hook
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```jsx
@@ -531,40 +306,10 @@ function useFetch(url) {
 
 ## 4. TanStack Query (React Query)
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 Replaces `useEffect`-based fetching with a cache-first, declarative approach. Server state becomes a cache management problem, not a state management problem.
 
 ### useQuery
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```jsx
@@ -594,21 +339,6 @@ function Posts() {
 
 ### Query Keys
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```javascript
 ['posts']                           // Simple
@@ -621,21 +351,6 @@ This pattern is commonly used in production systems.
 
 ### Stale Time vs Cache Time
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 | | staleTime | cacheTime |
 |---|---|---|
@@ -646,21 +361,6 @@ This pattern is commonly used in production systems.
 **Key insight**: `staleTime` is the most impactful optimization. Set it high (15-30 min) for static data, 0 for real-time data.
 
 ### Caching Flow
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```mermaid
@@ -684,21 +384,6 @@ sequenceDiagram
 ```
 
 ### useMutation & Optimistic Updates
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```javascript
@@ -731,21 +416,6 @@ const updateTodo = useMutation({
 
 ### Infinite Queries
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```javascript
 function Feed() {
@@ -771,21 +441,6 @@ function Feed() {
 
 ### Pagination (Offset-Based)
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```javascript
 const [page, setPage] = useState(0);
@@ -801,21 +456,6 @@ const { data, isPreviousData } = useQuery({
 
 ## 5. Server State vs Client State
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 | Dimension | Server State | Client State |
 |---|---|---|
@@ -829,21 +469,6 @@ This pattern is commonly used in production systems.
 
 ### Cache Invalidation
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```javascript
 queryClient.invalidateQueries({ queryKey: ['posts'] });           // Specific
@@ -853,21 +478,6 @@ queryClient.setQueryData(['posts', id], newData);                   // Direct up
 ```
 
 ### When to Use What
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 | Scenario | Tool |
@@ -885,40 +495,10 @@ Most apps need 2-3 tools: TanStack Query + Context/Zustand + useSearchParams cov
 
 ## 6. Suspense & Data Fetching
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 Suspense lets components "wait" for data before rendering.
 
 ### Suspense Boundaries
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```jsx
@@ -939,21 +519,6 @@ function Page() {
 Nested Suspense boundaries are independent — the outer content renders while inner sections stream in.
 
 ### The use() Hook (React 19)
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```jsx
@@ -982,21 +547,6 @@ function App() {
 **Key insight**: `use()` unwraps promises inline without `useEffect` or `isLoading` booleans. The component declares what it needs; React handles the async lifecycle. Error handling requires an error boundary.
 
 ### Streaming SSR
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```javascript
@@ -1028,38 +578,8 @@ Improves LCP by sending visible shell immediately while slow data streams in.
 
 ## 7. Parallel & Sequential Fetching
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Waterfall (Sequential)
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```javascript
@@ -1072,21 +592,6 @@ const posts = await fetch(`/api/users/${user.id}/posts`).then(r => r.json());
 **Necessary when**: B depends on A (e.g., need postId to fetch comments).
 
 ### Parallel
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```javascript
@@ -1102,21 +607,6 @@ const [users, posts, notifs] = await Promise.all([
 **Key insight**: `Promise.all` fails fast — any rejection rejects the whole. Use `Promise.allSettled` for partial failure tolerance.
 
 ### Preloading
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```jsx
@@ -1142,21 +632,6 @@ function UserPage() {
 
 ### SWR Pattern
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 Always return data (cached or fresh), revalidate in background:
 
@@ -1176,38 +651,8 @@ function useSWR(key, fetcher) {
 
 ## 8. Caching & Performance
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### HTTP Caching
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```javascript
@@ -1225,21 +670,6 @@ graph TB
 ```
 
 ### Service Worker Cache
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```javascript
@@ -1262,21 +692,6 @@ self.addEventListener('fetch', (event) => {
 
 ### Persistent Cache
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```javascript
 // Hydrate from localStorage on mount
@@ -1297,21 +712,6 @@ function usePersistedQuery(key, fetcher) {
 ```
 
 ### Offline Mutation Queue
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```javascript
@@ -1334,38 +734,8 @@ async function mutateWithQueue(fn) {
 
 ## 9. Error & Edge Cases
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Retry with Exponential Backoff
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```javascript
@@ -1394,21 +764,6 @@ useQuery({
 
 ### Timeout
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```javascript
 function fetchWithTimeout(url, opts = {}, timeout = 5000) {
@@ -1423,21 +778,6 @@ function fetchWithTimeout(url, opts = {}, timeout = 5000) {
 ```
 
 ### Race Condition Prevention (Comprehensive)
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```javascript
@@ -1459,21 +799,6 @@ function useLatestFetch() {
 
 ### Cancellation
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```javascript
 // TanStack Query provides signal automatically
@@ -1487,21 +812,6 @@ queryClient.cancelQueries({ queryKey: ['data'] });
 ```
 
 ### Error Boundaries for Async
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```jsx
@@ -1537,38 +847,8 @@ class AsyncErrorBoundary extends React.Component {
 
 ## 10. Production Patterns
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Request Deduplication
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 TanStack Query deduplicates identical in-flight requests by default:
@@ -1587,21 +867,6 @@ sequenceDiagram
 Without TanStack Query, two rendered components fire two identical HTTP requests.
 
 ### Optimistic UI
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```jsx
@@ -1629,21 +894,6 @@ function LikeButton({ postId, liked }) {
 
 ### Pagination Strategies
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 | Strategy | UX | Trade-off |
 |---|---|---|
@@ -1652,21 +902,6 @@ This pattern is commonly used in production systems.
 | Keyset (WHERE id > x) | No duplicates, fast | Complex implementation |
 
 ### Infinite Scroll
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```jsx
@@ -1698,21 +933,6 @@ function InfiniteFeed() {
 
 ### Real-Time: SSE
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```javascript
 function useSSE(url) {
@@ -1737,21 +957,6 @@ function useSSE(url) {
 ```
 
 ### Real-Time: WebSocket
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```javascript
@@ -1781,21 +986,6 @@ function useWebSocket(url) {
 
 ### SSE vs WebSocket
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 | | SSE | WebSocket |
 |---|---|---|
@@ -1805,21 +995,6 @@ This pattern is commonly used in production systems.
 | Use case | Live feeds, notifications | Chat, collaboration |
 
 ### Production Failure: Waterfall Causing 8s Load Time
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Scenario**: Dashboard fetches user → posts → comments → notifications sequentially.
@@ -1837,21 +1012,6 @@ sequenceDiagram
 
 ### Data Fetching Decision Matrix
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 | Pattern | Complexity | UX | When |
 |---|---|---|---|
@@ -1864,21 +1024,6 @@ This pattern is commonly used in production systems.
 ---
 
 ## Production Checklist
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 - [ ] All routes wrapped with `ErrorBoundary` or route-level error boundaries
@@ -1905,21 +1050,6 @@ This pattern is commonly used in production systems.
 ---
 
 ## Related
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 - [Networking](../../11-networking/) — HTTP, performance, optimization

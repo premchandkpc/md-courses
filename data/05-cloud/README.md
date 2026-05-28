@@ -3,7 +3,6 @@
 The knowledge base for designing, deploying, and operating infrastructure on public cloud providers. Covers AWS (deep), GCP, Azure, multi-cloud strategies, cloud-native design patterns, cost optimization, and migration approaches.
 
 
-
 ```mermaid
 graph LR
     COMP["Compute<br/>EC2 / Lambda / ECS"] --> NET["Networking<br/>VPC / ELB / Route53"]

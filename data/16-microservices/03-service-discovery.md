@@ -5,7 +5,6 @@
 ---
 
 
-
 ```mermaid
 graph LR
     CLIENT_SD["Service Consumer"] --> REGISTRY["Service Registry<br/>(Eureka/Consul/etcd)"]

@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Circuit Breaker — Interactive Simulator</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:system-ui,-apple-system,sans-serif;background:#0d1117;color:#e6edf3;padding:24px;max-width:800px;margin:0 auto}
+h1{font-size:20px;margin-bottom:4px;color:#58a6ff}
+.sub{color:#8b949e;font-size:13px;margin-bottom:20px}
+
+/* state diagram */
+.sm-viz{display:flex;align-items:center;justify-content:center;gap:12px;margin:20px 0;padding:20px;background:#161b22;border-radius:8px;border:1px solid #30363d;flex-wrap:wrap}
+.state-box{padding:12px 20px;border-radius:8px;text-align:center;min-width:100px;font-weight:600;font-size:14px;border:2px solid transparent;transition:all .3s}
+.state-box .label{font-size:11px;font-weight:400;color:#8b949e;margin-top:2px}
+.state-box.closed{background:#1a3a2c;border-color:#3fb950;color:#3fb950}
+.state-box.open{background:#3a1a1a;border-color:#f85149;color:#f85149}
+.state-box.half{background:#3a2a1a;border-color:#d29922;color:#d29922}
+.state-box.inactive{opacity:.3;border-color:#30363d;color:#8b949e}
+.arrow{font-size:20px;color:#8b949e;flex-shrink:0}
+
+/* controls */
+.controls{display:flex;gap:8px;flex-wrap:wrap;margin:16px 0}
+.btn{padding:8px 16px;border:1px solid #30363d;border-radius:6px;background:#1c2128;color:#e6edf3;cursor:pointer;font-size:12px;transition:all .15s}
+.btn:hover{border-color:#8b949e;background:#21262d}
+.btn.primary{background:#58a6ff;color:#000;border-color:#58a6ff;font-weight:600}
+.btn.primary:hover{background:#79b8ff}
+.btn.danger{background:#f85149;color:#fff;border-color:#f85149}
+.btn.danger:hover{background:#da3633}
+.btn.success{background:#3fb950;color:#000;border-color:#3fb950}
+.btn.success:hover{background:#56d364}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+
+/* status */
+.status{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:16px;margin:16px 0}
+.status-row{display:flex;justify-content:space-between;padding:4px 0;font-size:13px}
+.status-row span:first-child{color:#8b949e}
+.status-row .val{font-weight:600}
+.status-row .val.good{color:#3fb950}
+.status-row .val.bad{color:#f85149}
+.status-row .val.warn{color:#d29922}
+
+/* log */
+.log{background:#0d1117;border:1px solid #30363d;border-radius:6px;padding:10px;max-height:200px;overflow-y:auto;font-family:monospace;font-size:11px;line-height:1.6;margin-top:12px}
+.log .ev{color:#8b949e}.log .ev.good{color:#3fb950}.log .ev.bad{color:#f85149}.log .ev.info{color:#58a6ff}.log .ev.warn{color:#d29922}
+
+/* metrics bar */
+.metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px;margin:12px 0}
+.metric{background:#1c2128;padding:10px;border-radius:6px;border:1px solid #30363d;text-align:center}
+.metric .num{font-size:20px;font-weight:700}
+.metric .lbl{font-size:10px;color:#8b949e;margin-top:2px}
+
+h2{font-size:16px;margin:20px 0 8px;color:#e6edf3}
+
+@media(max-width:600px){.sm-viz{gap:6px}.state-box{padding:8px 12px;min-width:70px;font-size:12px}}
+</style>
+</head>
+<body>
+
+<h1>Circuit Breaker — Interactive State Machine</h1>
+<div class="sub">Click buttons to simulate requests and watch the circuit breaker transition between states</div>
+
+<div class="sm-viz" id="stateViz">
+  <div class="state-box closed" id="sClosed">CLOSED<div class="label">passing</div></div>
+  <div class="arrow">→</div>
+  <div class="state-box open inactive" id="sOpen">OPEN<div class="label">rejecting</div></div>
+  <div class="arrow">→</div>
+  <div class="state-box half inactive" id="sHalf">HALF-OPEN<div class="label">probing</div></div>
+</div>
+
+<div class="controls">
+  <button class="btn success" onclick="simCall(true)">✓ Successful Call</button>
+  <button class="btn danger" onclick="simCall(false)">✗ Failed Call</button>
+  <button class="btn primary" onclick="resetSim()">⟳ Reset</button>
+</div>
+
+<div class="status">
+  <div class="status-row"><span>State</span><span class="val good" id="stateDisplay">CLOSED</span></div>
+  <div class="status-row"><span>Consecutive Failures</span><span class="val good" id="failCount">0 / 5</span></div>
+  <div class="status-row"><span>Success Count (half-open)</span><span class="val good" id="succCount">0 / 2</span></div>
+  <div class="status-row"><span>Timeout</span><span class="val warn" id="timeoutDisplay">30s</span></div>
+  <div class="status-row"><span>Request Count</span><span class="val" id="reqCount">0</span></div>
+</div>
+
+<div class="metrics">
+  <div class="metric"><div class="num" id="mSuccess">0</div><div class="lbl">Successes</div></div>
+  <div class="metric"><div class="num" id="mFailure">0</div><div class="lbl">Failures</div></div>
+  <div class="metric"><div class="num" id="mRejected">0</div><div class="lbl">Rejected</div></div>
+  <div class="metric"><div class="num" id="mUptime">100%</div><div class="lbl">Uptime</div></div>
+</div>
+
+<div class="log" id="log"></div>
+
+<script>
+const CFG = { failThreshold: 5, succThreshold: 2, baseTimeout: 30, maxTimeout: 300 };
+let state = 'CLOSED';
+let failCount = 0;
+let succCount = 0;
+let reqCount = 0;
+let totalSuccess = 0;
+let totalFailure = 0;
+let totalRejected = 0;
+let timeout = CFG.baseTimeout;
+let openTime = null;
+
+function log(msg, type='info') {
+  const el = document.getElementById('log');
+  const d = new Date();
+  const ts = d.toLocaleTimeString();
+  el.innerHTML += `<div class="ev ${type}">[${ts}] ${msg}</div>`;
+  el.scrollTop = el.scrollHeight;
+}
+
+function updateUI() {
+  const states = ['sClosed','sOpen','sHalf'];
+  states.forEach(id => document.getElementById(id).classList.add('inactive'));
+  if (state === 'CLOSED') document.getElementById('sClosed').classList.remove('inactive');
+  else if (state === 'OPEN') document.getElementById('sOpen').classList.remove('inactive');
+  else document.getElementById('sHalf').classList.remove('inactive');
+
+  document.getElementById('stateDisplay').textContent = state;
+  document.getElementById('stateDisplay').className = 'val ' + (state==='CLOSED'?'good':state==='OPEN'?'bad':'warn');
+  document.getElementById('failCount').textContent = `${failCount} / ${CFG.failThreshold}`;
+  document.getElementById('failCount').className = 'val ' + (failCount >= CFG.failThreshold ? 'bad' : 'good');
+  document.getElementById('succCount').textContent = `${succCount} / ${CFG.succThreshold}`;
+  document.getElementById('timeoutDisplay').textContent = `${timeout}s`;
+  document.getElementById('reqCount').textContent = reqCount;
+  document.getElementById('mSuccess').textContent = totalSuccess;
+  document.getElementById('mFailure').textContent = totalFailure;
+  document.getElementById('mRejected').textContent = totalRejected;
+  const total = totalSuccess + totalFailure + totalRejected;
+  document.getElementById('mUptime').textContent = total ? Math.round(totalSuccess/total*100) + '%' : '100%';
+}
+
+function simCall(success) {
+  reqCount++;
+  log(`Request #${reqCount}: ${success ? 'SUCCESS' : 'FAILURE'}`, success ? 'good' : 'bad');
+
+  if (state === 'CLOSED') {
+    if (success) {
+      totalSuccess++;
+      failCount = 0;
+    } else {
+      totalFailure++;
+      failCount++;
+      if (failCount >= CFG.failThreshold) {
+        state = 'OPEN';
+        openTime = Date.now();
+        timeout = CFG.baseTimeout;
+        log(`Threshold reached! Circuit OPEN — rejecting requests`, 'bad');
+      }
+    }
+  } else if (state === 'OPEN') {
+    totalRejected++;
+    const elapsed = Math.floor((Date.now() - openTime)/1000);
+    if (elapsed >= timeout) {
+      state = 'HALF_OPEN';
+      succCount = 0;
+      log(`Timeout elapsed (${timeout}s). Transition to HALF_OPEN`, 'warn');
+      // Retry logic — allow this call
+      if (success) { succCount++; totalSuccess++; }
+      else { failCount++; totalFailure++; state = 'OPEN'; openTime = Date.now(); timeout = Math.min(timeout*2, CFG.maxTimeout); log(`Retry failed. Back to OPEN, timeout=${timeout}s`, 'bad'); }
+    } else {
+      log(`Request rejected (circuit OPEN, ${timeout-elapsed}s remaining)`, 'warn');
+    }
+  } else if (state === 'HALF_OPEN') {
+    if (success) {
+      succCount++;
+      totalSuccess++;
+      if (succCount >= CFG.succThreshold) {
+        state = 'CLOSED';
+        failCount = 0;
+        timeout = CFG.baseTimeout;
+        log(`Recovery confirmed! Circuit CLOSED`, 'good');
+      }
+    } else {
+      totalFailure++;
+      failCount++;
+      state = 'OPEN';
+      openTime = Date.now();
+      timeout = Math.min(timeout*2, CFG.maxTimeout);
+      log(`Retry failed. Back to OPEN, timeout=${timeout}s`, 'bad');
+    }
+  }
+  updateUI();
+}
+
+function resetSim() {
+  state = 'CLOSED'; failCount = 0; succCount = 0; reqCount = 0;
+  totalSuccess = 0; totalFailure = 0; totalRejected = 0;
+  timeout = CFG.baseTimeout; openTime = null;
+  document.getElementById('log').innerHTML = '';
+  log('Simulation reset', 'info');
+  updateUI();
+}
+
+log('Circuit breaker initialized. State: CLOSED', 'info');
+updateUI();
+</script>
+</body>
+</html>

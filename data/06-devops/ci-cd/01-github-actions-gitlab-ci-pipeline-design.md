@@ -1,7 +1,6 @@
 # GitHub Actions & GitLab CI Pipeline Design
 
 
-
 ```mermaid
 graph LR
     CODE["Code Push<br/>(git push)"] --> BUILD["Build Stage<br/>(compile/lint)"]
@@ -32,20 +31,6 @@ graph LR
 
 ## Table of Contents
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 1. NOOB Explanation
 2. Internal Architecture
@@ -64,38 +49,8 @@ This pattern is commonly used in production systems.
 
 ## Section 1: NOOB Explanation - CI/CD Pipeline Fundamentals
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### The Assembly Line Analogy
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 Imagine a car factory:
@@ -110,21 +65,6 @@ Each station is independent but connected. If any station fails, the entire line
 
 ### GitHub Actions: The Robot Workers
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 GitHub Actions runners are:
 - **Stateless machines** that spin up, execute jobs, then vanish
@@ -136,21 +76,6 @@ A **workflow** is a collection of **jobs**, each running on its own runner.
 Each **job** contains **steps** that execute sequentially.
 
 ### GitLab CI: The Self-Hosted Alternative
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 GitLab CI uses:
@@ -165,38 +90,8 @@ Key difference: GitLab stages run sequentially by default; GitHub jobs run in pa
 
 ## Section 2: Internal Architecture
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### GitHub Actions Execution Model
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -269,21 +164,6 @@ This pattern is commonly used in production systems.
 
 ### Secrets Management Deep Dive
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 GitHub Actions secrets storage:
 ```
@@ -333,21 +213,6 @@ GitHub Actions secrets storage:
 ```
 
 ### YAML Parsing & Validation
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 GitHub Actions YAML parsing:
@@ -439,21 +304,6 @@ Parsing flow:
 5. **Scheduler** builds execution DAG (Directed Acyclic Graph)
 
 ### Runner Architecture (Self-Hosted)
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -549,38 +399,8 @@ Self-Hosted Runner Process:
 
 ## Section 3: End-to-End Execution Flows
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Commit → Test → Deploy Flow
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -664,21 +484,6 @@ Webhook notification to Slack/Teams
 
 ### Pull Request Workflow with Status Checks
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```
 Developer pushes feature branch & creates PR
@@ -731,38 +536,8 @@ After merge:
 
 ## Section 4: Large-Scale CI/CD Systems
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Multi-Region Runner Distribution
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 For a company with 1000+ repositories and 5000+ developers:
@@ -797,21 +572,6 @@ Runner scaling strategy:
 - **Pool management**: Separate pools for build, test, deploy jobs
 
 ### High-Frequency Deployment System
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -848,38 +608,8 @@ Job prioritization queue:
 
 ## Section 5: Failure Analysis & Root Causes
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Cache Poisoning Incident
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Symptom**: Tests passing locally but failing in CI
@@ -924,21 +654,6 @@ This pattern is commonly used in production systems.
 
 ### Build Timeout Race Condition
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **Symptom**: Job randomly times out after 360 minutes (6 hours)
 
@@ -967,21 +682,6 @@ This pattern is commonly used in production systems.
 ```
 
 ### Artifact Loss During Cleanup
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Symptom**: Artifact exists immediately after upload but gone when trying to download
@@ -1017,21 +717,6 @@ This pattern is commonly used in production systems.
 
 ### Secret Rotation Failure
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **Symptom**: Some jobs have new secret, others still have old secret
 
@@ -1056,21 +741,6 @@ This pattern is commonly used in production systems.
 ```
 
 ### Concurrent Deploy Race Condition
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Symptom**: Two deploys to production simultaneously, causing data corruption
@@ -1110,38 +780,8 @@ deploy:
 
 ## Section 6: Edge Cases & Race Conditions
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Circular Dependencies in Jobs
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Problem**:
@@ -1161,21 +801,6 @@ The jobs dependency graph is cyclic: job-a -> job-b -> job-a
 ```
 
 ### Conditional Expression Short Circuiting
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```yaml
@@ -1201,21 +826,6 @@ if: |
 ```
 
 ### Matrix Job Combination Explosion
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```yaml
@@ -1247,21 +857,6 @@ strategy:
 
 ### Artifact Storage Exhaustion
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **Scenario**:
 - Workflow generates 500MB artifact per run
@@ -1290,21 +885,6 @@ This pattern is commonly used in production systems.
 ```
 
 ### Self-Hosted Runner Disk Full
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Scenario**:
@@ -1340,38 +920,8 @@ MONITOR_PID=$!
 
 ## Section 7: Interview Questions for FAANG
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Q1: Design a CI/CD system for 10,000 repositories
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Expected Answer Structure**:
@@ -1419,21 +969,6 @@ This pattern is commonly used in production systems.
 
 ### Q2: You have a job that occasionally hangs indefinitely
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **Root Cause Analysis**:
 ```
@@ -1477,21 +1012,6 @@ Common causes:
 ```
 
 ### Q3: Artifact uploaded successfully but can't download
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Diagnosis Tree**:
@@ -1544,21 +1064,6 @@ Artifact size?
 
 ### Q4: Design concurrent deployment safety
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **Requirement**: Multiple developers can merge PRs to main simultaneously. Prevent deploy race conditions.
 
@@ -1601,21 +1106,6 @@ deploy:
 
 ### Q5: Explain how matrix jobs interact with concurrency limits
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **Complex scenario**:
 ```yaml
@@ -1649,38 +1139,8 @@ Key insight: cancel-in-progress only cancels within same group!
 
 ## Section 8: Performance Optimization
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Build Cache Strategy
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Problem**: Node modules installation takes 3 minutes every run
@@ -1730,21 +1190,6 @@ In GitHub Actions:
 
 ### Parallelization Strategy
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```yaml
 jobs:
@@ -1790,21 +1235,6 @@ jobs:
 
 ### Runner Efficiency
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```
 Problem: 400 runners, but average utilization only 40%
@@ -1838,38 +1268,8 @@ Cost impact:
 
 ## Section 9: Security Deep Dive
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Secrets Management Evolution
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Phase 1: Environment Files (UNSAFE)**
@@ -1943,21 +1343,6 @@ GitHub Actions                   AWS
 
 ### RBAC & Repository Secrets
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```
 GitHub Organization
@@ -1998,21 +1383,6 @@ jobs:
 
 ### Supply Chain Security
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **Risk**: Compromised GitHub Action
 
@@ -2048,21 +1418,6 @@ uses: actions/checkout@main  # BAD!
 
 ### Audit Logging
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```
 What to audit:
@@ -2093,38 +1448,8 @@ gh api repos/{owner}/{repo}/actions/runs \
 
 ## Section 10: Code Examples
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Complete Multi-Stage Workflow
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```yaml
@@ -2512,38 +1837,8 @@ jobs:
 
 ## Section 11: Production Incidents
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Incident 1: Cache Poisoning in Monorepo
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Timeline**:
@@ -2594,21 +1889,6 @@ strategy:
 ```
 
 ### Incident 2: State File Corruption in Terraform CI
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Timeline**:
@@ -2666,21 +1946,6 @@ deploy:
 ```
 
 ### Incident 3: Artifact Race Condition During Cleanup
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Timeline**:
@@ -2753,21 +2018,6 @@ cleanup:
 
 ### Incident 4: Self-Hosted Runner Disk Full
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **Symptom**: All jobs timeout waiting for runner availability
 
@@ -2825,21 +2075,6 @@ done
 
 ### Incident 5: Secret Exposure in Logs
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **Timeline**:
 - 10:00: Engineer deploys new logging
@@ -2887,21 +2122,6 @@ steps:
 
 ## Section 12: GitHub Actions vs GitLab CI vs Jenkins
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 | Feature | GitHub Actions | GitLab CI | Jenkins |
 |---------|---|---|---|
@@ -2925,21 +2145,6 @@ This pattern is commonly used in production systems.
 | **Deployment Approval** | Environment approval | Manual approval jobs | Manual approval plugins |
 
 ### Comparison: Build a Node.js app & deploy
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **GitHub Actions**:
@@ -3036,21 +2241,6 @@ pipeline {
 
 ## Section 13: Best Practices Checklist
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 - [ ] **Secrets**: Use OIDC tokens, not static credentials
 - [ ] **Caching**: Cache dependencies, build outputs, Docker layers
@@ -3069,21 +2259,6 @@ This pattern is commonly used in production systems.
 
 ## Conclusion
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 GitHub Actions and GitLab CI are powerful, but understanding their internals is critical for production systems. Master YAML parsing, runner execution, artifact storage, and security to build reliable CI/CD pipelines that scale to thousands of repositories.
 
@@ -3097,21 +2272,6 @@ Key takeaways:
 
 
 ## Observability
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```mermaid
@@ -3127,21 +2287,6 @@ flowchart LR
 
 ### Key Metrics
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 | Metric | Unit | Threshold | Indicates |
 |--------|------|-----------|-----------|
@@ -3155,42 +2300,12 @@ This pattern is commonly used in production systems.
 
 ### Logs
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 - **ERROR**: Container exit code != 0, OOMKilled, daemon errors, storage driver errors
 - **WARN**: Image pull slow, container restart, resource limit approaching, DNS resolution slow
 - **INFO**: Container start/stop, image pull complete, daemon ready, network created
 
 ### Alerts
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 | Severity | Condition | Response |
@@ -3201,21 +2316,6 @@ This pattern is commonly used in production systems.
 | P2 | Image pull > 60s | Check registry mirror |
 
 ### Dashboards
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Docker Host Dashboard**: container count, CPU/memory/disk per container, restart rate, image size distribution, layer usage.

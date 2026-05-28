@@ -3,21 +3,6 @@
 
 ## Overview
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```mermaid
 graph TB
@@ -35,42 +20,12 @@ graph TB
 
 ## 1. Overview
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 The Simulation Engine is an interactive, browser-accessible distributed systems simulator. It models real-world systems (Kafka, Kubernetes, TCP, Raft, etc.) using an Entity-Component-System (ECS) architecture with an event-driven tick loop. Users can run pre-defined scenarios, inject failures, control time dilation, and observe system behavior through real-time visualizations.
 
 ---
 
 ## 2. High-Level Architecture
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -114,38 +69,8 @@ This pattern is commonly used in production systems.
 
 ## 3. Entity-Component-System (ECS) Architecture
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### 3.1 Entity
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 An entity is a unique ID — a bag of components. No behavior, no data of its own.
@@ -160,21 +85,6 @@ type Entity struct {
 ```
 
 ### 3.2 Components (Data)
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```go
@@ -232,21 +142,6 @@ type ConsumerState struct {
 
 ### 3.3 Systems (Behavior)
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```go
 // Each system implements the System interface
@@ -269,21 +164,6 @@ type MetricsSystem struct { /* emit metrics per tick */ }
 ---
 
 ## 4. Event-Driven Simulation Loop
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -362,38 +242,8 @@ func (m *SimulationManager) Tick() error {
 
 ## 5. Simulator Types
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### 5.1 Kafka Simulator
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -430,21 +280,6 @@ This pattern is commonly used in production systems.
 
 ### 5.2 Kubernetes Scheduler Simulator
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```
  Simulation Entities:
@@ -478,21 +313,6 @@ This pattern is commonly used in production systems.
 ```
 
 ### 5.3 TCP Handshake Simulator
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -533,21 +353,6 @@ This pattern is commonly used in production systems.
 ```
 
 ### 5.4 Raft Consensus Simulator
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -595,21 +400,6 @@ This pattern is commonly used in production systems.
 
 ## 6. Time Dilation Controls
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```json
 {
@@ -627,21 +417,6 @@ This pattern is commonly used in production systems.
 ---
 
 ## 7. Failure Injection System
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```go
@@ -677,21 +452,6 @@ const (
 ---
 
 ## 8. Metrics Emission
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```go
@@ -729,21 +489,6 @@ type TickMetrics struct {
 ---
 
 ## 9. Scenario Definitions (JSON)
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```json
@@ -793,21 +538,6 @@ This pattern is commonly used in production systems.
 
 ## 10. Persistence & Replay
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```
  ┌────────────┐     ┌────────────┐     ┌────────────┐
@@ -825,21 +555,6 @@ This pattern is commonly used in production systems.
 ---
 
 ## 11. CLI for Headless Runs
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```bash
@@ -864,21 +579,6 @@ sim-engine replay recording.bin --time-scale 2.0
 
 ## 12. Browser Integration
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```
  ┌─────────────────────────────────────────────────────────────────────┐
@@ -902,21 +602,6 @@ The simulation engine runs in a **Web Worker** using compiled WASM (Go → TinyG
 
 
 ## Practical Example
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 See code examples above for practical usage patterns.

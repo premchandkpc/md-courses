@@ -7,7 +7,6 @@
 ---
 
 
-
 ```mermaid
 graph LR
     USER["User Space<br/>(Applications)"] --> SYSCALL["System Call Interface<br/>(sys_read/sys_write)"]
@@ -39,21 +38,6 @@ graph LR
 
 ## Table of Contents
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 1. [Kernel vs User Space](#1-kernel-vs-user-space)
 2. [Source Tree Layout](#2-source-tree-layout)
@@ -75,21 +59,6 @@ This pattern is commonly used in production systems.
 ---
 
 ## 1. Kernel vs User Space
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -129,21 +98,6 @@ This pattern is commonly used in production systems.
 
 ### Step-by-Step
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 1. **Application execution** runs in user space (Ring 3) with isolated virtual memory
 2. **System call invocation** app executes `syscall` instruction with syscall number in rax register
@@ -153,21 +107,6 @@ This pattern is commonly used in production systems.
 6. **Return to user space** kernel restores user registers, copies data to user buffer, returns control
 
 ### Code Example
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```c
@@ -202,42 +141,12 @@ int main() {
 
 ### Real-World Scenario
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 Google discovered that high-frequency trading firms were experiencing Spectre/Meltdown mitigations (KPTI: Kernel Page Table Isolation) adding 5-10% latency to syscalls due to TLB flushes on kernel entry/exit. They deployed vDSO clock_gettime to avoid syscalls for timestamps. Trading firms rewrote hot loops to use vDSO getcpu instead of sched_getcpu(), reducing syscall overhead from 10K/sec to <100/sec—latency P99 dropped by 2.3μs.
 
 ---
 
 ## 2. Source Tree Layout
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -297,21 +206,6 @@ linux/
 
 ## 3. Syscall Interface
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```
 User app
@@ -370,38 +264,8 @@ User code resumes
 
 ## 4. Process Scheduler
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Scheduling Classes
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -414,21 +278,6 @@ idle_sched_class    → SCHED_IDLE, lowest priority
 
 ### CFS (Completely Fair Scheduler)
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 - **vruntime**: Virtual runtime measured in nanoseconds, accumulated per-task
 - **Red-black tree**: Tasks ordered by vruntime; leftmost = smallest vruntime = most deserving
@@ -437,21 +286,6 @@ This pattern is commonly used in production systems.
 - **Sleeper fairness**: Waking tasks get vruntime set to `min_vruntime - (sched_latency / 2)` to prevent unfairness after sleep
 
 ### EEVDF (Earliest Eligible Virtual Deadline First) — Linux 6.6+
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -463,21 +297,6 @@ Replaces CFS vruntime with eligibility + deadline
 ```
 
 ### Sysfs tuning
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -491,38 +310,8 @@ This pattern is commonly used in production systems.
 
 ## 5. Memory Manager
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Subsystems
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -545,21 +334,6 @@ This pattern is commonly used in production systems.
 
 ### Page Allocator (Buddy System)
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 - **Page orders**: 0 (4KB) through 10 (4MB), buddy pair merging
 - **Migrate types**: UNMOVABLE, MOVABLE, RECLAIMABLE, CMA, HIGHATOMIC — prevents fragmentation
@@ -568,21 +342,6 @@ This pattern is commonly used in production systems.
 
 ### Slab/SLUB Allocator
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 - **SLUB** is default since 2.6: simpler, better for large NUMA, per-CPU partial slabs
 - **kmem_cache**: Pre-allocated object pools (e.g., `task_struct` cache, `inode_cache`)
@@ -590,21 +349,6 @@ This pattern is commonly used in production systems.
 - **Slab coloring**: Offset objects within a slab to reduce cache-line conflicts
 
 ### OOM Killer
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -618,21 +362,6 @@ Trigger: alloc_pages fails watermarks, no reclaim possible
 ---
 
 ## 6. IPC Mechanisms
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 | Mechanism | Type | Scope | Notes |
@@ -651,38 +380,8 @@ This pattern is commonly used in production systems.
 
 ## 7. Device Drivers
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Driver Types
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -703,21 +402,6 @@ Network devices (drivers/net/)
 
 ### Driver Framework
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```
 Device ←→ Bus (PCI, USB, platform) ←→ Driver
@@ -729,21 +413,6 @@ Device ←→ Bus (PCI, USB, platform) ←→ Driver
 ```
 
 ### Interrupt Handling
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -763,21 +432,6 @@ Threaded IRQ:
 ---
 
 ## 8. Kernel Modules
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```c
@@ -814,21 +468,6 @@ MODULE_DESCRIPTION("Minimal module");
 
 ## 9. Virtual Filesystem (VFS)
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```
                   ┌─────────────────────────────┐
@@ -854,21 +493,6 @@ This pattern is commonly used in production systems.
 
 ### Key VFS Structures
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 - **super_block**: Represents a mounted filesystem — `s_type` (filesystem type), `s_root` (dentry of root), `s_op`
 - **inode**: Represents a file (metadata — permissions, size, timestamps, block pointers), unique per filesystem
@@ -876,21 +500,6 @@ This pattern is commonly used in production systems.
 - **file**: Open file descriptor — current position, flags, pointer to dentry, `f_op`
 
 ### Page Cache & Writeback
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -915,21 +524,6 @@ Writeback:
 
 ## 10. /proc, /sys, sysfs, debugfs
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 | Filesystem | Mount point | Purpose |
 |------------|------------|---------|
@@ -938,21 +532,6 @@ This pattern is commonly used in production systems.
 | debugfs | /sys/kernel/debug | Developer debugging (mount -t debugfs none /sys/kernel/debug) |
 
 ### /proc key files
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -972,21 +551,6 @@ This pattern is commonly used in production systems.
 
 ### sysfs structure
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```
 /sys/
@@ -1005,21 +569,6 @@ This pattern is commonly used in production systems.
 ---
 
 ## 11. Architecture Diagram
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -1080,38 +629,8 @@ This pattern is commonly used in production systems.
 
 ## 12. Internals
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Kernel Thread Creation
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```c
@@ -1134,21 +653,6 @@ struct task_struct *kthread_create(int (*threadfn)(void *data),
 
 ### RCU (Read-Copy Update)
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```
 Reader: rcu_read_lock() → lightweight, no memory barrier (on TREE RCU)
@@ -1164,21 +668,6 @@ Writer: rcu_assign_pointer(ptr, new) → smp_store_release
 ```
 
 ### Spinlock Implementation
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```c
@@ -1202,38 +691,8 @@ static __always_inline void arch_spin_lock(arch_spinlock_t *lock)
 
 ## 13. Failure Analysis
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Kernel Panic / Oops
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -1256,21 +715,6 @@ Recovery:
 
 ### OOM Scenarios
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```
 - Memory overcommit + fork bomb → OOM killer triggered
@@ -1283,21 +727,6 @@ This pattern is commonly used in production systems.
 ---
 
 ## 14. Edge Cases
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 - **RCU priority inversion**: CPU-bound real-time task prevents RCU grace period — solved by RCU priority boosting
@@ -1314,38 +743,8 @@ This pattern is commonly used in production systems.
 
 ## 15. Performance
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Syscall Cost Breakdown (x86-64, ~3GHz)
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 | Operation | Cycles | Time |
@@ -1363,21 +762,6 @@ This pattern is commonly used in production systems.
 
 ### lock_stat Overhead
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```
 spin_lock:          ~25ns (contended) / ~5ns (uncontended)
@@ -1387,21 +771,6 @@ RCU read lock:      ~1ns (atomic, no memory barrier on TREE)
 ```
 
 ### Memory Allocation Latency
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -1416,21 +785,6 @@ Page fault (file cache): ~500ns (page cache hit) / ~5ms (disk read)
 ---
 
 ## 16. Simplest Mental Model
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 > **The Linux kernel is a resource multiplexer.** It takes a single set of hardware resources (CPU cores, RAM, disk, network) and gives every process the illusion of owning the whole machine. It does this through three core mechanisms: **isolation** (virtual memory, process separation), **scheduling** (time-sharing CPU via CFS/EEVDF), and **abstraction** (VFS so everything looks like a file, device drivers as interchangeable modules). The entire design is about trading guarantees — the kernel guarantees fairness (CFS), safety (memory protection, seccomp), and performance (RCU, lockless data structures) while delegating most policy decisions to userspace or sysctl knobs.

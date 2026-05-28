@@ -6,21 +6,6 @@ Essential network diagnostics tools for debugging connectivity, DNS, routing, an
 
 ## curl
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```bash
 curl -v http://example.com              # Verbose (headers + handshake)
@@ -52,21 +37,6 @@ curl --proxy http://proxy:8080 http://example.com
 
 ## dig (DNS)
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```bash
 dig example.com                          # A record
@@ -92,21 +62,6 @@ dig +stats example.com                  # Timing statistics
 ```
 
 ## tcpdump
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```bash
@@ -136,21 +91,6 @@ tcpdump -i eth0 -s 96 -B 4096                    # Buffer size 4MB
 
 ## traceroute / mtr
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```bash
 traceroute example.com                  # Trace path to host
@@ -167,21 +107,6 @@ mtr -i 1 example.com                    # 1 second between hops
 ```
 
 ## nmap
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```bash
@@ -201,21 +126,6 @@ nmap -T4 -F 192.168.1.0/24            # Fast (-T4) + fast (-F, 100 ports)
 ```
 
 ## ss / ip
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```bash
@@ -241,21 +151,6 @@ ip -br addr                            # Brief output (CIDR)
 
 ## iptables / nftables
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```bash
 # iptables
@@ -276,21 +171,6 @@ nft add rule inet filter input ip saddr 10.0.0.0/8 drop
 
 ## nc (netcat)
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```bash
 nc -zv example.com 80                  # Port check (verbose)
@@ -306,21 +186,6 @@ cat file.txt | nc -w 3 host 8080      # Send file
 ```
 
 ## Quick Diagnostic Workflows
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```bash
@@ -344,21 +209,6 @@ tcpdump -i any port 8080 -c 100       # See actual traffic
 
 ## Anti-Patterns
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 | Anti-Pattern | Why It Hurts | Fix |
 |-------------|-------------|-----|
@@ -372,21 +222,6 @@ This pattern is commonly used in production systems.
 | dig without `@server` | Uses system resolver cache | Explicitly query `@8.8.8.8` |
 
 ## Production Troubleshooting Sequences
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```bash

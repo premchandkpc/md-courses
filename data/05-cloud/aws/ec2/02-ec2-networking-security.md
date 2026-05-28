@@ -1,7 +1,6 @@
 # 🖥️ EC2 Networking & Security — Complete Deep Dive
 
 
-
 ```mermaid
 graph LR
     VPC["VPC<br/>(10.0.0.0/16)"] --> PUB["Public Subnet<br/>(10.0.1.0/24)"]
@@ -28,20 +27,6 @@ graph LR
 
 ## Table of Contents
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 - [VPC Design Patterns](#vpc-design-patterns)
 - [VPC Endpoints](#vpc-endpoints)
@@ -63,21 +48,6 @@ This pattern is commonly used in production systems.
 ---
 
 ## VPC Design Patterns
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 A VPC is a logically isolated network in AWS. Three subnet tiers for different workloads:
@@ -103,21 +73,6 @@ A VPC is a logically isolated network in AWS. Three subnet tiers for different w
 
 ## VPC Endpoints
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 Private access to AWS services without NAT Gateway or IGW.
 
@@ -130,21 +85,6 @@ Private access to AWS services without NAT Gateway or IGW.
 **Interface Endpoint**: Creates ENI with private IP. Needs SG. Supports on-prem via PrivateLink + Direct Connect/VPN.
 
 ## VPC Peering vs Transit Gateway
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -163,21 +103,6 @@ This pattern is commonly used in production systems.
 
 ## Security Groups vs NACLs
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 | | Security Group | NACL |
 |---|---|---|
@@ -191,21 +116,6 @@ This pattern is commonly used in production systems.
 
 ## Bastion Hosts vs SSM Session Manager
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **Bastion pros/cons**: EC2 in public subnet with SSH key, SG open on 22/3389, running 24/7, key management pain.
 
@@ -214,21 +124,6 @@ This pattern is commonly used in production systems.
 **Pattern**: Never use bastions. Always SSM + EC2 Instance Connect.
 
 ## Instance Metadata & User Data
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 Available at `http://169.254.169.254/latest/meta-data/`. No auth (IMDSv1) or token-based (IMDSv2).
@@ -251,21 +146,6 @@ Available at `http://169.254.169.254/latest/meta-data/`. No auth (IMDSv1) or tok
 
 ## Instance Profiles (IAM Roles for EC2)
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```text
   IAM Role (e.g., S3ReadOnly) -> Instance Profile (wrapper, 1 role) -> EC2 Instance
@@ -275,21 +155,6 @@ This pattern is commonly used in production systems.
 Credentials auto-rotated every ~6 hours by EC2. Never put AWS access keys on EC2 instances.
 
 ## ENI Deep Dive
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Elastic Network Interface** = virtual network card.
@@ -302,21 +167,6 @@ This pattern is commonly used in production systems.
 **Limits**: ENIs per instance vary by type (t3.nano = 2, m5.24xlarge = 15). Each ENI gets one primary IP + multiple secondary IPs.
 
 ## ENA vs EFA vs ENA Express
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 | Feature | ENA | EFA | ENA Express |
@@ -332,21 +182,6 @@ This pattern is commonly used in production systems.
 
 ## Placement Groups
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 | Type | Strategy | Limit |
 |------|----------|-------|
@@ -357,21 +192,6 @@ This pattern is commonly used in production systems.
 **Cluster** for HPC. **Spread** for critical small apps (max 7). **Partition** for large distributed systems like Kafka, Cassandra, HDFS.
 
 ## Dedicated Hosts vs Dedicated Instances
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 | Feature | Dedicated Host | Dedicated Instance |
@@ -385,21 +205,6 @@ This pattern is commonly used in production systems.
 
 ## Nitro System
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 The Nitro system is the underlying platform for all current-generation EC2 instances.
 
@@ -408,21 +213,6 @@ The Nitro system is the underlying platform for all current-generation EC2 insta
 **Nitro Hypervisor**: Lightweight KVM-based. Passes CPU/memory directly. Near bare-metal performance.
 
 ## Hibernate vs Stop vs Terminate
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 | | Stop | Hibernate | Terminate |
@@ -438,21 +228,6 @@ This pattern is commonly used in production systems.
 
 ## Systems Manager
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 AWS Systems Manager is a suite for fleet management.
 
@@ -464,21 +239,6 @@ AWS Systems Manager is a suite for fleet management.
 **Automation**: Step-by-step playbooks (e.g., stop instances, create AMIs).
 
 ## EC2 Image Builder
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 Automated AMI pipeline:
@@ -496,21 +256,6 @@ Automated AMI pipeline:
 
 ## Simplest Mental Model
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 > **EC2 networking is building a moat with controlled drawbridges around your castle.**
 >
@@ -522,21 +267,6 @@ This pattern is commonly used in production systems.
 ---
 
 ## Code Examples
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```python
@@ -614,21 +344,6 @@ aws ssm start-session --target i-1234 \
 
 ## Common Failure Modes
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **Problem**: Security group rules accumulating unused allow rules, increasing blast radius
 
@@ -650,79 +365,19 @@ This pattern is commonly used in production systems.
 
 ## Interview Questions
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Q1: Explain the difference between Security Groups and NACLs, and when you would use each.
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Answer**: Security Groups are stateful, operate at the ENI level, and support allow-only rules evaluated as a set. Return traffic is automatically allowed. NACLs are stateless, operate at the subnet level, and support both allow and deny rules evaluated in numerical order (lowest first). Return traffic must be explicitly allowed. Use SGs for micro-segmentation between app tiers (web SG allows 443 from 0.0.0.0/0, app SG allows 8080 from web SG). Use NACLs as a second layer for deny lists — block known bad IPs at the subnet boundary. NACLs also protect against intra-VPC traffic that bypasses SGs (e.g., traffic through NAT Gateway). The most secure pattern is SG-based isolation with NACLs as a defense-in-depth layer.
 
 ### Q2: How would you architect EC2 networking for a multi-AZ application with strict isolation requirements?
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **Answer**: Create one VPC with a /16 CIDR. In each AZ, create three subnets: public (ALB, NAT Gateway, bastion), private (application servers), and isolated (databases, Redis). Route tables: public → IGW, private → NAT GW, isolated → no internet route. Security groups: ALB SG (443 from 0.0.0.0/0), app SG (8080 from ALB SG only), DB SG (5432 from app SG only). Use VPC Endpoints for S3 and DynamoDB (gateway endpoints, free) and for SSM, ECR, CloudWatch (interface endpoints). Use Transit Gateway if connecting to multiple VPCs. Enforce IMDSv2. Use SSM Session Manager instead of SSH (no public IPs needed on app/db instances). Place instances in an Auto Scaling Group across all AZs. Use VPC Flow Logs to audit traffic patterns.
 
 
 ## Edge Cases
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 | Scenario | Challenge | Solution |
@@ -735,21 +390,6 @@ This pattern is commonly used in production systems.
 
 ## Cross-References
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 - [ECS Deployment Patterns](../ecs/02-ecs-deployment-patterns.md) — Security group-driven networking in ECS task definitions
 - [EKS Operations](../eks/02-eks-operations.md) — VPC CNI, security groups for pods
@@ -758,38 +398,8 @@ This pattern is commonly used in production systems.
 
 ## Advanced Troubleshooting
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Diagnosing Network Connectivity Issues
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -802,40 +412,10 @@ Client → Internet Gateway → Route Table → Subnet → Security Group → NA
 
 ### VPC Reachability Analyzer
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 AWS VPC Reachability Analyzer builds a graph of all networking components (SGs, NACLs, route tables, TGW attachments, VPC peering) and runs a path analysis between any two endpoints. It identifies which component blocks traffic — e.g., "Security group sg-123: port 443 blocked" or "Route table rtb-abc: no route to destination."
 
 ### Common EC2 Networking Commands
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 | Purpose | Command |
@@ -848,98 +428,23 @@ This pattern is commonly used in production systems.
 
 ## Interview Questions
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Q1 (Beginner): What is the difference between a security group and a network ACL?
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Answer**: Security groups are stateful, instance-level firewalls. If you allow inbound traffic, the return traffic is automatically allowed. NACLs are stateless, subnet-level firewalls — you must explicitly allow both inbound and outbound traffic. Security groups support allow rules only (no explicit deny). NACLs support both allow and deny rules, evaluated in order (lowest number first). Security groups are evaluated as a whole (all rules apply). NACLs use rule numbers (1-32766) and stop at the first matching rule. Use security groups for most access control, NACLs for subnet-wide deny rules (block known malicious IP ranges).
 
 ### Q2 (Mid-Level): How would you design a VPC for a multi-tier application (web, app, DB)?
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **Answer**: Three tiers across three subnets: public subnet (web servers, load balancers) with route to IGW. Private app subnet (application servers) with route to NAT Gateway for outbound internet. Private DB subnet (RDS, ElastiCache) with no internet route. Security groups: Web SG → allow HTTP/HTTPS from 0.0.0.0/0. App SG → allow traffic from Web SG only (reference SG by ID). DB SG → allow traffic from App SG only, port 3306/5432. NACLs: deny all inbound/outbound as default, explicitly allow only needed ports. This creates defense-in-depth: even if an attacker penetrates the web tier, they can't reach the DB tier without a security group rule.
 
 ### Q3 (Senior): Design a multi-VPC network for a 500-microservice architecture with shared services.
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **Answer**: Hub-and-spoke with AWS Transit Gateway: Hub VPC contains shared services (DNS, Active Directory, CI/CD, monitoring, artifact repos). Spoke VPCs per team/environment (dev, staging, prod). Each spoke VPC has its own subnets, route tables, NACLs, and per-service security groups. TGW attachments route traffic between spokes and hub. TGW route tables isolate spokes from each other (spoke A can't reach spoke B unless explicitly routed). For cross-spoke communication: either through hub (TGW) or direct VPC peering (only for high-traffic pairs). Network segmentation: prod spoke VPC has no internet route; all traffic goes through hub's egress VPC with centralized inspection (firewall, IDS/IPS). PrivateLink for service-to-service: each service exposes a NLB + PrivateLink endpoint, other services consume via interface endpoints in their VPC. This prevents VPC peering mesh complexity. Monitoring: VPC flow logs (aggregated to central S3), TGW attachment metrics, Reachability Analyzer for path debugging.
 
 ## Cross-References
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 - [ECS Deployment Patterns](../ecs/02-ecs-deployment-patterns.md) — Security group-driven networking in ECS task definitions

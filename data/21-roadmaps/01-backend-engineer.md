@@ -3,7 +3,6 @@
 > **Scope:** A tiered, self-paced curriculum spanning 5 phases from absolute beginner to Staff/Principal Engineer. Each phase covers programming fundamentals, systems knowledge, operations, architecture, and soft skills. Estimated time per phase, key topics, recommended books, projects, and success metrics are included.
 
 
-
 ```mermaid
 graph TD
     P0["Phase 0: Foundation<br/>Python/Java, DSA, SQL, REST, Git"] --> P1["Phase 1: Intermediate<br/>Concurrency, Docker, Redis, Kafka, CI/CD"]

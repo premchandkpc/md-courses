@@ -5,7 +5,6 @@
 > **Related**: [02-netflix.md](./02-netflix.md) | [03-twitter.md](./03-twitter.md)
 
 
-
 ```mermaid
 graph LR
     CREATOR["Creator"] --> UPLOAD_YT["Upload Video<br/>(chunked)"]
@@ -41,21 +40,6 @@ graph LR
 
 ## Table of Contents
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 1. Requirements & Scale
 2. High-Level Architecture
@@ -72,21 +56,6 @@ This pattern is commonly used in production systems.
 ---
 
 ## 1. Requirements & Scale
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -112,21 +81,6 @@ Key Requirements:
 ---
 
 ## 2. High-Level Architecture
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -160,21 +114,6 @@ This pattern is commonly used in production systems.
 ---
 
 ## 3. Upload Flow
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -250,21 +189,6 @@ Processing job priority:
 ---
 
 ## 4. Video Processing Pipeline
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -364,21 +288,6 @@ Codec comparison:
 
 ## 5. Video Storage Layer
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```text
 Tiered Storage Architecture:
@@ -455,21 +364,6 @@ Table: video_stats
 ---
 
 ## 6. Content Delivery & Streaming
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -566,21 +460,6 @@ Client-side steering fallback:
 
 ## 7. Content Delivery Optimization
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```text
 CDN Cache Optimization:
@@ -621,21 +500,6 @@ Thumbnail optimization:
 ---
 
 ## 8. Recommendation System
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -790,21 +654,6 @@ Diversity enforcement:
 
 ## 9. Search
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```text
 YouTube Search Architecture:
@@ -868,21 +717,6 @@ Search Ranking:
 ---
 
 ## 10. Failure Analysis
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Upload Processing Failure:**
@@ -1009,21 +843,6 @@ Mitigations:
 
 ## 11. Performance Considerations
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```text
 Latency Targets:
@@ -1056,21 +875,6 @@ CDN:
 
 ## Simplest Mental Model
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **YouTube is like a global TV station where anyone can broadcast, but every video is automatically repackaged into hundreds of versions (different qualities, sizes, formats) and stored in a multi-tier warehouse — hot items on the shelf, old ones in the basement.** When you hit play, the player is a smart waiter who grabs the right-sized package for your internet speed and keeps refilling your plate before you finish (buffering). The recommendation system is like a librarian who watches what you borrow and quietly slides new books onto your desk — with a small random selection to keep you from only ever reading cookbooks (filter bubble prevention).
 
@@ -1078,21 +882,6 @@ This pattern is commonly used in production systems.
 
 
 ## Practical Example
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 See code examples above for practical usage patterns.

@@ -1730,7 +1730,6 @@ graph TD
 ```
 
 
-
 ### 8.2 GPU Provisioning Reference
 
 ```python

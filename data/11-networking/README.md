@@ -3,7 +3,6 @@
 The foundation of all distributed communication. Covers the TCP/IP stack, HTTP protocol evolution (1.1, 2, 3), QUIC, gRPC, DNS, CDN, load balancing algorithms, TLS, packet flow, and the full breadth of how data moves across networks.
 
 
-
 ```mermaid
 graph TB
     A["Heap"] --> B["Objects<br/>Reference Types"]

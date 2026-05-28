@@ -1,7 +1,6 @@
 # 🐘 PostgreSQL Architecture — Complete Deep Dive
 
 
-
 ```mermaid
 graph LR
     POST["Postmaster<br/>Daemon"] --> BG["Backend<br/>(per connection)"]
@@ -34,20 +33,6 @@ graph LR
 
 ## Table of Contents
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 1. [Process Architecture](#process-architecture)
 2. [Shared Memory](#shared-memory)
@@ -60,21 +45,6 @@ This pattern is commonly used in production systems.
 ---
 
 ## Process Architecture
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 PostgreSQL uses a **multi-process** model (not threaded):
@@ -116,21 +86,6 @@ PostgreSQL uses a **multi-process** model (not threaded):
 
 ## Shared Memory
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```text
 ┌──────────────────────────────────────────────────────────┐
@@ -159,21 +114,6 @@ This pattern is commonly used in production systems.
 
 ## Query Pipeline
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```text
 Client → PARSER (scan.l + gram.y) → raw parse tree
@@ -184,21 +124,6 @@ Client → PARSER (scan.l + gram.y) → raw parse tree
 ```
 
 ### Planner
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```sql
@@ -233,21 +158,6 @@ TID Scan      → direct by ctid
 
 ### Plan Node Details
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **Seq Scan:** Iterates all pages, extracts tuples matching filter. Cost proportional to `relpages × seq_page_cost`.
 
@@ -264,21 +174,6 @@ Index B: [bitmap of pages matching cond_b]
 Good for when each index is selective but together they narrow significantly.
 
 ### pg_stat_activity
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```sql
@@ -299,21 +194,6 @@ JOIN pg_stat_activity blocking
 ```
 
 ### Executor
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```python
@@ -338,21 +218,6 @@ class Executor:
 
 ## WAL
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 Every modification is logged before data page write:
 
@@ -373,21 +238,6 @@ Backend → WAL Buffer (shared mem) → WAL Writer → WAL Segment (pg_wal/)
 
 ### Replication
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```text
 Streaming: Primary → WAL stream → Standby
@@ -400,21 +250,6 @@ Logical:   Publisher → row-by-row changes → Subscriber
 ---
 
 ## Vacuum
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 Dead tuple lifecycle: UPDATE creates new tuple version, old becomes dead → VACUUM removes.
@@ -436,21 +271,6 @@ SHOW autovacuum_vacuum_scale_factor;   -- 0.2
 ---
 
 ## Memory Contexts
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -474,21 +294,6 @@ Each query runs in its own context. At end of query, entire context is reset —
 
 ## Simplest Mental Model
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```
 PostgreSQL is a factory with dedicated workers:
@@ -506,21 +311,6 @@ PostgreSQL is a factory with dedicated workers:
 ---
 
 ## Code Examples
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```python
@@ -577,21 +367,6 @@ with conn.cursor() as cur:
 
 ## Common Failure Modes
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **Problem**: Checkpoint burst — periodic I/O spikes every `checkpoint_timeout` interval
 
@@ -613,79 +388,19 @@ This pattern is commonly used in production systems.
 
 ## Interview Questions
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Q1: Why does PostgreSQL use a multi-process model instead of multi-threaded, and what are the implications?
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Answer**: PostgreSQL uses fork-based multi-process for isolation: if a backend crashes, it doesn't take down other connections. Shared memory is used for the buffer pool, WAL buffers, and lock manager — processes communicate through this. The trade-off: each connection has its own memory context (~10MB overhead), making 10,000 connections impractical without a pooler. Threaded databases (MySQL, Oracle) use less memory per connection because threads share the same address space, but a crash in any thread can corrupt shared state. PostgreSQL's approach favors stability and isolation over raw connection density.
 
 ### Q2: How does the PostgreSQL query planner choose between a sequential scan and an index scan?
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **Answer**: The planner estimates the cost of each scan method using `seq_page_cost`, `random_page_cost`, `cpu_tuple_cost`, and `cpu_operator_cost`. For a sequential scan, cost = `seq_page_cost × pages + cpu_tuple_cost × tuples + cpu_operator_cost × filter_ops`. For an index scan, cost = `random_page_cost × index_pages + cpu_tuple_cost × expected_tuples + ...`. The planner uses table statistics (reltuples, relpages) and column statistics (most-common-values, histogram bounds, correlation) to estimate selectivity. A seq scan is preferred when the table is small (< 10% of shared_buffers), the query selects a large fraction of rows (> 5-10%), or there's no useful index. The key knob is `random_page_cost` — setting it to 1.1 (NVMe) vs the default 4.0 (HDD) makes the planner correctly choose index scans on SSD systems.
 
 
 ## Edge Cases
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 | Scenario | Challenge | Solution |
@@ -698,21 +413,6 @@ This pattern is commonly used in production systems.
 
 ## Cross-References
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 - [Database Internals](../../08-databases/01-db-internals.md) — B-tree page structure, MVCC visibility checks, LSM-tree compactions
 - [NoSQL Databases](../05-nosql-databases.md) — Document, wide-column, and KV comparison
@@ -721,21 +421,6 @@ This pattern is commonly used in production systems.
 
 
 ## Observability
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```mermaid
@@ -751,21 +436,6 @@ flowchart LR
 
 ### Key Metrics
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 | Metric | Unit | Threshold | Indicates |
 |--------|------|-----------|-----------|
@@ -780,21 +450,6 @@ This pattern is commonly used in production systems.
 
 ### Logs
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 - **ERROR**: Deadlock detected, out of shared memory, connection failures, replication conflict
 - **WARN**: Long queries > 5s, checkpoint frequency high, autovacuum triggered, replication lag
@@ -802,21 +457,6 @@ This pattern is commonly used in production systems.
 - **DEBUG**: Slow queries (enable `log_min_duration_statement`), lock waits
 
 ### Alerts
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 | Severity | Condition | Response |
@@ -829,59 +469,14 @@ This pattern is commonly used in production systems.
 
 ### Dashboards
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **PostgreSQL Overview**: active connections, cache hit ratio, transactions per second, query latency (p50/p99), dead tuple ratio, replication lag, autovacuum activity, checkpoint frequency.
 
 
 ## Common Failures
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Failure: Connection Pool Exhaustion
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 - **Symptoms**: New connections fail with "remaining connection slots reserved". Application timeouts and 500s.
@@ -892,21 +487,6 @@ This pattern is commonly used in production systems.
 
 ### Failure: Replication Lag
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 - **Symptoms**: Read replicas return stale data. Replica lag grows until WAL segments removed.
 - **Root Cause**: Replica cannot keep up with write rate. Long-running queries on replica block WAL replay. Insufficient replica IOPS.
@@ -915,21 +495,6 @@ This pattern is commonly used in production systems.
 - **Prevention**: Monitor `wal_keep_segments`. Use replication slots. Ensure replica has sufficient IOPS.
 
 ### Failure: Autovacuum Bloat
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 - **Symptoms**: Table size >> data size. Query performance degrades. I/O increases.
@@ -940,21 +505,6 @@ This pattern is commonly used in production systems.
 
 ### Failure: XID Wraparound
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 - **Symptoms**: Database becomes read-only, or crashes with "database is not accepting commands to avoid wraparound". Emergency.
 - **Root Cause**: Transaction ID (32-bit counter) wraps after 2B transactions. If autovacuum doesn't freeze XIDs before 2B, PostgreSQL stops accepting writes.
@@ -963,21 +513,6 @@ This pattern is commonly used in production systems.
 - **Prevention**: Ensure autovacuum is never disabled. Monitor `age(datfrozenxid)`. Set `autovacuum_freeze_max_age=500000000`.
 
 ### Failure: Checkpoint Storm
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 - **Symptoms**: Regular I/O spikes every checkpoint interval. WAL write latency spikes during checkpoint. Query latency spikes.

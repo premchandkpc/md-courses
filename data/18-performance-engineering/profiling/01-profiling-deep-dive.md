@@ -1,7 +1,6 @@
 # Profiling Deep Dive
 
 
-
 ```mermaid
 graph LR
     PROFILING["Profiling"] --> SAMPLING_PR["Sampling Profiler<br/>(periodic PC)"]
@@ -1194,7 +1193,6 @@ production_profiling_workflow()
 ```
 
 
-
 ## Profiling Workflow
 
 ```
@@ -1243,7 +1241,6 @@ const users = db.query(`
 `);
 // Total: 1 query, 50ms (40x faster)
 ```
-
 
 
 ## Practical Example

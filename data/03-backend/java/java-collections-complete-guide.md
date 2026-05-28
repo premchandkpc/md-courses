@@ -2,21 +2,6 @@
 
 ## Overview
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 Java Collections Framework provides reusable data structures organized by:
 
@@ -29,38 +14,8 @@ Know the right collection = faster code, lower memory, fewer bugs.
 
 ## 1. LIST COLLECTIONS
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### 1.1 ArrayList: When You Need Fast Random Access
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Scenario:** Dashboard displays 1000 user records. You frequently jump to user #500 (random access), occasionally add new users at end.
@@ -90,21 +45,6 @@ users.add(new User(1000, "NewUser")); // O(1) amortized at end
 
 ### 1.2 LinkedList: When You Need Deque Operations (Both Ends)
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **Scenario:** Task queue. Workers process tasks from front. New urgent tasks injected at front. Original ArrayDeque is better but LinkedList shows doubly-linked pattern.
 
@@ -131,21 +71,6 @@ Task next = queue.removeFirst();      // O(1) - process from head
 ---
 
 ### 1.3 CopyOnWriteArrayList: When Readers Dominate, Writers Rare
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Scenario:** Event listener list. 1000 listeners read on every mouse click. New listener added once per minute.
@@ -175,21 +100,6 @@ listeners.add(e -> System.out.println("NewListener"));
 ---
 
 ### 1.4 Vector (Legacy) & Stack: Avoid These
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Scenario:** Old codebase uses Vector. New code tempted to use Stack.
@@ -222,38 +132,8 @@ int top = goodStack.pop();
 
 ## 2. SET COLLECTIONS
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### 2.1 HashSet: When You Need O(1) Unique Element Checks
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Scenario:** Spam filter. Thousands of emails arrive. Check "is this email from known spammer?" millions of times.
@@ -283,21 +163,6 @@ if (spammers.contains(incomingEmail)) {  // O(1) - nanoseconds
 ---
 
 ### 2.2 LinkedHashSet: When You Need Insertion Order + O(1) Speed
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Scenario:** Product recommendation. Track "first items user viewed" (insertion order) for personalization. Also need fast "was item viewed?" checks.
@@ -331,21 +196,6 @@ if (viewedProducts.contains("Mouse")) {  // O(1)
 
 ### 2.3 TreeSet: When You Need Sorted Unique Elements + Range Queries
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **Scenario:** Stock price alert system. Store prices of 1000 stocks. Query "all stocks between $100-$150" to notify users.
 
@@ -375,21 +225,6 @@ Double above = stockPrices.ceiling(140.0);  // 150.75
 ---
 
 ### 2.4 ConcurrentSkipListSet: When Multiple Threads Modify Sorted Set
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Scenario:** Multi-threaded task scheduler. 4 threads add/remove tasks from priority set. Must stay sorted. Cannot block.
@@ -425,38 +260,8 @@ executor.submit(() -> {
 
 ## 3. QUEUE COLLECTIONS
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### 3.1 PriorityQueue: When You Need Min-Heap (Single Thread)
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Scenario:** Hospital triage. Patients arrive in random order. Medical staff always treats most-critical-first.
@@ -496,21 +301,6 @@ while (!triage.isEmpty()) {
 
 ### 3.2 ArrayDeque: Best Stack/Queue Implementation
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **Scenario:** Undo/Redo stack. User edits photo. Each edit pushed to undo stack. Pop for undo, push for redo.
 
@@ -544,21 +334,6 @@ System.out.println("Undo complete");
 ---
 
 ### 3.3 PriorityBlockingQueue: When Multiple Threads Need Priority Queue
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Scenario:** Job processor pool. 10 worker threads consume jobs. Jobs vary in priority (critical, normal, background). No job should wait indefinitely.
@@ -601,21 +376,6 @@ executor.submit(() -> {
 
 ### 3.4 ConcurrentLinkedQueue: When Threads Need Non-Blocking Queue
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **Scenario:** Real-time metrics collection. 100 threads constantly log metrics. Central thread drains queue every 100ms (doesn't want to block on empty).
 
@@ -657,38 +417,8 @@ executor.submit(() -> {
 
 ## 4. MAP COLLECTIONS
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### 4.1 HashMap: Default Fast Key-Value Lookup
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Scenario:** Cache API responses. Thousands of API calls. Before hitting network, check cache by URL.
@@ -729,21 +459,6 @@ responseCache.put("NoData", null);           // Allows multiple null values
 
 ### 4.2 LinkedHashMap: When You Need Insertion Order + O(1) Speed
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **Scenario:** LRU (Least-Recently-Used) cache. Cache max 100 items. When full, evict least-recently-used.
 
@@ -781,21 +496,6 @@ lruCache.put("user-101", "NewUser");
 
 ### 4.3 TreeMap: When You Need Sorted Keys + Range Queries
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **Scenario:** Time-series database. Store stock ticks with timestamps. Query "all ticks from 10:00 to 10:30" efficiently.
 
@@ -831,21 +531,6 @@ Long ceilingTime = ticks.ceilingKey(1250L); // 1300
 ---
 
 ### 4.4 ConcurrentHashMap: When Multiple Threads Write to Map
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Scenario:** Web server logging. 100 request threads log to same map (request statistics). No blocking allowed.
@@ -885,40 +570,10 @@ stats.forEach((endpoint, count) ->
 
 ## 5. COLLECTION SELECTION GUIDE
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **Scenario**: "Which collection should I use?"
 
 ### Lists
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 | Scenario | Use | Why |
@@ -931,21 +586,6 @@ This pattern is commonly used in production systems.
 
 ### Sets
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 | Scenario | Use | Why |
 |----------|-----|-----|
@@ -957,21 +597,6 @@ This pattern is commonly used in production systems.
 
 ### Queues
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 | Scenario | Use | Why |
 |----------|-----|-----|
@@ -981,21 +606,6 @@ This pattern is commonly used in production systems.
 | High-throughput lock-free queue | ConcurrentLinkedQueue | Non-blocking |
 
 ### Maps
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 | Scenario | Use | Why |
@@ -1011,38 +621,8 @@ This pattern is commonly used in production systems.
 
 ## 6. COMMON MISTAKES & FIXES
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Mistake 1: Using Vector in 2024
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```java
@@ -1061,21 +641,6 @@ better.add("item");
 
 ### Mistake 2: LinkedList for Random Access
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```java
 // DON'T
@@ -1093,21 +658,6 @@ User user = users.get(500);  // O(1)
 
 ### Mistake 3: Stack for LIFO Instead of ArrayDeque
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```java
 // DON'T (extends Vector - overhead)
@@ -1124,21 +674,6 @@ stack.push(1);
 ---
 
 ### Mistake 4: Iterating While Removing (ArrayList)
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```java
@@ -1166,21 +701,6 @@ while (iter.hasNext()) {
 
 ### Mistake 5: Collections.synchronizedMap for Multi-Threaded Access
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```java
 // DON'T (full map lock per operation)
@@ -1197,21 +717,6 @@ concMap.put("key1", 1);
 ---
 
 ### Mistake 6: PriorityQueue in Multi-Threaded Code
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```java
@@ -1231,21 +736,6 @@ executor.submit(() -> queue.put(task2));
 ---
 
 ### Mistake 7: Raw Iteration on Iterator After Modification
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```java
@@ -1275,21 +765,6 @@ while (iter.hasNext()) {
 ---
 
 ## 7. PERFORMANCE QUICK REFERENCE
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Access Speed (100k elements, random key)**
@@ -1330,21 +805,6 @@ This pattern is commonly used in production systems.
 
 ## 8. DECISION TREE
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```
 Need a List?
@@ -1378,21 +838,6 @@ Need a Map?
 ---
 
 ## 9. SUMMARY
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Default Choices:**

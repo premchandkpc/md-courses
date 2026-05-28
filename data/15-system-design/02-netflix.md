@@ -5,7 +5,6 @@
 > **Related**: [01-whatsapp.md](./01-whatsapp.md)
 
 
-
 ```mermaid
 graph LR
     STUDIO["Content Studio"] --> INGEST["Ingest Pipeline<br/>(RAW video)"]

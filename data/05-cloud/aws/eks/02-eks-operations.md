@@ -1,7 +1,6 @@
 # ☸️ EKS Operations — Complete Deep Dive
 
 
-
 ```mermaid
 graph LR
     CA["Cluster<br/>Autoscaler"] --> NG["Node Group<br/>(EC2 Auto Scaling)"]
@@ -31,20 +30,6 @@ graph LR
 
 ## Table of Contents
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 - [Managed vs Self-Managed vs Fargate](#managed-vs-self-managed-vs-fargate)
 - [Cluster Autoscaler vs Karpenter](#cluster-autoscaler-vs-karpenter)
@@ -65,21 +50,6 @@ This pattern is commonly used in production systems.
 ---
 
 ## Managed vs Self-Managed vs Fargate
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -109,21 +79,6 @@ Fargate:
 
 ## Cluster Autoscaler vs Karpenter
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```text
 Cluster Autoscaler: Pending Pod → ASG scale-up → Node in ~3-5 min
@@ -150,21 +105,6 @@ Karpenter advantages:
 
 ## EBS CSI Driver
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 Dynamic provisioning of EBS volumes. `WaitForFirstConsumer` ensures AZ alignment with pod.
 
@@ -189,21 +129,6 @@ allowVolumeExpansion: true
 
 ## EFS CSI Driver
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 Shared file storage with ReadWriteMany access across pods and AZs. Works on Fargate.
 
@@ -224,21 +149,6 @@ parameters:
 
 ## FSx for Lustre CSI
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 | Feature | EFS | FSx for Lustre |
 |---------|-----|---------------|
@@ -252,21 +162,6 @@ This pattern is commonly used in production systems.
 ---
 
 ## IRSA (IAM Roles for Service Accounts)
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -282,21 +177,6 @@ Token injected via projected volume, auto-rotated, scoped to the pod's service a
 
 ## EKS Pod Identity
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 Simpler than IRSA — no OIDC provider management. EKS agent handles credential vending directly.
 
@@ -310,21 +190,6 @@ Simpler than IRSA — no OIDC provider management. EKS agent handles credential 
 
 ## CNI Deep Dive
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```text
 VPC CNI Default: Pods get VPC IPs from ENIs. Max pods = ENIs × IPs/ENI - 1.
@@ -336,21 +201,6 @@ Security Groups Per Pod: Attach SG directly to pod via SecurityGroupPolicy CRD.
 ---
 
 ## ALB Ingress vs AWS Load Balancer Controller
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 AWS LB Controller supports: ALB + NLB, IngressGroup (shared ALB), SSL redirect, OIDC auth, target type `ip` or `instance`, Gateway API.
@@ -381,42 +231,12 @@ spec:
 
 ## Gateway API on EKS
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 Gateway (LB) → HTTPRoute (routing) → Service (backend). Benefits: cross-vendor standard, role-oriented (ops vs dev), extended routing, service mesh integration.
 
 ---
 
 ## EKS Add-Ons
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 | Add-On | Purpose | Required |
@@ -437,42 +257,12 @@ aws eks create-addon --cluster-name my-cluster \
 
 ## Bottlerocket
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 Container-optimized OS by AWS. Immutable root, atomic A/B updates, no package manager. Host containers for SSH/debug. Smaller attack surface, faster boot.
 
 ---
 
 ## EKS Anywhere & EKS Distro
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 | | EKS (Managed) | EKS Anywhere | EKS Distro |
@@ -488,42 +278,12 @@ This pattern is commonly used in production systems.
 
 ## EKS Blueprints
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 Open-source framework (Terraform/CDK): VPC + EKS + node groups + add-ons + teams (namespace, IAM, quotas). GitOps-ready (ArgoCD/Flux).
 
 ---
 
 ## Simplest Mental Model
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -556,21 +316,6 @@ EKS BLUEPRINTS  =  Pre-designed factory blueprint. Just build.
 ---
 
 ## Code Examples
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```python
@@ -640,21 +385,6 @@ aws eks update-nodegroup-version --cluster-name prod --nodegroup-name spot-4
 
 ## Common Failure Modes
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **Problem**: CNI IP exhaustion causing pods stuck in ContainerCreating
 
@@ -676,78 +406,18 @@ This pattern is commonly used in production systems.
 
 ## Interview Questions
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Q1: Compare EKS Fargate, Managed Node Groups, and Self-Managed Nodes — when would you use each?
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Answer**: **Fargate** eliminates node management entirely — no EC2 instances to patch or scale. Use it for security-isolated workloads, spiky/batch jobs, or teams without Kubernetes operations expertise. Limitations: no DaemonSets, no privileged containers, no EBS volumes, limited GPU support. **Managed Node Groups** are best for 90% of production workloads — AWS handles AMI updates, node health replacement, and scaling. Use when you need custom instance types, GPUs, or DaemonSets. **Self-Managed** is for edge cases: custom CNI plugins (non-AWS), custom kernel modules, specialized AMI configurations, or regulatory requirements that demand full OS control.
 
 ### Q2: How would you upgrade an EKS cluster from 1.27 to 1.29 with zero downtime?
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **Answer**: Plan a two-version upgrade (1.27 → 1.28 → 1.29) since EKS only supports sequential upgrades. For each minor version: first upgrade the control plane (AWS handles this, ~15 min). Then upgrade managed node groups — create a new node group with the latest AMI matching the new version, cordon and drain old nodes, then delete the old node group. For self-managed nodes, update the bootstrap script's `--kubelet-extra-args` to the new version and roll the ASG. During the process, ensure at least 2 replicas of each service, PDBs set to `maxUnavailable: 1`, and PodAntiAffinity configured. Test add-on compatibility (CNI, CoreDNS, kube-proxy) before upgrading — upgrade add-ons first. Use a canary cluster before production. Rollback: if control plane upgrade fails in the 24h window, contact AWS support; node group rollback is a redeploy with old AMI.
 
 ## Edge Cases and Advanced Scenarios
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 | Scenario | Challenge | Solution |
@@ -760,21 +430,6 @@ This pattern is commonly used in production systems.
 
 ## Cross-References
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 - [EC2 Networking & Security](../ec2/02-ec2-networking-security.md) — Nitro system, instance types, ENI limits
 - [ECS Deployment Patterns](../ecs/02-ecs-deployment-patterns.md) — Capacity providers, Fargate comparison
@@ -784,21 +439,6 @@ This pattern is commonly used in production systems.
 
 
 ## Observability
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```mermaid
@@ -817,21 +457,6 @@ flowchart LR
 
 ### Key Metrics
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 | Metric | Unit | Threshold | Indicates |
 |--------|------|-----------|-----------|
@@ -846,21 +471,6 @@ This pattern is commonly used in production systems.
 
 ### Logs
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 - **ERROR**: Pod CrashLoopBackOff, Node NotReady, OOMKilled, API server errors, etcd leader changes
 - **WARN**: Pod pending > 5min, node pressure, PVC pending, ImagePullBackOff
@@ -869,40 +479,10 @@ This pattern is commonly used in production systems.
 
 ### Traces
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 Use OpenTelemetry operator with auto-instrumentation for envoy/kube-api. Trace API server request flow. Use Jaeger for distributed tracing across services.
 
 ### Alerts
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 | Severity | Condition | Response |
@@ -916,21 +496,6 @@ This pattern is commonly used in production systems.
 
 ### Dashboards
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **Cluster Overview**: node count (Ready/NotReady), pod count (Running/Pending/Failed), CPU/memory utilization, API server request rate and latency, etcd leader and latency.
 
@@ -941,38 +506,8 @@ This pattern is commonly used in production systems.
 
 ## Common Failures
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Failure: Node Pressure (Disk/Memory/PID)
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 - **Symptoms**: Pods evicted from node, `NodeHasDiskPressure` or `NodeHasMemoryPressure` condition true. `kubectl describe node` shows pressure conditions.
@@ -984,21 +519,6 @@ This pattern is commonly used in production systems.
 
 ### Failure: CrashLoopBackOff with OOMKilled
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 - **Symptoms**: Pod restarts repeatedly. `kubectl get pods` shows `CrashLoopBackOff`. `kubectl describe pod` shows `OOMKilled` exit reason.
 - **Root Cause**: Memory limit too low for the workload. Memory leak in application. Heap grows until limit reached, then killed by OOM killer.
@@ -1008,21 +528,6 @@ This pattern is commonly used in production systems.
 - **Production Story**: A Java microservice had `-Xmx512m` but container memory limit was 256MB. The JVM allocated heap up to 512MB, got OOMKilled within 30s of each restart. Took 2h to diagnose because heap dump was lost on each restart. Fix: set `-Xmx200m` and added `-XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/dumps/`.
 
 ### Failure: CoreDNS Outage
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 - **Symptoms**: Services can't resolve DNS, inter-service communication fails, curl to service names fails. `nslookup kubernetes.default.svc.cluster.local` times out.
@@ -1034,21 +539,6 @@ This pattern is commonly used in production systems.
 
 ### Failure: CNI Pod Networking Delay
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 - **Symptoms**: New pods take 30s-2min to reach `Running` state. Existing pods work fine. Pod creation latency spikes.
 - **Root Cause**: AWS VPC CNI IP exhaustion (ENI and /28 subnets). IPAMD (AWS CNI's IP allocator) WARM_ENI_TARGET or WARM_IP_TARGET too low for burst scale-up. Subnet CIDR exhaustion.
@@ -1058,21 +548,6 @@ This pattern is commonly used in production systems.
 - **Production Story**: During a major deployment, 500 new pods were created simultaneously. VPC CNI had only 10 warm IPs. Each ENI attachment took 3-5s, and each new EC2 instance added only 1 ENI per minute. Pod startup latency went from 5s to 2min. Fix: set `WARM_IP_TARGET=20` and `WARM_ENI_TARGET=5`.
 
 ### Failure: API Server Overload
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 - **Symptoms**: `kubectl` commands timeout, controller managers report errors, etcd leader changes, pod creation fails.

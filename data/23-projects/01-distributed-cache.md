@@ -1,7 +1,6 @@
 # Distributed Cache — Production-Grade Design
 
 
-
 ```mermaid
 graph TB
     A["Heap"] --> B["Objects<br/>Reference Types"]

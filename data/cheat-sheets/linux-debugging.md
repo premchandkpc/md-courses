@@ -6,21 +6,6 @@ Essential Linux debugging tools for production outages, performance issues, and 
 
 ## Process & Resource Monitoring
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 | Command | Purpose | Example |
 |---------|---------|---------|
@@ -40,21 +25,6 @@ top -b -n 1 -o %CPU | head -20
 
 ## System Call Tracing
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```bash
 strace -p 1234                # Attach to running PID
@@ -69,21 +39,6 @@ strace -p 1234 -e trace=network -S time -c -o /tmp/strace.summary
 ```
 
 ## Performance Profiling
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```bash
@@ -103,21 +58,6 @@ perf sched latency                  # Schedule latency analysis
 
 ## I/O Analysis
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```bash
 iostat -x 1 5                 # Extended I/O stats, 1s interval, 5 iterations
@@ -133,21 +73,6 @@ iostat -x 1 | grep -E "Device|await"  # await > 10ms = slow device
 
 ## Memory Analysis
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```bash
 free -h                       # Memory summary
@@ -161,21 +86,6 @@ cat /proc/meminfo | grep -E "Slab|SReclaimable|SUnreclaim"
 ```
 
 ## Network Debugging
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```bash
@@ -194,21 +104,6 @@ ss -i '( dport = :443 or sport = :443 )'  # Filter by port
 
 ## Kernel & System
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```bash
 dmesg -T --level=err,warn     # Kernel messages (errors + warnings)
@@ -221,21 +116,6 @@ sysctl -w vm.swappiness=10    # Set (temporary)
 ```
 
 ## GDB Debugging
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```bash
@@ -253,21 +133,6 @@ gdb -batch -ex "bt" -ex "info registers" /path/binary core.dump
 ```
 
 ## Production Workflows
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```bash
@@ -292,21 +157,6 @@ sar -q 1 5                    # Load average, run queue
 
 ## Anti-Patterns
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 | Anti-Pattern | Why It Hurts | Better Approach |
 |-------------|-------------|----------------|
@@ -318,21 +168,6 @@ This pattern is commonly used in production systems.
 | Chaining | Debugging blind | Run `dmesg` first for kernel context |
 
 ## Common Troubleshooting Sequences
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```bash

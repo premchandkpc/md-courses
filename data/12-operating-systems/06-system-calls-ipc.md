@@ -7,7 +7,6 @@
 ---
 
 
-
 ```mermaid
 graph LR
     USR["Userspace"] --> SYSCALL_INS["syscall instruction<br/>(x86: SYSCALL)"]
@@ -45,21 +44,6 @@ graph LR
 
 ## Table of Contents
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 1. [Syscall Mechanism](#1-syscall-mechanism)
 2. [Syscall Categories](#2-syscall-categories)
@@ -84,21 +68,6 @@ This pattern is commonly used in production systems.
 ---
 
 ## 1. Syscall Mechanism
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -151,21 +120,6 @@ This pattern is commonly used in production systems.
 
 ### Syscall Entry (x86-64)
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```asm
 ;; entry_SYSCALL_64 — arch/x86/entry/entry_64.S
@@ -195,21 +149,6 @@ SYM_CODE_END(entry_SYSCALL_64)
 
 ### Syscall Table
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```c
 // arch/x86/entry/syscall_64.c
@@ -238,21 +177,6 @@ asmlinkage const sys_call_ptr_t sys_call_table[] = {
 
 ### Argument Passing Convention
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```
 syscall number: rax
@@ -269,38 +193,8 @@ return value:   rax (negative = -errno, 0 or positive = success)
 
 ## 2. Syscall Categories
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Process Control
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -321,21 +215,6 @@ prctl()     – process control (name, seccomp, subreaper)
 ```
 
 ### File I/O
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -368,21 +247,6 @@ ioctl()       – device control
 
 ### Network
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```
 socket()      – create endpoint (domain, type, protocol)
@@ -408,21 +272,6 @@ io_uring_register() – register buffers/files (427)
 ```
 
 ### IPC
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -452,21 +301,6 @@ futex()       – fast userspace mutex
 
 ### Signal
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```
 kill()        – send signal to process
@@ -484,38 +318,8 @@ signalfd()    – receive signals via fd
 
 ## 3. Syscall Overhead & Mitigation
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Cycle Cost
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -536,21 +340,6 @@ io_uring SQPOLL (0 syscalls)  ~0             ~0ns
 ```
 
 ### Mitigation Strategies
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -580,21 +369,6 @@ This pattern is commonly used in production systems.
 ---
 
 ## 4. vDSO
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -631,21 +405,6 @@ How it works:
 
 ### vsyscall (Legacy)
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```
 Before vDSO, Linux used vsyscall page:
@@ -660,38 +419,8 @@ Before vDSO, Linux used vsyscall page:
 
 ## 5. IPC: Pipe & FIFO
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Pipe (Anonymous)
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -732,21 +461,6 @@ close(fds[1]);  // in reader
 
 ### FIFO (Named Pipe)
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```bash
 # Create FIFO
@@ -775,21 +489,6 @@ int rfd = open("/tmp/myfifo", O_RDONLY);
 
 ## 6. IPC: Unix Domain Socket
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```
 Process A (Server)          Process B (Client)
@@ -809,21 +508,6 @@ Process A (Server)          Process B (Client)
 
 ### Socket Types
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```
 SOCK_STREAM:   Reliable, ordered, connection-oriented (pipe semantics)
@@ -832,21 +516,6 @@ SOCK_SEQPACKET: Reliable, ordered, connection-oriented with message boundaries
 ```
 
 ### SCM_RIGHTS (fd passing)
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```c
@@ -884,21 +553,6 @@ int received_fd = *(int *)CMSG_DATA(cmsg);
 
 ### Peer Credentials
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```c
 // Server gets client's PID, UID, GID via SO_PEERCRED
@@ -911,21 +565,6 @@ getsockopt(client_fd, SOL_SOCKET, SO_PEERCRED, &cred, &len);
 ---
 
 ## 7. IPC: Shared Memory
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -942,21 +581,6 @@ Process A                      Process B
 ```
 
 ### SysV Shared Memory
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```c
@@ -980,21 +604,6 @@ shmctl(shmid, IPC_RMID, NULL);      // Destroy
 
 ### POSIX Shared Memory
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```c
 int fd = shm_open("/myshm", O_CREAT | O_RDWR, 0666);
@@ -1016,21 +625,6 @@ shm_unlink("/myshm");  // Remove when done
 
 ### memfd_create
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```c
 // Anonymous memory fd — no filesystem path needed
@@ -1046,38 +640,8 @@ void *ptr = mmap(NULL, 4096, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
 
 ## 8. IPC: Message Queues
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### SysV Message Queues
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```c
@@ -1102,21 +666,6 @@ msgctl(msqid, IPC_RMID, NULL);
 ```
 
 ### POSIX Message Queues
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```c
@@ -1149,21 +698,6 @@ mq_unlink("/myqueue");  // Remove
 
 ## 9. IPC: Signals
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```
 Sender:          Kernel delivery:              Receiver:
@@ -1174,21 +708,6 @@ kill(pid, SIG) ──► Signal pending ──► Handler ──► sigaction ha
 ```
 
 ### signal vs sigaction
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```c
@@ -1206,21 +725,6 @@ sigaction(SIGINT, &sa, NULL);
 
 ### sa_flags
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```
 SA_RESTART:    Auto-restart interrupted syscalls (EINTR becomes transparent)
@@ -1231,21 +735,6 @@ SA_ONSTACK:    Use alternate signal stack (sigaltstack) for handler
 ```
 
 ### Signal Mask
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```c
@@ -1265,21 +754,6 @@ sigprocmaps(SIG_UNBLOCK, &set, NULL);
 
 ### Real-Time Signals
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```
 SIGRTMIN (34) through SIGRTMAX (64)
@@ -1294,21 +768,6 @@ Use cases:
 ```
 
 ### signalfd
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```c
@@ -1330,21 +789,6 @@ read(sfd, &info, sizeof(info));
 ---
 
 ## 10. IPC: eventfd
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```c
@@ -1377,21 +821,6 @@ ssize_t n = read(efd, &result, sizeof(result));
 
 ## 11. IPC: futex
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```
 futex — Fast Userspace MUTEX
@@ -1415,21 +844,6 @@ Waiters hash table:
 
 ### Futex Operations
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```c
 // Wait: if *uaddr == val, block until futex_wake
@@ -1445,21 +859,6 @@ int futex(int *uaddr, FUTEX_CMP_REQUEUE, int nr_wake, int nr_requeue,
 
 ### PI Futex (Priority Inheritance)
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```
 FUTEX_LOCK_PI:  Lock with priority inheritance
@@ -1473,21 +872,6 @@ Extended for RT:
 ```
 
 ### Mutex Implementation with futex
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```c
@@ -1524,38 +908,8 @@ void mutex_unlock(atomic_int *m) {
 
 ## 12. seccomp & landlock
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### seccomp (SECure COMPuting)
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -1603,21 +957,6 @@ prctl(PR_SET_SECCOMP, SECCOMP_MODE_FILTER, &prog);
 
 ### landlock (Linux 5.13+)
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```
 landlock — unprivileged filesystem access control (no root needed)
@@ -1658,38 +997,8 @@ landlock_restrict_self(ruleset_fd, 0);
 
 ## 13. Error Handling Patterns
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### errno Patterns
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```c
@@ -1732,21 +1041,6 @@ if (errno == EMFILE || errno == ENFILE) {
 
 ### Signal-Safe Functions
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```
 Only these functions are safe to call from signal handlers (async-signal-safe):
@@ -1764,21 +1058,6 @@ Best practice:
 ```
 
 ### Restarting Syscalls
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```c
@@ -1798,38 +1077,8 @@ This pattern is commonly used in production systems.
 
 ## 14. Syscall Tracing: strace, perf, bpftrace
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### strace
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```bash
@@ -1861,21 +1110,6 @@ strace -e trace=network -z ./server
 
 ### perf trace
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```bash
 # Trace syscalls with perf (lower overhead than strace)
@@ -1894,21 +1128,6 @@ perf trace -e net:netif_receive_skb,sched:sched_switch
 
 ### bpftrace
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```bash
 # Zero-overhead syscall tracing (when not tracing!)
@@ -1926,21 +1145,6 @@ bpftrace -e 'tracepoint:io_uring:io_uring_create { printf("ring created: %d\n", 
 
 ### /proc syscall Interface
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```bash
 # Total syscalls per second
@@ -1957,38 +1161,8 @@ cat /proc/12345/status | grep voluntary_ctxt_switches
 
 ## 15. Internals
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### pipe_inode_info
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```c
@@ -2015,21 +1189,6 @@ struct pipe_buffer {
 
 ### futex_q
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```c
 // kernel/futex/core.c
@@ -2044,21 +1203,6 @@ struct futex_q {
 ```
 
 ### signalfd Implementation
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```c
@@ -2077,38 +1221,8 @@ struct signalfd_ctx {
 
 ## 16. Failure Analysis
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Pipe Buffer Deadlock
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -2121,21 +1235,6 @@ Solution: Use separate pipe, or socketpair, or async I/O
 ```
 
 ### Shared Memory Synchronization Failure
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -2155,21 +1254,6 @@ Solution: Use C11 atomics, pthread mutex in shared memory, or futex
 
 ### Signal Loss
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```
 Scenario: Same signal sent multiple times → only delivered once
@@ -2183,21 +1267,6 @@ Signal to a specific thread (tgkill):
 ```
 
 ### seccomp Too Restrictive
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -2216,21 +1285,6 @@ Debug:
 
 ### Futex Contention Collapse
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```
 Scenario: Thousands of threads contending on same futex
@@ -2248,21 +1302,6 @@ Solution:
 ---
 
 ## 17. Edge Cases
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 - **ftok collisions**: Different paths can generate same IPC key → unintended shared memory access
@@ -2284,38 +1323,8 @@ This pattern is commonly used in production systems.
 
 ## 18. Performance
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### IPC Throughput (4KB message, local)
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -2334,21 +1343,6 @@ Signal                    500k-2M/s       ~10-50μs
 
 ### Syscall Latency Breakdown
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```
 getpid (vDSO):             ~7ns
@@ -2365,21 +1359,6 @@ futex(FUTEX_WAIT):         ~200ns (uncontended, returns immediately)
 ```
 
 ### Reducing Syscall Overhead
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -2402,21 +1381,6 @@ This pattern is commonly used in production systems.
 ---
 
 ## 19. Simplest Mental Model
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 > **System calls are the embassy between userspace and the kernel. Your program is a foreign citizen; to do anything official (read a file, send a packet, create a process), you must go through the embassy window (syscall instruction). The embassy has a catalog of forms (syscall numbers), a counter window (registers), and a wait area for slow processes. vDSO is the automated kiosk outside the embassy — for simple tasks (what time is it?), you can get the answer without entering the building. IPC is the postal service between citizens: pipes are two-way tin cans with string, shared memory is a shared office you both rent, signals are telegrams with limited words, futex is knocking on the shared office door to see if someone is there first. seccomp is a gatekeeper inside your own embassy — it stamps "ALLOWED" or "DENIED" on every form before processing. The entire system exists because only the kernel can touch hardware safely, and every mechanism is a trade-off between isolation, speed, and convenience.**

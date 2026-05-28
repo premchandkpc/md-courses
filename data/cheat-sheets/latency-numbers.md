@@ -3,33 +3,26 @@
 Reference latencies for system design and performance optimization.
 
 
-
 ```mermaid
-graph TB
-    A["Heap"] --> B["Objects<br/>Reference Types"]
-    C["Stack"] --> D["Primitives<br/>Pointers"]
-    E["Garbage<br/>Collector"] -.->|Mark & Sweep| A
-    style A fill:#c73e1d
-    style C fill:#4a8bc2
-    style E fill:#1a5d3a
+graph LR
+    REG["Register<br/>0.3ns"] --> L1["L1 Cache<br/>0.5ns"]
+    L1 --> L2["L2 Cache<br/>7ns"]
+    L2 --> RAM["Main Memory<br/>100ns"]
+    RAM --> SSD["SSD<br/>0.1ms"]
+    SSD --> HDD["HDD<br/>10ms"]
+    HDD --> NET["Network<br/>0.5ms-dc"]
+    
+    style REG fill:#3fb950
+    style L1 fill:#4a8bc2
+    style L2 fill:#2d5a7b
+    style RAM fill:#c73e1d
+    style SSD fill:#e8912e
+    style HDD fill:#f85149
+    style NET fill:#bc8cff
+
 ```
 
 ## CPU & Memory Latencies
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -50,21 +43,6 @@ Send packet CA -> Netherlands:  150,000,000 ns (150 ms)
 
 ### Step-by-Step
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 1. **Understand the magnitude scale** — each order of magnitude (ns → µs → ms → s) represents ~1000x slowdown
 2. **Profile your bottleneck** — measure actual latencies in your system before optimizing (avoid premature optimization)
@@ -74,21 +52,6 @@ This pattern is commonly used in production systems.
 6. **Batch operations** — reduce number of disk seeks/network calls by combining requests
 
 ### Code Example
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```python
@@ -191,40 +154,10 @@ api_calls_parallel()               # ~0.5ms (3x faster)
 
 ### Real-World Scenario
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 LinkedIn's feed was timing out (p99 > 5 seconds) because the backend made 10 sequential database queries per feed request: 1 for user profile, 3 for recommendations, 4 for comments, 2 for engagements. Each query was 1-5ms individually. With sequential execution: 10 queries * 3ms = 30ms of actual work, but 10 * 500µs network overhead = 5ms latency added up to 35ms. By parallelizing queries and caching hot data in Redis (0.5ms lookups), they reduced feed latency from 5 seconds to 200ms and served 10x more concurrent users.
 
 ### Latency Scaling Diagram
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```mermaid
@@ -250,21 +183,6 @@ graph LR
 
 ## Interactive with Latency Analogies
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 | Latency | Real-world Analogy |
 |---------|-------------------|
@@ -275,38 +193,8 @@ This pattern is commonly used in production systems.
 
 ## Common System Latencies
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Network
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 | Operation | Latency |
@@ -324,21 +212,6 @@ This pattern is commonly used in production systems.
 
 ### Database
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 | Operation | Latency |
 |-----------|---------|
@@ -352,21 +225,6 @@ This pattern is commonly used in production systems.
 
 ### Cache
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 | Operation | Latency |
 |-----------|---------|
@@ -377,21 +235,6 @@ This pattern is commonly used in production systems.
 | Cache warm-up (1M items) | 10-60 seconds |
 
 ### Storage
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 | Operation | Latency |
@@ -407,21 +250,6 @@ This pattern is commonly used in production systems.
 
 ### Message Queues
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 | Operation | Latency |
 |-----------|---------|
@@ -432,21 +260,6 @@ This pattern is commonly used in production systems.
 | Message delivery | 1-100 ms |
 
 ### Real-world Service Latencies
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 | Service | Typical P50 | Typical P99 |
@@ -462,38 +275,8 @@ This pattern is commonly used in production systems.
 
 ## Acceptable Latencies (by context)
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### User-Facing
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 | Interaction Type | Target Latency |
@@ -509,21 +292,6 @@ This pattern is commonly used in production systems.
 
 ### Internal/Backend
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 | Operation | Target Latency |
 |-----------|-----------------|
@@ -536,21 +304,6 @@ This pattern is commonly used in production systems.
 
 ## Latency SLOs
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 | Tier | P50 | P95 | P99 | P99.9 |
 |------|-----|-----|-----|-------|
@@ -561,38 +314,8 @@ This pattern is commonly used in production systems.
 
 ## Common Latency Optimizations
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Quick Wins
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 | Technique | Latency Reduction |
@@ -608,21 +331,6 @@ This pattern is commonly used in production systems.
 
 ### Medium Effort
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 | Technique | Latency Reduction |
 |-----------|-------------------|
@@ -634,21 +342,6 @@ This pattern is commonly used in production systems.
 | Microservice decomposition | Depends on coupling |
 
 ## Latency Budget Example
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Target: 100 ms total latency**
@@ -668,38 +361,8 @@ Total:                         100 ms
 
 ## Measuring Latency
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Percentiles
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -714,21 +377,6 @@ Max:            Longest request (often outlier)
 
 ### Tools
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 - `ping` — Network latency
 - `curl -w` — HTTP request latency
@@ -739,21 +387,6 @@ This pattern is commonly used in production systems.
 - `flamegraph` — Visualization
 
 ## Rule of Thumb
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Doubling latency roughly halves user satisfaction.**
@@ -767,21 +400,6 @@ This pattern is commonly used in production systems.
 ---
 
 ## Code Examples
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```python
@@ -856,21 +474,6 @@ mtr -r example.com
 
 ## Common Failure Modes
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **Problem**: Tail latency amplification in fan-out architectures (the "long tail of slow")
 
@@ -892,58 +495,13 @@ This pattern is commonly used in production systems.
 
 ## Interview Questions
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Q1: What latency numbers should every engineer know, and how do they inform system design?
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Answer**: The critical numbers: L1 cache: 0.5ns, main memory: 100ns, SSD read: 0.1ms, HDD seek: 10ms, intra-DC round trip: 0.5ms, cross-country round trip: 50ms, intercontinental: 150ms. These inform every design decision: sequential disk reads are 100x faster than random (B-trees exploit this). In-memory caches are 1000x faster than disk (hence, cache everything). Network calls within a DC are 100x faster than cross-region. An SSD can do ~10K random IOPS vs HDD's ~100 IOPS. For a 100ms user-facing budget: DB query ~20ms, cache lookup ~2ms, external API < 50ms, serialization < 5ms, network ~20ms. Design for locality — minimize cross-DC calls, batch operations, use caching aggressively, and choose SSD over HDD for any latency-sensitive operation.
 
 ### Q2: How do you troubleshoot a sudden P99 latency spike from 50ms to 2000ms?
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Answer**: (1) Check if the spike correlates with a deployment, traffic increase, or external dependency. (2) Use percentiles breakout by service — is the spike global or isolated to one endpoint? (3) Check slowest traces — is it a specific DB query, an external API, or GC pause? (4) Check resource saturation: CPU, memory, disk I/O, network bandwidth, connection pool utilization. (5) Check for lock contention: database row locks, distributed locks, mutexes. (6) Check for GC: if Java, get GC logs; if Go, check GC pause times. (7) Look for the "slow one" in a pool — sometimes one slightly degraded node causes coordinated omission for the entire pool. (8) Check for TLS — a certificate rotation causing re-handshake. (9) Use coordinated omission-aware analysis: the spike may have been queueing, not slow processing. (10) If nothing else, CPU profiling (flame graphs) during the spike often reveals the cause.

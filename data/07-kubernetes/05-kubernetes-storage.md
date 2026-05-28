@@ -1,7 +1,6 @@
 # 💾 Kubernetes Storage — Complete Deep Dive
 
 
-
 ```mermaid
 graph LR
     PV["PersistentVolume<br/>(Cluster Resource)"] --> SC["StorageClass<br/>(Provisioner: ebs.csi.aws.com)"]
@@ -31,41 +30,12 @@ graph LR
 
 ## ToC
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 - PV | PVC | StorageClass | CSI Architecture | Volume Modes | CSI Drivers | StatefulSet | VolumeSnapshot | Cloning | Expansion | Ephemeral | Data Gravity | Performance
 
 ---
 
 ## PersistentVolume
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```yaml
@@ -106,21 +76,6 @@ spec:
 
 ## PersistentVolumeClaim
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```yaml
 apiVersion: v1
@@ -152,21 +107,6 @@ spec:
 ---
 
 ## StorageClass
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```yaml
@@ -201,21 +141,6 @@ allowVolumeExpansion: true
 
 ## CSI Architecture
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```
   +----------------+      +----------------+      +----------------+
@@ -233,21 +158,6 @@ This pattern is commonly used in production systems.
 ---
 
 ## Volume Modes
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```yaml
@@ -277,21 +187,6 @@ spec:
 ---
 
 ## CSI Drivers
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```yaml
@@ -338,21 +233,6 @@ parameters:
 
 ## StatefulSet volumeClaimTemplates
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```yaml
 apiVersion: apps/v1
@@ -378,21 +258,6 @@ spec:
 ---
 
 ## VolumeSnapshot
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```yaml
@@ -423,21 +288,6 @@ spec:
 
 ## Volume Cloning & Expansion
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **Clone:**
 ```yaml
@@ -453,21 +303,6 @@ Requires: same/compatible SC, same access mode, same/larger size, CSI CLONE_VOLU
 ---
 
 ## Ephemeral Inline Volumes
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```yaml
@@ -503,21 +338,6 @@ volumes:
 
 ## Data Gravity Patterns
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **Local SSDs:**
 ```yaml
@@ -549,21 +369,6 @@ spec:
 
 ## Storage Performance
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 | Type | Max IOPS | Max Throughput | Latency |
 |------|----------|----------------|---------|
@@ -589,21 +394,6 @@ spec:
 
 ## Simplest Mental Model
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```
 K8s storage = shipping container warehouse
@@ -622,38 +412,8 @@ K8s storage = shipping container warehouse
 
 ## Interview Questions
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Beginner Level
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Q1: What is the difference between a PersistentVolume (PV) and a PersistentVolumeClaim (PVC)?**
@@ -674,21 +434,6 @@ This pattern is commonly used in production systems.
 
 ### Intermediate Level
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **Q3: How does CSI (Container Storage Interface) work in Kubernetes?**
 
@@ -699,21 +444,6 @@ This pattern is commonly used in production systems.
 **Answer**: StorageClass defines a class of storage with parameters: provisioner (e.g., `ebs.csi.aws.com`, `pd.csi.storage.gke.io`), `parameters` (type: gp3/io2, IOPS, encryption), `reclaimPolicy` (Delete/Retain), `allowVolumeExpansion`, `mountOptions`. When a PVC references a StorageClass (via `storageClassName`), Kubernetes dynamically calls the provisioner to create the volume. No StorageClass = no dynamic provisioning — PVs must be pre-created. Default StorageClass is marked with annotation `storageclass.kubernetes.io/is-default-class: "true"`.
 
 ### Senior Level
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Q5: A StatefulSet pod's PVC shows "Pending" and never binds. Walk your debugging process.**
@@ -728,21 +458,6 @@ This pattern is commonly used in production systems.
 
 ### Staff/Principal Level
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **Q7: Your team's database pods keep getting evicted due to disk pressure. The node has 500GB free. What's happening?**
 
@@ -755,21 +470,6 @@ This pattern is commonly used in production systems.
 **Answer**: 1) **CSI Volume Snapshots** every 60 seconds (RPO=1min). 2) **Replication**: use `VolumeReplication` CRD (via `volsync` or Kasten) for async replication to secondary region. 3) **Cluster recovery**: Velero to back up Kubernetes objects (PVC definitions, but not data — too slow) to S3. 4) **RTO < 5min**: pre-provisioned secondary cluster with warm PVs. On failover, promote snapshot → restore from latest → remap PVC → scale up application. 5) **Service mesh**: use Istio multi-primary, multi-cluster mesh for traffic shift. 6) **Key challenge**: consistent snapshot order across multiple PVs. Use application-level quiesce (pause writes, snapshot all volumes, resume). For databases: use `pg_start_backup()` / `FLUSH TABLES WITH READ LOCK`. 7) **Testing**: run `litmus` chaos experiments for region failure scenarios monthly.
 
 ### Tricky Edge Cases
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Q9**: A CSI driver creates a volume in `us-east-1a`, but the pod is scheduled in `us-east-1b`. The pod stays `ContainerCreating` for 5 minutes then fails. Why?

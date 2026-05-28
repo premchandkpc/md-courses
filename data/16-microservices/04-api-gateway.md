@@ -5,7 +5,6 @@
 ---
 
 
-
 ```mermaid
 graph LR
     CLIENTS_G["Clients<br/>(Web/Mobile/3rd)"] --> API_GATEWAY["API Gateway"]
@@ -1016,7 +1015,6 @@ JWT          =  A passport. The receptionist stamps it when you arrive,
 ---
 
 **Next**: [Circuit Breaker & Resilience](05-circuit-breaker-resilience.md)
-
 
 
 ## API Gateway Request Flow

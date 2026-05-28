@@ -5,7 +5,6 @@
 > **Related**: [04-distributed-transactions.md](./04-distributed-transactions.md)
 
 
-
 ```mermaid
 graph LR
     PRODUCER["Data Producer<br/>(Source)"] --> INPUT["Input Stream"]
@@ -40,21 +39,6 @@ graph LR
 
 ## Table of Contents
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 1. Stream vs Batch Processing
 2. Processing Models
@@ -75,21 +59,6 @@ This pattern is commonly used in production systems.
 ---
 
 ## 1. Stream vs Batch Processing
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -123,21 +92,6 @@ Stream:
 
 ## 2. Processing Models
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **One-at-a-Time (event-at-a-time):**
 - Process each event individually as it arrives
@@ -166,21 +120,6 @@ Continuous:     e1 -> op -> e2 -> op -> e3 -> op -> e4 ->
 ---
 
 ## 3. Time Semantics & Watermarks
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -226,21 +165,6 @@ Only complete windows up to t=8 can be emitted.
 
 ## 4. Lateness Handling
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 When an event arrives after the watermark has passed its event time, it is "late."
 
@@ -271,21 +195,6 @@ Final:   [10:00:11] watermark = 10:00 + 10s -> window purged from state
 ---
 
 ## 5. State Management
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **State Types:**
@@ -336,21 +245,6 @@ Broadcast State (replicated to all tasks):
 
 ## 6. Checkpointing & Fault Tolerance
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```text
 Checkpoint Barrier Flow:
@@ -387,21 +281,6 @@ Source (Kafka) -> Operator A -> Operator B -> Sink
 ---
 
 ## 7. Windowing
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -443,21 +322,6 @@ Session (gap=2):
 
 ## 8. Stream Joins
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 | Join Type | Description | State Requirements |
 |-----------|-------------|-------------------|
@@ -482,21 +346,6 @@ Interval Join:
 ---
 
 ## 9. Backpressure
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Local Backpressure:**
@@ -537,21 +386,6 @@ Backpressure Chain:
 
 ## 10. Apache Kafka Streams
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **Topology:**
 ```text
@@ -589,21 +423,6 @@ Different partition count -> repartition required (expensive)
 ---
 
 ## 11. Apache Flink
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -643,21 +462,6 @@ Flink Architecture:
 ---
 
 ## 12. Apache Pulsar
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -701,21 +505,6 @@ Pulsar: Topic = multiple ledgers (segments). Storage (BookKeeper)
 ---
 
 ## 13. Stream Processing Patterns
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Filter:**
@@ -779,21 +568,6 @@ Moving Average (exponential):
 
 ## 14. Production CDC Pipeline
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```text
 PostgreSQL  ->  WAL  ->  Debezium  ->  Kafka  ->  Flink  ->  Sink
@@ -815,21 +589,6 @@ Example: Order pipeline
 ---
 
 ## 15. Failure Analysis
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **State Size Explosion:**
@@ -869,21 +628,6 @@ This pattern is commonly used in production systems.
 ---
 
 ## Simplest Mental Model
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Stream processing is like a conveyor belt in a factory, not a warehouse.** Instead of collecting items and processing them in batches (warehouse/batch), you process each item as it moves past your station (conveyor/stream). A "watermark" is like a sign saying "no more items from 9AM will arrive" — you can now finalize the 9-10AM shift report. "State" is your notebook where you keep running totals. "Backpressure" is the conveyor belt slowing because you're too slow. "Checkpoint" is taking a photo of your notebook every few minutes — if you mess up, you go back to the last photo and replay.

@@ -1,7 +1,6 @@
 # ⚖️ DNS, CDN & Load Balancing — Complete Deep Dive
 
 
-
 ```mermaid
 graph LR
     BROWSER["Browser<br/>(Stub Resolver)"] --> RECURSIVE["Recursive Resolver<br/>(ISP/8.8.8.8)"]
@@ -38,20 +37,6 @@ graph LR
 
 ## 📋 Table of Contents
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 - [DNS Resolution](#dns-resolution)
 - [DNS Record Types](#dns-record-types)
@@ -69,38 +54,8 @@ This pattern is commonly used in production systems.
 
 ## DNS Resolution
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Resolution Flow
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -139,21 +94,6 @@ This pattern is commonly used in production systems.
 
 ### Iterative vs Recursive
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```text
 Iterative (client does the walking):
@@ -168,21 +108,6 @@ Recursive (resolver does the walking):
 ---
 
 ## DNS Record Types
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 | Record | Purpose | Example |
@@ -204,21 +129,6 @@ This pattern is commonly used in production systems.
 
 ### SOA Fields
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```
 Serial:  YYYYMMDDNN (incrementing)
@@ -232,38 +142,8 @@ Minimum: Negative cache TTL (300s)
 
 ## DNSSEC
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Chain of Trust
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -301,38 +181,8 @@ Validation: Recursor walks up the chain
 
 ## DNS Performance & Security
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### DNS over HTTPS (DoH)
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 - **RFC 8484**: DNS query encoded as HTTP GET or POST. `Content-Type: application/dns-message`. Response in body.
@@ -342,21 +192,6 @@ This pattern is commonly used in production systems.
 
 ### DNS over TLS (DoT)
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 - **RFC 7858**: DNS over TLS on port 853. Raw DNS payload encrypted in TLS.
 - **Simpler than DoH**: No HTTP overhead. Direct connection.
@@ -364,42 +199,12 @@ This pattern is commonly used in production systems.
 
 ### Zone Transfer
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 - **AXFR** (Authoritative Transfer): Full zone dump. Used by secondary DNS servers to replicate zone. Typically restricted by IP (allow-transfer).
 - **IXFR** (Incremental Transfer): Only changes since SOA serial. Uses SOA serial comparison.
 - **NOTIFY**: Primary notifies secondary of zone changes. Secondary then initiates IXFR.
 
 ### Anycast DNS
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 - Multiple DNS servers share the same IP. BGP routes clients to nearest instance.
@@ -410,38 +215,8 @@ This pattern is commonly used in production systems.
 
 ## CDN Architecture
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Edge Node (POP) Structure
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -477,38 +252,8 @@ This pattern is commonly used in production systems.
 
 ## Content Routing
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Anycast Routing
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 - **Anycast**: Multiple servers announce same IP via BGP. Network routes to the closest.
@@ -519,21 +264,6 @@ This pattern is commonly used in production systems.
 - **Failover routing**: Primary → secondary → tertiary. Health check triggers failover.
 
 ### DNS Zone Apex Problem
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -547,21 +277,6 @@ Solutions:
 ---
 
 ## Load Balancing Algorithms
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 | Algorithm | How It Works | Use Case |
@@ -580,38 +295,8 @@ This pattern is commonly used in production systems.
 
 ## Proxy vs Reverse Proxy
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Forward Proxy
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -626,21 +311,6 @@ Features: Client anonymity, content filtering, cache,
 ```
 
 ### Reverse Proxy
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -659,21 +329,6 @@ Features: Load balancing, SSL termination, caching,
 
 ### Forwarded Headers
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 - **X-Forwarded-For**: `X-Forwarded-For: client_ip, proxy1_ip, proxy2_ip` — original client IP chain.
 - **X-Real-IP**: Single header with original client IP (NGINX convention).
@@ -684,38 +339,8 @@ This pattern is commonly used in production systems.
 
 ## L4 vs L7 Load Balancing
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Layer 4 (Transport Layer)
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -737,21 +362,6 @@ Client                     L4 LB (NAT)                    Server
 - **Cons**: No content-aware routing, no cookie persistence, can't inspect HTTP.
 
 ### Layer 7 (Application Layer)
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -781,38 +391,8 @@ Client                     L7 LB (TLS termination)         Server
 
 ## Session Persistence (Sticky Sessions)
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Methods
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 - **Cookie-based**: LB sets a cookie (`AWSALB`, `SERVERID`). Client sends it back. LB routes to same backend.
@@ -827,21 +407,6 @@ This pattern is commonly used in production systems.
 
 ## Simplest Mental Model
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 > **DNS, CDN & Load Balancing are a city's wayfinding and delivery system.**
 >
@@ -854,38 +419,8 @@ This pattern is commonly used in production systems.
 
 ## Production Failure Modes
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Failure 1: DNS Propagation Delay Causes Partial Outage
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 | Aspect | Detail |
@@ -898,21 +433,6 @@ This pattern is commonly used in production systems.
 
 ### Failure 2: CDN Cache Poisoning
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 | Aspect | Detail |
 |--------|--------|
@@ -923,21 +443,6 @@ This pattern is commonly used in production systems.
 | **Prevention** | Set correct Cache-Control headers per content type: `max-age=31536000, immutable` for static assets; `no-cache, no-store` for dynamic API. Use cache-busting with content hashes in filenames. Test with `curl -I` to verify headers |
 
 ### Failure 3: Load Balancer Connection Draining Failure
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 | Aspect | Detail |
@@ -950,21 +455,6 @@ This pattern is commonly used in production systems.
 
 ### Failure 4: GeoDNS Routing Inaccuracy
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 | Aspect | Detail |
 |--------|--------|
@@ -975,21 +465,6 @@ This pattern is commonly used in production systems.
 | **Prevention** | Use latency-based routing (Route53 Latency Routing) instead of Geo Routing for most cases. For geo-specific needs, combine Geo + Latency routing. Use Global Accelerator for anycast IP |
 
 ### Failure 5: TLS Termination at LB Causes Security Headers to Strip
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 | Aspect | Detail |
@@ -1002,21 +477,6 @@ This pattern is commonly used in production systems.
 
 ## Edge Cases
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 | Scenario | Challenge | Solution |
 |----------|-----------|----------|
@@ -1028,138 +488,33 @@ This pattern is commonly used in production systems.
 
 ## Interview Questions
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Q1 (Beginner): What happens when you type google.com into a browser?
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Answer**: (1) Browser checks local DNS cache. (2) Cache miss → OS resolver queries recursive resolver (ISP or 8.8.8.8). (3) Recursive resolver queries root server → returns TLD server (.com). (4) TLD server returns authoritative DNS server for google.com. (5) Authoritative returns A/AAAA records. (6) Browser opens TCP connection to IP, TLS handshake, sends HTTP GET. (7) If behind CDN, response may come from edge server instead of origin. (8) Browser renders HTML, fetches CSS/JS/images (possibly from CDN). Key optimization points: DNS caching reduces lookup time, CDN reduces latency, HTTP/2 multiplexing reduces connection overhead.
 
 ### Q2 (Mid-Level): Compare round-robin, least-connections, and latency-based load balancing algorithms.
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **Answer**: Round-robin: distributes requests sequentially across all targets. Simple, works for homogeneous workloads. Fails when request processing time varies — a slow request holds one connection while the others sit idle. Least-connections: sends request to target with fewest active connections. Better for variable request durations. Still doesn't account for processing power differences (16-core vs 4-core). Latency-based: routes to target with lowest response time. Most adaptive but requires constant health check traffic. Use case: round-robin for simple TCP load (NLB), least-connections for HTTP applications (ALB), latency-based for cross-region routing (Route53). In practice, ALB uses a weighted random distribution algorithm that's closer to least-connections.
 
 ### Q3 (Senior): Design a global load balancing strategy for a multi-region active-active architecture.
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Answer**: Three layers of load balancing: (1) DNS level (Route53 Latency Routing): user's DNS resolver routes to nearest region based on latency measurements. TTL 60s for quick failover. (2) Anycast IP (Cloudflare/AWS Global Accelerator): traffic enters nearest edge location, routed over AWS global network to closest healthy region. Provides ~15-60% latency improvement over DNS-only. (3) Regional LB (ALB/NLB): within each region, distribute across AZs and instances. Health checks at each layer: DNS health check pings regional LB health endpoint; Global Accelerator health check pings regional endpoint health; Regional LB health check pings instance health. Failover: if us-east-1 is unhealthy, DNS stops returning us-east-1 IPs, all traffic routes to eu-west-2 and ap-southeast-1. Active-active requires each region to handle 100% of traffic (N+1 redundancy). Data replication: multi-region active-active requires cross-region DB replication (or CRDTs). Session affinity: use sticky cookies or stateless sessions (JWT). DR: load shed 50% in surviving region before traffic doubles.
 
 ### Q4 (Staff): How does CDN work internally? Design a CDN from scratch.
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **Answer**: Core components: (1) Origin Shield: single layer of cache between edge and origin to prevent cache stampede. (2) Edge Nodes: thousands of PoPs worldwide. Each PoP has local cache (SSD + RAM) + parent cache. (3) Routing: anycast IP routes user to nearest PoP. (4) Caching: on cache miss, PoP fetches from origin shield (or origin if shield miss). Cache key = (scheme, host, path, query params). (5) Cache eviction: LRU is standard. Popular CDNs use adaptive replacement cache (ARC): balances recency and frequency. (6) Purging: instant via API (purge by URL, tag, or regex). (7) Prefetch: for known high-traffic events (product launch), warm cache by pre-fetching content. Deep dive — cache behavior for dynamic content: support Edge Workers (Cloudflare Workers, CloudFront Functions) to process requests at edge, assemble HTML from microservices, or A/B test. For video CDN (Netflix): Open Connect Appliances at ISP data centers store entire catalog (100TB+). Adaptive bitrate (HLS/DASH) requires multiple renditions of each video. CDN uses predictive prefetching based on viewing patterns.
 
 ### Q5 (Principal): Design a DNS-based service discovery system for a 100,000-node microservice mesh.
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **Answer**: Requirements: 100K services, each with 10 instances, 1M DNS queries/sec. SRV record lookup latency < 10ms. Challenges: DNS TTL-based caching leads to stale data. High query rate overwhelms authoritative DNS. Solution: tiered approach. (1) Internal DNS (CoreDNS): deployed as a sidecar per host, caches SRV/A records locally. TTL = 5s for rapidly changing services, 60s for stable services. (2) Service Registry (etcd/Consul): stores all service instances, watches for changes. CoreDNS uses etcd plugin or Consul plugin to resolve queries from registry. (3) DNS-based load balancing: CoreDNS returns healthy instances only, weighted randomly. (4) Client-side caching: each service caches resolved addresses for min 1s, uses circuit breaker on failure. For 100K scale, use hierarchical namespaces: `svc.namespace.cluster.local`. CoreDNS uses zone transfer to sync across nodes. For cross-cluster discovery, use federation via DNS: `svc.namespace.cluster1.region1.consul`. For latency-critical apps, bypass DNS entirely: use sidecar proxy (Envoy) with xDS API from control plane (Istio/Linkerd). DNS becomes fallback only.
 
 ## Cross-References
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 - [HTTP Protocols](../02-http-protocols.md) — TLS handshake details, HTTP/2 multiplexing, HTTP/3 QUIC

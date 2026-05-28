@@ -1,7 +1,6 @@
 # 🌐 Linux Networking & IPC — Complete Deep Dive
 
 
-
 ```mermaid
 graph LR
     SOCK["Socket API<br/>(Berkeley Sockets)"] --> TCP_STACK["TCP Stack<br/>(struct sock)"]
@@ -41,20 +40,6 @@ graph LR
 
 ## Table of Contents
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 - [Socket Internals](#socket-internals)
 - [Berkeley Sockets API](#berkeley-sockets-api)
@@ -74,21 +59,6 @@ This pattern is commonly used in production systems.
 ---
 
 ## Socket Internals
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -142,21 +112,6 @@ This pattern is commonly used in production systems.
 
 ## Berkeley Sockets API
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 | Call | Description | Key syscall |
 |------|-------------|-------------|
@@ -180,38 +135,8 @@ This pattern is commonly used in production systems.
 
 ## TCP Stack
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Three-Way Handshake
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -273,21 +198,6 @@ This pattern is commonly used in production systems.
 
 ## Zero-Copy
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 | Method | Direction | System Calls | Description |
 |--------|-----------|-------------|-------------|
@@ -306,21 +216,6 @@ This pattern is commonly used in production systems.
 ---
 
 ## epoll
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Event notification interface**. Scales to millions of FDs.
@@ -376,21 +271,6 @@ int nfds = epoll_wait(epfd, events, maxevents, timeout);
 
 ## Unix Domain Sockets
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **Communication within same host**. Uses filesystem path or abstract namespace.
 
@@ -413,21 +293,6 @@ This pattern is commonly used in production systems.
 ---
 
 ## Pipes/FIFO
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Anonymous pipes**: `pipe(int pipefd[2])`. `pipefd[0]` = read end, `pipefd[1]` = write end.
@@ -456,38 +321,8 @@ This pattern is commonly used in production systems.
 
 ## Shared Memory
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### System V Shared Memory
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```c
@@ -506,21 +341,6 @@ shmctl(shmid, IPC_RMID, NULL);        // remove
 
 ### POSIX Shared Memory
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```c
 int fd = shm_open("/myregion", O_CREAT | O_RDWR, 0666);
@@ -533,21 +353,6 @@ shm_unlink("/myregion");
 Files under `/dev/shm/` (tmpfs). `ls /dev/shm`. Survives as long as referenced (open FD or mmap).
 
 ### memfd_create
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```c
@@ -562,38 +367,8 @@ Anonymous file descriptor (no filesystem path). Can be passed via SCM_RIGHTS. Su
 
 ## Message Queues
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### POSIX Message Queues
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```c
@@ -612,21 +387,6 @@ mq_unlink("/mqname");
 
 ### System V Message Queues
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```c
 int msqid = msgget(IPC_PRIVATE, IPC_CREAT | 0666);
@@ -640,21 +400,6 @@ msgctl(msqid, IPC_RMID, NULL);
 ---
 
 ## eBPF
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Extended Berkeley Packet Filter**: In-kernel virtual machine. Sandboxed programs attached to events.
@@ -712,21 +457,6 @@ bpftrace -e 'kprobe:blk_start_request { @start[tid] = nsecs; }
 
 ## Netfilter/nftables
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```text
   Packet Flow through Netfilter hooks:
@@ -775,21 +505,6 @@ nft add rule inet filter input drop
 
 ## Netlink Sockets
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **Netlink**: Communication between kernel and userspace. Socket family `AF_NETLINK`.
 
@@ -821,21 +536,6 @@ This pattern is commonly used in production systems.
 
 ## Network Namespaces & Virtual Networking
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```text
   ┌──────────────────┐    ┌──────────────────┐
@@ -863,21 +563,6 @@ This pattern is commonly used in production systems.
 
 ## Simplest Mental Model
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 > **Linux networking and IPC is a post office with various delivery services.**
 >
@@ -894,21 +579,6 @@ This pattern is commonly used in production systems.
 
 
 ## Practical Example
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 See code examples above for practical usage patterns.

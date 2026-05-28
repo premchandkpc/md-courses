@@ -1,7 +1,6 @@
 # Optimization Patterns Deep Dive
 
 
-
 ```mermaid
 graph LR
     CPU_OPT["CPU Optimization"] --> ALGO["Algorithm<br/>(O(n) → O(log n))"]

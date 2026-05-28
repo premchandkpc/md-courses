@@ -7,7 +7,6 @@
 ---
 
 
-
 ```mermaid
 graph LR
     BLOCKING["Blocking I/O<br/>(read/write)"] --> KERNEL["Syscall → Kernel<br/>Context Switch"]
@@ -45,21 +44,6 @@ graph LR
 
 ## Table of Contents
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 1. [Blocking I/O](#1-blocking-io)
 2. [Non-Blocking I/O](#2-non-blocking-io)
@@ -83,21 +67,6 @@ This pattern is commonly used in production systems.
 ---
 
 ## 1. Blocking I/O
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -132,21 +101,6 @@ read(fd, buf, count)
 
 ## 2. Non-Blocking I/O
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```c
 // Set non-blocking
@@ -175,21 +129,6 @@ if (rc == -1 && errno == EINPROGRESS) {
 
 ## 3. I/O Multiplexing — select/poll/epoll
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```
                     ┌─────────────────────┐
@@ -208,21 +147,6 @@ This pattern is commonly used in production systems.
 ```
 
 ### select
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```c
@@ -248,21 +172,6 @@ if (FD_ISSET(fd, &readfds)) {
 
 ### poll
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```c
 // poll — no FD_SETSIZE limit, still O(n)
@@ -286,21 +195,6 @@ if (fds[0].revents & POLLIN) {
 - **Better for medium scale**: Works up to ~1000 fds
 
 ### epoll
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```c
@@ -334,21 +228,6 @@ for (int i = 0; i < nfds; i++) {
 
 ### Internals Structure
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```
 epoll_create1()
@@ -381,21 +260,6 @@ epoll_wait()
 
 ## 4. AIO (libaio)
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```c
 // Linux AIO — direct I/O required, complex interface
@@ -424,21 +288,6 @@ int n = io_getevents(ctx, 1, 128, events, NULL);
 
 ### AIO Limitations
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 - **O_DIRECT required**: Page cache bypass mandatory — no buffered AIO (fixed in 5.1+ with RWF_NOWAIT but still limited)
 - **Kernel thread completion**: Each I/O completion handler runs in a kernel thread
@@ -453,21 +302,6 @@ This pattern is commonly used in production systems.
 ---
 
 ## 5. io_uring
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -501,21 +335,6 @@ This pattern is commonly used in production systems.
 
 ### Key Structures
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```
 SQE (Submission Queue Entry):
@@ -537,21 +356,6 @@ Ring buffer (shared memory):
 
 ### Submission Paths
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```
 io_uring_submit(ring):
@@ -570,21 +374,6 @@ io_uring_submit(ring):
 ```
 
 ### Key Features
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Fixed buffers** (`IORING_REGISTER_BUFFERS`):
@@ -615,21 +404,6 @@ This pattern is commonly used in production systems.
 
 ### Supported Operations
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```
 Read/Write:       IORING_OP_READV, READ_FIXED, WRITEV, WRITE_FIXED
@@ -643,21 +417,6 @@ Other:            NOP (latency test), TIMEOUT, CANCEL, CLOSE
 ```
 
 ### io_uring + epoll Pattern
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```c
@@ -693,21 +452,6 @@ while (1) {
 
 ## 6. Memory-Mapped I/O
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```
 mmap (file-backed, MAP_SHARED)
@@ -738,21 +482,6 @@ Application memory
 
 ## 7. Direct I/O (O_DIRECT)
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```c
 // Open file with O_DIRECT
@@ -777,21 +506,6 @@ read(fd, buf, 4096);
 
 ## 8. Zero-Copy: sendfile, splice, pipe
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```
 Traditional file → socket (4 copies):
@@ -809,21 +523,6 @@ splice (zero-copy between two fds):
 
 ### sendfile
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```c
 // Zero-copy file → socket
@@ -834,21 +533,6 @@ ssize_t n = sendfile(socket_fd, file_fd, &offset, count);
 ```
 
 ### splice
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```c
@@ -865,21 +549,6 @@ n = splice(pipefd[0], NULL, output_fd, NULL, 4096, SPLICE_F_MORE);
 
 ### vm_splice (internals)
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```
 splice(file_fd, pipe_fd):
@@ -895,21 +564,6 @@ splice(pipe_fd, socket_fd):
 
 ## 9. Kernel Bypass: DPDK, XDP, AF_XDP
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
@@ -922,21 +576,6 @@ This pattern is commonly used in production systems.
 ```
 
 ### DPDK (Data Plane Development Kit)
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -958,21 +597,6 @@ Application ──► DPDK PMD (Poll Mode Driver)
 
 ### XDP (eXpress Data Path)
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```
 NIC ──► XDP BPF program (driver hook, before SKB allocation)
@@ -991,21 +615,6 @@ NIC ──► XDP BPF program (driver hook, before SKB allocation)
 ```
 
 ### AF_XDP
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -1033,21 +642,6 @@ Features:
 
 ## 10. Disk I/O Schedulers
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```
 ┌──────────────┐    ┌──────────────┐    ┌──────────────┐
@@ -1071,21 +665,6 @@ This pattern is commonly used in production systems.
 ```
 
 ### mq-deadline
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -1112,21 +691,6 @@ Properties:
 
 ### BFQ (Budget Fair Queuing)
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```
 Fair queuing I/O scheduler — per-process bandwidth allocation
@@ -1141,21 +705,6 @@ Properties:
 ```
 
 ### Kyber
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -1172,21 +721,6 @@ Properties:
 
 ### none (NOOP)
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```
 Pass-through scheduler — no reordering, no merging
@@ -1201,21 +735,6 @@ Properties:
 ---
 
 ## 11. blk-mq — Multi-Queue Block Layer
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -1252,21 +771,6 @@ This pattern is commonly used in production systems.
 
 ### Key Design Points
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 - **Per-CPU submission**: No locking for software queue — each CPU writes to its own queue
 - **Hardware queue mapping**: Maps to device's hardware submission/completion queues
@@ -1277,21 +781,6 @@ This pattern is commonly used in production systems.
 ---
 
 ## 12. VFS Cache & Writeback Lifecycle
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -1313,21 +802,6 @@ Inode Cache:
 ```
 
 ### Writeback Lifecycle
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -1354,38 +828,8 @@ This pattern is commonly used in production systems.
 
 ## 13. Async I/O Patterns
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Reactor vs Proactor
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -1410,21 +854,6 @@ Proactor (io_uring-based):
 
 ### libuv
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```c
 // libuv — event loop with epoll on Linux
@@ -1443,21 +872,6 @@ uv_run(loop, UV_RUN_DEFAULT);
 
 ### Boost.Asio
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```cpp
 // Boost.Asio — proactor pattern via io_uring (or epoll)
@@ -1474,21 +888,6 @@ io.run();  // Event loop
 ```
 
 ### Thread Pool I/O
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```c
@@ -1511,38 +910,8 @@ void *worker(void *arg) {
 
 ## 14. Internals
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### epoll Implementation
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```c
@@ -1573,21 +942,6 @@ struct epitem {
 ```
 
 ### io_uring Implementation
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```c
@@ -1631,38 +985,8 @@ struct io_kiocb {
 
 ## 15. Failure Analysis
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### epoll Edge-Triggered Miss
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -1681,21 +1005,6 @@ Prevention:
 
 ### io_uring CQ Overflow
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```
 Scenario: Completion queue fills before application processes it
@@ -1711,21 +1020,6 @@ Prevention:
 ```
 
 ### O_DIRECT Alignment Errors
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```c
@@ -1743,21 +1037,6 @@ pread(fd, buf, 4096, 0);          // OK
 
 ### I/O Scheduler Stalls
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```
 Scenario: BFQ with many processes → I/O scheduler CPU overhead → latency spikes
@@ -1773,21 +1052,6 @@ Debug:
 ---
 
 ## 16. Edge Cases
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 - **select with >1024 fds**: Silent truncation — kernel reads only first 1024 bits → connections silently ignored
@@ -1809,38 +1073,8 @@ This pattern is commonly used in production systems.
 
 ## 17. Performance
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### I/O Model Throughput Comparison
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -1857,21 +1091,6 @@ io_uring + fixed         0 (SQPOLL)      1 thread    ~5,000,000+ ops/sec
 
 ### Latency Comparison
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```
 Operation (SSD, 4KB read)                  Latency
@@ -1887,21 +1106,6 @@ XDP packet drop                            ~50ns
 
 ### io_uring Overhead Savings vs Traditional epoll
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```
 Operation              Traditional         io_uring
@@ -1914,21 +1118,6 @@ fd refcount            per-read fget/fput   one-time registration
 ```
 
 ### Maximizing I/O Throughput
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -1953,38 +1142,8 @@ This pattern is commonly used in production systems.
 
 ## Interview Questions
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Beginner Level
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Q1: What's the difference between blocking and non-blocking I/O?**
@@ -2004,21 +1163,6 @@ This pattern is commonly used in production systems.
 
 ### Intermediate Level
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **Q3: How does `io_uring` work and what makes it faster than `epoll`?**
 
@@ -2029,21 +1173,6 @@ This pattern is commonly used in production systems.
 **Answer**: **Reactor** (epoll): tell me when I can read/write → I do the read/write. **Proactor** (io_uring): I initiate the read/write → tell me when it's done. Reactor is simpler but requires application-level state machines for each operation. Proactor reduces context switches (kernel handles the data movement) and enables true zero-copy (registered buffers). Proactor is harder to program but gives higher throughput (especially with buffered I/O and vectored operations). Linux's `io_uring` supports both modes via `IOSQE_ASYNC`.
 
 ### Senior Level
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Q5: Your database server shows 80% `iowait` and the application is slow. The storage team says the SSDs are only 30% utilized. What's wrong?**
@@ -2058,21 +1187,6 @@ This pattern is commonly used in production systems.
 
 ### Staff/Principal Level
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **Q7: Design a storage engine that must handle 1M 4KB random writes/sec with fsync durability on consumer NVMe. How do you avoid the fsync bottleneck?**
 
@@ -2085,21 +1199,6 @@ This pattern is commonly used in production systems.
 **Answer**: 1) **eBPF-based tracing**: use `bcc` tools — `biolatency` for I/O latency, `fileslower` for slow file ops, `tcpconnlat` for connection latency. 2) **Per-event-loop metrics**: expose epoll_wait duration, io_uring CQ drain rate, average batch size. 3) **Distributed tracing**: OpenTelemetry with `SchedCLFS` context propagation to correlate I/O waits with spans. 4) **Linux `perf` for kernel I/O stack**: `perf top -e block:*`, `perf record -e iommu:*`. 5) **Pressure Stall Information (PSI)**: `/proc/pressure/io` shows `some` (any task stalled) and `full` (all tasks stalled). PSI > 10% full indicates the I/O subsystem is bottleneck.
 
 ### Tricky Edge Cases
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Q9**: You call `read(fd, buf, 65536)` and it returns 4096. The file isn't a pipe or socket. What happened?
@@ -2115,21 +1214,6 @@ This pattern is commonly used in production systems.
 
 
 ## Practical Example
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 See code examples above for practical usage patterns.

@@ -10,21 +10,6 @@
 
 ## Table of Contents
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 - [1. Repository Overview](#1-repository-overview)
 - [2. Per-Topic Analysis](#2-per-topic-analysis)
@@ -72,38 +57,8 @@ This pattern is commonly used in production systems.
 
 ## 1. Repository Overview
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### 1.1 Directory Tree
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -208,21 +163,6 @@ data/
 
 ### 1.2 Topic Coverage Matrix
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 | Topic | Files | Lines | Depth Level | Quality (1-10) |
 |-------|-------|-------|-------------|----------------|
@@ -243,21 +183,6 @@ This pattern is commonly used in production systems.
 | Architecture Docs | 8 | ~4,688 | N/A (app docs) | 7/10 |
 
 ### 1.3 Overall Quality Assessment
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Strengths:**
@@ -283,38 +208,8 @@ This pattern is commonly used in production systems.
 
 ## 2. Per-Topic Analysis
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### 2.1 Java
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Files**: 01-oop-concepts (938), 02-collections-framework (1,044), 03-exception-handling (906), 04-multithreading (1,311), 05-jvm-architecture (930), 06-java-memory-gc (910), 07-streams-lambda (1,035), 08-generics (926), 09-io-nio (1,060), 10-annotations-reflection (917), 11-java-8-features (901), 12-spring-boot (1,003), 13-hibernate-jpa (1,049), 14-design-patterns-in-java (1,221), 15-concurrency-deep-dive (436), 16-reactive-programming (374), 17-spring-boot-advanced (429), 18-testing-advanced (323)
@@ -362,21 +257,6 @@ This pattern is commonly used in production systems.
 
 ### 2.2 Python
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **Files**: 01-python-basics (1,022), 02-python-advanced (815), 03-python-concurrency-async (671), 04-python-testing-packaging (661), 05-python-ds-algorithms (388)
 
@@ -407,21 +287,6 @@ This pattern is commonly used in production systems.
 - Missing **Interview Questions**: No Python-specific FAANG questions
 
 ### 2.3 React
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Files**: 01-components-jsx (1,241), 02-hooks-state (1,380), 03-rendering-performance (1,181), 04-state-management (1,099), 05-routing-data-fetching (966), 06-testing-forms-validation (1,374), 07-production-issues (1,379), 08-custom-hooks-patterns (490), 09-performance-optimization (406), 10-ssr-nextjs (368), standalone react.md (1,701)
@@ -455,21 +320,6 @@ This pattern is commonly used in production systems.
 
 ### 2.4 Microservices
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **Files**: 01-architecture-patterns (681), 02-service-decomposition (624), 03-service-discovery (770), 04-api-gateway (794), 05-circuit-breaker-resilience (679), 06-distributed-transactions-saga (721), 07-observability-monitoring (395), 08-security-identity (372), standalone MICROSERVICES_SYSTEM_DESIGN.md (1,870)
 
@@ -498,21 +348,6 @@ This pattern is commonly used in production systems.
 - Missing **Interview Questions**: Design Uber, Design Netflix, Design WhatsApp
 
 ### 2.5 Kubernetes
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Files**: 01-kubernetes-basics (2,390), 02-advanced-k8s (1,296), 03-kubernetes-networking (260), 04-kubernetes-security (363), 05-kubernetes-storage (367), 06-kubernetes-observability (356), standalone k8s.md (1,204)
@@ -544,21 +379,6 @@ This pattern is commonly used in production systems.
 
 ### 2.6 Docker
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **Files**: 01-container-basics (1,213), 02-compose-orchestration (979), 03-docker-networking-security (719), 04-docker-production-operations (708)
 
@@ -583,21 +403,6 @@ This pattern is commonly used in production systems.
 - Missing **Performance Coverage**: no container overhead analysis, no cgroup pressure stall information (PSI) coverage
 
 ### 2.7 Kafka
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Files**: 01-kafka-basics (489), 02-kafka-patterns (301), 03-kafka-internals (646), 04-kafka-production-operations (247)
@@ -626,21 +431,6 @@ This pattern is commonly used in production systems.
 
 ### 2.8 RabbitMQ
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **Files**: 01-rabbitmq-basics (681), 02-rabbitmq-patterns (519)
 
@@ -665,21 +455,6 @@ This pattern is commonly used in production systems.
 - No **Interview Questions**: RabbitMQ vs Kafka vs Pulsar
 
 ### 2.9 SNS/SQS
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Files**: 01-sns-sqs-basics (462), 02-sns-sqs-patterns (338)
@@ -706,21 +481,6 @@ This pattern is commonly used in production systems.
 - No **Interview Questions**: SQS vs Kafka vs RabbitMQ comparison
 
 ### 2.10 AWS
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Files**: 14 files across 9 services (cloudwatch, ec2, ecs, eks, elasticache, iam, lambda, rds, s3) + Elasticache, Lambda, EC2, IAM, RDS, S3
@@ -757,21 +517,6 @@ This pattern is commonly used in production systems.
 
 ### 2.11 Design Patterns
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **File**: `designpatterns.md` (992 lines)
 
@@ -800,21 +545,6 @@ This pattern is commonly used in production systems.
 
 ### 2.12 Load Balancers
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **File**: `loadbalancer.md` (1,115 lines)
 
@@ -839,21 +569,6 @@ This pattern is commonly used in production systems.
 - No **Interview Questions**: Design a load balancer, design Google Maglev
 
 ### 2.13 Database Indexes
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **File**: `indexes.md` (786 lines)
@@ -880,21 +595,6 @@ This pattern is commonly used in production systems.
 
 ### 2.14 Protocols
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **File**: `protocols.md` (96 lines)
 
@@ -920,21 +620,6 @@ This pattern is commonly used in production systems.
 
 ### 2.15 Architecture Documents
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **Files**: 8 files in `arch/`
 
@@ -957,38 +642,8 @@ These are application architecture documents for the "Study Lab" platform being 
 
 ## 3. CRITICAL GAPS — Missing Topics
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### 3.1 Operating Systems (MISSING ENTIRELY)
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Priority**: P0
@@ -1032,21 +687,6 @@ data/os/
 
 ### 3.2 Networking Internals (MISSING ENTIRELY)
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **Priority**: P0
 
@@ -1075,21 +715,6 @@ No standalone networking internals content. Only covered as part of microservice
 | iptables/nftables/netfilter | P0 | Kubernetes networking (kube-proxy), firewall rules |
 
 ### 3.3 Database Internals (MISSING ENTIRELY)
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Priority**: P0
@@ -1151,21 +776,6 @@ data/databases/
 
 ### 3.4 Distributed Systems (PARTIALLY COVERED)
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **Priority**: P0
 
@@ -1221,21 +831,6 @@ data/distributed-systems/
 
 ### 3.5 Cloud Native Infrastructure (PARTIALLY COVERED)
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 Kubernetes and Docker are well-covered, but major areas missing.
 
@@ -1263,21 +858,6 @@ Kubernetes and Docker are well-covered, but major areas missing.
 | Serverless (Knative, OpenWhisk, OpenFaaS) | P2 | Event-driven compute |
 
 ### 3.6 System Design Case Studies (MISSING ENTIRELY)
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Priority**: P0
@@ -1337,21 +917,6 @@ data/system-design/
 
 ### 3.7 Programming Languages (PARTIALLY COVERED)
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 Covered: Java (18 files), Python (5 files), React/JavaScript (11 files)
 
@@ -1367,21 +932,6 @@ Covered: Java (18 files), Python (5 files), React/JavaScript (11 files)
 | Shell Scripting (Bash) | P1 | DevOps, CI/CD, automation |
 
 ### 3.8 Computer Science Fundamentals (PARTIALLY COVERED)
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Covered:**
@@ -1404,21 +954,6 @@ This pattern is commonly used in production systems.
 
 ### 3.9 DevOps / CI/CD (MISSING ENTIRELY)
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **Priority**: P1
 
@@ -1435,21 +970,6 @@ This pattern is commonly used in production systems.
 | SRE principles (SLIs, SLOs, SLAs, error budgets) | P1 | Site Reliability Engineering |
 
 ### 3.10 Testing (MISSING ENTIRELY)
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Priority**: P1
@@ -1468,21 +988,6 @@ This pattern is commonly used in production systems.
 - Load testing methodology
 
 ### 3.11 Security Fundamentals (MISSING ENTIRELY)
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Priority**: P1
@@ -1503,21 +1008,6 @@ This pattern is commonly used in production systems.
 
 ### 3.12 Performance Engineering (MISSING ENTIRELY)
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **Priority**: P1
 
@@ -1535,21 +1025,6 @@ This pattern is commonly used in production systems.
 | Benchmarking methodology | P1 | JMH, wrk, k6, meaningful interpretation |
 
 ### 3.13 Interview Preparation (MISSING ENTIRELY)
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Priority**: P1
@@ -1569,38 +1044,8 @@ No dedicated interview preparation section exists anywhere in the repo.
 
 ## 4. Priority Ranking of All Gaps
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### P0 — Critical (Must Exist)
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 | # | Gap | Reason |
@@ -1617,21 +1062,6 @@ This pattern is commonly used in production systems.
 | 10 | **System Design Fundamentals** | Back of envelope estimation, latency numbers, CDNs |
 
 ### P1 — High Priority (Significantly Improves Quality)
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 | # | Gap | Reason |
@@ -1654,21 +1084,6 @@ This pattern is commonly used in production systems.
 
 ### P2 — Medium Priority (Nice to Have)
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 | # | Gap | Reason |
 |---|-----|--------|
@@ -1685,21 +1100,6 @@ This pattern is commonly used in production systems.
 
 ### P3 — Low Priority (Aspirational)
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 | # | Gap | Reason |
 |---|-----|--------|
@@ -1715,21 +1115,6 @@ This pattern is commonly used in production systems.
 ---
 
 ## 5. Recommended Folder Structure
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -1927,38 +1312,8 @@ data/
 
 ## 6. Recommended Learning Roadmaps
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### 6.1 Java Roadmap
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Beginner (0-3 months)**
@@ -2003,21 +1358,6 @@ Structured Concurrency / Scoped Values  → MISSING
 
 ### 6.2 Python Roadmap
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **Beginner**
 ```
@@ -2042,21 +1382,6 @@ Cython / mypyc / PyO3                   → MISSING
 ```
 
 ### 6.3 System Design Roadmap
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Beginner**
@@ -2098,21 +1423,6 @@ Performance engineering, profiling               → MISSING
 
 ### 6.4 DevOps/Cloud Roadmap
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **Beginner**
 ```
@@ -2153,21 +1463,6 @@ eBPF / Cilium                               → PARTIALLY MISSING
 
 ### 6.5 Frontend Roadmap
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **Beginner**
 ```
@@ -2195,21 +1490,6 @@ TypeScript deep-dive                        → MISSING
 
 ### 6.6 Staff+ Engineering Roadmap
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **Staff Engineer — Depth (pick 2-3)**
 ```
@@ -2233,38 +1513,8 @@ Production postmortem analysis
 
 ## 7. Summary Dashboard
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Current State
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -2295,21 +1545,6 @@ Total: 95/200 = 47.5% completeness
 
 ### What Exists vs What Should Exist
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 | Category | Existing | Missing | Coverage |
 |----------|----------|---------|----------|
@@ -2334,21 +1569,6 @@ This pattern is commonly used in production systems.
 **Total content gap**: ~150+ files missing across ~15 topic areas
 
 ### Quality Rating System
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -2379,21 +1599,6 @@ This pattern is commonly used in production systems.
 
 ### Critical Path to 8/10
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 To reach an 8/10 overall rating:
 
@@ -2405,21 +1610,6 @@ To reach an 8/10 overall rating:
 ---
 
 ## Appendix: File-Specific Issues
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 | File | Lines | Issue |
@@ -2455,21 +1645,6 @@ This pattern is commonly used in production systems.
 
 
 ## Workflow
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```mermaid

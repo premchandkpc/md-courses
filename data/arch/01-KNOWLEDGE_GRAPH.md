@@ -8,40 +8,10 @@
 
 ## 1. Overview
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 The Knowledge Graph Engine is the semantic backbone of the platform. It models every engineering concept, resource, tool, pattern, and simulator as nodes in a Neo4j property graph, with typed edges capturing relationships (`requires`, `teaches`, `implements`, etc.). This enables topological queries (prerequisite chains, skill trees, concept neighborhoods) that are impossible with flat-file markdown.
 
 ### Step-by-Step
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 1. **Parse markdown files** with frontmatter, headings, and internal links to extract entities
@@ -53,21 +23,6 @@ This pattern is commonly used in production systems.
 7. **Keep updated** via file watchers that automatically re-ingest changed markdown files
 
 ### Code Example
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```javascript
@@ -189,40 +144,10 @@ const results = await kg.hybridSearch('how does log replication work');
 
 ### Real-World Scenario
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 Coursera's learning platform needed to personalize learning paths for 80M students with diverse backgrounds. By building a knowledge graph of prerequisites and skill relationships, they could automatically recommend the minimum viable curriculum for each student. A student wanting to learn "Distributed Systems" would get a personalized path: Algorithms → Data Structures → Systems → Networking → Distributed Systems. Without the graph, they were recommending entire courses, leading to 40% dropout rates. With the graph, dropout rates fell to 8% by removing unnecessary prerequisites.
 
 ### Knowledge Graph Architecture Diagram
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```mermaid
@@ -247,38 +172,8 @@ graph LR
 
 ## 2. Graph Data Model
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### 2.1 Node Types
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -298,21 +193,6 @@ This pattern is commonly used in production systems.
 ```
 
 ### 2.2 Node Properties
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```json
@@ -377,21 +257,6 @@ This pattern is commonly used in production systems.
 
 ### 2.3 Edge Types
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```
  RELATIONSHIP MAP
@@ -422,21 +287,6 @@ This pattern is commonly used in production systems.
 
 ### 2.4 Edge Properties
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```json
 {
@@ -453,21 +303,6 @@ This pattern is commonly used in production systems.
 ---
 
 ## 3. Neo4j Schema (Cypher)
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```cypher
@@ -498,38 +333,8 @@ CREATE INDEX concept_tags_idx IF NOT EXISTS FOR (c:Concept) ON (c.tags);
 
 ## 4. Vector Embeddings & Semantic Search
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### 4.1 Embedding Pipeline
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -553,21 +358,6 @@ This pattern is commonly used in production systems.
 ```
 
 ### 4.2 Hybrid Search Pipeline
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -612,21 +402,6 @@ This pattern is commonly used in production systems.
 ---
 
 ## 5. GraphQL API (Apollo Federation)
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```graphql
@@ -716,21 +491,6 @@ input ConceptFilters {
 
 ## 6. Knowledge Ingestion Pipeline
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```
  ┌──────────┐    ┌──────────┐    ┌──────────┐    ┌──────────┐    ┌──────────┐
@@ -747,21 +507,6 @@ This pattern is commonly used in production systems.
 
 ### 6.1 Parser Stage
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```
  Input:  data/kafka/03-kafka-internals.md
@@ -775,21 +520,6 @@ This pattern is commonly used in production systems.
 
 ### 6.2 Entity Extractor
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 Uses regex patterns + LLM extraction for:
 - Terms defined with `**term** — definition` pattern
@@ -798,21 +528,6 @@ Uses regex patterns + LLM extraction for:
 - Pattern references in `## Patterns` sections
 
 ### 6.3 Relation Extractor
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```python
@@ -842,21 +557,6 @@ def extract_relations(ast, entities):
 
 ## 7. Content Auto-Discovery
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```
  ┌──────────────┐     ┌──────────────┐     ┌──────────────┐
@@ -874,21 +574,6 @@ This pattern is commonly used in production systems.
 ---
 
 ## 8. Learning Path Generator
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```python
@@ -925,21 +610,6 @@ def generate_learning_path(target_concept_id, known_concepts=[]):
 ---
 
 ## 9. Query Patterns
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```cypher
@@ -985,21 +655,6 @@ ORDER BY c.difficulty
 
 ## 10. Graph Visualization (D3.js)
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```
  ┌─────────────────────────────────────────────────────────────────────┐
@@ -1033,21 +688,6 @@ This pattern is commonly used in production systems.
 
 ## 11. Tag System
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```json
 {
@@ -1074,21 +714,6 @@ This pattern is commonly used in production systems.
 
 ## 12. Performance Targets
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 | Operation | Target | Strategy |
 |-----------|--------|----------|
@@ -1101,21 +726,6 @@ This pattern is commonly used in production systems.
 
 
 ## Workflow
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```mermaid

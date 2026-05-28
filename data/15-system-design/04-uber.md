@@ -5,7 +5,6 @@
 > **Related**: [03-twitter.md](./03-twitter.md) | [06-stripe.md](./06-stripe.md)
 
 
-
 ```mermaid
 graph LR
     RIDER["Rider App"] --> GEO["Geospatial<br/>Index (H3/S2)"]
@@ -44,21 +43,6 @@ graph LR
 
 ## Table of Contents
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 1. Requirements & Scale
 2. High-Level Architecture
@@ -78,21 +62,6 @@ This pattern is commonly used in production systems.
 ---
 
 ## 1. Requirements & Scale
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -118,21 +87,6 @@ Key Requirements:
 ---
 
 ## 2. High-Level Architecture
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -181,21 +135,6 @@ This pattern is commonly used in production systems.
 ---
 
 ## 3. Booking Flow
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -272,21 +211,6 @@ Total dispatch time: 50ms x up to 15 offers = < 750ms worst case
 ---
 
 ## 4. Geospatial Indexing
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -393,21 +317,6 @@ Expand search radius if insufficient drivers:
 
 ## 5. Ride Dispatch
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```text
 Dispatch Algorithm:
@@ -479,21 +388,6 @@ if len(drivers) == 0:
 
 ## 6. Supply/Demand Forecasting
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```text
 Forecasting Pipeline:
@@ -548,21 +442,6 @@ Based on demand forecast:
 ---
 
 ## 7. Surge Pricing
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -631,21 +510,6 @@ Damping ensures:
 ---
 
 ## 8. ETA Computation
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -731,21 +595,6 @@ Accuracy target:
 
 ## 9. Trip Pricing
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```text
 Fare Calculation:
@@ -784,21 +633,6 @@ Cancellation fee:
 ---
 
 ## 10. Database Design
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -886,21 +720,6 @@ Rate limit counters:
 
 ## 11. Multi-Region Deployment
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```text
 Global Architecture:
@@ -954,21 +773,6 @@ Data loss: none for persisted trips, minimal for in-flight state
 
 ## 12. Availability & Reliability
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```text
 Data Loss Tolerance:
@@ -1016,21 +820,6 @@ Dispatcher -> Redis:
 ---
 
 ## 13. Failure Analysis
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Dispatcher Hot Cell (Stadium Event):**
@@ -1154,21 +943,6 @@ Mitigations:
 
 ## 14. Performance Considerations
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```text
 Latency Targets:
@@ -1197,21 +971,6 @@ Cassandra:
 
 ## Simplest Mental Model
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **Uber is like a real-time taxi dispatcher that knows where every driver is, predicts where riders will appear, and adjusts prices like an airline booking system.** The city is divided into a honeycomb of hexagons (H3). When you request a ride, dispatcher finds the nearest free driver in your hex and neighboring cells, sends them a ping, and the first to accept wins — like a game of "who can grab this fare?" Surge pricing is like a thermostat: when too many people want rides in one area but not enough drivers, the price goes up until more drivers arrive or fewer riders request.
 
@@ -1219,21 +978,6 @@ This pattern is commonly used in production systems.
 
 
 ## Practical Example
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 See code examples above for practical usage patterns.

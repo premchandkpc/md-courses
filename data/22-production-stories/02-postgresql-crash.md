@@ -7,7 +7,6 @@
 ---
 
 
-
 ```mermaid
 graph LR
     WRAPAROUND["TXID Wraparound"] --> AUTO_FREEZE["Emergency<br/>Autovacuum"]

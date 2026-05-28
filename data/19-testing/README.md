@@ -7,7 +7,6 @@ Testing is the systematic verification that software behaves as expected. It's n
 ---
 
 
-
 ```mermaid
 graph LR
     TEST_PYRAMID["Test Pyramid"] --> UNIT["Unit Tests<br/>(fast, isolated)"]

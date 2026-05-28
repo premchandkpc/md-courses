@@ -7,7 +7,6 @@
 ---
 
 
-
 ```mermaid
 graph LR
     DB_REPLICA_FAIL["DB Read Replica<br/>Fails"] --> PRODUCT_SVC["Product Service<br/>(reads stale)"]
@@ -41,21 +40,6 @@ graph LR
 
 ## Table of Contents
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 1. [Incident Overview](#incident-overview)
 2. [Architecture Background](#architecture-background)
@@ -75,21 +59,6 @@ This pattern is commonly used in production systems.
 
 ## Incident Overview
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 | Field | Value |
 |---|---|
@@ -103,40 +72,10 @@ This pattern is commonly used in production systems.
 
 ### What Happened
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 A single database read replica in the `orders` service experienced a transient hardware failure at the storage layer. This replica served as the primary read target for 12 downstream microservices. Within 67 minutes, the failure cascaded through the service mesh, opening circuit breakers across 47 services, triggering thread pool starvation in 8 critical services, and ultimately degrading both the checkout and search surfaces.
 
 ### Why It Matters
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 Circuit breakers are designed to contain failures, not amplify them. This incident demonstrates how **improperly configured circuit breakers** combined with **aggressive client-side timeouts**, **retry storms**, and **cache stampede effects** turned a localized infrastructure failure into a platform-wide degradation event.
@@ -145,38 +84,8 @@ Circuit breakers are designed to contain failures, not amplify them. This incide
 
 ## Architecture Background
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Service Topology (Simplified)
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -222,21 +131,6 @@ This pattern is commonly used in production systems.
 
 ### Service Mesh Layer (Istio/Envoy)
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 Every pod runs an Envoy sidecar proxy. The sidecar handles:
 - **Circuit breaking** at the TCP/HTTP layer (cluster-level)
@@ -246,21 +140,6 @@ Every pod runs an Envoy sidecar proxy. The sidecar handles:
 
 ### Application-Level Circuit Breakers (Resilience4j)
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 Each service implements application-level circuit breakers using Resilience4j with:
 - Thread pool isolation for critical paths (checkout, payment)
@@ -268,21 +147,6 @@ Each service implements application-level circuit breakers using Resilience4j wi
 - Configuration via `@CircuitBreaker` and `@Bulkhead` annotations
 
 ### Service Dependency Graph
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 The order service read path had an unusually high fan-out:
@@ -309,38 +173,8 @@ Order Service Read Replica
 
 ## Timeline
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Waterfall Diagram
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -413,38 +247,8 @@ T+67m [15:09:15] └─ ALL CIRCUITS CLOSED — INCIDENT RESOLVED
 
 ### Detailed Timeline
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### T-0: Primary Database Read Replica Failure
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -464,21 +268,6 @@ This pattern is commonly used in production systems.
 
 ### T+1min: Circuit Breakers Begin Opening
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```
 14:03:15 UTC — Order Service Resilience4j circuit breaker opens
@@ -497,21 +286,6 @@ This pattern is commonly used in production systems.
 ```
 
 ### T+5min: Cascading Failures
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -537,21 +311,6 @@ This pattern is commonly used in production systems.
 ```
 
 ### T+10min: Cache Stampede Effect
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -580,21 +339,6 @@ Cache miss amplification:
 
 ### T+30min: Bulkhead Isolation
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```
 14:32:15 UTC — Thread pool bulkheads saturate across critical services
@@ -618,21 +362,6 @@ Non-critical paths still functional:
 ```
 
 ### T+60min: Recovery
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -658,38 +387,8 @@ This pattern is commonly used in production systems.
 
 ## Symptoms and Detection
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### End-User Symptoms
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 | Symptom | User Impact | Percentage |
@@ -701,21 +400,6 @@ This pattern is commonly used in production systems.
 | Stale data | Order status showing "processing" when completed | 4.2% of order queries |
 
 ### Monitoring Dashboard
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 The key dashboard during the incident showed:
@@ -752,21 +436,6 @@ The key dashboard during the incident showed:
 
 ### Alert Sequence (First 15 Minutes)
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```
 14:02:20  P1  orders-db-1 REPLICA DOWN — storage subsystem failure
@@ -793,58 +462,13 @@ This pattern is commonly used in production systems.
 
 ## Root Cause Analysis
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Direct Cause
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **A hardware-level NVMe drive failure on the database read replica (`orders-db-1`)** caused all active database connections to hang on I/O operations. The HAProxy health check detected the failure within 1 second, but existing connections could not be terminated cleanly — they blocked waiting on storage I/O that would never complete.
 
 ### Triggering Chain
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -864,21 +488,6 @@ Storage I/O failure (NVMe uncorrectable sector)
 
 ### Why It Became a Cascade
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 | Contributing Factor | Severity | Description |
 |---|---|---|
@@ -895,38 +504,8 @@ This pattern is commonly used in production systems.
 
 ## Circuit Breaker Deep Dive
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### State Machine Diagram
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -991,21 +570,6 @@ This pattern is commonly used in production systems.
 
 ### Resilience4j Implementation
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 Resilience4j uses a **sliding window** approach to circuit breaker state transitions:
 
@@ -1028,21 +592,6 @@ Ring Buffer (sliding window) — 10s window, 100 requests max
 ```
 
 ### Circuit Breaker Configuration (Resilience4j)
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```yaml
@@ -1096,21 +645,6 @@ public class OrderService {
 
 ### Envoy Cluster-Level Circuit Breaking
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 Envoy implements circuit breaking at the transport layer, which operates independently of application-level breakers:
 
@@ -1148,21 +682,6 @@ static_resources:
 
 ### Envoy Retry Policy
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```yaml
 # Retry policy — contributed to retry storm
@@ -1183,21 +702,6 @@ routes:
 ```
 
 ### Bulkhead Pattern Implementation
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 Bulkheads isolate resources by limiting concurrent execution:
@@ -1261,21 +765,6 @@ resilience4j:
 
 ### Thread Pool Isolation vs Semaphore Isolation
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 | Aspect | Thread Pool Isolation | Semaphore Isolation |
 |---|---|---|
@@ -1307,21 +796,6 @@ public boolean validateCartWithOrder(String cartId) {
 
 ### Envoy/Istio Circuit Breaking at Mesh Level
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 Envoy's circuit breaker operates at the **upstream cluster** level and tracks:
 
@@ -1340,21 +814,6 @@ circuit_breakers:
 These limits trigger **Envoy-level 503 responses** with `x-envoy-overloaded: true` header when exceeded. The problem during this incident was that limits were set so high they never triggered — the application-level breakers opened first, but with poor fallback behavior.
 
 ### Client-Side Load Balancing Interaction
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 The interaction between client-side load balancing and circuit breakers created a feedback loop:
@@ -1380,38 +839,8 @@ During incident:
 
 ## Cascade Propagation Mechanics
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### How Failure Propagated Through the Mesh
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -1467,21 +896,6 @@ Checkout thread pool (max=10):
 ```
 
 ### Cascade State Propagation Graph
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -1539,38 +953,8 @@ This pattern is commonly used in production systems.
 
 ## Failure Analysis: Why Circuit Breakers Failed to Contain
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### 1. Homogeneous Configuration Across All Services
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 Every service used the same circuit breaker parameters:
@@ -1583,21 +967,6 @@ Every service used the same circuit breaker parameters:
 - All services tried to recover simultaneously after 30s (thundering herd on half-open probes)
 
 ### 2. Fallback Anti-Pattern: Redirecting to Primary
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 The single most destructive decision was the fallback for the replica circuit breaker:
@@ -1635,21 +1004,6 @@ private List<Order> replicaFallback(String userId, Throwable t) {
 
 ### 3. Missing Fallbacks on Downstream Circuits
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 60% of circuit breakers had **no fallback method** configured:
 
@@ -1666,21 +1020,6 @@ public OrderStatus getOrderStatus(String orderId) {
 **No fallback means the failure is guaranteed to propagate to the next layer.**
 
 ### 4. Retry Multiplier (9× Request Multiplication)
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 The combination of client retries + mesh retries created a **retry storm**:
@@ -1700,40 +1039,10 @@ Effective load on primary DB:
 
 ### 5. No Distinction Between Transient and Persistent Failures
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 The circuit breaker treated all failures equally. A 503 "service unavailable" (transient) was counted the same as a 500 "internal error" (potentially persistent). With proper classification, transient failures could have been retried while persistent ones triggered immediate circuit opening.
 
 ### 6. Synchronous Call Chain on Critical Path
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 The checkout flow made **synchronous blocking calls** to three consecutive services:
@@ -1749,21 +1058,6 @@ If Order Service times out (30s), the checkout thread is blocked for 30s.
 ```
 
 ### 7. Cache TTL and Circuit Breaker Window Misalignment
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 Cache TTL was 60s. Circuit breaker sleep window (open → half-open) was 30s. This misalignment caused:
@@ -1783,38 +1077,8 @@ T+120:Cache still empty → more DB direct reads
 
 ## Mitigation
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Immediate Actions (First 30 Minutes)
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 | Time | Action | Responsible | Effect |
@@ -1828,21 +1092,6 @@ This pattern is commonly used in production systems.
 | T+30m | Enable request collapsing for order reads | Backend Team | Reduces duplicate DB calls |
 
 ### Request Collapsing Implementation
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```java
@@ -1875,21 +1124,6 @@ public class CollapsedOrderService {
 
 ### Circuit Breaker Override (Manual)
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```yaml
 # Emergency override — force closed on critical paths
@@ -1909,21 +1143,6 @@ resilience4j:
 ```
 
 ### Traffic Shaping Rules
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```yaml
@@ -1953,21 +1172,6 @@ spec:
 
 ### Cache Warming Commands
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```bash
 # Warm critical cache entries after circuit breaker closes
@@ -1989,21 +1193,6 @@ redis-cli INFO keyspace
 
 ### Rate Limiting at API Gateway
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```yaml
 # Kong rate limiting — applied at T+20m
@@ -2022,38 +1211,8 @@ plugins:
 
 ## Resolution and Permanent Fixes
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### 1. Remove Bad Circuit Breaker Configurations
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Problem:** Uniform configuration across all services.
@@ -2114,21 +1273,6 @@ resilience4j:
 
 ### 2. Add Proper Timeouts at All Layers
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```yaml
 # Timeout configuration (previously all defaulted to 30s)
@@ -2163,21 +1307,6 @@ routes:
 ```
 
 ### 3. Implement Retry Budgets
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 Retry budgets limit the total volume of retries to a percentage of the original request volume:
@@ -2248,21 +1377,6 @@ resilience4j:
 
 ### 4. Add Independent Fallbacks
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 Every circuit breaker must have a meaningful fallback:
 
@@ -2326,21 +1440,6 @@ public class OrderServiceWithFallbacks {
 
 ### 5. Implement Slow Call Detection
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 Resilience4j supports slow call rate limiting — calls that exceed a threshold are counted as failures even if they eventually succeed:
 
@@ -2357,21 +1456,6 @@ resilience4j:
 This prevents **slow calls** from degrading the system — a call that takes 29s to return 200 OK is *functionally* a failure for the user experience, and should open the circuit.
 
 ### 6. Add Circuit Breaker Metadata Propagation
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```java
@@ -2394,21 +1478,6 @@ public class CircuitBreakerHeaderFilter implements WebFilter {
 ```
 
 ### 7. Envoy Circuit Breaker Tuning
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```yaml
@@ -2437,21 +1506,6 @@ clusters:
 ```
 
 ### 8. Async Boundary on Critical Path
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 Convert synchronous calls on the checkout critical path to async with timeouts:
@@ -2493,38 +1547,8 @@ public CompletableFuture<CheckoutResult> checkout(String userId, String cartId) 
 
 ## Production Patterns Reference
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Retry Storm
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 A retry storm occurs when multiple layers of retry logic amplify request volume exponentially:
@@ -2563,21 +1587,6 @@ A retry storm occurs when multiple layers of retry logic amplify request volume 
 - Don't retry on circuit breaker responses
 
 ### Dogpile Effect (Cache Stampede, Thundering Herd)
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 When many cache entries expire simultaneously and multiple requests all try to regenerate them:
@@ -2656,21 +1665,6 @@ public void refreshHotCache() {
 
 ### Self-Healing Mechanisms
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **Gradual Recovery with Half-Open Probes:**
 
@@ -2709,21 +1703,6 @@ outlier_detection:
 
 ### Circuit Breaker Integration with Retry Policies
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **Correct ordering: Circuit breaker → Retry**
 
@@ -2753,38 +1732,8 @@ public Order getOrder(String id) {
 
 ## Monitoring and Observability Reference
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Metrics to Track
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 | Metric | Source | Warning | Critical |
@@ -2803,21 +1752,6 @@ This pattern is commonly used in production systems.
 | Success rate (half-open probes) | Resilience4j | <80% | <50% |
 
 ### Resilience4j Metrics Export (Micrometer)
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```yaml
@@ -2845,21 +1779,6 @@ management:
 ```
 
 ### Prometheus Alerting Rules
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```yaml
@@ -2935,21 +1854,6 @@ groups:
 
 ### Grafana Dashboard (Circuit Breaker Overview)
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```json
 {
@@ -3010,41 +1914,12 @@ This pattern is commonly used in production systems.
 
 ### Runbook: Circuit Breaker Cascade
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```markdown
 # Runbook: Circuit Breaker Cascade Incident
 
 ## 1. DETECT
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 Symptoms:
 - Multiple circuit breakers showing OPEN state
@@ -3060,20 +1935,6 @@ Commands:
 
 ## 2. TRIAGE
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 1. Identify the root cause (DB failure? Downstream service? Network?)
 2. Check if the failure is contained or cascading
@@ -3081,20 +1942,6 @@ This pattern is commonly used in production systems.
 
 ## 3. MITIGATE
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 Options (in order of preference):
 a) Rate limiting at API Gateway (cut traffic by 30-50%)
@@ -3106,20 +1953,6 @@ f) Redirect traffic away from failing dependencies
 
 ## 4. RESOLVE
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 1. Fix root cause (DB restart, service scale-up, etc.)
 2. Verify circuit breakers self-heal (watch half-open → closed transitions)
@@ -3129,20 +1962,6 @@ This pattern is commonly used in production systems.
 
 ## 5. POST-INCIDENT
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 - Review circuit breaker configuration per dependency tier
 - Add missing fallbacks
@@ -3155,38 +1974,8 @@ This pattern is commonly used in production systems.
 
 ## Incident Retrospective
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### What Went Wrong
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 | Category | Issue | Severity |
@@ -3204,21 +1993,6 @@ This pattern is commonly used in production systems.
 
 ### What Went Well
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 | Action | Impact |
 |---|---|
@@ -3229,21 +2003,6 @@ This pattern is commonly used in production systems.
 | Gradual circuit closing prevented thundering herd recovery | Zero re-injuries during recovery |
 
 ### Key Learnings
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 1. **Circuit breakers contain failures only if fallbacks are safe.** A fallback that redirects to a different (already loaded) system is not a fallback — it's a lever that amplifies failure.
@@ -3261,21 +2020,6 @@ This pattern is commonly used in production systems.
 7. **Bulkheads stop cascades; circuit breakers start them.** Circuit breakers actively reject traffic (which can cascade to upstream callers). Bulkheads passively limit resource usage (which contains failure locally). Design which pattern to use based on whether you want to shed load (circuit breaker) or absorb it (bulkhead).
 
 ### Action Items
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 | # | Action | Owner | Deadline |
@@ -3298,21 +2042,6 @@ This pattern is commonly used in production systems.
 ---
 
 ## Related
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 - [Databases](../../08-databases/) — Outages, corruption, performance

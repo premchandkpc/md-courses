@@ -1,7 +1,6 @@
 # 🔐 IAM Advanced Patterns — Complete Deep Dive
 
 
-
 ```mermaid
 graph LR
     PB["Permission<br/>Boundary"] --> USER["IAM User<br/>/ Role"]
@@ -32,20 +31,6 @@ graph LR
 
 ## Table of Contents
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 - [Permission Boundaries vs SCP vs Service Control](#permission-boundaries-vs-scp-vs-service-control)
 - [Resource-Based vs Identity-Based Policies](#resource-based-vs-identity-based-policies)
@@ -65,21 +50,6 @@ This pattern is commonly used in production systems.
 ---
 
 ## Permission Boundaries vs SCP vs Service Control
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -113,21 +83,6 @@ AWS Organization Account:
 
 ## Resource-Based vs Identity-Based Policies
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```text
 Identity-Based (attached to principal):
@@ -152,21 +107,6 @@ Resource-Based (attached to resource):
 
 ## Policy Evaluation Logic
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```text
 1. Is there a DENY? (SCP, boundary, identity, session, resource)
@@ -187,21 +127,6 @@ Order: SCP → Resource-Based → Permission Boundary →
 
 ## IAM Roles for EC2/Lambda/ECS
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 | Service | Trust Principal | How Credentials Work |
 |---------|----------------|---------------------|
@@ -213,21 +138,6 @@ This pattern is commonly used in production systems.
 ---
 
 ## Cross-Account Role Assumption
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -248,40 +158,10 @@ Role in Acct B has trust policy allowing Acct A's principal.
 
 ### Common Patterns: Central audit (one security account), central network (TGW management), data lake (prod reads from sources).
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ---
 
 ## Role Chaining
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 User → Role A → Role B. Max 1 hop. 1-hour sessions. Don't chain — call `sts:AssumeRole` directly on the target role instead.
@@ -289,21 +169,6 @@ User → Role A → Role B. Max 1 hop. 1-hour sessions. Don't chain — call `st
 ---
 
 ## Session Tags
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 Tags propagated to assumed session for ABAC.
@@ -318,21 +183,6 @@ aws sts assume-role --role-arn "arn:aws:iam::123:role/ProjectRole" \
 ---
 
 ## ABAC (Attribute-Based Access Control)
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -361,21 +211,6 @@ ABAC: Policy uses tags (resource tag = principal tag) → automatic.
 
 ## Access Analyzer
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```text
 External Access Findings: S3 bucket → external account → HIGH risk
@@ -387,21 +222,6 @@ Unused Access Findings: Role unused 90 days, permission never used
 ---
 
 ## IAM Identity Center (SSO)
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 Centralized access across accounts. Identity source (AWS/AD/Okta) → Permission Sets → Account assignments.
@@ -416,21 +236,6 @@ Centralized access across accounts. Identity source (AWS/AD/Okta) → Permission
 ---
 
 ## Policy Conditions Deep Dive
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -469,21 +274,6 @@ Common Conditions:
 
 ## IAM Roles Anywhere
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 Temporary AWS credentials for external servers (on-prem, other clouds) via X.509 certificates. Trust anchor (root CA) → profile (links IAM role) → `aws_signing_helper` returns temp creds.
 
@@ -491,42 +281,12 @@ Temporary AWS credentials for external servers (on-prem, other clouds) via X.509
 
 ## Service-Linked Roles
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 Pre-built IAM roles for AWS services (fixed trust policy, auto-updated permissions). Examples: RDS (Multi-AZ), Auto Scaling (lifecycle hooks), Lambda (VPC functions), EKS (cluster creation). Auto-created when feature enabled. Deleted only when no resources remain.
 
 ---
 
 ## Simplest Mental Model
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -565,21 +325,6 @@ ROLE                service (RDS, Lambda). Tailored fit.
 ---
 
 ## Code Examples
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```python
@@ -667,21 +412,6 @@ aws accessanalyzer list-findings --analyzer-arn arn:aws:access-analyzer:... \
 
 ## Common Failure Modes
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **Problem**: Accidental privilege escalation through IAM role chaining
 
@@ -703,58 +433,13 @@ This pattern is commonly used in production systems.
 
 ## Interview Questions
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Q1: Explain AWS policy evaluation logic — how does a request get allowed or denied?
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Answer**: AWS evaluates policies in a specific order: (1) SCP from AWS Organizations, (2) Resource-based policies, (3) Permission boundaries, (4) Identity-based policies, (5) Session policies. At each layer, if there's an explicit `Deny`, the request is immediately denied. If no `Deny` exists but there's an `Allow` at any layer, the request is allowed. If there's neither deny nor allow, the implicit default-deny kicks in. Explicit deny always wins — even if the identity policy allows it, a SCP with deny blocks it. Permission boundaries set a maximum: even if the identity policy allows action X, the boundary restricts it. Session policies further restrict assumed roles. The key insight: there's no "allow override" — you must not have any applicable deny at any layer, and must have at least one allow.
 
 ### Q2: How do you design IAM for a multi-account AWS Organization with 20+ accounts?
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Answer**: Use AWS Organizations with a well-structured OU hierarchy (e.g., Security, Infrastructure, Workloads, Sandbox). Apply SCPs at the OU level for guardrails: deny root user actions, restrict regions, block leaving the organization. Use IAM Identity Center (SSO) for centralized user access with Permission Sets — grant access at the account/OU level rather than creating individual IAM users. Use IAM Roles (cross-account) for service-to-service access: central audit account reads CloudTrail from all accounts, central network account manages Transit Gateway. Use Resource-based policies (S3 bucket policies, KMS key policies) for cross-account data access. Use Access Analyzer continuously to detect unintended cross-account access. Automate account provisioning with Control Tower.

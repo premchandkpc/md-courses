@@ -6,21 +6,6 @@ PostgreSQL performance tuning for slow queries, high concurrency, and production
 
 ## Quick Diagnostic Commands
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```bash
 # Slow query log
@@ -41,21 +26,6 @@ SELECT count(*), state, wait_event FROM pg_stat_activity GROUP BY state, wait_ev
 
 ## Configuration Parameters
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 | Parameter | Default | Tuning | Effect |
 |-----------|---------|--------|--------|
@@ -70,21 +40,6 @@ This pattern is commonly used in production systems.
 
 ## Query Tuning
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```sql
 -- EXPLAIN plans
@@ -98,21 +53,6 @@ SET enable_seqscan = off;  -- Force index use (debug only, not permanent)
 ```
 
 ## Indexing
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 | Index Type | Use Case | Caveat |
@@ -137,21 +77,6 @@ FROM pg_indexes i1 WHERE EXISTS (SELECT 1 FROM pg_indexes i2 WHERE i2.indexdef =
 
 ## Vacuum & Bloat
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```sql
 -- Table-level vacuum
@@ -171,21 +96,6 @@ FROM pg_stat_progress_vacuum;
 
 ## Memory Tuning Profile
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```ini
 # Server with 32GB RAM, SSD, 16 cores
@@ -202,21 +112,6 @@ max_parallel_workers = 8
 ```
 
 ## Production Debugging Workflow
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```bash
@@ -242,21 +137,6 @@ WHERE state != 'idle' AND wait_event IS NOT NULL GROUP BY 1, 2 ORDER BY 3 DESC;
 
 ## Anti-Patterns
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 | Anti-Pattern | Why It Hurts | Fix |
 |-------------|-------------|-----|
@@ -268,21 +148,6 @@ This pattern is commonly used in production systems.
 | No `pg_stat_statements` | Tuning blind | `shared_preload_libraries = 'pg_stat_statements'` |
 
 ## Common Troubleshooting Sequences
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```bash

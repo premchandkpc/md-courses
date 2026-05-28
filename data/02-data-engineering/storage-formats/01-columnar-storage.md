@@ -4,38 +4,8 @@
 
 ## LAYER 1: Beginner's Mental Model 🧠
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Real-World Analogy
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 Imagine a **library with different filing systems**:
@@ -51,21 +21,6 @@ Imagine a **library with different filing systems**:
 - Fast for "give me this column from 1M books", slow for "give me this whole book"
 
 ### Why Column-Oriented Matters
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **The Big Data Problem:**
@@ -95,38 +50,8 @@ Column-Oriented:
 
 ## LAYER 2: How Column Storage Works (Intermediate) 🔧
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Query Execution Comparison
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Query: Find avg salary by department where hire_date > 2020**
@@ -175,38 +100,8 @@ Why the difference?
 
 ## LAYER 3: Deep Internals — Storage Layout & Encoding ⚙️
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Row-Oriented Storage
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 In row-oriented storage, all columns of a row are stored together:
@@ -235,21 +130,6 @@ On Disk:
 - Cache-inefficient when accessing few columns from many rows
 
 ### Column-Oriented Storage
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 Columns are stored separately:
@@ -284,21 +164,6 @@ city.col:  [NYC][LA][CHI][SF]
 
 ### When to Use Which
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 | Workload | Pattern | Format | Example |
 |----------|---------|--------|---------|
@@ -309,58 +174,13 @@ This pattern is commonly used in production systems.
 
 ## Parquet
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Overview
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 Apache Parquet is a columnar storage format designed for efficient data storage and retrieval. It originated from Cloudera and Twitter (based on Google's Dremel paper). Parquet is a binary format with rich metadata, compression, and encoding, supporting nested data structures via the striped/assembly algorithm from Dremel.
 
 ### File Structure
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -407,21 +227,6 @@ Parquet File:
 
 ### Row Groups
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 Row groups are horizontal partitions of the data:
 
@@ -436,21 +241,6 @@ spark.conf.set("parquet.dictionary.page.size", 1048576)
 ```
 
 ### Column Chunks
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 Each column chunk contains all pages for one column within a row group:
@@ -467,21 +257,6 @@ Total: 32KB on disk
 
 ### Pages
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 The smallest storage unit in Parquet:
 
@@ -490,21 +265,6 @@ The smallest storage unit in Parquet:
 3. **Data Page Header**: Metadata for the page (encoding type, num values, compression)
 
 ### Encoding Methods
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 #### RLE (Run-Length Encoding)
@@ -566,21 +326,6 @@ Delta-encode lengths, concatenate content. Excellent for text columns.
 
 ### Compression Codecs
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 | Codec | Speed | Ratio | CPU | Best For |
 |-------|-------|-------|-----|----------|
@@ -597,21 +342,6 @@ spark.conf.set("spark.sql.parquet.compression.codec", "zstd")
 ```
 
 ### Statistics and Predicate Pushdown
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 Parquet stores min/max/null counts per column chunk and per page:
@@ -639,21 +369,6 @@ spark.conf.set("parquet.filter.statistics.enabled", "true")
 
 ### Schema
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 Parquet stores schema using Thrift Compact Protocol:
 
@@ -677,21 +392,6 @@ message schema {
 
 ### Projection Pushdown
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```python
 df = spark.read.parquet("s3://data/events/").select("user_id", "event_type")
@@ -700,58 +400,13 @@ df = spark.read.parquet("s3://data/events/").select("user_id", "event_type")
 
 ## ORC (Optimized Row Columnar)
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Overview
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ORC is a columnar storage format from Apache Hive, designed specifically for Hive workloads. It provides ACID support and richer indexes than Parquet.
 
 ### File Structure
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -786,21 +441,6 @@ ORC File:
 
 ### Key Features
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **Three-level index**:
 1. File-level: statistics per column across entire file
@@ -819,38 +459,8 @@ CREATE TABLE events STORED AS ORC TBLPROPERTIES (
 
 ## LAYER 4: Production Reality — Scaling & Failures 🚨
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Common Production Failures
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 | Failure | Symptom | Root Cause | Detection | Recovery |
@@ -863,21 +473,6 @@ This pattern is commonly used in production systems.
 | **Index Bloat** | File 10x too large | Too many small writes | File size >> data | Compact, rewrite |
 
 ### Real Production Incident: Netflix Streaming Analytics
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Problem:** Daily analytics job (find top 10K shows by streams) became 2 hours slow (was 10 minutes).
@@ -964,21 +559,6 @@ spark.conf.set("parquet.page.size", 16777216)     # 16MB
 
 ### Observability: Parquet Performance Metrics
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```python
 # Check compression ratio
@@ -1004,38 +584,8 @@ for col in pf.schema:
 
 ## LAYER 5: Staff Engineer Perspective 👨‍💼
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Choosing Column Format
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 | Factor | Parquet | ORC | Delta Lake | Iceberg |
@@ -1054,21 +604,6 @@ This pattern is commonly used in production systems.
 - **Iceberg**: Enterprise: multi-region, hidden partitions, atomic writes
 
 ### Scaling Patterns: 1GB → 1PB Data Lake
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -1103,21 +638,6 @@ Phase 5: 100TB-1PB (Google scale)
 
 ### Architecture Evolution: Airbnb Data Platform
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```
 Year 1: Hadoop + Hive (ORC)
@@ -1151,38 +671,8 @@ Year 5: Add Iceberg
 
 ## Interview Questions 💼
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Level 1: Junior
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Q: What's the difference between row and columnar storage?**
@@ -1198,21 +688,6 @@ A: Analyses typically query few columns from many rows. Columnar: read only need
 A: Replace repeated string values with integer IDs. "NYC, LA, NYC, SF" → "0, 1, 0, 2" with dict {0:NYC, 1:LA, 2:SF}. Reduces size 5-100x for text.
 
 ### Level 2: Intermediate
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Q: When would you use Parquet vs ORC?**
@@ -1241,21 +716,6 @@ Tradeoff: Speed vs space.
 
 ### Level 3: Senior
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **Q: Design a data lake for Uber with 10B+ events/day. How do you partition?**
 
@@ -1276,21 +736,6 @@ Why:
 - Don't over-partition: Too many small files = slow metadata
 
 ### Level 4: Staff Engineer
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Q: You have 1PB data lake. Query scans 500GB, takes 5 seconds on Druid but 10 minutes on Spark. Design solution.**
@@ -1318,21 +763,6 @@ Query routing:
 ---
 
 ## Production Story: Stripe Payment Analytics
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Challenge:** Daily payment analytics (10B+ transactions) became bottleneck for fraud detection retraining.
@@ -1393,38 +823,8 @@ df.write.parquet(...)
 
 ## Hands-On Labs
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Lab 1: Design Optimal Parquet Schema
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Scenario:** Ecommerce events (1B/day)
@@ -1444,21 +844,6 @@ This pattern is commonly used in production systems.
 - IDs → plain + lz4
 
 ### Lab 2: Investigate & Fix Slow Query
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Setup:**
@@ -1481,21 +866,6 @@ Takes 10 minutes, need < 1 minute.
 
 ### Lab 3: Multi-Region Data Lake
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **Design:** Stripe serves payments in 10 regions. Data lives in AWS S3 (us-east, eu-west, ap-southeast).
 
@@ -1513,78 +883,21 @@ This pattern is commonly used in production systems.
 
 ## Related Topics
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Prerequisites
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 - [Operating Systems (12-operating-systems/)](../../12-operating-systems/) — Disk I/O, cache
 - [Networking (11-networking/)](../../11-networking/) — Data transfer optimization
 
 ### Deep Dives
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 - [Databases (08-databases/)](../../08-databases/) — Storage engines, B-trees
 - [Data Warehousing (02-data-engineering/)](../../02-data-engineering/) — OLAP, OLTP, MPP
 
 ### Cross-Domain
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 - [Performance Engineering (18-performance-engineering/)](../../18-performance-engineering/) — Profiling columnar reads
 - [Distributed Systems (09-distributed-systems/)](../../09-distributed-systems/) — Sharding, replication
@@ -1592,21 +905,6 @@ This pattern is commonly used in production systems.
 ---
 
 ## Summary
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 Columnar storage is **transformational for analytics**:
@@ -1630,21 +928,6 @@ SELECT * FROM events WHERE event_date = '2024-03-15';
 
 ### Bloom Filters
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 Bloom filters provide fast "definitely not in set" checks:
 
@@ -1664,21 +947,6 @@ CREATE TABLE events STORED AS ORC TBLPROPERTIES (
 ```
 
 ### ACID via Hive
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```sql
@@ -1706,58 +974,13 @@ DELETE FROM transactional_table WHERE id = 2;
 
 ## Avro
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Overview
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 Apache Avro is a row-oriented serialization framework with rich schema support, designed for data exchange between systems, especially Kafka streams.
 
 ### Schema (JSON)
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```json
@@ -1786,21 +1009,6 @@ This pattern is commonly used in production systems.
 
 ### Schema Evolution
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```json
 // v1 schema
@@ -1826,21 +1034,6 @@ This pattern is commonly used in production systems.
 
 ### Binary Encoding
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```
 Record: {"name": "Alice", "age": 30}
@@ -1864,21 +1057,6 @@ Total: 12 bytes vs ~20 bytes JSON
 | string | Length (varint) + UTF-8 |
 
 ### Container File Format
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -1907,58 +1085,13 @@ Key features:
 
 ## Arrow
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Overview
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 Apache Arrow is a cross-language, in-memory columnar data format. Unlike Parquet/ORC (storage formats), Arrow is designed for zero-copy data sharing and high-performance analytics.
 
 ### Columnar Format in Memory
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -1989,21 +1122,6 @@ Nested types (Lists):
 
 ### Key Features
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 1. **Zero-copy reads**: Data can be shared between processes without serialization
 2. **SIMD-friendly**: Columnar layout enables vectorized processing
@@ -2011,21 +1129,6 @@ This pattern is commonly used in production systems.
 4. **IPC format**: Standard for transferring data between processes
 
 ### Zero-Copy
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -2042,21 +1145,6 @@ No serialization! Same bytes in memory, different language bindings.
 ```
 
 ### IPC Format
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -2080,21 +1168,6 @@ Arrow IPC Stream Format:
 ```
 
 ### Flight SQL
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 Arrow Flight SQL is a protocol for high-performance database access:
@@ -2120,21 +1193,6 @@ Benefits:
 
 ### Arrow vs Other Formats
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 | Feature | Arrow | Parquet | Avro |
 |---------|-------|---------|------|
@@ -2148,38 +1206,8 @@ This pattern is commonly used in production systems.
 
 ## Comparison: Parquet vs ORC vs Avro vs Arrow
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Feature Matrix
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 | Feature | Parquet | ORC | Avro | Arrow |
@@ -2199,21 +1227,6 @@ This pattern is commonly used in production systems.
 | Read speed (all cols) | Good | Good | Excellent | Excellent |
 
 ### Decision Guide
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```
@@ -2255,21 +1268,6 @@ Trade-offs table:
 
 ### Hybrid Patterns
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 Modern systems combine formats:
 
@@ -2292,21 +1290,6 @@ Data Lake:
 ---
 
 ## Related
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 - [Databases](../../08-databases/) — Data storage and querying

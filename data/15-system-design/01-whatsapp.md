@@ -5,7 +5,6 @@
 > **Related**: [02-netflix.md](./02-netflix.md)
 
 
-
 ```mermaid
 graph LR
     CLIENT["WhatsApp Client"] --> WS["WebSocket<br/>Connection (long-lived)"]
@@ -41,21 +40,6 @@ graph LR
 
 ## Table of Contents
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 1. Requirements & Scale
 2. High-Level Architecture
@@ -75,21 +59,6 @@ This pattern is commonly used in production systems.
 ---
 
 ## 1. Requirements & Scale
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -113,21 +82,6 @@ Key Requirements:
 ---
 
 ## 2. High-Level Architecture
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -171,21 +125,6 @@ This pattern is commonly used in production systems.
 ---
 
 ## 3. Connection Management
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -231,21 +170,6 @@ jitter = random(0, base)
 ---
 
 ## 4. Message Flow
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -299,21 +223,6 @@ TTL based on message retention policy (default: messages stored until all device
 
 ## 5. Group Chat Architecture
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```text
 Group Types:
@@ -361,21 +270,6 @@ Offline: 1 push notification (notify group, not per-sender).
 
 ## 6. Multi-Device Support
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```text
 Account: +1-555-1234
@@ -420,21 +314,6 @@ Phone                    Server                    Desktop
 ---
 
 ## 7. End-to-End Encryption
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Signal Protocol Components:**
@@ -506,21 +385,6 @@ Initial Key -> root key chain
 
 ## 8. Media Sharing
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```text
 Sender                   Media Server              Recipient
@@ -556,21 +420,6 @@ Sender                   Media Server              Recipient
 ---
 
 ## 9. Presence Service
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -611,21 +460,6 @@ Read Receipts: On | Off (mutual)
 
 ## 10. Push Notifications
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```text
 WhatsApp Server              FCM/APNs                    Mobile Client
@@ -656,21 +490,6 @@ iOS (APNs):      { "aps": { "alert": "New message", "content-available": 1 }, "m
 ---
 
 ## 11. Database Design
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Cassandra for Messages:**
@@ -711,21 +530,6 @@ Broadcast: conversation_id = broadcast_list_id
 ---
 
 ## 12. Scaling Strategy
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -774,21 +578,6 @@ Bloom Filter (1% false positive) -> 1MB for 10M users (vs 100MB hash set)
 ---
 
 ## 13. Failure Analysis
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Connection Storm on Reconnection After Downtime:**
@@ -858,21 +647,6 @@ Mitigations:
 
 ## 14. Performance Considerations
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```text
 Messages:
@@ -900,41 +674,11 @@ Network:
 
 ## Simplest Mental Model
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **WhatsApp is like a post office that never reads your letters.** The post office (server) knows who is home (online/offline), carries the letter to the right address, and knocks (push notification) if nobody answers. But the letters are in sealed armored envelopes (end-to-end encryption) — even the post office can't read them. Large groups are like mailing lists: either each letter is copied for every member (small group fan-out) or members check a bulletin board (large group fan-out).
 
 
 ## Practical Example
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 See code examples above for practical usage patterns.

@@ -1,7 +1,6 @@
 # 🚀 Redis — Complete Deep Dive
 
 
-
 ```mermaid
 graph LR
     STR["String<br/>(SDS)"] --> CACHING["Caching<br/>(SET/GET)"]
@@ -34,20 +33,6 @@ graph LR
 
 ## Table of Contents
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 1. [Data Structures Overview](#data-structures-overview)
 2. [Data Structure Internals](#data-structure-internals)
@@ -63,21 +48,6 @@ This pattern is commonly used in production systems.
 ---
 
 ## Data Structures Overview
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -97,38 +67,8 @@ Bloom/Cuckoo/T-Digest/CMS → modules
 
 ## Data Structure Internals
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### SDS (Simple Dynamic String)
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -142,21 +82,6 @@ O(1) length, binary safe, preallocation to next power of 2.
 
 ### Encoding
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```python
 EMBSTR_LIMIT = 44  # 64 - header(19) - null(1)
@@ -169,21 +94,6 @@ else:
 ```
 
 ### SkipList (Sorted Set)
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -205,21 +115,6 @@ def random_level():
 ```
 
 ### Dict (Hash Table)
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```python
@@ -245,21 +140,6 @@ class RedisDict:
 
 ### Stream (Radix Tree)
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 Compressed trie with listpack leaf nodes. Each entry ID = `timestamp-sequence`.
 
@@ -267,38 +147,8 @@ Compressed trie with listpack leaf nodes. Each entry ID = `timestamp-sequence`.
 
 ## Memory Optimization
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Key Naming & Expiration
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```redis
@@ -312,21 +162,6 @@ SETEX "session:abc123" 3600 "data"
 Expiration: **Lazy** (check on access) + **Active** (sample 20 keys every 100ms, if >25% expired, repeat).
 
 ### Eviction Policies
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```redis
@@ -344,21 +179,6 @@ allkeys-random   → random eviction          [uniform access]
 
 ### Memory Fragmentation
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```bash
 INFO memory | grep mem_fragmentation_ratio
@@ -374,38 +194,8 @@ CONFIG SET activedefrag yes
 
 ## Persistence
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### RDB (Snapshot)
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```redis
@@ -416,21 +206,6 @@ BGSAVE         # background fork + COW
 ```
 
 ### AOF (Append-Only File)
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```redis
@@ -443,21 +218,6 @@ appendfsync no        # let OS decide
 
 ### Hybrid (Redis 4+)
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```text
 appendonly.aof = [RDB snapshot | AOF incremental commands]
@@ -467,21 +227,6 @@ Fast restart: load RDB, replay only incremental AOF.
 ---
 
 ## Replication (PSYNC2)
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -497,21 +242,6 @@ REPLICAOF host port
 ---
 
 ## Redis Cluster
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```text
@@ -535,21 +265,6 @@ def slot_for_key(key):
 
 ## Sentinel
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```text
 Sentinels (3+) monitor master/replicas.
@@ -563,38 +278,8 @@ Config epoch prevents split-brain.
 
 ## Transactions & Lua
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### MULTI/EXEC/WATCH
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```redis
@@ -606,21 +291,6 @@ EXEC                                 -- nil if WATCHed key changed
 ```
 
 ### Lua Scripting
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```lua
@@ -641,21 +311,6 @@ EVALSHA <sha1> 2 from to amount   -- cached script (SCRIPT FLUSH to clear)
 ---
 
 ## Modules
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```redis
@@ -680,21 +335,6 @@ TS.RANGE sensor:temp 1614556800 1614643200
 
 ## Simplest Mental Model
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ```
 Redis is a toolbox where everything is a key:
@@ -717,21 +357,6 @@ Redis is a toolbox where everything is a key:
 ---
 
 ## Code Examples
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```python
@@ -775,21 +400,6 @@ def get_top_players(game: str, page: int = 0, page_size: int = 10):
 
 ## Common Failure Modes
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **Problem**: Cache stampede — thundering herd when cached key expires under high concurrency
 
@@ -811,79 +421,19 @@ This pattern is commonly used in production systems.
 
 ## Interview Questions
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Q1: How does Redis handle eviction and what policy should you choose for a caching use case?
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 **Answer**: Redis applies eviction when memory exceeds `maxmemory`. It uses a combination of lazy (check on every command) and active (sample keys every 100ms) eviction. For caching, `allkeys-lru` is the general-purpose choice — it evicts the least recently used keys across all keys. `allkeys-lfu` is better for workloads with skewed access patterns (some keys accessed much more frequently than others). `volatile-lru` only evicts keys with TTL set, which is useful when some keys should never be evicted. `noeviction` returns errors on writes — use it as a safety net to prevent data loss but monitor closely.
 
 ### Q2: How would you design a Redis deployment for high availability with automatic failover?
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **Answer**: Use Redis Sentinel for HA. Deploy at least 3 Sentinel nodes (odd number for quorum) monitoring a master-replica pair. Sentinels use gossip to agree on master status — if a master is unreachable, a leader election happens (requires majority), and a replica is promoted. Configure the application to connect via Sentinel (not directly to master) so it gets the current master address. For higher scale, use Redis Cluster with 3 masters and 3 replicas — data is sharded across 16384 hash slots, each master replicates to one replica. If a master fails, its replica is promoted. Cluster mode provides both HA and horizontal scaling but has limitations (multi-key operations only within same hash slot).
 
 
 ## Observability
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 ```mermaid
@@ -899,21 +449,6 @@ flowchart LR
 
 ### Key Metrics
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 | Metric | Unit | Threshold | Indicates |
 |--------|------|-----------|-----------|
@@ -928,42 +463,12 @@ This pattern is commonly used in production systems.
 
 ### Logs
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 - **ERROR**: OOM on write, replication failure, cluster fail state, AOF rewrite failure
 - **WARN**: Evictions > 0, memory > maxmemory, replication buffer growing, fork delay
 - **INFO**: BGSAVE complete, AOF rewrite, failover, replica connected, config rewrite
 
 ### Alerts
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 | Severity | Condition | Response |
@@ -975,59 +480,14 @@ This pattern is commonly used in production systems.
 
 ### Dashboards
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 **Redis Overview**: CPU, memory, hit rate, evictions, connected clients, commands/sec, network I/O.
 
 
 ## Common Failures
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 ### Failure: Cache Stampede
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 - **Symptoms**: DB load spikes, latency increases. Cache miss rate suddenly 100% for popular keys.
@@ -1038,21 +498,6 @@ This pattern is commonly used in production systems.
 
 ### Failure: Memory Fragmentation
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 - **Symptoms**: `used_memory_rss` >> `used_memory`. Process memory high but data small. OOM risk despite low data.
 - **Root Cause**: Redis allocates/frees differently-sized objects. Jemalloc can't return pages to OS. Common with frequent expiry/deletion.
@@ -1062,21 +507,6 @@ This pattern is commonly used in production systems.
 
 ### Failure: Fork-Based Save Latency
 
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
-
 
 - **Symptoms**: Latency spikes, correlated with BGSAVE/AOF rewrite. P99 10x during save.
 - **Root Cause**: BGSAVE forks Redis process. Fork blocks for large heaps. Copy-on-write page faults.
@@ -1085,21 +515,6 @@ This pattern is commonly used in production systems.
 - **Prevention**: Keep memory < 4GB per instance. Use `repl-diskless-sync`. Schedule saves.
 
 ### Failure: Cluster Failover Issues
-
-#### Step-by-Step
-1. Process input
-2. Validate
-3. Execute
-4. Return result
-
-#### Code Example
-```python
-# Example implementation
-pass
-```
-
-#### Real-World Scenario
-This pattern is commonly used in production systems.
 
 
 - **Symptoms**: Data loss on failover. Cluster in fail state. Write commands fail.

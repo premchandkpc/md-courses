@@ -1,696 +1,890 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1.0">
-  <title>Knowledge Universe</title>
-  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    :root {
-      --bg: #0d1117; --bg2: #161b22; --bg3: #1c2128; --bg4: #21262d;
-      --border: #30363d; --fg: #e6edf3; --fg2: #8b949e; --fg3: #6e7681;
-      --accent: #58a6ff; --accent2: #3fb950; --accent3: #d29922; --accent4: #f0883e;
-      --red: #f85149; --purple: #bc8cff; --pink: #f778ba;
-      --mono: 'SF Mono','JetBrains Mono','Fira Code',monospace;
-      --layer-1: #1a3a5c; --layer-2: #1a3a2c; --layer-3: #3a1a3a; --layer-4: #3a2a1a; --layer-5: #1a2a3a;
-      --radius: 6px; --radius-sm: 4px;
-    }
-    body {
-      font-family: system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
-      background: var(--bg); color: var(--fg); height: 100vh; overflow: hidden;
-      font-size: 14px; line-height: 1.6;
-    }
-    .app { display: flex; height: 100vh; }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Knowledge Universe</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
 
-    /* ─── Sidebar ─── */
-    .sidebar {
-      width: 300px; background: var(--bg2); border-right: 1px solid var(--border);
-      display: flex; flex-direction: column; overflow: hidden;
-      transition: width .2s;
-    }
-    .sidebar.collapsed { width: 44px; }
-    .sidebar-header {
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 10px 12px; border-bottom: 1px solid var(--border); flex-shrink: 0;
-    }
-    .sidebar-header h2 { font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; }
-    .collapse-btn {
-      background: none; border: none; color: var(--fg3); cursor: pointer;
-      padding: 2px 6px; border-radius: var(--radius-sm); font-size: 16px;
-    }
-    .collapse-btn:hover { background: var(--bg3); color: var(--fg); }
-    .sidebar-search {
-      padding: 8px 10px; border-bottom: 1px solid var(--border); flex-shrink: 0;
-    }
-    .sidebar-search input {
-      width: 100%; padding: 6px 8px; background: var(--bg3); border: 1px solid var(--border);
-      border-radius: var(--radius-sm); color: var(--fg); font-size: 12px; outline: none;
-    }
-    .sidebar-search input:focus { border-color: var(--accent); }
-    .search-status {
-      padding: 4px 10px; font-size: 11px; color: var(--fg3); border-bottom: 1px solid var(--border);
-      flex-shrink: 0; display: none;
-    }
-    .tree-scroll { flex: 1; overflow-y: auto; padding: 4px 0; }
-    .tree-item {
-      display: flex; align-items: center; padding: 3px 8px; cursor: pointer;
-      gap: 5px; font-size: 12px; user-select: none; white-space: nowrap;
-    }
-    .tree-item:hover { background: var(--bg3); }
-    .tree-item.active { background: var(--accent); color: #000; font-weight: 600; }
-    .tree-item .icon { flex-shrink: 0; font-size: 11px; width: 16px; text-align: center; }
-    .tree-item.file { padding-left: 24px; }
-    .tree-item.hidden { display: none; }
-    .tree-item .hl { background: var(--accent3); color: #000; padding: 0 2px; border-radius: 2px; }
-    .tree-toggle {
-      cursor: pointer; color: var(--fg3); font-size: 9px; width: 12px; text-align: center; flex-shrink: 0;
-    }
-    .tree-children { padding-left: 14px; display: none; }
-    .tree-children.open { display: block; }
+:root{
+  --bg:#0b0e14;--bg2:#11161e;--bg3:#18202a;--bg4:#1f2937;--bg5:#263340;
+  --border:#1e2a3a;--border-light:#2a3a4e;
+  --fg:#e3eaf0;--fg2:#94a3b8;--fg3:#64748b;
+  --accent:#60a5fa;--accent-hover:#93c5fd;
+  --green:#34d399;--green-bg:rgba(52,211,149,.08);
+  --yellow:#fbbf24;--yellow-bg:rgba(251,191,36,.08);
+  --red:#f87171;--red-bg:rgba(248,113,113,.08);
+  --purple:#a78bfa;--purple-bg:rgba(167,139,250,.08);
+  --pink:#f472b6;--orange:#fb923c;
+  --code-fg:#e3eaf0;--code-bg:#0f1520;
+  --radius:8px;--radius-sm:5px;
+  --font-display:'Inter',system-ui,-apple-system,sans-serif;
+  --font-mono:'JetBrains Mono','SF Mono','Fira Code',monospace;
+  --shadow:0 1px 3px rgba(0,0,0,.3),0 1px 2px rgba(0,0,0,.2);
+  --shadow-lg:0 4px 16px rgba(0,0,0,.4);
+}
+body{
+  font-family:var(--font-display);background:var(--bg);color:var(--fg);
+  height:100vh;overflow:hidden;font-size:15px;line-height:1.7;
+  -webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;
+}
+.app{display:flex;height:100vh}
 
-    /* ─── Content ─── */
-    .content { flex: 1; display: flex; flex-direction: column; overflow: hidden; min-width: 0; }
-    .content-header {
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 12px 24px; border-bottom: 1px solid var(--border); flex-shrink: 0; gap: 12px;
-    }
-    .content-header .title-area { min-width: 0; }
-    .content-header h1 { font-size: 16px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .content-header .path { font-size: 11px; color: var(--fg3); }
+/* ─── Sidebar ─── */
+.sidebar{
+  width:280px;background:var(--bg2);border-right:1px solid var(--border);
+  display:flex;flex-direction:column;overflow:hidden;
+  transition:width .25s cubic-bezier(.4,0,.2,1);
+}
+.sidebar.collapsed{width:48px}
+.sidebar-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:14px 14px 12px;flex-shrink:0;
+}
+.sidebar-header h2{
+  font-size:13px;font-weight:700;letter-spacing:.04em;
+  color:var(--fg2);text-transform:uppercase;
+  white-space:nowrap;overflow:hidden;
+}
+.collapse-btn{
+  background:none;border:none;color:var(--fg3);cursor:pointer;
+  padding:2px 6px;border-radius:var(--radius-sm);font-size:14px;
+  line-height:1;transition:all .15s;
+}
+.collapse-btn:hover{background:var(--bg4);color:var(--fg)}
+.sidebar-search{
+  padding:0 10px 8px;flex-shrink:0;
+}
+.sidebar-search input{
+  width:100%;padding:7px 10px;background:var(--bg3);border:1px solid var(--border);
+  border-radius:var(--radius-sm);color:var(--fg);font-size:12.5px;outline:none;
+  transition:border-color .15s;font-family:var(--font-display);
+}
+.sidebar-search input::placeholder{color:var(--fg3)}
+.sidebar-search input:focus{border-color:var(--accent);background:var(--bg4)}
+.search-status{
+  padding:3px 14px 5px;font-size:11px;color:var(--fg3);
+  border-bottom:1px solid var(--border);flex-shrink:0;display:none;
+}
+.tree-scroll{flex:1;overflow-y:auto;padding:6px 0}
+.tree-item{
+  display:flex;align-items:center;padding:4px 10px;cursor:pointer;
+  gap:6px;font-size:12.5px;user-select:none;white-space:nowrap;
+  transition:background .1s;border-left:2px solid transparent;
+}
+.tree-item:hover{background:var(--bg3)}
+.tree-item.active{background:var(--accent);color:#000;font-weight:600;border-left-color:#fff}
+.tree-item .icon{flex-shrink:0;font-size:12px;width:18px;text-align:center;opacity:.7}
+.tree-item.active .icon{opacity:1}
+.tree-item.file{padding-left:22px}
+.tree-item.hidden{display:none}
+.tree-item .hl{background:var(--yellow);color:#000;padding:0 2px;border-radius:2px;font-weight:600}
+.tree-toggle{
+  cursor:pointer;color:var(--fg3);font-size:9px;width:14px;
+  text-align:center;flex-shrink:0;transition:transform .15s;
+}
+.tree-toggle.open{transform:rotate(90deg)}
+.tree-children{padding-left:14px;display:none}
+.tree-children.open{display:block}
 
-    /* ─── Layer Toggles ─── */
-    .layer-toggles {
-      display: flex; gap: 4px; flex-shrink: 0; flex-wrap: wrap;
-    }
-    .layer-btn {
-      padding: 4px 10px; border: 1px solid var(--border); border-radius: 4px;
-      background: var(--bg3); color: var(--fg2); cursor: pointer; font-size: 11px;
-      font-weight: 500; transition: all .15s;
-    }
-    .layer-btn:hover { border-color: var(--fg2); }
-    .layer-btn.on {
-      background: var(--accent); color: #000; border-color: var(--accent); font-weight: 600;
-    }
-    .layer-btn.l1.on { background: #4a8bc2; }
-    .layer-btn.l2.on { background: #3fb950; }
-    .layer-btn.l3.on { background: #bc8cff; }
-    .layer-btn.l4.on { background: #f0883e; }
-    .layer-btn.l5.on { background: #f778ba; }
+/* ─── Content Header Bar ─── */
+.content{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0;position:relative}
 
-    /* ─── Scrollable Body ─── */
-    .content-body {
-      flex: 1; overflow-y: auto; padding: 16px 28px 60px;
-      max-width: 960px; width: 100%; margin: 0 auto;
-    }
-    .content-body.narrow { max-width: 720px; }
+/* Scroll progress bar at top */
+.scroll-progress{
+  position:absolute;top:0;left:0;right:0;height:2px;z-index:20;
+  background:var(--border);pointer-events:none;
+}
+.scroll-progress .fill{
+  height:100%;width:0%;background:linear-gradient(90deg,var(--accent),var(--purple));
+  transition:width .1s linear;border-radius:0 1px 1px 0;
+}
 
-    /* ─── Start Screen ─── */
-    .start-screen {
-      display: flex; flex-direction: column; align-items: center;
-      justify-content: center; height: 100%; gap: 12px; text-align: center;
-    }
-    .start-screen .big-icon { font-size: 48px; }
-    .start-screen h1 { font-size: 26px; }
-    .start-screen p { color: var(--fg2); max-width: 420px; }
+.content-header{
+  padding:12px 28px;border-bottom:1px solid var(--border);flex-shrink:0;
+  background:var(--bg2);position:relative;z-index:10;
+}
 
-    /* ─── Markdown Styling ─── */
-    .md h1 { font-size: 22px; margin: 20px 0 8px; border-bottom: 1px solid var(--border); padding-bottom: 6px; }
-    .md h2 { font-size: 17px; margin: 18px 0 6px; }
-    .md h3 { font-size: 15px; margin: 14px 0 5px; }
-    .md h4 { font-size: 13px; margin: 10px 0 4px; color: var(--fg2); }
-    .md p { margin: 6px 0; }
-    .md ul,.md ol { margin: 6px 0; padding-left: 20px; }
-    .md li { margin: 2px 0; }
-    .md strong { color: var(--fg); }
-    .md a { color: var(--accent); text-decoration: none; cursor: pointer; }
-    .md a:hover { text-decoration: underline; }
-    .md code {
-      font-family: var(--mono); background: var(--bg3); padding: 1px 5px;
-      border-radius: 3px; font-size: 12px; color: var(--accent2);
-    }
-    .md pre {
-      background: var(--bg3); padding: 12px; border-radius: var(--radius);
-      overflow-x: auto; margin: 8px 0; border: 1px solid var(--border); position: relative;
-    }
-    .md pre code {
-      background: none; padding: 0; font-size: 12px; line-height: 1.5;
-      color: var(--fg); font-family: var(--mono);
-    }
-    .md pre .copy-btn {
-      position: absolute; top: 6px; right: 6px; background: var(--bg4);
-      border: 1px solid var(--border); color: var(--fg3); padding: 2px 6px;
-      border-radius: 3px; cursor: pointer; font-size: 10px; opacity: 0;
-      transition: opacity .15s;
-    }
-    .md pre:hover .copy-btn { opacity: 1; }
-    .md pre .copy-btn:hover { background: var(--bg); color: var(--fg); }
-    .md blockquote {
-      border-left: 3px solid var(--accent3); padding: 6px 14px; margin: 8px 0;
-      background: var(--bg3);
-    }
-    .md blockquote p { color: var(--fg2); }
-    .md table { border-collapse: collapse; width: 100%; margin: 8px 0; }
-    .md th,.md td { padding: 5px 8px; border: 1px solid var(--border); text-align: left; font-size: 12px; }
-    .md th { background: var(--bg3); font-weight: 600; }
-    .md tr:nth-child(even) td { background: var(--bg2); }
-    .md hr { border: none; border-top: 1px solid var(--border); margin: 16px 0; }
+/* Domain badge row */
+.domain-row{
+  display:flex;align-items:center;gap:8px;margin-bottom:6px;
+}
+.domain-badge{
+  display:inline-flex;align-items:center;gap:4px;
+  font-size:10px;font-weight:700;text-transform:uppercase;
+  letter-spacing:.06em;padding:2px 9px;border-radius:4px;
+  background:var(--bg3);color:var(--fg2);border:1px solid var(--border);
+  white-space:nowrap;
+}
+.domain-badge .dot{
+  width:6px;height:6px;border-radius:50%;display:inline-block;
+}
 
-    /* ─── Mermaid ─── */
-    .md .mermaid-wrap {
-      display: flex; justify-content: center; margin: 16px 0;
-      padding: 12px; background: var(--bg3); border-radius: var(--radius);
-      border: 1px solid var(--border); overflow-x: auto;
-      transition: opacity .4s, transform .3s;
-    }
-    .md .mermaid-wrap.animate-in {
-      animation: fadeSlide .5s ease-out;
-    }
-    @keyframes fadeSlide {
-      from { opacity: 0; transform: translateY(12px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
+/* Breadcrumb */
+.breadcrumb{
+  display:flex;align-items:center;gap:4px;flex-wrap:wrap;
+  font-size:11px;color:var(--fg3);font-family:var(--font-mono);
+}
+.breadcrumb .seg{
+  color:var(--fg3);cursor:pointer;padding:1px 4px;border-radius:3px;
+  transition:all .12s;text-decoration:none;
+}
+.breadcrumb .seg:hover{color:var(--accent);background:var(--bg4)}
+.breadcrumb .sep{color:var(--border-light);font-size:9px;font-weight:700}
 
-    /* ─── Layer visibility ─── */
-    .md .layer-section { transition: opacity .3s, max-height .3s; overflow: hidden; }
-    .md .layer-section.hidden-l { opacity: 0; max-height: 0; margin: 0; padding: 0; }
-    .md .layer-label {
-      display: inline-block; font-size: 10px; font-weight: 600; padding: 2px 8px;
-      border-radius: 3px; margin-right: 8px; text-transform: uppercase;
-    }
-    .md .layer-label.l1 { background: #4a8bc2; color: #fff; }
-    .md .layer-label.l2 { background: #3fb950; color: #000; }
-    .md .layer-label.l3 { background: #bc8cff; color: #fff; }
-    .md .layer-label.l4 { background: #f0883e; color: #000; }
-    .md .layer-label.l5 { background: #f778ba; color: #000; }
+/* Title row */
+.title-row{
+  display:flex;align-items:flex-start;justify-content:space-between;gap:12px;
+  margin-top:2px;
+}
+.title-area{min-width:0;flex:1}
+.title-area h1{
+  font-size:20px;font-weight:800;letter-spacing:-.02em;line-height:1.3;
+  color:var(--fg);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.title-area .subtitle{
+  font-size:12px;color:var(--fg3);margin-top:2px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
 
-    /* ─── Comparison Cards ─── */
-    .md .comp-row {
-      display: flex; gap: 10px; margin: 10px 0; flex-wrap: wrap;
-    }
-    .md .comp-card {
-      flex: 1; min-width: 160px; padding: 12px; border: 1px solid var(--border);
-      border-radius: var(--radius); background: var(--bg3);
-      transition: transform .15s, box-shadow .15s;
-    }
-    .md .comp-card:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,.3); }
-    .md .comp-card h4 { margin: 0 0 4px; font-size: 13px; }
-    .md .comp-card p { font-size: 12px; color: var(--fg2); margin: 0; }
+/* File stats */
+.file-stats{
+  display:flex;gap:8px;flex-shrink:0;align-items:center;
+}
+.file-stats .stat{
+  display:flex;align-items:center;gap:4px;
+  font-size:10.5px;color:var(--fg3);font-weight:500;
+  padding:3px 8px;background:var(--bg3);border-radius:4px;
+  border:1px solid var(--border);white-space:nowrap;
+}
 
-    /* ─── Interactive State Machine ─── */
-    .state-machine { margin: 16px 0; }
-    .state-machine svg {
-      width: 100%; max-height: 280px; background: var(--bg3);
-      border: 1px solid var(--border); border-radius: var(--radius);
-    }
-    .sm-controls {
-      display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px;
-    }
-    .sm-btn {
-      padding: 5px 12px; border: 1px solid var(--border); border-radius: 4px;
-      background: var(--bg3); color: var(--fg); cursor: pointer; font-size: 11px;
-      transition: all .12s;
-    }
-    .sm-btn.active { background: var(--accent); color: #000; border-color: var(--accent); font-weight: 600; }
-    .sm-btn.err { border-color: var(--red); color: var(--red); }
-    .sm-btn:hover { border-color: var(--fg2); }
-    .sm-state {
-      display: inline-block; padding: 1px 6px; border-radius: 3px;
-      font-size: 11px; font-weight: 600;
-    }
-    .sm-state.closed { background: #3fb950; color: #000; }
-    .sm-state.open { background: #f85149; color: #fff; }
-    .sm-state.half { background: #d29922; color: #000; }
+/* Layer toggles row */
+.toggles-row{
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+  margin-top:8px;padding-top:8px;border-top:1px solid var(--border);
+}
+.toggles-label{
+  font-size:10px;font-weight:600;text-transform:uppercase;
+  letter-spacing:.06em;color:var(--fg3);white-space:nowrap;
+}
+.layer-toggles{display:flex;gap:4px;flex-shrink:0;flex-wrap:wrap}
+.layer-btn{
+  padding:4px 12px;border:1px solid var(--border);border-radius:20px;
+  background:var(--bg3);color:var(--fg3);cursor:pointer;font-size:10px;
+  font-weight:600;letter-spacing:.03em;text-transform:uppercase;
+  transition:all .18s cubic-bezier(.4,0,.2,1);font-family:var(--font-display);
+  position:relative;overflow:hidden;
+}
+.layer-btn::before{
+  content:'';position:absolute;inset:0;border-radius:20px;
+  opacity:0;transition:opacity .18s;
+}
+.layer-btn:hover{border-color:var(--border-light);color:var(--fg2);background:var(--bg4)}
+.layer-btn.on{color:#000;font-weight:700;border-color:transparent}
+.layer-btn.on::before{opacity:1}
+.layer-btn.on span{position:relative;z-index:1}
+.layer-btn.l1.on{background:#4a8bc2}
+.layer-btn.l2.on{background:var(--green)}
+.layer-btn.l3.on{background:var(--purple)}
+.layer-btn.l4.on{background:var(--orange)}
+.layer-btn.l5.on{background:var(--pink)}
 
-    /* ─── Animated Flow Steps ─── */
-    .flow-step {
-      display: flex; align-items: flex-start; gap: 10px; padding: 8px 10px;
-      margin: 4px 0; border: 1px solid transparent; border-radius: var(--radius);
-      transition: all .25s;
-    }
-    .flow-step .step-num {
-      width: 22px; height: 22px; border-radius: 50%; background: var(--bg3);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 11px; font-weight: 700; flex-shrink: 0; color: var(--fg3);
-    }
-    .flow-step.active {
-      border-color: var(--accent); background: rgba(88,166,255,.08);
-    }
-    .flow-step.active .step-num { background: var(--accent); color: #000; }
-    .flow-step.done .step-num { background: var(--accent2); color: #000; }
+/* ─── Content Body ─── */
+.content-body{
+  flex:1;overflow-y:auto;padding:28px 32px 80px;
+  max-width:900px;width:100%;margin:0 auto;
+}
+@media(max-width:1100px){.content-body{padding:20px 24px 60px}}
 
-    /* ─── TOC ─── */
-    .toc-sidebar {
-      width: 220px; background: var(--bg2); border-left: 1px solid var(--border);
-      padding: 16px 0; overflow-y: auto; flex-shrink: 0; display: none;
-    }
-    .toc-sidebar.show { display: block; }
-    .toc-item {
-      padding: 3px 14px; font-size: 11px; color: var(--fg3); cursor: pointer;
-      border-left: 2px solid transparent; transition: all .12s;
-    }
-    .toc-item:hover { color: var(--fg); }
-    .toc-item.active { color: var(--accent); border-left-color: var(--accent); }
-    .toc-item.h2 { padding-left: 14px; }
-    .toc-item.h3 { padding-left: 24px; font-size: 10px; }
+/* ─── Start Screen ─── */
+.start-screen{
+  display:flex;flex-direction:column;align-items:center;
+  justify-content:center;height:100%;gap:14px;text-align:center;
+  padding:40px;
+}
+.start-screen .big-icon{font-size:64px;margin-bottom:4px}
+.start-screen h1{font-size:30px;font-weight:800;letter-spacing:-.02em}
+.start-screen p{color:var(--fg2);max-width:440px;font-size:15px;line-height:1.6}
 
-    /* ─── Scrollbar ─── */
-    ::-webkit-scrollbar { width: 6px; height: 6px; }
-    ::-webkit-scrollbar-thumb { background: var(--bg3); border-radius: 3px; }
-    ::-webkit-scrollbar-thumb:hover { background: var(--fg3); }
+/* ═══ TYPOGRAPHIC SCALE ═══ */
+.md{font-size:15px;line-height:1.75;color:var(--fg)}
 
-    /* ─── Responsive ─── */
-    @media (max-width: 900px) {
-      .sidebar { width: 220px; }
-      .toc-sidebar { display: none !important; }
-      .content-body { padding: 12px 16px 40px; }
-    }
-  </style>
+.md h1{
+  font-size:28px;font-weight:800;margin:32px 0 12px;letter-spacing:-.025em;
+  padding-bottom:10px;border-bottom:2px solid var(--border);
+  position:relative;
+}
+.md h1::after{
+  content:'';position:absolute;bottom:-2px;left:0;width:80px;
+  height:2px;background:linear-gradient(90deg,var(--accent),transparent);
+  border-radius:1px;
+}
+.md h2{
+  font-size:20px;font-weight:700;margin:28px 0 10px;letter-spacing:-.015em;
+  padding-left:0;color:var(--fg);
+}
+.md h3{
+  font-size:17px;font-weight:600;margin:22px 0 8px;color:var(--fg);
+}
+.md h4{
+  font-size:14px;font-weight:600;margin:16px 0 6px;color:var(--fg2);
+  text-transform:uppercase;letter-spacing:.04em;
+}
+.md h5{font-size:13px;font-weight:600;margin:12px 0 4px;color:var(--fg2)}
+.md h6{font-size:12px;font-weight:600;margin:10px 0 4px;color:var(--fg3);text-transform:uppercase;letter-spacing:.05em}
+
+.md p{margin:9px 0;color:var(--fg)}
+.md ul,.md ol{margin:8px 0;padding-left:24px}
+.md li{margin:4px 0;line-height:1.7}
+.md li::marker{color:var(--fg3)}
+.md strong{color:#fff;font-weight:600}
+.md em{color:var(--fg2);font-style:italic}
+
+/* ─── Links ─── */
+.md a{
+  color:var(--accent);text-decoration:none;cursor:pointer;
+  transition:color .12s;font-weight:500;
+}
+.md a:hover{color:var(--accent-hover);text-decoration:underline}
+
+/* ─── Inline Code ─── */
+.md code{
+  font-family:var(--font-mono);background:var(--code-bg);padding:2px 7px;
+  border-radius:4px;font-size:13px;color:var(--green);
+  border:1px solid rgba(52,211,149,.12);
+}
+
+/* ─── Code Blocks ─── */
+.md pre{
+  background:var(--code-bg);padding:16px;border-radius:var(--radius);
+  overflow-x:auto;margin:14px 0;border:1px solid var(--border);
+  position:relative;
+}
+.md pre::before{
+  content:attr(data-lang);position:absolute;top:8px;right:12px;
+  font-size:10px;font-family:var(--font-mono);font-weight:600;
+  color:var(--fg3);text-transform:uppercase;letter-spacing:.05em;
+}
+.md pre code{
+  background:none;padding:0;font-size:13px;line-height:1.65;
+  color:var(--code-fg);font-family:var(--font-mono);
+  border:none;
+}
+.md pre .copy-btn{
+  position:absolute;top:6px;right:6px;background:var(--bg4);
+  border:1px solid var(--border);color:var(--fg3);padding:3px 8px;
+  border-radius:4px;cursor:pointer;font-size:10px;font-family:var(--font-display);
+  opacity:0;transition:opacity .2s;
+}
+.md pre .copy-btn:hover{background:var(--bg5);color:var(--fg);border-color:var(--border-light)}
+.md pre:hover .copy-btn{opacity:1}
+
+/* ─── Blockquotes ─── */
+.md blockquote{
+  border-left:3px solid var(--accent);padding:10px 18px;margin:14px 0;
+  background:linear-gradient(135deg,var(--accent) 0%,var(--accent) 3px,var(--bg3) 3px);
+  border-radius:0 var(--radius-sm) var(--radius-sm) 0;
+  position:relative;
+}
+.md blockquote p{color:var(--fg2);margin:5px 0;font-size:14px;}
+.md blockquote p:first-child{margin-top:0}
+.md blockquote p:last-child{margin-bottom:0}
+
+/* ─── Tables ─── */
+.md table{
+  border-collapse:separate;border-spacing:0;width:100%;
+  margin:14px 0;border:1px solid var(--border);border-radius:var(--radius);
+  overflow:hidden;font-size:13px;
+}
+.md thead{position:sticky;top:0}
+.md th{
+  background:var(--bg4);font-weight:600;text-transform:uppercase;
+  letter-spacing:.03em;font-size:11px;color:var(--fg2);padding:10px 14px;
+  text-align:left;border-bottom:1px solid var(--border);
+}
+.md td{
+  padding:9px 14px;border-bottom:1px solid var(--border);color:var(--fg);
+  vertical-align:top;
+}
+.md tr:last-child td{border-bottom:none}
+.md tr:nth-child(even) td{background:var(--bg2)}
+
+/* ─── H Rule ─── */
+.md hr{
+  border:none;height:1px;background:linear-gradient(90deg,transparent,var(--border),transparent);
+  margin:28px 0;
+}
+
+/* ─── Mermaid ─── */
+.md .mermaid-wrap{
+  display:flex;justify-content:center;margin:20px 0;
+  padding:20px;background:var(--bg3);border-radius:var(--radius);
+  border:1px solid var(--border);overflow-x:auto;
+  transition:opacity .4s,transform .3s;
+  box-shadow:var(--shadow);
+}
+.md .mermaid-wrap.animate-in{animation:fadeSlide .5s ease-out}
+@keyframes fadeSlide{
+  from{opacity:0;transform:translateY(14px)}
+  to{opacity:1;transform:translateY(0)}
+}
+
+/* ─── Images ─── */
+.md img{
+  max-width:100%;border-radius:var(--radius);
+  border:1px solid var(--border);margin:14px 0;
+}
+
+/* ─── Layer Sections ─── */
+.md .layer-section{transition:opacity .3s,max-height .35s cubic-bezier(.4,0,.2,1);overflow:hidden}
+.md .layer-section.hidden-l{opacity:0;max-height:0;margin:0;padding:0}
+.md .layer-label{
+  display:inline-block;font-size:10px;font-weight:700;padding:3px 10px;
+  border-radius:4px;margin-right:10px;text-transform:uppercase;
+  letter-spacing:.04em;vertical-align:middle;
+}
+.md .layer-label.l1{background:#4a8bc2;color:#fff}
+.md .layer-label.l2{background:var(--green);color:#000}
+.md .layer-label.l3{background:var(--purple);color:#fff}
+.md .layer-label.l4{background:var(--orange);color:#000}
+.md .layer-label.l5{background:var(--pink);color:#000}
+
+/* ─── Comparison Cards ─── */
+.md .comp-row{
+  display:flex;gap:12px;margin:14px 0;flex-wrap:wrap;
+}
+.md .comp-card{
+  flex:1;min-width:170px;padding:16px;border:1px solid var(--border);
+  border-radius:var(--radius);background:var(--bg3);
+  transition:transform .15s,box-shadow .15s;
+}
+.md .comp-card:hover{transform:translateY(-3px);box-shadow:var(--shadow-lg)}
+.md .comp-card h4{margin:0 0 6px;font-size:14px;font-weight:600;text-transform:none;letter-spacing:0;color:var(--fg)}
+.md .comp-card p{font-size:13px;color:var(--fg2);margin:0;line-height:1.5}
+
+/* ─── State Machine Widget ─── */
+.state-machine{margin:16px 0}
+.state-machine svg{width:100%;max-height:280px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius)}
+.sm-controls{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+.sm-btn{
+  padding:6px 14px;border:1px solid var(--border);border-radius:5px;
+  background:var(--bg3);color:var(--fg);cursor:pointer;font-size:12px;
+  transition:all .12s;font-family:var(--font-display);
+}
+.sm-btn.active{background:var(--accent);color:#000;border-color:var(--accent);font-weight:600}
+.sm-btn.err{border-color:var(--red);color:var(--red)}
+.sm-btn:hover{border-color:var(--border-light)}
+.sm-state{
+  display:inline-block;padding:2px 8px;border-radius:4px;
+  font-size:12px;font-weight:700;
+}
+.sm-state.closed{background:var(--green);color:#000}
+.sm-state.open{background:var(--red);color:#fff}
+.sm-state.half{background:var(--yellow);color:#000}
+
+/* ─── Flow Steps ─── */
+.flow-step{
+  display:flex;align-items:flex-start;gap:12px;padding:10px 12px;
+  margin:6px 0;border:1px solid transparent;border-radius:var(--radius);
+  transition:all .25s;
+}
+.flow-step .step-num{
+  width:26px;height:26px;border-radius:50%;background:var(--bg4);
+  display:flex;align-items:center;justify-content:center;
+  font-size:12px;font-weight:700;flex-shrink:0;color:var(--fg3);
+}
+.flow-step.active{border-color:var(--accent);background:var(--accent);opacity:.08}
+.flow-step.active .step-num{background:var(--accent);color:#000}
+.flow-step.done .step-num{background:var(--green);color:#000}
+
+/* ─── TOC ─── */
+.toc-sidebar{
+  width:210px;background:var(--bg2);border-left:1px solid var(--border);
+  padding:12px 0;overflow-y:auto;flex-shrink:0;display:none;
+}
+.toc-sidebar.show{display:block}
+.toc-item{
+  padding:4px 16px;font-size:12px;color:var(--fg3);cursor:pointer;
+  border-left:2px solid transparent;transition:all .12s;
+  line-height:1.4;font-family:var(--font-display);
+}
+.toc-item:hover{color:var(--fg)}
+.toc-item.active{color:var(--accent);border-left-color:var(--accent)}
+.toc-item.h2{padding-left:16px}
+.toc-item.h3{padding-left:26px;font-size:11px;color:var(--fg3)}
+
+/* ─── Scrollbar ─── */
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--bg4);border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:var(--border-light)}
+
+/* ─── Loading ─── */
+@keyframes pulse{
+  0%,100%{opacity:.4}50%{opacity:.8}
+}
+.loading{animation:pulse 1.5s ease-in-out infinite;color:var(--fg3)}
+
+/* ─── Responsive ─── */
+@media(max-width:900px){
+  .sidebar{width:220px}
+  .toc-sidebar{display:none!important}
+  .content-body{padding:16px 18px 50px}
+  .content-header{padding:12px 18px}
+  .title-area h1{font-size:17px}
+  .file-stats .stat{font-size:9px;padding:2px 6px}
+  .toggles-row{flex-wrap:wrap;gap:6px}
+}
+
+/* ─── Back to Top ─── */
+.back-top{
+  position:fixed;bottom:24px;right:24px;z-index:100;
+  width:40px;height:40px;border-radius:50%;
+  background:var(--bg4);border:1px solid var(--border);
+  color:var(--fg2);cursor:pointer;font-size:16px;
+  display:flex;align-items:center;justify-content:center;
+  opacity:0;transform:translateY(12px);
+  transition:all .2s cubic-bezier(.4,0,.2,1);
+  box-shadow:var(--shadow);
+}
+.back-top.show{opacity:1;transform:translateY(0)}
+.back-top:hover{background:var(--accent);color:#000;border-color:var(--accent);transform:translateY(-2px)}
+
+/* ─── Heading Anchors ─── */
+.md .anchor-link{
+  opacity:0;margin-left:6px;font-size:14px;color:var(--fg3);
+  text-decoration:none!important;transition:opacity .12s;font-weight:400;
+}
+.md h1:hover .anchor-link,.md h2:hover .anchor-link,.md h3:hover .anchor-link,
+.md h4:hover .anchor-link,.md h5:hover .anchor-link,.md h6:hover .anchor-link{opacity:1}
+.md .anchor-link:hover{color:var(--accent)!important}
+
+/* ─── Image Lightbox ─── */
+.lightbox{
+  position:fixed;inset:0;z-index:1000;background:rgba(0,0,0,.85);
+  display:flex;align-items:center;justify-content:center;
+  cursor:zoom-out;opacity:0;transition:opacity .2s;pointer-events:none;
+}
+.lightbox.open{opacity:1;pointer-events:auto}
+.lightbox img{max-width:90vw;max-height:90vh;border-radius:8px;box-shadow:0 8px 40px rgba(0,0,0,.5);transform:scale(.95);transition:transform .25s cubic-bezier(.4,0,.2,1)}
+.lightbox.open img{transform:scale(1)}
+.lightbox .lb-close{
+  position:absolute;top:20px;right:28px;color:#fff;font-size:28px;
+  cursor:pointer;opacity:.7;transition:opacity .15s;background:none;border:none;
+}
+.lightbox .lb-close:hover{opacity:1}
+
+/* ─── Keyboard Shortcuts Panel ─── */
+.kb-toggle{
+  position:fixed;bottom:24px;right:72px;z-index:100;
+  width:40px;height:40px;border-radius:50%;
+  background:var(--bg4);border:1px solid var(--border);
+  color:var(--fg3);cursor:pointer;font-size:14px;
+  display:flex;align-items:center;justify-content:center;
+  opacity:0;transform:translateY(12px);
+  transition:all .2s cubic-bezier(.4,0,.2,1);
+  box-shadow:var(--shadow);font-family:var(--font-mono);font-weight:600;
+}
+.kb-toggle.show{opacity:1;transform:translateY(0)}
+.kb-toggle:hover{background:var(--bg5);color:var(--fg);border-color:var(--border-light)}
+.kb-panel{
+  position:fixed;bottom:72px;right:24px;z-index:100;
+  background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);
+  padding:16px;min-width:240px;box-shadow:var(--shadow-lg);
+  opacity:0;transform:translateY(8px);transition:all .15s;pointer-events:none;
+}
+.kb-panel.open{opacity:1;transform:translateY(0);pointer-events:auto}
+.kb-panel h3{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--fg3);margin-bottom:10px}
+.kb-row{display:flex;align-items:center;justify-content:space-between;padding:4px 0;font-size:12px;gap:16px}
+.kb-row .key{font-family:var(--font-mono);font-size:10px;font-weight:600;padding:2px 6px;background:var(--bg4);border:1px solid var(--border);border-radius:3px;color:var(--fg2);white-space:nowrap}
+.kb-row .desc{color:var(--fg2)}
+
+/* ─── Smooth Scroll ─── */
+.content-body{scroll-behavior:smooth}
+
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}
+}
+@media(max-width:640px){
+  .sidebar{width:100%;position:fixed;z-index:10;height:100vh}
+  .sidebar.collapsed{width:0;border:none}
+  .content-body{padding:14px 14px 40px}
+}
+</style>
 </head>
 <body>
-  <div class="app">
-    <!-- Sidebar -->
-    <div class="sidebar" id="sidebar">
-      <div class="sidebar-header">
-        <h2>Explorer</h2>
-        <button class="collapse-btn" onclick="toggleSidebar()" title="Toggle sidebar">◀</button>
-      </div>
-      <div class="sidebar-search">
-        <input type="text" id="search" placeholder="Search files..." autocomplete="off">
-      </div>
-      <div class="search-status" id="searchStatus"></div>
-      <div class="tree-scroll" id="tree"></div>
-    </div>
+<div class="app">
 
-    <!-- Content -->
-    <div class="content">
-      <div class="content-header">
-        <div class="title-area">
-          <h1 id="fileTitle"></h1>
-          <div class="path" id="filePath"></div>
-        </div>
-        <div class="layer-toggles" id="layerToggles">
-          <button class="layer-btn l1 on" data-layer="1">L1</button>
-          <button class="layer-btn l2 on" data-layer="2">L2</button>
-          <button class="layer-btn l3 on" data-layer="3">L3</button>
-          <button class="layer-btn l4 on" data-layer="4">L4</button>
-          <button class="layer-btn l5 on" data-layer="5">L5</button>
-        </div>
-      </div>
-      <div id="start" class="start-screen">
-        <div class="big-icon">📚</div>
-        <h1>Engineering Knowledge Universe</h1>
-        <p>Select a file from the sidebar to begin</p>
-      </div>
-      <div id="fileView" style="display:none;flex:1;overflow:hidden;display:none;flex-direction:column;">
-        <div class="content-body md" id="fileContent"></div>
-      </div>
+  <!-- Sidebar -->
+  <div class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <h2>Explorer</h2>
+      <button class="collapse-btn" onclick="toggleSidebar()" title="Toggle sidebar">◀</button>
     </div>
-
-    <!-- TOC sidebar -->
-    <div class="toc-sidebar" id="tocSidebar"></div>
+    <div class="sidebar-search">
+      <input type="text" id="search" placeholder="Search files..." autocomplete="off">
+    </div>
+    <div class="search-status" id="searchStatus"></div>
+    <div class="tree-scroll" id="tree"></div>
   </div>
 
-  <script>
-    const API = '/api';
-    let treeData = [];
-    let flatFiles = [];
-    let currentContent = '';
-    let currentPath = '';
-    let tocItems = [];
-    let smInterval = null;
+  <!-- Content -->
+  <div class="content">
+    <div class="scroll-progress" id="scrollProgress"><div class="fill" id="scrollFill"></div></div>
+    <div class="content-header">
+      <div class="domain-row" id="domainRow" style="display:none">
+        <span class="domain-badge" id="domainBadge"><span class="dot" style="background:var(--accent)"></span><span id="domainName">domain</span></span>
+      </div>
+      <div class="breadcrumb" id="breadcrumb"></div>
+      <div class="title-row">
+        <div class="title-area">
+          <h1 id="fileTitle"></h1>
+          <div class="subtitle" id="fileSubtitle"></div>
+        </div>
+        <div class="file-stats" id="fileStats" style="display:none">
+          <span class="stat">📝 <span id="wordCount">0</span> words</span>
+          <span class="stat">⏱ <span id="readingTime">0</span> min read</span>
+          <span class="stat">📑 <span id="sectionCount">0</span> sections</span>
+        </div>
+      </div>
+      <div class="toggles-row">
+        <span class="toggles-label">Focus:</span>
+        <div class="layer-toggles" id="layerToggles">
+          <button class="layer-btn l1 on" data-layer="1"><span>L1 · Beginner</span></button>
+          <button class="layer-btn l2 on" data-layer="2"><span>L2 · Intermediate</span></button>
+          <button class="layer-btn l3 on" data-layer="3"><span>L3 · Advanced</span></button>
+          <button class="layer-btn l4 on" data-layer="4"><span>L4 · Production</span></button>
+          <button class="layer-btn l5 on" data-layer="5"><span>L5 · Staff</span></button>
+        </div>
+      </div>
+    </div>
+    <div id="start" class="start-screen">
+      <div class="big-icon">📚</div>
+      <h1>Engineering Knowledge Universe</h1>
+      <p>Select a file from the sidebar to begin</p>
+    </div>
+    <div id="fileView" style="display:none;flex:1;overflow:hidden;flex-direction:column;">
+      <div class="content-body md" id="fileContent"></div>
+    </div>
+  </div>
 
-    // ─── Init ───
-    mermaid.initialize({
-      startOnLoad: false,
-      theme: 'dark',
-      themeVariables: { background: '#1c2128', primaryColor: '#58a6ff', primaryBorderColor: '#30363d', primaryTextColor: '#e6edf3', lineColor: '#8b949e', tertiaryColor: '#161b22', fontSize: '14px' }
-    });
+  <div class="toc-sidebar" id="tocSidebar"></div>
+  <div class="lightbox" id="lightbox" onclick="closeLightbox()">
+    <button class="lb-close" onclick="closeLightbox()">✕</button>
+    <img id="lightboxImg" src="" alt="">
+  </div>
+  <button class="back-top" id="backTop" onclick="document.getElementById('fileContent').scrollTo({top:0,behavior:'smooth'})" title="Back to top">↑</button>
+  <button class="kb-toggle" id="kbToggle" onclick="toggleKeyboardPanel()" title="Keyboard shortcuts">⌘</button>
+  <div class="kb-panel" id="kbPanel">
+    <h3>Keyboard Shortcuts</h3>
+    <div class="kb-row"><span class="desc">Search files</span><span class="key">⌘K</span></div>
+    <div class="kb-row"><span class="desc">Toggle sidebar</span><span class="key">⌘B</span></div>
+    <div class="kb-row"><span class="desc">Back to top</span><span class="key">⌘↑</span></div>
+    <div class="kb-row"><span class="desc">Next file</span><span class="key">⌘↓</span></div>
+    <div class="kb-row"><span class="desc">Toggle layers</span><span class="key">1-5</span></div>
+    <div class="kb-row"><span class="desc">Close panel</span><span class="key">Esc</span></div>
+  </div>
+</div>
 
-    document.addEventListener('DOMContentLoaded', init);
+<script>
+const API='/api';let treeData=[],flatFiles=[],currentContent='',currentPath='',tocItems=[];
 
-    async function init() {
-      await loadTree();
-      setupSearch();
-      setupLayers();
-      renderStartScreen();
+const DOMAIN_ICONS={
+  'ai-ml':'🤖','backend':'⚙️','cloud':'☁️','kubernetes':'☸️','databases':'🗄️',
+  'messaging':'📨','sre-observability':'📊','microservices':'🔗','software-architecture':'🏗️',
+  'interviews':'💼','production-stories':'🚨','software-engineering':'📐','foundations':'📐',
+  'frontend':'🎨','devops':'🔄','networking':'🌐','operating-systems':'⚡',
+  'security':'🔒','system-design':'📋','performance-engineering':'⚡','testing':'🧪',
+  'cheat-sheets':'📎','interactive-simulations':'🎮','arch':'🏛️','data-engineering':'📊',
+  'projects':'📦'
+};
+
+mermaid.initialize({
+  startOnLoad:false,theme:'dark',
+  themeVariables:{
+    background:'#18202a',primaryColor:'#60a5fa',primaryBorderColor:'#1e2a3a',
+    primaryTextColor:'#e3eaf0',lineColor:'#94a3b8',tertiaryColor:'#11161e',
+    fontSize:'14px',fontFamily:'Inter,system-ui,sans-serif'
+  }
+});
+
+document.addEventListener('DOMContentLoaded',init);
+async function init(){await loadTree();setupSearch();setupLayers();renderStartScreen()}
+
+async function loadTree(){try{
+  const r=await fetch(API+'/tree'),d=await r.json();treeData=d.tree||[];
+  flattenFiles(treeData);renderTree(treeData)
+}catch{document.getElementById('tree').innerHTML='<div style="padding:14px;color:var(--fg3)">Failed to load</div>'}}
+
+function flattenFiles(nodes,prefix=''){
+  for(const n of nodes){const p=prefix?prefix+'/'+n.name:n.name
+    if(n.type==='dir')flattenFiles(n.children||[],p);else flatFiles.push({path:p,name:n.name})}
+}
+
+function renderTree(nodes,depth=0){
+  let h=''
+  for(const n of nodes)
+    if(n.type==='dir'){
+      const icon=DOMAIN_ICONS[n.name]||'📁'
+      h+=`<div class="tree-item" style="padding-left:${depth*12}px"><span class="tree-toggle">▼</span><span class="icon">${icon}</span><span>${esc(n.name)}</span></div><div class="tree-children open">${renderTree(n.children||[],depth+1)}</div>`
+    } else
+      h+=`<div class="tree-item file" data-path="${esc(n.path)}" style="padding-left:${depth*12+12}px"><span class="icon">📄</span><span>${esc(n.name.replace(/\.md$/,''))}</span></div>`
+  return h
+}
+
+function attachTreeEvents(){
+  document.querySelectorAll('.tree-toggle').forEach(el=>{
+    el.addEventListener('click',e=>{
+      e.stopPropagation();
+      const ch=el.parentElement.nextElementSibling
+      if(ch&&ch.classList.contains('tree-children')){ch.classList.toggle('open')
+        el.textContent=ch.classList.contains('open')?'▼':'▶'}
+    })
+  })
+  document.querySelectorAll('.tree-item.file').forEach(el=>{
+    el.addEventListener('click',()=>{
+      const p=el.dataset.path
+      if(p.endsWith('.html'))window.open(p,'_blank');else loadFile(p)
+    })
+  })
+}
+
+function setupSearch(){
+  const input=document.getElementById('search')
+  input.addEventListener('input',()=>{clearTimeout(window._st);window._st=setTimeout(doSearch,80)})
+  input.addEventListener('keydown',e=>{if(e.key==='Enter'&&currentContent){const q=input.value.trim();if(q)scrollToFirstMatch(q)}})
+}
+
+function doSearch(){
+  const q=document.getElementById('search').value.toLowerCase().trim(),st=document.getElementById('searchStatus')
+  document.querySelectorAll('.tree-item').forEach(el=>el.classList.remove('hidden'))
+  document.querySelectorAll('.tree-item .hl').forEach(el=>el.outerHTML=el.textContent)
+  if(!q){st.style.display='none';return}
+  const matches=flatFiles.filter(f=>f.path.toLowerCase().includes(q))
+  document.querySelectorAll('.tree-item.file').forEach(el=>{const p=el.dataset.path;el.classList.toggle('hidden',!(p&&matches.some(m=>m.path===p)))})
+  st.textContent=`${matches.length} result${matches.length!==1?'s':''}`;st.style.display=matches.length?'block':'none'
+  const ql=q.length
+  document.querySelectorAll('.tree-item.file:not(.hidden)').forEach(el=>{
+    const sp=el.querySelector('span:last-child'),tx=sp.textContent,ix=tx.toLowerCase().indexOf(q)
+    if(ix!==-1)sp.innerHTML=esc(tx.slice(0,ix))+`<span class="hl">${esc(tx.slice(ix,ix+ql))}</span>`+esc(tx.slice(ix+ql))
+  })
+}
+
+function scrollToFirstMatch(q){
+  const body=document.getElementById('fileContent'),walker=document.createTreeWalker(body,NodeFilter.SHOW_TEXT,null,false)
+  let node;while(node=walker.nextNode())
+    if(node.textContent.toLowerCase().includes(q)){
+      node.parentElement.scrollIntoView({behavior:'smooth',block:'center'})
+      node.parentElement.style.background='rgba(251,191,36,.12)'
+      setTimeout(()=>{node.parentElement.style.background=''},2000);return
     }
+}
 
-    async function loadTree() {
-      try {
-        const res = await fetch(`${API}/tree`);
-        const data = await res.json();
-        treeData = data.tree || [];
-        flattenFiles(treeData);
-        renderTree(treeData);
-      } catch { document.getElementById('tree').innerHTML = '<div style="padding:14px;color:var(--fg3)">Failed to load</div>'; }
-    }
+function setupLayers(){document.querySelectorAll('.layer-btn').forEach(b=>b.addEventListener('click',()=>{b.classList.toggle('on');applyLayers()}))}
 
-    function flattenFiles(nodes, prefix = '') {
-      for (const n of nodes) {
-        const p = prefix ? `${prefix}/${n.name}` : n.name;
-        if (n.type === 'dir') flattenFiles(n.children || [], p);
-        else flatFiles.push({ path: p, name: n.name });
-      }
-    }
+function applyLayers(){
+  const a=new Set();document.querySelectorAll('.layer-btn.on').forEach(b=>a.add(b.dataset.layer))
+  document.querySelectorAll('.layer-section').forEach(el=>{el.classList.toggle('hidden-l',!a.has(el.dataset.layer))})
+}
 
-    function renderTree(nodes, depth = 0) {
-      let html = '';
-      for (const n of nodes) {
-        if (n.type === 'dir') {
-          html += `<div class="tree-item" style="padding-left:${depth*12}px">
-            <span class="tree-toggle">▼</span><span class="icon">📁</span><span>${esc(n.name)}</span>
-          </div><div class="tree-children open">${renderTree(n.children||[], depth+1)}</div>`;
-        } else {
-          html += `<div class="tree-item file" data-path="${esc(n.path)}" style="padding-left:${depth*12+12}px">
-            <span class="icon">📄</span><span>${esc(n.name.replace(/\.md$/,''))}</span>
-          </div>`;
-        }
-      }
-      return html;
-    }
+async function loadFile(path){
+  document.querySelectorAll('.tree-item.active').forEach(el=>el.classList.remove('active'))
+  const el=document.querySelector(`[data-path="${path}"]`);if(el)el.classList.add('active')
+  document.getElementById('start').style.display='none'
+  document.getElementById('fileView').style.display='flex'
+  currentPath=path
+  const name=path.split('/').pop().replace(/\.md$/,'')
+  document.getElementById('fileTitle').textContent=name
 
-    function attachTreeEvents() {
-      document.querySelectorAll('.tree-toggle').forEach(el => {
-        el.addEventListener('click', e => {
-          e.stopPropagation();
-          const ch = el.parentElement.nextElementSibling;
-          if (ch && ch.classList.contains('tree-children')) {
-            ch.classList.toggle('open');
-            el.textContent = ch.classList.contains('open') ? '▼' : '▶';
-          }
-        });
-      });
-      document.querySelectorAll('.tree-item.file').forEach(el => {
-        el.addEventListener('click', () => {
-          const path = el.dataset.path;
-          if (path.endsWith('.html')) {
-            window.open(path, '_blank');
-          } else {
-            loadFile(path);
-          }
-        });
-      });
-    }
+  // Breadcrumb
+  const segs=path.split('/')
+  let bc=''
+  for(let i=0;i<segs.length;i++){
+    const s=segs[i].replace(/\.md$/,'')
+    if(i===segs.length-1) bc+=`<span class="sep">›</span> <span style="color:var(--fg)">${esc(s)}</span>`
+    else bc+=`${i>0?`<span class="sep">›</span>`:''}<a class="seg" onclick="loadFile('${segs.slice(0,i+1).join('/')}')">${esc(s)}</a>`
+  }
+  document.getElementById('breadcrumb').innerHTML=bc
 
-    // ─── Search ───
-    function setupSearch() {
-      const input = document.getElementById('search');
-      input.addEventListener('input', () => {
-        clearTimeout(window._searchTimer);
-        window._searchTimer = setTimeout(doSearch, 80);
-      });
-      input.addEventListener('keydown', e => {
-        if (e.key === 'Enter' && currentContent) {
-          const q = input.value.trim();
-          if (q) scrollToFirstMatch(q);
-        }
-      });
-    }
+  // Domain badge
+  const domainMatch=path.match(/^\d{2}-([^/]+)/)
+  const domainRow=document.getElementById('domainRow')
+  if(domainMatch){
+    domainRow.style.display='flex'
+    const dname=domainMatch[1].replace(/-/g,' ')
+    document.getElementById('domainName').textContent=dname.replace(/\b\w/g,c=>c.toUpperCase())
+  } else {domainRow.style.display='none'}
 
-    function doSearch() {
-      const q = document.getElementById('search').value.toLowerCase().trim();
-      const st = document.getElementById('searchStatus');
+  // Subtitle
+  document.getElementById('fileSubtitle').textContent=path
 
-      document.querySelectorAll('.tree-item').forEach(el => el.classList.remove('hidden'));
-      document.querySelectorAll('.tree-item .hl').forEach(el => el.outerHTML = el.textContent);
+  const body=document.getElementById('fileContent')
+  body.innerHTML='<span class="loading" style="color:var(--fg3)">Loading...</span>'
+  try{
+    const r=await fetch(API+'/file?path='+encodeURIComponent(path)),d=await r.json()
+    if(d.error){body.innerHTML=`<p>Error: ${esc(d.error)}</p>`;return}
+    currentContent=d.content||'';renderContent(body,currentContent);buildTOC()
+    computeStats(body)
+  }catch{body.innerHTML='<p>Failed to load</p>'}
+}
 
-      if (!q) { st.style.display = 'none'; return; }
+function computeStats(container){
+  const text=container.textContent||''
+  const words=text.trim().split(/\s+/).filter(Boolean).length
+  document.getElementById('wordCount').textContent=words.toLocaleString()
+  document.getElementById('readingTime').textContent=Math.max(1,Math.round(words/200))
+  const sections=container.querySelectorAll('h1,h2,h3').length
+  document.getElementById('sectionCount').textContent=sections
+  document.getElementById('fileStats').style.display='flex'
+}
 
-      const matches = flatFiles.filter(f => f.path.toLowerCase().includes(q));
-      document.querySelectorAll('.tree-item.file').forEach(el => {
-        const path = el.dataset.path;
-        el.classList.toggle('hidden', !(path && matches.some(m => m.path === path)));
-      });
+// ─── Lightbox ───
+function openLightbox(src){
+  document.getElementById('lightboxImg').src=src
+  document.getElementById('lightbox').classList.add('open')
+}
+function closeLightbox(){document.getElementById('lightbox').classList.remove('open')}
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&document.getElementById('lightbox').classList.contains('open'))closeLightbox()})
 
-      st.textContent = `${matches.length} result${matches.length!==1?'s':''}`;
-      st.style.display = matches.length > 0 ? 'block' : 'none';
+// ─── Keyboard Shortcuts ───
+function toggleKeyboardPanel(){document.getElementById('kbPanel').classList.toggle('open')}
+document.addEventListener('keydown',e=>{
+  const meta=e.metaKey||e.ctrlKey
+  if(meta&&e.key==='k'){e.preventDefault();document.getElementById('search').focus()}
+  if(meta&&e.key==='b'){e.preventDefault();toggleSidebar()}
+  if(meta&&e.key==='ArrowUp'){e.preventDefault();document.getElementById('fileContent').scrollTo({top:0,behavior:'smooth'})}
+  if(e.key==='Escape'){const p=document.getElementById('kbPanel');if(p.classList.contains('open'))p.classList.remove('open')}
+  if(e.key>='1'&&e.key<='5'){const btn=document.querySelector(`.layer-btn[data-layer="${e.key}"]`);if(btn){btn.classList.toggle('on');applyLayers()}}
+})
 
-      const qlen = q.length;
-      document.querySelectorAll('.tree-item.file:not(.hidden)').forEach(el => {
-        const span = el.querySelector('span:last-child');
-        const txt = span.textContent;
-        const idx = txt.toLowerCase().indexOf(q);
-        if (idx !== -1)
-          span.innerHTML = esc(txt.slice(0,idx)) + `<span class="hl">${esc(txt.slice(idx,idx+qlen))}</span>` + esc(txt.slice(idx+qlen));
-      });
-    }
+function renderContent(container,text){
+  if(!text){container.innerHTML='<p>Empty</p>';return}
+  const blocks=[],diagrams=[]
 
-    function scrollToFirstMatch(q) {
-      const body = document.getElementById('fileContent');
-      const walker = document.createTreeWalker(body, NodeFilter.SHOW_TEXT, null, false);
-      let node;
-      while (node = walker.nextNode()) {
-        if (node.textContent.toLowerCase().includes(q)) {
-          node.parentElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-          node.parentElement.style.background = 'rgba(210,153,34,.15)';
-          setTimeout(() => { node.parentElement.style.background = ''; }, 2000);
-          return;
-        }
-      }
-    }
+  text=text.replace(/```mermaid\n([\s\S]*?)```/g,(m,c)=>{diagrams.push(c.trim());return `__MERMAID${diagrams.length-1}__`})
+  text=text.replace(/```(\w*)\n([\s\S]*?)```/g,(m,l,c)=>{blocks.push({lang:l||'',code:c.trim()});return `__CODE${blocks.length-1}__`})
 
-    // ─── Layer Toggles ───
-    function setupLayers() {
-      document.querySelectorAll('.layer-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-          btn.classList.toggle('on');
-          applyLayers();
-        });
-      });
-    }
+  text=text.replace(/`([^`]+)`/g,'<code>$1</code>')
+  text=text.replace(/\*\*([^*]+)\*\*/g,'<strong>$1</strong>')
+  text=text.replace(/\*([^*]+)\*/g,'<em>$1</em>')
+  text=text.replace(/\[([^\]]+)\]\(([^)]+)\)/g,(m,l,u)=>u.endsWith('.md')?`<a onclick="loadFile('${u}');return false">${l}</a>`:`<a href="${u}" target="_blank">${l}</a>`)
 
-    function applyLayers() {
-      const active = new Set();
-      document.querySelectorAll('.layer-btn.on').forEach(b => active.add(b.dataset.layer));
-      document.querySelectorAll('.layer-section').forEach(el => {
-        const l = el.dataset.layer;
-        el.classList.toggle('hidden-l', !active.has(l));
-      });
-    }
+  text=text.replace(/^######\s+(.+)$/gm,(m,t)=>`<h6 id="h6-${slugify(t)}">${t}<a class="anchor-link" href="#h6-${slugify(t)}">#</a></h6>`)
+  text=text.replace(/^#####\s+(.+)$/gm,(m,t)=>`<h5 id="h5-${slugify(t)}">${t}<a class="anchor-link" href="#h5-${slugify(t)}">#</a></h5>`)
+  text=text.replace(/^####\s+(.+)$/gm,(m,t)=>`<h4 id="h4-${slugify(t)}">${t}<a class="anchor-link" href="#h4-${slugify(t)}">#</a></h4>`)
+  text=text.replace(/^###\s+(.+)$/gm,(m,t)=>{const l=detectLayer(t);return l?`</div><div class="layer-section" data-layer="${l}"><h3 id="h3-${slugify(t)}">${t}<a class="anchor-link" href="#h3-${slugify(t)}">#</a></h3>`:`<h3 id="h3-${slugify(t)}">${t}<a class="anchor-link" href="#h3-${slugify(t)}">#</a></h3>`})
+  text=text.replace(/^##\s+(.+)$/gm,(m,t)=>{const l=detectLayer(t);const id=`h2-${slugify(t)}`;return l?`</div><div class="layer-section" data-layer="${l}"><h2 id="${id}"><span class="layer-label l${l}">L${l}</span>${t}<a class="anchor-link" href="#${id}">#</a></h2>`:`<h2 id="${id}">${t}<a class="anchor-link" href="#${id}">#</a></h2>`})
+  text=text.replace(/^#\s+(.+)$/gm,(m,t)=>`<h1 id="h1-${slugify(t)}">${t}</h1>`)
+  text+='</div>'
 
-    // ─── File Loading ───
-    async function loadFile(path) {
-      document.querySelectorAll('.tree-item.active').forEach(el => el.classList.remove('active'));
-      const el = document.querySelector(`[data-path="${path}"]`);
-      if (el) el.classList.add('active');
+  text=text.replace(/^\s*[-*+]\s+(.+)$/gm,'<li>$1</li>')
+  text=text.replace(/(<li>.*<\/li>\n?)+/g,'<ul>$&</ul>')
+  text=text.replace(/^\s*\d+\.\s+(.+)$/gm,'<li>$1</li>')
+  text=text.replace(/((?:<li>.*<\/li>\n?)+)/g,m=>m.includes('<ul>')?m:'<ol>'+m+'</ol>')
 
-      document.getElementById('start').style.display = 'none';
-      document.getElementById('fileView').style.display = 'flex';
-      currentPath = path;
-      document.getElementById('fileTitle').textContent = path.split('/').pop().replace(/\.md$/,'');
-      document.getElementById('filePath').textContent = path;
+  text=text.replace(/^>\s+(.+)$/gm,'__BQ__$1\n')
+  text=text.replace(/((__BQ__[^\n]+\n?)+)/g,m=>{
+    const l=m.split('\n').map(x=>x.replace('__BQ__','').trim()).filter(Boolean)
+    return '<blockquote>'+l.map(x=>'<p>'+x+'</p>').join('')+'</blockquote>\n'
+  })
 
-      const body = document.getElementById('fileContent');
-      body.innerHTML = '<p style="color:var(--fg3)">Loading...</p>';
+  text=text.replace(/^\|(.+)\|\n\|[\s\-:|\s]+\|\n((?:\|.+\|\n?)*)/gm,m=>{
+    const l=m.trim().split('\n');if(l.length<3)return m
+    const h=l[0].split('|').map(x=>x.trim()).filter(Boolean)
+    const r=l.slice(2).map(x=>x.split('|').map(c=>c.trim()).filter(Boolean))
+    let hh='<table><thead><tr>'+h.map(x=>'<th>'+x+'</th>').join('')+'</tr></thead><tbody>'
+    for(const row of r)hh+='<tr>'+row.map(c=>'<td>'+c+'</td>').join('')+'</tr>'
+    return hh+'</tbody></table>\n'
+  })
 
-      try {
-        const res = await fetch(`${API}/file?path=${encodeURIComponent(path)}`);
-        const data = await res.json();
-        if (data.error) { body.innerHTML = `<p>Error: ${esc(data.error)}</p>`; return; }
-        currentContent = data.content || '';
-        renderContent(body, currentContent);
-        buildTOC();
-      } catch { body.innerHTML = '<p>Failed to load</p>'; }
-    }
+  text=text.replace(/^---$/gm,'<hr>')
+  text=text.replace(/^(?!<[hHh]|<ul|<ol|<blockquote|<table|<pre|<hr|<\/div|$)(.+)$/gm,'<p>$1</p>')
+  text=text.replace(/<p>\s*<\/p>/g,'')
 
-    // ─── Markdown Renderer ───
-    function renderContent(container, text) {
-      if (!text) { container.innerHTML = '<p>Empty</p>'; return; }
+  for(let i=0;i<blocks.length;i++){
+    const{lang,code}=blocks[i]
+    text=text.replace(`__CODE${i}__`,`<pre data-lang="${esc(lang||'text')}"><button class="copy-btn" onclick="copyCode(this)">Copy</button><code class="lang-${esc(lang)}">${highlight(code,lang)}</code></pre>`)
+  }
+  for(let i=0;i<diagrams.length;i++)
+    text=text.replace(`__MERMAID${i}__`,`<div class="mermaid-wrap animate-in"><div class="mermaid">${diagrams[i]}</div></div>`)
 
-      const blocks = [];
-      const diagrams = [];
+  container.innerHTML=text;applyLayers()
 
-      // Extract mermaid blocks
-      text = text.replace(/```mermaid\n([\s\S]*?)```/g, (m, code) => {
-        diagrams.push(code.trim());
-        return `__MERMAID${diagrams.length-1}__`;
-      });
+  // Image click → lightbox
+  container.querySelectorAll('img').forEach(img=>{
+    img.style.cursor='zoom-in'
+    img.addEventListener('click',e=>{e.stopPropagation();openLightbox(img.src)})
+  })
 
-      // Extract code blocks
-      text = text.replace(/```(\w*)\n([\s\S]*?)```/g, (m, lang, code) => {
-        blocks.push({ lang: lang||'', code: code.trim() });
-        return `__CODE${blocks.length-1}__`;
-      });
+  if(diagrams.length>0)setTimeout(()=>{if(window.mermaid)try{mermaid.run({nodes:container.querySelectorAll('.mermaid')})}catch{}},50)
+}
 
-      // Inline code
-      text = text.replace(/`([^`]+)`/g, '<code>$1</code>');
+function slugify(t){return t.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')}
 
-      // Bold/italic
-      text = text.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
-      text = text.replace(/\*([^*]+)\*/g, '<em>$1</em>');
+function detectLayer(t){const m=t.match(/LAYER\s*(\d)/i);return m?m[1]:null}
 
-      // Links
-      text = text.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (m, label, url) =>
-        url.endsWith('.md') ? `<a onclick="loadFile('${url}');return false">${label}</a>` : `<a href="${url}" target="_blank">${label}</a>`
-      );
+function highlight(code,lang){
+  code=esc(code);lang=lang.toLowerCase().trim()
+  code=code.replace(/(&quot;(?:[^&quot;\\]|\\.)*&quot;|&#039;(?:[^&#039;\\]|\\.)*&#039;)/g,'<span style="color:#a5d6ff">$1</span>')
+  code=code.replace(/\b(\d+\.?\d*)\b/g,'<span style="color:#79c0ff">$1</span>')
+  code=code.replace(/(\/\/.*$|\/\*[\s\S]*?\*\/|#.*$)/gm,'<span style="color:#8b949e;font-style:italic">$1</span>')
 
-      // Headings — wrap in layer-section divs
-      text = text.replace(/^######\s+(.+)$/gm, '<h6>$1</h6>');
-      text = text.replace(/^#####\s+(.+)$/gm, '<h5>$1</h5>');
-      text = text.replace(/^####\s+(.+)$/gm, (m, t) => `<h4>${t}</h4>`);
-      text = text.replace(/^###\s+(.+)$/gm, (m, t) => {
-        const layer = detectLayer(t);
-        return layer ? `</div><div class="layer-section" data-layer="${layer}"><h3>${t}</h3>` : `<h3>${t}</h3>`;
-      });
-      text = text.replace(/^##\s+(.+)$/gm, (m, t) => {
-        const layer = detectLayer(t);
-        return layer ? `</div><div class="layer-section" data-layer="${layer}"><h2><span class="layer-label l${layer}">Layer ${layer}</span>${t}</h2>` : `<h2>${t}</h2>`;
-      });
-      text = text.replace(/^#\s+(.+)$/gm, '<h1>$1</h1>');
-      // Close any open layer-section
-      text += '</div>';
+  const kw=lang==='python'||lang==='py'?'\\b(if|else|elif|for|while|def|class|import|from|return|try|except|True|False|None|self|async|await|yield|with|as|pass|raise|finally|lambda|print)\\b':
+    lang==='java'?'\\b(public|private|protected|class|static|void|if|else|for|while|return|new|import|package|extends|implements|interface|abstract|final|try|catch|throw|throws|synchronized|volatile|transient|this|super|int|long|double|float|boolean|String|var|record|sealed|permits)\\b':
+    lang==='go'?'\\b(func|if|else|for|range|return|var|type|struct|interface|map|chan|go|defer|select|case|switch|break|continue|package|import|const|nil|true|false|make|len|cap|append|error|string|int|bool|byte|rune|float64|uint64)\\b':
+    lang==='sql'?'\\b(SELECT|FROM|WHERE|INSERT|UPDATE|DELETE|CREATE|DROP|JOIN|ON|GROUP|ORDER|BY|LIMIT|DISTINCT|HAVING|UNION|ALTER|TABLE|INDEX|PRIMARY|KEY|FOREIGN|REFERENCES|CASCADE|SET|VALUES|INTO|AND|OR|NOT|NULL|AS|LEFT|RIGHT|INNER|OUTER|FULL)\\b':
+    lang==='yaml'||lang==='yml'?'\\b(true|false|yes|no|null|on|off)\\b':
+    lang==='bash'||lang==='shell'?'\\b(if|then|else|fi|for|while|do|done|function|export|source|return|local|exit|echo|set|unset|read|eval|exec|trap)\\b':
+    lang==='javascript'||lang==='js'||lang==='typescript'||lang==='ts'||lang==='jsx'||lang==='tsx'?'\\b(const|let|var|function|return|if|else|for|while|class|new|import|export|default|async|await|try|catch|throw|typeof|instanceof|from|interface|type|extends|implements|enum|keyof)\\b':null
+  if(kw)code=code.replace(new RegExp(kw,'gi'),'<span style="color:#ff7b72;font-weight:bold">$1</span>')
+  return code
+}
 
-      // Lists
-      text = text.replace(/^\s*[-*+]\s+(.+)$/gm, '<li>$1</li>');
-      text = text.replace(/(<li>.*<\/li>\n?)+/g, '<ul>$&</ul>');
-      text = text.replace(/^\s*\d+\.\s+(.+)$/gm, '<li>$1</li>');
-      text = text.replace(/((?:<li>.*<\/li>\n?)+)/g, m => m.includes('<ul>') ? m : '<ol>'+m+'</ol>');
+function copyCode(btn){
+  const code=btn.parentElement.querySelector('code').textContent
+  navigator.clipboard.writeText(code).then(()=>{btn.textContent='Copied!';setTimeout(()=>{btn.textContent='Copy'},1500)})
+}
 
-      // Blockquotes
-      text = text.replace(/^>\s+(.+)$/gm, '__BQ__$1\n');
-      text = text.replace(/((__BQ__[^\n]+\n?)+)/g, m => {
-        const lines = m.split('\n').map(x => x.replace('__BQ__','').trim()).filter(Boolean);
-        return '<blockquote>'+lines.map(x => '<p>'+x+'</p>').join('')+'</blockquote>\n';
-      });
+function buildTOC(){
+  const sidebar=document.getElementById('tocSidebar')
+  const headings=document.querySelectorAll('#fileContent h1,#fileContent h2,#fileContent h3')
+  if(headings.length<3){sidebar.classList.remove('show');return}
+  sidebar.classList.add('show');tocItems=[]
+  let html='<div style="padding:0 16px 10px;font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--fg3)">On this page</div>'
+  headings.forEach(h=>{
+    const lvl=h.tagName.toLowerCase(),tx=h.textContent.replace(/L\d\s*/i,'')
+    const id='toc-'+tocItems.length;h.id=h.id||id
+    html+=`<div class="toc-item ${lvl}" data-target="${h.id}" onclick="document.getElementById('${h.id}').scrollIntoView({behavior:'smooth',block:'start'});event.stopPropagation()">${esc(tx)}</div>`
+    tocItems.push(h)
+  })
+  sidebar.innerHTML=html
+  const body=document.getElementById('fileContent')
+  body.onscroll=()=>{
+    let active=null;const st=body.scrollTop+100
+    for(const h of tocItems){if(h.offsetTop<=st)active=h;else break}
+    sidebar.querySelectorAll('.toc-item').forEach(el=>el.classList.remove('active'))
+    if(active){const el=sidebar.querySelector(`[data-target="${active.id}"]`);if(el)el.classList.add('active')}
+    // Scroll progress
+    const max=body.scrollHeight-body.clientHeight
+    document.getElementById('scrollFill').style.width=max>0?(body.scrollTop/max*100)+'%':'0%'
+    // Back to top
+    document.getElementById('backTop').classList.toggle('show',body.scrollTop>300)
+  }
+}
 
-      // Tables
-      text = text.replace(/^\|(.+)\|\n\|[\s\-:|\s]+\|\n((?:\|.+\|\n?)*)/gm, match => {
-        const lines = match.trim().split('\n');
-        if (lines.length < 3) return match;
-        const headers = lines[0].split('|').map(x => x.trim()).filter(Boolean);
-        const rows = lines.slice(2).map(l => l.split('|').map(x => x.trim()).filter(Boolean));
-        let html = '<table><thead><tr>'+headers.map(h => '<th>'+h+'</th>').join('')+'</tr></thead><tbody>';
-        for (const row of rows) html += '<tr>'+row.map(c => '<td>'+c+'</td>').join('')+'</tr>';
-        return html+'</tbody></table>\n';
-      });
+function toggleSidebar(){
+  const s=document.getElementById('sidebar');s.classList.toggle('collapsed')
+  document.querySelector('.collapse-btn').textContent=s.classList.contains('collapsed')?'▶':'◀'
+  setTimeout(()=>{try{mermaid.run({nodes:document.querySelectorAll('.mermaid')})}catch{}},100)
+}
 
-      // Horizontal rules
-      text = text.replace(/^---$/gm, '<hr>');
+function renderStartScreen(){document.getElementById('tree').innerHTML=renderTree(treeData);attachTreeEvents()}
 
-      // Paragraphs (catch remaining)
-      text = text.replace(/^(?!<[hHh]|<ul|<ol|<blockquote|<table|<pre|<hr|<\/div|$)(.+)$/gm, '<p>$1</p>');
-      text = text.replace(/<p>\s*<\/p>/g, '');
-
-      // Insert code blocks with copy buttons
-      for (let i = 0; i < blocks.length; i++) {
-        const { lang, code } = blocks[i];
-        const highlighted = highlight(code, lang);
-        text = text.replace(`__CODE${i}__`,
-          `<pre><button class="copy-btn" onclick="copyCode(this)">Copy</button><code class="lang-${esc(lang)}">${highlighted}</code></pre>`);
-      }
-
-      // Insert mermaid diagrams
-      for (let i = 0; i < diagrams.length; i++) {
-        text = text.replace(`__MERMAID${i}__`,
-          `<div class="mermaid-wrap animate-in"><div class="mermaid">${diagrams[i]}</div></div>`);
-      }
-
-      container.innerHTML = text;
-      applyLayers();
-
-      // Render mermaid
-      if (diagrams.length > 0) {
-        setTimeout(() => {
-          if (window.mermaid) {
-            try { mermaid.run({ nodes: container.querySelectorAll('.mermaid') }); } catch {}
-          }
-        }, 50);
-      }
-    }
-
-    function detectLayer(text) {
-      const m = text.match(/LAYER\s*(\d)/i);
-      if (m) return m[1];
-      return null;
-    }
-
-    // ─── Syntax Highlighting ───
-    function highlight(code, lang) {
-      code = esc(code);
-      lang = lang.toLowerCase().trim();
-
-      code = code.replace(/(&quot;(?:[^&quot;\\]|\\.)*&quot;|&#039;(?:[^&#039;\\]|\\.)*&#039;)/g, '<span style="color:#a5d6ff">$1</span>');
-      code = code.replace(/\b(\d+\.?\d*)\b/g, '<span style="color:#79c0ff">$1</span>');
-      code = code.replace(/(\/\/.*$|\/\*[\s\S]*?\*\/|#.*$)/gm, '<span style="color:#8b949e;font-style:italic">$1</span>');
-
-      const kw = lang === 'python' || lang === 'py' ? '\\b(if|else|elif|for|while|def|class|import|from|return|try|except|True|False|None|self|async|await|yield|with|as|pass|raise|finally|lambda|print)\\b' :
-               lang === 'java' ? '\\b(public|private|protected|class|static|void|if|else|for|while|return|new|import|package|extends|implements|interface|abstract|final|try|catch|throw|throws|synchronized|volatile|transient|this|super|int|long|double|float|boolean|String|var|record|sealed|permits)\\b' :
-               lang === 'go' ? '\\b(func|if|else|for|range|return|var|type|struct|interface|map|chan|go|defer|select|case|switch|break|continue|package|import|const|nil|true|false|make|len|cap|append|error|string|int|bool|byte|rune|float64|uint64)\\b' :
-               lang === 'sql' ? '\\b(SELECT|FROM|WHERE|INSERT|UPDATE|DELETE|CREATE|DROP|JOIN|ON|GROUP|ORDER|BY|LIMIT|DISTINCT|HAVING|UNION|ALTER|TABLE|INDEX|PRIMARY|KEY|FOREIGN|REFERENCES|CASCADE|SET|VALUES|INTO|AND|OR|NOT|NULL|AS|LEFT|RIGHT|INNER|OUTER|FULL)\\b' :
-               lang === 'yaml' || lang === 'yml' ? '\\b(true|false|yes|no|null|on|off)\\b' :
-               lang === 'bash' || lang === 'shell' ? '\\b(if|then|else|fi|for|while|do|done|function|export|source|return|local|exit|echo|set|unset|read|eval|exec|trap)\\b' :
-               lang === 'javascript' || lang === 'js' || lang === 'typescript' || lang === 'ts' || lang === 'jsx' || lang === 'tsx' ? '\\b(const|let|var|function|return|if|else|for|while|class|new|import|export|default|async|await|try|catch|throw|typeof|instanceof|from|interface|type|extends|implements|enum|keyof)\\b' :
-               null;
-      if (kw) code = code.replace(new RegExp(kw, 'gi'), '<span style="color:#ff7b72;font-weight:bold">$1</span>');
-
-      return code;
-    }
-
-    // ─── Copy ───
-    function copyCode(btn) {
-      const code = btn.parentElement.querySelector('code').textContent;
-      navigator.clipboard.writeText(code).then(() => {
-        btn.textContent = 'Copied!';
-        setTimeout(() => { btn.textContent = 'Copy'; }, 1500);
-      });
-    }
-
-    // ─── Build TOC ───
-    function buildTOC() {
-      const sidebar = document.getElementById('tocSidebar');
-      const headings = document.querySelectorAll('#fileContent h1, #fileContent h2, #fileContent h3');
-      if (headings.length < 3) { sidebar.classList.remove('show'); return; }
-
-      sidebar.classList.add('show');
-      tocItems = [];
-      let html = '<div style="padding:0 14px 8px;font-size:11px;font-weight:600;color:var(--fg3)">Contents</div>';
-      headings.forEach(h => {
-        const level = h.tagName.toLowerCase();
-        const text = h.textContent.replace(/Layer \d\s*/i, '');
-        const id = 'toc-' + tocItems.length;
-        h.id = h.id || id;
-        html += `<div class="toc-item ${level}" data-target="${h.id}" onclick="document.getElementById('${h.id}').scrollIntoView({behavior:'smooth',block:'start'});event.stopPropagation()">${esc(text)}</div>`;
-        tocItems.push(h);
-      });
-      sidebar.innerHTML = html;
-
-      // Scroll-spy
-      const body = document.getElementById('fileContent');
-      body.onscroll = () => {
-        let active = null;
-        const scrollTop = body.scrollTop + 100;
-        for (const h of tocItems) {
-          if (h.offsetTop <= scrollTop) active = h;
-          else break;
-        }
-        sidebar.querySelectorAll('.toc-item').forEach(el => el.classList.remove('active'));
-        if (active) {
-          const el = sidebar.querySelector(`[data-target="${active.id}"]`);
-          if (el) el.classList.add('active');
-        }
-      };
-    }
-
-    // ─── Sidebar Toggle ───
-    function toggleSidebar() {
-      const s = document.getElementById('sidebar');
-      s.classList.toggle('collapsed');
-      document.querySelector('.collapse-btn').textContent = s.classList.contains('collapsed') ? '▶' : '◀';
-      setTimeout(() => { try { mermaid.run({ nodes: document.querySelectorAll('.mermaid') }); } catch {} }, 100);
-    }
-
-    // ─── Start Screen ───
-    function renderStartScreen() {
-      document.getElementById('tree').innerHTML = renderTree(treeData);
-      attachTreeEvents();
-    }
-
-    // ─── Utils ───
-    function esc(s) {
-      const m = {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'};
-      return (s||'').replace(/[&<>"']/g, x => m[x]);
-    }
-  </script>
+function esc(s){const m={'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'};return(s||'').replace(/[&<>"']/g,x=>m[x])}
+</script>
 </body>
 </html>

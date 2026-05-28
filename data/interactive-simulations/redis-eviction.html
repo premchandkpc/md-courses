@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Redis Eviction Policies — Interactive Simulator</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:system-ui,-apple-system,sans-serif;background:#0d1117;color:#e6edf3;padding:24px;max-width:900px;margin:0 auto}
+h1{font-size:20px;margin-bottom:4px;color:#58a6ff}
+.sub{color:#8b949e;font-size:13px;margin-bottom:20px}
+
+/* policy selector */
+.controls{display:flex;gap:8px;flex-wrap:wrap;margin:16px 0;align-items:center}
+.policy-label{font-size:12px;color:#8b949e;font-weight:600}
+select{padding:6px 12px;background:#1c2128;color:#e6edf3;border:1px solid #30363d;border-radius:6px;cursor:pointer;font-size:12px}
+.btn{padding:8px 16px;border:1px solid #30363d;border-radius:6px;background:#1c2128;color:#e6edf3;cursor:pointer;font-size:12px;transition:all .15s}
+.btn:hover{border-color:#8b949e;background:#21262d}
+.btn.primary{background:#58a6ff;color:#000;border-color:#58a6ff;font-weight:600}
+.btn.primary:hover{background:#79b8ff}
+.btn.danger{background:#f85149;color:#fff}
+.btn.danger:hover{background:#da3633}
+
+/* memory viz */
+.memory-container{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:16px;margin:20px 0}
+.memory-info{display:flex;justify-content:space-between;margin-bottom:12px;font-size:12px}
+.memory-info strong{color:#58a6ff}
+
+.memory-bar{background:#0d1117;height:24px;border-radius:4px;border:1px solid #30363d;overflow:hidden;position:relative}
+.memory-used{height:100%;background:linear-gradient(90deg,#58a6ff,#79b8ff);transition:width .3s;display:flex;align-items:center;justify-content:flex-end;padding-right:8px;color:#000;font-size:11px;font-weight:600}
+
+/* keys grid */
+.keys-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(80px,1fr));gap:8px;margin-top:16px}
+.key-box{padding:8px;border-radius:6px;border:1px solid #30363d;background:#1c2128;font-size:10px;text-align:center}
+.key-box.hot{border-color:#3fb950;background:#1a3a2c;color:#3fb950}
+.key-box.warm{border-color:#d29922;background:#3a2a1a;color:#d29922}
+.key-box.cold{border-color:#8b949e;background:#0d1117;color:#8b949e}
+.key-box.ttl{border-color:#58a6ff;position:relative}
+.key-box.evicted{opacity:.3;text-decoration:line-through;color:#8b949e}
+
+.key-name{font-weight:600;display:block;margin-bottom:2px}
+.key-freq{font-size:9px;color:#8b949e;margin:2px 0}
+
+/* metrics */
+.metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px;margin:16px 0}
+.metric{background:#1c2128;padding:12px;border-radius:6px;border:1px solid #30363d;text-align:center}
+.metric .num{font-size:20px;font-weight:700;color:#58a6ff}
+.metric .lbl{font-size:10px;color:#8b949e;margin-top:4px}
+
+/* log */
+.log{background:#0d1117;border:1px solid #30363d;border-radius:6px;padding:12px;max-height:150px;overflow-y:auto;font-family:monospace;font-size:11px;line-height:1.6;margin-top:16px}
+.log .ev{color:#8b949e;margin:2px 0}
+.log .ev.evict{color:#f85149}
+.log .ev.write{color:#3fb950}
+.log .ev.access{color:#58a6ff}
+
+h2{font-size:14px;margin:16px 0 8px;color:#e6edf3}
+
+@media(max-width:600px){.keys-grid{grid-template-columns:repeat(4,1fr)}}
+</style>
+</head>
+<body>
+
+<h1>Redis Memory Eviction — Interactive Simulator</h1>
+<div class="sub">Choose an eviction policy and fill memory to see which keys get evicted</div>
+
+<h2>Configuration</h2>
+<div class="controls">
+  <span class="policy-label">Policy:</span>
+  <select id="policySelect" onchange="changPolicy()">
+    <option value="noeviction">noeviction</option>
+    <option value="allkeys-lru" selected>allkeys-lru</option>
+    <option value="volatile-lru">volatile-lru</option>
+    <option value="allkeys-lfu">allkeys-lfu</option>
+    <option value="volatile-lfu">volatile-lfu</option>
+    <option value="allkeys-random">allkeys-random</option>
+    <option value="volatile-random">volatile-random</option>
+    <option value="volatile-ttl">volatile-ttl</option>
+  </select>
+  <button class="btn primary" onclick="writeKey()">+ Write Key</button>
+  <button class="btn primary" onclick="accessRandomKey()">⚡ Access Key</button>
+  <button class="btn danger" onclick="resetSim()">⟳ Reset</button>
+</div>
+
+<h2>Memory State</h2>
+<div class="memory-container">
+  <div class="memory-info">
+    <span>Maxmemory: <strong id="maxMemDisplay">100 units</strong></span>
+    <span>Used: <strong id="usedDisplay">0 units</strong></span>
+    <span>Pressure: <strong id="pressureDisplay">0%</strong></span>
+  </div>
+  <div class="memory-bar">
+    <div class="memory-used" id="memoryUsed" style="width:0%"></div>
+  </div>
+  <div class="keys-grid" id="keysGrid"></div>
+</div>
+
+<h2>Statistics</h2>
+<div class="metrics">
+  <div class="metric"><div class="num" id="statKeys">0</div><div class="lbl">Keys</div></div>
+  <div class="metric"><div class="num" id="statEvicted">0</div><div class="lbl">Evicted</div></div>
+  <div class="metric"><div class="num" id="statHits">0</div><div class="lbl">Accesses</div></div>
+  <div class="metric"><div class="num" id="statOOM">0</div><div class="lbl">OOM Errors</div></div>
+</div>
+
+<h2>Event Log</h2>
+<div class="log" id="log"></div>
+
+<script>
+const MAX_MEMORY = 100;
+const KEY_SIZE = 5;
+
+const redis = {
+  policy: 'allkeys-lru',
+  maxMemory: MAX_MEMORY,
+  usedMemory: 0,
+  keys: {},
+  stats: { evicted: 0, hits: 0, oom: 0 },
+  logs: [],
+  counter: 0
+};
+
+function getKeyFreq() {
+  return Math.floor(Math.random() * 5) + 1;
+}
+
+function changPolicy() {
+  redis.policy = document.getElementById('policySelect').value;
+  logEvent(`policy`, `Policy changed to: ${redis.policy}`);
+}
+
+function writeKey() {
+  redis.counter++;
+  const keyId = `k${redis.counter}`;
+  const hasSpace = redis.usedMemory + KEY_SIZE <= redis.maxMemory;
+
+  if (!hasSpace) {
+    // Trigger eviction
+    evictKey();
+    if (redis.usedMemory + KEY_SIZE > redis.maxMemory) {
+      if (redis.policy === 'noeviction') {
+        redis.stats.oom++;
+        logEvent(`evict`, `OOM: Cannot write key (noeviction policy)`);
+        updateUI();
+        return;
+      }
+    }
+  }
+
+  redis.keys[keyId] = {
+    id: keyId,
+    size: KEY_SIZE,
+    freq: getKeyFreq(),
+    lastAccess: Date.now(),
+    ttl: Math.random() > 0.5 ? Date.now() + 30000 : null,
+    created: Date.now()
+  };
+
+  redis.usedMemory += KEY_SIZE;
+  logEvent(`write`, `Wrote ${keyId} (freq=${redis.keys[keyId].freq})`);
+  updateUI();
+}
+
+function evictKey() {
+  const candidates = Object.values(redis.keys);
+  if (candidates.length === 0) return;
+
+  let victim;
+
+  switch (redis.policy) {
+    case 'allkeys-lru':
+      victim = candidates.reduce((a, b) => a.lastAccess < b.lastAccess ? a : b);
+      break;
+    case 'volatile-lru':
+      const volatile = candidates.filter(k => k.ttl);
+      victim = volatile.length > 0 ? volatile.reduce((a, b) => a.lastAccess < b.lastAccess ? a : b) : null;
+      break;
+    case 'allkeys-lfu':
+      victim = candidates.reduce((a, b) => a.freq < b.freq ? a : b);
+      break;
+    case 'volatile-lfu':
+      const volatileLFU = candidates.filter(k => k.ttl);
+      victim = volatileLFU.length > 0 ? volatileLFU.reduce((a, b) => a.freq < b.freq ? a : b) : null;
+      break;
+    case 'allkeys-random':
+      victim = candidates[Math.floor(Math.random() * candidates.length)];
+      break;
+    case 'volatile-random':
+      const volatileRnd = candidates.filter(k => k.ttl);
+      victim = volatileRnd.length > 0 ? volatileRnd[Math.floor(Math.random() * volatileRnd.length)] : null;
+      break;
+    case 'volatile-ttl':
+      const withTTL = candidates.filter(k => k.ttl);
+      victim = withTTL.length > 0 ? withTTL.reduce((a, b) => (b.ttl || Infinity) < (a.ttl || Infinity) ? a : b) : null;
+      break;
+    default:
+      victim = null;
+  }
+
+  if (victim) {
+    redis.usedMemory -= victim.size;
+    delete redis.keys[victim.id];
+    redis.stats.evicted++;
+    logEvent(`evict`, `Evicted ${victim.id} (policy: ${redis.policy})`);
+  }
+}
+
+function accessRandomKey() {
+  const keyIds = Object.keys(redis.keys);
+  if (keyIds.length === 0) return;
+
+  const key = redis.keys[keyIds[Math.floor(Math.random() * keyIds.length)]];
+  key.lastAccess = Date.now();
+  key.freq++;
+  redis.stats.hits++;
+  logEvent(`access`, `Accessed ${key.id} (freq now: ${key.freq})`);
+  updateUI();
+}
+
+function resetSim() {
+  redis.keys = {};
+  redis.usedMemory = 0;
+  redis.stats = { evicted: 0, hits: 0, oom: 0 };
+  redis.logs = [];
+  redis.counter = 0;
+  updateUI();
+}
+
+function logEvent(type, msg) {
+  redis.logs.unshift({ type, msg });
+  if (redis.logs.length > 15) redis.logs.pop();
+}
+
+function updateUI() {
+  // Memory bar
+  const pressure = (redis.usedMemory / redis.maxMemory) * 100;
+  document.getElementById('memoryUsed').style.width = pressure + '%';
+  document.getElementById('memoryUsed').textContent = pressure > 20 ? Math.round(pressure) + '%' : '';
+  document.getElementById('usedDisplay').textContent = redis.usedMemory + ' units';
+  document.getElementById('pressureDisplay').textContent = Math.round(pressure) + '%';
+
+  // Keys grid
+  const keysHtml = Object.values(redis.keys).map(k => {
+    const type = k.ttl ? 'ttl' : 'volatile';
+    const freq = k.freq <= 2 ? 'cold' : k.freq <= 4 ? 'warm' : 'hot';
+    return `<div class="key-box ${freq} ${type}"><span class="key-name">${k.id}</span><span class="key-freq">f:${k.freq}</span></div>`;
+  }).join('');
+  document.getElementById('keysGrid').innerHTML = keysHtml;
+
+  // Stats
+  document.getElementById('statKeys').textContent = Object.keys(redis.keys).length;
+  document.getElementById('statEvicted').textContent = redis.stats.evicted;
+  document.getElementById('statHits').textContent = redis.stats.hits;
+  document.getElementById('statOOM').textContent = redis.stats.oom;
+
+  // Log
+  const logHtml = redis.logs.map(({ type, msg }) =>
+    `<div class="ev ${type}">${msg}</div>`
+  ).join('');
+  document.getElementById('log').innerHTML = logHtml;
+}
+
+updateUI();
+</script>
+
+</body>
+</html>

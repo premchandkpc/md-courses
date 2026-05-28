@@ -30,7 +30,9 @@
       "Bash(node /tmp/full-scan.js)",
       "Bash(bash /tmp/batch-strategic-enhance.sh)",
       "Bash(awk '{print $2}')",
-      "Bash(xargs kill -9)"
+      "Bash(xargs kill -9)",
+      "Bash(python3 convert-diagrams.py)",
+      "Bash(python3 /Users/ramyachowdary/Documents/prem-work/md-courses/batch-convert-backend.py)"
     ]
   }
 }

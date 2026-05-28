@@ -1,7 +1,9 @@
 # 08 — Databases
 
-The theory and practice of data storage, retrieval, and management. Covers relational databases (PostgreSQL, MySQL), NoSQL systems (MongoDB, Cassandra, DynamoDB), in-memory stores (Redis), distributed SQL (CockroachDB, TiDB, Spanner), storage engine internals (B+tree, LSM, MVCC, WAL), query optimization, performance tuning, and troubleshooting.
 
+> **Run the live simulator**: [redis-eviction.html](/08-databases/redis-eviction.html) — add keys with different TTLs, fill memory, and watch eviction policies in action.> **Run the live simulator**: [btree-visualizer.html](/08-databases/btree-visualizer.html) — insert keys into an Order-4 B+Tree and watch node splits and tree growth in real-time.
+
+The theory and practice of data storage, retrieval, and management. Covers relational databases (PostgreSQL, MySQL), NoSQL systems (MongoDB, Cassandra, DynamoDB), in-memory stores (Redis), distributed SQL (CockroachDB, TiDB, Spanner), storage engine internals (B+tree, LSM, MVCC, WAL), query optimization, performance tuning, and troubleshooting.
 
 ```mermaid
 graph TB
@@ -428,14 +430,6 @@ Ensures durability without flushing data pages on each commit. Central to Postgr
 | [07 — Kubernetes](../07-kubernetes/) | Running databases on K8s (stateful operators), CSI storage, database at scale on K8s |
 | [09 — Distributed Systems](../09-distributed-systems/) | Consensus (Raft, Paxos) in distributed databases, CAP theorem, consistency models |
 | [10 — Messaging](../10-messaging/) | CDC (Debezium, Kafka Connect), database event streaming, transactional outbox pattern |
-
-
-> **Run the live simulator**: [redis-eviction.html](/08-databases/redis-eviction.html) — add keys with different TTLs, fill memory, and watch eviction policies in action.
-
-
-
-> **Run the live simulator**: [btree-visualizer.html](/08-databases/btree-visualizer.html) — insert keys into an Order-4 B+Tree and watch node splits and tree growth in real-time.
-
 
 ## Related
 

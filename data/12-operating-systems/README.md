@@ -1,5 +1,8 @@
 # Operating Systems — Complete Deep Dive 🖥️
 
+
+> **Run the live simulator**: [page-replacement.html](/12-operating-systems/page-replacement.html) — step through FIFO, LRU, and LFU page replacement algorithms interactively.
+
 The OS is the **resource manager** between hardware and applications. It virtualizes CPU, memory, storage, and devices into clean abstractions (processes, virtual memory, files, sockets).
 
 **Related**: [Linux Internals](../os/linux.md) · [Networking](../11-networking/README.md) · [Performance Engineering](../18-performance-engineering/README.md) · [Distributed Systems](../09-distributed-systems/README.md)
@@ -560,10 +563,6 @@ Everything else (IPC, file systems, networking) is these four roles extending th
 ---
 
 **Next**: [Security Engineering](../13-security/README.md) · [Performance Engineering](../18-performance-engineering/README.md)
-
-
-> **Run the live simulator**: [page-replacement.html](/12-operating-systems/page-replacement.html) — step through FIFO, LRU, and LFU page replacement algorithms interactively.
-
 
 ## Related
 

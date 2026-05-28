@@ -1,7 +1,9 @@
 # 11 — Networking
 
-The foundation of all distributed communication. Covers the TCP/IP stack, HTTP protocol evolution (1.1, 2, 3), QUIC, gRPC, DNS, CDN, load balancing algorithms, TLS, packet flow, and the full breadth of how data moves across networks.
 
+> **Run the live simulator**: [tcp-state-machine.html](/11-networking/tcp-state-machine.html) — step through the TCP 3-way handshake, SYN flood, and FIN teardown interactively.
+
+The foundation of all distributed communication. Covers the TCP/IP stack, HTTP protocol evolution (1.1, 2, 3), QUIC, gRPC, DNS, CDN, load balancing algorithms, TLS, packet flow, and the full breadth of how data moves across networks.
 
 ```mermaid
 graph TB
@@ -444,10 +446,6 @@ HTTP over QUIC (UDP-based). Eliminates TCP HOL blocking.
 | [08 — Databases](../08-databases/) | Database connection networking, replication network traffic, query latency from network |
 | [09 — Distributed Systems](../09-distributed-systems/) | Network partitions, latency and timeouts, consensus protocol messaging, failure detection |
 | [10 — Messaging](../10-messaging/) | Broker networking, replication traffic, Kafka's request pipeline, message serialization |
-
-
-> **Run the live simulator**: [tcp-state-machine.html](/11-networking/tcp-state-machine.html) — step through the TCP 3-way handshake, SYN flood, and FIN teardown interactively.
-
 
 ## Related
 

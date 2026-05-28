@@ -1,11 +1,13 @@
 # 🔄 Distributed Consensus & Replication — Complete Deep Dive
 
+
+> **Run the live simulator**: [raft-consensus.html](/09-distributed-systems/raft-consensus.html) — trigger elections, watch term increments, and see log replication in real-time.
+
 > **Scope**: CAP theorem proof and tradeoffs, PACELC extension, FLP impossibility, Raft consensus (leader election, log replication, safety, membership change), Paxos (classic and Multi-Paxos), Zab (ZooKeeper atomic broadcast), gossip protocols (SWIM, memberlist, phi accrual), CRDTs (state-based, operation-based, common types), conflict resolution strategies.
 
 ---
 
 ## Layer 1: Beginner Mental Model
-
 
 **Analogy**: Like a jury reaching a verdict. They must agree (consensus) despite some members being unreliable (crashes). Raft: jurors follow a designated leader (judge) who proposes decisions. All must record the decision in their log before it's final. If the judge dies, a new election happens.
 
@@ -21,9 +23,7 @@
 
 ## Layer 4: Production Reality
 
-
 ### Consensus Failure Modes
-
 
 | Failure | Symptoms | Root Cause | Fix |
 |---------|----------|-----------|-----|
@@ -35,7 +35,6 @@
 | **Quorum Loss** | 5-node cluster loses 3 nodes, no leader possible | Network partition isolates minority | Design for fault tolerance (N nodes survive N/2 failures) |
 
 ### Production Incident: Stripe Payment Raft Cascade (2018)
-
 
 **Context**: Stripe's payment ledger uses Raft for consensus. A network partition isolated 2 nodes from the leader cluster (5 total).
 
@@ -93,9 +92,7 @@ def start_election(self):
 
 ## Layer 5: Staff Engineer Perspective
 
-
 ### Consensus Algorithm Tradeoffs
-
 
 | Algorithm | Complexity | Leader | Latency | Safety | Use Case |
 |-----------|-----------|--------|---------|--------|----------|
@@ -106,7 +103,6 @@ def start_election(self):
 | **Gossip/Eventual** | Very simple, no leader | Peer-to-peer | High latency but cheap | Weak (eventual consistency) | Cassandra, membership |
 
 ### Scaling Pattern: Single Cluster → Global Replication
-
 
 **Stage 1 (Startup)**: 3-node Raft cluster (single region)
 - Leader handles all writes
@@ -141,9 +137,7 @@ def start_election(self):
 
 ## Layer 5: Interview Questions
 
-
 ### Level 1 (Junior Engineer)
-
 
 **Q1: What's a quorum? Why 5 nodes and not 4?**
 A: Quorum = majority. To tolerate F failures, need 2F+1 nodes. 5 nodes tolerates 2 failures (quorum = 3). 4 nodes tolerates only 1 (quorum = 3), but if you lose 2, you lose quorum. Odd numbers guarantee clear majority.
@@ -157,7 +151,6 @@ A: Term = monotonically increasing epoch. Each leader election starts a new term
 
 ### Level 2 (Mid-Level Engineer)
 
-
 **Q3: Leader election takes 150-300ms (random). Why randomized?**
 A: If all nodes use same timeout, they all become candidates simultaneously → no one wins (election deadlock). Randomization ensures one node times out first, becomes leader, sends heartbeat before others timeout.
 - Why asked: Election robustness, randomization purpose
@@ -169,7 +162,6 @@ A: Raft safety rule: nodes only vote for candidates with log at least as up-to-d
 - Expected: Mention log comparison (term + index)
 
 ### Level 3 (Senior Engineer)
-
 
 **Q5: Design a fault-tolerant consensus system for 3 data centers. How many nodes per DC? How do you handle partition?**
 A:
@@ -194,7 +186,6 @@ A:
 - Expected: Tradeoffs between algorithms
 
 ### Level 4 (Staff Engineer)
-
 
 **Q7: Your leader gets 100K writes/second. Followers can only keep up with 50K. What do you do?**
 A:
@@ -227,7 +218,6 @@ A:
 
 ---
 
-
 ```mermaid
 graph LR
     RAFT["Raft<br/>Consensus"] --> LEADER["Leader<br/>(Handles all writes)"]
@@ -256,7 +246,6 @@ graph LR
 
 ## Table of Contents
 
-
 1. CAP Theorem & Proof
 2. PACELC Extension
 3. FLP Impossibility
@@ -274,7 +263,6 @@ graph LR
 ---
 
 ## 1. CAP Theorem & Proof
-
 
 ```text
 +------------------+     +------------------+     +------------------+
@@ -298,7 +286,6 @@ graph LR
 
 ## 2. PACELC Extension
 
-
 **PACELC (Abadi, 2010):** If a Partition occurs (P), trade off C vs A. Else (E), trade off Latency vs Consistency.
 
 ```text
@@ -316,7 +303,6 @@ graph LR
 
 ## 3. FLP Impossibility
 
-
 **Fischer, Lynch, Paterson (1985):** In an asynchronous distributed system where at least one process may crash, no deterministic consensus protocol can guarantee termination.
 
 **Implications:**
@@ -327,7 +313,6 @@ graph LR
 ---
 
 ## 4. Raft: Leader Election
-
 
 ```text
 +--------+      timeout, starts election      +-----------+
@@ -380,7 +365,6 @@ class RaftNode:
 
 ## 5. Raft: Log Replication
 
-
 ```text
 Client            Leader                Followers
   |                 |                      |
@@ -410,7 +394,6 @@ Leader: [x=3][y=1][x=5][z=2][w=1][w=3][x=9]
 
 ## 6. Raft: Safety & Commit Rule
 
-
 **Election Safety:** At most one leader per term (majority can only vote for one candidate).
 
 **Leader Append-Only:** Leader never overwrites or deletes log entries.
@@ -436,7 +419,6 @@ Commit Rule for Previous Terms:
 
 ## 7. Raft: Cluster Membership Change
 
-
 **Single-Server Changes:** Add/remove one server at a time. Overlapping majorities ensure safety.
 
 ```text
@@ -450,7 +432,6 @@ Add D (learner) → D catches up → D becomes voter → Add E (learner) → E b
 ---
 
 ## 8. Raft vs Paxos
-
 
 ```text
 +--------------------------+  +---------------------------+
@@ -469,7 +450,6 @@ Add D (learner) → D catches up → D becomes voter → Add E (learner) → E b
 ---
 
 ## 9. Paxos: Classic & Multi-Paxos
-
 
 ```text
 Phase 1: Prepare
@@ -509,7 +489,6 @@ class PaxosAcceptor:
 
 ## 10. Zab: ZooKeeper Atomic Broadcast
 
-
 **Zab (ZooKeeper Atomic Broadcast):** Leader-based total order broadcast. Leader-only writes.
 
 ```text
@@ -524,7 +503,6 @@ zxid = (epoch << 32) | counter   (monotonically increasing)
 ---
 
 ## 11. Gossip Protocols & SWIM
-
 
 **SWIM (Scalable Weakly-consistent Infection-style Membership):**
 
@@ -550,7 +528,6 @@ def phi(since_last_heartbeat, mean_interval):
 ---
 
 ## 12. CRDTs: Theory & Common Types
-
 
 **CRDT (Conflict-Free Replicated Data Type):** Converges without consensus. Operations commute.
 
@@ -595,7 +572,6 @@ class LWWRegister:
 
 ## 13. Conflict Resolution Strategies
 
-
 | Strategy | Mechanism | Pros | Cons |
 |----------|-----------|------|------|
 | LWW | Timestamp | Simple, always converges | Lost concurrent writes |
@@ -621,15 +597,11 @@ class HLC:
 
 ## Simplest Mental Model
 
-
 **Consensus is a group of servers agreeing on one thing despite failures.** Raft makes this simple: one leader makes all decisions; if it dies, servers run a random-timer election to pick a new one. Paxos does the same with more math. **CRDTs avoid consensus entirely** — operations commute like addition: `1+2+3` is same regardless of order. CAP says: during a network split, you must choose correctness or availability, never both.
-
 
 ## Replication Stages Explained
 
-
 ### Stage 1: Write to Leader
-
 
 ```
 Client → Leader: "insert user=alice"
@@ -638,7 +610,6 @@ Client → Leader: "insert user=alice"
 ```
 
 ### Stage 2: Replicate to Followers
-
 
 ```
 Leader → Follower-1: "insert user=alice"
@@ -654,7 +625,6 @@ Leader → Follower-2: "insert user=alice"
 
 ### Stage 3: Commit
 
-
 ```
 Leader checks: "Got acks from N/2+1 replicas?"
 If YES → Marks committed in leader's log
@@ -665,22 +635,15 @@ If NO  → Entry stays in log but not applied
 
 ### Failure Scenarios
 
-
 | Scenario | Replication State | Recovery |
 |----------|------------------|----------|
 | Client crashes | Entry in leader WAL | Retry on reconnect |
 | Leader crashes | Entry in 1 follower | New leader may not have it |
 | 3/5 replicas down | 2/5 can't quorum | Wait for replica recovery |
 
-
 ## Practical Example
 
-
 See code examples above for practical usage patterns.
-
-
-> **Run the live simulator**: [raft-consensus.html](/09-distributed-systems/raft-consensus.html) — trigger elections, watch term increments, and see log replication in real-time.
-
 
 ## Related
 

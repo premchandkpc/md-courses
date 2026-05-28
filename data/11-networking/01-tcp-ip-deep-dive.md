@@ -1,11 +1,13 @@
 # 🌐 TCP/IP Protocol Stack — Complete Deep Dive
 
+
+> **Run the live simulator**: [tcp-state-machine.html](/11-networking/tcp-state-machine.html) — step through the TCP 3-way handshake, SYN flood, and FIN teardown interactively.
+
 > **Scope**: Ethernet framing, IP packet structure and fragmentation, TCP segment format, TCP state machine, 3-way handshake, TIME-WAIT, flow control, congestion control (CUBIC, BBR, Reno, Vegas), Nagle/keepalive/retransmission, NIC offloading (TSO/GRO/RSS), socket buffers, Linux network stack tuning — the complete TCP/IP stack from wire to application.
 
 > **Related**: [02-tls-http-grpc.md](02-tls-http-grpc.md), [03-memory-management.md](03-memory-management.md), [04-io-models.md](../os/04-io-models.md)
 
 ---
-
 
 ```mermaid
 graph LR
@@ -36,7 +38,6 @@ graph LR
 
 ## Table of Contents
 
-
 1. [Ethernet Frame](#1-ethernet-frame)
 2. [IP Packet](#2-ip-packet)
 3. [TCP Segment](#3-tcp-segment)
@@ -61,7 +62,6 @@ graph LR
 
 ## 1. Ethernet Frame
 
-
 ```
  7 bytes     1 byte     6 bytes     6 bytes     2 bytes     46-1500 bytes   4 bytes
 ┌──────────┬────────┬──────────┬──────────┬────────┬────────────────────┬──────────┐
@@ -77,7 +77,6 @@ graph LR
 
 ### Fields
 
-
 - **Preamble** (7 bytes): Alternating 1/0 bits for clock synchronization
 - **SFD** (1 byte): Start Frame Delimiter — marks end of preamble
 - **Destination MAC** (6 bytes): Physical address of receiver
@@ -88,7 +87,6 @@ graph LR
 
 ### Step-by-Step
 
-
 1. **Physical layer transmission** NIC generates preamble and SFD for clock synchronization
 2. **MAC address lookup** sender queries ARP to resolve IP to destination MAC
 3. **Frame construction** payload (IP packet) is wrapped with layer-2 headers
@@ -97,7 +95,6 @@ graph LR
 6. **Physical transmission** frame sent as electrical/optical signal over wire
 
 ### Code Example
-
 
 ```python
 # Python: Parse Ethernet frame with scapy
@@ -130,11 +127,9 @@ print(f"Max TCP payload per frame: {MAX_PAYLOAD} bytes")
 
 ### Real-World Scenario
 
-
 Facebook's internal data center fabric uses jumbo frames (9000 bytes MTU) for storage replication. When a single 1GB block is transferred, standard MTU would require 1M+ frames, generating millions of interrupts. With jumbo frames, it's only 111K frames—85% reduction in CPU overhead. Engineers discovered a misconfigured switch forcing standard MTU; replication bandwidth dropped from 40Gbps to 2Gbps until the jumbo frame config was restored.
 
 ### Jumbo Frames
-
 
 ```
 Standard MTU:    1500 bytes
@@ -155,7 +150,6 @@ Requirements:
 ---
 
 ## 2. IP Packet
-
 
 ```
 Bit:  0-3    4-7     8-15         16-18   19-31
@@ -179,7 +173,6 @@ Bit:  0-3    4-7     8-15         16-18   19-31
 
 ### Key Fields
 
-
 - **Version** (4 bits): 4 = IPv4, 6 = IPv6
 - **IHL** (4 bits): Header length in 32-bit words (minimum 5 = 20 bytes)
 - **DSCP** (6 bits): Differentiated Services Code Point (QoS marking)
@@ -193,7 +186,6 @@ Bit:  0-3    4-7     8-15         16-18   19-31
 - **Header Checksum** (16 bits): Covering header only (recalculated at each hop)
 
 ### Fragmentation
-
 
 ```
 Original packet:  4000 bytes payload, ID=123, DF=0
@@ -227,7 +219,6 @@ After fragmentation (MTU 1500):
 
 ## 3. TCP Segment
 
-
 ```
 Bit:  0-15           16-31
     ┌──────────────────────────┐
@@ -254,7 +245,6 @@ Bit:  0-15           16-31
 
 ### Flags
 
-
 ```
 SYN:  Synchronize sequence numbers (connection establishment)
 ACK:  Acknowledgment number is valid
@@ -268,7 +258,6 @@ NS:   Nonce Sum (ECN nonce, experimental)
 ```
 
 ### Options
-
 
 ```
 MSS (Maximum Segment Size):
@@ -303,7 +292,6 @@ TCP Fast Open (TFO):
 ---
 
 ## 4. TCP State Machine
-
 
 ```
                     ┌────────────────────────────────────┐
@@ -372,7 +360,6 @@ TCP Fast Open (TFO):
 
 ### TIME-WAIT (2MSL)
 
-
 ```
 TIME-WAIT duration: 2 * MSL (Maximum Segment Lifetime)
   - MSL: 30 seconds (RFC 1122) → TIME-WAIT = 60 seconds
@@ -393,7 +380,6 @@ Consequences:
 
 ### TIME-WAIT Assassination
 
-
 ```
 If a host in TIME-WAIT receives a RST segment:
   → TIME-WAIT terminated early → connection closes immediately
@@ -408,9 +394,7 @@ Linux behavior: tcp_timewait_state_process():
 
 ## 5. Connection Establishment & Teardown
 
-
 ### 3-Way Handshake
-
 
 ```
 Client (active open)                 Server (passive open)
@@ -433,7 +417,6 @@ Latency:
 
 ### TCP Fast Open (TFO)
 
-
 ```
 First connection:
   Client                          Server
@@ -453,7 +436,6 @@ Repeat connection:
 ```
 
 ### 4-Way Teardown
-
 
 ```
 Active closer                     Passive closer
@@ -479,7 +461,6 @@ Active closer                     Passive closer
 
 ### Simultaneous Open
 
-
 ```
 Both sides send SYN simultaneously:
   Host A                       Host B
@@ -495,7 +476,6 @@ Both sides send SYN simultaneously:
 
 ### Half-Close
 
-
 ```
 After FIN/ACK exchange, one direction is closed:
   - Passive closer (still receiving from active closed) → can still send
@@ -507,9 +487,7 @@ After FIN/ACK exchange, one direction is closed:
 
 ## 6. TCP Flow Control
 
-
 ### Receive Window & Sliding Window
-
 
 ```
 Sender's view of receiver's buffer:
@@ -531,7 +509,6 @@ wnd = min(rwnd, cwnd)  ← sender's effective window
 
 ### Window Scaling
 
-
 ```
 Without window scaling:  max window = 65535 bytes
 With window scaling:     max window = 65535 * 2^14 = 1GB
@@ -551,7 +528,6 @@ TCP window auto-tuning (Linux):
 
 ### Zero Window
 
-
 ```
 When receiver's buffer is full (rwnd = 0):
   → Sender cannot send data
@@ -565,7 +541,6 @@ When receiver's buffer is full (rwnd = 0):
 
 ## 7. TCP Congestion Control
 
-
 ```
                    TCP Congestion Control
                     │
@@ -577,7 +552,6 @@ When receiver's buffer is full (rwnd = 0):
 ```
 
 ### CUBIC (Default on Linux)
-
 
 ```
 CUBIC replaces BIC-TCP with a cubic function for window growth.
@@ -622,7 +596,6 @@ Fast recovery:
 
 ### BBR (Bottleneck Bandwidth and Round-trip)
 
-
 ```
 BBR uses bandwidth and RTT measurements (not packet loss!) to control sending rate.
 
@@ -663,7 +636,6 @@ BBR v3 (2023+):
 
 ### Reno & NewReno
 
-
 ```
 Reno (RFC 2581):
   - Slow start: cwnd doubles per RTT
@@ -677,7 +649,6 @@ NewReno (RFC 6582):
 ```
 
 ### Vegas
-
 
 ```
 Delay-based congestion control:
@@ -698,9 +669,7 @@ Not widely deployed (Linux, but not default):
 
 ## 8. Nagle & Delayed ACK
 
-
 ### Nagle's Algorithm
-
 
 ```
 Purpose: Reduce small packet overhead (tinygrams)
@@ -728,7 +697,6 @@ setsockopt(fd, IPPROTO_TCP, TCP_NODELAY, &one, sizeof(one));
 
 ### Delayed ACK
 
-
 ```
 RFC 1122: ACK delay ≤ 500ms (Linux default: 40ms or every 2nd segment)
 
@@ -747,7 +715,6 @@ Quick ACK mode:
 ---
 
 ## 9. Keepalive
-
 
 ```
 TCP keepalive — detects dead peers
@@ -770,9 +737,7 @@ Application-level keepalive (recommended):
 
 ## 10. Retransmission & RTO
 
-
 ### RTO Calculation (RFC 6298)
-
 
 ```
 RTO = SRTT + max(G, 4 * RTTVAR)
@@ -801,7 +766,6 @@ RTO backoff:
 ```
 
 ### Retransmission Strategies
-
 
 ```
 1. Fast Retransmit (3 dupacks → retransmit)
@@ -833,9 +797,7 @@ RTO backoff:
 
 ## 11. NIC Offloading
 
-
 ### Checksum Offload
-
 
 ```
 NIC computes/verifies TCP/UDP/IP checksums in hardware
@@ -849,7 +811,6 @@ Benefit: ~15-30% CPU savings for large transfers
 ```
 
 ### TSO (TCP Segmentation Offload)
-
 
 ```
 Application sends large buffer (64KB) to kernel
@@ -868,7 +829,6 @@ ethtool -K eth0 gso on             # Generic Segmentation Offload (software fall
 
 ### GRO (Generic Receive Offload)
 
-
 ```
 NIC receives individual segments → hardware coalesces into larger buffer
   → Driver passes large skb to kernel
@@ -885,7 +845,6 @@ ethtool -K eth0 lro on             # LRO (legacy, GRO replacement)
 ```
 
 ### RSS (Receive Side Scaling)
-
 
 ```
 NIC distributes incoming packets across multiple RX queues:
@@ -914,7 +873,6 @@ NIC distributes incoming packets across multiple RX queues:
 
 ### RPS/RFS (Receive Packet Steering / Flow Steering)
 
-
 ```
 RPS: Software RSS (when NIC doesn't support RSS)
   - Kernel applies hash to decide which CPU processes packet
@@ -934,7 +892,6 @@ XPS (Transmit Packet Steering):
 ---
 
 ## 12. Socket Buffers (sk_buff)
-
 
 ```
 struct sk_buff — the fundamental data structure in Linux networking
@@ -976,7 +933,6 @@ struct sk_buff — the fundamental data structure in Linux networking
 
 ### Buffer Layout
 
-
 ```
 Headroom (reserved for headers):
   ┌────────────────────────────────────────────────┐
@@ -1002,9 +958,7 @@ skb_trim(skb, new_len);            // Remove trailing data
 
 ## 13. Linux TCP Tuning
 
-
 ### Core Parameters
-
 
 ```bash
 # Buffer sizes (min, default, max)
@@ -1048,7 +1002,6 @@ net.ipv4.tcp_notsent_lowat = -1          # Wake application when notsent < thres
 
 ### High-Performance Settings
 
-
 ```bash
 # For 10Gbps+ connections with many connections:
 net.core.rmem_max = 134217728           # 128MB max receive
@@ -1068,9 +1021,7 @@ net.ipv4.tcp_mtu_probing = 1            # Enable PLPMTUD
 
 ## 14. TCP in High BDP Networks
 
-
 ### Bandwidth-Delay Product
-
 
 ```
 BDP = Bandwidth × RTT
@@ -1090,7 +1041,6 @@ BDP for common links:
 
 ### Window Scaling for High BDP
 
-
 ```
 Needed: window ≥ BDP
 
@@ -1102,7 +1052,6 @@ Needed: window ≥ BDP
 ```
 
 ### BBR vs CUBIC on High BDP
-
 
 ```
 CUBIC on high BDP (100ms RTT, 10Gbps):
@@ -1121,9 +1070,7 @@ BBR on high BDP:
 
 ## 15. Internals
 
-
 ### TCP Receive Path (Linux net/ipv4/tcp_input.c)
-
 
 ```
 tcp_v4_rcv(skb)
@@ -1149,7 +1096,6 @@ tcp_v4_rcv(skb)
 
 ### TCP Timer Wheel
 
-
 ```
 Linux maintains per-socket TCP timers via a timer wheel:
 
@@ -1168,9 +1114,7 @@ All managed in struct inet_connection_sock (icsk_*):
 
 ## 16. Failure Analysis
 
-
 ### SYN Flood
-
 
 ```
 Attacker sends many SYN packets with spoofed source IPs
@@ -1189,7 +1133,6 @@ Mitigations:
 
 ### TIME-WAIT Exhaustion
 
-
 ```
 High connection rate (thousands/sec):
   → 60s TIME-WAIT per connection
@@ -1204,7 +1147,6 @@ Solutions:
 ```
 
 ### Bufferbloat
-
 
 ```
 Excessive buffering in network → high latency
@@ -1226,7 +1168,6 @@ Mitigation:
 
 ### Path MTU Discovery Black Hole
 
-
 ```
 Firewall blocks ICMP "Fragmentation Needed" messages
 → Sender with DF=1 gets no response → connection stalls (PMTUD black hole)
@@ -1243,7 +1184,6 @@ Solutions:
 ```
 
 ### Connection Storms & Listen Overload
-
 
 ```
 Many concurrent connections arriving:
@@ -1263,7 +1203,6 @@ Mitigation:
 ---
 
 ## 17. Edge Cases
-
 
 - **Simultaneous open**: Both sides send SYN → transition to SYN_SENT then SYN_ACK_RCVD → rare but valid
 - **Half-close + data**: Passive closer can still send data after receiving FIN
@@ -1285,9 +1224,7 @@ Mitigation:
 
 ## 18. Performance
 
-
 ### Throughput Bottlenecks
-
 
 ```
 Bottleneck           Limit for 10Gbps          Solution
@@ -1303,7 +1240,6 @@ Kernel context sw    ~5-10 Gbps per core     batch processing
 
 ### Optimal Block Sizes
 
-
 ```
 send()/write() size:
   - Small writes (< 1KB): high syscall overhead per byte
@@ -1318,7 +1254,6 @@ MSS tuning:
 ```
 
 ### Single Connection Performance
-
 
 ```
 Linux tuned for single TCP connection:
@@ -1336,9 +1271,7 @@ To exceed single-core throughput:
 
 ## Interview Questions
 
-
 ### Beginner Level
-
 
 **Q1: Walk through what happens when you type google.com into a browser.**
 
@@ -1359,7 +1292,6 @@ To exceed single-core throughput:
 
 ### Intermediate Level
 
-
 **Q3: How does TCP congestion control work? Explain slow start, congestion avoidance, and fast recovery.**
 
 **Answer**: 1) **Slow start**: cwnd starts at 10 MSS (~14KB). Each ACK doubles cwnd (exponential growth). Until ssthresh (slow start threshold, ~64KB default). 2) **Congestion avoidance**: After ssthresh, additive increase (cwnd += 1 MSS per RTT). On packet loss (triple duplicate ACK or timeout): Reno sets ssthresh = cwnd/2, cwnd = ssthresh, then additive increase. CUBIC (default Linux) uses cubic function for better throughput over high-BDP networks. 3) **Fast recovery**: On triple duplicate ACK, Reno retransmits lost segment, sets cwnd = ssthresh + 3 MSS, ACKs increase cwnd temporarily. TCP includes also: **FACK** (forward ACK for retransmission), **SACK** (selective ACK — only retransmit lost segments, not entire window). Modern Linux uses **TCP BBR** (model-based, not loss-based) which paces based on measured bandwidth and RTT.
@@ -1369,7 +1301,6 @@ To exceed single-core throughput:
 **Answer**: 1) **Client → Server (SYN)**: Sequence number = X (random, e.g., 28475839). SYN flag set. 2) **Server → Client (SYN-ACK)**: Acknowledgment = X+1. Sequence number = Y (server's random ISN). SYN + ACK flags set. 3) **Client → Server (ACK)**: Acknowledgment = Y+1. Sequence = X+1. ACK flag set. Connection established. What happens: Both sides synchronize initial sequence numbers (ISNs) for tracking bytes sent/received. The random ISN prevents TCP sequence prediction attacks (blind in-window attacks). SYN flood mitigation: SYN cookies (send SYN-ACK with encoded sequence number, if ACK comes with correct seq-1, allocate resources). Modern Linux: SYN cookies on by default under SYN flood.
 
 ### Senior Level
-
 
 **Q5: A user reports that their application is experiencing "Connection timed out" but only for certain hosts. How do you diagnose this?**
 
@@ -1383,7 +1314,6 @@ To exceed single-core throughput:
 
 ### Staff/Principal Level
 
-
 **Q7: Your company's TCP-based service in us-east-1 has high tail latency for users in Europe. You see packet loss is <0.1%. The bottleneck is NOT bandwidth. What is it?**
 
 **Why**: Tests understanding of TCP performance physics — latency not bandwidth.
@@ -1396,7 +1326,6 @@ To exceed single-core throughput:
 
 ### Tricky Edge Cases
 
-
 **Q9**: Your server sends a TCP segment with FIN flag but the client never closes the connection. The server's `ss` shows CLOSE_WAIT state. Why is the connection stuck?
 
 **Answer**: **Application bug — client hasn't called close()**. TCP state: Server sends FIN → Client receives FIN → Client is in CLOSE_WAIT (waiting for application to close()). If the client application never calls `close()` or `shutdown()`, CLOSE_WAIT persists indefinitely. The server is in FIN_WAIT_2. These connections consume resources. Fix: 1) Add timeout for CLOSE_WAIT sockets: `net.ipv4.tcp_keepalive_time`. 2) Set `SO_LINGER` with timeout in server. 3) Fix the client application to properly close connections. 4) Use `ss -tan state close-wait` to monitor. CLOSE_WAIT = application bug on the side that receives FIN.
@@ -1404,7 +1333,6 @@ To exceed single-core throughput:
 **Q10**: You have two servers with identical TCP tuning, same kernel, same application. One shows 10x higher retransmission rate. What could cause this?
 
 **Answer**: **Link layer differences**: 1) **Duplex mismatch**: if one side is full-duplex and other is half-duplex (auto-negotiation failure) → collisions + retransmits. 2) **Faulty NIC or cable**: CRC errors on the switch port. Check `ethtool -S eth0` for `rx_crc_errors`, `rx_frame_errors`. 3) **Switch buffer exhaustion**: one port is oversubscribed (too many flows through that switch). 4) **Interrupt coalescence**: `ethtool -c eth0` — if adaptive RX/TX is off, one server may have more interrupts and drop frames. 5) **LRO/GRO (Large Receive Offload)**: if one server has it off and the other on, the offload-capable one has better coalescing → fewer TCP segments → fewer retransmissions. 6) **TCP offload**: TSO/GSO checksum offloading — if one NIC has broken offload, corrupt packets → TCP checksum failures → retransmissions. Fix: compare `ethtool -k eth0` features; compare `/sys/class/net/eth0/statistics/` errors; use `tcpdump` on both to see if retransmits are server's fault or client's.
-
 
 > **TCP/IP is a postal service for the internet. Ethernet is the local mail truck that delivers between houses on your street. IP is the envelope with addresses — it tells the postal system which city and house. TCP is the registered mail service that confirms every package arrived, re-sends lost ones, and makes sure they're in order. The 3-way handshake is "I'll send a letter, you confirm, I confirm back" before any real communication. The congestion window is how many packages you're willing to have on trucks at once — slow start means you start with one, double until you see a traffic jam (loss), then ease back. BBR is a GPS that measures how fast the road system actually is and paces your packages to avoid traffic jams entirely. All the offloading (TSO/GRO/RSS) is like having automated sorting machines at the post office — the mail carrier (NIC) handles the heavy lifting so the clerks (CPU) can focus on the actual mail (applications).**
 
@@ -1445,10 +1373,6 @@ To exceed single-core throughput:
 | **Reno** | AIMD (additive inc, multiplicative dec) | Fair | Low | Moderate |
 | **NewReno** | Reno + partial ACK handling | Fair | Low-Moderate | Moderate |
 | **Westwood** | Bandwidth estimation | Good | High (wireless) | Moderate |
-
-
-> **Run the live simulator**: [tcp-state-machine.html](/11-networking/tcp-state-machine.html) — step through the TCP 3-way handshake, SYN flood, and FIN teardown interactively.
-
 
 ## Related
 

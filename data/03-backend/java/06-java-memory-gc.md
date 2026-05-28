@@ -1,9 +1,11 @@
 # 🗑️ Java Memory Model & Garbage Collection — Complete Deep Dive
 
+
+> **Run the live simulator**: [gc-visualizer.html](/03-backend/java/gc-visualizer.html) — allocate objects, trigger Young/Full GC pauses, and watch objects promote across heap generations.
+
 **Related**: [JVM Architecture](05-jvm-architecture.md) · [Multithreading](04-multithreading.md) · [Collections](02-collections-framework.md)
 
 ---
-
 
 ```mermaid
 graph LR
@@ -29,7 +31,6 @@ graph LR
 
 ## Table of Contents
 
-
 - [Java Memory Model (JMM)](#-java-memory-model-jmm)
 - [1. Happens-Before Rules](#1-happens-before-rules)
 - [2. Garbage Collection Overview](#2-garbage-collection-overview)
@@ -47,9 +48,7 @@ graph LR
 
 ## 🧭 Java Memory Model (JMM)
 
-
 ### What JMM Defines
-
 
 ```text
 JMM defines:
@@ -64,7 +63,6 @@ JMM does NOT define:
 ```
 
 ### Memory Hierarchy Visibility
-
 
 ```text
 Thread A                           Thread B
@@ -95,9 +93,7 @@ Without synchronization → Thread B may see:
 
 ## 1. Happens-Before Rules
 
-
 ### The Rules
-
 
 ```text
 If A happens-before B, then everything A did (writes, etc.)
@@ -144,7 +140,6 @@ is visible to B.
 
 ### Visualizing Happens-Before
 
-
 ```text
 Thread A:                        Thread B:
     │                                │
@@ -166,7 +161,6 @@ Thread A:                        Thread B:
 
 ### volatile Memory Barrier
 
-
 ```text
 volatile write:
   ┌─────────────────────────────────────────┐
@@ -186,7 +180,6 @@ volatile read:
 ```
 
 ### JMM in Practice: Double-Checked Locking
-
 
 ```java
 // ✅ CORRECT — using volatile
@@ -218,9 +211,7 @@ class Singleton {
 
 ## 2. Garbage Collection Overview
 
-
 ### What is GC?
-
 
 ```text
 Automatic memory management:
@@ -231,7 +222,6 @@ Automatic memory management:
 ```
 
 ### Reachability
-
 
 ```text
 GC Roots (always reachable):
@@ -264,9 +254,7 @@ Example:
 
 ## 3. GC Algorithms
 
-
 ### 1. Mark-Sweep
-
 
 ```text
 Phase 1: MARK
@@ -291,7 +279,6 @@ Problem: Fragmentation (free blocks interspersed)
 
 ### 2. Mark-Compact
 
-
 ```text
 Phase 1: MARK (same as Mark-Sweep)
 
@@ -309,7 +296,6 @@ Used by: Serial GC, Parallel GC (old gen)
 ```
 
 ### 3. Copying (Scavenge)
-
 
 ```text
 Phase 1: Copy live objects from FROM to TO space
@@ -335,7 +321,6 @@ Used by: Young Gen collectors (Copying is fast, but wastes half space)
 
 ### Algorithm Comparison
 
-
 | Algorithm | Speed | Fragmentation | Space Overhead | Used By |
 |-----------|-------|---------------|----------------|---------|
 | Mark-Sweep | Medium | High | None | CMS (old gen) |
@@ -346,9 +331,7 @@ Used by: Young Gen collectors (Copying is fast, but wastes half space)
 
 ## 4. Generational GC Flow
 
-
 ### Object Age & Promotion
-
 
 ```text
                     ┌─────────────────────────────────────────────┐
@@ -402,7 +385,6 @@ Object Lifetime Flow:
 
 ### Full GC Flow
 
-
 ```text
 ┌─────────────────────────────────────────────────────────────┐
 │                    Full GC Triggers                          │
@@ -441,7 +423,6 @@ Object Lifetime Flow:
 
 ### GC: Young vs Old vs Full
 
-
 | Type | What | STW? | Frequency |
 |------|------|------|-----------|
 | Minor GC | Young gen only | Yes (fast) | Frequent (seconds) |
@@ -452,9 +433,7 @@ Object Lifetime Flow:
 
 ## 5. Garbage Collector Types
 
-
 ### Serial GC (-XX:+UseSerialGC)
-
 
 ```text
 ┌─────────────────────────────────────────────────────────────┐
@@ -470,7 +449,6 @@ Object Lifetime Flow:
 ```
 
 ### Parallel GC (-XX:+UseParallelGC) — Default in Java 8
-
 
 ```text
 ┌─────────────────────────────────────────────────────────────┐
@@ -490,7 +468,6 @@ Object Lifetime Flow:
 ```
 
 ### G1 GC (-XX:+UseG1GC) — Default since Java 9
-
 
 ```text
 ┌─────────────────────────────────────────────────────────────┐
@@ -521,7 +498,6 @@ Object Lifetime Flow:
 
 ### ZGC (-XX:+UseZGC) — Java 11+ (Experimental → Production)
 
-
 ```text
 ┌─────────────────────────────────────────────────────────────┐
 │  ZGC                                                        │
@@ -544,7 +520,6 @@ Object Lifetime Flow:
 
 ### GC Comparison
 
-
 | GC | Pause Time | Throughput | CPU Overhead | Best For |
 |----|-----------|------------|--------------|----------|
 | Serial | Long | Low | Low | Small apps, single core |
@@ -557,9 +532,7 @@ Object Lifetime Flow:
 
 ## 6. Object Allocation & TLABs
 
-
 ### TLAB (Thread-Local Allocation Buffer)
-
 
 ```text
 Each thread gets a private region in Eden for allocation:
@@ -594,7 +567,6 @@ Size control:
 
 ### Object Layout in Memory
 
-
 ```text
 Object header (12 bytes on 64-bit, with compressed OOPs):
   ┌──────────────────────────────────────────┐
@@ -620,9 +592,7 @@ Object header (12 bytes on 64-bit, with compressed OOPs):
 
 ## 7. GC Logging & Analysis
 
-
 ### Enabling GC Logs
-
 
 ```bash
 # Java 8 style
@@ -641,7 +611,6 @@ Object header (12 bytes on 64-bit, with compressed OOPs):
 ```
 
 ### Reading GC Logs
-
 
 ```text
 Example (Parallel GC):
@@ -676,7 +645,6 @@ Example (Full GC):
 
 ### GC Analysis Tools
 
-
 | Tool | Purpose |
 |------|---------|
 | `jstat -gcutil <pid> 1s` | Real-time GC stats every second |
@@ -690,9 +658,7 @@ Example (Full GC):
 
 ## 8. Memory Leak Detection
 
-
 ### Types of Memory Leaks
-
 
 ```java
 // 1. Forgotten references in collections
@@ -747,7 +713,6 @@ class Leak5 {
 
 ### Detecting Leaks with Heap Dumps
 
-
 ```bash
 # Trigger heap dump on OOM
 -XX:+HeapDumpOnOutOfMemoryError
@@ -766,7 +731,6 @@ jcmd <pid> GC.heap_dump /path/to/dump.hprof
 
 ### Using Eclipse MAT
 
-
 ```text
 1. Open .hprof file in MAT
 2. Run "Leak Suspects Report"
@@ -784,7 +748,6 @@ Key metrics:
 ```
 
 ### Using jcmd for Diagnostics
-
 
 ```bash
 # Thread dump
@@ -810,9 +773,7 @@ jcmd <pid> help
 
 ## 9. Reference Types
 
-
 ### SoftReference — Memory-Sensitive Cache
-
 
 ```java
 // GC clears SoftReferences only when memory is low
@@ -838,7 +799,6 @@ public class SoftCache<K, V> {
 ```
 
 ### WeakReference — No Memory Pressure
-
 
 ```java
 // GC clears WeakReference as soon as no strong refs exist
@@ -867,7 +827,6 @@ public class WeakListener<T> {
 ```
 
 ### PhantomReference — Post-Mortem Cleanup
-
 
 ```java
 // get() always returns null!
@@ -908,7 +867,6 @@ public class ResourceCleaner {
 
 ### Reference Type Comparison
 
-
 | Aspect | SoftReference | WeakReference | PhantomReference |
 |--------|--------------|---------------|------------------|
 | get() returns | Object (maybe null) | Object (maybe null) | Always null |
@@ -919,7 +877,6 @@ public class ResourceCleaner {
 ---
 
 ## ⚠️ Common Pitfalls
-
 
 | Pitfall | Cause | Detection |
 |---------|-------|-----------|
@@ -935,7 +892,6 @@ public class ResourceCleaner {
 ---
 
 ## 🧠 Simplest Mental Model
-
 
 ```text
 MARK            =  A janitor marking chairs that are still in use with
@@ -978,9 +934,7 @@ HAPPENS-BEFORE  =  If I text you "I put the keys on the table" before
 
 **Next**: [Streams & Lambda](07-streams-lambda.md) — Functional programming in Java
 
-
 ## Observability
-
 
 ```mermaid
 flowchart LR
@@ -998,7 +952,6 @@ flowchart LR
 
 ### Key Metrics
 
-
 | Metric | Unit | Threshold | Indicates |
 |--------|------|-----------|-----------|
 | JVM heap used | % | < 75% | Memory pressure |
@@ -1012,7 +965,6 @@ flowchart LR
 
 ### Logs
 
-
 - **ERROR**: Uncaught exceptions, OOM, stack traces, connection pool exhaustion, thread starvation
 - **WARN**: Slow queries, long GC pauses, retry attempts, deprecated API usage
 - **INFO**: Server start/stop, context initialization, config loaded, scheduled tasks
@@ -1020,11 +972,9 @@ flowchart LR
 
 ### Traces
 
-
 Use Micrometer Tracing (formerly Spring Cloud Sleuth) or OpenTelemetry Java SDK. Propagate trace context via MDC for log correlation.
 
 ### Alerts
-
 
 | Severity | Condition | Response |
 |----------|-----------|----------|
@@ -1036,9 +986,7 @@ Use Micrometer Tracing (formerly Spring Cloud Sleuth) or OpenTelemetry Java SDK.
 
 ### Dashboards
 
-
 **JVM Dashboard**: heap usage (young/old/metaspace), GC pause (count, duration per generation), thread states (runnable/blocked/waiting), class loading, JIT compilation time, file descriptor count.
-
 
 ---
 
@@ -1046,9 +994,7 @@ Use Micrometer Tracing (formerly Spring Cloud Sleuth) or OpenTelemetry Java SDK.
 
 ## Object Allocation Deep Dive
 
-
 ### TLAB (Thread-Local Allocation Buffer)
-
 
 ```
 Problem: Thread-safe allocation requires locking
@@ -1094,7 +1040,6 @@ java -XX:MinTLABSize=16384 App  # Minimum TLAB size
 
 ### Object Allocation Timeline
 
-
 ```
 new User()
   │
@@ -1127,7 +1072,6 @@ Reference returned
 
 ### Allocation Rate Analysis
 
-
 ```bash
 # Monitor allocation rate with async-profiler
 ./profiler.sh -d 30 -e alloc -o flamegraph.html <pid>
@@ -1151,9 +1095,7 @@ Reference returned
 
 ## Memory Barriers & CPU Cache
 
-
 ### False Sharing
-
 
 ```
 Problem: Two threads update different fields, same cache line
@@ -1222,7 +1164,6 @@ public class Counter {
 
 ### Memory Barriers in Action
 
-
 ```
 Store Buffer & Ordering:
 
@@ -1240,7 +1181,6 @@ Thread A              Main Memory         Thread B's View
                  │ flag = 1   │
 
 Thread B reads flag=1 → can now safely read x=5
-
 
 Barrier Types (CPU dependent):
 
@@ -1266,9 +1206,7 @@ Thread A:          Thread B:
 
 ## GC Algorithm Comparison
 
-
 ### Mark-Sweep-Compact (G1GC, CMS)
-
 
 ```
 Before GC:
@@ -1300,7 +1238,6 @@ But: Defragments, improves allocation
 
 ### Concurrent Mark-Sweep (CMS)
 
-
 ```
 Reduces pause time by doing work concurrently:
 
@@ -1329,9 +1266,7 @@ Cost: Extra book-keeping, more CPU used
 
 ## Production Tuning Strategies
 
-
 ### GC Pause Optimization
-
 
 ```
 Scenario: p99 latency = 500ms, needs < 100ms
@@ -1374,7 +1309,6 @@ Metaspace filling:
 
 ### Heap Sizing for Production
 
-
 ```
 Framework: Determine correct -Xmx
 
@@ -1416,9 +1350,7 @@ Framework: Determine correct -Xmx
 
 ## Interview Questions: Memory & GC Mastery
 
-
 ### Beginner Questions
-
 
 **Q1: What's the difference between stack and heap?**
 ```
@@ -1508,7 +1440,6 @@ Solution:
 
 ### Intermediate Questions
 
-
 **Q4: Explain the generational hypothesis and why it works**
 ```
 A: Hypothesis: Most objects die young
@@ -1579,7 +1510,6 @@ Prevention:
 ```
 
 ### Senior Questions
-
 
 **Q6: Design a low-latency, low-garbage application**
 ```
@@ -1691,7 +1621,6 @@ Detection:
 
 ### Staff-Level Question
 
-
 **Q8: Architect a multi-region distributed cache with Java**
 ```
 A: Requirements:
@@ -1770,9 +1699,7 @@ Result:
 
 ## Common Failures
 
-
 ### Failure: OutOfMemoryError
-
 
 - **Symptoms**: Application crashes with `java.lang.OutOfMemoryError`. Heap dump on exit. 503s from load balancer.
 - **Root Cause**: Memory leak (unclosed streams, collections growing unbounded, ThreadLocal not cleaned). Heap too small for workload. Metaspace leak from dynamic class loading.
@@ -1782,7 +1709,6 @@ Result:
 
 ### Failure: Full GC Storm
 
-
 - **Symptoms**: Latency spikes, CPU high, throughput drops. GC log shows Full GC events in quick succession.
 - **Root Cause**: Old Gen fills up faster than concurrent GC can clear. Large object allocation (direct to Old Gen). GC fragmentation. Too many concurrent GC threads competing.
 - **Detection**: GC logs show Full GC events. `jstat -gcutil` shows Old Gen at > 90% after GC. `jmap -histo` shows large byte arrays.
@@ -1790,7 +1716,6 @@ Result:
 - **Prevention**: Use G1GC with `-XX:MaxGCPauseMillis=200`. Set `-XX:G1HeapRegionSize=16m`. Monitor allocation rate with async-profiler.
 
 ### Failure: Thread Pool Exhaustion
-
 
 - **Symptoms**: "RejectedExecutionException" in logs. Tasks queue up and time out. Deadlock between thread pools.
 - **Root Cause**: Task submitted faster than thread pool can process. Thread pool queue bounded. Deadlock where pool A waits for pool B, pool B waits for pool A.
@@ -1800,7 +1725,6 @@ Result:
 
 ### Failure: ClassLoader Leak
 
-
 - **Symptoms**: Metaspace grows unbounded, Full GC on Metaspace, eventually OOM: Metaspace.
 - **Root Cause**: Application redeploy (Tomcat) creates new ClassLoader each time. Old ClassLoader not garbage collected because some reference (often from a library thread) holds it alive. Common with thread pools initialized at deploy time.
 - **Detection**: `jstat -gcutil` shows Metaspace usage climbing. Heap dump shows many `ClassLoader` instances. PermGen/Metaspace GC before OOM.
@@ -1808,7 +1732,6 @@ Result:
 - **Prevention**: Always use `ThreadFactory` that sets daemon threads. Use `Thread.setContextClassLoader(null)` for library threads. Test redeploy with `Profiler` to verify ClassLoader cleanup.
 
 ### Failure: Deadlock
-
 
 - **Symptoms**: Threads stuck, no progress, application partially frozen. Thread dump shows threads in BLOCKED state all holding locks others need.
 - **Root Cause**: Circular lock dependency. Two+ threads each hold a lock and wait for another thread's lock. Classic dining philosophers.
@@ -1845,10 +1768,6 @@ Result:
 | G1 | Variable regions (1-32MB) | Variable regions | Humongous regions (>50% region size) |
 | ZGC | Multi-mapped pages | Multi-mapped pages | Colored pointers (metadata bits) |
 | Shenandoah | Regions | Regions | Brooks forwarding pointers |
-
-
-> **Run the live simulator**: [gc-visualizer.html](/03-backend/java/gc-visualizer.html) — allocate objects, trigger Young/Full GC pauses, and watch objects promote across heap generations.
-
 
 ## Related
 

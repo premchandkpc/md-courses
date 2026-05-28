@@ -1,6 +1,8 @@
 # 🚀 Redis — Complete Deep Dive
 
 
+> **Run the live simulator**: [redis-eviction.html](/08-databases/redis-eviction.html) — add keys with different TTLs, fill memory, and watch eviction policies in action.
+
 ```mermaid
 graph LR
     STR["String<br/>(SDS)"] --> CACHING["Caching<br/>(SET/GET)"]
@@ -33,7 +35,6 @@ graph LR
 
 ## Table of Contents
 
-
 1. [Data Structures Overview](#data-structures-overview)
 2. [Data Structure Internals](#data-structure-internals)
 3. [Memory Optimization](#memory-optimization)
@@ -48,7 +49,6 @@ graph LR
 ---
 
 ## Data Structures Overview
-
 
 ```text
 String      → SDS (512MB max)
@@ -67,9 +67,7 @@ Bloom/Cuckoo/T-Digest/CMS → modules
 
 ## Data Structure Internals
 
-
 ### SDS (Simple Dynamic String)
-
 
 ```text
 ┌──────┬──────┬──────┬──────────────────────┐
@@ -82,7 +80,6 @@ O(1) length, binary safe, preallocation to next power of 2.
 
 ### Encoding
 
-
 ```python
 EMBSTR_LIMIT = 44  # 64 - header(19) - null(1)
 if len(value) <= EMBSTR_LIMIT:
@@ -94,7 +91,6 @@ else:
 ```
 
 ### SkipList (Sorted Set)
-
 
 ```text
 Level 4:  ──────► 45 ──────────────────────────► NULL
@@ -115,7 +111,6 @@ def random_level():
 ```
 
 ### Dict (Hash Table)
-
 
 ```python
 class RedisDict:
@@ -140,16 +135,13 @@ class RedisDict:
 
 ### Stream (Radix Tree)
 
-
 Compressed trie with listpack leaf nodes. Each entry ID = `timestamp-sequence`.
 
 ---
 
 ## Memory Optimization
 
-
 ### Key Naming & Expiration
-
 
 ```redis
 # Bad: long prefixes
@@ -162,7 +154,6 @@ SETEX "session:abc123" 3600 "data"
 Expiration: **Lazy** (check on access) + **Active** (sample 20 keys every 100ms, if >25% expired, repeat).
 
 ### Eviction Policies
-
 
 ```redis
 maxmemory 4gb
@@ -179,7 +170,6 @@ allkeys-random   → random eviction          [uniform access]
 
 ### Memory Fragmentation
 
-
 ```bash
 INFO memory | grep mem_fragmentation_ratio
 # >1.5 → fragmentation (check jemalloc)
@@ -194,9 +184,7 @@ CONFIG SET activedefrag yes
 
 ## Persistence
 
-
 ### RDB (Snapshot)
-
 
 ```redis
 save 900 1    # 15min if ≥1 change
@@ -206,7 +194,6 @@ BGSAVE         # background fork + COW
 ```
 
 ### AOF (Append-Only File)
-
 
 ```redis
 appendfsync everysec  # default (good balance)
@@ -218,7 +205,6 @@ appendfsync no        # let OS decide
 
 ### Hybrid (Redis 4+)
 
-
 ```text
 appendonly.aof = [RDB snapshot | AOF incremental commands]
 Fast restart: load RDB, replay only incremental AOF.
@@ -227,7 +213,6 @@ Fast restart: load RDB, replay only incremental AOF.
 ---
 
 ## Replication (PSYNC2)
-
 
 ```text
 REPLICAOF host port
@@ -242,7 +227,6 @@ REPLICAOF host port
 ---
 
 ## Redis Cluster
-
 
 ```text
 Nodes: A(0-5461), B(5462-10922), C(10923-16383)
@@ -265,7 +249,6 @@ def slot_for_key(key):
 
 ## Sentinel
 
-
 ```text
 Sentinels (3+) monitor master/replicas.
 S1 marks master SDOWN (no PONG) → asks others → ODOWN → leader elected
@@ -278,9 +261,7 @@ Config epoch prevents split-brain.
 
 ## Transactions & Lua
 
-
 ### MULTI/EXEC/WATCH
-
 
 ```redis
 WATCH balance                        -- optimistic lock
@@ -291,7 +272,6 @@ EXEC                                 -- nil if WATCHed key changed
 ```
 
 ### Lua Scripting
-
 
 ```lua
 -- Atomic transfer (runs on server, no network roundtrips)
@@ -311,7 +291,6 @@ EVALSHA <sha1> 2 from to amount   -- cached script (SCRIPT FLUSH to clear)
 ---
 
 ## Modules
-
 
 ```redis
 # RediSearch: full-text search
@@ -335,7 +314,6 @@ TS.RANGE sensor:temp 1614556800 1614643200
 
 ## Simplest Mental Model
 
-
 ```
 Redis is a toolbox where everything is a key:
 
@@ -353,11 +331,9 @@ Redis is a toolbox where everything is a key:
 "If you need to go to disk, you've already lost"
 ```
 
-
 ---
 
 ## Code Examples
-
 
 ```python
 import redis
@@ -400,7 +376,6 @@ def get_top_players(game: str, page: int = 0, page_size: int = 10):
 
 ## Common Failure Modes
 
-
 **Problem**: Cache stampede — thundering herd when cached key expires under high concurrency
 
 **Root cause**: Multiple concurrent requests find the key expired and all hit the backend database simultaneously. This can saturate the DB connection pool, increase latency by 10x, and cascade to other services.
@@ -421,20 +396,15 @@ def get_top_players(game: str, page: int = 0, page_size: int = 10):
 
 ## Interview Questions
 
-
 ### Q1: How does Redis handle eviction and what policy should you choose for a caching use case?
-
 
 **Answer**: Redis applies eviction when memory exceeds `maxmemory`. It uses a combination of lazy (check on every command) and active (sample keys every 100ms) eviction. For caching, `allkeys-lru` is the general-purpose choice — it evicts the least recently used keys across all keys. `allkeys-lfu` is better for workloads with skewed access patterns (some keys accessed much more frequently than others). `volatile-lru` only evicts keys with TTL set, which is useful when some keys should never be evicted. `noeviction` returns errors on writes — use it as a safety net to prevent data loss but monitor closely.
 
 ### Q2: How would you design a Redis deployment for high availability with automatic failover?
 
-
 **Answer**: Use Redis Sentinel for HA. Deploy at least 3 Sentinel nodes (odd number for quorum) monitoring a master-replica pair. Sentinels use gossip to agree on master status — if a master is unreachable, a leader election happens (requires majority), and a replica is promoted. Configure the application to connect via Sentinel (not directly to master) so it gets the current master address. For higher scale, use Redis Cluster with 3 masters and 3 replicas — data is sharded across 16384 hash slots, each master replicates to one replica. If a master fails, its replica is promoted. Cluster mode provides both HA and horizontal scaling but has limitations (multi-key operations only within same hash slot).
 
-
 ## Observability
-
 
 ```mermaid
 flowchart LR
@@ -449,7 +419,6 @@ flowchart LR
 
 ### Key Metrics
 
-
 | Metric | Unit | Threshold | Indicates |
 |--------|------|-----------|-----------|
 | Hit rate (keyspace_hits/keyspace_misses) | % | > 90% | Cache efficiency |
@@ -463,13 +432,11 @@ flowchart LR
 
 ### Logs
 
-
 - **ERROR**: OOM on write, replication failure, cluster fail state, AOF rewrite failure
 - **WARN**: Evictions > 0, memory > maxmemory, replication buffer growing, fork delay
 - **INFO**: BGSAVE complete, AOF rewrite, failover, replica connected, config rewrite
 
 ### Alerts
-
 
 | Severity | Condition | Response |
 |----------|-----------|----------|
@@ -480,15 +447,11 @@ flowchart LR
 
 ### Dashboards
 
-
 **Redis Overview**: CPU, memory, hit rate, evictions, connected clients, commands/sec, network I/O.
-
 
 ## Common Failures
 
-
 ### Failure: Cache Stampede
-
 
 - **Symptoms**: DB load spikes, latency increases. Cache miss rate suddenly 100% for popular keys.
 - **Root Cause**: All cache keys expire at same TTL boundary. N concurrent requests hit DB simultaneously.
@@ -498,7 +461,6 @@ flowchart LR
 
 ### Failure: Memory Fragmentation
 
-
 - **Symptoms**: `used_memory_rss` >> `used_memory`. Process memory high but data small. OOM risk despite low data.
 - **Root Cause**: Redis allocates/frees differently-sized objects. Jemalloc can't return pages to OS. Common with frequent expiry/deletion.
 - **Detection**: `mem_fragmentation_ratio` > 1.5. RSS growing but used_memory stable.
@@ -506,7 +468,6 @@ flowchart LR
 - **Prevention**: Use `maxmemory-policy allkeys-lru`. Keep TTLs consistent (same-size keys). Use Redis 4+ jemalloc improvements.
 
 ### Failure: Fork-Based Save Latency
-
 
 - **Symptoms**: Latency spikes, correlated with BGSAVE/AOF rewrite. P99 10x during save.
 - **Root Cause**: BGSAVE forks Redis process. Fork blocks for large heaps. Copy-on-write page faults.
@@ -516,16 +477,11 @@ flowchart LR
 
 ### Failure: Cluster Failover Issues
 
-
 - **Symptoms**: Data loss on failover. Cluster in fail state. Write commands fail.
 - **Root Cause**: Network partition. Node timeout too aggressive. Quorum not met.
 - **Detection**: `CLUSTER INFO` shows `cluster_state:fail`. `cluster_known_nodes` missing.
 - **Recovery**: 1) `CLUSTER FAILOVER TAKEOVER` on replicas. 2) Re-add failed nodes. 3) Ensure slot coverage.
 - **Prevention**: Set `cluster-node-timeout` appropriately. Use 3+ nodes in different AZs.
-
-
-> **Run the live simulator**: [redis-eviction.html](/08-databases/redis-eviction.html) — add keys with different TTLs, fill memory, and watch eviction policies in action.
-
 
 ## Related
 

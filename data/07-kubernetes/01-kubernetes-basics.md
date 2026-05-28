@@ -1,9 +1,11 @@
 # ☸️ Kubernetes — Complete Deep Dive
 
+
+> **Run the live simulator**: [kubernetes-scheduling.html](/07-kubernetes/kubernetes-scheduling.html) — add pods, watch the scheduler score and bind them to nodes interactively.
+
 **Related**: [Advanced K8s Patterns](02-advanced-k8s.md) · [Docker Container Basics](../docker/01-container-basics.md) · [K8s Docs](https://kubernetes.io/docs)
 
 ---
-
 
 ```mermaid
 graph LR
@@ -2818,10 +2820,6 @@ and the control plane makes it happen, continuously reconciling.
 **Q10**: A NetworkPolicy allows traffic from app-a to app-b on port 8080. Traffic works in some node pairs but not others. Why?
 
 **Answer**: **kube-proxy and NetworkPolicy implementation differences**. If using different CNI plugins or kube-proxy modes on different nodes (e.g., some nodes use iptables, others use eBPF/Cilium), the policy enforcement differs. Also: **NodePort traffic** bypasses NetworkPolicy (it goes directly through kube-proxy, not through the CNI's policy engine). Or: some CNI plugins (Calico) enforce at the node level via iptables, while others (Cilium) enforce at eBPF level — if the policy references `ipBlock` with CIDR that includes some nodes' pod CIDR but not others, traffic intermittently fails.
-
-
-> **Run the live simulator**: [kubernetes-scheduling.html](/07-kubernetes/kubernetes-scheduling.html) — add pods, watch the scheduler score and bind them to nodes interactively.
-
 
 ## Related
 

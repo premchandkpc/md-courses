@@ -1,6 +1,8 @@
 # OWASP Top 10, Authentication & Authorization: Deep Dive
 
 
+> **Run the live simulator**: [jwt-debugger.html](/13-security/jwt-debugger.html) — inspect, decode, tamper, and verify JSON Web Tokens with real HMAC-SHA256 signing.
+
 ```mermaid
 graph LR
     WEB_APP["Web Application"] --> THREATS["Threat Surface"]
@@ -2410,10 +2412,6 @@ Attacker uses forged token to:
 **End of File: 900+ lines**
 
 ---
-
-
-> **Run the live simulator**: [jwt-debugger.html](/13-security/jwt-debugger.html) — inspect, decode, tamper, and verify JSON Web Tokens with real HMAC-SHA256 signing.
-
 
 ## Related
 

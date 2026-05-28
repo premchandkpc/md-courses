@@ -1,6 +1,8 @@
 # 🌐 TCP/IP Protocol Stack — Complete Deep Dive
 
 
+> **Run the live simulator**: [tcp-state-machine.html](/11-networking/tcp-state-machine.html) — step through the TCP 3-way handshake, SYN flood, and FIN teardown interactively.
+
 ```mermaid
 graph LR
     APP_L["Application Layer<br/>(HTTP/SSH/DNS)"] --> TRANS_L["Transport Layer<br/>(TCP/UDP)"]
@@ -34,7 +36,6 @@ graph LR
 
 ## 📋 Table of Contents
 
-
 - [OSI vs TCP/IP Model](#osi-vs-tcpip-model)
 - [Ethernet](#ethernet)
 - [ARP](#arp)
@@ -50,7 +51,6 @@ graph LR
 ---
 
 ## OSI vs TCP/IP Model
-
 
 ```text
 OSI Model (7 Layers)          TCP/IP Model (5 Layers)      Protocol Data Unit
@@ -79,9 +79,7 @@ OSI Model (7 Layers)          TCP/IP Model (5 Layers)      Protocol Data Unit
 
 ## Ethernet
 
-
 ### Frame Structure
-
 
 ```text
 +----------+--------+----------+----------+----------+----------+------------+----------+
@@ -99,7 +97,6 @@ OSI Model (7 Layers)          TCP/IP Model (5 Layers)      Protocol Data Unit
 
 ### Key Concepts
 
-
 - **CSMA/CD**: Listen before talk, jam on collision, exponential backoff. Obsolete in full-duplex switched nets.
 - **Full-Duplex**: Separate TX/RX pairs, no collisions, CSMA/CD disabled.
 - **Auto-Negotiation**: FLP advertising capabilities → highest common denominator (speed+duplex).
@@ -111,9 +108,7 @@ OSI Model (7 Layers)          TCP/IP Model (5 Layers)      Protocol Data Unit
 
 ## ARP
 
-
 ### Packet Structure
-
 
 ```text
 +---------+---------+--------+--------+----------------+----------------+----------------+----------------+
@@ -133,9 +128,7 @@ OSI Model (7 Layers)          TCP/IP Model (5 Layers)      Protocol Data Unit
 
 ## IP — Internet Protocol
 
-
 ### IPv4 Header
-
 
 ```text
  0                   1                   2                   3
@@ -161,7 +154,6 @@ OSI Model (7 Layers)          TCP/IP Model (5 Layers)      Protocol Data Unit
 
 ### Fragmentation
 
-
 ```text
 Flags: [0][DF][MF]  DF=don't fragment, MF=more fragments
 Fragment Offset: 13 bits, 8-byte blocks
@@ -171,7 +163,6 @@ Fragment Offset: 13 bits, 8-byte blocks
 **Path MTU Discovery**: Set DF, router returns ICMP Frag Needed (Type 3, Code 4) with MTU.
 
 ### IPv6 Header
-
 
 ```text
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
@@ -195,7 +186,6 @@ Fragment Offset: 13 bits, 8-byte blocks
 
 ### Subnetting
 
-
 - **CIDR**: `/24` = 255.255.255.0. Notation: `192.168.1.0/24`.
 - **VLSM**: Variable masks per subnet (e.g., `/30` P2P, `/24` LAN).
 - **Supernetting**: Aggregate contiguous prefixes (`192.168.0.0/23` covers two `/24`s).
@@ -204,9 +194,7 @@ Fragment Offset: 13 bits, 8-byte blocks
 
 ## TCP — Transmission Control Protocol
 
-
 ### TCP Header
-
 
 ```text
  0                   1                   2                   3
@@ -234,7 +222,6 @@ Fragment Offset: 13 bits, 8-byte blocks
 
 ### TCP Options
 
-
 | Option | Kind | Purpose |
 |--------|------|---------|
 | MSS | 2 | Max segment size (MTU - 40 = 1460) |
@@ -244,7 +231,6 @@ Fragment Offset: 13 bits, 8-byte blocks
 | NOP | 1 | Alignment padding |
 
 ### Three-Way Handshake
-
 
 ```text
 Client                                          Server
@@ -265,7 +251,6 @@ Client                                          Server
 - **TFO**: Client sends data in SYN using cached cookie. Saves 1-RTT on repeat connections.
 
 ### Connection Termination
-
 
 ```text
 Client                                      Server
@@ -293,7 +278,6 @@ Client                                      Server
 ---
 
 ## TCP State Machine
-
 
 ```text
                           +-----------+
@@ -351,7 +335,6 @@ Client                                      Server
 
 ## TCP Flow Control
 
-
 - **Sliding Window**: Sender sends up to `min(cwnd, rwnd)` unACKed bytes. Window slides on ACK.
 - **Receive Window**: Advertised in TCP header. Zero window = stop sending.
 - **Zero-Window Probe**: 1-byte probe when window closed. Persist timer backs off (5→10→30→60→120s).
@@ -361,9 +344,7 @@ Client                                      Server
 
 ## TCP Congestion Control
 
-
 ### Slow Start & Congestion Avoidance
-
 
 ```text
 cwnd (packets)     ssthresh
@@ -381,12 +362,10 @@ cwnd (packets)     ssthresh
 
 ### Fast Retransmit & Fast Recovery
 
-
 - **3 duplicate ACKs** → fast retransmit (no RTO wait).
 - **Fast Recovery**: `ssthresh = cwnd/2`, `cwnd = ssthresh + 3*MSS`. Inflate per dupACK. Deflate on new ACK.
 
 ### CUBIC
-
 
 ```text
 Wcubic = C * (t - K)^3 + Wmax
@@ -395,7 +374,6 @@ Wcubic = C * (t - K)^3 + Wmax
 ```
 
 ### BBR
-
 
 - **States**: `STARTUP` → `DRAIN` → `PROBE_BW` ↔ `PROBE_RTT`
 - **Pacing**: `pacing_rate = pacing_gain × bandwidth_estimate`
@@ -406,9 +384,7 @@ Wcubic = C * (t - K)^3 + Wmax
 
 ## TCP Retransmission & Timers
 
-
 ### RTO
-
 
 - **Jacobson**: `SRTT = 7/8×SRTT + 1/8×RTT`. `RTTvar = 3/4×RTTvar + 1/4×|SRTT - RTT|`. `RTO = SRTT + 4×RTTvar`.
 - **Karn/Partridge**: Don't update RTT on retransmitted segments. Double RTO per backoff (max 60s).
@@ -416,7 +392,6 @@ Wcubic = C * (t - K)^3 + Wmax
 - **RACK**: Time-based loss detection using most recently delivered packet.
 
 ### Timers
-
 
 | Timer | Purpose | Default |
 |-------|---------|---------|
@@ -429,7 +404,6 @@ Wcubic = C * (t - K)^3 + Wmax
 ---
 
 ## TCP vs QUIC
-
 
 | Feature | TCP | QUIC |
 |---------|-----|------|
@@ -445,7 +419,6 @@ Wcubic = C * (t - K)^3 + Wmax
 
 ## Simplest Mental Model
 
-
 > **TCP/IP is a postal service for computers.**
 >
 > - **Ethernet** = truck delivering envelopes on a local street.
@@ -458,12 +431,7 @@ Wcubic = C * (t - K)^3 + Wmax
 
 ## Practical Example
 
-
 See code examples above for practical usage patterns.
-
-
-> **Run the live simulator**: [tcp-state-machine.html](/11-networking/tcp-state-machine.html) — step through the TCP 3-way handshake, SYN flood, and FIN teardown interactively.
-
 
 ## Related
 

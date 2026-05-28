@@ -1,6 +1,8 @@
 # 🗄️ Relational Database Internals — Complete Deep Dive
 
 
+> **Run the live simulator**: [btree-visualizer.html](/08-databases/btree-visualizer.html) — insert keys into an Order-4 B+Tree and watch node splits and tree growth in real-time.
+
 ```mermaid
 graph LR
     BTREE["B+Tree<br/>Index Structure"] --> ROOT["Root Node<br/>(Page N)"]
@@ -33,7 +35,6 @@ graph LR
 
 ## Table of Contents
 
-
 1. [Storage Engines](#storage-engines)
 2. [B+tree Internals](#btree-internals)
 3. [LSM-tree Internals](#lsm-tree-internals)
@@ -46,7 +47,6 @@ graph LR
 ---
 
 ## Storage Engines
-
 
 ```text
 ┌────────────────────────────────────────────────────────────┐
@@ -68,9 +68,7 @@ graph LR
 
 ## B+tree Internals
 
-
 ### Page Structure (PostgreSQL 8KB pages)
-
 
 ```text
 ┌──────────────────────────────────┐
@@ -82,7 +80,6 @@ graph LR
 ```
 
 ### Internal vs Leaf Nodes
-
 
 ```text
             ┌──────────┐
@@ -108,7 +105,6 @@ graph LR
 
 ### Split/Merge
 
-
 ```python
 def btree_insert(tree, key, value):
     leaf = find_leaf(tree.root, key)
@@ -130,7 +126,6 @@ def btree_delete(tree, key):
 ```
 
 ### Buffer Pool
-
 
 ```python
 class BufferPool:
@@ -158,7 +153,6 @@ class BufferPool:
 
 ## LSM-tree Internals
 
-
 ```text
 Write Buffer → flush → L0 SST (overlapping keys)
                         │ compaction
@@ -176,13 +170,11 @@ Write Buffer → flush → L0 SST (overlapping keys)
 
 ### Compaction Strategies
 
-
 **Size-tiered (Cassandra):** N SSTables → compact → larger SST → next level. Triggers at file count threshold.
 
 **Leveled (LevelDB/RocksDB):** L0 overlapping, L1+ non-overlapping, 10x size ratio per level. Write amp ~10-40x, better space amp.
 
 ### Bloom Filter
-
 
 ```python
 class BloomFilter:
@@ -205,9 +197,7 @@ No false negatives, configurable false positive rate (~0.1-5%).
 
 ## Indexing
 
-
 ### Primary vs Secondary
-
 
 - **Clustered** (InnoDB): Data stored in index order (table = index)
 - **Heap** (PostgreSQL): Data stored separately, index points to TID
@@ -238,9 +228,7 @@ CREATE INDEX idx_lower ON users (LOWER(email));
 
 ## Transaction Management
 
-
 ### ACID
-
 
 - **Atomicity**: All-or-nothing via WAL + UNDO
 - **Consistency**: Constraints + triggers
@@ -248,7 +236,6 @@ CREATE INDEX idx_lower ON users (LOWER(email));
 - **Durability**: Committed data survives crashes
 
 ### Isolation Levels
-
 
 ```text
                     Dirty Read  Non-Repeatable  Phantom
@@ -261,7 +248,6 @@ SERIALIZABLE       Safe        Safe            Safe
 ---
 
 ## MVCC
-
 
 Each transaction sees the database as of its snapshot time. PostgreSQL tracks via XMIN/XMAX in tuple header:
 
@@ -286,7 +272,6 @@ def is_visible(tuple, snapshot):
 
 ## Concurrency Control
 
-
 **2PL (Two-Phase Locking):** Growing phase (acquire locks) → shrinking phase (release). SS2PL: hold all locks until commit.
 
 **OCC (Optimistic):** Read → Validate → Write. Abort on conflict.
@@ -298,7 +283,6 @@ def is_visible(tuple, snapshot):
 ---
 
 ## Simplest Mental Model
-
 
 ```
 A database is a fancy key-value store that:
@@ -314,11 +298,9 @@ MVCC   = git branches for each transaction
 WAL    = black box recorder for writes
 ```
 
-
 ---
 
 ## Code Examples
-
 
 ```python
 import struct
@@ -398,7 +380,6 @@ class WriteAheadLog:
 
 ## Common Failure Modes
 
-
 **Problem**: Index bloat from dead tuples and MVCC overhead
 
 **Root cause**: In PostgreSQL, UPDATE = INSERT + mark old tuple dead. Dead tuples accumulate in indexes, wasting space and slowing scans. Without regular VACUUM, indexes can grow to 5-10x the actual live data size. The B+tree internal nodes remain pointing to pages that contain mostly dead tuples.
@@ -419,20 +400,13 @@ class WriteAheadLog:
 
 ## Interview Questions
 
-
 ### Q1: How does MVCC work in PostgreSQL versus MySQL InnoDB, and what are the trade-offs?
-
 
 **Answer**: PostgreSQL stores old tuple versions in the same data page (dead tuples). Visibility is determined by comparing XMIN/XMAX in the tuple header against the transaction snapshot. This means no separate undo storage, but creates bloat that VACUUM must clean. InnoDB stores old versions in a separate undo tablespace (rollback segments), keeping the data page clean. This means no VACUUM equivalent, but undo logs grow large under long-running transactions. PostgreSQL's approach is better for read-heavy workloads (no undo lookup overhead), while InnoDB is better for write-heavy workloads (less bloat). PostgreSQL needs VACUUM tuning; InnoDB needs undo tablespace management.
 
 ### Q2: How would you implement ACID transactions across a distributed database?
 
-
 **Answer**: Implement a two-phase commit (2PC) protocol or use a consensus-based approach. In 2PC, a coordinator asks all participants to PREPARE (write WAL, make data durable but uncommitted). If all PREPARE succeeds, the coordinator sends COMMIT; otherwise, it sends ABORT. The failure mode is the coordinator crashing after PREPARE but before COMMIT — participants hold locks until recovery. Modern distributed databases like Spanner use TrueTime (clock synchronization) + Paxos for external consistency. CockroachDB uses a combination of Raft for replication and a transaction coordinator with MVCC timestamps. The key trade-off is between consistency guarantees and latency — synchronous replication across multiple datacenters adds significant latency.
-
-
-> **Run the live simulator**: [btree-visualizer.html](/08-databases/btree-visualizer.html) — insert keys into an Order-4 B+Tree and watch node splits and tree growth in real-time.
-
 
 ## Related
 

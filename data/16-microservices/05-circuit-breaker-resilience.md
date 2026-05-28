@@ -1,9 +1,11 @@
 # 🛡️ Circuit Breaker & Resilience Patterns — Complete Deep Dive
 
+
+> **Run the live simulator**: [circuit-breaker.html](/16-microservices/circuit-breaker.html) — click buttons to trigger state transitions and watch the circuit breaker react.
+
 **Related**: [API Gateway](04-api-gateway.md) · [Distributed Transactions](06-distributed-transactions-saga.md) · [Observability](08-observability.md)
 
 ---
-
 
 ```mermaid
 graph LR
@@ -839,10 +841,6 @@ FAILURE           services also fail → everything is down.
 ---
 
 **Next**: [Distributed Transactions & Saga](06-distributed-transactions-saga.md)
-
-
-> **Run the live simulator**: [circuit-breaker.html](/16-microservices/circuit-breaker.html) — click buttons to trigger state transitions and watch the circuit breaker react.
-
 
 ## Related
 

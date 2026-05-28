@@ -1,6 +1,8 @@
 # ⚡ Java Performance Tuning — Complete Deep Dive
 
 
+> **Run the live simulator**: [gc-visualizer.html](/03-backend/java/gc-visualizer.html) — allocate objects, trigger Young/Full GC pauses, and watch objects promote across heap generations.
+
 ```mermaid
 graph LR
     APP["Java<br/>Application"] --> JFR["JDK Flight<br/>Recorder"]
@@ -28,11 +30,9 @@ graph LR
 
 ## Scope
 
-
 Production-grade reference covering JVM profiling, JIT compiler internals, GC tuning, memory management, benchmarking with JMH, async-profiler, JFR, and operational runbooks for high-throughput Java services.
 
 ## Table of Contents
-
 
 - [Profiling Toolchain](#profiling-toolchain)
 - [JIT Compiler Deep Dive](#jit-compiler-deep-dive)
@@ -46,7 +46,6 @@ Production-grade reference covering JVM profiling, JIT compiler internals, GC tu
 ---
 
 ## Profiling Toolchain
-
 
 ```
                     ┌─────────────────────────────┐
@@ -71,7 +70,6 @@ Production-grade reference covering JVM profiling, JIT compiler internals, GC tu
 ```
 
 ### async-profiler (perf_events based)
-
 
 ```bash
 # CPU profiling — sampling event-based, low overhead (~1-2%)
@@ -98,7 +96,6 @@ profiler.sh -e cpu -f after.html $PID
 
 ### JFR (JDK Flight Recorder)
 
-
 ```bash
 # Start recording with 60s duration, dump on exit
 jfr record --name myrecording --duration 60s \
@@ -121,7 +118,6 @@ jmc -open /tmp/recording.jfr
 
 ### JMX — Standard Management Beans
 
-
 ```java
 // Accessing JMX MBeans programmatically
 MBeanServerConnection mbs = ManagementFactory.getPlatformMBeanServer();
@@ -143,9 +139,7 @@ for (MemoryPoolMXBean pool : ManagementFactory.getMemoryPoolMXBeans()) {
 
 ## JIT Compiler Deep Dive
 
-
 ### Tiered Compilation
-
 
 ```
   Interpretation       C1 (client)       C2 (server)
@@ -164,7 +158,6 @@ for (MemoryPoolMXBean pool : ManagementFactory.getMemoryPoolMXBeans()) {
 ```
 
 ### Inlining — The Most Important JIT Optimization
-
 
 ```java
 // Inline limits (JDK 17+ defaults)
@@ -199,7 +192,6 @@ public class InliningExample {
 
 ### On-Stack Replacement (OSR)
 
-
 ```java
 // OSR: when a long-running loop is compiled while executing
 // The JVM replaces the interpreted frame mid-execution
@@ -222,7 +214,6 @@ public class OSRExample {
 ```
 
 ### Escape Analysis & Lock Optimizations
-
 
 ```java
 public class EscapeAnalysis {
@@ -254,7 +245,6 @@ public class EscapeAnalysis {
 
 ### JIT Compiler Flags
 
-
 ```bash
 # Print compilation events
 -XX:+PrintCompilation
@@ -283,9 +273,7 @@ public class EscapeAnalysis {
 
 ## GC Tuning
 
-
 ### G1 GC — Default Since JDK 9
-
 
 ```bash
 # G1 GC: default collector, region-based, low pause target
@@ -305,7 +293,6 @@ public class EscapeAnalysis {
 ```
 
 ### G1 GC Pause Distribution
-
 
 ```
                 G1 Young GC Pause Times (ms)
@@ -333,7 +320,6 @@ public class EscapeAnalysis {
 
 ### G1 GC Log Parsing
 
-
 ```bash
 # Enable GC logging
 -XX:+PrintGCDetails
@@ -352,7 +338,6 @@ public class EscapeAnalysis {
 ```
 
 ### GC Tuning Decision Tree
-
 
 ```
   Pause too long (>200ms)?
@@ -378,9 +363,7 @@ public class EscapeAnalysis {
 
 ## Memory Management
 
-
 ### Heap Sizing
-
 
 ```bash
 # Production heap sizing
@@ -398,7 +381,6 @@ public class EscapeAnalysis {
 
 ### Off-Heap & Metaspace
 
-
 ```bash
 # Non-heap memory limits
 -XX:MaxMetaspaceSize=512M       # class metadata (unbounded default)
@@ -413,7 +395,6 @@ public class EscapeAnalysis {
 ```
 
 ### Direct (Off-Heap) Memory
-
 
 ```java
 import java.nio.ByteBuffer;
@@ -452,7 +433,6 @@ public class OffHeapPatterns {
 
 ### Thread-Local Allocation Buffers (TLAB)
 
-
 ```bash
 # TLAB — per-thread Eden allocation area, avoids synchronization
 # Each thread gets ~1% of Eden as initial TLAB
@@ -466,7 +446,6 @@ public class OffHeapPatterns {
 ```
 
 ### ClassLoader & ThreadLocal Leaks
-
 
 ```java
 // ClassLoader Leak — common in app servers
@@ -502,9 +481,7 @@ public class ThreadLocalLeak {
 
 ## JMH Benchmarking
 
-
 ### Correct JMH Benchmark
-
 
 ```java
 import org.openjdk.jmh.annotations.*;
@@ -549,7 +526,6 @@ public class StringConcatBenchmark {
 
 ### JMH Execution Flow
 
-
 ```
   ┌─────────────────────────────────────────────────────────┐
   │                     JMH Runner                            │
@@ -586,7 +562,6 @@ public class StringConcatBenchmark {
 ```
 
 ### Common JMH Pitfalls
-
 
 ```java
 @State(Scope.Benchmark)
@@ -630,9 +605,7 @@ public class JMHPitfalls {
 
 ## async-profiler Usage
 
-
 ### Profile Strategies by Problem
-
 
 ```bash
 # Problem: CPU high, which methods are hot?
@@ -652,7 +625,6 @@ profiler.sh -e alloc --alloc 500m -f live.html -d 30 $PID
 ```
 
 ### Flame Graph Interpretation
-
 
 ```
                ┌──────────────────────────────────────────────┐
@@ -680,7 +652,6 @@ profiler.sh -e alloc --alloc 500m -f live.html -d 30 $PID
 
 ### Differential Profiling
 
-
 ```bash
 # After deploying code change, compare CPU profiles
 profiler.sh -e cpu -f /tmp/before.html -d 60 $PID
@@ -697,9 +668,7 @@ profiler.sh --diff before.html after.html -f diff.html
 
 ## Production Tuning Checklist
 
-
 ### Capacity Thresholds
-
 
 ```yaml
 CPU:
@@ -750,7 +719,6 @@ Direct Memory:
 
 ### Quick Health Check Commands
 
-
 ```bash
 # GC activity
 jstat -gcutil $PID 2s 10
@@ -778,9 +746,7 @@ jcmd $PID JFR.start duration=60s filename=/tmp/recording.jfr
 
 ## Failure Analysis
 
-
 ### 1. GC Pause Storm
-
 
 ```
 Symptoms:
@@ -809,7 +775,6 @@ Resolution:
 
 ### 2. Code Cache Full → Deoptimization
 
-
 ```
 Symptoms:
   - JIT ceases compilation
@@ -830,7 +795,6 @@ Resolution:
 ```
 
 ### 3. Memory Leak — Heap Dump Analysis
-
 
 ```java
 // Classical leak pattern: accumulator map
@@ -859,7 +823,6 @@ public class LeakPattern {
 
 ### 4. Safepoint Storms
 
-
 ```bash
 # Diagnose safepoint issues
 -XX:+PrintSafepointStatistics
@@ -878,7 +841,6 @@ public class LeakPattern {
 ```
 
 ### 5. Resource Leak — File Descriptor Exhaustion
-
 
 ```java
 // Java 7+ try-with-resources prevents this
@@ -903,9 +865,7 @@ public void goodIo() throws IOException {
 // Config: -XX:+TraceClassLoading
 ```
 
-
 ## Observability
-
 
 ```mermaid
 flowchart LR
@@ -923,7 +883,6 @@ flowchart LR
 
 ### Key Metrics
 
-
 | Metric | Unit | Threshold | Indicates |
 |--------|------|-----------|-----------|
 | JVM heap used | % | < 75% | Memory pressure |
@@ -937,7 +896,6 @@ flowchart LR
 
 ### Logs
 
-
 - **ERROR**: Uncaught exceptions, OOM, stack traces, connection pool exhaustion, thread starvation
 - **WARN**: Slow queries, long GC pauses, retry attempts, deprecated API usage
 - **INFO**: Server start/stop, context initialization, config loaded, scheduled tasks
@@ -945,11 +903,9 @@ flowchart LR
 
 ### Traces
 
-
 Use Micrometer Tracing (formerly Spring Cloud Sleuth) or OpenTelemetry Java SDK. Propagate trace context via MDC for log correlation.
 
 ### Alerts
-
 
 | Severity | Condition | Response |
 |----------|-----------|----------|
@@ -961,15 +917,11 @@ Use Micrometer Tracing (formerly Spring Cloud Sleuth) or OpenTelemetry Java SDK.
 
 ### Dashboards
 
-
 **JVM Dashboard**: heap usage (young/old/metaspace), GC pause (count, duration per generation), thread states (runnable/blocked/waiting), class loading, JIT compilation time, file descriptor count.
-
 
 ## Common Failures
 
-
 ### Failure: OutOfMemoryError
-
 
 - **Symptoms**: Application crashes with `java.lang.OutOfMemoryError`. Heap dump on exit. 503s from load balancer.
 - **Root Cause**: Memory leak (unclosed streams, collections growing unbounded, ThreadLocal not cleaned). Heap too small for workload. Metaspace leak from dynamic class loading.
@@ -979,7 +931,6 @@ Use Micrometer Tracing (formerly Spring Cloud Sleuth) or OpenTelemetry Java SDK.
 
 ### Failure: Full GC Storm
 
-
 - **Symptoms**: Latency spikes, CPU high, throughput drops. GC log shows Full GC events in quick succession.
 - **Root Cause**: Old Gen fills up faster than concurrent GC can clear. Large object allocation (direct to Old Gen). GC fragmentation. Too many concurrent GC threads competing.
 - **Detection**: GC logs show Full GC events. `jstat -gcutil` shows Old Gen at > 90% after GC. `jmap -histo` shows large byte arrays.
@@ -987,7 +938,6 @@ Use Micrometer Tracing (formerly Spring Cloud Sleuth) or OpenTelemetry Java SDK.
 - **Prevention**: Use G1GC with `-XX:MaxGCPauseMillis=200`. Set `-XX:G1HeapRegionSize=16m`. Monitor allocation rate with async-profiler.
 
 ### Failure: Thread Pool Exhaustion
-
 
 - **Symptoms**: "RejectedExecutionException" in logs. Tasks queue up and time out. Deadlock between thread pools.
 - **Root Cause**: Task submitted faster than thread pool can process. Thread pool queue bounded. Deadlock where pool A waits for pool B, pool B waits for pool A.
@@ -997,7 +947,6 @@ Use Micrometer Tracing (formerly Spring Cloud Sleuth) or OpenTelemetry Java SDK.
 
 ### Failure: ClassLoader Leak
 
-
 - **Symptoms**: Metaspace grows unbounded, Full GC on Metaspace, eventually OOM: Metaspace.
 - **Root Cause**: Application redeploy (Tomcat) creates new ClassLoader each time. Old ClassLoader not garbage collected because some reference (often from a library thread) holds it alive. Common with thread pools initialized at deploy time.
 - **Detection**: `jstat -gcutil` shows Metaspace usage climbing. Heap dump shows many `ClassLoader` instances. PermGen/Metaspace GC before OOM.
@@ -1006,16 +955,11 @@ Use Micrometer Tracing (formerly Spring Cloud Sleuth) or OpenTelemetry Java SDK.
 
 ### Failure: Deadlock
 
-
 - **Symptoms**: Threads stuck, no progress, application partially frozen. Thread dump shows threads in BLOCKED state all holding locks others need.
 - **Root Cause**: Circular lock dependency. Two+ threads each hold a lock and wait for another thread's lock. Classic dining philosophers.
 - **Detection**: `jstack` shows deadlock detection: "Found one Java-level deadlock". Thread state: BLOCKED on a lock held by another thread that's waiting on this thread's lock.
 - **Recovery**: 1) Kill the stuck threads or restart JVM. 2) `jstack -l <pid>` to identify deadlocked threads. 3) Fix locking order in code.
 - **Prevention**: Always acquire locks in consistent order. Use `tryLock` with timeout instead of `synchronized`. Use `java.util.concurrent` classes. Enable `-XX:+PrintConcurrentLocks`.
-
-
-> **Run the live simulator**: [gc-visualizer.html](/03-backend/java/gc-visualizer.html) — allocate objects, trigger Young/Full GC pauses, and watch objects promote across heap generations.
-
 
 ## Related
 

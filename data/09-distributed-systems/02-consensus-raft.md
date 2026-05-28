@@ -1,9 +1,11 @@
 # ⛓️ Raft Consensus Algorithm — Complete Deep Dive
 
+
+> **Run the live simulator**: [raft-consensus.html](/09-distributed-systems/raft-consensus.html) — trigger elections, watch term increments, and see log replication in real-time.
+
 > **Scope**: Raft decomposition (leader election, log replication, safety, membership changes, log compaction), leader election mechanics, log replication protocol, safety guarantees, joint consensus for membership changes, snapshot/compaction, optimizations (batching, pipelining, read-only queries), Raft vs Paxos comparison, failure analysis, Raft implementations (etcd, Consul, TiKV, MongoDB, RethinkDB, Apache Ratis).
 >
 > **Related**: [01-cap-consistency.md](./01-cap-consistency.md) | [04-distributed-transactions.md](./04-distributed-transactions.md)
-
 
 ```mermaid
 graph LR
@@ -759,10 +761,6 @@ Recovery via AppendEntries consistency check:
 ## Simplest Mental Model
 
 **Raft is a group of servers that stay in sync by having one leader that makes all decisions.** When the leader fails, the group picks a new one via a random timeout "election." The leader keeps a log of commands; followers copy it. Most servers must agree before a command is "committed." This simple three-state machine (leader-follower-candidate) with one clear leader at a time makes the whole consensus problem look like reliable log replication instead of abstract math.
-
-
-> **Run the live simulator**: [raft-consensus.html](/09-distributed-systems/raft-consensus.html) — trigger elections, watch term increments, and see log replication in real-time.
-
 
 ## Related
 

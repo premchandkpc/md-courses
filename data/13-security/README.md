@@ -1,7 +1,9 @@
 # Application Security Course Materials
 
-This directory contains three comprehensive, production-grade deep dives into application security for elite engineering teams.
 
+> **Run the live simulator**: [jwt-debugger.html](/13-security/jwt-debugger.html) — inspect, decode, tamper, and verify JSON Web Tokens with real HMAC-SHA256 signing.
+
+This directory contains three comprehensive, production-grade deep dives into application security for elite engineering teams.
 
 ```mermaid
 graph LR
@@ -203,10 +205,6 @@ Each file includes content at multiple depth levels:
 **Depth:** Professional → FAANG interview level
 
 ---
-
-
-> **Run the live simulator**: [jwt-debugger.html](/13-security/jwt-debugger.html) — inspect, decode, tamper, and verify JSON Web Tokens with real HMAC-SHA256 signing.
-
 
 ## Related
 

@@ -1,11 +1,13 @@
 # 🐧 Linux Kernel Architecture — Complete Deep Dive
 
+
+> **Run the live simulator**: [page-replacement.html](/12-operating-systems/page-replacement.html) — step through FIFO, LRU, and LFU page replacement algorithms interactively.
+
 > **Scope**: Monolithic kernel design, key subsystems, kernel/user space boundary, source tree layout, device driver model, kernel module system, and virtual filesystem — the full anatomy of the Linux kernel.
 
 > **Related**: [02-cpu-scheduling.md](02-cpu-scheduling.md), [03-memory-management.md](03-memory-management.md), [04-io-models.md](04-io-models.md), [05-process-threads-fibers.md](05-process-threads-fibers.md), [06-system-calls-ipc.md](06-system-calls-ipc.md)
 
 ---
-
 
 ```mermaid
 graph LR
@@ -38,7 +40,6 @@ graph LR
 
 ## Table of Contents
 
-
 1. [Kernel vs User Space](#1-kernel-vs-user-space)
 2. [Source Tree Layout](#2-source-tree-layout)
 3. [Syscall Interface](#3-syscall-interface)
@@ -59,7 +60,6 @@ graph LR
 ---
 
 ## 1. Kernel vs User Space
-
 
 ```
 ┌──────────────────────────────────────────┐
@@ -98,7 +98,6 @@ graph LR
 
 ### Step-by-Step
 
-
 1. **Application execution** runs in user space (Ring 3) with isolated virtual memory
 2. **System call invocation** app executes `syscall` instruction with syscall number in rax register
 3. **Context switch** CPU transitions to kernel space (Ring 0), saves user registers, loads kernel stack
@@ -107,7 +106,6 @@ graph LR
 6. **Return to user space** kernel restores user registers, copies data to user buffer, returns control
 
 ### Code Example
-
 
 ```c
 // C example: Custom syscall and kernel space boundary crossing
@@ -141,13 +139,11 @@ int main() {
 
 ### Real-World Scenario
 
-
 Google discovered that high-frequency trading firms were experiencing Spectre/Meltdown mitigations (KPTI: Kernel Page Table Isolation) adding 5-10% latency to syscalls due to TLB flushes on kernel entry/exit. They deployed vDSO clock_gettime to avoid syscalls for timestamps. Trading firms rewrote hot loops to use vDSO getcpu instead of sched_getcpu(), reducing syscall overhead from 10K/sec to <100/sec—latency P99 dropped by 2.3μs.
 
 ---
 
 ## 2. Source Tree Layout
-
 
 ```
 linux/
@@ -206,7 +202,6 @@ linux/
 
 ## 3. Syscall Interface
 
-
 ```
 User app
    │
@@ -264,9 +259,7 @@ User code resumes
 
 ## 4. Process Scheduler
 
-
 ### Scheduling Classes
-
 
 ```
 stop_sched_class    → Highest priority, special per-CPU for hotplug/migration
@@ -278,7 +271,6 @@ idle_sched_class    → SCHED_IDLE, lowest priority
 
 ### CFS (Completely Fair Scheduler)
 
-
 - **vruntime**: Virtual runtime measured in nanoseconds, accumulated per-task
 - **Red-black tree**: Tasks ordered by vruntime; leftmost = smallest vruntime = most deserving
 - **Time slice**: Not fixed — calculated as `sched_period = max(sched_latency_ns, nr_running * min_granularity)`; each task gets `time_slice = sched_period / nr_running`
@@ -286,7 +278,6 @@ idle_sched_class    → SCHED_IDLE, lowest priority
 - **Sleeper fairness**: Waking tasks get vruntime set to `min_vruntime - (sched_latency / 2)` to prevent unfairness after sleep
 
 ### EEVDF (Earliest Eligible Virtual Deadline First) — Linux 6.6+
-
 
 ```
 Replaces CFS vruntime with eligibility + deadline
@@ -297,7 +288,6 @@ Replaces CFS vruntime with eligibility + deadline
 ```
 
 ### Sysfs tuning
-
 
 ```
 /proc/sys/kernel/sched_latency_ns       # = 6ms * (1 + nr_cpus - 1)
@@ -310,9 +300,7 @@ Replaces CFS vruntime with eligibility + deadline
 
 ## 5. Memory Manager
 
-
 ### Subsystems
-
 
 ```
 ┌──────────────────────────────────────────────┐
@@ -334,7 +322,6 @@ Replaces CFS vruntime with eligibility + deadline
 
 ### Page Allocator (Buddy System)
 
-
 - **Page orders**: 0 (4KB) through 10 (4MB), buddy pair merging
 - **Migrate types**: UNMOVABLE, MOVABLE, RECLAIMABLE, CMA, HIGHATOMIC — prevents fragmentation
 - **Watermarks**: min, low, high — kswapd reclaims at low, direct reclaim at min, OOM below min
@@ -342,14 +329,12 @@ Replaces CFS vruntime with eligibility + deadline
 
 ### Slab/SLUB Allocator
 
-
 - **SLUB** is default since 2.6: simpler, better for large NUMA, per-CPU partial slabs
 - **kmem_cache**: Pre-allocated object pools (e.g., `task_struct` cache, `inode_cache`)
 - **kmalloc**: Frontend to slab — returns physically contiguous memory up to 8MB (order-10 max)
 - **Slab coloring**: Offset objects within a slab to reduce cache-line conflicts
 
 ### OOM Killer
-
 
 ```
 Trigger: alloc_pages fails watermarks, no reclaim possible
@@ -362,7 +347,6 @@ Trigger: alloc_pages fails watermarks, no reclaim possible
 ---
 
 ## 6. IPC Mechanisms
-
 
 | Mechanism | Type | Scope | Notes |
 |-----------|------|-------|-------|
@@ -380,9 +364,7 @@ Trigger: alloc_pages fails watermarks, no reclaim possible
 
 ## 7. Device Drivers
 
-
 ### Driver Types
-
 
 ```
 Character devices (drivers/char/)
@@ -402,7 +384,6 @@ Network devices (drivers/net/)
 
 ### Driver Framework
 
-
 ```
 Device ←→ Bus (PCI, USB, platform) ←→ Driver
   │                                        │
@@ -413,7 +394,6 @@ Device ←→ Bus (PCI, USB, platform) ←→ Driver
 ```
 
 ### Interrupt Handling
-
 
 ```
 Hard IRQ (top half):
@@ -432,7 +412,6 @@ Threaded IRQ:
 ---
 
 ## 8. Kernel Modules
-
 
 ```c
 // Minimal kernel module
@@ -468,7 +447,6 @@ MODULE_DESCRIPTION("Minimal module");
 
 ## 9. Virtual Filesystem (VFS)
 
-
 ```
                   ┌─────────────────────────────┐
                   │     System Calls            │
@@ -493,14 +471,12 @@ MODULE_DESCRIPTION("Minimal module");
 
 ### Key VFS Structures
 
-
 - **super_block**: Represents a mounted filesystem — `s_type` (filesystem type), `s_root` (dentry of root), `s_op`
 - **inode**: Represents a file (metadata — permissions, size, timestamps, block pointers), unique per filesystem
 - **dentry**: Directory entry — maps filename to inode, forms path hierarchy, has dentry cache (dcache)
 - **file**: Open file descriptor — current position, flags, pointer to dentry, `f_op`
 
 ### Page Cache & Writeback
-
 
 ```
 Read path:
@@ -524,7 +500,6 @@ Writeback:
 
 ## 10. /proc, /sys, sysfs, debugfs
 
-
 | Filesystem | Mount point | Purpose |
 |------------|------------|---------|
 | procfs | /proc | Process info, kernel parameters, hardware info |
@@ -532,7 +507,6 @@ Writeback:
 | debugfs | /sys/kernel/debug | Developer debugging (mount -t debugfs none /sys/kernel/debug) |
 
 ### /proc key files
-
 
 ```
 /proc/cpuinfo         — CPU details, flags, cores
@@ -551,7 +525,6 @@ Writeback:
 
 ### sysfs structure
 
-
 ```
 /sys/
 ├── block/            # Block devices
@@ -569,7 +542,6 @@ Writeback:
 ---
 
 ## 11. Architecture Diagram
-
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────┐
@@ -629,9 +601,7 @@ Writeback:
 
 ## 12. Internals
 
-
 ### Kernel Thread Creation
-
 
 ```c
 // kernel/kthread.c
@@ -653,7 +623,6 @@ struct task_struct *kthread_create(int (*threadfn)(void *data),
 
 ### RCU (Read-Copy Update)
 
-
 ```
 Reader: rcu_read_lock() → lightweight, no memory barrier (on TREE RCU)
          rcu_dereference(ptr) → READ_ONCE + barrier
@@ -668,7 +637,6 @@ Writer: rcu_assign_pointer(ptr, new) → smp_store_release
 ```
 
 ### Spinlock Implementation
-
 
 ```c
 // x86 spinlock: ticket spinlock
@@ -691,9 +659,7 @@ static __always_inline void arch_spin_lock(arch_spinlock_t *lock)
 
 ## 13. Failure Analysis
 
-
 ### Kernel Panic / Oops
-
 
 ```
 Common causes:
@@ -715,7 +681,6 @@ Recovery:
 
 ### OOM Scenarios
 
-
 ```
 - Memory overcommit + fork bomb → OOM killer triggered
 - zswap thrashing → swap + compress thrashing → OOM even with swap
@@ -727,7 +692,6 @@ Recovery:
 ---
 
 ## 14. Edge Cases
-
 
 - **RCU priority inversion**: CPU-bound real-time task prevents RCU grace period — solved by RCU priority boosting
 - **Memory reclaim deadlock**: `__GFP_IO` allocation while holding filesystem lock → use `memalloc_nofs_save()`
@@ -743,9 +707,7 @@ Recovery:
 
 ## 15. Performance
 
-
 ### Syscall Cost Breakdown (x86-64, ~3GHz)
-
 
 | Operation | Cycles | Time |
 |-----------|--------|------|
@@ -762,7 +724,6 @@ Recovery:
 
 ### lock_stat Overhead
 
-
 ```
 spin_lock:          ~25ns (contended) / ~5ns (uncontended)
 mutex_lock:         ~100ns (uncontended) / ~1-10μs (contended → sleep)
@@ -771,7 +732,6 @@ RCU read lock:      ~1ns (atomic, no memory barrier on TREE)
 ```
 
 ### Memory Allocation Latency
-
 
 ```
 kmalloc(64):            ~100ns (hot slab, per-CPU)
@@ -785,7 +745,6 @@ Page fault (file cache): ~500ns (page cache hit) / ~5ms (disk read)
 ---
 
 ## 16. Simplest Mental Model
-
 
 > **The Linux kernel is a resource multiplexer.** It takes a single set of hardware resources (CPU cores, RAM, disk, network) and gives every process the illusion of owning the whole machine. It does this through three core mechanisms: **isolation** (virtual memory, process separation), **scheduling** (time-sharing CPU via CFS/EEVDF), and **abstraction** (VFS so everything looks like a file, device drivers as interchangeable modules). The entire design is about trading guarantees — the kernel guarantees fairness (CFS), safety (memory protection, seccomp), and performance (RCU, lockless data structures) while delegating most policy decisions to userspace or sysctl knobs.
 
@@ -810,10 +769,6 @@ Page fault (file cache): ~500ns (page cache hit) / ~5ms (disk read)
 | 4. Dispatch | `sys_call_table` | Jump to handler (e.g. `sys_read`) |
 | 5. Kernel execution | Handler function | Perform operation in kernel space |
 | 6. Return | `syscall_exit_work` | Restore registers, `sysret` to user |
-
-
-> **Run the live simulator**: [page-replacement.html](/12-operating-systems/page-replacement.html) — step through FIFO, LRU, and LFU page replacement algorithms interactively.
-
 
 ## Related
 

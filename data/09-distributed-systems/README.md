@@ -1,7 +1,9 @@
 # 09 — Distributed Systems
 
-The theory and practice of building systems that span multiple machines, networks, and data centers. Covers consensus algorithms, replication, consistency models, CAP/PACELC, distributed storage, caching, transactions, stream processing, and distributed computing patterns.
 
+> **Run the live simulator**: [raft-consensus.html](/09-distributed-systems/raft-consensus.html) — trigger elections, watch term increments, and see log replication in real-time.
+
+The theory and practice of building systems that span multiple machines, networks, and data centers. Covers consensus algorithms, replication, consistency models, CAP/PACELC, distributed storage, caching, transactions, stream processing, and distributed computing patterns.
 
 ```mermaid
 graph LR
@@ -412,10 +414,6 @@ Ensures database writes and message sending are atomic (both happen or both don'
 | [08 — Databases](../08-databases/) | Distributed SQL databases are the practical application of consensus and replication |
 | [10 — Messaging](../10-messaging/) | Kafka's distributed log is a replicated state machine; message ordering, partitioning |
 | [11 — Networking](../11-networking/) | Network partitions, latency, timeout detection are fundamental to distributed system behavior |
-
-
-> **Run the live simulator**: [raft-consensus.html](/09-distributed-systems/raft-consensus.html) — trigger elections, watch term increments, and see log replication in real-time.
-
 
 ## Related
 

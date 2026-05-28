@@ -1,7 +1,9 @@
 # 07 — Kubernetes
 
-The de facto container orchestration platform. This domain covers Kubernetes core concepts, networking, security, storage, observability, performance tuning, GitOps, policy engines (OPA/Kyverno), service mesh (Istio, Linkerd), operator pattern, and production operations at scale.
 
+> **Run the live simulator**: [kubernetes-scheduling.html](/07-kubernetes/kubernetes-scheduling.html) — add pods, watch the scheduler score and bind them to nodes interactively.
+
+The de facto container orchestration platform. This domain covers Kubernetes core concepts, networking, security, storage, observability, performance tuning, GitOps, policy engines (OPA/Kyverno), service mesh (Istio, Linkerd), operator pattern, and production operations at scale.
 
 ```mermaid
 graph LR
@@ -509,10 +511,6 @@ graph LR
 | [10 — Messaging](../10-messaging/) | Kafka on K8s (Strimzi), message-driven autoscaling (KEDA), event-driven K8s jobs |
 | [11 — Networking](../11-networking/) | CNI plugins, network policies, service mesh, DNS in K8s, eBPF networking |
 | [14 — SRE/Observability](../14-sre-observability/) | Prometheus + Grafana on K8s, Loki for logs, OpenTelemetry tracing, K8s-specific SLOs |
-
-
-> **Run the live simulator**: [kubernetes-scheduling.html](/07-kubernetes/kubernetes-scheduling.html) — add pods, watch the scheduler score and bind them to nodes interactively.
-
 
 ## Related
 

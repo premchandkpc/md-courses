@@ -1,5 +1,8 @@
 # 🔴 Redis Internals — Complete Deep Dive
 
+
+> **Run the live simulator**: [redis-eviction.html](/08-databases/redis-eviction.html) — add keys with different TTLs, fill memory, and watch eviction policies in action.
+
 ---
 
 ## Layer 1: Beginner Mental Model
@@ -1576,7 +1579,6 @@ redis-cli --cluster info 127.0.0.1:6379
     - Monitor eviction rate as leading indicator
 ```
 
-
 ## Observability
 
 ```mermaid
@@ -1621,7 +1623,6 @@ flowchart LR
 ### Dashboards
 
 **Redis Overview**: CPU, memory, hit rate, evictions, connected clients, commands/sec, network I/O.
-
 
 ## Common Failures
 
@@ -1689,10 +1690,6 @@ flowchart LR
 | `volatile-lru` | Evict LRU among TTL keys | Cache with TTL set |
 | `volatile-ttl` | Evict shortest TTL first | Session stores |
 | `allkeys-random` | Evict random key | Uniform access patterns |
-
-
-> **Run the live simulator**: [redis-eviction.html](/08-databases/redis-eviction.html) — add keys with different TTLs, fill memory, and watch eviction policies in action.
-
 
 ## Related
 

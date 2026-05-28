@@ -1,11 +1,13 @@
 # Microservices — Complete Deep Dive 🧩
 
+
+> **Run the live simulator**: [circuit-breaker.html](/16-microservices/circuit-breaker.html) — click buttons to trigger state transitions and watch the circuit breaker react.
+
 Microservices are independently deployable, loosely coupled services each owning a specific business capability. They enable **polyglot persistence**, **independent scaling**, and **team autonomy** — at the cost of distributed systems complexity.
 
 **Related**: [System Design](../15-system-design/README.md) · [Distributed Systems](../09-distributed-systems/README.md) · [Software Architecture](../17-software-architecture/README.md) · [Kubernetes](../07-kubernetes/README.md)
 
 ---
-
 
 ```mermaid
 graph LR
@@ -676,10 +678,6 @@ Emergency Protocol (Saga)        → Distributed recovery plan
 ---
 
 **Next**: [Software Architecture](../17-software-architecture/README.md) · [System Design](../15-system-design/README.md)
-
-
-> **Run the live simulator**: [circuit-breaker.html](/16-microservices/circuit-breaker.html) — click buttons to trigger state transitions and watch the circuit breaker react.
-
 
 ## Related
 

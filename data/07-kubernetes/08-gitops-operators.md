@@ -1428,6 +1428,58 @@ graph TD
     - Use Kyverno backgroundScan: false for perf
 ```
 
+## Interactive Components
+
+### GitOps Deployment Flow
+
+<div style="display:flex;flex-direction:column;align-items:center;gap:8px;padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>@keyframes flow-pulse{0%,100%{opacity:.3;transform:translateY(0)}50%{opacity:1;transform:translateY(-2px)}}.flow-title{color:#00d4ff;font-family:monospace;font-size:14px;font-weight:bold;margin-bottom:8px;letter-spacing:1px}.flow-node{display:inline-block;padding:8px 16px;border-radius:4px;font-size:12px;font-family:monospace;color:#e3eaf0;background:#1e3a5f;border:1px solid #00d4ff}.flow-arrow{color:#00d4ff;font-size:16px;animation:flow-pulse 1.5s infinite;font-weight:bold}</style>
+  <div class="flow-title">GitOps Sync Cycle</div>
+  <div style="display:flex;flex-direction:column;align-items:center;gap:6px">
+    <div class="flow-node">Git Commit</div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-node">Webhook Trigger</div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-node">ArgoCD/Flux Controller</div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-node">Manifest Reconcile</div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-node">Cluster Updated</div>
+  </div>
+</div>
+
+### Operator Failure Cascade
+
+<div style="padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>.cascade-title{color:#00d4ff;font-family:monospace;font-size:14px;font-weight:bold;margin-bottom:16px;letter-spacing:1px}.cascade-stages{display:flex;flex-direction:column;gap:12px;margin-bottom:16px}.cascade-stage{display:flex;align-items:center;gap:12px}.cascade-label{color:#e3eaf0;font-family:monospace;font-size:12px;min-width:140px}.cascade-indicator{width:24px;height:24px;border-radius:4px;background:#34d399;border:2px solid #22c55e;transition:all 0.3s}.cascade-indicator.failing{background:#ef4444;border-color:#dc2626;box-shadow:0 0 12px #ef4444;animation:cascade-fail 0.6s ease-out}@keyframes cascade-fail{0%{transform:scale(1);opacity:1}100%{transform:scale(1.2);opacity:0.8}}.cascade-controls{display:flex;gap:8px;flex-wrap:wrap}.cascade-button{padding:8px 16px;border:1px solid #00d4ff;background:#1e3a5f;color:#00d4ff;border-radius:4px;cursor:pointer;font-family:monospace;font-size:12px;transition:all 0.2s}.cascade-button:hover{background:#2a5a8f;box-shadow:0 0 8px #00d4ff}</style>
+  <div class="cascade-title">GitOps Sync Failure Cascade</div>
+  <div class="cascade-stages">
+    <div class="cascade-stage"><span class="cascade-label">Git Repository</span><div class="cascade-indicator" data-stage="git"></div></div>
+    <div class="cascade-stage"><span class="cascade-label">Controller Sync</span><div class="cascade-indicator" data-stage="sync"></div></div>
+    <div class="cascade-stage"><span class="cascade-label">API Server</span><div class="cascade-indicator" data-stage="api"></div></div>
+    <div class="cascade-stage"><span class="cascade-label">Cluster State</span><div class="cascade-indicator" data-stage="state"></div></div>
+  </div>
+  <div class="cascade-controls">
+    <button class="cascade-button" onclick="startGitOpsFailure()">Sync Fails</button>
+    <button class="cascade-button" onclick="resetGitOpsFailure()">Retry</button>
+  </div>
+  <script>
+    function startGitOpsFailure() {
+      const stages = ['git', 'sync', 'api', 'state'];
+      let delay = 0;
+      stages.forEach((id) => {
+        setTimeout(() => {
+          document.querySelector('[data-stage="'+id+'"]').classList.add('failing');
+        }, delay);
+        delay += 350;
+      });
+    }
+    function resetGitOpsFailure() {
+      document.querySelectorAll('[data-stage]').forEach(s => s.classList.remove('failing'));
+    }
+  </script>
+</div>
+
 ## Related
 
 - [Readme](/05-cloud/README.md)

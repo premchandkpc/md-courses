@@ -1656,3 +1656,148 @@ Solution:
 - [Kubernetes](/07-kubernetes/) — Cluster failures
 - [Networking](/11-networking/) — DNS, TCP issues
 - [SRE](/14-sre-observability/) — Incident response
+
+---
+
+## Interactive: Deadlock Dependency Graph
+
+<div style="padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>
+    .topology-title {
+      color:#00d4ff;
+      font-family:monospace;
+      font-size:14px;
+      font-weight:bold;
+      margin-bottom:12px;
+      letter-spacing:1px;
+    }
+    .topology-svg {
+      width:100%;
+      max-width:600px;
+      height:280px;
+      background:#1a2332;
+      border:1px solid #1e3a5f;
+      border-radius:4px;
+    }
+  </style>
+
+  <div class="topology-title">Distributed Deadlock Cycle</div>
+  <svg class="topology-svg" viewBox="0 0 600 280">
+    <!-- Node A (Transaction 1) -->
+    <rect x="50" y="80" width="120" height="60" rx="4" fill="#1e3a5f" stroke="#60a5fa" stroke-width="1"/>
+    <text x="110" y="110" text-anchor="middle" fill="#e3eaf0" font-size="11" font-family="monospace">Txn 1</text>
+    <text x="110" y="130" text-anchor="middle" fill="#a3aab8" font-size="10" font-family="monospace">Lock: A</text>
+    
+    <!-- Node B (Transaction 2) -->
+    <rect x="350" y="80" width="120" height="60" rx="4" fill="#1e3a5f" stroke="#60a5fa" stroke-width="1"/>
+    <text x="410" y="110" text-anchor="middle" fill="#e3eaf0" font-size="11" font-family="monospace">Txn 2</text>
+    <text x="410" y="130" text-anchor="middle" fill="#a3aab8" font-size="10" font-family="monospace">Lock: B</text>
+    
+    <!-- Node C (Transaction 3) -->
+    <rect x="200" y="200" width="120" height="60" rx="4" fill="#1e3a5f" stroke="#60a5fa" stroke-width="1"/>
+    <text x="260" y="230" text-anchor="middle" fill="#e3eaf0" font-size="11" font-family="monospace">Txn 3</text>
+    <text x="260" y="250" text-anchor="middle" fill="#a3aab8" font-size="10" font-family="monospace">Lock: C</text>
+    
+    <!-- Edges: Wait-for relationships -->
+    <defs>
+      <marker id="deadlock-arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+        <polygon points="0 0, 10 3, 0 6" fill="#ef4444"/>
+      </marker>
+    </defs>
+    
+    <!-- Txn 1 waits for B (held by Txn 2) -->
+    <line x1="170" y1="110" x2="350" y2="110" stroke="#ef4444" stroke-width="2" marker-end="url(#deadlock-arrow)"/>
+    <text x="260" y="100" text-anchor="middle" fill="#ef4444" font-size="9" font-family="monospace">wants B</text>
+    
+    <!-- Txn 2 waits for C (held by Txn 3) -->
+    <line x1="410" y1="140" x2="310" y2="200" stroke="#ef4444" stroke-width="2" marker-end="url(#deadlock-arrow)"/>
+    <text x="380" y="175" text-anchor="middle" fill="#ef4444" font-size="9" font-family="monospace">wants C</text>
+    
+    <!-- Txn 3 waits for A (held by Txn 1) -->
+    <line x1="200" y1="230" x2="170" y2="140" stroke="#ef4444" stroke-width="2" marker-end="url(#deadlock-arrow)"/>
+    <text x="140" y="180" text-anchor="middle" fill="#ef4444" font-size="9" font-family="monospace">wants A</text>
+  </svg>
+</div>
+
+---
+
+## Interactive: Deadlock Detection States
+
+<div style="padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>
+    .state-machine-title {
+      color:#00d4ff;
+      font-family:monospace;
+      font-size:14px;
+      font-weight:bold;
+      margin-bottom:16px;
+      letter-spacing:1px;
+    }
+    .state-demo {
+      text-align:center;
+    }
+    .state-display {
+      font-size:18px;
+      font-family:monospace;
+      padding:16px;
+      border-radius:4px;
+      margin:16px 0;
+      color:#0b0e14;
+      font-weight:bold;
+      min-height:50px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      border:2px solid currentColor;
+    }
+    .state-healthy { background:#34d399;border-color:#22c55e }
+    .state-blocked { background:#fbbf24;border-color:#f59e0b }
+    .state-deadlock { background:#ef4444;border-color:#dc2626 }
+    .state-buttons {
+      display:flex;
+      gap:8px;
+      justify-content:center;
+      flex-wrap:wrap;
+      margin-top:16px;
+    }
+    .state-button {
+      padding:8px 16px;
+      border:1px solid #00d4ff;
+      background:#1e3a5f;
+      color:#00d4ff;
+      border-radius:4px;
+      cursor:pointer;
+      font-family:monospace;
+      font-size:12px;
+      transition:all 0.2s;
+    }
+    .state-button:hover {
+      background:#2a5a8f;
+      box-shadow:0 0 8px #00d4ff;
+    }
+  </style>
+
+  <div class="state-machine-title">Deadlock Detection States</div>
+  <div class="state-demo">
+    <div class="state-display state-healthy" id="deadlock-state">HEALTHY</div>
+    <div class="state-buttons">
+      <button class="state-button" onclick="setDlState('HEALTHY')">Healthy</button>
+      <button class="state-button" onclick="setDlState('BLOCKED')">Blocked</button>
+      <button class="state-button" onclick="setDlState('DEADLOCK')">Deadlock</button>
+    </div>
+  </div>
+
+  <script>
+    const dlMap = {
+      'HEALTHY': { label: 'HEALTHY', class: 'state-healthy' },
+      'BLOCKED': { label: 'BLOCKED (waiting)', class: 'state-blocked' },
+      'DEADLOCK': { label: 'DEADLOCK (cycle)', class: 'state-deadlock' }
+    };
+    function setDlState(state) {
+      const display = document.getElementById('deadlock-state');
+      const info = dlMap[state];
+      display.textContent = info.label;
+      display.className = 'state-display ' + info.class;
+    }
+  </script>
+</div>

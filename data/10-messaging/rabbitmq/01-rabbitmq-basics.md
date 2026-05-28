@@ -810,6 +810,108 @@ RabbitMQ = POST OFFICE with smart sorting:
 └──────────────────────────────────────────────────────────────────┘
 ```
 
+---
+
+## Interactive Components
+
+### RabbitMQ Message Flow
+
+<div style="display:flex;flex-direction:column;align-items:center;gap:8px;padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>@keyframes flow-pulse{0%,100%{opacity:.3;transform:translateY(0)}50%{opacity:1;transform:translateY(-2px)}}.flow-title{color:#00d4ff;font-family:monospace;font-size:14px;font-weight:bold;margin-bottom:8px;letter-spacing:1px}.flow-node{display:inline-block;padding:8px 16px;border-radius:4px;font-size:12px;font-family:monospace;color:#e3eaf0;background:#1e3a5f;border:1px solid #00d4ff}.flow-arrow{color:#00d4ff;font-size:16px;animation:flow-pulse 1.5s infinite;font-weight:bold}</style>
+  <div class="flow-title">RabbitMQ Message Routing</div>
+  <div style="display:flex;flex-direction:column;align-items:center;gap:6px">
+    <div class="flow-node">Producer</div>
+    <div class="flow-arrow">↓ Publish with routing_key</div>
+    <div class="flow-node">Exchange (TOPIC/DIRECT/FANOUT)</div>
+    <div class="flow-arrow">↓ Match binding keys</div>
+    <div class="flow-node">Queue 1, 2, 3...</div>
+    <div class="flow-arrow">↓ Message Delivery</div>
+    <div class="flow-node">Consumer (Acknowledge)</div>
+  </div>
+</div>
+
+### RabbitMQ Topology
+
+<div style="padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>.topology-title{color:#00d4ff;font-family:monospace;font-size:14px;font-weight:bold;margin-bottom:12px;letter-spacing:1px}.topology-svg{width:100%;max-width:600px;height:300px;background:#1a2332;border:1px solid #1e3a5f;border-radius:4px}.topo-edge{stroke:#1e3a5f;stroke-width:2}.topo-legend{display:flex;gap:16px;margin-top:12px;font-size:12px;color:#e3eaf0;font-family:monospace;flex-wrap:wrap}.legend-item{display:flex;align-items:center;gap:6px}</style>
+  <div class="topology-title">RabbitMQ Message Broker</div>
+  <svg class="topology-svg" viewBox="0 0 600 300">
+    <defs>
+      <marker id="arrow-rmq" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+        <polygon points="0 0, 10 3, 0 6" fill="#1e3a5f"/>
+      </marker>
+    </defs>
+    <!-- Producer -->
+    <circle cx="60" cy="50" r="20" fill="#34d399" stroke="#34d399" stroke-width="1"/>
+    <text x="60" y="55" text-anchor="middle" fill="#0b0e14" font-size="10" font-family="monospace" font-weight="bold">P</text>
+    <!-- Exchange -->
+    <rect x="220" y="30" width="160" height="50" rx="4" fill="#6f42c1" stroke="#00d4ff" stroke-width="2"/>
+    <text x="300" y="60" text-anchor="middle" fill="#e3eaf0" font-size="12" font-family="monospace" font-weight="bold">Exchange</text>
+    <!-- Queues -->
+    <g>
+      <rect x="80" y="150" width="70" height="50" rx="4" fill="#1e3a5f" stroke="#00d4ff" stroke-width="1"/>
+      <text x="115" y="180" text-anchor="middle" fill="#e3eaf0" font-size="11" font-family="monospace">Queue-1</text>
+    </g>
+    <g>
+      <rect x="270" y="150" width="70" height="50" rx="4" fill="#1e3a5f" stroke="#00d4ff" stroke-width="1"/>
+      <text x="305" y="180" text-anchor="middle" fill="#e3eaf0" font-size="11" font-family="monospace">Queue-2</text>
+    </g>
+    <g>
+      <rect x="460" y="150" width="70" height="50" rx="4" fill="#1e3a5f" stroke="#00d4ff" stroke-width="1"/>
+      <text x="495" y="180" text-anchor="middle" fill="#e3eaf0" font-size="11" font-family="monospace">Queue-3</text>
+    </g>
+    <!-- Consumers -->
+    <circle cx="115" cy="260" r="18" fill="#60a5fa" stroke="#60a5fa" stroke-width="1"/>
+    <text x="115" y="265" text-anchor="middle" fill="#0b0e14" font-size="10" font-family="monospace" font-weight="bold">C</text>
+    <circle cx="305" cy="260" r="18" fill="#60a5fa" stroke="#60a5fa" stroke-width="1"/>
+    <text x="305" y="265" text-anchor="middle" fill="#0b0e14" font-size="10" font-family="monospace" font-weight="bold">C</text>
+    <circle cx="495" cy="260" r="18" fill="#60a5fa" stroke="#60a5fa" stroke-width="1"/>
+    <text x="495" y="265" text-anchor="middle" fill="#0b0e14" font-size="10" font-family="monospace" font-weight="bold">C</text>
+    <!-- Edges -->
+    <line class="topo-edge" x1="80" y1="50" x2="220" y2="55" marker-end="url(#arrow-rmq)"/>
+    <line class="topo-edge" x1="280" y1="80" x2="115" y2="150" marker-end="url(#arrow-rmq)"/>
+    <line class="topo-edge" x1="300" y1="80" x2="305" y2="150" marker-end="url(#arrow-rmq)"/>
+    <line class="topo-edge" x1="320" y1="80" x2="495" y2="150" marker-end="url(#arrow-rmq)"/>
+    <line class="topo-edge" x1="115" y1="200" x2="115" y2="240" marker-end="url(#arrow-rmq)"/>
+    <line class="topo-edge" x1="305" y1="200" x2="305" y2="240" marker-end="url(#arrow-rmq)"/>
+    <line class="topo-edge" x1="495" y1="200" x2="495" y2="240" marker-end="url(#arrow-rmq)"/>
+  </svg>
+  <div class="topo-legend">
+    <div class="legend-item"><div style="width:14px;height:14px;background:#34d399;border-radius:50%"></div><span>Producer</span></div>
+    <div class="legend-item"><div style="width:14px;height:14px;background:#6f42c1;border:1px solid #00d4ff"></div><span>Exchange</span></div>
+    <div class="legend-item"><div style="width:14px;height:14px;background:#1e3a5f;border:1px solid #00d4ff"></div><span>Queue</span></div>
+    <div class="legend-item"><div style="width:14px;height:14px;background:#60a5fa;border-radius:50%"></div><span>Consumer</span></div>
+  </div>
+</div>
+
+### Queue Depth Monitor
+
+<div style="padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>.obs-title{color:#00d4ff;font-family:monospace;font-size:14px;font-weight:bold;margin-bottom:16px;letter-spacing:1px}.obs-grid{display:grid;grid-template-columns:repeat(auto-fit, minmax(140px, 1fr));gap:12px}.obs-card{padding:12px;background:#1a2332;border:1px solid #1e3a5f;border-radius:4px;display:flex;flex-direction:column;align-items:center;transition:all 0.3s}.obs-card:hover{border-color:#00d4ff;box-shadow:0 0 8px rgba(0, 212, 255, 0.3)}.obs-label{color:#a3aab8;font-family:monospace;font-size:11px;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px}.obs-value{font-family:monospace;font-size:20px;font-weight:bold;margin-bottom:4px;letter-spacing:0.5px}.obs-unit{color:#a3aab8;font-family:monospace;font-size:10px;text-transform:uppercase}.metric-healthy{color:#34d399}.metric-warning{color:#fbbf24}.metric-critical{color:#ef4444}</style>
+  <div class="obs-title">RabbitMQ Queue Health</div>
+  <div class="obs-grid">
+    <div class="obs-card">
+      <div class="obs-label">Total Messages</div>
+      <div class="obs-value metric-warning">12,450</div>
+      <div class="obs-unit">messages</div>
+    </div>
+    <div class="obs-card">
+      <div class="obs-label">Consumers</div>
+      <div class="obs-value metric-healthy">8</div>
+      <div class="obs-unit">active</div>
+    </div>
+    <div class="obs-card">
+      <div class="obs-label">Ack Rate</div>
+      <div class="obs-value metric-healthy">98.5</div>
+      <div class="obs-unit">%</div>
+    </div>
+    <div class="obs-card">
+      <div class="obs-label">Throughput</div>
+      <div class="obs-value metric-healthy">3,200</div>
+      <div class="obs-unit">msg/s</div>
+    </div>
+  </div>
+</div>
 
 ## Practical Example
 

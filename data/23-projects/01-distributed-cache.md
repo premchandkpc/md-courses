@@ -1444,3 +1444,140 @@ void zfree(void *ptr) {
 - [System Design Blueprints](/15-system-design/02-system-design-blueprints.md)
 - [Twitter](/15-system-design/03-twitter.md)
 - [Uber](/15-system-design/04-uber.md)
+
+---
+
+## Interactive: Cache Architecture Topology
+
+<div style="padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>
+    .topology-title {
+      color:#00d4ff;
+      font-family:monospace;
+      font-size:14px;
+      font-weight:bold;
+      margin-bottom:12px;
+      letter-spacing:1px;
+    }
+    .topology-svg {
+      width:100%;
+      max-width:600px;
+      height:280px;
+      background:#1a2332;
+      border:1px solid #1e3a5f;
+      border-radius:4px;
+    }
+  </style>
+
+  <div class="topology-title">Distributed Cache Architecture</div>
+  <svg class="topology-svg" viewBox="0 0 600 280">
+    <!-- Client -->
+    <circle cx="300" cy="30" r="20" fill="#34d399" stroke="#34d399" stroke-width="1"/>
+    <text x="300" y="35" text-anchor="middle" fill="#0b0e14" font-size="10" font-family="monospace" font-weight="bold">Client</text>
+    
+    <!-- Cache Nodes -->
+    <g><rect x="80" y="100" width="100" height="50" rx="4" fill="#1e3a5f" stroke="#00d4ff" stroke-width="1"/>
+      <text x="130" y="130" text-anchor="middle" fill="#e3eaf0" font-size="11" font-family="monospace">Cache N1</text></g>
+    
+    <g><rect x="250" y="100" width="100" height="50" rx="4" fill="#1e3a5f" stroke="#00d4ff" stroke-width="1"/>
+      <text x="300" y="130" text-anchor="middle" fill="#e3eaf0" font-size="11" font-family="monospace">Cache N2</text></g>
+    
+    <g><rect x="420" y="100" width="100" height="50" rx="4" fill="#1e3a5f" stroke="#00d4ff" stroke-width="1"/>
+      <text x="470" y="130" text-anchor="middle" fill="#e3eaf0" font-size="11" font-family="monospace">Cache N3</text></g>
+    
+    <!-- Backend DB -->
+    <rect x="200" y="220" width="200" height="50" rx="4" fill="#1e3a5f" stroke="#a78bfa" stroke-width="1"/>
+    <text x="300" y="250" text-anchor="middle" fill="#a78bfa" font-size="12" font-family="monospace" font-weight="bold">Persistent DB</text>
+    
+    <!-- Lines -->
+    <line x1="300" y1="50" x2="130" y2="100" stroke="#1e3a5f" stroke-width="1"/>
+    <line x1="300" y1="50" x2="300" y2="100" stroke="#1e3a5f" stroke-width="1"/>
+    <line x1="300" y1="50" x2="470" y2="100" stroke="#1e3a5f" stroke-width="1"/>
+    <line x1="130" y1="150" x2="300" y2="220" stroke="#1e3a5f" stroke-width="1"/>
+    <line x1="300" y1="150" x2="300" y2="220" stroke="#1e3a5f" stroke-width="1"/>
+    <line x1="470" y1="150" x2="300" y2="220" stroke="#1e3a5f" stroke-width="1"/>
+  </svg>
+</div>
+
+---
+
+## Interactive: Cache Metrics
+
+<div style="padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>
+    .obs-title {
+      color:#00d4ff;
+      font-family:monospace;
+      font-size:14px;
+      font-weight:bold;
+      margin-bottom:16px;
+      letter-spacing:1px;
+    }
+    .obs-grid {
+      display:grid;
+      grid-template-columns:repeat(auto-fit, minmax(150px, 1fr));
+      gap:12px;
+    }
+    .obs-card {
+      padding:12px;
+      background:#1a2332;
+      border:1px solid #1e3a5f;
+      border-radius:4px;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      transition:all 0.3s;
+    }
+    .obs-card:hover {
+      border-color:#00d4ff;
+      box-shadow:0 0 8px rgba(0, 212, 255, 0.3);
+    }
+    .obs-label {
+      color:#a3aab8;
+      font-family:monospace;
+      font-size:11px;
+      text-transform:uppercase;
+      letter-spacing:0.5px;
+      margin-bottom:8px;
+    }
+    .obs-value {
+      font-family:monospace;
+      font-size:20px;
+      font-weight:bold;
+      margin-bottom:4px;
+      letter-spacing:0.5px;
+    }
+    .obs-unit {
+      color:#a3aab8;
+      font-family:monospace;
+      font-size:10px;
+      text-transform:uppercase;
+    }
+    .metric-healthy { color:#34d399 }
+    .metric-warning { color:#fbbf24 }
+  </style>
+
+  <div class="obs-title">Cache Performance</div>
+  <div class="obs-grid">
+    <div class="obs-card">
+      <div class="obs-label">Hit Rate</div>
+      <div class="obs-value metric-healthy">94.2</div>
+      <div class="obs-unit">%</div>
+    </div>
+    <div class="obs-card">
+      <div class="obs-label">Avg Latency</div>
+      <div class="obs-value metric-healthy">2.1</div>
+      <div class="obs-unit">ms</div>
+    </div>
+    <div class="obs-card">
+      <div class="obs-label">Memory Used</div>
+      <div class="obs-value metric-warning">4.8</div>
+      <div class="obs-unit">GB</div>
+    </div>
+    <div class="obs-card">
+      <div class="obs-label">Ops/sec</div>
+      <div class="obs-value metric-healthy">125K</div>
+      <div class="obs-unit">ops/s</div>
+    </div>
+  </div>
+</div>

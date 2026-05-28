@@ -1507,3 +1507,51 @@ git merge-tree A B C        # Preview merge result
 - Partial clone: `git-scm.com/docs/partial-clone`
 - Git LFS: `git-lfs.com`
 - commit-graph: Git Documentation on `git commit-graph`
+
+---
+
+## Interactive: Git Workflow
+
+<div style="display:flex;flex-direction:column;align-items:center;gap:8px;padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>
+    @keyframes flow-pulse {
+      0%,100%{opacity:.3;transform:translateY(0)}
+      50%{opacity:1;transform:translateY(-2px)}
+    }
+    .flow-title {
+      color:#00d4ff;
+      font-family:monospace;
+      font-size:14px;
+      font-weight:bold;
+      margin-bottom:8px;
+      letter-spacing:1px;
+    }
+    .flow-node {
+      display:inline-block;
+      padding:8px 16px;
+      border-radius:4px;
+      font-size:12px;
+      font-family:monospace;
+      color:#e3eaf0;
+      background:#1e3a5f;
+      border:1px solid #00d4ff;
+    }
+    .flow-arrow {
+      color:#00d4ff;
+      font-size:16px;
+      animation:flow-pulse 1.5s infinite;
+      font-weight:bold;
+    }
+  </style>
+
+  <div class="flow-title">Git Commit Workflow</div>
+  <div style="display:flex;flex-direction:column;align-items:center;gap:6px">
+    <div class="flow-node">Working Directory</div>
+    <div class="flow-arrow">↓ git add</div>
+    <div class="flow-node">Staging Area</div>
+    <div class="flow-arrow">↓ git commit</div>
+    <div class="flow-node">Commit Object</div>
+    <div class="flow-arrow">↓ tree + blob</div>
+    <div class="flow-node">Object Database</div>
+  </div>
+</div>

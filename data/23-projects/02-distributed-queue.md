@@ -1160,3 +1160,53 @@ Recommendation: 4-8 TB NVMe SSDs per broker, RAID 10
 - [System Design Blueprints](/15-system-design/02-system-design-blueprints.md)
 - [Twitter](/15-system-design/03-twitter.md)
 - [Uber](/15-system-design/04-uber.md)
+
+---
+
+## Interactive: Queue Processing Flow
+
+<div style="display:flex;flex-direction:column;align-items:center;gap:8px;padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>
+    @keyframes flow-pulse {
+      0%,100%{opacity:.3;transform:translateY(0)}
+      50%{opacity:1;transform:translateY(-2px)}
+    }
+    .flow-title {
+      color:#00d4ff;
+      font-family:monospace;
+      font-size:14px;
+      font-weight:bold;
+      margin-bottom:8px;
+      letter-spacing:1px;
+    }
+    .flow-node {
+      display:inline-block;
+      padding:8px 16px;
+      border-radius:4px;
+      font-size:12px;
+      font-family:monospace;
+      color:#e3eaf0;
+      background:#1e3a5f;
+      border:1px solid #00d4ff;
+    }
+    .flow-arrow {
+      color:#00d4ff;
+      font-size:16px;
+      animation:flow-pulse 1.5s infinite;
+      font-weight:bold;
+    }
+  </style>
+
+  <div class="flow-title">Message Queue Processing Pipeline</div>
+  <div style="display:flex;flex-direction:column;align-items:center;gap:6px">
+    <div class="flow-node">Producer Enqueue</div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-node">Broker Store</div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-node">Consumer Fetch</div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-node">Process Message</div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-node">Commit Offset</div>
+  </div>
+</div>

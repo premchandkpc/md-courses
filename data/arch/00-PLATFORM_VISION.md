@@ -460,3 +460,45 @@ study_project/
 | Simulation engine CPU usage | High compute costs | WebAssembly sandbox, request queuing |
 | Content migration from markdown | Data loss | Incremental migration, rollback support |
 | Browser memory for 3D viz | User experience issues | LOD, virtual scrolling, canvas pooling |
+
+---
+
+## Interactive: Platform Architecture Topology
+
+<div style="padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>
+    .topology-title {
+      color:#00d4ff;
+      font-family:monospace;
+      font-size:14px;
+      font-weight:bold;
+      margin-bottom:12px;
+    }
+    .topology-svg {
+      width:100%;
+      max-width:600px;
+      height:280px;
+      background:#1a2332;
+      border:1px solid #1e3a5f;
+      border-radius:4px;
+    }
+  </style>
+
+  <div class="topology-title">Core Platform Components</div>
+  <svg class="topology-svg" viewBox="0 0 600 280">
+    <rect x="50" y="20" width="500" height="50" rx="4" fill="#1a2332" stroke="#fbbf24" stroke-width="2"/>
+    <text x="300" y="50" text-anchor="middle" fill="#fbbf24" font-size="12" font-family="monospace" font-weight="bold">Knowledge Graph & Simulation</text>
+    
+    <rect x="30" y="120" width="150" height="60" rx="4" fill="#1e3a5f" stroke="#00d4ff" stroke-width="1"/>
+    <text x="105" y="155" text-anchor="middle" fill="#e3eaf0" font-size="11" font-family="monospace">AI Tutor</text>
+    
+    <rect x="225" y="120" width="150" height="60" rx="4" fill="#1e3a5f" stroke="#00d4ff" stroke-width="1"/>
+    <text x="300" y="155" text-anchor="middle" fill="#e3eaf0" font-size="11" font-family="monospace">Visualization</text>
+    
+    <rect x="420" y="120" width="150" height="60" rx="4" fill="#1e3a5f" stroke="#00d4ff" stroke-width="1"/>
+    <text x="495" y="155" text-anchor="middle" fill="#e3eaf0" font-size="11" font-family="monospace">Observability</text>
+    
+    <rect x="100" y="230" width="400" height="40" rx="4" fill="#1e3a5f" stroke="#60a5fa" stroke-width="1"/>
+    <text x="300" y="258" text-anchor="middle" fill="#60a5fa" font-size="11" font-family="monospace">Data Pipeline & Storage Layer</text>
+  </svg>
+</div>

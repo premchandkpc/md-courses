@@ -490,3 +490,69 @@ O(2ⁿ)    ← Exponential (impossible!)
 - [Profiling Deep Dive](/18-performance-engineering/profiling/01-profiling-deep-dive.md)
 - [Readme](/03-backend/README.md)
 - [Goroutines Channels Concurrency](/03-backend/go/01-goroutines-channels-concurrency.md)
+
+---
+
+## Interactive: Complexity Metrics
+
+<div style="padding:16px;background:#0b0e14;border:1px solid #1e2a3a;border-radius:8px">
+  <style>
+    .obs-title {
+      color:#00d4ff;
+      font-family:monospace;
+      font-size:14px;
+      font-weight:bold;
+      margin-bottom:16px;
+    }
+    .obs-grid {
+      display:grid;
+      grid-template-columns:repeat(auto-fit, minmax(140px, 1fr));
+      gap:12px;
+    }
+    .obs-card {
+      padding:12px;
+      background:#1a2332;
+      border:1px solid #1e3a5f;
+      border-radius:4px;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+    }
+    .obs-label {
+      color:#a3aab8;
+      font-family:monospace;
+      font-size:11px;
+      text-transform:uppercase;
+      margin-bottom:6px;
+    }
+    .obs-value {
+      font-family:monospace;
+      font-size:16px;
+      font-weight:bold;
+      color:#00d4ff;
+    }
+    .metric-optimal { color:#34d399 }
+    .metric-acceptable { color:#fbbf24 }
+    .metric-poor { color:#ef4444 }
+  </style>
+
+  <div class="obs-title">Algorithm Complexities</div>
+  <div class="obs-grid">
+    <div class="obs-card">
+      <div class="obs-label">Linear Search</div>
+      <div class="obs-value metric-acceptable">O(n)</div>
+    </div>
+    <div class="obs-card">
+      <div class="obs-label">Binary Search</div>
+      <div class="obs-value metric-optimal">O(log n)</div>
+    </div>
+    <div class="obs-card">
+      <div class="obs-label">Quick Sort</div>
+      <div class="obs-value metric-optimal">O(n log n)</div>
+    </div>
+    <div class="obs-card">
+      <div class="obs-label">Bubble Sort</div>
+      <div class="obs-value metric-poor">O(n²)</div>
+    </div>
+  </div>
+</div>

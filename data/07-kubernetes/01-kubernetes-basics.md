@@ -1,9 +1,12 @@
 # ☸️ Kubernetes — Complete Deep Dive
 
 
-> **Run the live simulator**: [kubernetes-scheduling.html](/07-kubernetes/kubernetes-scheduling.html) — add pods, watch the scheduler score and bind them to nodes interactively.
+> **Run the live simulators**:
+>
+> - [Kubernetes World V2](./kubernetes-world-v2.html) — Node pressure, cascading pod evictions, cluster instability.
+> - [kubernetes-scheduling.html](./kubernetes-scheduling.html) — Scheduler scoring, pod binding.
 
-**Related**: [Advanced K8s Patterns](/07-kubernetes/02-advanced-k8s.md) · [Docker Container Basics](/06-devops/docker/01-container-basics.md) · [K8s Docs](https://kubernetes.io/docs)
+**Related**: [Advanced K8s Patterns](./02-advanced-k8s.md) · [Docker Container Basics](/06-devops/docker/01-container-basics.md) · [K8s Docs](https://kubernetes.io/docs)
 
 ---
 

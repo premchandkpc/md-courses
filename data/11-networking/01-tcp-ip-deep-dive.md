@@ -1,11 +1,15 @@
 # 🌐 TCP/IP Protocol Stack — Complete Deep Dive
 
 
-> **Run the live simulator**: [tcp-state-machine.html](/11-networking/tcp-state-machine.html) — step through the TCP 3-way handshake, SYN flood, and FIN teardown interactively.
+> **Run the live simulators**:
+>
+> - [TCP Packet Journey V2](./tcp-packet-journey-v2.html) — Watch congestion window shrink on loss, exponential backoff fire, throughput collapse.
+> - [tcp-state-machine.html](./tcp-state-machine.html) — 3-way handshake, SYN flood, FIN teardown.
+> - [DNS World](./dns-world.html) — Cache hierarchy under load, root pressure cascades.
 
 > **Scope**: Ethernet framing, IP packet structure and fragmentation, TCP segment format, TCP state machine, 3-way handshake, TIME-WAIT, flow control, congestion control (CUBIC, BBR, Reno, Vegas), Nagle/keepalive/retransmission, NIC offloading (TSO/GRO/RSS), socket buffers, Linux network stack tuning — the complete TCP/IP stack from wire to application.
 
-> **Related**: [02-tls-http-grpc.md](/11-networking/02-tls-http-grpc.md), [03-memory-management.md](/12-operating-systems/03-memory-management.md), [04-io-models.md](/12-operating-systems/04-io-models.md)
+> **Related**: [02-tls-http-grpc.md](./02-tls-http-grpc.md), [03-memory-management.md](/12-operating-systems/03-memory-management.md), [04-io-models.md](/12-operating-systems/04-io-models.md)
 
 ---
 
@@ -1646,3 +1650,6 @@ Packet 4: Sent at T=30ms
   </script>
 </div>
 | **Ad serving** | Every ms of latency costs revenue |
+
+---
+

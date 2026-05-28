@@ -1,6 +1,8 @@
 # 🔧 Kafka Internals — Complete Deep Dive
 
-**Related**: [Kafka Basics](/10-messaging/kafka/01-kafka-basics.md) · [Kafka Patterns](/10-messaging/kafka/02-kafka-patterns.md) · [Production Operations](/10-messaging/kafka/04-kafka-production-operations.md) · [KRaft Migration](/10-messaging/kafka/04-kafka-production-operations.md)
+**Related**: [Kafka Basics](./01-kafka-basics.md) · [Kafka Patterns](./02-kafka-patterns.md) · [Production Operations](./04-kafka-production-operations.md) · [KRaft Migration](./04-kafka-production-operations.md)
+
+> **Simulate**: [Kafka World V2](./kafka-world-v2.html) — Watch partition pressure from message backlog, lag accumulation, broker failure cascades.
 
 ---
 
@@ -989,3 +991,5 @@ kafka-features --bootstrap-server localhost:9092 --finalize-migration
 
 
 See code examples above for practical usage patterns.
+---
+

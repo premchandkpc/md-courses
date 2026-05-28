@@ -1,6 +1,9 @@
 # Circuit Breaker Pattern — Interactive State Machine
 
-> **Run the live simulator**: [circuit-breaker.html](/16-microservices/circuit-breaker.html) — click buttons to trigger state transitions and watch the circuit breaker react in real-time.
+> **Run the live simulators**:
+>
+> - [gRPC World](./grpc-world.html) — Circuit breaker state cascades, failure propagation upstream.
+> - [circuit-breaker.html](./circuit-breaker.html) — State transitions, recovery testing.
 
 ## Overview
 

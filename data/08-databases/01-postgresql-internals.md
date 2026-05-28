@@ -4,6 +4,8 @@
 
 > **Related**: [01-linux-kernel-architecture.md](/12-operating-systems/01-linux-kernel-architecture.md), [03-memory-management.md](/12-operating-systems/03-memory-management.md), [04-io-models.md](/12-operating-systems/04-io-models.md)
 
+> **Simulate**: [Database Internals V2](./database-internals-v2.html) — Watch GC pauses freeze queries, lock storms block writers, and WAL pressure cause write stalls.
+
 ---
 
 ## LAYER 1: Beginner's Mental Model 🧠

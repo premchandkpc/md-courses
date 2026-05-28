@@ -1,7 +1,10 @@
 # 🚀 Redis — Complete Deep Dive
 
 
-> **Run the live simulator**: [redis-eviction.html](/08-databases/redis-eviction.html) — add keys with different TTLs, fill memory, and watch eviction policies in action.
+> **Run the live simulators**:
+>
+> - [Redis World V2](./redis-world-v2.html) — Memory pressure, LRU eviction storms, hit rate collapse.
+> - [redis-eviction.html](./redis-eviction.html) — TTLs & eviction policies.
 
 ```mermaid
 graph LR

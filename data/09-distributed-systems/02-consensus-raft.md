@@ -1,11 +1,14 @@
 # ⛓️ Raft Consensus Algorithm — Complete Deep Dive
 
 
-> **Run the live simulator**: [raft-consensus.html](/09-distributed-systems/raft-consensus.html) — trigger elections, watch term increments, and see log replication in real-time.
+> **Run the live simulators**:
+>
+> - [Raft Distributed Systems V2](./raft-distributed-systems-v2.html) — Watch election storms, split-brain, voting pressure under partition.
+> - [raft-consensus.html](./raft-consensus.html) — Term progression, log replication.
 
 > **Scope**: Raft decomposition (leader election, log replication, safety, membership changes, log compaction), leader election mechanics, log replication protocol, safety guarantees, joint consensus for membership changes, snapshot/compaction, optimizations (batching, pipelining, read-only queries), Raft vs Paxos comparison, failure analysis, Raft implementations (etcd, Consul, TiKV, MongoDB, RethinkDB, Apache Ratis).
 >
-> **Related**: [01-cap-consistency.md](/09-distributed-systems/01-cap-consistency.md) | [04-distributed-transactions.md](/09-distributed-systems/04-distributed-transactions.md)
+> **Related**: [01-cap-consistency.md](./01-cap-consistency.md) | [04-distributed-transactions.md](./04-distributed-transactions.md)
 
 ```mermaid
 graph LR
@@ -836,3 +839,6 @@ Recovery via AppendEntries consistency check:
 - [Redis Internals](/08-databases/02-redis-internals.md)
 - [Postgresql Troubleshooting Tuning](/08-databases/03-postgresql-troubleshooting-tuning.md)
 - [Redis Deep Dive](/08-databases/04-redis-deep-dive.md)
+
+---
+

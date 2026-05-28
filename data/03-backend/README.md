@@ -16,6 +16,8 @@ graph LR
     style E fill:#1a5d3a
 ```
 
+> **Simulate**: [Request Lifecycle V2](./request-lifecycle-v2.html) — Watch latency propagate through layers, timeouts cascade, retries amplify load.
+
 ## Table of Contents
 
 - [Languages](#languages)
@@ -637,3 +639,6 @@ public class ConcurrencyExample {
 | Go | `01-goroutines-channels` | `01-goroutines-channels` (built-in) | `03-go-profiling` | Testing (std `testing` pkg) |
 | Python | `01-python-internals` | `03-python-concurrency-async` | `01-python-internals` (GIL) | `04-python-testing-packaging` |
 | TypeScript | `01-types-system-deep-dive` | Event loop (Node.js eventemitter) | `03-internals-performance` | Jest / Vitest |
+
+---
+

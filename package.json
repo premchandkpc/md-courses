@@ -1,0 +1,35 @@
+{
+  "name": "md-courses",
+  "version": "1.0.0",
+  "description": "Engineering Knowledge Universe — Interactive learning platform for distributed systems, cloud, AI/ML, and more",
+  "main": "data/server.js",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node data/server.js",
+    "serve": "node data/server.js 3000",
+    "dev": "node data/server.js 8080"
+  },
+  "keywords": [
+    "engineering",
+    "knowledge",
+    "distributed-systems",
+    "cloud",
+    "ai-ml",
+    "backend",
+    "devops",
+    "system-design"
+  ],
+  "author": "Engineering Knowledge Contributors",
+  "license": "MIT",
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/md-courses"
+  },
+  "bugs": {
+    "url": "https://github.com/yourusername/md-courses/issues"
+  },
+  "homepage": "http://localhost:3000"
+}

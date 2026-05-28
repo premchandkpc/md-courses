@@ -6,6 +6,17 @@ A comprehensive, production-graded knowledge base spanning 25 domains of softwar
 
 ---
 
+## Documentation
+
+| Doc | Purpose |
+| --- | --- |
+| **[STRUCTURE.md](STRUCTURE.md)** | Directory layout & project organization |
+| **[data/API.md](data/API.md)** | HTTP API reference (tree, file, search, stats) |
+| **[ARCHIVE.md](ARCHIVE.md)** | Legacy docs status (what to review/delete) |
+| **[TECH_DEBT.md](TECH_DEBT.md)** | Known technical debt & improvements |
+
+---
+
 ## Quick Stats
 
 | Metric | Value |

@@ -57,7 +57,8 @@
       "Bash(awk '/^function buildTreeHtml/,/^}$/{print NR\": \"$0}' /Users/ramyachowdary/Documents/prem-work/md-courses/data/read.html)",
       "Bash(awk '/^function renderContent/,/^}$/{print NR\": \"$0}' /Users/ramyachowdary/Documents/prem-work/md-courses/data/read.html)",
       "Bash(awk '{print $NF}')",
-      "Bash(xargs -I {} basename {})"
+      "Bash(xargs -I {} basename {})",
+      "Bash(node -c data/read.html)"
     ],
     "additionalDirectories": [
       "/private/tmp"

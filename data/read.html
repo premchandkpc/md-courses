@@ -8,6 +8,32 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
 <link rel="stylesheet" href="read.css">
+<style>
+  /* Mermaid diagram glow animation */
+  .diagram-animated {
+    filter: drop-shadow(0 0 8px rgba(0, 212, 255, 0.4)) !important;
+    animation: diagram-fade-in 0.5s ease-out forwards;
+  }
+
+  .diagram-animated .node {
+    filter: drop-shadow(0 0 8px rgba(0, 212, 255, 0.4));
+  }
+
+  .diagram-animated .arrowMarker {
+    stroke-width: 2px;
+  }
+
+  @keyframes diagram-fade-in {
+    from {
+      opacity: 0;
+      filter: drop-shadow(0 0 2px rgba(0, 212, 255, 0.2));
+    }
+    to {
+      opacity: 1;
+      filter: drop-shadow(0 0 8px rgba(0, 212, 255, 0.4));
+    }
+  }
+</style>
 </head>
 <body>
 <div class="app">
@@ -180,15 +206,26 @@ async function init() {
     theme: 'dark',
     themeVariables: {
       background: '#18202a',
-      primaryColor: '#60a5fa',
-      primaryBorderColor: '#1e2a3a',
-      primaryTextColor: '#e3eaf0',
+      primaryColor: '#00d4ff',
+      primaryBorderColor: '#00d4ff',
+      primaryTextColor: '#00ffff',
       lineColor: '#94a3b8',
-      tertiaryColor: '#11161e',
+      tertiaryColor: '#1a0030',
+      successColor: '#34d399',
+      failureColor: '#ef4444',
+      warningColor: '#fbbf24',
       fontSize: '14px',
       fontFamily: 'Inter,system-ui,sans-serif'
     }
   });
+
+  // Post-render glow animation for mermaid diagrams
+  document.addEventListener('mermaid-rendered', () => {
+    document.querySelectorAll('.mermaid svg').forEach(svg => {
+      svg.classList.add('diagram-animated');
+    });
+  });
+
   await loadTree();
   renderTree();
   renderTopics();
@@ -859,6 +896,16 @@ function renderContent(container, text) {
       }
     }, 50);
   }
+
+  // SVG block support: convert ```svg blocks to rendered SVG
+  container.querySelectorAll('code-block[data-type="svg"]').forEach(block => {
+    try {
+      const svgContent = block.textContent.trim();
+      block.outerHTML = svgContent;
+    } catch (e) {
+      console.error('Failed to render SVG block:', e);
+    }
+  });
 }
 
 const diagramZooms = {};

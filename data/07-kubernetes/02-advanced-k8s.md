@@ -52,6 +52,42 @@ graph LR
 
 ---
 
+### Visual: Operator Reconciliation Loop
+
+```mermaid
+stateDiagram-v2
+    [*] --> WatchCR: Operator starts
+    WatchCR --> FetchCR: CR event detected
+    FetchCR --> CompareDV: Fetch desired spec
+    CompareDV --> CheckActual: Compare desired vs actual
+    CheckActual --> NeedsUpdate: Actual state matches?
+    
+    NeedsUpdate --> Yes: Yes
+    NeedsUpdate --> No: No
+    
+    No --> CreateUpdate: Create/update resources
+    CreateUpdate --> Persist: Persist changes
+    Persist --> UpdateStatus: Update CR status
+    UpdateStatus --> Requeue: Requeue reconcile
+    Requeue --> WatchCR
+    
+    Yes --> Idle: Idle
+    Idle --> WatchCR: Event trigger
+    
+    style WatchCR fill:#1e5f3f,stroke:#34d399
+    style FetchCR fill:#1e3a5f,stroke:#00d4ff
+    style CompareDV fill:#1e3a5f,stroke:#00d4ff
+    style CheckActual fill:#1e3a5f,stroke:#00d4ff
+    style NeedsUpdate fill:#3a7ca5,stroke:#00d4ff
+    style CreateUpdate fill:#1e5f3f,stroke:#34d399
+    style Persist fill:#1e5f3f,stroke:#34d399
+    style UpdateStatus fill:#1e5f3f,stroke:#34d399
+    style Requeue fill:#3a7ca5,stroke:#00d4ff
+    style Idle fill:#1e5f3f,stroke:#34d399
+```
+
+---
+
 ## 🧭 Operators (Custom Controllers + CRDs)
 
 
@@ -1297,6 +1333,31 @@ spec:
 
   Recommendation: Use Kaniko or BuildKit for in-cluster builds.
   Avoid Docker-in-Docker (security risk).
+```
+
+### Visual: Service Mesh Traffic Flow (Istio/Cilium)
+
+```mermaid
+graph LR
+    Client["Client Pod"] -->|Request| Envoy1["Envoy Sidecar<br/>(Pod A)"]
+    Envoy1 -->|mTLS| Envoy2["Envoy Sidecar<br/>(Pod B)"]
+    Envoy2 --> AppB["App Container<br/>Pod B"]
+    
+    Control["Control Plane<br/>(Istiod)"] -->|Config| Envoy1
+    Control -->|Config| Envoy2
+    
+    Envoy1 -->|Metrics| Telemetry["Prometheus<br/>Metrics"]
+    Envoy2 -->|Metrics| Telemetry
+    
+    VirtualSvc["VirtualService<br/>(Routing Rules)"] -->|Define| Control
+    
+    style Client fill:#1e3a5f,stroke:#00d4ff
+    style Envoy1 fill:#3a7ca5,stroke:#00d4ff
+    style Envoy2 fill:#3a7ca5,stroke:#00d4ff
+    style AppB fill:#1e5f3f,stroke:#34d399
+    style Control fill:#3a7ca5,stroke:#00d4ff
+    style Telemetry fill:#3a7ca5,stroke:#00d4ff
+    style VirtualSvc fill:#3a7ca5,stroke:#00d4ff
 ```
 
 ---

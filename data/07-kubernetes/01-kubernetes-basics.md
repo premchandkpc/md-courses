@@ -61,6 +61,37 @@ graph LR
 
 ---
 
+### Visual: Kubernetes Core Lifecycle
+
+```mermaid
+graph TD
+    A["User kubectl apply"] --> B["API Server<br/>Validates"]
+    B --> C["etcd<br/>Persists"]
+    C --> D["Scheduler<br/>Assigns Node"]
+    D --> E["kubelet<br/>Pulls Image"]
+    E --> F["Container<br/>Starts"]
+    F --> G["Pod Running<br/>Ready"]
+    G --> H["Service Routes<br/>Traffic"]
+    H --> I["EndpointSlice<br/>Updated"]
+    
+    G --> J["Health Checks<br/>Pass"]
+    J --> K["Pod Healthy"]
+    
+    style A fill:#1e3a5f,stroke:#00d4ff
+    style B fill:#1e3a5f,stroke:#00d4ff
+    style C fill:#2d5a7b,stroke:#00d4ff
+    style D fill:#3a7ca5,stroke:#00d4ff
+    style E fill:#1e5f3f,stroke:#34d399
+    style F fill:#1e5f3f,stroke:#34d399
+    style G fill:#1e5f3f,stroke:#34d399
+    style H fill:#3a7ca5,stroke:#00d4ff
+    style I fill:#3a7ca5,stroke:#00d4ff
+    style J fill:#1e5f3f,stroke:#34d399
+    style K fill:#1e5f3f,stroke:#34d399
+```
+
+---
+
 ## 🧭 Cluster Architecture
 
 ### Control Plane & Worker Nodes
@@ -2310,6 +2341,28 @@ Taint Effects:
     node.kubernetes.io/network-unavailable
     node.kubernetes.io/unschedulable
     node.kubernetes.io/out-of-disk
+```
+
+---
+
+### Visual: Scheduler & Node Assignment Flow
+
+```mermaid
+sequenceDiagram
+    participant API as API Server
+    participant Sched as Scheduler
+    participant Node as Node (kubelet)
+    participant Etcd as etcd
+    
+    API->>Sched: Pod created (no nodeName)
+    Sched->>Sched: Filter: CPU/Memory/Constraints
+    Sched->>Sched: Score: Affinity/Spread/Balance
+    Sched->>API: Bind pod to node-1
+    API->>Etcd: Update pod.spec.nodeName=node-1
+    Node->>API: Watch pods on my node
+    Node->>Node: CRI: Pull image, create container
+    Node->>API: Update pod.status=Running
+    API->>Etcd: Persist pod.status
 ```
 
 ---

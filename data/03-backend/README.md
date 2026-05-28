@@ -175,11 +175,73 @@ High-performance RPC using HTTP/2 and Protocol Buffers. Default for microservice
 - **Middleware** — auth, rate limiting, logging, tracing, compression, CORS, request ID, timeout, recovery
 - **Context Propagation** — request-scoped values (tenant ID, user ID, trace ID, deadline); Go context, Java MDC, Python contextvars
 
+```mermaid
+sequenceDiagram
+    participant Client
+    participant HTTPServer as HTTP Server
+    participant Router
+    participant Middleware
+    participant Handler
+    participant Service
+    participant DB as Database
+    Client->>HTTPServer: TCP Connection + TLS
+    HTTPServer->>HTTPServer: Parse HTTP Request
+    HTTPServer->>Router: Route Matching
+    Router->>Middleware: Middleware Chain
+    Middleware->>Handler: Handler Execution
+    Handler->>Service: Call Service Layer
+    Service->>DB: Query/Update
+    DB-->>Service: Result
+    Service-->>Handler: Response
+    Handler-->>Middleware: Serialize Response
+    Middleware-->>HTTPServer: Response Ready
+    HTTPServer-->>Client: HTTP Response
+    HTTPServer->>HTTPServer: Log Request
+    style Client fill:#60a5fa
+    style HTTPServer fill:#fbbf24
+    style Router fill:#fbbf24
+    style Middleware fill:#fbbf24
+    style Handler fill:#fbbf24
+    style Service fill:#fbbf24
+    style DB fill:#ef4444
+```
+
 ### Connection Management
 
 - **Connection Pooling** — database (HikariCP, pgx), HTTP (keepalive), gRPC; pool sizing, max lifetime, validation
 - **Rate Limiting** — token bucket, leaky bucket, sliding window; per-user, per-IP, per-endpoint
 - **Graceful Shutdown** — SIGTERM → stop accepting → drain in-flight → cleanup → exit; health check endpoints for load balancer
+
+```mermaid
+graph LR
+    R1["Request 1"]
+    R2["Request 2"]
+    R3["Request 3"]
+    Pool["Connection Pool"]
+    C1["Connection 1"]
+    C2["Connection 2"]
+    C3["Connection 3"]
+    DB["Database"]
+    
+    R1 --> Pool
+    R2 --> Pool
+    R3 --> Pool
+    Pool --> C1
+    Pool --> C2
+    Pool --> C3
+    C1 --> DB
+    C2 --> DB
+    C3 --> DB
+    
+    style R1 fill:#60a5fa
+    style R2 fill:#60a5fa
+    style R3 fill:#60a5fa
+    style Pool fill:#fbbf24
+    style C1 fill:#34d399
+    style C2 fill:#34d399
+    style C3 fill:#34d399
+    style DB fill:#ef4444
+```
 
 ---
 
@@ -198,6 +260,29 @@ High-performance RPC using HTTP/2 and Protocol Buffers. Default for microservice
 - **Patterns** — cache-aside, read-through, write-through, write-behind, refresh-ahead
 - **Invalidation** — TTL-based, event-driven (cache eviction on data change), versioned keys
 - **Pitfalls** — cache stampede, thundering herd, stale data, cache/memory size planning
+
+```mermaid
+sequenceDiagram
+    participant Client
+    participant Handler
+    participant Cache
+    participant DB as Database
+    Client->>Handler: Request Data
+    Handler->>Cache: Check Cache
+    alt Cache Hit
+        Cache-->>Handler: Return Cached Data
+        Handler-->>Client: Response
+    else Cache Miss
+        Handler->>DB: Query Database
+        DB-->>Handler: Data
+        Handler->>Cache: Store in Cache
+        Handler-->>Client: Response
+    end
+    style Client fill:#60a5fa
+    style Handler fill:#fbbf24
+    style Cache fill:#34d399
+    style DB fill:#ef4444
+```
 
 ### Database Performance
 
@@ -229,6 +314,33 @@ High-performance RPC using HTTP/2 and Protocol Buffers. Default for microservice
 - **Circuit Breaker** — tripped by error rate; half-open for recovery probes
 - **Bulkhead** — isolate resources (connection pools, thread pools per dependency)
 - **Health Checks** — liveness (is app alive?), readiness (can it serve traffic?), startup (first ready?)
+
+```mermaid
+graph TD
+    Error["Error Occurred"]
+    Retry["Retry with Backoff"]
+    Timeout["Timeout Threshold"]
+    CircuitBreak["Circuit Breaker Open"]
+    HalfOpen["Half-Open for Probes"]
+    Fallback["Fallback Response"]
+    Success["Success - Recover"]
+    
+    Error --> Retry
+    Retry --> Timeout
+    Timeout --> CircuitBreak
+    CircuitBreak --> Fallback
+    CircuitBreak --> HalfOpen
+    HalfOpen --> Success
+    Success --> Retry
+    
+    style Error fill:#ef4444
+    style Retry fill:#fbbf24
+    style Timeout fill:#fbbf24
+    style CircuitBreak fill:#ef4444
+    style HalfOpen fill:#fbbf24
+    style Fallback fill:#ef4444
+    style Success fill:#34d399
+```
 
 ---
 

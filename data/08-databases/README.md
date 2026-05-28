@@ -5,20 +5,76 @@ The theory and practice of data storage, retrieval, and management. Covers relat
 
 ```mermaid
 graph TB
-    A["Client"] --> B["Query"]
-    B --> C["Parser"]
-    C --> D["Optimizer"]
-    D --> E["Executor"]
-    E --> F["Index"]
-    F --> G["Storage"]
-    G --> H["Result"]
-    style A fill:#4a8bc2
-    style B fill:#2d5a7b
-    style G fill:#c73e1d
-    style H fill:#1a5d3a
+    subgraph Clients
+        C1["App / Service"]
+        C2["Migration Tool"]
+        C3["Analytics"]
+    end
+    subgraph Database
+        Q["Query Layer"]
+        P["Parser"]
+        O["Optimizer<br/>(CBO)"]
+        E["Executor"]
+        I["Index<br/>B+Tree / Hash"]
+        S["Storage Engine"]
+        L["Logging<br/>(WAL / AOF)"]
+        M["MVCC<br/>Snapshot"]
+        B["Buffer Pool"]
+        D["Disk"]
+    end
+    C1 --> Q; C2 --> Q; C3 --> Q
+    Q --> P --> O --> E
+    E --> I
+    E --> S
+    S --> L
+    S --> M
+    S --> B --> D
+    
+    style C1 fill:#4a8bc2
+    style C2 fill:#2d5a7b
+    style C3 fill:#3a7ca5
+    style O fill:#e8912e
+    style S fill:#c73e1d
+    style D fill:#f85149
 ```
 
 ## Table of Contents
+
+## Database Comparison
+
+| Feature | PostgreSQL | MongoDB | Cassandra | Redis | Elasticsearch |
+|---------|-----------|---------|-----------|-------|---------------|
+| **Model** | Relational (SQL) | Document | Wide-Column | Key-Value | Inverted Index |
+| **Consistency** | Strong | Tunable | Eventual | Strong | Near Real-Time |
+| **Partitioning** | Manual | Sharding | Auto (Partitioner) | Clustering | Auto Sharding |
+| **Replication** | Primary/Standby | Replica Set | Gossip + Hinted Handoff | Primary/Replica | Multi-Node |
+| **Index** | B+Tree, GiST, GIN | B+Tree | SSTable/LSM | Skip List | Inverted Index |
+| **Transactions** | ACID | Multi-Doc | Lightweight | MULTI/EXEC | Per Document |
+| **Use Case** | OLTP, Analytics | Content, IoT | Time-Series, IoT | Cache, Session | Search, Logs |
+
+## Query Flow
+
+```mermaid
+sequenceDiagram
+    participant C as Client
+    participant P as Parser
+    participant O as Optimizer
+    participant E as Executor
+    participant S as Storage Engine
+    participant D as Disk
+    
+    C->>P: SQL / Query
+    P->>P: Parse & Validate
+    P->>O: Parse Tree
+    O->>O: Generate Plans
+    O->>O: CBO (Cost-Based)
+    O->>E: Best Execution Plan
+    E->>S: Fetch Tuples
+    S->>D: Page Read
+    D-->>S: Data Page
+    S-->>E: Tuple
+    E-->>C: Result
+```
 
 - [Relational Databases](#relational-databases)
   - [PostgreSQL](#postgresql)

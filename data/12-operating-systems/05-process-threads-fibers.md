@@ -1224,3 +1224,27 @@ Fix: Use `__sync_fetch_and_add` (x86 LOCK prefix) or compare-and-swap loop. With
 
 
 > **Processes are houses: each has its own address, foundation, and walls. They're completely isolated — you can't see into your neighbor's house without explicitly asking (IPC). Threads are rooms in the same house: they share the kitchen (memory), must coordinate who uses what (locking), and if the kitchen catches fire (crash), the whole house burns. Goroutines are people having conversations in a coffee shop: there are only so many seats (kernel threads = M), but everyone can talk to anyone, wait for their turn, and you can have thousands of conversations happening. Fibers are a group of people passing a single talking stick — only one speaks at a time, extremely efficient, no coordination needed, but if someone takes too long (blocking), everyone waits. The hierarchy of cost (process > thread > goroutine > fiber) directly corresponds to the degree of isolation. Less isolation = less overhead = more concurrency.**
+
+## Process vs Thread vs Fiber vs Coroutine
+
+| Feature | Process | Thread | Fiber (green thread) | Coroutine |
+|---|---|---|---|---|
+| **Address Space** | Isolated (separate page tables) | Shared (same process) | Shared | Shared |
+| **Scheduling** | OS kernel | OS kernel | User-space (runtime) | User-space (cooperative) |
+| **Creation Cost** | High (fork + address space copy) | Medium (TCB + stack) | Low (stack ~4KB) | Very low (~100 bytes) |
+| **Context Switch** | ~1-10μs (TLB flush) | ~0.1-1μs | ~0.01μs | ~0.001μs |
+| **Memory Per Instance** | ~2-8MB (address space overhead) | ~1MB (default stack) | ~4-16KB | ~100-500 bytes |
+| **Concurrency Model** | Preemptive | Preemptive | Preemptive (M:N) | Cooperative |
+| **Parallelism** | ✅ True parallel on multi-core | ✅ True parallel | ⚠️ If runtime maps to threads | ❌ One at a time per thread |
+| **Isolation** | Strong (crash one = others fine) | Weak (crash = whole process) | Weak | Weak |
+| **Examples** | `fork()`, Docker container | Java Thread, pthread | Go goroutine, Erlang process | Python async, Kotlin coroutine |
+
+## Scheduling Algorithm Comparison
+
+| Algorithm | Policy | Starvation | Overhead | Use Case |
+|---|---|---|---|---|
+| **CFS** (Linux) | Fair, vruntime tracking | Very low | Medium | General-purpose Linux |
+| **Round Robin** | Time-sliced cyclic | None | Very low | Simple embedded systems |
+| **Priority** | Higher priority first | High (low priority) | Low | Real-time critical tasks |
+| **MLFQ** | Multi-level with promotion/demotion | Low | High | BSD, Windows |
+| **O(1)** | Expired/active arrays | Low | O(1) constant | Legacy Linux (pre-2.6.23) |

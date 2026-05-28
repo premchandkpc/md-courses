@@ -1229,3 +1229,35 @@ Use Micrometer Tracing (formerly Spring Cloud Sleuth) or OpenTelemetry Java SDK.
 
 
 **JVM Dashboard**: heap usage (young/old/metaspace), GC pause (count, duration per generation), thread states (runnable/blocked/waiting), class loading, JIT compilation time, file descriptor count.
+
+## JVM Memory Regions
+
+| Region | Size | Content | GC Behavior |
+|---|---|---|---|
+| **Heap** | -Xms/-Xmx (default 1/4 RAM) | All objects & arrays | Full GC (major mark-compact) |
+| ├─ Young Gen (Eden) | `-Xmn` (default 1/3 heap) | Short-lived objects | Minor GC (copy survivor) |
+| ├─ Young Gen (S0/S1) | `-XX:SurvivorRatio=8` | Surviving objects | Copy between survivors |
+| ├─ Old Gen | Remaining heap | Long-lived objects | Major GC (mark-sweep-compact) |
+| └─ Metaspace | `-XX:MaxMetaspaceSize` | Class metadata | Full GC (unload classes) |
+| **Stack** | `-Xss` (default 1MB) | Frames, locals, operand stack | Per-thread, no GC |
+| **PC Register** | Fixed | Current instruction pointer | Per-thread |
+| **Native Method Stack** | Varies | Native method frames | Per-thread |
+
+## ClassLoader Hierarchy
+
+| ClassLoader | Loads From | Scope |
+|---|---|---|
+| **Bootstrap** | `rt.jar`, `java.*` | JVM startup, native |
+| **Extension** | `lib/ext/*` | Standard extensions |
+| **Application/System** | `CLASSPATH` | Application classes |
+| **Custom** | User-defined | Plugin systems, hot-reload |
+
+## Execution Mode Comparison
+
+| Feature | Interpreter | C1 (Client) | C2 (Server) | Graal JIT |
+|---|---|---|---|---|
+| Startup | Instant | ~1s | ~10s | ~15s |
+| Peak Performance | 10x slower | 3x slower | Native speed | Native + optimizations |
+| Profiling | None | Light | Aggressive | Aggressive |
+| Inlining | No | Limited | Full | Full + speculative |
+| Use Case | Early startup | Desktop | Server | Server, long-running |

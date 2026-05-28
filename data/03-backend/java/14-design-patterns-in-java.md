@@ -1273,3 +1273,52 @@ RESPONSIBILITY    then Level 3. If one can't solve it, it passes up.
 | Complexity | High | Low | Features vs Ease of Use |
 | Scalability | Excellent | Good | Horizontal vs Vertical |
 | Cost | High | Low | Features vs Budget |
+
+## Pattern Categories
+
+| Category | Pattern | Intent | Java Example |
+|---|---|---|---|
+| **Creational** | Singleton | One instance globally | `Runtime.getRuntime()` |
+| | Factory Method | Delegate object creation | `Collection.iterator()` |
+| | Abstract Factory | Families of related objects | `DocumentBuilderFactory` |
+| | Builder | Complex object construction | `StringBuilder`, `Stream.Builder` |
+| | Prototype | Clone existing objects | `Cloneable`, `Object.clone()` |
+| **Structural** | Adapter | Incompatible interfaces | `Arrays.asList()` |
+| | Decorator | Add behavior dynamically | `BufferedInputStream` |
+| | Proxy | Control access to object | `Proxy.newProxyInstance()` |
+| | Facade | Simplified interface | `javax.faces.context.FacesContext` |
+| | Composite | Tree structures | `java.awt.Component` |
+| | Bridge | Abstraction from implementation | JDBC drivers |
+| **Behavioral** | Observer | State change notifications | `PropertyChangeListener` |
+| | Strategy | Interchangeable algorithms | `Comparator` |
+| | Command | Encapsulate request as object | `Runnable`, `Callable` |
+| | Template Method | Skeleton algorithm | `AbstractList` |
+| | State | State-dependent behavior | `Thread` states via transitions |
+| | Iterator | Sequential access | `Iterator`, `Iterable` |
+| | Chain of Responsibility | Request passing | `FilterChain` in servlets |
+
+## Modern Java Implementations
+
+```java
+// Builder — using records and builder pattern (Java 14+)
+public record HttpRequest(String url, String method, Map<String,String> headers) {
+    public static Builder builder() { return new Builder(); }
+    public static class Builder {
+        private String url;
+        private String method = "GET";
+        private Map<String,String> headers = new HashMap<>();
+        public Builder url(String url) { this.url = url; return this; }
+        public Builder method(String method) { this.method = method; return this; }
+        public Builder header(String k, String v) { headers.put(k, v); return this; }
+        public HttpRequest build() { return new HttpRequest(url, method, Map.copyOf(headers)); }
+    }
+}
+
+// Strategy — using lambda (Java 8+)
+Map<String, UnaryOperator<String>> strategies = Map.of(
+    "upper", String::toUpperCase,
+    "lower", String::toLowerCase,
+    "reverse", s -> new StringBuilder(s).reverse().toString()
+);
+String result = strategies.get(strategyName).apply(input);
+```

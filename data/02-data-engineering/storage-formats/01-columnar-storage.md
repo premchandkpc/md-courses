@@ -1,5 +1,32 @@
 # Columnar Storage Formats — Deep Engineering Guide
 
+
+```mermaid
+graph LR
+    subgraph Row-Oriented
+        R1["Row 1: A,B,C"] --> R1D["Disk Block 1"]
+        R2["Row 2: D,E,F"] --> R2D["Disk Block 2"]
+        R3["Row 3: G,H,I"] --> R3D["Disk Block 3"]
+    end
+    subgraph Column-Oriented
+        CA["Col A: A,D,G"] --> CAD["Block A"]
+        CB["Col B: B,E,H"] --> CBD["Block B"]
+        CC["Col C: C,F,I"] --> CCD["Block C"]
+    end
+    subgraph Performance
+        Q1["SELECT AVG(A)"] -.->|"Row: reads ALL cols<br/>Col: reads only A"| CA
+        Q2["SELECT *"] -.->|"Row: sequential<br/>Col: scattered"| R1
+    end
+    style R1 fill:#c73e1d
+    style R2 fill:#c73e1d
+    style R3 fill:#c73e1d
+    style CA fill:#3fb950
+    style CB fill:#3fb950
+    style CC fill:#3fb950
+    style Q1 fill:#58a6ff
+    style Q2 fill:#e8912e
+```
+
 ---
 
 ## LAYER 1: Beginner's Mental Model 🧠

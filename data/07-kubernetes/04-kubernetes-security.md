@@ -1,5 +1,45 @@
 # 🔐 Kubernetes Security — Complete Deep Dive
 
+
+```mermaid
+graph TB
+    subgraph Authentication
+        USER["User"] --> API["API Server"]
+        SA["ServiceAccount"] --> API
+        API --> AUTHN["AuthN<br/>X.509 / OIDC / Webhook"]
+    end
+    subgraph Authorization
+        AUTHN --> RBAC["RBAC"]
+        AUTHN --> ABAC["ABAC (legacy)"]
+        AUTHN --> WEBHOOK["Webhook"]
+        RBAC --> ROLE["Role / ClusterRole"]
+        ROLE --> BINDING["RoleBinding<br/>ClusterRoleBinding"]
+    end
+    subgraph Pod Security
+        POD["Pod Spec"] --> PSA["Pod Security<br/>Standards"]
+        PSA --> PS["Privileged"]
+        PSA --> BS["Baseline"]
+        PSA --> RS["Restricted"]
+        POD --> SECCOMP["Seccomp<br/>Syscall Filtering"]
+        POD --> APPARMOR["AppArmor<br/>MAC"]
+    end
+    subgraph Network
+        NP["NetworkPolicy"] --> INGRESS["Ingress Rules"]
+        NP --> EGRESS["Egress Rules"]
+        NP --> SEL["Selector Labels"]
+    end
+    subgraph Secrets
+        SEC["Secret"] --> ETCD["Encrypted at Rest"]
+        SEC --> MOUNT["Volume Mount"]
+        SEC --> ENV["Environment"]
+    end
+    style AUTHN fill:#4a8bc2
+    style RBAC fill:#2d5a7b
+    style PSA fill:#e8912e
+    style NP fill:#3fb950
+    style SEC fill:#c73e1d
+```
+
 ---
 
 ## LAYER 1: Beginner's Mental Model 🧠

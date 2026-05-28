@@ -326,3 +326,47 @@ docker build --no-cache              # Bypass cache
 docker build --progress=plain        # Verbose output
 docker system df                     # Check disk space
 ```
+
+## Container Lifecycle Commands
+
+| Action | Command |
+|---|---|
+| Create & start | `docker run -d --name myapp nginx:latest` |
+| Start existing | `docker start myapp` |
+| Stop graceful | `docker stop -t 30 myapp` |
+| Force stop | `docker kill myapp` |
+| Restart | `docker restart myapp` |
+| Pause | `docker pause myapp` |
+| Unpause | `docker unpause myapp` |
+| Remove | `docker rm -f myapp` |
+| Execute in running | `docker exec -it myapp bash` |
+| Logs | `docker logs -f --tail 100 myapp` |
+
+## Dockerfile Best Practices
+
+```dockerfile
+# Multi-stage build — keep images small
+FROM golang:1.21 AS builder
+WORKDIR /app
+COPY go.mod go.sum ./
+RUN go mod download
+COPY . .
+RUN CGO_ENABLED=0 go build -o /app/server
+
+FROM alpine:3.19
+RUN apk add --no-cache ca-certificates tzdata
+COPY --from=builder /app/server /server
+EXPOSE 8080
+USER nobody
+ENTRYPOINT ["/server"]
+```
+
+## Resource Limits
+
+| Flag | Example | Effect |
+|---|---|---|
+| `--memory` | `--memory=512m` | Max 512MB RAM |
+| `--memory-reservation` | `--memory-reservation=256m` | Soft limit for scheduling |
+| `--cpus` | `--cpus=1.5` | Max 1.5 CPU cores |
+| `--pids-limit` | `--pids-limit=100` | Max 100 processes |
+| `--restart` | `--restart=on-failure:3` | Auto-restart on crash |

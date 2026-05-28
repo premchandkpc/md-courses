@@ -1429,3 +1429,27 @@ Use Micrometer Tracing (formerly Spring Cloud Sleuth) or OpenTelemetry Java SDK.
 
 
 **JVM Dashboard**: heap usage (young/old/metaspace), GC pause (count, duration per generation), thread states (runnable/blocked/waiting), class loading, JIT compilation time, file descriptor count.
+
+## Synchronization Mechanism Comparison
+
+| Mechanism | Scope | Ordering | Visibility | Deadlock Risk | Performance |
+|---|---|---|---|---|---|
+| `synchronized` | Block / Method | ✅ Built-in | ✅ Immediate | High | Moderate |
+| `ReentrantLock` | Explicit | ✅ tryLock() | ✅ Immediate | Medium | Good |
+| `ReadWriteLock` | Read/Write split | ✅ upgradeable | ✅ Immediate | Low | Excellent (read-heavy) |
+| `Semaphore` | Permit count | ❌ | ✅ Immediate | Low | Excellent |
+| `CountDownLatch` | One-shot barrier | N/A | ✅ After await | None | Excellent |
+| `CyclicBarrier` | Reusable barrier | N/A | ✅ After await | None | Excellent |
+| `Exchanger` | Pair exchange | N/A | ✅ After exchange | None | Good |
+| `Phaser` | Phased barrier | N/A | ✅ Per phase | None | Good |
+| `ThreadLocal` | Per-thread | N/A | ✅ Thread-scoped | None | Excellent |
+
+## Thread Pool Comparison
+
+| Pool Type | Core Pool | Max Pool | Queue | Use Case |
+|---|---|---|---|---|
+| `FixedThreadPool` | Fixed | Fixed | LinkedBlockingQueue | Consistent load, bounded threads |
+| `CachedThreadPool` | 0 | Integer.MAX | SynchronousQueue | Bursty, short-lived tasks |
+| `SingleThreadExecutor` | 1 | 1 | LinkedBlockingQueue | Serial execution, no concurrency |
+| `ScheduledThreadPool` | Fixed | Fixed | DelayedWorkQueue | Timed / periodic tasks |
+| `WorkStealingPool` | Parallelism | Auto | Work-stealing deque | Fork-join, recursive tasks |

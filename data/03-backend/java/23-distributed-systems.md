@@ -1,5 +1,36 @@
 # 🌐 Distributed Systems Engineering — Java Production Patterns
 
+
+```mermaid
+graph TB
+    subgraph Patterns
+        CAP["CAP Theorem"] --> CP["CP Systems<br/>ZooKeeper, etcd"]
+        CAP --> AP["AP Systems<br/>Cassandra, DNS"]
+        CAP --> CA["CA Systems<br/>Single DB"]
+    end
+    subgraph Consensus
+        RAFT["Raft"] --> LEADER["Leader Election"]
+        RAFT --> LOG["Log Replication"]
+        RAFT --> SAFETY["Safety Guarantee"]
+        PAXOS["Paxos"] --> PHASE["Prepare → Promise<br/>Accept → Accepted"]
+    end
+    subgraph Coordination
+        ZK["ZooKeeper"] --> ELECTION["Leader Election"]
+        ZK --> CONFIG["Config Mgmt"]
+        ZK --> LOCK["Distributed Locks"]
+        ZK --> WATCH["Watchers/Events"]
+    end
+    subgraph Java Patterns
+        JP["Java Distributed"] --> JGROUP["JGroups<br/>Group Comm"]
+        JP --> JTA["JTA<br/>Distributed TX"]
+        JP --> JMS["JMS<br/>Async Messaging"]
+    end
+    style CAP fill:#e8912e
+    style RAFT fill:#4a8bc2
+    style ZK fill:#2d5a7b
+    style JP fill:#3fb950
+```
+
 **Related**: [Kafka Streaming](21-kafka-streaming.md) · [Redis Caching](22-redis-caching.md) · [Concurrency Deep Dive](15-concurrency-deep-dive.md)
 
 ---

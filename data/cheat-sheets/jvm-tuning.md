@@ -1,5 +1,27 @@
 # JVM Tuning Cheat Sheet
 
+
+```mermaid
+graph LR
+    JVM["JVM Tuning"] --> HEAP["Heap<br/>-Xms / -Xmx"]
+    JVM --> GC["GC<br/>G1 / ZGC / Shenandoah"]
+    JVM --> THREAD["Threads<br/>-Xss"]
+    JVM --> META["Metaspace<br/>-XX:MaxMetaspaceSize"]
+    GC --> YOUNG["Young Gen<br/>-Xmn"]
+    GC --> OLD["Old Gen"]
+    GC --> HUMONGOUS["Humongous<br/>(G1 > 50%)"]
+    YOUNG --> SERIAL["SerialGC"]
+    YOUNG --> PARALLEL["ParallelGC"]
+    OLD --> G1GC["G1GC<br/>Region-Based"]
+    OLD --> ZGC["ZGC<br/>&lt;1ms Pause"]
+    OLD --> SHEN["Shenandoah<br/>Concurrent"]
+    style JVM fill:#4a8bc2
+    style HEAP fill:#e8912e
+    style GC fill:#3fb950
+    style ZGC fill:#a78bfa
+    style SHEN fill:#f472b6
+```
+
 JVM tuning for production Java applications: GC algorithms, flags, heap analysis, thread dumps, and flight recorder.
 
 **Cross-refs**: `18-performance-engineering/jvm-tuning/01-jvm-performance.md`, `18-performance-engineering/profiling/01-profiling-deep-dive.md`
@@ -218,3 +240,32 @@ jstat -gcutil <pid> 1s
 # Pause times
 jstat -gccause <pid> 1s
 ```
+
+## GC Algorithm Comparison
+
+| GC | Pause Time | Throughput | Heap Requirement | Java Version | Best For |
+|---|---|---|---|---|---|
+| **Serial** | High (STW) | Lowest | <100 MB | All | Single-threaded, small heaps |
+| **Parallel** | High (STW) | Highest | <4 GB | All | Batch processing, high throughput |
+| **G1GC** | Low (~10ms) | High | >4 GB | 9+ | Default server GC, balanced |
+| **ZGC** | <1ms | Medium | >8 GB | 15+ | Low-latency, very large heaps |
+| **Shenandoah** | <1ms | Medium | >4 GB | 15+ | Low-pause, concurrent compaction |
+| **Epsilon** | N/A (no GC) | Max (no overhead) | Any | 11+ | Short-lived tasks, testing |
+
+## Common JVM Flags by Use-Case
+
+| Use Case | Key Flags |
+|---|---|
+| **Low Latency** | `-XX:+UseZGC -Xms16g -Xmx16g -XX:ZAllocationSpikeTolerance=2.0` |
+| **High Throughput** | `-XX:+UseParallelGC -XX:ParallelGCThreads=4 -XX:+AggressiveOpts` |
+| **Memory-Constrained** | `-XX:+UseG1GC -Xms256m -Xmx256m -XX:MaxGCPauseMillis=100` |
+| **Debugging** | `-XX:+PrintGCDetails -Xlog:gc* -XX:+FlightRecorder -XX:StartFlightRecording=filename=rec.jfr` |
+
+## Heap Structure by GC
+
+| Collector | Young Gen | Old Gen | Special Regions |
+|---|---|---|---|
+| Parallel | Contiguous Eden + Survivor | Contiguous | None |
+| G1 | Multiple regions (1-32MB each) | Regions | Humongous (>50% region) |
+| ZGC | Multi-mapped | Multi-mapped | Colored pointers |
+| Shenandoah | Regions | Regions | Brooks pointers |

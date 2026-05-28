@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Kubernetes Scheduler — Interactive Simulator</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:system-ui,-apple-system,sans-serif;background:#0d1117;color:#e6edf3;padding:24px;max-width:1000px;margin:0 auto}
+h1{font-size:20px;color:#58a6ff;margin-bottom:4px}
+.sub{color:#8b949e;font-size:13px;margin-bottom:20px}
+
+/* Nodes */
+.nodes{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin:20px 0}
+.node-card{padding:16px;border-radius:8px;border:2px solid #30363d;background:#0d1117;min-height:180px}
+.node-card.ready{border-color:#3fb950;background:#1a3a2c}
+.node-card.full{border-color:#f85149;background:#3a1a1a}
+.node-card.tainted{border-color:#d29922;background:#3a2a1a}
+
+.node-name{font-size:14px;font-weight:700;margin-bottom:4px}
+.node-capacity{font-size:10px;color:#8b949e;margin-bottom:8px}
+.node-capacity strong{color:#e6edf3}
+
+.resource-bar{margin:6px 0;height:6px;background:#1c2128;border-radius:3px;overflow:hidden}
+.resource-bar .fill{height:100%;border-radius:3px;transition:width .3s}
+.resource-bar .fill.cpu{background:#58a6ff}
+.resource-bar .fill.mem{background:#a78bfa}
+.resource-bar .fill.green{background:#3fb950}
+.resource-bar .fill.yellow{background:#d29922}
+.resource-bar .fill.red{background:#f85149}
+
+.resource-label{font-size:9px;color:#8b949e;display:flex;justify-content:space-between;margin-top:2px}
+.taint-badge{display:inline-block;font-size:9px;padding:2px 6px;border-radius:3px;background:#3a2a1a;color:#d29922;border:1px solid #d29922;margin:4px 2px 0 0}
+
+/* Pod queue */
+.pod-queue{margin:16px 0;padding:16px;background:#161b22;border-radius:8px;border:1px solid #30363d}
+.pq-title{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:#8b949e;margin-bottom:10px}
+.pq-list{display:flex;gap:8px;flex-wrap:wrap}
+.pod-chip{padding:8px 14px;border-radius:6px;background:#1c2128;border:1px solid #30363d;font-size:11px;cursor:pointer;transition:all .15s;text-align:center;min-width:90px}
+.pod-chip:hover{border-color:#8b949e}
+.pod-chip.pending{background:#1a3a5c;border-color:#58a6ff;color:#58a6ff}
+.pod-chip.running{background:#1a3a2c;border-color:#3fb950;color:#3fb950}
+.pod-chip.failed{background:#3a1a1a;border-color:#f85149;color:#f85149}
+.pod-chip .pod-req{font-size:9px;color:#8b949e;margin-top:2px}
+
+/* scheduled pods on nodes */
+.node-pods{display:flex;flex-direction:column;gap:4px;margin-top:8px}
+.node-pod{font-size:10px;padding:3px 6px;border-radius:3px;background:#1c2128;border:1px solid #30363d}
+
+/* Controls */
+.controls{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
+.btn{padding:8px 16px;border:1px solid #30363d;border-radius:6px;background:#1c2128;color:#e6edf3;cursor:pointer;font-size:12px;transition:all .15s}
+.btn:hover{border-color:#8b949e;background:#21262d}
+.btn.primary{background:#58a6ff;color:#000;border-color:#58a6ff;font-weight:600}
+.btn.primary:hover{background:#79b8ff}
+
+.log{background:#0d1117;border:1px solid #30363d;border-radius:6px;padding:10px;max-height:160px;overflow-y:auto;font-family:monospace;font-size:11px;line-height:1.6;margin-top:12px}
+.log .ev{color:#8b949e}.log .ev.good{color:#3fb950}.log .ev.bad{color:#f85149}.log .ev.info{color:#58a6ff}.log .ev.warn{color:#d29922}
+</style>
+</head>
+<body>
+
+<h1>Kubernetes Scheduler — Interactive Simulator</h1>
+<div class="sub">Add pending pods, watch the scheduler score and bind them to the best-fit node</div>
+
+<div class="nodes" id="nodes"></div>
+
+<div class="pod-queue">
+  <div class="pq-title">Pending Pods</div>
+  <div class="pq-list" id="podQueue">
+    <div style="font-size:11px;color:#8b949e">No pending pods — click "Add Pod"</div>
+  </div>
+</div>
+
+<div class="controls">
+  <button class="btn primary" onclick="addPod()">＋ Add Pod</button>
+  <button class="btn" onclick="addNode()">＋ Add Node</button>
+  <button class="btn" onclick="scheduleAll()">▶ Schedule All</button>
+  <button class="btn" onclick="resetSim()">⟳ Reset</button>
+</div>
+
+<div class="log" id="log"></div>
+
+<script>
+let nodes=[
+  {id:1,name:'node-1',cpu:4,mem:16,cpuUsed:0,memUsed:0,taints:[],pods:[]},
+  {id:2,name:'node-2',cpu:8,mem:32,cpuUsed:0,memUsed:0,taints:[],pods:[]},
+  {id:3,name:'node-3',cpu:2,mem:8,cpuUsed:0,memUsed:0,taints:[{key:'gpu',effect:'NoSchedule'}],pods:[]},
+]
+let pendingPods=[]
+let podCounter=0,nextNodeId=4
+
+function log(msg,type='info'){
+  const el=document.getElementById('log')
+  el.innerHTML+=`<div class="ev ${type}">${msg}</div>`
+  el.scrollTop=el.scrollHeight
+}
+
+function barClass(used,total){
+  const p=used/total
+  return p>0.85?'red':p>0.6?'yellow':'green'
+}
+
+function render(){
+  // Nodes
+  const nh=nodes.map(n=>{
+    const cpuP=n.cpuUsed/n.cpu,memP=n.memUsed/n.mem
+    const cls=cpuP>=1||memP>=1?'full':n.taints.length?'tainted':'ready'
+    const taints=n.taints.map(t=>`<span class="taint-badge">${t.key}:${t.effect}</span>`).join('')
+    const pods=n.pods.map(p=>`<div class="node-pod">${p.name} (${p.cpu}c/${p.mem}GB)</div>`).join('')
+    return `<div class="node-card ${cls}">
+      <div class="node-name">${n.name}</div>
+      <div class="node-capacity"><strong>CPU</strong> ${n.cpuUsed}/${n.cpu} · <strong>MEM</strong> ${n.memUsed}/${n.mem}GB</div>
+      <div class="resource-bar"><div class="fill cpu ${barClass(cpuP,1)}" style="width:${Math.min(cpuP*100,100)}%"></div></div>
+      <div class="resource-label"><span>CPU</span><span>${(cpuP*100).toFixed(0)}%</span></div>
+      <div class="resource-bar"><div class="fill mem ${barClass(memP,1)}" style="width:${Math.min(memP*100,100)}%"></div></div>
+      <div class="resource-label"><span>MEM</span><span>${(memP*100).toFixed(0)}%</span></div>
+      ${taints}
+      ${pods?'<div class="node-pods">'+pods+'</div>':''}
+    </div>`
+  }).join('')
+  document.getElementById('nodes').innerHTML=nh
+
+  // Pending pods
+  const pq=pendingPods.map(p=>`<div class="pod-chip pending">${p.name}<div class="pod-req">${p.cpu}c · ${p.mem}GB</div></div>`).join('')
+  document.getElementById('podQueue').innerHTML=pq||'<div style="font-size:11px;color:#8b949e">No pending pods</div>'
+}
+
+function addPod(){
+  podCounter++
+  const cpu=[0.5,1,2,4][Math.floor(Math.random()*4)]
+  const mem=[1,2,4,8][Math.floor(Math.random()*4)]
+  const pod={id:podCounter,name:`pod-${podCounter}`,cpu,mem}
+  pendingPods.push(pod)
+  log(`📦 ${pod.name} added (${cpu}c/${mem}GB)`, 'info')
+  render()
+}
+
+function addNode(){
+  const cpu=[2,4,8,16][Math.floor(Math.random()*4)]
+  const mem=[8,16,32,64][Math.floor(Math.random()*4)]
+  const n={id:nextNodeId++,name:`node-${nextNodeId-1}`,cpu,mem,cpuUsed:0,memUsed:0,taints:[],pods:[]}
+  nodes.push(n)
+  log(`🖥️  ${n.name} joined (${cpu}c/${mem}GB)`, 'good')
+  render()
+}
+
+function scheduleAll(){
+  const scheduled=[]
+  for(const pod of pendingPods){
+    const result=schedulePod(pod)
+    if(result) scheduled.push(result)
+  }
+  for(const idx of scheduled.sort((a,b)=>b-a)) pendingPods.splice(idx,1)
+  render()
+  if(scheduled.length===0) log('No pods could be scheduled — all nodes full or tainted!', 'bad')
+}
+
+function schedulePod(pod){
+  let best=null,bestScore=-1
+  for(const n of nodes){
+    // Filter: taints
+    const hasTaint=n.taints.some(t=>t.effect==='NoSchedule')
+    if(hasTaint) continue
+    // Filter: resources
+    if(n.cpuUsed+pod.cpu>n.cpu||n.memUsed+pod.mem>n.mem) continue
+    // Score: best-fit (most balanced)
+    const cpuScore=1-(n.cpuUsed+pod.cpu)/n.cpu
+    const memScore=1-(n.memUsed+pod.mem)/n.mem
+    const score=cpuScore+memScore
+    if(score>bestScore){bestScore=score;best=n}
+  }
+  if(best){
+    best.cpuUsed+=pod.cpu
+    best.memUsed+=pod.mem
+    best.pods.push({...pod})
+    log(`✅ ${pod.name} → ${best.name} (score: ${bestScore.toFixed(2)})`, 'good')
+    return pendingPods.indexOf(pod)
+  } else {
+    log(`❌ ${pod.name} — no suitable node (resources exhausted or taints)`, 'bad')
+    return null
+  }
+}
+
+function resetSim(){
+  nodes.forEach(n=>{n.cpuUsed=0;n.memUsed=0;n.pods=[]})
+  pendingPods=[];podCounter=0
+  document.getElementById('log').innerHTML=''
+  log('Simulation reset', 'info')
+  render()
+}
+
+log('K8s scheduler started. 3 nodes ready', 'info')
+render()
+</script>
+</body>
+</html>

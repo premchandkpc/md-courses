@@ -1,5 +1,36 @@
 # 💾 Linux I/O & Storage — Complete Deep Dive
 
+
+```mermaid
+graph TB
+    subgraph Linux I/O Stack
+        APP["Application"] --> LIBC["libc<br/>read()/write()"]
+        LIBC --> VFS["VFS<br/>Virtual File System"]
+        VFS --> FS["File System<br/>ext4 / XFS / btrfs"]
+        FS --> BC["Page Cache<br/>(Buffer/Cache)"]
+        BC --> MM["Memory Manager"]
+        BC --> BIO["Block I/O Layer<br/>(BIO)"]
+        BIO --> IOSCHED["I/O Scheduler<br/>CFQ / Deadline / noop"]
+        IOSCHED --> BLKDEV["Block Device<br/>Driver"]
+        BLKDEV --> DISK["Physical Disk<br/>SSD / HDD / NVMe"]
+    end
+    subgraph Async IO
+        APP --> AIO["AIO / io_uring"]
+        AIO --> SQ["Submission Queue"]
+        SQ --> CQ["Completion Queue"]
+        CQ --> APP
+    end
+    subgraph Direct IO
+        APP --> DIO["O_DIRECT"]
+        DIO --> BIO
+    end
+    style VFS fill:#4a8bc2
+    style BC fill:#e8912e
+    style IOSCHED fill:#2d5a7b
+    style AIO fill:#3fb950
+    style DISK fill:#c73e1d
+```
+
 ---
 
 ## Layer 1: Beginner Mental Model

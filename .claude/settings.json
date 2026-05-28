@@ -32,7 +32,17 @@
       "Bash(awk '{print $2}')",
       "Bash(xargs kill -9)",
       "Bash(python3 convert-diagrams.py)",
-      "Bash(python3 /Users/ramyachowdary/Documents/prem-work/md-courses/batch-convert-backend.py)"
+      "Bash(python3 /Users/ramyachowdary/Documents/prem-work/md-courses/batch-convert-backend.py)",
+      "Bash(open -a \"Google Chrome\" data/interactive-simulations/raft-consensus.html)",
+      "Bash(screencapture -x /tmp/raft-enhanced.png)",
+      "Bash(pkill -f \"Google Chrome\")",
+      "Bash(screencapture -x /tmp/raft-zoom.png)",
+      "Bash(mkdir -p 09-distributed-systems/simulations)",
+      "Bash(mkdir -p 10-messaging/simulations)",
+      "Bash(mkdir -p 07-kubernetes/simulations)",
+      "Bash(mkdir -p 11-networking/simulations)",
+      "Bash(mkdir -p 08-databases/simulations)",
+      "Bash(grep -E \"\\\\.\\(html|md\\)$\")"
     ]
   }
 }

@@ -1,5 +1,55 @@
 # 00 — Foundations
 
+
+```mermaid
+mindmap
+  root(("Foundations"))
+    CS Core
+      Automata Theory
+        DFA / NFA
+        Turing Machines
+        Decidability
+      Computational Complexity
+        Big-O / Big-Θ / Big-Ω
+        NP-Completeness
+        Master Theorem
+      Boolean Algebra
+        Logic Gates
+        Karnaugh Maps
+        Circuit Design
+    DSA
+      Arrays & Linked Lists
+      Trees & Graphs
+        BST / AVL / Red-Black
+        BFS / DFS / Dijkstra
+      Sorting & Searching
+        Quick / Merge / Heap
+        Binary Search
+      Dynamic Programming
+        Memoization
+        Tabulation
+    Math
+      Discrete Math
+        Combinatorics
+        Graph Theory
+      Linear Algebra
+        Vectors / Matrices
+        Eigenvalues
+      Probability
+        Bayes Theorem
+        Distributions
+    Paradigms
+      OOP
+        Encapsulation
+        Inheritance
+      Functional
+        Pure Functions
+        Immutability
+      Declarative
+        SQL
+        DSLs
+```
+
 The bedrock of all software engineering. This domain covers the essential computer science theory, mathematical underpinnings, and core programming concepts that every engineer—regardless of specialization—must master. Without these foundations, higher-level topics (distributed systems, AI, compilers) rest on sand.
 
 ## Table of Contents

@@ -1,10 +1,11 @@
 # Kafka Partition Replication — Interactive Simulator
 
+> **Run the live simulator**: [kafka-replication.html](/kafka-replication.html) — produce messages, kill leaders, watch ISR management in real-time.
+
 ## Overview
 
-
 ```mermaid
-graph TB
+graph LR
     P["Producer"] --> L["Leader<br/>(broker N)"]
     L --> F1["Follower<br/>(broker A)"]
     L --> F2["Follower<br/>(broker B)"]

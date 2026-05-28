@@ -368,3 +368,46 @@ sequenceDiagram
     A->>B: Process
     B-->>User: Result
 ```
+
+## Workflow Comparison
+
+| Strategy | Merge | Rebase | Cherry-Pick |
+|---|---|---|---|
+| Preserves history | ✅ Full DAG | ❌ Rewrites | ✅ Selected commits |
+| Clean linear history | ❌ Merge bubbles | ✅ Linear | ✅ If no conflicts |
+| Safety | Non-destructive | Destructive (force push) | Non-destructive |
+| Use case | Feature branches | Private branches | Hotfix backport |
+
+## Interactive Rebase Patterns
+
+```bash
+# Squash last 3 commits into one
+git rebase -i HEAD~3
+# → pick <hash> feat: add login
+# → squash <hash> fix: typo in login
+# → squash <hash> test: login tests
+
+# Reorder commits
+git rebase -i HEAD~3
+# → Move lines up/down in editor
+
+# Split a commit
+git rebase -i HEAD~3
+# → Change 'pick' to 'edit' for the commit
+git reset HEAD^        # unstage
+git add -p             # stage partial
+git commit -m "part 1"
+git add . && git commit -m "part 2"
+git rebase --continue
+```
+
+## Undo Operations Reference
+
+| State | Command | Result |
+|---|---|---|
+| Unstaged changes | `git checkout -- file` | Discard working copy |
+| Staged (not committed) | `git restore --staged file` | Unstage, keep changes |
+| Last commit (keep changes) | `git reset --soft HEAD~1` | Uncommit, keep staged |
+| Last commit (discard) | `git reset --hard HEAD~1` | Completely remove |
+| Push with force | `git push --force-with-lease` | Safe force push |
+| Public commit | `git revert <hash>` | New commit undoing changes |

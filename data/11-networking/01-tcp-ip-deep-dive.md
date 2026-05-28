@@ -1407,3 +1407,41 @@ To exceed single-core throughput:
 
 
 > **TCP/IP is a postal service for the internet. Ethernet is the local mail truck that delivers between houses on your street. IP is the envelope with addresses — it tells the postal system which city and house. TCP is the registered mail service that confirms every package arrived, re-sends lost ones, and makes sure they're in order. The 3-way handshake is "I'll send a letter, you confirm, I confirm back" before any real communication. The congestion window is how many packages you're willing to have on trucks at once — slow start means you start with one, double until you see a traffic jam (loss), then ease back. BBR is a GPS that measures how fast the road system actually is and paces your packages to avoid traffic jams entirely. All the offloading (TSO/GRO/RSS) is like having automated sorting machines at the post office — the mail carrier (NIC) handles the heavy lifting so the clerks (CPU) can focus on the actual mail (applications).**
+
+## TCP vs UDP Comparison
+
+| Feature | TCP | UDP |
+|---|---|---|
+| **Connections** | Connection-oriented (3-way handshake) | Connectionless |
+| **Reliability** | ✅ Guaranteed delivery (ACK + retransmit) | ❌ Best effort (no ACK) |
+| **Ordering** | ✅ In-order delivery (sequence numbers) | ❌ Out of order possible |
+| **Flow Control** | ✅ Sliding window | ❌ None |
+| **Congestion Control** | ✅ Slow start, congestion avoidance | ❌ None |
+| **Header Size** | 20-60 bytes | 8 bytes |
+| **Stream vs Datagram** | Byte-stream (no boundaries) | Message boundaries preserved |
+| **Use Cases** | HTTP, SSH, SMTP, WebSocket | DNS, VoIP, video streaming, gaming |
+
+## TCP State Transitions
+
+| State | Description | Entered From | Exits To |
+|---|---|---|---|
+| **CLOSED** | No connection | Initial / after close | SYN_SENT or LISTEN |
+| **LISTEN** | Waiting for incoming | CLOSED | SYN_RCVD |
+| **SYN_SENT** | Sent SYN, waiting for ACK | CLOSED | ESTABLISHED or SYN_RCVD |
+| **SYN_RCVD** | Received SYN, sent SYN-ACK | LISTEN | ESTABLISHED |
+| **ESTABLISHED** | Connection open | SYN_SENT / SYN_RCVD | FIN_WAIT_1 / CLOSE_WAIT |
+| **FIN_WAIT_1** | Sent FIN, waiting | ESTABLISHED | FIN_WAIT_2 / TIME_WAIT |
+| **FIN_WAIT_2** | Received ACK to FIN | FIN_WAIT_1 | TIME_WAIT |
+| **CLOSE_WAIT** | Received FIN, awaiting app close | ESTABLISHED | LAST_ACK |
+| **LAST_ACK** | Sent FIN, waiting for ACK | CLOSE_WAIT | CLOSED |
+| **TIME_WAIT** | Both FIN'd, waiting 2*MSL | FIN_WAIT_2 | CLOSED |
+
+## Congestion Control Algorithms
+
+| Algorithm | Approach | Fairness | Throughput | Latency |
+|---|---|---|---|---|
+| **Cubic** (default Linux) | Cubic growth function | Good | Very high (long-RTT friendly) | Moderate |
+| **BBR** | Model-based (BW + RTT pacing) | Good | High | Low |
+| **Reno** | AIMD (additive inc, multiplicative dec) | Fair | Low | Moderate |
+| **NewReno** | Reno + partial ACK handling | Fair | Low-Moderate | Moderate |
+| **Westwood** | Bandwidth estimation | Good | High (wireless) | Moderate |

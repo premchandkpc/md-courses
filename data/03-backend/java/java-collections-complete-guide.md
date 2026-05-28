@@ -1,5 +1,36 @@
 # Java Collections: Complete Guide with Real Scenarios
 
+
+```mermaid
+graph TB
+    subgraph Collection
+        S1["Set<br/>Unique Only"] --> H1["HashSet<br/>O(1)"]
+        S1 --> T1["TreeSet<br/>O(log n)"]
+        S1 --> L1["LinkedHashSet<br/>Insertion Order"]
+    end
+    subgraph List
+        L2["List<br/>Ordered"] --> A1["ArrayList<br/>Fast Get"]
+        L2 --> L3["LinkedList<br/>Fast Insert"]
+        L2 --> S2["Stack<br/>LIFO"]
+    end
+    subgraph Queue
+        Q1["Queue<br/>FIFO"] --> P1["PriorityQueue<br/>Sorted"]
+        Q1 --> D1["Deque<br/>Both Ends"]
+        Q1 --> B1["BlockingQueue<br/>Thread-Safe"]
+    end
+    subgraph Map
+        M1["Map<br/>KV Pairs"] --> H2["HashMap<br/>O(1)"]
+        M1 --> T2["TreeMap<br/>O(log n)"]
+        M1 --> H3["LinkedHashMap<br/>Insertion Order"]
+        M1 --> C1["ConcurrentHashMap<br/>Thread-Safe"]
+    end
+    style S1 fill:#4a8bc2
+    style L2 fill:#2d5a7b
+    style Q1 fill:#3a7ca5
+    style M1 fill:#e8912e
+    style C1 fill:#3fb950
+```
+
 ## Overview
 
 

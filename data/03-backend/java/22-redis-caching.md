@@ -1,5 +1,35 @@
 # 🔴 Redis Caching & Distributed Patterns — Production Engineering
 
+
+```mermaid
+graph TB
+    subgraph Application
+        APP["App Server"] --> CACHE["Redis Cache"]
+        CACHE -->|"Cache Hit ✅"| APP
+        APP -->|"Cache Miss ❌"| DB["Database"]
+        DB -->|"Query Result"| APP
+        APP -->|"Update Cache"| CACHE
+    end
+    subgraph Redis Topologies
+        SINGLE["Single Node"] --> MASTER["Master"]
+        MASTER --> REPLICA["Replica<br/>Read-Only"]
+        SENTINEL["Sentinel<br/>HA"] -.-> MASTER
+        CLUSTER["Cluster<br/>Sharding"] --> SHARD1["Shard 1"]
+        CLUSTER --> SHARD2["Shard 2"]
+        CLUSTER --> SHARD3["Shard 3"]
+    end
+    subgraph Patterns
+        CACHE --> CW["Cache-Aside<br/>Lazy Load"]
+        CACHE --> CR["Cache-Through<br/>Write-Through"]
+        CACHE --> CC["Cache-Aside +<br/>TTL + Eviction"]
+    end
+    style APP fill:#4a8bc2
+    style DB fill:#c73e1d
+    style CACHE fill:#c73e1d
+    style MASTER fill:#3fb950
+    style CLUSTER fill:#e8912e
+```
+
 **Related**: [Collections Framework](02-collections-framework.md) · [Spring Boot](12-spring-boot.md) · [Performance Tuning](19-performance-tuning.md)
 
 ---

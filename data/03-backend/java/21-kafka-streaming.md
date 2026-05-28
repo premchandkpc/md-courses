@@ -1,5 +1,39 @@
 # 🚀 Kafka & Distributed Streaming in Java — Production Engineering
 
+
+```mermaid
+graph LR
+    subgraph Producers
+        P1["Producer 1"] --> TOPIC["Topic: orders<br/>Partitions: 3"]
+        P2["Producer 2"] --> TOPIC
+    end
+    subgraph Kafka Cluster
+        TOPIC --> P0["Partition 0<br/>Leader: Broker A"]
+        TOPIC --> P1P["Partition 1<br/>Leader: Broker B"]
+        TOPIC --> P2P["Partition 2<br/>Leader: Broker C"]
+        P0 --> R0["Replica: Broker B"]
+        P1P --> R1["Replica: Broker C"]
+        P2P --> R2["Replica: Broker A"]
+    end
+    subgraph Consumers
+        CG["Consumer Group<br/>orders-group"] --> P0
+        CG --> P1P
+        CG --> P2P
+        CG --> CG1["Consumer 1<br/>P0, P1"]
+        CG --> CG2["Consumer 2<br/>P2"]
+    end
+    subgraph Streams
+        TOPIC --> SS["Kafka Streams"]
+        SS --> ST["State Store<br/>(RocksDB)"]
+        SS --> OT["Output Topic"]
+    end
+    style P0 fill:#3fb950
+    style P1P fill:#4a8bc2
+    style P2P fill:#e8912e
+    style CG fill:#58a6ff
+    style SS fill:#a78bfa
+```
+
 **Related**: [Multithreading](04-multithreading.md) · [Java Memory Model](06-java-memory-gc.md) · [Performance Tuning](19-performance-tuning.md)
 
 ---

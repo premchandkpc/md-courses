@@ -1,5 +1,36 @@
 # Linux Debugging Cheat Sheet
 
+
+```mermaid
+graph TB
+    subgraph Process
+        TOP["top<br/>Dynamic View"] --> RESOURCE["CPU/MEM Usage"]
+        HTOP["htop<br/>Interactive"] --> TREE["Process Tree"]
+        PS["ps<br/>Snapshot"] --> STAT["Process State"]
+        STRACE["strace<br/>Syscall Trace"] --> SYSCALL["System Calls"]
+    end
+    subgraph Memory
+        FREE["free<br/>Memory Usage"] --> RAM["RAM / Swap"]
+        VMSTAT["vmstat<br/>System Stats"] --> PROCS["Processes/Memory"]
+        PMAP["pmap<br/>Process Map"] --> SEGMENTS["Memory Segments"]
+    end
+    subgraph Disk
+        IOSTAT["iostat<br/>I/O Stats"] --> THROUGHPUT["Throughput"]
+        IOTOP["iotop<br/>Per-Process I/O"] --> IOPS["IOPS/Latency"]
+        DF["df<br/>Disk Free"] --> MOUNTS["Mount Points"]
+    end
+    subgraph Performance
+        PERF["perf<br/>Advanced"] --> EVENTS["HW/SW Events"]
+        SAR["sar<br/>Historical"] --> TREND["System Trends"]
+        BPFTOOL["bpftool<br/>eBPF"] --> BPF["BPF Programs"]
+    end
+    style TOP fill:#4a8bc2
+    style FREE fill:#e8912e
+    style IOSTAT fill:#3fb950
+    style PERF fill:#a78bfa
+    style STRACE fill:#c73e1d
+```
+
 Essential Linux debugging tools for production outages, performance issues, and system crashes.
 
 **Cross-refs**: `12-operating-systems/05-linux-observability-debugging.md`, `12-operating-systems/01-linux-kernel-architecture.md`, `12-operating-systems/02-linux-process-memory.md`
@@ -190,3 +221,31 @@ cat /proc/$PID/limits    # Check ulimit
 sysctl fs.file-max       # System max
 ulimit -n 65536          # Increase shell limit
 ```
+
+## Tool Selection Matrix
+
+| Symptom | Tool | Key Command | What to Look For |
+|---|---|---|---|
+| **High CPU** | `top` / `htop` | `top -o %CPU` | Process consuming >90% CPU |
+| **High CPU** | `perf top` | `perf top -p <PID>` | Hot function (kernel/user) |
+| **Out of Memory** | `free -h` | `free -h` | Available vs used swap |
+| **Out of Memory** | `/var/log/kern.log` | `dmesg \| grep -i oom` | OOM killer messages |
+| **Disk Full** | `df -h` | `df -h` | Mount at 100% usage |
+| **Slow Disk** | `iostat -x 1` | `iostat -x 1` | `%util` > 90%, `await` > 10ms |
+| **Slow Disk** | `iotop -o` | `iotop -o` | Process with high I/O |
+| **Network Slow** | `ss -tup` | `ss -tup \| grep ESTAB` | Connection count, send-Q |
+| **Network Slow** | `tcpdump` | `tcpdump -i eth0 port 80` | Retransmissions, RTT |
+| **Hanging Process** | `strace -p <PID>` | `strace -p <PID>` | Blocked syscall (e.g. `read`) |
+| **Hanging Process** | `gdb attach <PID>` | `gdb -p <PID>; bt` | Stack trace |
+| **Swap Thrashing** | `vmstat 1` | `vmstat 1` | `si` / `so` > 0 consistently |
+
+## Production Incident Checklist
+
+1. **Save the state**: `top -bn1`, `free -h`, `df -h`, `ss -tup` → capture first
+2. **Identify the victim**: Isolate by container/pod/process
+3. **Narrow the domain**: CPU / Memory / Disk / Network
+4. **Deep dive**: Select tool from matrix above
+5. **Collect evidence**: Save all output with timestamps
+6. **Mitigate**: Kill / restart / scale before root cause analysis
+7. **Root cause**: `perf`, `strace`, core dump analysis
+8. **Postmortem**: File incident report with timeline

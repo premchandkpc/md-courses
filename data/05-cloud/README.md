@@ -24,6 +24,56 @@ graph LR
     style MON fill:#3a7ca5
 ```
 
+## Request Flow: User → AWS
+
+```mermaid
+sequenceDiagram
+    actor U as User
+    participant R53 as Route53
+    participant CF as CloudFront
+    participant ELB as ELB
+    participant EC2 as EC2
+    participant RDS as RDS
+    participant S3 as S3
+    
+    U->>R53: DNS lookup
+    R53->>U: IP address
+    U->>CF: HTTP request
+    CF->>S3: static assets
+    S3-->>CF: files
+    CF-->>U: static content
+    U->>ELB: API request
+    ELB->>EC2: distribute
+    EC2->>RDS: query
+    RDS-->>EC2: data
+    EC2->>S3: store
+    EC2-->>ELB: response
+    ELB-->>U: API response
+```
+
+## Multi-Region Architecture
+
+```mermaid
+graph TB
+    subgraph "Region A: us-east-1"
+        ALB1["ALB"] --> ASG1["ASG"]
+        ASG1 --> RDS1["RDS Primary"]
+    end
+    subgraph "Region B: eu-west-1"
+        ALB2["ALB"] --> ASG2["ASG"]
+        ASG2 --> RDS2["RDS Standby"]
+    end
+    R53["Route53<br/>Geo-Routing"] --> ALB1
+    R53 --> ALB2
+    RDS1 -.->|"Cross-Region Replication"| RDS2
+    CF["CloudFront<br/>Global Edge"] --> S3["S3 Global"]
+    
+    style R53 fill:#e8912e
+    style CF fill:#6f42c1
+    style RDS1 fill:#c73e1d
+    style S3 fill:#3a7ca5
+```
+
 ## Table of Contents
 
 - [AWS](#aws)

@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Kafka Partition Replication — Interactive Simulator</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:system-ui,-apple-system,sans-serif;background:#0d1117;color:#e6edf3;padding:24px;max-width:1000px;margin:0 auto}
+h1{font-size:20px;color:#58a6ff;margin-bottom:4px}
+.sub{color:#8b949e;font-size:13px;margin-bottom:20px}
+
+/* Broker cluster */
+.cluster{display:flex;gap:14px;flex-wrap:wrap;margin:20px 0;padding:20px;background:#161b22;border-radius:8px;border:1px solid #30363d;justify-content:center}
+.broker{padding:16px;border-radius:8px;border:2px solid #30363d;background:#0d1117;min-width:160px;text-align:center}
+.broker.leader{border-color:#3fb950;background:#1a3a2c}
+.broker.follower{border-color:#58a6ff;background:#1a3a5c}
+.broker.dead{border-color:#f85149;background:#3a1a1a;opacity:.6}
+.broker-id{font-size:15px;font-weight:700;margin-bottom:6px}
+.broker-role{font-size:11px;font-weight:600;padding:3px 8px;border-radius:4px;display:inline-block;margin-bottom:6px}
+.broker-role.leader{background:#1a3a2c;color:#3fb950}
+.broker-role.follower{background:#1a3a5c;color:#58a6ff}
+.broker-role.dead{background:#3a1a1a;color:#f85149}
+.broker-info{font-size:10px;color:#8b949e;margin:4px 0}
+.broker-info strong{color:#e6edf3}
+
+/* ISR */
+.isr-box{margin:12px 0;padding:10px;background:#161b22;border-radius:6px;border:1px solid #30363d}
+.isr-title{font-size:10px;text-transform:uppercase;letter-spacing:.05em;color:#8b949e;margin-bottom:6px}
+.isr-list{display:flex;gap:4px;flex-wrap:wrap}
+.isr-badge{padding:2px 8px;border-radius:3px;font-size:10px;font-weight:600;background:#1c2128;border:1px solid #30363d}
+.isr-badge.active{background:#1a3a2c;color:#3fb950;border-color:#3fb950}
+.isr-badge.inactive{background:#3a1a1a;color:#f85149;border-color:#f85149;text-decoration:line-through;opacity:.5}
+
+/* Producer */
+.producer{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:16px;margin:16px 0}
+.prod-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.prod-label{font-size:12px;color:#8b949e;min-width:100px}
+.acks-btns{display:flex;gap:4px}
+.ack-btn{padding:4px 12px;border:1px solid #30363d;border-radius:4px;background:#1c2128;color:#e6edf3;cursor:pointer;font-size:11px;transition:all .12s}
+.ack-btn.active{background:#58a6ff;color:#000;border-color:#58a6ff;font-weight:600}
+.ack-btn:hover{border-color:#8b949e}
+
+/* Controls */
+.controls{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
+.btn{padding:8px 16px;border:1px solid #30363d;border-radius:6px;background:#1c2128;color:#e6edf3;cursor:pointer;font-size:12px;transition:all .15s}
+.btn:hover{border-color:#8b949e;background:#21262d}
+.btn.danger{background:#f85149;color:#fff;border-color:#f85149}
+.btn.danger:hover{background:#da3633}
+.btn.success{background:#3fb950;color:#000;border-color:#3fb950}
+.btn.success:hover{background:#56d364}
+.btn.warn{background:#d29922;color:#000;border-color:#d29922}
+.btn.warn:hover{background:#e3a833}
+
+/* Status */
+.status{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px;margin:12px 0}
+.stat{background:#1c2128;padding:10px;border-radius:6px;border:1px solid #30363d;text-align:center}
+.stat .num{font-size:18px;font-weight:700}
+.stat .lbl{font-size:10px;color:#8b949e}
+
+/* Log */
+.log{background:#0d1117;border:1px solid #30363d;border-radius:6px;padding:10px;max-height:180px;overflow-y:auto;font-family:monospace;font-size:11px;line-height:1.6;margin-top:12px}
+.log-entry{margin:4px 0}
+.log-entry.info{color:#58a6ff}
+.log-entry.good{color:#3fb950}
+.log-entry.bad{color:#f85149}
+.log-entry.warn{color:#d29922}
+
+@media(max-width:700px){.cluster{flex-direction:column;align-items:center}}
+</style>
+</head>
+<body>
+
+<h1>Kafka Partition Replication — Interactive Simulator</h1>
+<div class="sub">Watch leader-follower replication, ISR management, and failure recovery across a multi-broker Kafka cluster</div>
+
+<div class="cluster" id="cluster"></div>
+
+<div class="isr-box">
+  <div class="isr-title">In-Sync Replicas (ISR)</div>
+  <div class="isr-list" id="isrList"></div>
+</div>
+
+<div class="producer">
+  <div class="prod-row">
+    <span class="prod-label">Producer acks:</span>
+    <div class="acks-btns" data-action="setAcks">
+      <button class="ack-btn active" data-value="all">acks=all</button>
+      <button class="ack-btn" data-value="leader">acks=leader</button>
+      <button class="ack-btn" data-value="0">acks=0</button>
+    </div>
+  </div>
+</div>
+
+<div class="controls">
+  <button class="btn success" data-action="produce">📨 Produce Message</button>
+  <button class="btn danger" data-action="killBroker">💀 Kill Leader</button>
+  <button class="btn warn" data-action="reviveBroker">🔄 Revive Broker</button>
+  <button class="btn" data-action="reset">⟳ Reset</button>
+</div>
+
+<div class="status">
+  <div class="stat"><div class="num" id="sLeader">—</div><div class="lbl">Leader</div></div>
+  <div class="stat"><div class="num" id="sISR">0</div><div class="lbl">ISR Count</div></div>
+  <div class="stat"><div class="num" id="sMessages">0</div><div class="lbl">Messages</div></div>
+  <div class="stat"><div class="num" id="sReplicas">3</div><div class="lbl">Replicas</div></div>
+  <div class="stat"><div class="num" id="sAcks">all</div><div class="lbl">Ack Mode</div></div>
+</div>
+
+<div class="log" id="log"></div>
+
+<script>
+const CONFIG = {
+  replicationFactor: 3,
+  minIsrForAll: 2,
+  replicationSuccessRate: 0.85,
+};
+
+const STATE = {
+  brokers: [
+    { id: 1, name: 'Broker A', role: 'leader', alive: true },
+    { id: 2, name: 'Broker B', role: 'follower', alive: true },
+    { id: 3, name: 'Broker C', role: 'follower', alive: true },
+    { id: 4, name: 'Broker D', role: 'follower', alive: true },
+  ],
+  acksMode: 'all',
+  messageCount: 0,
+};
+
+const LOG = [];
+
+function initEventHandlers() {
+  document.addEventListener('click', (e) => {
+    const btn = e.target.closest('[data-action]');
+    if (!btn) return;
+
+    const action = btn.dataset.action;
+    const value = btn.dataset.value;
+
+    if (action === 'setAcks') {
+      setAcks(value);
+    } else if (action === 'produce') {
+      produce();
+    } else if (action === 'killBroker') {
+      killBroker();
+    } else if (action === 'reviveBroker') {
+      reviveBroker();
+    } else if (action === 'reset') {
+      resetCluster();
+    }
+  });
+}
+
+function addLog(msg, type = 'info') {
+  const entry = { msg, type, ts: Date.now() };
+  LOG.push(entry);
+
+  const logEl = document.getElementById('log');
+  const entryEl = document.createElement('div');
+  entryEl.className = `log-entry ${type}`;
+  entryEl.textContent = msg;
+  logEl.appendChild(entryEl);
+  logEl.scrollTop = logEl.scrollHeight;
+}
+
+function getLeader() {
+  return STATE.brokers.find(b => b.alive && b.role === 'leader');
+}
+
+function getAliveBrokers() {
+  return STATE.brokers.filter(b => b.alive);
+}
+
+function ensureLeader() {
+  const leader = getLeader();
+  if (leader) return;
+
+  const alive = getAliveBrokers();
+  if (alive.length === 0) return;
+
+  alive[0].role = 'leader';
+  addLog(`New leader elected: ${alive[0].name}`, 'warn');
+}
+
+function renderCluster() {
+  const html = STATE.brokers.map(broker => {
+    const isAlive = broker.alive;
+    const role = isAlive ? broker.role : 'dead';
+    const hwm = STATE.messageCount;
+    const leo = STATE.messageCount + (isAlive ? Math.floor(Math.random() * 2) : 0);
+
+    return `
+      <div class="broker ${role}">
+        <div class="broker-id">${broker.name}</div>
+        <div class="broker-role ${role}">${isAlive ? broker.role.toUpperCase() : 'DEAD'}</div>
+        <div class="broker-info">
+          ${isAlive ? `HW: ${hwm}<br/>LEO: ${leo}` : 'OFFLINE'}
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  document.getElementById('cluster').innerHTML = html;
+}
+
+function renderISR() {
+  const alive = getAliveBrokers();
+  const dead = STATE.brokers.filter(b => !b.alive);
+
+  const html = [
+    ...alive.map(b => {
+      const star = b.role === 'leader' ? ' ★' : '';
+      return `<span class="isr-badge active">${b.name}${star}</span>`;
+    }),
+    ...dead.map(b => `<span class="isr-badge inactive">${b.name}</span>`),
+  ].join('');
+
+  document.getElementById('isrList').innerHTML = html;
+}
+
+function updateStats() {
+  const leader = getLeader();
+  const alive = getAliveBrokers();
+
+  document.getElementById('sLeader').textContent = leader ? leader.name : '—';
+  document.getElementById('sISR').textContent = alive.length;
+  document.getElementById('sMessages').textContent = STATE.messageCount;
+  document.getElementById('sAcks').textContent = STATE.acksMode;
+}
+
+function setAcks(mode) {
+  STATE.acksMode = mode;
+  document.querySelectorAll('.ack-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.value === mode);
+  });
+  addLog(`Acks mode: ${mode}`, 'info');
+  updateStats();
+}
+
+function produce() {
+  const leader = getLeader();
+  if (!leader) {
+    addLog('No leader available! Cannot produce.', 'bad');
+    return;
+  }
+
+  STATE.messageCount++;
+  addLog(`Message #${STATE.messageCount}: Leader ${leader.name} received`, 'good');
+
+  const followers = STATE.brokers.filter(b => b.alive && b.id !== leader.id);
+  let replicatedCount = 0;
+
+  for (const follower of followers) {
+    if (Math.random() < CONFIG.replicationSuccessRate) {
+      replicatedCount++;
+      addLog(`  ✓ ${follower.name} replicated`, 'good');
+    } else {
+      addLog(`  ✗ ${follower.name} replication delayed`, 'warn');
+    }
+  }
+
+  const totalReplicated = replicatedCount + 1;
+
+  if (STATE.acksMode === 'all') {
+    if (totalReplicated >= CONFIG.minIsrForAll) {
+      addLog(`  ✓ acks=all: ${totalReplicated}/${CONFIG.replicationFactor} confirmed — committed`, 'good');
+    } else {
+      addLog(`  ✗ acks=all: only ${totalReplicated}/${CONFIG.replicationFactor} — NOT committed (min.insync.replicas=${CONFIG.minIsrForAll})`, 'bad');
+    }
+  } else if (STATE.acksMode === 'leader') {
+    addLog(`  ✓ acks=leader: leader confirmed — committed (${replicatedCount} followers async)`, 'info');
+  } else if (STATE.acksMode === '0') {
+    addLog(`  🔥 acks=0: fire-and-forget — no confirmation`, 'warn');
+  }
+
+  renderCluster();
+  updateStats();
+}
+
+function killBroker() {
+  const leader = getLeader();
+  if (!leader) {
+    addLog('No leader to kill', 'bad');
+    return;
+  }
+
+  leader.alive = false;
+  leader.role = 'follower';
+  addLog(`💀 ${leader.name} (leader) died!`, 'bad');
+
+  const alive = getAliveBrokers();
+  if (alive.length >= 2) {
+    alive[0].role = 'leader';
+    addLog(`New leader elected: ${alive[0].name} (term +1)`, 'warn');
+  } else {
+    addLog('⚠️ Cluster unavailable — no majority!', 'bad');
+  }
+
+  renderCluster();
+  renderISR();
+  updateStats();
+}
+
+function reviveBroker() {
+  const dead = STATE.brokers.find(b => !b.alive);
+  if (!dead) {
+    addLog('No dead brokers to revive', 'info');
+    return;
+  }
+
+  dead.alive = true;
+  dead.role = 'follower';
+  addLog(`🔄 ${dead.name} rejoined cluster — catching up`, 'info');
+
+  ensureLeader();
+  renderCluster();
+  renderISR();
+  updateStats();
+}
+
+function resetCluster() {
+  STATE.brokers.forEach((b, i) => {
+    b.alive = true;
+    b.role = i === 0 ? 'leader' : 'follower';
+  });
+  STATE.messageCount = 0;
+  LOG.length = 0;
+  document.getElementById('log').innerHTML = '';
+  addLog('Cluster reset', 'info');
+  renderCluster();
+  renderISR();
+  updateStats();
+}
+
+function init() {
+  initEventHandlers();
+  addLog('Kafka cluster initialized. Leader: Broker A', 'info');
+  renderCluster();
+  renderISR();
+  updateStats();
+}
+
+init();
+</script>
+</body>
+</html>

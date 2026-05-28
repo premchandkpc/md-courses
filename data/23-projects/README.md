@@ -1,5 +1,38 @@
 # Project Architectures — Complete Blueprint Catalog 📐
 
+
+```mermaid
+graph TB
+    subgraph Projects
+        CACHE["01-distributed-cache"] --> ARCH["Architecture"]
+        ARCH --> API["REST API"]
+        ARCH --> CLUSTER["Cluster Mgmt"]
+        ARCH --> SHARD["Sharding"]
+        
+        QUEUE["02-distributed-queue"] --> QARCH["Architecture"]
+        QARCH --> PROD["Producer API"]
+        QARCH --> CONS["Consumer API"]
+        QARCH --> PERSIST["Persistence"]
+        
+        WFE["03-workflow-engine"] --> WARCH["Architecture"]
+        WARCH --> DAG["DAG Scheduler"]
+        WARCH --> STATE["State Machine"]
+        WARCH --> RETRY["Retry Logic"]
+    end
+    subgraph Common Patterns
+        API --> SVC1["REST / gRPC"]
+        CLUSTER --> SVC2["Raft / Gossip"]
+        SHARD --> SVC3["Consistent Hashing"]
+        PERSIST --> SVC4["WAL / MVCC"]
+        STATE --> SVC5["FSM Pattern"]
+    end
+    style CACHE fill:#4a8bc2
+    style QUEUE fill:#e8912e
+    style WFE fill:#3fb950
+    style SVC1 fill:#2d5a7b
+    style SVC4 fill:#c73e1d
+```
+
 This directory contains **full architecture blueprints** for real-world systems. Each blueprint covers requirements, architecture decisions, data models, API design, deployment topology, tradeoffs, and scaling considerations.
 
 **Related**: [System Design](../15-system-design/README.md) · [Microservices](../16-microservices/README.md) · [Software Architecture](../17-software-architecture/README.md) · [Low-Level Design](../24-low-level-design/README.md)

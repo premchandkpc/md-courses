@@ -1,6 +1,35 @@
 # Java Collections: Elite-Level Masterclass
 ## JVM Internals | Production Engineering | Interview Mastery
 
+```mermaid
+graph TB
+    subgraph "Collection Framework"
+        IT["Iterable"] --> CL["Collection"]
+        CL --> L["List"]
+        CL --> S["Set"]
+        CL --> Q["Queue"]
+        IT --> M["Map"]
+    end
+    subgraph Implementations
+        L --> AL["ArrayList<br/>O(1) get"]
+        L --> LL["LinkedList<br/>O(1) insert"]
+        S --> HS["HashSet<br/>O(1)"]
+        S --> TS["TreeSet<br/>O(log n)"]
+        Q --> PQ["PriorityQueue<br/>O(log n)"]
+        M --> HM["HashMap<br/>O(1)"]
+        M --> TM["TreeMap<br/>O(log n)"]
+    end
+    subgraph Concurrency
+        HM --> CHM["ConcurrentHashMap<br/>Lock Striping"]
+        AL --> CV["CopyOnWriteArrayList<br/>Immutable Snapshots"]
+    end
+    style IT fill:#4a8bc2
+    style CL fill:#2d5a7b
+    style M fill:#e8912e
+    style CHM fill:#3fb950
+```
+
+
 
 ---
 

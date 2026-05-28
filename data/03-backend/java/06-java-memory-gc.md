@@ -1815,3 +1815,33 @@ Result:
 - **Detection**: `jstack` shows deadlock detection: "Found one Java-level deadlock". Thread state: BLOCKED on a lock held by another thread that's waiting on this thread's lock.
 - **Recovery**: 1) Kill the stuck threads or restart JVM. 2) `jstack -l <pid>` to identify deadlocked threads. 3) Fix locking order in code.
 - **Prevention**: Always acquire locks in consistent order. Use `tryLock` with timeout instead of `synchronized`. Use `java.util.concurrent` classes. Enable `-XX:+PrintConcurrentLocks`.
+
+## GC Algorithm Comparison
+
+| GC | Algorithm | Pause Target | Throughput | Best For |
+|---|---|---|---|---|
+| **Serial** | Stop-the-world mark-compact | High (STW seconds) | Lowest | Single-core, <100MB heaps |
+| **Parallel** | Parallel mark-compact (STW) | Moderate (100ms-1s) | Highest | Batch, throughput-critical |
+| **G1GC** (default 9+) | Region-based mark-compact | ~10ms target | High | Large heaps, balanced |
+| **ZGC** | Concurrent reference coloring | <1ms | Medium | Very large heaps, sub-millisecond |
+| **Shenandoah** | Concurrent evacuation | <1ms | Medium | Large heaps, low-pause |
+| **Epsilon** | No GC | N/A | Max (no overhead) | Short-lived, testing |
+
+## GC Tuning Flags by Goal
+
+| Goal | Flags |
+|---|---|
+| **Lowest Latency** | `-XX:+UseZGC -XX:ZAllocationSpikeTolerance=2.0 -XX:+UnlockExperimentalVMOptions` |
+| **High Throughput** | `-XX:+UseParallelGC -XX:ParallelGCThreads=4 -XX:+UseAdaptiveSizePolicy` |
+| **Minimize Footprint** | `-XX:+UseSerialGC -Xms128m -Xmx128m -XX:MaxMetaspaceSize=64m` |
+| **Predictable Pauses** | `-XX:+UseG1GC -XX:MaxGCPauseMillis=10 -XX:G1HeapRegionSize=4m` |
+| **Diagnostics** | `-Xlog:gc*:file=gc.log:time,uptime,level,tags` |
+
+## Heap Structure Per GC
+
+| GC | Young Gen | Old Gen | Special Structures |
+|---|---|---|---|
+| Serial/Parallel | Contiguous Eden + S0/S1 | Contiguous | Card table for remembered sets |
+| G1 | Variable regions (1-32MB) | Variable regions | Humongous regions (>50% region size) |
+| ZGC | Multi-mapped pages | Multi-mapped pages | Colored pointers (metadata bits) |
+| Shenandoah | Regions | Regions | Brooks forwarding pointers |

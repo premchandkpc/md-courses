@@ -788,3 +788,25 @@ Page fault (file cache): ~500ns (page cache hit) / ~5ms (disk read)
 
 
 > **The Linux kernel is a resource multiplexer.** It takes a single set of hardware resources (CPU cores, RAM, disk, network) and gives every process the illusion of owning the whole machine. It does this through three core mechanisms: **isolation** (virtual memory, process separation), **scheduling** (time-sharing CPU via CFS/EEVDF), and **abstraction** (VFS so everything looks like a file, device drivers as interchangeable modules). The entire design is about trading guarantees — the kernel guarantees fairness (CFS), safety (memory protection, seccomp), and performance (RCU, lockless data structures) while delegating most policy decisions to userspace or sysctl knobs.
+
+## Linux Kernel Subsystems
+
+| Subsystem | Responsibility | Key Files | Key System Calls |
+|---|---|---|---|
+| **Process Scheduler** | CPU time allocation | `kernel/sched/` | `sched_yield`, `sched_setparam` |
+| **Memory Manager** | Virtual memory, page cache | `mm/` | `mmap`, `brk`, `munmap` |
+| **VFS** | Unified file system interface | `fs/` | `open`, `read`, `write`, `stat` |
+| **Networking Stack** | TCP/IP, sockets | `net/` | `socket`, `bind`, `connect`, `sendmsg` |
+| **IPC** | Inter-process communication | `ipc/` | `shmget`, `semop`, `msgget` |
+| **Device Drivers** | Hardware abstraction | `drivers/` | `ioctl` |
+
+## System Call Flow
+
+| Step | Location | What Happens |
+|---|---|---|
+| 1. User code | `libc (glibc)` | Wrapper function, sets syscall number |
+| 2. Trap | `arch/x86/entry/entry_64.S` | `syscall` instruction, switch to kernel stack |
+| 3. Syscall handler | `entry/common.c` | Save registers, verify syscall number |
+| 4. Dispatch | `sys_call_table` | Jump to handler (e.g. `sys_read`) |
+| 5. Kernel execution | Handler function | Perform operation in kernel space |
+| 6. Return | `syscall_exit_work` | Restore registers, `sysret` to user |

@@ -1,5 +1,34 @@
 # PostgreSQL Tuning Cheat Sheet
 
+
+```mermaid
+graph TB
+    subgraph Config
+        SHARED["shared_buffers<br/>25% of RAM"] --> EFFECTIVE["effective_cache_size<br/>50-75% of RAM"]
+        WORK["work_mem<br/>4-64MB per op"] --> MAINT["maintenance_work_mem<br/>256MB-1GB"]
+        WAL["wal_buffers<br/>16-64MB"] --> CHECKPOINT["checkpoint_completion_target<br/>0.9"]
+    end
+    subgraph Vacuum
+        AUTOVAC["autovacuum"] --> SCALE["Scale: 20-60% dead tuples"]
+        AUTOVAC --> FREEZE["Freeze: 200M txns"]
+        AUTOVAC_F["autovacuum_vacuum_scale_factor"] -->TABLE["Per-table tuning"]
+    end
+    subgraph Indexing
+        BTREE["B+Tree Index"] --> QUIERY["WHERE / JOIN / ORDER BY"]
+        GIN["GIN Index"] --> FULLTEXT["Full-Text Search"]
+        BRIN["BRIN Index"] --> RANGE["Range Queries<br/>Large Tables"]
+    end
+    subgraph Monitoring
+        PG_STAT["pg_stat_activity"] --> BLOCKED["Blocked Queries"]
+        PG_STAT2["pg_stat_statements"] --> SLOW["Slow Queries"]
+        PG_STAT3["pg_stat_all_tables"] --> DEAD["Dead Tuples"]
+    end
+    style SHARED fill:#4a8bc2
+    style AUTOVAC fill:#e8912e
+    style BTREE fill:#3fb950
+    style PG_STAT fill:#c73e1d
+```
+
 PostgreSQL performance tuning for slow queries, high concurrency, and production incidents. Covers config knobs, indexing, vacuum, and monitoring.
 
 **Cross-refs**: `08-databases/01-relational-database-internals.md`, `08-databases/02-postgresql-architecture.md`, `08-databases/03-postgresql-troubleshooting-tuning.md`, `08-databases/internals/indexes.md`
@@ -166,3 +195,41 @@ pg_stat_user_tables.n_dead_tup → tune autovacuum → VACUUM → check WAL arch
 # Lock contention
 pg_locks with NOT granted → find blocking pid → cancel or tune query → add index
 ```
+
+## Configuration Tiers
+
+| Setting | Development | Production (small) | Production (large) |
+|---|---|---|---|
+| `max_connections` | 20 | 100 | 500 |
+| `shared_buffers` | 128MB | 2GB | 8GB (25% RAM) |
+| `effective_cache_size` | 512MB | 6GB | 24GB |
+| `work_mem` | 4MB | 16MB | 64MB |
+| `maintenance_work_mem` | 64MB | 256MB | 1GB |
+| `wal_buffers` | 16MB | 32MB | 64MB |
+| `checkpoint_completion_target` | 0.5 | 0.9 | 0.9 |
+| `random_page_cost` | 4.0 | 1.1 (SSD) | 1.1 (SSD) |
+| `effective_io_concurrency` | 1 | 200 (SSD) | 200 (SSD) |
+
+## Index Type Comparison
+
+| Index Type | Use Case | Size vs Table | Maintenance Cost |
+|---|---|---|---|
+| **B+Tree** (default) | Equality + range queries, ORDER BY, JOIN | ~20-30% | Low |
+| **Hash** | Equality only | ~10% | Very low |
+| **GIN** | Full-text search, arrays, JSONB | ~10-15% | High (insert/update) |
+| **GiST** | Full-text, geometry, fuzzy search | ~20-30% | Medium |
+| **BRIN** | Very large tables with natural ordering | ~0.1-1% | Very low |
+| **SP-GiST** | Non-balanced structures (quadtree) | ~15-25% | Medium |
+
+## Query Pattern Anti-Patterns
+
+| Anti-Pattern | Symptom | Fix |
+|---|---|---|
+| `SELECT *` | Excessive I/O | Name needed columns |
+| Missing `WHERE` clause | Seq scan on large table | Add index + filter |
+| `IN (subquery)` | Slow for large lists | Use `EXISTS` or JOIN |
+| `NOT IN` | NULL handling issues | Use `NOT EXISTS` |
+| `LIKE '%pattern'` | Full scan, no index | Use trigram index (`pg_trgm`) |
+| `OR` conditions | Poor index usage | Use `UNION` or `IN` |
+| `ORDER BY ... LIMIT` without index | Sort on full result | Create composite index |
+| Implicit type coercion | Index not used | Match types explicitly |

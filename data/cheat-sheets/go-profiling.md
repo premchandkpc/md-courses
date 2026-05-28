@@ -1,5 +1,33 @@
 # Go Profiling Cheat Sheet
 
+
+```mermaid
+graph TB
+    PP["pprof"] --> CPU["CPU Profile<br/>sampling / 100Hz"]
+    PP --> MEM["Memory Profile<br/>heap / alloc"]
+    PP --> GOR["Goroutine Profile<br/>stack traces"]
+    PP --> BLK["Block Profile<br/>contention"]
+    PP --> MUT["Mutex Profile<br/>lock contention"]
+    
+    CPU --> FLAMEG["Flame Graph<br/>svg"]
+    MEM --> ALLOC["Allocation Source"]
+    GOR --> LEAKS["Goroutine Leaks"]
+    BLK --> HOTSPOTS["Contention Hotspots"]
+    
+    TRACE["Execution Trace"] --> SCHED["Scheduler Events"]
+    TRACE --> GC_TRACE["GC Events"]
+    TRACE --> SYS["Syscall Events"]
+    
+    ESCAN["Escape Analysis"] --> STACK["Stack Allocation<br/>Fast"]
+    ESCAN --> HEAP["Heap Allocation<br/>GC Pressure"]
+    
+    style PP fill:#4a8bc2
+    style CPU fill:#e8912e
+    style MEM fill:#3fb950
+    style TRACE fill:#58a6ff
+    style ESCAN fill:#a78bfa
+```
+
 Go performance profiling with pprof, tracing, escape analysis, and memory/CPU/goroutine analysis.
 
 **Cross-refs**: `03-backend/go/03-go-profiling-performance-debugging.md`, `03-backend/go/01-goroutines-channels-concurrency.md`, `03-backend/go/02-go-scheduler-memory-gc.md`, `18-performance-engineering/profiling/01-profiling-deep-dive.md`
@@ -281,3 +309,45 @@ go tool pprof -http=:8080 block.prof
 | Pause time / cycle | `trace` / `ReadGCStats` | Latency impact |
 | Mutex wait time | pprof mutex | Contention hotspots |
 | sched latency | `trace` → scheduler | P execution delays |
+
+## Profile Type Comparison
+
+| Profile | Target | Frequency | Default | Use Case |
+|---|---|---|---|---|
+| **CPU** | Function execution time | 100 Hz (10ms) | On | Find hot functions |
+| **Heap** | Memory allocations | On `pprof.WriteHeapProfile` | Only in tests | Find allocation sources |
+| **Goroutine** | Goroutine stack traces | On demand | Off | Detect goroutine leaks |
+| **Block** | Contention on sync primitives | On demand | Off | Find lock contention |
+| **Mutex** | Mutex hold times | On demand | Off | Find long-held locks |
+| **Threadcreate** | OS thread creation | On demand | Off | Detect thread explosion |
+
+## pprof Commands Cheat Sheet
+
+```bash
+# CPU profile (30s)
+go test -cpuprofile cpu.prof -bench .
+go tool pprof -http=:8080 cpu.prof
+
+# Memory profile
+go test -memprofile mem.prof -bench .
+go tool pprof -top -show=MyFunc mem.prof
+
+# Combine benchmarks
+go test -bench . -cpuprofile cpu.prof -memprofile mem.prof
+
+# Interactive CLI
+go tool pprof cpu.prof
+(pprof) top10
+(pprof) web           # SVG flame graph in browser
+(pprof) list MyFunc   # annotated source
+```
+
+## Benchmarks Best Practices
+
+| Practice | Why | How |
+|---|---|---|
+| **Stable machine** | Avoid noise from other processes | Run on idle dedicated instance |
+| **Benchstat** | Statistical significance | `go get golang.org/x/perf/cmd/benchstat` |
+| **Warmup** | JIT / cache warmup | `-benchtime=5s` |
+| **Reset timer** | Exclude setup overhead | `b.ResetTimer()` after setup |
+| **Report allocs** | Memory matters | Add `-benchmem` flag |

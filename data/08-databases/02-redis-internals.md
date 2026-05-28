@@ -1656,3 +1656,36 @@ flowchart LR
 - **Detection**: `CLUSTER INFO` shows `cluster_state:fail`. `cluster_known_nodes` missing.
 - **Recovery**: 1) `CLUSTER FAILOVER TAKEOVER` on replicas. 2) Re-add failed nodes. 3) Ensure slot coverage.
 - **Prevention**: Set `cluster-node-timeout` appropriately. Use 3+ nodes in different AZs.
+
+## Redis Data Structure Internals
+
+| Structure | Underlying Encoding | Time Complexity | Memory Overhead | Use Case |
+|---|---|---|---|---|
+| **String** | SDS (Simple Dynamic String) | O(1) get/set | ~3-12 bytes overhead | Cache values, counters |
+| **List** | quicklist (ziplist + linked list) | O(n) index | Low | Queues, timelines |
+| **Set** | intset / hashtable | O(1) add/remove/check | High (hash table) | Tags, dedup |
+| **Sorted Set** | ziplist / skiplist + dict | O(log n) add/remove | Very high (two structures) | Leaderboards, rate limits |
+| **Hash** | ziplist / hashtable | O(1) field ops | Medium (~2x data) | Object storage |
+| **Stream** | radix tree | O(log n) | Low | Event sourcing, messaging |
+
+## Persistence Comparison
+
+| Feature | RDB (snapshot) | AOF (append-only) | RDB + AOF (hybrid) |
+|---|---|---|---|
+| **Durability** | Up to last save | Every second / always | Best |
+| **Recovery** | Fast (load RDB) | Slow (replay AOF) | Fast (RDB + incremental AOF) |
+| **File Size** | Small (compressed) | Large (append=compressed) | Medium |
+| **Performance Impact** | fork() + write | fsync per second | Slight (AOF on RDB load) |
+| **Data Loss Window** | Minutes (configurable) | 1s (everysec) / 0 (always) | 1s or 0 |
+| **Use Case** | Cache, ephemeral | Durability-critical | Production default |
+
+## Eviction Policies
+
+| Policy | Behavior | Best For |
+|---|---|---|
+| `noeviction` | Return error on OOM | Caching with bounded size |
+| `allkeys-lru` | Evict LRU among all keys | General-purpose cache |
+| `allkeys-lfu` | Evict least-frequent keys | Hot-key focused workloads |
+| `volatile-lru` | Evict LRU among TTL keys | Cache with TTL set |
+| `volatile-ttl` | Evict shortest TTL first | Session stores |
+| `allkeys-random` | Evict random key | Uniform access patterns |

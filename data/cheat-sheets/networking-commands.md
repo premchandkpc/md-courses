@@ -1,5 +1,33 @@
 # Networking Commands Cheat Sheet
 
+
+```mermaid
+graph TB
+    subgraph Connectivity
+        PING["ping<br/>ICMP Echo"] --> REACH["Host Reachability"]
+        TRACE["traceroute<br/>TTL Probe"] --> PATH["Network Path"]
+        MTR["mtr<br/>Ping + Trace"] --> BOTH["Continuous Path"]
+    end
+    subgraph DNS
+        DIG["dig<br/>DNS Lookup"] --> ALL["All Record Types"]
+        NSLOOKUP["nslookup<br/>DNS Query"] --> A_REC["A / AAAA Records"]
+        HOST["host<br/>Simple DNS"] --> NAME["Name Resolution"]
+    end
+    subgraph Socket
+        SS["ss<br/>Socket Stats"] --> LISTEN["Listening Ports"]
+        NETSTAT["netstat<br/>Legacy"] --> CONN["Connections"]
+        NC["nc<br/>Netcat"] --> PORT["Port Test"]
+    end
+    subgraph Packet
+        TCPDUMP["tcpdump<br/>Packet Capture"] --> FILTER["BPF Filters"]
+        WIRESHARK["tshark<br/>CLI Wireshark"] --> DEEP["Deep Inspection"]
+    end
+    style PING fill:#4a8bc2
+    style DIG fill:#e8912e
+    style SS fill:#3fb950
+    style TCPDUMP fill:#c73e1d
+```
+
 Essential network diagnostics tools for debugging connectivity, DNS, routing, and packet-level issues.
 
 **Cross-refs**: `11-networking/01-tcp-ip-deep-dive.md`, `11-networking/02-tls-http-grpc.md`, `11-networking/03-dns-cdn-loadbalancing.md`, `12-operating-systems/04-linux-networking-ipc.md`
@@ -245,3 +273,27 @@ curl -w "@timing" -o /dev/null -s $URL  # 2. Timing breakdown
 ping -c 100 $HOST                       # 3. Loss rate
 ss -ti                                  # 4. TCP retransmits?
 ```
+
+## Diagnostic Scenarios
+
+| Scenario | Command | Expected Output | Red Flags |
+|---|---|---|---|
+| **DNS resolution** | `dig +short example.com` | IP address(es) | `NXDOMAIN`, `SERVFAIL`, timeout |
+| **Connectivity check** | `ping -c 3 8.8.8.8` | `0% packet loss` | >10% loss, high RTT variance |
+| **Port listening** | `ss -tlnp \| grep :443` | LISTEN state | Empty output = not listening |
+| **Trace route** | `mtr -r example.com` | All hops ≤30ms | Hops with `???` or >100ms |
+| **Bandwidth test** | `iperf3 -c server -t 10` | Throughput in Mbps | < expected for link speed |
+| **Packet capture** | `tcpdump -i eth0 port 443 -c 100` | SYN/ACK packets | Retransmissions, RST packets |
+| **HTTP response** | `curl -v -o /dev/null http://host` | 200 + timing | 5xx, high `time_total` |
+| **SSL cert** | `openssl s_client -connect host:443` | Certificate chain | Expired, self-signed, mismatch |
+
+## Common Network Metrics
+
+| Metric | Good | Warning | Critical |
+|---|---|---|---|
+| Latency (RTT) | <10ms | 10-100ms | >100ms |
+| Packet Loss | 0% | 0.1-1% | >1% |
+| Bandwidth Utilization | <70% | 70-90% | >90% |
+| TCP Retransmissions | <0.1% | 0.1-2% | >2% |
+| Connection Timeout Rate | <0.01% | 0.01-0.1% | >0.1% |
+| Socket Queue (send) | 0 | <100 | >1000 |

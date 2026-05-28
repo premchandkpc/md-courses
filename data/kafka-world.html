@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kafka World - Interactive Broker Simulation</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: linear-gradient(135deg, #0a0e1a 0%, #1a1f2e 100%);
+      color: #e3eaf0;
+      font-family: 'Monaco', 'Menlo', monospace;
+      overflow: hidden;
+      height: 100vh;
+    }
+    .container {
+      display: flex;
+      height: 100vh;
+      padding: 16px;
+      gap: 16px;
+    }
+    .canvas-area {
+      flex: 1;
+      background: #0b0e14;
+      border: 1px solid #1e3a5f;
+      border-radius: 8px;
+      position: relative;
+    }
+    .control-panel {
+      width: 280px;
+      background: #0b0e14;
+      border: 1px solid #1e3a5f;
+      border-radius: 8px;
+      padding: 16px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    h1 {
+      font-size: 18px;
+      color: #00d4ff;
+      margin-bottom: 12px;
+      letter-spacing: 1px;
+    }
+    h3 {
+      font-size: 12px;
+      color: #a3aab8;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-top: 12px;
+      margin-bottom: 8px;
+    }
+    .control-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    button {
+      padding: 8px 12px;
+      background: #1e3a5f;
+      border: 1px solid #00d4ff;
+      color: #00d4ff;
+      border-radius: 4px;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 11px;
+      transition: all 0.2s;
+    }
+    button:hover {
+      background: #2a5a8f;
+      box-shadow: 0 0 8px #00d4ff;
+    }
+    button.active {
+      background: #00d4ff;
+      color: #0b0e14;
+    }
+    .slider-container {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    label {
+      font-size: 11px;
+      color: #a3aab8;
+    }
+    input[type="range"] {
+      width: 100%;
+      height: 4px;
+      border-radius: 2px;
+      background: #1e3a5f;
+      outline: none;
+      -webkit-appearance: none;
+    }
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: #00d4ff;
+      cursor: pointer;
+      box-shadow: 0 0 6px #00d4ff;
+    }
+    input[type="range"]::-moz-range-thumb {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: #00d4ff;
+      cursor: pointer;
+      box-shadow: 0 0 6px #00d4ff;
+      border: none;
+    }
+    .metric {
+      background: #1a2332;
+      border: 1px solid #1e3a5f;
+      border-radius: 4px;
+      padding: 8px;
+      font-size: 11px;
+    }
+    .metric-value {
+      color: #34d399;
+      font-weight: bold;
+      font-size: 14px;
+    }
+    .metric-label {
+      color: #a3aab8;
+      font-size: 10px;
+    }
+    canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+    .title-bar {
+      background: #1a2332;
+      border-bottom: 1px solid #1e3a5f;
+      padding: 12px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .title-bar h1 {
+      margin: 0;
+    }
+    .status {
+      font-size: 10px;
+      color: #a3aab8;
+    }
+  </style>
+</head>
+<body>
+  <div class="title-bar">
+    <h1>Kafka World - Interactive Broker Simulation</h1>
+    <div class="status" id="status">Ready</div>
+  </div>
+
+  <div class="container">
+    <div class="canvas-area">
+      <canvas id="canvas"></canvas>
+    </div>
+
+    <div class="control-panel">
+      <div>
+        <h3>Producer Control</h3>
+        <div class="control-group">
+          <button id="startProducer">Start Producer</button>
+          <button id="stopProducer">Stop Producer</button>
+        </div>
+        <div class="slider-container">
+          <label>Message Rate (msg/sec)</label>
+          <input type="range" id="producerRate" min="1" max="50" value="10">
+          <span style="font-size: 10px; color: #34d399;" id="rateValue">10</span>
+        </div>
+      </div>
+
+      <div>
+        <h3>Consumer Control</h3>
+        <div class="control-group">
+          <button id="addConsumer">Add Consumer</button>
+          <button id="removeConsumer">Remove Consumer</button>
+        </div>
+        <div class="slider-container">
+          <label>Consumer Speed (msg/sec)</label>
+          <input type="range" id="consumerSpeed" min="1" max="30" value="8">
+          <span style="font-size: 10px; color: #34d399;" id="speedValue">8</span>
+        </div>
+      </div>
+
+      <div>
+        <h3>Broker Control</h3>
+        <div class="control-group">
+          <button id="pauseBroker" style="background: #ef4444; border-color: #ef4444; color: #0b0e14;">Pause Broker</button>
+          <button id="resumeBroker">Resume Broker</button>
+        </div>
+      </div>
+
+      <div>
+        <h3>Metrics</h3>
+        <div class="metric">
+          <div class="metric-label">Total Messages</div>
+          <div class="metric-value" id="totalMessages">0</div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">Consumer Lag</div>
+          <div class="metric-value" id="consumerLag">0</div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">Broker Throughput</div>
+          <div class="metric-value" id="throughput">0</div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">Active Consumers</div>
+          <div class="metric-value" id="consumerCount">0</div>
+        </div>
+      </div>
+
+      <div>
+        <h3>Simulation</h3>
+        <div class="control-group">
+          <button id="resetSim">Reset Simulation</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+
+    function resizeCanvas() {
+      const rect = canvas.parentElement.getBoundingClientRect();
+      canvas.width = rect.width;
+      canvas.height = rect.height;
+    }
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
+
+    // Simulation state
+    const sim = {
+      producerActive: false,
+      producerRate: 10,
+      consumerSpeed: 8,
+      brokerPaused: false,
+      messages: [],
+      consumers: [],
+      totalProduced: 0,
+      totalConsumed: 0,
+      fps: 60,
+      time: 0
+    };
+
+    const producers = [
+      { x: 100, y: 100, id: 'P1', color: '#34d399' },
+      { x: 100, y: 200, id: 'P2', color: '#34d399' }
+    ];
+
+    const broker = {
+      x: canvas.width / 2 - 40,
+      y: canvas.height / 2 - 40,
+      width: 80,
+      height: 80,
+      capacity: 100,
+      color: '#00d4ff'
+    };
+
+    function addConsumer() {
+      const consumerCount = sim.consumers.length;
+      const angle = (consumerCount * Math.PI * 2) / 4;
+      sim.consumers.push({
+        x: broker.x + broker.width/2 + Math.cos(angle) * 200,
+        y: broker.y + broker.height/2 + Math.sin(angle) * 200,
+        id: `C${consumerCount + 1}`,
+        color: '#60a5fa',
+        lag: 0
+      });
+    }
+
+    function removeConsumer() {
+      if (sim.consumers.length > 0) {
+        sim.consumers.pop();
+      }
+    }
+
+    function update() {
+      sim.time += 1 / sim.fps;
+
+      // Produce messages
+      if (sim.producerActive && !sim.brokerPaused) {
+        if (Math.random() < sim.producerRate / sim.fps) {
+          const producer = producers[Math.floor(Math.random() * producers.length)];
+          sim.messages.push({
+            x: producer.x,
+            y: producer.y,
+            targetX: broker.x + broker.width/2,
+            targetY: broker.y + broker.height/2,
+            progress: 0,
+            consumed: false,
+            id: sim.totalProduced++
+          });
+        }
+      }
+
+      // Move messages toward broker
+      for (let i = sim.messages.length - 1; i >= 0; i--) {
+        const msg = sim.messages[i];
+        msg.progress += 0.05;
+        if (msg.progress < 1) {
+          msg.x += (msg.targetX - msg.x) * 0.1;
+          msg.y += (msg.targetY - msg.y) * 0.1;
+        } else if (!msg.consumed) {
+          // Message reached broker
+          msg.x = broker.x + broker.width/2;
+          msg.y = broker.y + broker.height/2;
+
+          if (sim.consumers.length > 0) {
+            const consumer = sim.consumers[Math.floor(Math.random() * sim.consumers.length)];
+            if (Math.random() < sim.consumerSpeed / sim.fps) {
+              msg.consumed = true;
+              msg.targetX = consumer.x;
+              msg.targetY = consumer.y;
+              msg.progress = 0;
+            }
+          }
+        } else {
+          msg.progress += 0.05;
+          if (msg.progress < 1) {
+            msg.x += (msg.targetX - msg.x) * 0.1;
+            msg.y += (msg.targetY - msg.y) * 0.1;
+          } else {
+            sim.totalConsumed++;
+            sim.messages.splice(i, 1);
+          }
+        }
+      }
+
+      // Update lag
+      sim.consumerLag = Math.max(0, sim.totalProduced - sim.totalConsumed);
+    }
+
+    function draw() {
+      // Background
+      ctx.fillStyle = '#0b0e14';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // Grid
+      ctx.strokeStyle = '#1a2332';
+      ctx.lineWidth = 1;
+      for (let i = 0; i < canvas.width; i += 50) {
+        ctx.beginPath();
+        ctx.moveTo(i, 0);
+        ctx.lineTo(i, canvas.height);
+        ctx.stroke();
+      }
+      for (let i = 0; i < canvas.height; i += 50) {
+        ctx.beginPath();
+        ctx.moveTo(0, i);
+        ctx.lineTo(canvas.width, i);
+        ctx.stroke();
+      }
+
+      // Producers
+      producers.forEach(prod => {
+        ctx.fillStyle = prod.color;
+        ctx.fillRect(prod.x - 15, prod.y - 15, 30, 30);
+        ctx.fillStyle = '#0b0e14';
+        ctx.font = 'bold 12px monospace';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(prod.id, prod.x, prod.y);
+      });
+
+      // Broker
+      ctx.fillStyle = broker.color;
+      ctx.globalAlpha = sim.brokerPaused ? 0.3 : 1;
+      ctx.fillRect(broker.x, broker.y, broker.width, broker.height);
+      ctx.globalAlpha = 1;
+      ctx.fillStyle = '#0b0e14';
+      ctx.font = 'bold 14px monospace';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('Broker', broker.x + broker.width/2, broker.y + broker.height/2 - 10);
+      ctx.font = '10px monospace';
+      ctx.fillText(`${sim.messages.length}/${broker.capacity}`, broker.x + broker.width/2, broker.y + broker.height/2 + 15);
+
+      // Consumers
+      sim.consumers.forEach(cons => {
+        ctx.fillStyle = cons.color;
+        ctx.beginPath();
+        ctx.arc(cons.x, cons.y, 15, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = '#0b0e14';
+        ctx.font = 'bold 10px monospace';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(cons.id, cons.x, cons.y);
+      });
+
+      // Messages
+      sim.messages.forEach(msg => {
+        ctx.fillStyle = msg.consumed ? '#fbbf24' : '#34d399';
+        ctx.beginPath();
+        ctx.arc(msg.x, msg.y, 4, 0, Math.PI * 2);
+        ctx.fill();
+      });
+
+      // Title
+      ctx.fillStyle = '#00d4ff';
+      ctx.font = '12px monospace';
+      ctx.textAlign = 'left';
+      ctx.fillText(`Messages in Queue: ${sim.messages.length}`, 20, 30);
+      ctx.fillText(`Lag: ${sim.consumerLag}`, 20, 50);
+    }
+
+    function animate() {
+      update();
+      draw();
+      requestAnimationFrame(animate);
+    }
+    animate();
+
+    // Event listeners
+    document.getElementById('startProducer').addEventListener('click', () => {
+      sim.producerActive = true;
+    });
+    document.getElementById('stopProducer').addEventListener('click', () => {
+      sim.producerActive = false;
+    });
+    document.getElementById('producerRate').addEventListener('input', (e) => {
+      sim.producerRate = parseInt(e.target.value);
+      document.getElementById('rateValue').textContent = sim.producerRate;
+    });
+    document.getElementById('consumerSpeed').addEventListener('input', (e) => {
+      sim.consumerSpeed = parseInt(e.target.value);
+      document.getElementById('speedValue').textContent = sim.consumerSpeed;
+    });
+    document.getElementById('addConsumer').addEventListener('click', addConsumer);
+    document.getElementById('removeConsumer').addEventListener('click', removeConsumer);
+    document.getElementById('pauseBroker').addEventListener('click', () => {
+      sim.brokerPaused = true;
+      document.getElementById('pauseBroker').style.opacity = '0.5';
+      document.getElementById('resumeBroker').style.opacity = '1';
+    });
+    document.getElementById('resumeBroker').addEventListener('click', () => {
+      sim.brokerPaused = false;
+      document.getElementById('pauseBroker').style.opacity = '1';
+      document.getElementById('resumeBroker').style.opacity = '0.5';
+    });
+    document.getElementById('resetSim').addEventListener('click', () => {
+      sim.messages = [];
+      sim.consumers = [];
+      sim.totalProduced = 0;
+      sim.totalConsumed = 0;
+      sim.producerActive = false;
+      sim.brokerPaused = false;
+    });
+
+    // Update metrics display
+    setInterval(() => {
+      document.getElementById('totalMessages').textContent = sim.totalProduced;
+      document.getElementById('consumerLag').textContent = sim.consumerLag;
+      document.getElementById('throughput').textContent = Math.floor(sim.consumerSpeed) + ' msg/s';
+      document.getElementById('consumerCount').textContent = sim.consumers.length;
+    }, 100);
+
+    // Initialize
+    addConsumer();
+  </script>
+</body>
+</html>

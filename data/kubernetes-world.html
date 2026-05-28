@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kubernetes World - Pod Orchestration Simulator</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: linear-gradient(135deg, #0a0e1a 0%, #1a1f2e 100%);
+      color: #e3eaf0;
+      font-family: 'Monaco', 'Menlo', monospace;
+      overflow: hidden;
+      height: 100vh;
+    }
+    .container {
+      display: flex;
+      height: 100vh;
+      padding: 16px;
+      gap: 16px;
+    }
+    .canvas-area {
+      flex: 1;
+      background: #0b0e14;
+      border: 1px solid #1e3a5f;
+      border-radius: 8px;
+      position: relative;
+    }
+    .control-panel {
+      width: 300px;
+      background: #0b0e14;
+      border: 1px solid #1e3a5f;
+      border-radius: 8px;
+      padding: 16px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    h1, h3 {
+      color: #00d4ff;
+      letter-spacing: 1px;
+    }
+    h1 { font-size: 18px; margin-bottom: 12px; }
+    h3 { font-size: 12px; text-transform: uppercase; margin-top: 12px; margin-bottom: 8px; color: #a3aab8; }
+    .control-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    button {
+      padding: 8px 12px;
+      background: #1e3a5f;
+      border: 1px solid #00d4ff;
+      color: #00d4ff;
+      border-radius: 4px;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 11px;
+      transition: all 0.2s;
+    }
+    button:hover { background: #2a5a8f; box-shadow: 0 0 8px #00d4ff; }
+    .slider-container { display: flex; flex-direction: column; gap: 4px; }
+    label { font-size: 11px; color: #a3aab8; }
+    input[type="range"] {
+      width: 100%;
+      height: 4px;
+      border-radius: 2px;
+      background: #1e3a5f;
+      outline: none;
+      -webkit-appearance: none;
+    }
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: #00d4ff;
+      cursor: pointer;
+      box-shadow: 0 0 6px #00d4ff;
+    }
+    input[type="range"]::-moz-range-thumb {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: #00d4ff;
+      cursor: pointer;
+      box-shadow: 0 0 6px #00d4ff;
+      border: none;
+    }
+    .metric {
+      background: #1a2332;
+      border: 1px solid #1e3a5f;
+      border-radius: 4px;
+      padding: 8px;
+      font-size: 11px;
+    }
+    .metric-value {
+      color: #34d399;
+      font-weight: bold;
+      font-size: 14px;
+    }
+    .metric-label {
+      color: #a3aab8;
+      font-size: 10px;
+    }
+    canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+    .title-bar {
+      background: #1a2332;
+      border-bottom: 1px solid #1e3a5f;
+      padding: 12px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .title-bar h1 { margin: 0; }
+  </style>
+</head>
+<body>
+  <div class="title-bar">
+    <h1>Kubernetes World - Pod Orchestration</h1>
+  </div>
+
+  <div class="container">
+    <div class="canvas-area">
+      <canvas id="canvas"></canvas>
+    </div>
+
+    <div class="control-panel">
+      <div>
+        <h3>Deployment Control</h3>
+        <div class="control-group">
+          <button id="deployApp">Deploy Application</button>
+          <button id="scaleUp">Scale Up (+Pod)</button>
+          <button id="scaleDown">Scale Down (-Pod)</button>
+        </div>
+      </div>
+
+      <div>
+        <h3>Node Management</h3>
+        <div class="slider-container">
+          <label>Resource Pressure (CPU %)</label>
+          <input type="range" id="resourcePressure" min="0" max="100" value="30">
+          <span style="font-size: 10px; color: #34d399;" id="pressureValue">30%</span>
+        </div>
+        <div class="control-group">
+          <button id="killNode" style="background: #ef4444; border-color: #ef4444; color: #0b0e14;">Kill Node</button>
+          <button id="healNode">Heal Node</button>
+        </div>
+      </div>
+
+      <div>
+        <h3>Rolling Update</h3>
+        <div class="control-group">
+          <button id="startRollingUpdate">Start Rolling Update</button>
+          <button id="rollback">Rollback</button>
+        </div>
+        <div class="slider-container">
+          <label>Update Progress</label>
+          <input type="range" id="updateProgress" min="0" max="100" value="0" disabled>
+          <span style="font-size: 10px; color: #34d399;" id="progressValue">0%</span>
+        </div>
+      </div>
+
+      <div>
+        <h3>Metrics</h3>
+        <div class="metric">
+          <div class="metric-label">Running Pods</div>
+          <div class="metric-value" id="runningPods">0</div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">Available Nodes</div>
+          <div class="metric-value" id="nodeCount">3</div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">Healthy Pods</div>
+          <div class="metric-value" id="healthyPods">0</div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">Cluster Load</div>
+          <div class="metric-value" id="clusterLoad">0%</div>
+        </div>
+      </div>
+
+      <div>
+        <h3>Simulation</h3>
+        <div class="control-group">
+          <button id="resetSim">Reset</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+
+    function resizeCanvas() {
+      const rect = canvas.parentElement.getBoundingClientRect();
+      canvas.width = rect.width;
+      canvas.height = rect.height;
+    }
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
+
+    const sim = {
+      pods: [],
+      nodes: [
+        { id: 'node-1', x: 100, y: 100, healthy: true },
+        { id: 'node-2', x: 100, y: canvas.height - 100, healthy: true },
+        { id: 'node-3', x: canvas.width - 100, y: canvas.height / 2, healthy: true }
+      ],
+      desiredReplicas: 0,
+      resourcePressure: 30,
+      updateInProgress: false,
+      updateProgress: 0,
+      killedNodeIndex: -1
+    };
+
+    function deployApp() {
+      sim.desiredReplicas = 3;
+      sim.pods = [];
+      for (let i = 0; i < 3; i++) {
+        const nodeIndex = i % sim.nodes.length;
+        const node = sim.nodes[nodeIndex];
+        sim.pods.push({
+          id: `pod-${i}`,
+          nodeIndex: nodeIndex,
+          x: node.x + (Math.random() - 0.5) * 40,
+          y: node.y + (Math.random() - 0.5) * 40,
+          healthy: true,
+          version: 'v1'
+        });
+      }
+    }
+
+    function scaleUp() {
+      if (sim.desiredReplicas < 12) {
+        sim.desiredReplicas++;
+        const nodeIndex = sim.pods.length % sim.nodes.length;
+        const node = sim.nodes[nodeIndex];
+        sim.pods.push({
+          id: `pod-${sim.pods.length}`,
+          nodeIndex: nodeIndex,
+          x: node.x + (Math.random() - 0.5) * 40,
+          y: node.y + (Math.random() - 0.5) * 40,
+          healthy: true,
+          version: sim.updateInProgress ? 'v2' : 'v1'
+        });
+      }
+    }
+
+    function scaleDown() {
+      if (sim.desiredReplicas > 0) {
+        sim.desiredReplicas--;
+        sim.pods.pop();
+      }
+    }
+
+    function update() {
+      // Health check
+      sim.pods.forEach(pod => {
+        const node = sim.nodes[pod.nodeIndex];
+        pod.healthy = node.healthy;
+      });
+
+      // Rolling update
+      if (sim.updateInProgress && sim.updateProgress < 100) {
+        sim.updateProgress += 0.5;
+        const podsToUpdate = Math.floor((sim.updateProgress / 100) * sim.pods.length);
+        for (let i = 0; i < podsToUpdate; i++) {
+          if (sim.pods[i]) sim.pods[i].version = 'v2';
+        }
+      }
+    }
+
+    function draw() {
+      ctx.fillStyle = '#0b0e14';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // Grid
+      ctx.strokeStyle = '#1a2332';
+      ctx.lineWidth = 1;
+      for (let i = 0; i < canvas.width; i += 50) {
+        ctx.beginPath();
+        ctx.moveTo(i, 0);
+        ctx.lineTo(i, canvas.height);
+        ctx.stroke();
+      }
+      for (let i = 0; i < canvas.height; i += 50) {
+        ctx.beginPath();
+        ctx.moveTo(0, i);
+        ctx.lineTo(canvas.width, i);
+        ctx.stroke();
+      }
+
+      // Draw nodes
+      sim.nodes.forEach((node, idx) => {
+        const isKilled = idx === sim.killedNodeIndex;
+        ctx.fillStyle = isKilled ? '#ef4444' : '#00d4ff';
+        ctx.globalAlpha = isKilled ? 0.3 : 1;
+        ctx.fillRect(node.x - 40, node.y - 40, 80, 80);
+        ctx.globalAlpha = 1;
+
+        ctx.fillStyle = '#0b0e14';
+        ctx.font = 'bold 12px monospace';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(node.id.split('-')[1], node.x, node.y - 10);
+        ctx.font = '10px monospace';
+        ctx.fillText(`CPU: ${sim.resourcePressure}%`, node.x, node.y + 15);
+      });
+
+      // Draw pods
+      sim.pods.forEach(pod => {
+        const node = sim.nodes[pod.nodeIndex];
+        const isHealthy = pod.healthy && !node.healthy === false;
+
+        ctx.fillStyle = isHealthy ? '#34d399' : '#fbbf24';
+        if (pod.version === 'v2') ctx.fillStyle = '#60a5fa';
+
+        ctx.beginPath();
+        ctx.arc(pod.x, pod.y, 8, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.fillStyle = '#0b0e14';
+        ctx.font = '7px monospace';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(pod.version, pod.x, pod.y);
+      });
+
+      // Draw legend
+      ctx.fillStyle = '#a3aab8';
+      ctx.font = '10px monospace';
+      ctx.textAlign = 'left';
+      ctx.fillText('Green: Healthy Pod | Blue: v2 Pod | Yellow: Pending', 20, 30);
+      ctx.fillText(`Desired: ${sim.desiredReplicas} | Running: ${sim.pods.length}`, 20, 50);
+    }
+
+    function animate() {
+      update();
+      draw();
+      requestAnimationFrame(animate);
+    }
+    animate();
+
+    // Event listeners
+    document.getElementById('deployApp').addEventListener('click', deployApp);
+    document.getElementById('scaleUp').addEventListener('click', scaleUp);
+    document.getElementById('scaleDown').addEventListener('click', scaleDown);
+
+    document.getElementById('resourcePressure').addEventListener('input', (e) => {
+      sim.resourcePressure = parseInt(e.target.value);
+      document.getElementById('pressureValue').textContent = sim.resourcePressure + '%';
+    });
+
+    document.getElementById('killNode').addEventListener('click', () => {
+      if (sim.killedNodeIndex === -1) {
+        sim.killedNodeIndex = 0;
+        sim.nodes[0].healthy = false;
+      }
+    });
+
+    document.getElementById('healNode').addEventListener('click', () => {
+      if (sim.killedNodeIndex !== -1) {
+        sim.nodes[sim.killedNodeIndex].healthy = true;
+        sim.killedNodeIndex = -1;
+      }
+    });
+
+    document.getElementById('startRollingUpdate').addEventListener('click', () => {
+      sim.updateInProgress = true;
+      sim.updateProgress = 0;
+    });
+
+    document.getElementById('rollback').addEventListener('click', () => {
+      sim.updateInProgress = false;
+      sim.updateProgress = 0;
+      sim.pods.forEach(p => p.version = 'v1');
+    });
+
+    document.getElementById('updateProgress').addEventListener('input', (e) => {
+      sim.updateProgress = parseInt(e.target.value);
+      const podsToUpdate = Math.floor((sim.updateProgress / 100) * sim.pods.length);
+      for (let i = 0; i < podsToUpdate; i++) {
+        if (sim.pods[i]) sim.pods[i].version = 'v2';
+      }
+    });
+
+    document.getElementById('resetSim').addEventListener('click', () => {
+      sim.pods = [];
+      sim.desiredReplicas = 0;
+      sim.updateInProgress = false;
+      sim.updateProgress = 0;
+      sim.killedNodeIndex = -1;
+      sim.nodes.forEach(n => n.healthy = true);
+    });
+
+    // Update metrics
+    setInterval(() => {
+      document.getElementById('runningPods').textContent = sim.pods.length;
+      document.getElementById('nodeCount').textContent = sim.nodes.filter(n => n.healthy).length;
+      document.getElementById('healthyPods').textContent = sim.pods.filter(p => p.healthy).length;
+      document.getElementById('clusterLoad').textContent = sim.resourcePressure + '%';
+      document.getElementById('progressValue').textContent = Math.floor(sim.updateProgress) + '%';
+    }, 100);
+  </script>
+</body>
+</html>

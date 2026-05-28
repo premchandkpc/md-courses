@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Database Internals - B+Tree & WAL</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: linear-gradient(135deg, #0a0e1a 0%, #1a1f2e 100%);
+      color: #e3eaf0;
+      font-family: 'Monaco', 'Menlo', monospace;
+      overflow: hidden;
+      height: 100vh;
+    }
+    .container {
+      display: flex;
+      height: 100vh;
+      padding: 16px;
+      gap: 16px;
+    }
+    .canvas-area {
+      flex: 1;
+      background: #0b0e14;
+      border: 1px solid #1e3a5f;
+      border-radius: 8px;
+    }
+    .control-panel {
+      width: 300px;
+      background: #0b0e14;
+      border: 1px solid #1e3a5f;
+      border-radius: 8px;
+      padding: 16px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    h1, h3 {
+      color: #00d4ff;
+      letter-spacing: 1px;
+    }
+    h1 { font-size: 18px; margin-bottom: 12px; }
+    h3 { font-size: 12px; text-transform: uppercase; margin-bottom: 8px; color: #a3aab8; }
+    .control-group { display: flex; flex-direction: column; gap: 8px; }
+    button {
+      padding: 8px 12px;
+      background: #1e3a5f;
+      border: 1px solid #00d4ff;
+      color: #00d4ff;
+      border-radius: 4px;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 11px;
+      transition: all 0.2s;
+    }
+    button:hover { background: #2a5a8f; box-shadow: 0 0 8px #00d4ff; }
+    .metric {
+      background: #1a2332;
+      border: 1px solid #1e3a5f;
+      border-radius: 4px;
+      padding: 8px;
+      font-size: 11px;
+    }
+    .metric-value {
+      color: #34d399;
+      font-weight: bold;
+      font-size: 14px;
+    }
+    .metric-label {
+      color: #a3aab8;
+      font-size: 10px;
+    }
+    canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+    .title-bar {
+      background: #1a2332;
+      border-bottom: 1px solid #1e3a5f;
+      padding: 12px 16px;
+    }
+    .title-bar h1 { margin: 0; }
+  </style>
+</head>
+<body>
+  <div class="title-bar">
+    <h1>Database Internals - B+Tree & WAL</h1>
+  </div>
+
+  <div class="container">
+    <div class="canvas-area">
+      <canvas id="canvas"></canvas>
+    </div>
+
+    <div class="control-panel">
+      <div>
+        <h3>B+Tree Operations</h3>
+        <div class="control-group">
+          <button id="insertKey">Insert Key</button>
+          <button id="deleteKey">Delete Key</button>
+          <button id="rebalance">Rebalance Tree</button>
+        </div>
+      </div>
+
+      <div>
+        <h3>WAL (Write-Ahead Log)</h3>
+        <div class="control-group">
+          <button id="writeWAL">Log Entry</button>
+          <button id="crash" style="background: #ef4444; border-color: #ef4444; color: #0b0e14;">Simulate Crash</button>
+          <button id="recover">Recover from Crash</button>
+        </div>
+      </div>
+
+      <div>
+        <h3>MVCC (Multi-Version CC)</h3>
+        <div class="control-group">
+          <button id="startTxn">Start Transaction</button>
+          <button id="commitTxn">Commit Transaction</button>
+        </div>
+      </div>
+
+      <div>
+        <h3>Metrics</h3>
+        <div class="metric">
+          <div class="metric-label">Tree Height</div>
+          <div class="metric-value" id="treeHeight">3</div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">Keys in Tree</div>
+          <div class="metric-value" id="keyCount">0</div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">WAL Entries</div>
+          <div class="metric-value" id="walEntries">0</div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">Active Transactions</div>
+          <div class="metric-value" id="activeTxns">0</div>
+        </div>
+      </div>
+
+      <div>
+        <h3>Simulation</h3>
+        <div class="control-group">
+          <button id="resetSim">Reset</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+
+    function resizeCanvas() {
+      const rect = canvas.parentElement.getBoundingClientRect();
+      canvas.width = rect.width;
+      canvas.height = rect.height;
+    }
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
+
+    const sim = {
+      keys: [],
+      walEntries: [],
+      transactions: [],
+      treeHeight: 1,
+      crashed: false,
+      nextTxnId: 1
+    };
+
+    function insertKey() {
+      const newKey = Math.floor(Math.random() * 1000);
+      if (!sim.keys.includes(newKey)) {
+        sim.keys.push(newKey);
+        sim.keys.sort((a, b) => a - b);
+        sim.walEntries.push({ type: 'INSERT', key: newKey, txnId: null });
+        recalculateTreeHeight();
+      }
+    }
+
+    function deleteKey() {
+      if (sim.keys.length > 0) {
+        const idx = Math.floor(Math.random() * sim.keys.length);
+        const key = sim.keys[idx];
+        sim.keys.splice(idx, 1);
+        sim.walEntries.push({ type: 'DELETE', key: key, txnId: null });
+        recalculateTreeHeight();
+      }
+    }
+
+    function recalculateTreeHeight() {
+      sim.treeHeight = Math.max(1, Math.ceil(Math.log(sim.keys.length + 1) / Math.log(4)));
+    }
+
+    function startTxn() {
+      const txnId = sim.nextTxnId++;
+      sim.transactions.push({
+        id: txnId,
+        startTime: Date.now(),
+        readSet: [...sim.keys]
+      });
+      sim.walEntries.push({ type: 'TXN_START', txnId: txnId });
+    }
+
+    function commitTxn() {
+      if (sim.transactions.length > 0) {
+        const txn = sim.transactions.shift();
+        sim.walEntries.push({ type: 'TXN_COMMIT', txnId: txn.id });
+      }
+    }
+
+    function draw() {
+      ctx.fillStyle = '#0b0e14';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // Draw B+Tree structure
+      const treeX = 50;
+      const treeY = 50;
+      const nodeWidth = 40;
+      const nodeHeight = 30;
+      const levelSpacing = 60;
+
+      // Root node
+      ctx.fillStyle = '#00d4ff';
+      ctx.fillRect(canvas.width / 2 - 30, treeY, 60, nodeHeight);
+      ctx.fillStyle = '#0b0e14';
+      ctx.font = '10px monospace';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('Root', canvas.width / 2, treeY + 15);
+
+      // Child nodes
+      const childCount = Math.min(4, Math.max(1, sim.treeHeight));
+      for (let i = 0; i < childCount; i++) {
+        const x = 100 + i * 120;
+        const y = treeY + levelSpacing;
+        ctx.fillStyle = '#34d399';
+        ctx.fillRect(x, y, nodeWidth, nodeHeight);
+        ctx.fillStyle = '#0b0e14';
+        ctx.fillText(`N${i}`, x + nodeWidth/2, y + 15);
+
+        // Draw connection
+        ctx.strokeStyle = '#1e3a5f';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(canvas.width / 2, treeY + nodeHeight);
+        ctx.lineTo(x + nodeWidth/2, y);
+        ctx.stroke();
+      }
+
+      // Draw keys in leaf nodes
+      const keysPerLeaf = Math.ceil(sim.keys.length / childCount) || 1;
+      for (let i = 0; i < sim.keys.length; i++) {
+        const leafNode = Math.floor(i / keysPerLeaf);
+        const leafX = 100 + leafNode * 120;
+        const leafY = treeY + levelSpacing * 2;
+        const keyX = leafX + (i % keysPerLeaf) * 15;
+        const keyY = leafY - 30;
+
+        ctx.fillStyle = '#60a5fa';
+        ctx.fillRect(keyX, keyY, 12, 12);
+        ctx.fillStyle = '#e3eaf0';
+        ctx.font = '8px monospace';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(sim.keys[i] % 10, keyX + 6, keyY + 6);
+      }
+
+      // Draw WAL
+      const walX = 50;
+      const walY = canvas.height - 200;
+      ctx.fillStyle = '#1e3a5f';
+      ctx.fillRect(walX, walY, canvas.width - 100, 180);
+
+      ctx.fillStyle = '#a3aab8';
+      ctx.font = '12px monospace';
+      ctx.textAlign = 'left';
+      ctx.fillText('Write-Ahead Log:', walX + 10, walY + 20);
+
+      const recentWAL = sim.walEntries.slice(-8);
+      recentWAL.forEach((entry, idx) => {
+        const y = walY + 40 + idx * 15;
+        ctx.fillStyle = '#e3eaf0';
+        ctx.font = '10px monospace';
+        ctx.fillText(`[${sim.walEntries.length - 8 + idx}] ${entry.type}`, walX + 10, y);
+      });
+
+      // Info
+      ctx.fillStyle = '#00d4ff';
+      ctx.font = '12px monospace';
+      ctx.textAlign = 'left';
+      ctx.fillText(`Tree Height: ${sim.treeHeight} | Keys: ${sim.keys.length} | WAL Entries: ${sim.walEntries.length}`, 20, 30);
+
+      if (sim.crashed) {
+        ctx.fillStyle = '#ef4444';
+        ctx.font = 'bold 20px monospace';
+        ctx.textAlign = 'center';
+        ctx.globalAlpha = 0.7;
+        ctx.fillText('CRASHED', canvas.width / 2, 100);
+        ctx.globalAlpha = 1;
+      }
+    }
+
+    function animate() {
+      draw();
+      requestAnimationFrame(animate);
+    }
+    animate();
+
+    // Event listeners
+    document.getElementById('insertKey').addEventListener('click', insertKey);
+    document.getElementById('deleteKey').addEventListener('click', deleteKey);
+    document.getElementById('rebalance').addEventListener('click', () => {
+      // Just recalculate tree height
+      recalculateTreeHeight();
+    });
+
+    document.getElementById('writeWAL').addEventListener('click', () => {
+      sim.walEntries.push({ type: 'WRITE', key: Math.floor(Math.random() * 100), txnId: null });
+    });
+
+    document.getElementById('crash').addEventListener('click', () => {
+      sim.crashed = true;
+    });
+
+    document.getElementById('recover').addEventListener('click', () => {
+      sim.crashed = false;
+      // In real DB, would replay WAL
+      sim.walEntries.push({ type: 'RECOVER', txnId: null });
+    });
+
+    document.getElementById('startTxn').addEventListener('click', startTxn);
+    document.getElementById('commitTxn').addEventListener('click', commitTxn);
+
+    document.getElementById('resetSim').addEventListener('click', () => {
+      sim.keys = [];
+      sim.walEntries = [];
+      sim.transactions = [];
+      sim.treeHeight = 1;
+      sim.crashed = false;
+      sim.nextTxnId = 1;
+    });
+
+    // Update metrics
+    setInterval(() => {
+      document.getElementById('treeHeight').textContent = sim.treeHeight;
+      document.getElementById('keyCount').textContent = sim.keys.length;
+      document.getElementById('walEntries').textContent = sim.walEntries.length;
+      document.getElementById('activeTxns').textContent = sim.transactions.length;
+    }, 100);
+  </script>
+</body>
+</html>

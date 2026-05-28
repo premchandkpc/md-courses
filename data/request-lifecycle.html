@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Request Lifecycle - Full Journey</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: linear-gradient(135deg, #0a0e1a 0%, #1a1f2e 100%);
+      color: #e3eaf0;
+      font-family: 'Monaco', 'Menlo', monospace;
+      overflow: hidden;
+      height: 100vh;
+    }
+    .container {
+      display: flex;
+      height: 100vh;
+      padding: 16px;
+      gap: 16px;
+    }
+    .canvas-area {
+      flex: 1;
+      background: #0b0e14;
+      border: 1px solid #1e3a5f;
+      border-radius: 8px;
+    }
+    .control-panel {
+      width: 300px;
+      background: #0b0e14;
+      border: 1px solid #1e3a5f;
+      border-radius: 8px;
+      padding: 16px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    h1, h3 {
+      color: #00d4ff;
+      letter-spacing: 1px;
+    }
+    h1 { font-size: 18px; margin-bottom: 12px; }
+    h3 { font-size: 12px; text-transform: uppercase; margin-bottom: 8px; color: #a3aab8; }
+    .control-group { display: flex; flex-direction: column; gap: 8px; }
+    button {
+      padding: 8px 12px;
+      background: #1e3a5f;
+      border: 1px solid #00d4ff;
+      color: #00d4ff;
+      border-radius: 4px;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 11px;
+      transition: all 0.2s;
+    }
+    button:hover { background: #2a5a8f; box-shadow: 0 0 8px #00d4ff; }
+    .slider-container { display: flex; flex-direction: column; gap: 4px; }
+    label { font-size: 11px; color: #a3aab8; }
+    input[type="range"] {
+      width: 100%;
+      height: 4px;
+      border-radius: 2px;
+      background: #1e3a5f;
+      outline: none;
+      -webkit-appearance: none;
+    }
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: #00d4ff;
+      cursor: pointer;
+      box-shadow: 0 0 6px #00d4ff;
+    }
+    input[type="range"]::-moz-range-thumb {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: #00d4ff;
+      cursor: pointer;
+      box-shadow: 0 0 6px #00d4ff;
+      border: none;
+    }
+    .metric {
+      background: #1a2332;
+      border: 1px solid #1e3a5f;
+      border-radius: 4px;
+      padding: 8px;
+      font-size: 11px;
+    }
+    .metric-value {
+      color: #34d399;
+      font-weight: bold;
+      font-size: 14px;
+    }
+    .metric-label {
+      color: #a3aab8;
+      font-size: 10px;
+    }
+    canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+    .title-bar {
+      background: #1a2332;
+      border-bottom: 1px solid #1e3a5f;
+      padding: 12px 16px;
+    }
+    .title-bar h1 { margin: 0; }
+  </style>
+</head>
+<body>
+  <div class="title-bar">
+    <h1>Request Lifecycle - Client to Database</h1>
+  </div>
+
+  <div class="container">
+    <div class="canvas-area">
+      <canvas id="canvas"></canvas>
+    </div>
+
+    <div class="control-panel">
+      <div>
+        <h3>Request Control</h3>
+        <div class="control-group">
+          <button id="sendRequest">Send Request</button>
+          <button id="sendBurst">Send Burst (10x)</button>
+        </div>
+      </div>
+
+      <div>
+        <h3>Performance Tuning</h3>
+        <div class="slider-container">
+          <label>Request Rate (req/s)</label>
+          <input type="range" id="requestRate" min="1" max="100" value="10">
+          <span style="font-size: 10px; color: #34d399;" id="rateValue">10</span>
+        </div>
+        <div class="slider-container">
+          <label>Cache Hit Rate (%)</label>
+          <input type="range" id="cacheHitRate" min="0" max="100" value="70">
+          <span style="font-size: 10px; color: #34d399;" id="hitValue">70%</span>
+        </div>
+      </div>
+
+      <div>
+        <h3>Failure Injection</h3>
+        <div class="control-group">
+          <button id="failDB" style="background: #ef4444; border-color: #ef4444; color: #0b0e14;">Slow Database</button>
+          <button id="recoverDB">Recover Database</button>
+        </div>
+      </div>
+
+      <div>
+        <h3>Metrics</h3>
+        <div class="metric">
+          <div class="metric-label">Total Requests</div>
+          <div class="metric-value" id="totalRequests">0</div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">Avg Latency</div>
+          <div class="metric-value" id="avgLatency">0ms</div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">Cache Hits</div>
+          <div class="metric-value" id="cacheHits">0</div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">Error Rate</div>
+          <div class="metric-value" id="errorRate">0%</div>
+        </div>
+      </div>
+
+      <div>
+        <h3>Simulation</h3>
+        <div class="control-group">
+          <button id="resetSim">Reset</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+
+    function resizeCanvas() {
+      const rect = canvas.parentElement.getBoundingClientRect();
+      canvas.width = rect.width;
+      canvas.height = rect.height;
+    }
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
+
+    const sim = {
+      stages: [
+        { name: 'Browser', x: 50, y: canvas.height / 2 },
+        { name: 'DNS', x: 150, y: 100 },
+        { name: 'Network', x: 250, y: canvas.height / 2 },
+        { name: 'LB', x: 350, y: 100 },
+        { name: 'API Server', x: 450, y: canvas.height / 2 },
+        { name: 'Cache', x: 550, y: 100 },
+        { name: 'Database', x: 650, y: canvas.height / 2 }
+      ],
+      requests: [],
+      totalRequests: 0,
+      cacheHits: 0,
+      cacheMisses: 0,
+      requestRate: 10,
+      cacheHitRate: 70,
+      dbSlowed: false,
+      latencies: []
+    };
+
+    function sendRequest() {
+      const request = {
+        id: sim.totalRequests++,
+        currentStage: 0,
+        startTime: Date.now(),
+        cacheHit: Math.random() * 100 < sim.cacheHitRate,
+        latencies: []
+      };
+
+      if (request.cacheHit) {
+        sim.cacheHits++;
+      } else {
+        sim.cacheMisses++;
+      }
+
+      sim.requests.push(request);
+    }
+
+    function update() {
+      // Auto-send requests based on rate
+      if (Math.random() < sim.requestRate / 60) {
+        sendRequest();
+      }
+
+      for (let i = sim.requests.length - 1; i >= 0; i--) {
+        const req = sim.requests[i];
+        const stage = sim.stages[req.currentStage];
+
+        // Calculate stage latency based on type and state
+        let stageLatency = 10 + Math.random() * 10;
+        if (req.currentStage === 1) stageLatency = 20 + Math.random() * 30; // DNS
+        if (req.currentStage === 5 && !req.cacheHit) stageLatency = 5; // Cache miss path (skip)
+        if (req.currentStage === 6 && sim.dbSlowed) stageLatency = 100 + Math.random() * 100; // DB slow
+
+        // Move request through stages
+        req.stageTime = (req.stageTime || 0) + 1;
+        if (req.stageTime > stageLatency) {
+          req.stageTime = 0;
+
+          // Skip cache for misses, go direct to DB
+          if (req.currentStage === 5 && !req.cacheHit) {
+            req.currentStage = 6;
+          } else {
+            req.currentStage++;
+          }
+
+          if (req.currentStage >= sim.stages.length) {
+            req.totalTime = Date.now() - req.startTime;
+            sim.latencies.push(req.totalTime);
+            if (sim.latencies.length > 100) sim.latencies.shift();
+            sim.requests.splice(i, 1);
+          }
+        }
+      }
+    }
+
+    function draw() {
+      ctx.fillStyle = '#0b0e14';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // Draw stages as connected nodes
+      for (let i = 0; i < sim.stages.length; i++) {
+        const stage = sim.stages[i];
+
+        // Draw connection line
+        if (i < sim.stages.length - 1) {
+          const nextStage = sim.stages[i + 1];
+          ctx.strokeStyle = '#1e3a5f';
+          ctx.lineWidth = 2;
+          ctx.beginPath();
+          ctx.moveTo(stage.x, stage.y);
+          ctx.lineTo(nextStage.x, nextStage.y);
+          ctx.stroke();
+        }
+
+        // Draw stage node
+        ctx.fillStyle = i === 0 ? '#34d399' : i === sim.stages.length - 1 ? '#ef4444' : '#00d4ff';
+        ctx.beginPath();
+        ctx.arc(stage.x, stage.y, 25, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.fillStyle = '#0b0e14';
+        ctx.font = 'bold 10px monospace';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(i + 1, stage.x, stage.y);
+
+        // Stage label
+        ctx.fillStyle = '#a3aab8';
+        ctx.font = '10px monospace';
+        ctx.fillText(stage.name, stage.x, stage.y + 40);
+      }
+
+      // Draw requests in flight
+      sim.requests.forEach(req => {
+        const stage = sim.stages[Math.min(req.currentStage, sim.stages.length - 1)];
+        const color = req.cacheHit ? '#34d399' : '#fbbf24';
+
+        ctx.fillStyle = color;
+        ctx.globalAlpha = 0.8;
+        ctx.beginPath();
+        ctx.arc(stage.x, stage.y - 40, 6, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.globalAlpha = 1;
+
+        // Draw request path indicator
+        ctx.fillStyle = color;
+        ctx.globalAlpha = 0.3;
+        ctx.beginPath();
+        ctx.arc(stage.x, stage.y, 35, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.globalAlpha = 1;
+      });
+
+      // Info
+      ctx.fillStyle = '#e3eaf0';
+      ctx.font = '12px monospace';
+      ctx.textAlign = 'left';
+      const avgLatency = sim.latencies.length > 0 ? (sim.latencies.reduce((a, b) => a + b) / sim.latencies.length).toFixed(0) : 0;
+      ctx.fillText(`Requests in Flight: ${sim.requests.length}`, 20, 30);
+      ctx.fillText(`Avg Latency: ${avgLatency}ms`, 20, 50);
+      ctx.fillText(`Cache Hit Rate: ${(sim.cacheHits / sim.totalRequests * 100).toFixed(0)}%`, 20, 70);
+
+      // Latency graph
+      const graphX = 700;
+      const graphY = 50;
+      const graphWidth = canvas.width - graphX - 20;
+      const graphHeight = 100;
+
+      ctx.strokeStyle = '#1e3a5f';
+      ctx.lineWidth = 1;
+      ctx.strokeRect(graphX, graphY, graphWidth, graphHeight);
+
+      if (sim.latencies.length > 1) {
+        ctx.strokeStyle = '#00d4ff';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        const pointsPerPixel = sim.latencies.length / graphWidth;
+        for (let px = 0; px < graphWidth; px++) {
+          const idx = Math.floor(px * pointsPerPixel);
+          if (idx < sim.latencies.length) {
+            const latency = Math.min(sim.latencies[idx], 200);
+            const y = graphY + graphHeight - (latency / 200) * graphHeight;
+            if (px === 0) ctx.moveTo(graphX + px, y);
+            else ctx.lineTo(graphX + px, y);
+          }
+        }
+        ctx.stroke();
+      }
+
+      ctx.fillStyle = '#a3aab8';
+      ctx.font = '10px monospace';
+      ctx.fillText('Latency (ms)', graphX, graphY - 5);
+    }
+
+    function animate() {
+      update();
+      draw();
+      requestAnimationFrame(animate);
+    }
+    animate();
+
+    // Event listeners
+    document.getElementById('sendRequest').addEventListener('click', sendRequest);
+    document.getElementById('sendBurst').addEventListener('click', () => {
+      for (let i = 0; i < 10; i++) sendRequest();
+    });
+
+    document.getElementById('requestRate').addEventListener('input', (e) => {
+      sim.requestRate = parseInt(e.target.value);
+      document.getElementById('rateValue').textContent = sim.requestRate;
+    });
+
+    document.getElementById('cacheHitRate').addEventListener('input', (e) => {
+      sim.cacheHitRate = parseInt(e.target.value);
+      document.getElementById('hitValue').textContent = sim.cacheHitRate + '%';
+    });
+
+    document.getElementById('failDB').addEventListener('click', () => {
+      sim.dbSlowed = true;
+    });
+
+    document.getElementById('recoverDB').addEventListener('click', () => {
+      sim.dbSlowed = false;
+    });
+
+    document.getElementById('resetSim').addEventListener('click', () => {
+      sim.requests = [];
+      sim.totalRequests = 0;
+      sim.cacheHits = 0;
+      sim.cacheMisses = 0;
+      sim.latencies = [];
+      sim.dbSlowed = false;
+    });
+
+    // Update metrics
+    setInterval(() => {
+      const avgLatency = sim.latencies.length > 0 ? Math.round(sim.latencies.reduce((a, b) => a + b) / sim.latencies.length) : 0;
+      const errorRate = 0; // No errors in this simulation
+      document.getElementById('totalRequests').textContent = sim.totalRequests;
+      document.getElementById('avgLatency').textContent = avgLatency + 'ms';
+      document.getElementById('cacheHits').textContent = sim.cacheHits;
+      document.getElementById('errorRate').textContent = errorRate + '%';
+    }, 100);
+  </script>
+</body>
+</html>

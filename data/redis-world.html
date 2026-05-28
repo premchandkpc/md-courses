@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Redis World - Cache Simulation</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: linear-gradient(135deg, #0a0e1a 0%, #1a1f2e 100%);
+      color: #e3eaf0;
+      font-family: 'Monaco', 'Menlo', monospace;
+      overflow: hidden;
+      height: 100vh;
+    }
+    .container {
+      display: flex;
+      height: 100vh;
+      padding: 16px;
+      gap: 16px;
+    }
+    .canvas-area {
+      flex: 1;
+      background: #0b0e14;
+      border: 1px solid #1e3a5f;
+      border-radius: 8px;
+    }
+    .control-panel {
+      width: 280px;
+      background: #0b0e14;
+      border: 1px solid #1e3a5f;
+      border-radius: 8px;
+      padding: 16px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    h1, h3 {
+      color: #00d4ff;
+      letter-spacing: 1px;
+    }
+    h1 { font-size: 18px; margin-bottom: 12px; }
+    h3 { font-size: 12px; text-transform: uppercase; margin-bottom: 8px; color: #a3aab8; }
+    .control-group { display: flex; flex-direction: column; gap: 8px; }
+    button {
+      padding: 8px 12px;
+      background: #1e3a5f;
+      border: 1px solid #00d4ff;
+      color: #00d4ff;
+      border-radius: 4px;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 11px;
+      transition: all 0.2s;
+    }
+    button:hover { background: #2a5a8f; box-shadow: 0 0 8px #00d4ff; }
+    .slider-container { display: flex; flex-direction: column; gap: 4px; }
+    label { font-size: 11px; color: #a3aab8; }
+    input[type="range"] {
+      width: 100%;
+      height: 4px;
+      border-radius: 2px;
+      background: #1e3a5f;
+      outline: none;
+      -webkit-appearance: none;
+    }
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: #00d4ff;
+      cursor: pointer;
+      box-shadow: 0 0 6px #00d4ff;
+    }
+    input[type="range"]::-moz-range-thumb {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: #00d4ff;
+      cursor: pointer;
+      box-shadow: 0 0 6px #00d4ff;
+      border: none;
+    }
+    .metric {
+      background: #1a2332;
+      border: 1px solid #1e3a5f;
+      border-radius: 4px;
+      padding: 8px;
+      font-size: 11px;
+    }
+    .metric-value {
+      color: #34d399;
+      font-weight: bold;
+      font-size: 14px;
+    }
+    .metric-label {
+      color: #a3aab8;
+      font-size: 10px;
+    }
+    canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+    .title-bar {
+      background: #1a2332;
+      border-bottom: 1px solid #1e3a5f;
+      padding: 12px 16px;
+    }
+    .title-bar h1 { margin: 0; }
+  </style>
+</head>
+<body>
+  <div class="title-bar">
+    <h1>Redis World - Cache Hit/Miss Simulator</h1>
+  </div>
+
+  <div class="container">
+    <div class="canvas-area">
+      <canvas id="canvas"></canvas>
+    </div>
+
+    <div class="control-panel">
+      <div>
+        <h3>Cache Control</h3>
+        <div class="slider-container">
+          <label>Cache Size (MB)</label>
+          <input type="range" id="cacheSize" min="64" max="4096" value="512">
+          <span style="font-size: 10px; color: #34d399;" id="sizeValue">512 MB</span>
+        </div>
+      </div>
+
+      <div>
+        <h3>Workload</h3>
+        <div class="slider-container">
+          <label>Request Rate (req/s)</label>
+          <input type="range" id="requestRate" min="10" max="1000" value="100">
+          <span style="font-size: 10px; color: #34d399;" id="rateValue">100</span>
+        </div>
+        <div class="slider-container">
+          <label>Hit Rate Target (%)</label>
+          <input type="range" id="hitRateTarget" min="20" max="95" value="80">
+          <span style="font-size: 10px; color: #34d399;" id="targetValue">80%</span>
+        </div>
+      </div>
+
+      <div>
+        <h3>Eviction Policy</h3>
+        <div class="control-group">
+          <button id="lruPolicy">LRU (Least Recent)</button>
+          <button id="lfu Policy">LFU (Least Frequent)</button>
+          <button id="fifoPolicy">FIFO (First In)</button>
+        </div>
+      </div>
+
+      <div>
+        <h3>Operations</h3>
+        <div class="control-group">
+          <button id="flushCache">Flush Cache</button>
+          <button id="triggerEviction">Trigger Eviction</button>
+        </div>
+      </div>
+
+      <div>
+        <h3>Metrics</h3>
+        <div class="metric">
+          <div class="metric-label">Keys Stored</div>
+          <div class="metric-value" id="keyCount">0</div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">Hit Rate</div>
+          <div class="metric-value" id="hitRate">0%</div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">Memory Used</div>
+          <div class="metric-value" id="memoryUsed">0 MB</div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">Evictions/sec</div>
+          <div class="metric-value" id="evictionRate">0</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+
+    function resizeCanvas() {
+      const rect = canvas.parentElement.getBoundingClientRect();
+      canvas.width = rect.width;
+      canvas.height = rect.height;
+    }
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
+
+    const sim = {
+      cacheSize: 512,
+      keys: new Map(),
+      hits: 0,
+      misses: 0,
+      evictions: 0,
+      requestRate: 100,
+      hitRateTarget: 80,
+      policy: 'LRU',
+      memoryUsed: 0
+    };
+
+    function generateKey() {
+      return `key-${Math.floor(Math.random() * 1000)}`;
+    }
+
+    function update() {
+      // Simulate requests
+      for (let i = 0; i < sim.requestRate / 60; i++) {
+        const key = generateKey();
+        const shouldHit = Math.random() * 100 < sim.hitRateTarget;
+
+        if (sim.keys.has(key) && shouldHit) {
+          sim.hits++;
+          const entry = sim.keys.get(key);
+          entry.lastAccess = Date.now();
+          entry.accessCount++;
+        } else {
+          sim.misses++;
+          if (shouldHit) {
+            // Add to cache
+            const size = Math.random() * 2 + 0.5; // 0.5-2.5 MB per key
+            if (sim.memoryUsed + size > sim.cacheSize) {
+              // Evict
+              let toEvict = null;
+              if (sim.policy === 'LRU') {
+                toEvict = Array.from(sim.keys.entries()).reduce((a, b) =>
+                  a[1].lastAccess < b[1].lastAccess ? a : b
+                );
+              } else if (sim.policy === 'LFU') {
+                toEvict = Array.from(sim.keys.entries()).reduce((a, b) =>
+                  a[1].accessCount < b[1].accessCount ? a : b
+                );
+              } else {
+                toEvict = Array.from(sim.keys.entries())[0];
+              }
+              if (toEvict) {
+                sim.memoryUsed -= toEvict[1].size;
+                sim.keys.delete(toEvict[0]);
+                sim.evictions++;
+              }
+            }
+            sim.keys.set(key, {
+              size: size,
+              lastAccess: Date.now(),
+              accessCount: 1
+            });
+            sim.memoryUsed += size;
+          }
+        }
+      }
+    }
+
+    function draw() {
+      ctx.fillStyle = '#0b0e14';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      const hitRatePercent = (sim.hits / (sim.hits + sim.misses) * 100).toFixed(1);
+
+      // Draw memory usage bar
+      const barHeight = 30;
+      const barWidth = canvas.width - 100;
+      const barX = 50;
+      const barY = 50;
+
+      ctx.fillStyle = '#1e3a5f';
+      ctx.fillRect(barX, barY, barWidth, barHeight);
+
+      const usedPercent = (sim.memoryUsed / sim.cacheSize) * 100;
+      ctx.fillStyle = usedPercent > 90 ? '#ef4444' : usedPercent > 70 ? '#fbbf24' : '#34d399';
+      ctx.fillRect(barX, barY, (barWidth * usedPercent) / 100, barHeight);
+
+      ctx.fillStyle = '#e3eaf0';
+      ctx.font = '12px monospace';
+      ctx.textAlign = 'left';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(`Memory: ${sim.memoryUsed.toFixed(1)}/${sim.cacheSize} MB (${usedPercent.toFixed(1)}%)`, barX + 10, barY + 15);
+
+      // Draw hit/miss visualization
+      const chartX = 50;
+      const chartY = 120;
+      const chartWidth = canvas.width - 100;
+      const chartHeight = 200;
+
+      ctx.strokeStyle = '#1e3a5f';
+      ctx.lineWidth = 2;
+      ctx.strokeRect(chartX, chartY, chartWidth, chartHeight);
+
+      // Draw requests as bars
+      const maxRequests = 500;
+      const barWidthPixels = chartWidth / 10;
+      for (let i = 0; i < 10; i++) {
+        const requestCount = Math.floor(Math.random() * maxRequests);
+        const hitCount = Math.floor((requestCount * sim.hitRateTarget) / 100);
+        const barX = chartX + i * barWidthPixels;
+
+        // Hit bar
+        ctx.fillStyle = '#34d399';
+        ctx.fillRect(barX + 5, chartY + chartHeight - (hitCount / maxRequests) * chartHeight, barWidthPixels - 10, (hitCount / maxRequests) * chartHeight);
+
+        // Miss bar
+        ctx.fillStyle = '#fbbf24';
+        ctx.fillRect(barX + 5, chartY + chartHeight - ((hitCount + requestCount - hitCount) / maxRequests) * chartHeight, barWidthPixels - 10, ((requestCount - hitCount) / maxRequests) * chartHeight);
+      }
+
+      // Labels
+      ctx.fillStyle = '#e3eaf0';
+      ctx.font = '12px monospace';
+      ctx.fillText(`Hit Rate: ${hitRatePercent}%`, chartX, chartY - 10);
+      ctx.fillText('Hits', chartX, chartY + chartHeight + 25);
+      ctx.fillStyle = '#fbbf24';
+      ctx.fillText('Misses', chartX + 80, chartY + chartHeight + 25);
+
+      // Key visualization
+      const keyStartY = chartY + chartHeight + 60;
+      const cols = Math.floor(chartWidth / 40);
+      let keyIndex = 0;
+      for (let key of sim.keys) {
+        const row = Math.floor(keyIndex / cols);
+        const col = keyIndex % cols;
+        const keyX = chartX + col * 40 + 5;
+        const keyY = keyStartY + row * 25;
+
+        ctx.fillStyle = '#00d4ff';
+        ctx.fillRect(keyX, keyY, 30, 20);
+        ctx.fillStyle = '#0b0e14';
+        ctx.font = '8px monospace';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText('K', keyX + 15, keyY + 10);
+
+        keyIndex++;
+        if (keyIndex > 100) break; // Limit visualization
+      }
+
+      ctx.fillStyle = '#a3aab8';
+      ctx.font = '10px monospace';
+      ctx.textAlign = 'left';
+      ctx.fillText(`Keys in Cache: ${sim.keys.size}`, chartX, keyStartY - 10);
+    }
+
+    function animate() {
+      update();
+      draw();
+      requestAnimationFrame(animate);
+    }
+    animate();
+
+    // Event listeners
+    document.getElementById('cacheSize').addEventListener('input', (e) => {
+      sim.cacheSize = parseInt(e.target.value);
+      document.getElementById('sizeValue').textContent = sim.cacheSize + ' MB';
+    });
+
+    document.getElementById('requestRate').addEventListener('input', (e) => {
+      sim.requestRate = parseInt(e.target.value);
+      document.getElementById('rateValue').textContent = sim.requestRate;
+    });
+
+    document.getElementById('hitRateTarget').addEventListener('input', (e) => {
+      sim.hitRateTarget = parseInt(e.target.value);
+      document.getElementById('targetValue').textContent = sim.hitRateTarget + '%';
+    });
+
+    document.getElementById('lruPolicy').addEventListener('click', () => {
+      sim.policy = 'LRU';
+    });
+
+    document.getElementById('lfu Policy').addEventListener('click', () => {
+      sim.policy = 'LFU';
+    });
+
+    document.getElementById('fifoPolicy').addEventListener('click', () => {
+      sim.policy = 'FIFO';
+    });
+
+    document.getElementById('flushCache').addEventListener('click', () => {
+      sim.keys.clear();
+      sim.memoryUsed = 0;
+    });
+
+    document.getElementById('triggerEviction').addEventListener('click', () => {
+      sim.memoryUsed = sim.cacheSize * 0.95;
+    });
+
+    // Update metrics
+    setInterval(() => {
+      const hitRate = sim.hits + sim.misses > 0 ? ((sim.hits / (sim.hits + sim.misses)) * 100).toFixed(1) : 0;
+      document.getElementById('keyCount').textContent = sim.keys.size;
+      document.getElementById('hitRate').textContent = hitRate + '%';
+      document.getElementById('memoryUsed').textContent = sim.memoryUsed.toFixed(1) + ' MB';
+      document.getElementById('evictionRate').textContent = sim.evictions;
+    }, 100);
+  </script>
+</body>
+</html>

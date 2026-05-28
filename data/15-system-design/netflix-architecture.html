@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Netflix Recommendations Architecture</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 40px 20px; min-height: 100vh; }
+        .container { max-width: 1400px; margin: 0 auto; }
+        h1 { color: white; margin-bottom: 40px; text-align: center; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); }
+        .section { background: white; border-radius: 12px; padding: 40px; margin-bottom: 40px; box-shadow: 0 10px 40px rgba(0,0,0,0.2); }
+        .section h2 { color: #667eea; margin-bottom: 25px; font-size: 1.8em; border-bottom: 3px solid #667eea; padding-bottom: 15px; }
+        .component { background: linear-gradient(135deg, #f5f7fa 0%, #ffffff 100%); border-left: 5px solid #667eea; padding: 25px; border-radius: 8px; margin-bottom: 20px; }
+        .component h3 { color: #667eea; margin-bottom: 15px; font-size: 1.3em; }
+        .detail-box { background: #f0f4ff; padding: 20px; border-radius: 8px; margin: 15px 0; border-left: 4px solid #667eea; }
+        .detail-box h4 { color: #667eea; margin-bottom: 10px; }
+        .code-block { background: #2c3e50; color: #ecf0f1; padding: 20px; border-radius: 8px; margin: 20px 0; overflow-x: auto; font-family: 'Courier New', monospace; font-size: 0.85em; line-height: 1.5; }
+        .highlight { background: #fff3cd; padding: 20px; border-radius: 8px; border-left: 5px solid #ffc107; margin: 20px 0; }
+        .highlight h4 { color: #856404; margin-bottom: 10px; }
+        .back-link { display: inline-block; background: white; color: #667eea; padding: 10px 20px; border-radius: 6px; text-decoration: none; font-weight: 600; margin-bottom: 20px; }
+        .footer { text-align: center; color: white; padding: 20px; margin-top: 40px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div style="display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap;">
+            <a href="systems-index.html" class="back-link">← Back to Index</a>
+            <a href="06-Netflix-Recommendations.md" class="back-link">📖 Read Deep Dive</a>
+        </div>
+        <h1>📺 Netflix Recommendations Architecture</h1>
+
+        <div class="section">
+            <h2>System Overview</h2>
+            <div class="highlight">
+                <h4>🎯 Core Challenge</h4>
+                <p><strong>Cold-start + diversity + long-term satisfaction at 250M users</strong></p>
+                <p style="margin-top: 10px;">Batch-driven. Daily recomputation. Focus: retention.</p>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Approach: Offline Batch Pipeline</h2>
+            <div class="code-block">Nightly Pipeline:
+
+1. Extract Data:
+   ├─ Watch history (past 6 months)
+   ├─ Ratings and feedback
+   └─ User demographics
+
+2. Compute Embeddings:
+   ├─ User embeddings via collab filtering
+   ├─ Content embeddings via collab filtering
+   └─ Update all embeddings
+
+3. Score Phase:
+   ├─ User-content similarity (ANN)
+   ├─ Apply diversity penalties
+   ├─ Re-rank by business rules
+
+4. Storage:
+   ├─ Personalized lists per user
+   ├─ Deploy to serving layer
+   └─ Cache ready for next day</code-block>
+
+            <div class="highlight">
+                <h4>Why Batch?</h4>
+                <ul>
+                    <li>Can use expensive algorithms (collaborative filtering)</li>
+                    <li>Can optimize globally (diversity across portfolio)</li>
+                    <li>Less infrastructure than real-time</li>
+                    <li>Acceptable staleness (24 hours)</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Component 1: Collaborative Filtering</h2>
+            <div class="detail-box">
+                <h4>User-User Collab</h4>
+                <ul>
+                    <li>Find users similar to target user</li>
+                    <li>Aggregate movies they watched</li>
+                    <li>Score by (similarity × movie_popularity)</li>
+                </ul>
+            </div>
+
+            <div class="detail-box">
+                <h4>Content-Content Collab</h4>
+                <ul>
+                    <li>Find movies similar to user's watch history</li>
+                    <li>Score by (similarity × current_popularity)</li>
+                </ul>
+            </div>
+
+            <div class="detail-box">
+                <h4>Blending</h4>
+                <p><strong>Final score:</strong> 0.6 × user-user + 0.4 × content-content</p>
+                <p style="margin-top: 10px;">Reduces filter bubble. Better diversity.</p>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Component 2: Cold Start</h2>
+            <div class="component">
+                <h3>New User (No Watch History)</h3>
+                <ul style="margin-left: 20px; color: #666; margin-top: 10px;">
+                    <li>Onboarding questions: "What genres do you like?"</li>
+                    <li>Return: genre-based popular content</li>
+                    <li>Gradually personalize as they watch</li>
+                </ul>
+            </div>
+
+            <div class="component">
+                <h3>New Content (No Views)</h3>
+                <ul style="margin-left: 20px; color: #666; margin-top: 10px;">
+                    <li>Show in "New & Popular" section</li>
+                    <li>Bootstrap engagement</li>
+                    <li>Later: surface based on preference match</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Component 3: Diversity Optimization</h2>
+            <div class="code-block">Problem: All recommendations same genre = boredom
+
+Solution: Diversity Penalties
+
+score = collab_score × (1 - diversity_penalty)
+
+diversity_penalty ∝ (# already shown in genre)
+
+Example:
+├─ Drama score: 0.9 × (1 - 0.5) = 0.45
+│  (many dramas already shown)
+├─ Comedy score: 0.7 × (1 - 0.1) = 0.63
+│  (fewer comedies shown)
+└─ Comedy ranked higher (despite lower base score!)
+
+Result: Spread recommendations across genres</code-block>
+        </div>
+
+        <div class="section">
+            <h2>Component 4: Re-ranking & Business Rules</h2>
+            <div class="component">
+                <h3>Post-Processing</h3>
+                <ul style="margin-left: 20px; color: #666; margin-top: 10px;">
+                    <li>Remove already watched</li>
+                    <li>Enforce genre diversity limits</li>
+                    <li>Vary content duration</li>
+                    <li>Promote new releases</li>
+                    <li>Regional content availability</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Serving</h2>
+            <div class="detail-box">
+                <h4>Precomputed Lists Storage</h4>
+                <ul>
+                    <li><strong>Per user:</strong> Top 200 personalized recommendations</li>
+                    <li><strong>Storage:</strong> Materialized in database</li>
+                    <li><strong>Retrieval:</strong> O(1) lookup by user_id</li>
+                    <li><strong>Cache:</strong> Redis for hot users</li>
+                </ul>
+            </div>
+
+            <div class="detail-box">
+                <h4>Daily Refresh</h4>
+                <p><strong>Update cycle:</strong> Nightly batch → Deploy new lists → Serve next day</p>
+                <p style="margin-top: 10px;"><strong>Staleness:</strong> Up to 24 hours (acceptable for Netflix)</p>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Key Metrics</h2>
+            <div class="component">
+                <h3>Optimization Targets</h3>
+                <ul style="margin-left: 20px; color: #666; margin-top: 10px;">
+                    <li><strong>Watch-time:</strong> How much user watches</li>
+                    <li><strong>Satisfaction:</strong> User rating/completion</li>
+                    <li><strong>Retention:</strong> Long-term subscription</li>
+                    <li><strong>Genre diversity:</strong> Content variety</li>
+                    <li><strong>Discovery:</strong> New content consumption</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>📺 Batch recommendations at scale.</p>
+            <p style="margin-top: 10px;">250M users. Daily refresh. Long-term satisfaction focus.</p>
+        </div>
+    </div>
+</body>
+</html>

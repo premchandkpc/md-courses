@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ads CTR Prediction Architecture</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 40px 20px; min-height: 100vh; }
+        .container { max-width: 1400px; margin: 0 auto; }
+        h1 { color: white; margin-bottom: 40px; text-align: center; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); }
+        .section { background: white; border-radius: 12px; padding: 40px; margin-bottom: 40px; box-shadow: 0 10px 40px rgba(0,0,0,0.2); }
+        .section h2 { color: #667eea; margin-bottom: 25px; font-size: 1.8em; border-bottom: 3px solid #667eea; padding-bottom: 15px; }
+        .flow-diagram { background: #f9f9f9; border: 2px solid #667eea; border-radius: 8px; padding: 30px; margin: 20px 0; text-align: center; }
+        .flow-step { display: inline-block; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px 30px; border-radius: 8px; margin: 10px 5px; font-weight: 600; min-width: 180px; }
+        .arrow { color: #667eea; font-size: 1.5em; margin: 0 10px; font-weight: bold; }
+        .component { background: linear-gradient(135deg, #f5f7fa 0%, #ffffff 100%); border-left: 5px solid #667eea; padding: 25px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); margin-bottom: 20px; }
+        .component h3 { color: #667eea; margin-bottom: 15px; font-size: 1.3em; }
+        .metrics { background: #f0f4ff; padding: 15px; border-radius: 6px; margin-top: 15px; border-left: 4px solid #667eea; }
+        .metric-item { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 0.9em; }
+        .detail-box { background: #f0f4ff; padding: 20px; border-radius: 8px; margin: 15px 0; border-left: 4px solid #667eea; }
+        .detail-box h4 { color: #667eea; margin-bottom: 10px; }
+        .code-block { background: #2c3e50; color: #ecf0f1; padding: 20px; border-radius: 8px; margin: 20px 0; overflow-x: auto; font-family: 'Courier New', monospace; font-size: 0.85em; line-height: 1.5; }
+        .highlight { background: #fff3cd; padding: 20px; border-radius: 8px; border-left: 5px solid #ffc107; margin: 20px 0; }
+        .highlight h4 { color: #856404; margin-bottom: 10px; }
+        .back-link { display: inline-block; background: white; color: #667eea; padding: 10px 20px; border-radius: 6px; text-decoration: none; font-weight: 600; margin-bottom: 20px; }
+        .footer { text-align: center; color: white; padding: 20px; margin-top: 40px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div style="display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap;">
+            <a href="systems-index.html" class="back-link">← Back to Index</a>
+            <a href="03-Ads-CTR-Prediction.md" class="back-link">📖 Read Deep Dive</a>
+        </div>
+        <h1>💰 Ads CTR Prediction Architecture</h1>
+
+        <div class="section">
+            <h2>System Overview</h2>
+            <div class="flow-diagram">
+                <div class="flow-step">User Context</div>
+                <div class="arrow">→</div>
+                <div class="flow-step">Features</div>
+                <div class="arrow">→</div>
+                <div class="flow-step">CTR Model</div>
+                <div class="arrow">→</div>
+                <div class="flow-step">Rank Ads</div>
+            </div>
+            <div class="highlight">
+                <h4>🎯 Core Challenge</h4>
+                <p><strong>Predict clicks in <50ms at 1M QPS with online learning</strong></p>
+                <p style="margin-top: 10px;">$280B revenue. Real-time adaptation. Fraud detection critical.</p>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Traffic & Scale</h2>
+            <div class="component">
+                <h3>Daily Impressions</h3>
+                <div class="metrics">
+                    <div class="metric-item"><span>Impressions/day:</span><span><strong>400M+</strong></span></div>
+                    <div class="metric-item"><span>Peak QPS:</span><span><strong>1M+</strong></span></div>
+                    <div class="metric-item"><span>Latency SLA:</span><span><strong><50ms p99</strong></span></div>
+                    <div class="metric-item"><span>Revenue:</span><span><strong>$280B/year</strong></span></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Component 1: Feature Collection</h2>
+            <div class="code-block">Real-Time Features (200 total):
+├─ User features (100)
+│  ├─ Demographics (age, gender, country)
+│  ├─ CTR history
+│  ├─ Conversion history
+│  └─ Engagement metrics
+│
+├─ Ad features (60)
+│  ├─ Text embeddings
+│  ├─ Category
+│  ├─ Advertiser reputation
+│  └─ Ad quality score
+│
+└─ Context (40)
+   ├─ Time of day
+   ├─ Device type
+   ├─ Location
+   └─ Seasonality</code-block>
+        </div>
+
+        <div class="section">
+            <h2>Component 2: Feature Store (Redis)</h2>
+            <div class="component">
+                <h3>Hot Tier (Real-Time)</h3>
+                <ul style="margin-left: 20px; color: #666; margin-top: 10px;">
+                    <li>User features: 800 GB (top 2B active users)</li>
+                    <li>Ad features: 50 GB (top 100M ads)</li>
+                    <li>Cache hit rate: >98%</li>
+                    <li>Latency: <5ms p99</li>
+                </ul>
+            </div>
+
+            <div class="detail-box">
+                <h4>Update Pipeline</h4>
+                <p><strong>Source:</strong> Kafka impressions stream → Flink aggregation → Redis publish</p>
+                <p><strong>Frequency:</strong> Every 1 minute (sliding window)</p>
+                <p><strong>TTL:</strong> 1 hour (refreshed continuously)</p>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Component 3: CTR Model (DCN)</h2>
+            <div class="code-block">Deep & Cross Network:
+
+User Tower:         Ad Tower:
+Input(100)          Input(100)
+  │                   │
+Dense(512)      Dense(512)
+  │                   │
+Dense(256)      Dense(256)
+  │                   │
+Dense(128)      Dense(128)
+  │                   │
+  └─────┬────────────┘
+        │
+    Dot Product
+        │
+    Dense(64)
+        │
+    Dense(1) + Sigmoid
+        │
+    CTR [0-1]</code-block>
+
+            <div class="component">
+                <h3>Inference</h3>
+                <div class="metrics">
+                    <div class="metric-item"><span>Batch size:</span><span><strong>10K</strong></span></div>
+                    <div class="metric-item"><span>Latency:</span><span><strong>10ms</strong></span></div>
+                    <div class="metric-item"><span>Throughput:</span><span><strong>1M rankings/sec</strong></span></div>
+                    <div class="metric-item"><span>GPUs:</span><span><strong>300+</strong></span></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Component 4: Online Learning</h2>
+            <div class="detail-box">
+                <h4>Feature Updates (Streaming)</h4>
+                <ul>
+                    <li><strong>Per impression:</strong> Log to Kafka</li>
+                    <li><strong>Aggregate:</strong> 1-minute windows</li>
+                    <li><strong>Update:</strong> User CTR rate, ad CTR rate</li>
+                    <li><strong>Write back:</strong> Redis cache</li>
+                    <li><strong>Latency:</strong> <1 minute to reflect in inference</li>
+                </ul>
+            </div>
+
+            <div class="detail-box">
+                <h4>Model Retraining</h4>
+                <ul>
+                    <li><strong>Daily batch:</strong> 400M fresh impressions</li>
+                    <li><strong>Hourly online:</strong> Mini-batch SGD on recent data</li>
+                    <li><strong>A/B test:</strong> Shadow traffic first (1% users)</li>
+                    <li><strong>Rollout:</strong> Gradual if metrics improve</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Component 5: Fraud Detection</h2>
+            <div class="component">
+                <h3>Real-Time Detection</h3>
+                <ul style="margin-left: 20px; color: #666; margin-top: 10px;">
+                    <li>Rapid clicks from same IP</li>
+                    <li>Click rate > expected CTR</li>
+                    <li>Data center IP clicks</li>
+                    <li>Unusual device fingerprints</li>
+                    <li>Geographic anomalies</li>
+                </ul>
+            </div>
+
+            <div class="detail-box">
+                <h4>Action</h4>
+                <p><strong>High fraud score:</strong> Mark click as fraudulent → exclude from billing</p>
+                <p><strong>False positive rate:</strong> 0.5% (acceptable) | <strong>False negative:</strong> 5%</p>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Bandit Algorithm: Thompson Sampling</h2>
+            <div class="code-block">For each ad:
+├─ Maintain Beta(alpha, beta) distribution
+│  ├─ alpha = clicks
+│  └─ beta = skips
+│
+├─ Ranking:
+│  └─ Sample theta ~ Beta(alpha, beta)
+│  └─ Score = theta (higher uncertainty = explore)
+│
+└─ Feedback:
+   ├─ If click: alpha += 1
+   └─ If skip: beta += 1
+
+Result: Natural exploration/exploitation balance</code-block>
+        </div>
+
+        <div class="section">
+            <h2>Production Monitoring</h2>
+            <div class="component">
+                <h3>Key Metrics</h3>
+                <ul style="margin-left: 20px; color: #666; margin-top: 10px;">
+                    <li>AUC (model quality): Alert if AUC < baseline - 0.01</li>
+                    <li>CTR prediction error: Alert if >20% systematic bias</li>
+                    <li>Latency: Alert if p99 > 50ms</li>
+                    <li>Fraud rate: Alert if spike detected</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>💰 Real-time learning at $280B scale.</p>
+            <p style="margin-top: 10px;">1M QPS. <50ms. Billions in daily revenue impact.</p>
+        </div>
+    </div>
+</body>
+</html>

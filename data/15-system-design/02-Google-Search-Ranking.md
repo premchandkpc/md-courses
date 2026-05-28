@@ -1,5 +1,7 @@
 # Google Search Ranking System - L5 Deep Dive
 
+> **[🎨 View Interactive Diagram](search-architecture.html)** | [← Back to Index](systems-index.html)
+
 *"How do you return 10 most relevant pages from a trillion-page corpus in 200ms?"*
 
 ---

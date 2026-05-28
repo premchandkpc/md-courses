@@ -1,5 +1,7 @@
 # YouTube Recommendations System - Google L5 Deep Dive
 
+> **[🎨 View Interactive Diagram](youtube-architecture.html)** | [← Back to Index](systems-index.html)
+
 *"How do you recommend the right video to the right user at the right time, at planetary scale?"*
 
 ---

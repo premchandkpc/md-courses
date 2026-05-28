@@ -52,14 +52,15 @@ graph TB
 | `08-forms` | Controlled/uncontrolled, validation, libraries | Intermediate | 3 |
 | `09-performance` | Memoization, virtualization, profiling, bundles | Senior | 5 |
 | `10-concurrency` | Concurrent mode, transitions, Suspense | Staff | 4 |
-| `11-server-components` | RSC, streaming, serialization, boundaries | Staff | 3 |
+| `11-server-components` | RSC, streaming, serialization, boundaries | Staff | 4 |
 | `12-nextjs` | SSR, ISR, App Router, middleware | Senior | 4 |
-| `13-animation-systems` | Framer Motion, GSAP, Three.js, WebGL | Senior | 5 |
+| `13-animation-systems` | Framer Motion, GSAP, Three.js, WebGL | Senior | 4 |
 | `14-design-systems` | Component libraries, theming, tokens | Senior | 3 |
 | `15-testing` | RTL, Cypress, Playwright, e2e | Intermediate | 3 |
 | `16-accessibility` | ARIA, a11y tree, keyboard nav, screen readers | Senior | 3 |
 | `17-security` | XSS, CSRF, CSP, OAuth, iframe security | Senior | 3 |
-| `18-realtime-systems` | SSE, WebSocket, CRDT, conflict resolution | Staff | 4 |
+| `18-performance-engineering` | Profiling, Flame graphs, Render optimization | Staff | 2 |
+| `18-realtime-systems` | SSE, WebSocket, CRDT, conflict resolution | Staff | 1 |
 | `19-websockets` | Socket architecture, reconnection, scaling | Senior | 3 |
 | `20-microfrontends` | Module federation, isolation, shared deps | Staff | 3 |
 | `21-frontend-system-design` | YouTube, Figma, Netflix, ChatGPT frontends | Staff | 10 |
@@ -71,17 +72,17 @@ graph TB
 | `27-networking` | HTTP/2, HTTP/3, CDN, edge, cache invalidation | Senior | 3 |
 | `28-pwa` | Service workers, manifest, offline, push | Intermediate | 3 |
 | `29-offline-first` | IndexedDB, sync, conflict resolution | Senior | 3 |
-| `30-ai-powered-ui` | Streaming LLM, Vercel AI SDK, token rendering | Staff | 5 |
+| `30-ai-powered-ui` | Streaming LLM, Vercel AI SDK, token rendering | Staff | 4 |
 | `31-agentic-ui` | Agent workflows, MCP, autonomous UI | Staff | 4 |
 | `32-frontend-ml` | TensorFlow.js, ONNX, client-side inference | Staff | 3 |
 | `33-frontend-architecture-patterns` | Microfrontends, monorepo, federation | Staff | 5 |
 | `34-case-studies` | Meta, Netflix, Vercel, Google frontend | All | 6 |
-| `35-interview-prep` | FAANG questions, system design, coding | All | 5 |
-| `36-production-failures` | Hydration mismatch, memory leaks, race conditions | Senior | 4 |
-| `37-debugging-playbook` | DevTools, profiling, tracing, crash analysis | Senior | 4 |
+| `36-production-failures` | Hydration mismatch, memory leaks, race conditions | Senior | 3 |
+| `37-debugging-playbook` | DevTools, profiling, tracing, crash analysis | Senior | 2 |
 | `38-scaling-react-apps` | Multi-team, monorepo, CI/CD, performance budgets | Staff | 3 |
-| `39-visual-simulations` | Interactive HTML simulators | All | 5 |
-| `40-projects` | ChatGPT clone, YouTube, Figma, Slack | All | 6 |
+| `39-visual-simulations` | Interactive HTML simulators | All | 2 |
+| `40-interview-prep` | FAANG questions, system design, coding | All | 2 |
+| `40-projects` | ChatGPT clone, YouTube, Figma, Slack | All | 1 |
 
 ## Learning Paths
 
@@ -104,6 +105,26 @@ graph TB
 ```
 02-react-internals → 10-concurrency → 11-server-components → 20-microfrontends → 21-frontend-system-design → 30-ai-powered-ui → 33-architecture-patterns
 ```
+
+## 📊 Session Status
+
+- ✅ **Fiber architecture**: node structure, double-buffering, beginWork flow, reconciliation, lanes, edge cases, performance, failures, interview questions
+- ✅ **Scheduler + Lanes**: priority bitmask design, work loop, starvation prevention, edge cases
+- ✅ **RSC deep dive**: serialization protocol, streaming, client boundaries, edge cases, production usage
+- ✅ **Animation architecture**: CSS/GSAP/Framer Motion strategies, GPU composition, failure patterns
+- ✅ **Streaming LLM UI**: SSE vs WebSocket, token-by-token rendering, batched updates, production architecture
+- ✅ **Render optimization**: profiling, `React.memo` internals, useMemo/useCallback, React Compiler
+- ✅ **Hydration mismatch**: failure patterns, detection, prevention, `suppressHydrationWarning`
+- ✅ **Debugging playbook**: infinite re-render, stale closures, memory leaks, production-only bugs
+- ✅ **Interview prep**: per-level questions (junior → staff), system design, React 19 features
+- ✅ **Fiber visual simulator**: interactive SVG tree walkthrough with beginWork/completeWork/commit phases
+- 🔲 24 placeholder folders created, awaiting deep-dive content
+
+## Interactive Simulators
+
+Explore React's reconciliation algorithm visually:
+[Fiber Tree Visualizer](/04-frontend/react/39-visual-simulations/fiber-reconciliation.html)
+— step through beginWork/completeWork/commit phases on sample trees
 
 ## Every File Contains
 

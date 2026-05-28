@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LLM Serving Architecture</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 40px 20px; min-height: 100vh; }
+        .container { max-width: 1400px; margin: 0 auto; }
+        h1 { color: white; margin-bottom: 40px; text-align: center; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); }
+        .section { background: white; border-radius: 12px; padding: 40px; margin-bottom: 40px; box-shadow: 0 10px 40px rgba(0,0,0,0.2); }
+        .section h2 { color: #667eea; margin-bottom: 25px; font-size: 1.8em; border-bottom: 3px solid #667eea; padding-bottom: 15px; }
+        .component { background: linear-gradient(135deg, #f5f7fa 0%, #ffffff 100%); border-left: 5px solid #667eea; padding: 25px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); margin-bottom: 20px; }
+        .component h3 { color: #667eea; margin-bottom: 15px; font-size: 1.3em; }
+        .metrics { background: #f0f4ff; padding: 15px; border-radius: 6px; margin-top: 15px; border-left: 4px solid #667eea; }
+        .metric-item { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 0.9em; }
+        .detail-box { background: #f0f4ff; padding: 20px; border-radius: 8px; margin: 15px 0; border-left: 4px solid #667eea; }
+        .detail-box h4 { color: #667eea; margin-bottom: 10px; }
+        .code-block { background: #2c3e50; color: #ecf0f1; padding: 20px; border-radius: 8px; margin: 20px 0; overflow-x: auto; font-family: 'Courier New', monospace; font-size: 0.85em; line-height: 1.5; }
+        .highlight { background: #fff3cd; padding: 20px; border-radius: 8px; border-left: 5px solid #ffc107; margin: 20px 0; }
+        .highlight h4 { color: #856404; margin-bottom: 10px; }
+        .back-link { display: inline-block; background: white; color: #667eea; padding: 10px 20px; border-radius: 6px; text-decoration: none; font-weight: 600; margin-bottom: 20px; }
+        .footer { text-align: center; color: white; padding: 20px; margin-top: 40px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div style="display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap;">
+            <a href="systems-index.html" class="back-link">← Back to Index</a>
+            <a href="04-LLM-Serving-Infrastructure.md" class="back-link">📖 Read Deep Dive</a>
+        </div>
+        <h1>🤖 LLM Serving Architecture</h1>
+
+        <div class="section">
+            <h2>System Overview</h2>
+            <div class="highlight">
+                <h4>🎯 Core Challenge</h4>
+                <p><strong>Serve 70B parameter models with <500ms TTFT at billion-scale</strong></p>
+                <p style="margin-top: 10px;">Billions of users. Cost per token critical. Safety constraints.</p>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Token Generation Pipeline</h2>
+            <div class="code-block">Standard (Non-Batched):
+User 1: Generate 1 token (100ms)
+User 2: Wait for User 1...
+Sequential = SLOW
+
+Batched (N=100):
+User 1-100: Batch 100 tokens together
+Latency per user: 100ms (parallel!)
+Throughput: 100x better
+
+Token generation = compute bottleneck
+Batching hides latency
+                </code-block>
+        </div>
+
+        <div class="section">
+            <h2>Component 1: Request Batching</h2>
+            <div class="component">
+                <h3>Accumulation Strategy</h3>
+                <div class="metrics">
+                    <div class="metric-item"><span>Batch size:</span><span><strong>100 concurrent users</strong></span></div>
+                    <div class="metric-item"><span>Accumulation time:</span><span><strong>10ms</strong></span></div>
+                    <div class="metric-item"><span>First-token latency:</span><span><strong>~110ms</strong></span></div>
+                    <div class="metric-item"><span>Throughput:</span><span><strong>1000 tokens/sec per GPU</strong></span></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Component 2: KV Cache Optimization</h2>
+            <div class="code-block">Without KV Cache:
+├─ For each new token
+├─ Recompute attention for ALL previous tokens
+├─ Expensive: O(n^2) with sequence length
+
+With KV Cache:
+├─ Store K,V from previous tokens
+├─ Reuse in next generation
+├─ Only compute new token attention
+├─ 10x faster token generation (100ms → 10ms)
+
+Trade-off:
+├─ Memory growth: ~2.5GB per 1000-token context
+├─ Acceptable: speed gain worth it
+└─ Total latency: 1000 tokens in 10 seconds
+                </code-block>
+        </div>
+
+        <div class="section">
+            <h2>Component 3: Speculative Decoding</h2>
+            <div class="detail-box">
+                <h4>Parallel Token Generation</h4>
+                <ul>
+                    <li><strong>Main model:</strong> Generates token i (100ms)</li>
+                    <li><strong>While computing:</strong> Drafter model guesses tokens i+1, i+2, i+3 (20ms)</li>
+                    <li><strong>Verify:</strong> Check if drafter matched main model</li>
+                    <li><strong>Result:</strong> 2-3x speedup (if guesses correct)</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Component 4: Token-by-Token Streaming</h2>
+            <div class="component">
+                <h3>User Experience</h3>
+                <p><strong>Traditional:</strong> Wait 3 seconds → see complete response (feels slow)</p>
+                <p><strong>Streaming:</strong> See token 1 at 100ms, token 2 at 200ms, etc. (feels fast)</p>
+                <ul style="margin-left: 20px; color: #666; margin-top: 10px;">
+                    <li>Technology: WebSocket or Server-Sent Events (SSE)</li>
+                    <li>Perceived latency: First token (100ms)</li>
+                    <li>Progressive rendering on client</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Component 5: Model Management</h2>
+            <div class="component">
+                <h3>Multi-Model Serving</h3>
+                <div class="metrics">
+                    <div class="metric-item"><span>Small (7B):</span><span>10ms/token, cheap</span></div>
+                    <div class="metric-item"><span>Medium (70B):</span><span>100ms/token, balanced</span></div>
+                    <div class="metric-item"><span>Large (540B):</span><span>500ms/token, powerful</span></div>
+                </div>
+            </div>
+
+            <div class="detail-box">
+                <h4>Router Logic</h4>
+                <p>Classify query complexity → route to appropriate model</p>
+                <p style="margin-top: 10px;"><strong>Simple queries:</strong> Use small model (faster, cheaper)</p>
+                <p><strong>Complex reasoning:</strong> Use large model (better quality)</p>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Component 6: Inference Optimization</h2>
+            <div class="component">
+                <h3>Quantization</h3>
+                <p>float32 → int8: 4x smaller, 4x faster, 0.5% accuracy loss</p>
+            </div>
+
+            <div class="component">
+                <h3>Distillation</h3>
+                <p>Train 10x smaller student on teacher model: 10x faster inference on CPU</p>
+            </div>
+
+            <div class="component">
+                <h3>Request Scheduling</h3>
+                <p>Priority queue: Paying users first, manage backpressure</p>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Safety & Cost Control</h2>
+            <div class="detail-box">
+                <h4>Safety Filtering</h4>
+                <ul>
+                    <li><strong>Prompt check:</strong> Block harmful requests early</li>
+                    <li><strong>Output check:</strong> Detect toxic content in response</li>
+                    <li><strong>Latency:</strong> <50ms (separate GPU)</li>
+                </ul>
+            </div>
+
+            <div class="detail-box">
+                <h4>Token Limits</h4>
+                <ul>
+                    <li><strong>Free users:</strong> Max 500 tokens/request</li>
+                    <li><strong>Paid users:</strong> Max 2000 tokens/request</li>
+                    <li><strong>Enforcement:</strong> Stop generation at limit</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Monitoring & Scaling</h2>
+            <div class="component">
+                <h3>Metrics</h3>
+                <ul style="margin-left: 20px; color: #666; margin-top: 10px;">
+                    <li>Time-to-first-token (TTFT)</li>
+                    <li>Tokens-per-second (TPS)</li>
+                    <li>Cost-per-token</li>
+                    <li>Queue depth (backpressure signal)</li>
+                </ul>
+            </div>
+
+            <div class="detail-box">
+                <h4>Scaling 10x</h4>
+                <p><strong>Optimizations:</strong> Quantization + larger batches + distillation</p>
+                <p style="margin-top: 10px;"><strong>Result:</strong> Handle 10x load with 3-5x GPU increase (not 10x)</p>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>🤖 Modern inference at scale.</p>
+            <p style="margin-top: 10px;">70B+ models. <500ms latency. Cost-optimized.</p>
+        </div>
+    </div>
+</body>
+</html>

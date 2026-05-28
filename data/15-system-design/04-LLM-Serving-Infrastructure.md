@@ -1,5 +1,7 @@
 # LLM Serving Infrastructure - L5 Deep Dive
 
+> **[🎨 View Interactive Diagram](llm-architecture.html)** | [← Back to Index](systems-index.html)
+
 *"Serve 70B parameter models with 500ms latency to millions of users."*
 
 ---

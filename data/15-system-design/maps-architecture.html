@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Google Maps Ranking Architecture</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 40px 20px; min-height: 100vh; }
+        .container { max-width: 1400px; margin: 0 auto; }
+        h1 { color: white; margin-bottom: 40px; text-align: center; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); }
+        .section { background: white; border-radius: 12px; padding: 40px; margin-bottom: 40px; box-shadow: 0 10px 40px rgba(0,0,0,0.2); }
+        .section h2 { color: #667eea; margin-bottom: 25px; font-size: 1.8em; border-bottom: 3px solid #667eea; padding-bottom: 15px; }
+        .component { background: linear-gradient(135deg, #f5f7fa 0%, #ffffff 100%); border-left: 5px solid #667eea; padding: 25px; border-radius: 8px; margin-bottom: 20px; }
+        .component h3 { color: #667eea; margin-bottom: 15px; font-size: 1.3em; }
+        .detail-box { background: #f0f4ff; padding: 20px; border-radius: 8px; margin: 15px 0; border-left: 4px solid #667eea; }
+        .detail-box h4 { color: #667eea; margin-bottom: 10px; }
+        .code-block { background: #2c3e50; color: #ecf0f1; padding: 20px; border-radius: 8px; margin: 20px 0; overflow-x: auto; font-family: 'Courier New', monospace; font-size: 0.85em; line-height: 1.5; }
+        .highlight { background: #fff3cd; padding: 20px; border-radius: 8px; border-left: 5px solid #ffc107; margin: 20px 0; }
+        .highlight h4 { color: #856404; margin-bottom: 10px; }
+        .back-link { display: inline-block; background: white; color: #667eea; padding: 10px 20px; border-radius: 6px; text-decoration: none; font-weight: 600; margin-bottom: 20px; }
+        .footer { text-align: center; color: white; padding: 20px; margin-top: 40px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div style="display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap;">
+            <a href="systems-index.html" class="back-link">← Back to Index</a>
+            <a href="07-Maps-Ranking.md" class="back-link">📖 Read Deep Dive</a>
+        </div>
+        <h1>🗺️ Google Maps Ranking Architecture</h1>
+
+        <div class="section">
+            <h2>System Overview</h2>
+            <div class="code-block">User Search: "coffee near me"
+    │
+    ▼
+Query Understanding
+    │
+    ▼
+Geographic Retrieval (find nearby)
+    │
+    ▼
+Ranking (relevance + distance + popularity)
+    │
+    ▼
+Diversity Filter
+    │
+    ▼
+Top Places + Map</code-block>
+
+            <div class="highlight">
+                <h4>🎯 Core Challenge</h4>
+                <p><strong>Rank 200M places by relevance + distance + popularity at scale</strong></p>
+                <p style="margin-top: 10px;">Geographically distributed. Real-time signals. Regional spikes.</p>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Scale & Metrics</h2>
+            <div class="component">
+                <h3>Place Index</h3>
+                <ul style="margin-left: 20px; color: #666; margin-top: 10px;">
+                    <li>200M+ places indexed</li>
+                    <li>100K+ QPS</li>
+                    <li><200ms p99 latency</li>
+                    <li>Geographically distributed serving</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Component 1: Geospatial Retrieval</h2>
+            <div class="detail-box">
+                <h4>Hilbert Curve Indexing</h4>
+                <ul>
+                    <li><strong>Space-filling curve:</strong> Converts 2D coordinates to 1D index</li>
+                    <li><strong>Property:</strong> Nearby places → nearby curve values</li>
+                    <li><strong>Range query:</strong> Find places in bounding box</li>
+                    <li><strong>Latency:</strong> <10ms geographic retrieval</li>
+                </ul>
+            </div>
+
+            <div class="code-block">Geographic Retrieval:
+
+Input: (user_lat, user_lng, search_radius)
+
+1. Find bounding box
+2. Hilbert curve range query
+3. Return nearby places
+4. Latency: <10ms</code-block>
+        </div>
+
+        <div class="section">
+            <h2>Component 2: Ranking Signals</h2>
+            <div class="detail-box">
+                <h4>Multi-Signal Ranking</h4>
+                <div class="code-block">score =
+  w1 * relevance_score +
+  w2 * distance_score +
+  w3 * popularity_score +
+  w4 * freshness_score
+
+where:
+  relevance: query-place text match (BM25)
+  distance: 1 / (1 + distance_km)
+  popularity: ratings * review_count
+  freshness: hours_since_update</code-block>
+            </div>
+
+            <div class="component">
+                <h3>Real-Time Signals (Updated Minutely)</h3>
+                <ul style="margin-left: 20px; color: #666; margin-top: 10px;">
+                    <li>Popularity (from user visits)</li>
+                    <li>Crowdedness (estimated wait)</li>
+                    <li>Recent reviews & ratings</li>
+                    <li>Current hours (open/closed)</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Component 3: Learning-to-Rank</h2>
+            <div class="detail-box">
+                <h4>Model</h4>
+                <ul>
+                    <li><strong>Type:</strong> Gradient Boosted Decision Trees (GBDT)</li>
+                    <li><strong>Training:</strong> Click logs from Maps searches</li>
+                    <li><strong>Features:</strong> Relevance + distance + popularity</li>
+                    <li><strong>Output:</strong> Ranking score</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Component 4: Geographic Distribution</h2>
+            <div class="detail-box">
+                <h4>Problem</h4>
+                <p>User in Singapore shouldn't wait for index in US datacenter</p>
+            </div>
+
+            <div class="detail-box">
+                <h4>Solution: Geo-Partitioned Indexes</h4>
+                <ul>
+                    <li><strong>Split world:</strong> Into geographic regions</li>
+                    <li><strong>Each region:</strong> Has full index</li>
+                    <li><strong>Routing:</strong> Route requests to nearest region</li>
+                    <li><strong>Replication:</strong> 3x across datacenters per region</li>
+                    <li><strong>Latency:</strong> <50ms from nearest region</li>
+                </ul>
+            </div>
+
+            <div class="detail-box">
+                <h4>Regional Spikes</h4>
+                <p><strong>Rush hour:</strong> More queries in peak areas</p>
+                <p style="margin-top: 10px;"><strong>Solution:</strong> Load balancing + cached results fallback</p>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Component 5: Personalization</h2>
+            <div class="component">
+                <h3>User Preferences</h3>
+                <p>Same search, different results:</p>
+                <ul style="margin-left: 20px; color: #666; margin-top: 10px;">
+                    <li><strong>Vegetarian user:</strong> Rank vegetarian restaurants higher</li>
+                    <li><strong>Budget-conscious:</strong> Rank cheap places higher</li>
+                    <li><strong>Frequent visitor:</strong> Rank favorites higher</li>
+                </ul>
+            </div>
+
+            <div class="detail-box">
+                <h4>Implementation</h4>
+                <p>Personalization features: User preferences + search history</p>
+                <p style="margin-top: 10px;">Re-rank base results with personalization signal</p>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Special Challenges</h2>
+            <div class="detail-box">
+                <h4>Region Boundaries</h4>
+                <p>User at border (between two regions):</p>
+                <ul style="margin-left: 20px; color: #666; margin-top: 10px;">
+                    <li>Query both regions</li>
+                    <li>Merge results</li>
+                    <li>Return top-K across regions</li>
+                </ul>
+            </div>
+
+            <div class="detail-box">
+                <h4>Real-Time Updates</h4>
+                <p>When place status changes (opens/closes/updates):</p>
+                <ul style="margin-left: 20px; color: #666; margin-top: 10px;">
+                    <li>Update feature in all regional indexes</li>
+                    <li>Propagate changes (seconds to minutes)</li>
+                    <li>Consistency eventual (acceptable)</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Monitoring & Optimization</h2>
+            <div class="component">
+                <h3>Key Metrics</h3>
+                <ul style="margin-left: 20px; color: #666; margin-top: 10px;">
+                    <li>Click-through rate on first result</li>
+                    <li>User choosing different ranking</li>
+                    <li>Regional latency variance</li>
+                    <li>Place data freshness</li>
+                </ul>
+            </div>
+
+            <div class="detail-box">
+                <h4>Scaling 10x</h4>
+                <p><strong>Solutions:</strong> More regional indexes + caching + approximate ranking</p>
+                <p style="margin-top: 10px;"><strong>Challenge:</strong> Keeping indexes fresh across globe</p>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>🗺️ Geospatial ranking at planetary scale.</p>
+            <p style="margin-top: 10px;">200M places. Real-time signals. Personalized results.</p>
+        </div>
+    </div>
+</body>
+</html>

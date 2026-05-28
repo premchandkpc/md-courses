@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TikTok Feed Ranking Architecture</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 40px 20px; min-height: 100vh; }
+        .container { max-width: 1400px; margin: 0 auto; }
+        h1 { color: white; margin-bottom: 40px; text-align: center; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); }
+        .section { background: white; border-radius: 12px; padding: 40px; margin-bottom: 40px; box-shadow: 0 10px 40px rgba(0,0,0,0.2); }
+        .section h2 { color: #667eea; margin-bottom: 25px; font-size: 1.8em; border-bottom: 3px solid #667eea; padding-bottom: 15px; }
+        .component { background: linear-gradient(135deg, #f5f7fa 0%, #ffffff 100%); border-left: 5px solid #667eea; padding: 25px; border-radius: 8px; margin-bottom: 20px; }
+        .component h3 { color: #667eea; margin-bottom: 15px; font-size: 1.3em; }
+        .detail-box { background: #f0f4ff; padding: 20px; border-radius: 8px; margin: 15px 0; border-left: 4px solid #667eea; }
+        .detail-box h4 { color: #667eea; margin-bottom: 10px; }
+        .code-block { background: #2c3e50; color: #ecf0f1; padding: 20px; border-radius: 8px; margin: 20px 0; overflow-x: auto; font-family: 'Courier New', monospace; font-size: 0.85em; line-height: 1.5; }
+        .highlight { background: #fff3cd; padding: 20px; border-radius: 8px; border-left: 5px solid #ffc107; margin: 20px 0; }
+        .highlight h4 { color: #856404; margin-bottom: 10px; }
+        .back-link { display: inline-block; background: white; color: #667eea; padding: 10px 20px; border-radius: 6px; text-decoration: none; font-weight: 600; margin-bottom: 20px; }
+        .footer { text-align: center; color: white; padding: 20px; margin-top: 40px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div style="display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap;">
+            <a href="systems-index.html" class="back-link">← Back to Index</a>
+            <a href="05-TikTok-Feed-Ranking.md" class="back-link">📖 Read Deep Dive</a>
+        </div>
+        <h1>🎵 TikTok Feed Ranking Architecture</h1>
+
+        <div class="section">
+            <h2>System Overview</h2>
+            <div class="highlight">
+                <h4>🎯 Core Challenge</h4>
+                <p><strong>Generate infinite personalized feed with exploration/exploitation at 2B MAU</strong></p>
+                <p style="margin-top: 10px;">Per-scroll ranking. RL-based. Long-term engagement focus.</p>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Scale & Metrics</h2>
+            <div class="component">
+                <h3>Traffic</h3>
+                <ul style="margin-left: 20px; color: #666; margin-top: 10px;">
+                    <li>2B+ monthly active users</li>
+                    <li>100+ million creators</li>
+                    <li>Scrolls per user: 20/day</li>
+                    <li>Videos per scroll: 10 (need new recommendations each time)</li>
+                    <li>p99 latency: <500ms</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Architecture</h2>
+            <div class="code-block">User Opens Feed
+    │
+    ▼
+Fast Pool (80%)         Exploration Pool (20%)
+├─ Personalized         ├─ New videos
+├─ Known good           ├─ New creators
+└─ High engagement      └─ Test content
+    │                        │
+    ├─ Ranking (RL + Bandits)
+    │
+    ▼
+Diversity Filter
+    │
+    ▼
+Feed (10 videos)</code-block>
+        </div>
+
+        <div class="section">
+            <h2>Component 1: Contextual Bandits</h2>
+            <div class="detail-box">
+                <h4>Thompson Sampling Per Context</h4>
+                <ul>
+                    <li><strong>State:</strong> (user, context, video)</li>
+                    <li><strong>Action:</strong> Show or not show</li>
+                    <li><strong>Reward:</strong> Watch duration + future engagement</li>
+                    <li><strong>Learning:</strong> Update theta distribution per context</li>
+                </ul>
+            </div>
+
+            <div class="code-block">For each video:
+├─ Sample theta ~ Beta(alpha_context, beta_context)
+├─ Score = theta (uncertainty bonus for exploration)
+├─ Show top-k scored videos
+└─ Update based on engagement:
+   ├─ If watched: alpha += 1
+   └─ If skipped: beta += 1</code-block>
+        </div>
+
+        <div class="section">
+            <h2>Component 2: Long-Term Value Optimization</h2>
+            <div class="detail-box">
+                <h4>Reinforcement Learning</h4>
+                <p><strong>Objective:</strong> Maximize lifetime engagement, not just immediate watch-time</p>
+                <ul style="margin-left: 20px; color: #666; margin-top: 10px;">
+                    <li><strong>Short-term:</strong> Show viral videos (immediate watch-time)</li>
+                    <li><strong>Long-term:</strong> Show diverse content (keep user interested)</li>
+                    <li><strong>Optimization:</strong> 0.7 × short-term + 0.3 × long-term</li>
+                </ul>
+            </div>
+
+            <div class="code-block">Reward Function:
+reward =
+  immediate_watch_time +
+  0.7 * lambda * predicted_future_sessions
+
+Where lambda = decay factor (lower = more immediate focus)
+Tuned via A/B testing</code-block>
+        </div>
+
+        <div class="section">
+            <h2>Component 3: Diversity & Creator Growth</h2>
+            <div class="component">
+                <h3>Exploration Allocation</h3>
+                <ul style="margin-left: 20px; color: #666; margin-top: 10px;">
+                    <li>80% known good recommendations</li>
+                    <li>20% exploration (new videos, new creators)</li>
+                    <li>Discovery of new interests</li>
+                    <li>Creator growth opportunity</li>
+                </ul>
+            </div>
+
+            <div class="detail-box">
+                <h4>Cold Start for New Creators</h4>
+                <p>New creator → allocated to exploration pool → tested with small % of users</p>
+                <p style="margin-top: 10px;">If engagement good → gradually increase exposure</p>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Key Metrics</h2>
+            <div class="component">
+                <h3>Optimization Targets</h3>
+                <ul style="margin-left: 20px; color: #666; margin-top: 10px;">
+                    <li><strong>Watch time per session:</strong> How long user stays</li>
+                    <li><strong>Session frequency:</strong> How often user returns</li>
+                    <li><strong>Creator diversity:</strong> User sees diverse creators</li>
+                    <li><strong>Category diversity:</strong> Topic coverage</li>
+                    <li><strong>Retention:</strong> Long-term usage</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>A/B Testing</h2>
+            <div class="detail-box">
+                <h4>Validation Process</h4>
+                <ul>
+                    <li><strong>New ranking model:</strong> Test on 1% users</li>
+                    <li><strong>Metrics:</strong> Session length, retention, session frequency</li>
+                    <li><strong>Duration:</strong> 1-2 weeks (need sufficient data)</li>
+                    <li><strong>Rollout:</strong> If watch-time >= baseline → gradual rollout</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>🎵 Real-time engagement at 2B scale.</p>
+            <p style="margin-top: 10px;">Exploration/exploitation balance. Long-term value optimization.</p>
+        </div>
+    </div>
+</body>
+</html>

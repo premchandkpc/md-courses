@@ -1,5 +1,7 @@
 # Ads CTR Prediction - L5 Deep Dive
 
+> **[🎨 View Interactive Diagram](ads-architecture.html)** | [← Back to Index](systems-index.html)
+
 *"Predict which ad a user will click in <50ms, millions of times per second."*
 
 ---

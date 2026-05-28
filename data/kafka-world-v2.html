@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kafka World V2 - Physics-Based Simulation</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: linear-gradient(135deg, #0a0e1a 0%, #1a1f2e 100%);
+      color: #e3eaf0;
+      font-family: 'Monaco', 'Menlo', monospace;
+      overflow: hidden;
+      height: 100vh;
+    }
+    .container {
+      display: flex;
+      height: 100vh;
+      padding: 16px;
+      gap: 16px;
+    }
+    .canvas-area {
+      flex: 1;
+      background: #0b0e14;
+      border: 1px solid #1e3a5f;
+      border-radius: 8px;
+      position: relative;
+    }
+    .control-panel {
+      width: 350px;
+      background: #0b0e14;
+      border: 1px solid #1e3a5f;
+      border-radius: 8px;
+      padding: 16px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    h1, h3 {
+      color: #00d4ff;
+      letter-spacing: 1px;
+    }
+    h1 { font-size: 18px; margin-bottom: 8px; }
+    h3 { font-size: 11px; text-transform: uppercase; margin-bottom: 6px; color: #a3aab8; }
+    .control-group { display: flex; flex-direction: column; gap: 6px; }
+    button {
+      padding: 6px 10px;
+      background: #1e3a5f;
+      border: 1px solid #00d4ff;
+      color: #00d4ff;
+      border-radius: 4px;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 10px;
+      transition: all 0.2s;
+    }
+    button:hover { background: #2a5a8f; box-shadow: 0 0 8px #00d4ff; }
+    button.active { background: #00d4ff; color: #0b0e14; }
+    .mode-buttons { display: flex; gap: 4px; flex-wrap: wrap; }
+    .slider-container { display: flex; flex-direction: column; gap: 2px; }
+    label { font-size: 10px; color: #a3aab8; }
+    input[type="range"] {
+      width: 100%;
+      height: 3px;
+      border-radius: 2px;
+      background: #1e3a5f;
+      outline: none;
+      -webkit-appearance: none;
+    }
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: #00d4ff;
+      cursor: pointer;
+      box-shadow: 0 0 4px #00d4ff;
+    }
+    input[type="range"]::-moz-range-thumb {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: #00d4ff;
+      cursor: pointer;
+      border: none;
+      box-shadow: 0 0 4px #00d4ff;
+    }
+    .metric {
+      background: #1a2332;
+      border: 1px solid #1e3a5f;
+      border-radius: 4px;
+      padding: 6px;
+      font-size: 10px;
+    }
+    .metric-value {
+      color: #34d399;
+      font-weight: bold;
+      font-size: 12px;
+    }
+    .metric-label {
+      color: #a3aab8;
+      font-size: 9px;
+    }
+    canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+    .title-bar {
+      background: #1a2332;
+      border-bottom: 1px solid #1e3a5f;
+      padding: 10px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .title-bar h1 { margin: 0; }
+    .zoom-info {
+      font-size: 9px;
+      color: #a3aab8;
+      padding: 4px;
+      background: #1a2332;
+      border-radius: 3px;
+    }
+    .causality-log {
+      background: #1a2332;
+      border: 1px solid #1e3a5f;
+      border-radius: 4px;
+      padding: 6px;
+      font-size: 8px;
+      color: #a3aab8;
+      max-height: 80px;
+      overflow-y: auto;
+      font-family: 'Monaco', monospace;
+    }
+  </style>
+</head>
+<body>
+  <div class="title-bar">
+    <h1>Kafka V2: Physics Engine + Camera + Sandbox</h1>
+    <div class="zoom-info" id="zoomInfo">Level 1: Global</div>
+  </div>
+
+  <div class="container">
+    <div class="canvas-area">
+      <canvas id="canvas"></canvas>
+    </div>
+
+    <div class="control-panel">
+      <div>
+        <h3>Mode</h3>
+        <div class="mode-buttons">
+          <button id="modeLearn">Learn</button>
+          <button id="modeObserve" class="active">Observe</button>
+          <button id="modeDebug">Debug</button>
+          <button id="modeScale">Scale</button>
+          <button id="modeChaos">Chaos</button>
+        </div>
+      </div>
+
+      <div>
+        <h3>Camera</h3>
+        <div class="control-group">
+          <button id="zoomIn">Zoom In ↓</button>
+          <button id="zoomOut">Zoom Out ↑</button>
+        </div>
+      </div>
+
+      <div>
+        <h3>Parameters</h3>
+        <div class="slider-container">
+          <label>Producer Rate (msg/s)</label>
+          <input type="range" id="producerRate" min="1" max="100" value="20">
+          <span style="font-size: 9px; color: #34d399;" id="rateValue">20</span>
+        </div>
+        <div class="slider-container">
+          <label>Consumer Speed (msg/s)</label>
+          <input type="range" id="consumerSpeed" min="1" max="50" value="15">
+          <span style="font-size: 9px; color: #34d399;" id="speedValue">15</span>
+        </div>
+      </div>
+
+      <div>
+        <h3>Failures</h3>
+        <div class="control-group">
+          <button id="failBroker">Fail Broker</button>
+          <button id="slowNetwork">Slow Network</button>
+          <button id="recover">Recover</button>
+        </div>
+      </div>
+
+      <div>
+        <h3>Metrics</h3>
+        <div class="metric">
+          <div class="metric-label">Lag</div>
+          <div class="metric-value" id="lag">0</div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">Throughput</div>
+          <div class="metric-value" id="throughput">0 msg/s</div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">System Health</div>
+          <div class="metric-value" id="health">100%</div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">Pressure</div>
+          <div class="metric-value" id="pressure">0</div>
+        </div>
+      </div>
+
+      <div>
+        <h3>Causality Chain</h3>
+        <div class="causality-log" id="causalityLog">
+          System ready
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Mini physics engine (inline for simplicity)
+    class MiniPhysics {
+      constructor() {
+        this.entities = new Map();
+        this.queues = new Map();
+        this.causality = [];
+        this.time = 0;
+      }
+
+      propagatePressure(sourceId, amount, radius) {
+        const source = this.entities.get(sourceId);
+        if (!source) return;
+
+        this.entities.forEach((entity, id) => {
+          const dist = Math.hypot(entity.x - source.x, entity.y - source.y);
+          if (dist < radius && id !== sourceId) {
+            const factor = 1 - (dist / radius);
+            entity.pressure += amount * factor * 0.8;
+            if (entity.pressure > 70) entity.state = 'critical';
+            else if (entity.pressure > 40) entity.state = 'warning';
+            this.addCausality(`${sourceId} → ${id} pressure`);
+          }
+        });
+      }
+
+      addCausality(event) {
+        this.causality.push({ time: this.time, event });
+        if (this.causality.length > 20) this.causality.shift();
+      }
+    }
+
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+
+    function resizeCanvas() {
+      const rect = canvas.parentElement.getBoundingClientRect();
+      canvas.width = rect.width;
+      canvas.height = rect.height;
+    }
+    resizeCanvas();
+
+    // Simulation state
+    const sim = {
+      physics: new MiniPhysics(),
+      mode: 'observe',
+      zoomLevel: 1,
+      producerRate: 20,
+      consumerSpeed: 15,
+      brokerHealth: 100,
+      networkLatency: 50,
+      messages: [],
+      lag: 0,
+      totalProduced: 0,
+      totalConsumed: 0,
+      partitions: [
+        { id: 0, x: 150, y: 150, messages: 0, pressure: 0, state: 'healthy' },
+        { id: 1, x: 150, y: 300, messages: 0, pressure: 0, state: 'healthy' },
+        { id: 2, x: 150, y: 450, messages: 0, pressure: 0, state: 'healthy' }
+      ],
+      consumers: [
+        { id: 0, x: 600, y: 150, lag: 0, state: 'healthy' },
+        { id: 1, x: 600, y: 300, lag: 0, state: 'healthy' },
+        { id: 2, x: 600, y: 450, lag: 0, state: 'healthy' }
+      ]
+    };
+
+    function update() {
+      // Produce
+      if (Math.random() < sim.producerRate / 60) {
+        const partition = sim.partitions[Math.floor(Math.random() * 3)];
+        partition.messages++;
+        sim.totalProduced++;
+
+        // Pressure builds as queue fills
+        partition.pressure = (partition.messages / 50) * 100;
+        if (partition.pressure > 80) partition.state = 'critical';
+        else if (partition.pressure > 50) partition.state = 'warning';
+        else partition.state = 'healthy';
+      }
+
+      // Consume
+      sim.partitions.forEach((partition, idx) => {
+        const consumer = sim.consumers[idx];
+        if (partition.messages > 0 && Math.random() < sim.consumerSpeed / 60) {
+          if (sim.brokerHealth > 0) {
+            partition.messages--;
+            sim.totalConsumed++;
+            consumer.lag = Math.max(0, consumer.lag - 1);
+          }
+        }
+      });
+
+      // Lag accumulates if consumers can't keep up
+      sim.lag = Math.max(0, sim.totalProduced - sim.totalConsumed);
+      sim.partitions.forEach((p, idx) => {
+        sim.consumers[idx].lag = p.messages;
+      });
+
+      // Network latency affects consumption
+      if (sim.networkLatency > 100) {
+        sim.physics.addCausality('High latency → slower consumption');
+      }
+
+      // Broker failure cascades
+      if (sim.brokerHealth < 50) {
+        sim.physics.propagatePressure('broker', 30, 300);
+        sim.partitions.forEach(p => {
+          p.state = 'degraded';
+          p.pressure += 5;
+        });
+      }
+
+      sim.physics.time++;
+    }
+
+    function draw() {
+      ctx.fillStyle = '#0b0e14';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // Zoom level context
+      const zoomLevels = {
+        1: { name: 'Global: Datacenter overview', scale: 0.8 },
+        2: { name: 'Cluster: Kafka cluster layout', scale: 1 },
+        3: { name: 'Component: Partition mechanics', scale: 1.5 },
+        4: { name: 'Subsystem: Message flow detail', scale: 2 },
+        5: { name: 'Mechanics: Replication protocol', scale: 3 }
+      };
+
+      const levelInfo = zoomLevels[sim.zoomLevel];
+      document.getElementById('zoomInfo').textContent = `Level ${sim.zoomLevel}: ${levelInfo.name}`;
+
+      // Draw producers
+      ctx.fillStyle = '#34d399';
+      ctx.beginPath();
+      ctx.arc(50, 300, 25, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = '#0b0e14';
+      ctx.font = 'bold 10px monospace';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('P', 50, 300);
+
+      // Draw partitions with pressure visualization
+      sim.partitions.forEach(partition => {
+        const color = partition.state === 'critical' ? '#ef4444' :
+                      partition.state === 'warning' ? '#fbbf24' : '#00d4ff';
+
+        // Pressure glow
+        ctx.fillStyle = color;
+        ctx.globalAlpha = partition.pressure / 100 * 0.5;
+        ctx.beginPath();
+        ctx.arc(partition.x, partition.y, 40 + partition.pressure / 5, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.globalAlpha = 1;
+
+        // Partition node
+        ctx.fillStyle = color;
+        ctx.fillRect(partition.x - 25, partition.y - 25, 50, 50);
+
+        ctx.fillStyle = '#0b0e14';
+        ctx.font = '10px monospace';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(`P${partition.id}`, partition.x, partition.y - 8);
+        ctx.font = '8px monospace';
+        ctx.fillText(`${partition.messages}`, partition.x, partition.y + 8);
+      });
+
+      // Draw consumers
+      sim.consumers.forEach(consumer => {
+        const lagColor = consumer.lag > 30 ? '#ef4444' :
+                        consumer.lag > 10 ? '#fbbf24' : '#34d399';
+
+        ctx.fillStyle = lagColor;
+        ctx.beginPath();
+        ctx.arc(600, consumer.y, 20, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.fillStyle = '#0b0e14';
+        ctx.font = '10px monospace';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText('C', 600, consumer.y);
+      });
+
+      // Draw message flow
+      sim.messages.forEach(msg => {
+        ctx.fillStyle = '#60a5fa';
+        ctx.beginPath();
+        ctx.arc(msg.x, msg.y, 3, 0, Math.PI * 2);
+        ctx.fill();
+      });
+
+      // Connection lines
+      ctx.strokeStyle = '#1e3a5f';
+      ctx.lineWidth = 1;
+      sim.partitions.forEach(p => {
+        sim.consumers.forEach(c => {
+          ctx.beginPath();
+          ctx.moveTo(p.x, p.y);
+          ctx.lineTo(c.x, c.y);
+          ctx.stroke();
+        });
+      });
+
+      // Info
+      ctx.fillStyle = '#a3aab8';
+      ctx.font = '10px monospace';
+      ctx.textAlign = 'left';
+      ctx.fillText(`Lag: ${sim.lag} | Produced: ${sim.totalProduced} | Consumed: ${sim.totalConsumed}`, 20, 30);
+      ctx.fillText(`Broker Health: ${sim.brokerHealth}% | Network: ${sim.networkLatency}ms`, 20, 50);
+    }
+
+    function animate() {
+      update();
+      draw();
+      requestAnimationFrame(animate);
+    }
+    animate();
+
+    // Event listeners - Modes
+    ['Learn', 'Observe', 'Debug', 'Scale', 'Chaos'].forEach((mode, i) => {
+      document.getElementById(`mode${mode}`).addEventListener('click', function() {
+        document.querySelectorAll('.mode-buttons button').forEach(b => b.classList.remove('active'));
+        this.classList.add('active');
+        sim.mode = mode.toLowerCase();
+        sim.physics.addCausality(`Mode switched to ${mode}`);
+      });
+    });
+
+    // Camera
+    document.getElementById('zoomIn').addEventListener('click', () => {
+      sim.zoomLevel = Math.min(5, sim.zoomLevel + 1);
+    });
+
+    document.getElementById('zoomOut').addEventListener('click', () => {
+      sim.zoomLevel = Math.max(1, sim.zoomLevel - 1);
+    });
+
+    // Parameters
+    document.getElementById('producerRate').addEventListener('input', (e) => {
+      sim.producerRate = parseInt(e.target.value);
+      document.getElementById('rateValue').textContent = sim.producerRate;
+    });
+
+    document.getElementById('consumerSpeed').addEventListener('input', (e) => {
+      sim.consumerSpeed = parseInt(e.target.value);
+      document.getElementById('speedValue').textContent = sim.consumerSpeed;
+    });
+
+    // Failures
+    document.getElementById('failBroker').addEventListener('click', () => {
+      sim.brokerHealth = 20;
+      sim.physics.addCausality('Broker failure injected');
+    });
+
+    document.getElementById('slowNetwork').addEventListener('click', () => {
+      sim.networkLatency = 200;
+      sim.physics.addCausality('Network latency increased');
+    });
+
+    document.getElementById('recover').addEventListener('click', () => {
+      sim.brokerHealth = 100;
+      sim.networkLatency = 50;
+      sim.physics.addCausality('System recovered');
+    });
+
+    // Update metrics and causality display
+    setInterval(() => {
+      document.getElementById('lag').textContent = sim.lag;
+      document.getElementById('throughput').textContent = Math.floor(sim.consumerSpeed);
+      document.getElementById('health').textContent = Math.max(0, 100 - sim.lag / 10) + '%';
+      document.getElementById('pressure').textContent = Math.max(...sim.partitions.map(p => p.pressure)).toFixed(0);
+
+      const causalityLog = document.getElementById('causalityLog');
+      const recent = sim.physics.causality.slice(-10);
+      causalityLog.innerHTML = recent.map(c => `${c.event}`).join('<br>');
+    }, 100);
+  </script>
+</body>
+</html>

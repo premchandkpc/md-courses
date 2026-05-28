@@ -38,51 +38,51 @@ graph TB
 
 ## The 40-Domain Architecture
 
-| Domain | Focus | Level | Est. Files |
-|---|---|---|---|
-| `00-roadmap` | Navigation, learning paths, prerequisites | All | 2 |
-| `01-core-fundamentals` | JSX, components, props, events, lifecycle | Beginner | 4 |
-| `02-react-internals` | Fiber, reconciler, scheduler, lanes, hydration | Staff | 7 |
-| `03-rendering-pipeline` | Virtual DOM, reconciliation, commit, paint | Senior | 5 |
-| `04-hooks-deep-dive` | useState, useEffect, useRef, custom hooks | Intermediate | 5 |
-| `05-state-management` | Redux, Zustand, Jotai, Context, signals | Senior | 4 |
-| `06-component-architecture` | Composition, patterns, HOCs, render props | Intermediate | 1 |
-| `06-component-architecture` | Composition, patterns, HOCs, render props | Intermediate | 3 |
-| `07-routing` | React Router, Next.js routing, deep linking | Intermediate | 3 |
-| `08-forms` | Controlled/uncontrolled, validation, libraries | Intermediate | 3 |
-| `09-performance` | Memoization, virtualization, profiling, bundles | Senior | 5 |
-| `10-concurrency` | Concurrent mode, transitions, Suspense | Staff | 4 |
-| `11-server-components` | RSC, streaming, serialization, boundaries | Staff | 4 |
-| `12-nextjs` | SSR, ISR, App Router, middleware | Senior | 4 |
-| `13-animation-systems` | Framer Motion, GSAP, Three.js, WebGL | Senior | 4 |
-| `14-design-systems` | Component libraries, theming, tokens | Senior | 3 |
-| `15-testing` | RTL, Cypress, Playwright, e2e | Intermediate | 3 |
-| `16-accessibility` | ARIA, a11y tree, keyboard nav, screen readers | Senior | 3 |
-| `17-security` | XSS, CSRF, CSP, OAuth, iframe security | Senior | 3 |
-| `18-performance-engineering` | Profiling, Flame graphs, Render optimization | Staff | 2 |
-| `18-realtime-systems` | SSE, WebSocket, CRDT, conflict resolution | Staff | 1 |
-| `19-websockets` | Socket architecture, reconnection, scaling | Senior | 3 |
-| `20-microfrontends` | Module federation, isolation, shared deps | Staff | 3 |
-| `21-frontend-system-design` | YouTube, Figma, Netflix, ChatGPT frontends | Staff | 10 |
-| `22-observability` | RUM, tracing, error tracking, Web Vitals | Senior | 3 |
-| `23-build-tools` | Vite, webpack, esbuild, SWC, Turbopack | Senior | 4 |
-| `24-bundlers` | Tree shaking, code splitting, chunking | Staff | 3 |
-| `25-browser-internals` | Event loop, rendering pipeline, compositing | Staff | 4 |
-| `26-javascript-engine` | V8, JIT, GC, hidden classes, inline caching | Staff | 3 |
-| `27-networking` | HTTP/2, HTTP/3, CDN, edge, cache invalidation | Senior | 3 |
-| `28-pwa` | Service workers, manifest, offline, push | Intermediate | 3 |
-| `29-offline-first` | IndexedDB, sync, conflict resolution | Senior | 3 |
-| `30-ai-powered-ui` | Streaming LLM, Vercel AI SDK, token rendering | Staff | 4 |
-| `31-agentic-ui` | Agent workflows, MCP, autonomous UI | Staff | 4 |
-| `32-frontend-ml` | TensorFlow.js, ONNX, client-side inference | Staff | 3 |
-| `33-frontend-architecture-patterns` | Microfrontends, monorepo, federation | Staff | 5 |
-| `34-case-studies` | Meta, Netflix, Vercel, Google frontend | All | 6 |
-| `36-production-failures` | Hydration mismatch, memory leaks, race conditions | Senior | 3 |
-| `37-debugging-playbook` | DevTools, profiling, tracing, crash analysis | Senior | 2 |
-| `38-scaling-react-apps` | Multi-team, monorepo, CI/CD, performance budgets | Staff | 3 |
-| `39-visual-simulations` | Interactive HTML simulators | All | 2 |
-| `40-interview-prep` | FAANG questions, system design, coding | All | 2 |
-| `40-projects` | ChatGPT clone, YouTube, Figma, Slack | All | 1 |
+| Domain | Focus | Level | Files |
+|---|---|---|---|---|
+| `00-roadmap` | Navigation, learning paths | All | 1 |
+| `01-core-fundamentals` | JSX, components, props, events | Beginner | 1 |
+| `02-react-internals` | Fiber, scheduler, lanes, hydration | Staff | 2 |
+| `03-rendering-pipeline` | Virtual DOM, reconciliation, commit | Senior | 1 |
+| `04-hooks-deep-dive` | useState, useEffect, useRef, custom | Intermediate | 2 |
+| `05-state-management` | Redux, Zustand, Jotai, Context | Senior | 1 |
+| `06-component-architecture` | Composition, HOCs, render props, patterns | Intermediate | 2 |
+| `07-routing` | React Router, deep linking | Intermediate | 1 |
+| `08-forms` | Controlled/uncontrolled, validation | Intermediate | 1 |
+| `09-performance` | Memoization, virtualization, profiling | Senior | 1 |
+| `10-concurrency` | Transitions, Suspense, concurrent mode | Staff | 2 |
+| `11-server-components` | RSC, streaming, serialization, boundaries | Staff | 1 |
+| `12-nextjs` | App Router, SSR, ISR, middleware | Senior | 2 |
+| `13-animation-systems` | Framer Motion, GSAP, WebGL | Senior | 1 |
+| `14-design-systems` | Component libraries, tokens, theming | Senior | 2 |
+| `15-testing` | RTL, Playwright, e2e | Intermediate | 2 |
+| `16-accessibility` | ARIA, a11y tree, keyboard nav | Senior | 2 |
+| `17-security` | XSS, CSRF, CSP, token storage | Senior | 2 |
+| `18-performance-engineering` | Profiling, Flame graphs, optimization | Staff | 1 |
+| `18-realtime-systems` | SSE, WebSocket, CRDT, collaboration | Staff | 2 |
+| `19-websockets` | Socket architecture, reconnection, scaling | Senior | 2 |
+| `20-microfrontends` | Module federation, isolation, teams | Staff | 2 |
+| `21-frontend-system-design` | YouTube, Figma, ChatGPT design | Staff | 2 |
+| `22-observability` | RUM, Web Vitals, tracing, Sentry | Senior | 2 |
+| `23-build-tools` | Vite, webpack, esbuild, SWC, Turbopack | Senior | 2 |
+| `24-bundlers` | Tree shaking, code splitting, chunking | Staff | 2 |
+| `25-browser-internals` | Event loop, rendering, compositing | Staff | 2 |
+| `26-javascript-engine` | V8, JIT, GC, hidden classes, IC | Staff | 2 |
+| `27-networking` | HTTP/2, HTTP/3, CDN, caching | Senior | 2 |
+| `28-pwa` | Service workers, manifest, push | Intermediate | 2 |
+| `29-offline-first` | IndexedDB, sync, conflict resolution | Senior | 2 |
+| `30-ai-powered-ui` | Streaming LLM, Vercel AI SDK, tokens | Staff | 1 |
+| `31-agentic-ui` | Agent workflows, MCP, autonomous UI | Staff | 2 |
+| `32-frontend-ml` | TensorFlow.js, ONNX, client inference | Staff | 2 |
+| `33-frontend-architecture-patterns` | Monorepo, federation, design systems | Staff | 2 |
+| `34-case-studies` | Meta, Netflix, Vercel, Google | All | 2 |
+| `35-interview-prep` | → moved to 40-interview-prep | All | - |
+| `36-production-failures` | Hydration mismatch, memory leaks, traces | Senior | 2 |
+| `37-debugging-playbook` | DevTools, profiling, crash analysis | Senior | 1 |
+| `38-scaling-react-apps` | Multi-team, CI/CD, budgets, deployment | Staff | 2 |
+| `39-visual-simulations` | Interactive HTML simulators | All | 1 |
+| `40-interview-prep` | FAANG questions, system design, coding | All | 1 |
+| `40-projects` | ChatGPT, YouTube, Figma, Slack clones | All | 2 |
 
 ## Learning Paths
 
@@ -106,19 +106,33 @@ graph TB
 02-react-internals → 10-concurrency → 11-server-components → 20-microfrontends → 21-frontend-system-design → 30-ai-powered-ui → 33-architecture-patterns
 ```
 
-## 📊 Session Status
+## 📊 Session Status - ALL 40 FOLDERS FILLED ✅
 
-- ✅ **Fiber architecture**: node structure, double-buffering, beginWork flow, reconciliation, lanes, edge cases, performance, failures, interview questions
-- ✅ **Scheduler + Lanes**: priority bitmask design, work loop, starvation prevention, edge cases
-- ✅ **RSC deep dive**: serialization protocol, streaming, client boundaries, edge cases, production usage
-- ✅ **Animation architecture**: CSS/GSAP/Framer Motion strategies, GPU composition, failure patterns
-- ✅ **Streaming LLM UI**: SSE vs WebSocket, token-by-token rendering, batched updates, production architecture
-- ✅ **Render optimization**: profiling, `React.memo` internals, useMemo/useCallback, React Compiler
-- ✅ **Hydration mismatch**: failure patterns, detection, prevention, `suppressHydrationWarning`
-- ✅ **Debugging playbook**: infinite re-render, stale closures, memory leaks, production-only bugs
-- ✅ **Interview prep**: per-level questions (junior → staff), system design, React 19 features
-- ✅ **Fiber visual simulator**: interactive SVG tree walkthrough with beginWork/completeWork/commit phases
-- 🔲 24 placeholder folders created, awaiting deep-dive content
+- ✅ **06-component-architecture** — Compound components, slots, render props, HOCs with full code
+- ✅ **10-concurrency** — `startTransition`, `useDeferredValue`, `useTransition`, Suspense data fetching, edge cases
+- ✅ **12-nextjs** — App Router file conventions, layout persistence, data fetching, error handling
+- ✅ **14-design-systems** — Token system, Radix primitives, variant/size system, Storybook + Chromatic
+- ✅ **15-testing** — RTL component tests, hook tests, Playwright e2e, what not to test
+- ✅ **16-accessibility** — a11y tree, semantic HTML, focus management, ARIA roles, axe-core testing
+- ✅ **17-security** — XSS vectors, `dangerouslySetInnerHTML`, CSP headers, token storage, dependency risks
+- ✅ **18-realtime-systems** — SSE vs WebSocket vs CRDT decision guide, presence tracking with `useSyncExternalStore`
+- ✅ **19-websockets** — Production hook with exponential backoff, heartbeat, Zustand integration, scaling with Redis Pub/Sub
+- ✅ **20-microfrontends** — Module Federation config, dynamic remote loading, cross-app auth/navigation, trade-offs
+- ✅ **21-frontend-system-design** — 7-step framework, YouTube/ChatGPT/Figma/Netflix/Google Docs deep dives
+- ✅ **22-observability** — RUM pipeline, Core Web Vitals, error boundaries, OpenTelemetry tracing
+- ✅ **23-build-tools** — Vite vs webpack vs Turbopack, ESM dev server, HMR internals
+- ✅ **24-bundlers** — Tree shaking, splitChunks, bundle analysis, CI budgets, CSS extraction
+- ✅ **25-browser-internals** — Rendering pipeline, event loop, layout thrashing, compositing, frame budgets
+- ✅ **26-javascript-engine** — V8 pipeline, hidden classes, inline caching, GC, React optimization patterns
+- ✅ **27-networking** — HTTP/2 vs HTTP/3, CDN caching, SW strategies, resource hints
+- ✅ **28-pwa** — SW lifecycle, cache strategies, manifest, push notifications
+- ✅ **29-offline-first** — IndexedDB, Background Sync, conflict resolution, optimistic updates
+- ✅ **31-agentic-ui** — MCP protocol, tool registry, action queue, guardrails, confirmation dialogs
+- ✅ **32-frontend-ml** — TensorFlow.js, ONNX Runtime Web, Web Worker offloading, model optimization
+- ✅ **33-frontend-architecture-patterns** — Monorepo (Turborepo/Nx), federation contracts, design token sync
+- ✅ **34-case-studies** — Meta/Netflix/Vercel/Google architectures compared
+- ✅ **38-scaling-react-apps** — Team scaling, CI/CD pipeline, feature flags, deployment strategies
+- ✅ **40-projects** — ChatGPT, YouTube, Figma Lite, Slack clone with architecture diagrams
 
 ## Interactive Simulators
 

@@ -33,6 +33,22 @@ graph LR
 
 ## Table of Contents
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 - [The Big Picture](#-the-big-picture)
 - [1. Clusters](#1-clusters)
 - [2. Task Definitions](#2-task-definitions)
@@ -50,6 +66,22 @@ graph LR
 ---
 
 ## 🧭 The Big Picture
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
                     ┌──────────────────────────────┐
@@ -75,7 +107,39 @@ graph LR
 
 ## 1. Clusters
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Cluster Architecture
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 ┌──────────────────────────────────────────────────────┐
@@ -95,6 +159,22 @@ graph LR
 
 ### Cluster Lifecycle
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 | State | Description |
 |-------|-------------|
 | ACTIVE | Cluster running, accepting tasks |
@@ -106,7 +186,39 @@ graph LR
 
 ## 2. Task Definitions
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Task Definition Structure
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```json
 {
@@ -149,6 +261,22 @@ graph LR
 
 ### Task Size (Fargate)
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 | CPU | Memory (MiB) | Network |
 |-----|-------------|---------|
 | 256 (.25 vCPU) | 512, 1024, 2048 | Up to 0.5 Gbps |
@@ -163,7 +291,39 @@ graph LR
 
 ## 3. Services
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Service Model
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 ECS Service = Scheduler for long-running tasks
@@ -187,6 +347,22 @@ ECS Service = Scheduler for long-running tasks
 
 ### Service Lifecycle
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```text
 Create Service
       │
@@ -206,6 +382,22 @@ Create Service
 
 ### Deployment Types
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 | Type | Behavior | Zero-Downtime |
 |------|----------|--------------|
 | Rolling update | Gradually replace tasks | ✅ With health checks |
@@ -217,7 +409,39 @@ Create Service
 
 ## 4. Fargate vs EC2 Launch Type
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Comparison
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 | Aspect | Fargate | EC2 |
 |--------|---------|-----|
@@ -230,6 +454,22 @@ Create Service
 | EBS volumes | ❌ (EFS only) | ✅ |
 
 ### When to Choose
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 FARGATE when:
@@ -249,7 +489,39 @@ EC2 when:
 
 ## 5. Service Auto-Scaling
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Target Tracking
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```json
 {
@@ -266,6 +538,22 @@ EC2 when:
 
 ### Supported Metrics
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 | Metric | Description |
 |--------|-------------|
 | `ECSServiceAverageCPUUtilization` | CPU usage across tasks |
@@ -273,6 +561,22 @@ EC2 when:
 | `ALBRequestCountPerTarget` | Request count per task |
 
 ### Step Scaling
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 Metric (CPU%)    Condition         Action
@@ -284,6 +588,22 @@ Metric (CPU%)    Condition         Action
 ```
 
 ### Scaling Flow
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 CPU > 70% (3 min sustained)
@@ -305,7 +625,39 @@ New tasks launched
 
 ## 6. Load Balancing
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### ALB with ECS
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 ┌──────────┐
@@ -330,6 +682,22 @@ New tasks launched
 
 ### ALB vs NLB
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 | Feature | ALB (Layer 7) | NLB (Layer 4) |
 |---------|--------------|--------------|
 | Protocol | HTTP/HTTPS/gRPC | TCP/UDP/TLS |
@@ -342,7 +710,39 @@ New tasks launched
 
 ## 7. Service Discovery
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### AWS Cloud Map Integration
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 ┌────────────────────────────────────┐
@@ -364,6 +764,22 @@ New tasks launched
 ```
 
 ### Service Connect
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 Service Connect = Service mesh without sidecars
@@ -387,7 +803,39 @@ No sidecar containers needed!
 
 ## 8. ECR
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### ECR Architecture
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 ┌──────────┐    docker push    ┌──────────┐
@@ -403,6 +851,22 @@ No sidecar containers needed!
 ```
 
 ### Commands
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```awscli
 # Authenticate Docker to ECR
@@ -428,6 +892,22 @@ aws ecr start-image-scan \
 
 ### Lifecycle Policy
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```json
 {
   "rules": [
@@ -449,7 +929,39 @@ aws ecr start-image-scan \
 
 ## 9. Task Placement
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Placement Strategies (EC2 only)
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 Strategy: binpack
@@ -476,6 +988,22 @@ Strategy: random
 
 ### Placement Constraints
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 | Constraint | Description |
 |------------|-------------|
 | `distinctInstance` | Each task on a different instance |
@@ -487,7 +1015,39 @@ Strategy: random
 
 ## 10. Capacity Providers
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Capacity Provider Strategy
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 Cluster Capacity Strategy:
@@ -510,6 +1070,22 @@ Task 6+       → Distributed by weight:
 ```
 
 ### EC2 Capacity Providers
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 ┌──────────────────────────────────────┐
@@ -535,7 +1111,39 @@ Flow:
 
 ## 11. ECS Anywhere
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### External Instances
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 ECS Anywhere = Run ECS tasks on your own infrastructure
@@ -559,6 +1167,22 @@ ECS Anywhere = Run ECS tasks on your own infrastructure
 
 ### Requirements
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 | Requirement | Detail |
 |-------------|--------|
 | OS | Linux (x86_64, ARM64) |
@@ -569,6 +1193,22 @@ ECS Anywhere = Run ECS tasks on your own infrastructure
 ---
 
 ## 🧠 Simplest Mental Model
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 ECS CLUSTER      =  A container parking lot. All your containers

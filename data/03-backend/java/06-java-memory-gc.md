@@ -30,6 +30,22 @@ graph LR
 
 ## Table of Contents
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 - [Java Memory Model (JMM)](#-java-memory-model-jmm)
 - [1. Happens-Before Rules](#1-happens-before-rules)
 - [2. Garbage Collection Overview](#2-garbage-collection-overview)
@@ -47,7 +63,39 @@ graph LR
 
 ## 🧭 Java Memory Model (JMM)
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### What JMM Defines
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 JMM defines:
@@ -62,6 +110,22 @@ JMM does NOT define:
 ```
 
 ### Memory Hierarchy Visibility
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 Thread A                           Thread B
@@ -92,7 +156,39 @@ Without synchronization → Thread B may see:
 
 ## 1. Happens-Before Rules
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### The Rules
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 If A happens-before B, then everything A did (writes, etc.)
@@ -139,6 +235,22 @@ is visible to B.
 
 ### Visualizing Happens-Before
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```text
 Thread A:                        Thread B:
     │                                │
@@ -160,6 +272,22 @@ Thread A:                        Thread B:
 
 ### volatile Memory Barrier
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```text
 volatile write:
   ┌─────────────────────────────────────────┐
@@ -179,6 +307,22 @@ volatile read:
 ```
 
 ### JMM in Practice: Double-Checked Locking
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```java
 // ✅ CORRECT — using volatile
@@ -210,7 +354,39 @@ class Singleton {
 
 ## 2. Garbage Collection Overview
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### What is GC?
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 Automatic memory management:
@@ -221,6 +397,22 @@ Automatic memory management:
 ```
 
 ### Reachability
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 GC Roots (always reachable):
@@ -253,7 +445,39 @@ Example:
 
 ## 3. GC Algorithms
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### 1. Mark-Sweep
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 Phase 1: MARK
@@ -278,6 +502,22 @@ Problem: Fragmentation (free blocks interspersed)
 
 ### 2. Mark-Compact
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```text
 Phase 1: MARK (same as Mark-Sweep)
 
@@ -295,6 +535,22 @@ Used by: Serial GC, Parallel GC (old gen)
 ```
 
 ### 3. Copying (Scavenge)
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 Phase 1: Copy live objects from FROM to TO space
@@ -320,6 +576,22 @@ Used by: Young Gen collectors (Copying is fast, but wastes half space)
 
 ### Algorithm Comparison
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 | Algorithm | Speed | Fragmentation | Space Overhead | Used By |
 |-----------|-------|---------------|----------------|---------|
 | Mark-Sweep | Medium | High | None | CMS (old gen) |
@@ -330,7 +602,39 @@ Used by: Young Gen collectors (Copying is fast, but wastes half space)
 
 ## 4. Generational GC Flow
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Object Age & Promotion
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
                     ┌─────────────────────────────────────────────┐
@@ -384,6 +688,22 @@ Object Lifetime Flow:
 
 ### Full GC Flow
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```text
 ┌─────────────────────────────────────────────────────────────┐
 │                    Full GC Triggers                          │
@@ -422,6 +742,22 @@ Object Lifetime Flow:
 
 ### GC: Young vs Old vs Full
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 | Type | What | STW? | Frequency |
 |------|------|------|-----------|
 | Minor GC | Young gen only | Yes (fast) | Frequent (seconds) |
@@ -432,7 +768,39 @@ Object Lifetime Flow:
 
 ## 5. Garbage Collector Types
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Serial GC (-XX:+UseSerialGC)
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 ┌─────────────────────────────────────────────────────────────┐
@@ -448,6 +816,22 @@ Object Lifetime Flow:
 ```
 
 ### Parallel GC (-XX:+UseParallelGC) — Default in Java 8
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 ┌─────────────────────────────────────────────────────────────┐
@@ -467,6 +851,22 @@ Object Lifetime Flow:
 ```
 
 ### G1 GC (-XX:+UseG1GC) — Default since Java 9
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 ┌─────────────────────────────────────────────────────────────┐
@@ -497,6 +897,22 @@ Object Lifetime Flow:
 
 ### ZGC (-XX:+UseZGC) — Java 11+ (Experimental → Production)
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```text
 ┌─────────────────────────────────────────────────────────────┐
 │  ZGC                                                        │
@@ -519,6 +935,22 @@ Object Lifetime Flow:
 
 ### GC Comparison
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 | GC | Pause Time | Throughput | CPU Overhead | Best For |
 |----|-----------|------------|--------------|----------|
 | Serial | Long | Low | Low | Small apps, single core |
@@ -531,7 +963,39 @@ Object Lifetime Flow:
 
 ## 6. Object Allocation & TLABs
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### TLAB (Thread-Local Allocation Buffer)
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 Each thread gets a private region in Eden for allocation:
@@ -566,6 +1030,22 @@ Size control:
 
 ### Object Layout in Memory
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```text
 Object header (12 bytes on 64-bit, with compressed OOPs):
   ┌──────────────────────────────────────────┐
@@ -591,7 +1071,39 @@ Object header (12 bytes on 64-bit, with compressed OOPs):
 
 ## 7. GC Logging & Analysis
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Enabling GC Logs
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```bash
 # Java 8 style
@@ -610,6 +1122,22 @@ Object header (12 bytes on 64-bit, with compressed OOPs):
 ```
 
 ### Reading GC Logs
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 Example (Parallel GC):
@@ -644,6 +1172,22 @@ Example (Full GC):
 
 ### GC Analysis Tools
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 | Tool | Purpose |
 |------|---------|
 | `jstat -gcutil <pid> 1s` | Real-time GC stats every second |
@@ -657,7 +1201,39 @@ Example (Full GC):
 
 ## 8. Memory Leak Detection
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Types of Memory Leaks
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```java
 // 1. Forgotten references in collections
@@ -712,6 +1288,22 @@ class Leak5 {
 
 ### Detecting Leaks with Heap Dumps
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```bash
 # Trigger heap dump on OOM
 -XX:+HeapDumpOnOutOfMemoryError
@@ -730,6 +1322,22 @@ jcmd <pid> GC.heap_dump /path/to/dump.hprof
 
 ### Using Eclipse MAT
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```text
 1. Open .hprof file in MAT
 2. Run "Leak Suspects Report"
@@ -747,6 +1355,22 @@ Key metrics:
 ```
 
 ### Using jcmd for Diagnostics
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```bash
 # Thread dump
@@ -772,7 +1396,39 @@ jcmd <pid> help
 
 ## 9. Reference Types
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### SoftReference — Memory-Sensitive Cache
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```java
 // GC clears SoftReferences only when memory is low
@@ -798,6 +1454,22 @@ public class SoftCache<K, V> {
 ```
 
 ### WeakReference — No Memory Pressure
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```java
 // GC clears WeakReference as soon as no strong refs exist
@@ -826,6 +1498,22 @@ public class WeakListener<T> {
 ```
 
 ### PhantomReference — Post-Mortem Cleanup
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```java
 // get() always returns null!
@@ -866,6 +1554,22 @@ public class ResourceCleaner {
 
 ### Reference Type Comparison
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 | Aspect | SoftReference | WeakReference | PhantomReference |
 |--------|--------------|---------------|------------------|
 | get() returns | Object (maybe null) | Object (maybe null) | Always null |
@@ -876,6 +1580,22 @@ public class ResourceCleaner {
 ---
 
 ## ⚠️ Common Pitfalls
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 | Pitfall | Cause | Detection |
 |---------|-------|-----------|
@@ -891,6 +1611,22 @@ public class ResourceCleaner {
 ---
 
 ## 🧠 Simplest Mental Model
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 MARK            =  A janitor marking chairs that are still in use with
@@ -936,6 +1672,22 @@ HAPPENS-BEFORE  =  If I text you "I put the keys on the table" before
 
 ## Observability
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```mermaid
 flowchart LR
     A[Java App] --> B[Metrics]
@@ -952,6 +1704,22 @@ flowchart LR
 
 ### Key Metrics
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 | Metric | Unit | Threshold | Indicates |
 |--------|------|-----------|-----------|
 | JVM heap used | % | < 75% | Memory pressure |
@@ -965,6 +1733,22 @@ flowchart LR
 
 ### Logs
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 - **ERROR**: Uncaught exceptions, OOM, stack traces, connection pool exhaustion, thread starvation
 - **WARN**: Slow queries, long GC pauses, retry attempts, deprecated API usage
 - **INFO**: Server start/stop, context initialization, config loaded, scheduled tasks
@@ -972,9 +1756,41 @@ flowchart LR
 
 ### Traces
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 Use Micrometer Tracing (formerly Spring Cloud Sleuth) or OpenTelemetry Java SDK. Propagate trace context via MDC for log correlation.
 
 ### Alerts
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 | Severity | Condition | Response |
 |----------|-----------|----------|
@@ -986,6 +1802,22 @@ Use Micrometer Tracing (formerly Spring Cloud Sleuth) or OpenTelemetry Java SDK.
 
 ### Dashboards
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 **JVM Dashboard**: heap usage (young/old/metaspace), GC pause (count, duration per generation), thread states (runnable/blocked/waiting), class loading, JIT compilation time, file descriptor count.
 
 
@@ -995,7 +1827,39 @@ Use Micrometer Tracing (formerly Spring Cloud Sleuth) or OpenTelemetry Java SDK.
 
 ## Object Allocation Deep Dive
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### TLAB (Thread-Local Allocation Buffer)
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 Problem: Thread-safe allocation requires locking
@@ -1041,6 +1905,22 @@ java -XX:MinTLABSize=16384 App  # Minimum TLAB size
 
 ### Object Allocation Timeline
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```
 new User()
   │
@@ -1073,6 +1953,22 @@ Reference returned
 
 ### Allocation Rate Analysis
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```bash
 # Monitor allocation rate with async-profiler
 ./profiler.sh -d 30 -e alloc -o flamegraph.html <pid>
@@ -1096,7 +1992,39 @@ Reference returned
 
 ## Memory Barriers & CPU Cache
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### False Sharing
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 Problem: Two threads update different fields, same cache line
@@ -1165,6 +2093,22 @@ public class Counter {
 
 ### Memory Barriers in Action
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```
 Store Buffer & Ordering:
 
@@ -1208,7 +2152,39 @@ Thread A:          Thread B:
 
 ## GC Algorithm Comparison
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Mark-Sweep-Compact (G1GC, CMS)
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 Before GC:
@@ -1240,6 +2216,22 @@ But: Defragments, improves allocation
 
 ### Concurrent Mark-Sweep (CMS)
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```
 Reduces pause time by doing work concurrently:
 
@@ -1268,7 +2260,39 @@ Cost: Extra book-keeping, more CPU used
 
 ## Production Tuning Strategies
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### GC Pause Optimization
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 Scenario: p99 latency = 500ms, needs < 100ms
@@ -1311,6 +2335,22 @@ Metaspace filling:
 
 ### Heap Sizing for Production
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```
 Framework: Determine correct -Xmx
 
@@ -1352,7 +2392,39 @@ Framework: Determine correct -Xmx
 
 ## Interview Questions: Memory & GC Mastery
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Beginner Questions
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 **Q1: What's the difference between stack and heap?**
 ```
@@ -1442,6 +2514,22 @@ Solution:
 
 ### Intermediate Questions
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 **Q4: Explain the generational hypothesis and why it works**
 ```
 A: Hypothesis: Most objects die young
@@ -1512,6 +2600,22 @@ Prevention:
 ```
 
 ### Senior Questions
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 **Q6: Design a low-latency, low-garbage application**
 ```
@@ -1623,6 +2727,22 @@ Detection:
 
 ### Staff-Level Question
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 **Q8: Architect a multi-region distributed cache with Java**
 ```
 A: Requirements:
@@ -1701,7 +2821,39 @@ Result:
 
 ## Common Failures
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Failure: OutOfMemoryError
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 - **Symptoms**: Application crashes with `java.lang.OutOfMemoryError`. Heap dump on exit. 503s from load balancer.
 - **Root Cause**: Memory leak (unclosed streams, collections growing unbounded, ThreadLocal not cleaned). Heap too small for workload. Metaspace leak from dynamic class loading.
@@ -1711,6 +2863,22 @@ Result:
 
 ### Failure: Full GC Storm
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 - **Symptoms**: Latency spikes, CPU high, throughput drops. GC log shows Full GC events in quick succession.
 - **Root Cause**: Old Gen fills up faster than concurrent GC can clear. Large object allocation (direct to Old Gen). GC fragmentation. Too many concurrent GC threads competing.
 - **Detection**: GC logs show Full GC events. `jstat -gcutil` shows Old Gen at > 90% after GC. `jmap -histo` shows large byte arrays.
@@ -1718,6 +2886,22 @@ Result:
 - **Prevention**: Use G1GC with `-XX:MaxGCPauseMillis=200`. Set `-XX:G1HeapRegionSize=16m`. Monitor allocation rate with async-profiler.
 
 ### Failure: Thread Pool Exhaustion
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 - **Symptoms**: "RejectedExecutionException" in logs. Tasks queue up and time out. Deadlock between thread pools.
 - **Root Cause**: Task submitted faster than thread pool can process. Thread pool queue bounded. Deadlock where pool A waits for pool B, pool B waits for pool A.
@@ -1727,6 +2911,22 @@ Result:
 
 ### Failure: ClassLoader Leak
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 - **Symptoms**: Metaspace grows unbounded, Full GC on Metaspace, eventually OOM: Metaspace.
 - **Root Cause**: Application redeploy (Tomcat) creates new ClassLoader each time. Old ClassLoader not garbage collected because some reference (often from a library thread) holds it alive. Common with thread pools initialized at deploy time.
 - **Detection**: `jstat -gcutil` shows Metaspace usage climbing. Heap dump shows many `ClassLoader` instances. PermGen/Metaspace GC before OOM.
@@ -1734,6 +2934,22 @@ Result:
 - **Prevention**: Always use `ThreadFactory` that sets daemon threads. Use `Thread.setContextClassLoader(null)` for library threads. Test redeploy with `Profiler` to verify ClassLoader cleanup.
 
 ### Failure: Deadlock
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 - **Symptoms**: Threads stuck, no progress, application partially frozen. Thread dump shows threads in BLOCKED state all holding locks others need.
 - **Root Cause**: Circular lock dependency. Two+ threads each hold a lock and wait for another thread's lock. Classic dining philosophers.

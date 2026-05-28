@@ -29,9 +29,41 @@ graph LR
 
 ## Scope
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 Production-grade reference covering JVM profiling, JIT compiler internals, GC tuning, memory management, benchmarking with JMH, async-profiler, JFR, and operational runbooks for high-throughput Java services.
 
 ## Table of Contents
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 - [Profiling Toolchain](#profiling-toolchain)
 - [JIT Compiler Deep Dive](#jit-compiler-deep-dive)
@@ -45,6 +77,22 @@ Production-grade reference covering JVM profiling, JIT compiler internals, GC tu
 ---
 
 ## Profiling Toolchain
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
                     ┌─────────────────────────────┐
@@ -69,6 +117,22 @@ Production-grade reference covering JVM profiling, JIT compiler internals, GC tu
 ```
 
 ### async-profiler (perf_events based)
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```bash
 # CPU profiling — sampling event-based, low overhead (~1-2%)
@@ -95,6 +159,22 @@ profiler.sh -e cpu -f after.html $PID
 
 ### JFR (JDK Flight Recorder)
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```bash
 # Start recording with 60s duration, dump on exit
 jfr record --name myrecording --duration 60s \
@@ -117,6 +197,22 @@ jmc -open /tmp/recording.jfr
 
 ### JMX — Standard Management Beans
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```java
 // Accessing JMX MBeans programmatically
 MBeanServerConnection mbs = ManagementFactory.getPlatformMBeanServer();
@@ -138,7 +234,39 @@ for (MemoryPoolMXBean pool : ManagementFactory.getMemoryPoolMXBeans()) {
 
 ## JIT Compiler Deep Dive
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Tiered Compilation
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
   Interpretation       C1 (client)       C2 (server)
@@ -157,6 +285,22 @@ for (MemoryPoolMXBean pool : ManagementFactory.getMemoryPoolMXBeans()) {
 ```
 
 ### Inlining — The Most Important JIT Optimization
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```java
 // Inline limits (JDK 17+ defaults)
@@ -191,6 +335,22 @@ public class InliningExample {
 
 ### On-Stack Replacement (OSR)
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```java
 // OSR: when a long-running loop is compiled while executing
 // The JVM replaces the interpreted frame mid-execution
@@ -213,6 +373,22 @@ public class OSRExample {
 ```
 
 ### Escape Analysis & Lock Optimizations
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```java
 public class EscapeAnalysis {
@@ -244,6 +420,22 @@ public class EscapeAnalysis {
 
 ### JIT Compiler Flags
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```bash
 # Print compilation events
 -XX:+PrintCompilation
@@ -272,7 +464,39 @@ public class EscapeAnalysis {
 
 ## GC Tuning
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### G1 GC — Default Since JDK 9
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```bash
 # G1 GC: default collector, region-based, low pause target
@@ -292,6 +516,22 @@ public class EscapeAnalysis {
 ```
 
 ### G1 GC Pause Distribution
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
                 G1 Young GC Pause Times (ms)
@@ -319,6 +559,22 @@ public class EscapeAnalysis {
 
 ### G1 GC Log Parsing
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```bash
 # Enable GC logging
 -XX:+PrintGCDetails
@@ -337,6 +593,22 @@ public class EscapeAnalysis {
 ```
 
 ### GC Tuning Decision Tree
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
   Pause too long (>200ms)?
@@ -362,7 +634,39 @@ public class EscapeAnalysis {
 
 ## Memory Management
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Heap Sizing
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```bash
 # Production heap sizing
@@ -380,6 +684,22 @@ public class EscapeAnalysis {
 
 ### Off-Heap & Metaspace
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```bash
 # Non-heap memory limits
 -XX:MaxMetaspaceSize=512M       # class metadata (unbounded default)
@@ -394,6 +714,22 @@ public class EscapeAnalysis {
 ```
 
 ### Direct (Off-Heap) Memory
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```java
 import java.nio.ByteBuffer;
@@ -432,6 +768,22 @@ public class OffHeapPatterns {
 
 ### Thread-Local Allocation Buffers (TLAB)
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```bash
 # TLAB — per-thread Eden allocation area, avoids synchronization
 # Each thread gets ~1% of Eden as initial TLAB
@@ -445,6 +797,22 @@ public class OffHeapPatterns {
 ```
 
 ### ClassLoader & ThreadLocal Leaks
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```java
 // ClassLoader Leak — common in app servers
@@ -480,7 +848,39 @@ public class ThreadLocalLeak {
 
 ## JMH Benchmarking
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Correct JMH Benchmark
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```java
 import org.openjdk.jmh.annotations.*;
@@ -525,6 +925,22 @@ public class StringConcatBenchmark {
 
 ### JMH Execution Flow
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```
   ┌─────────────────────────────────────────────────────────┐
   │                     JMH Runner                            │
@@ -561,6 +977,22 @@ public class StringConcatBenchmark {
 ```
 
 ### Common JMH Pitfalls
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```java
 @State(Scope.Benchmark)
@@ -604,7 +1036,39 @@ public class JMHPitfalls {
 
 ## async-profiler Usage
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Profile Strategies by Problem
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```bash
 # Problem: CPU high, which methods are hot?
@@ -624,6 +1088,22 @@ profiler.sh -e alloc --alloc 500m -f live.html -d 30 $PID
 ```
 
 ### Flame Graph Interpretation
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
                ┌──────────────────────────────────────────────┐
@@ -651,6 +1131,22 @@ profiler.sh -e alloc --alloc 500m -f live.html -d 30 $PID
 
 ### Differential Profiling
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```bash
 # After deploying code change, compare CPU profiles
 profiler.sh -e cpu -f /tmp/before.html -d 60 $PID
@@ -667,7 +1163,39 @@ profiler.sh --diff before.html after.html -f diff.html
 
 ## Production Tuning Checklist
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Capacity Thresholds
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```yaml
 CPU:
@@ -718,6 +1246,22 @@ Direct Memory:
 
 ### Quick Health Check Commands
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```bash
 # GC activity
 jstat -gcutil $PID 2s 10
@@ -745,7 +1289,39 @@ jcmd $PID JFR.start duration=60s filename=/tmp/recording.jfr
 
 ## Failure Analysis
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### 1. GC Pause Storm
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 Symptoms:
@@ -774,6 +1350,22 @@ Resolution:
 
 ### 2. Code Cache Full → Deoptimization
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```
 Symptoms:
   - JIT ceases compilation
@@ -794,6 +1386,22 @@ Resolution:
 ```
 
 ### 3. Memory Leak — Heap Dump Analysis
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```java
 // Classical leak pattern: accumulator map
@@ -822,6 +1430,22 @@ public class LeakPattern {
 
 ### 4. Safepoint Storms
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```bash
 # Diagnose safepoint issues
 -XX:+PrintSafepointStatistics
@@ -840,6 +1464,22 @@ public class LeakPattern {
 ```
 
 ### 5. Resource Leak — File Descriptor Exhaustion
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```java
 // Java 7+ try-with-resources prevents this
@@ -867,6 +1507,22 @@ public void goodIo() throws IOException {
 
 ## Observability
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```mermaid
 flowchart LR
     A[Java App] --> B[Metrics]
@@ -883,6 +1539,22 @@ flowchart LR
 
 ### Key Metrics
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 | Metric | Unit | Threshold | Indicates |
 |--------|------|-----------|-----------|
 | JVM heap used | % | < 75% | Memory pressure |
@@ -896,6 +1568,22 @@ flowchart LR
 
 ### Logs
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 - **ERROR**: Uncaught exceptions, OOM, stack traces, connection pool exhaustion, thread starvation
 - **WARN**: Slow queries, long GC pauses, retry attempts, deprecated API usage
 - **INFO**: Server start/stop, context initialization, config loaded, scheduled tasks
@@ -903,9 +1591,41 @@ flowchart LR
 
 ### Traces
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 Use Micrometer Tracing (formerly Spring Cloud Sleuth) or OpenTelemetry Java SDK. Propagate trace context via MDC for log correlation.
 
 ### Alerts
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 | Severity | Condition | Response |
 |----------|-----------|----------|
@@ -917,12 +1637,60 @@ Use Micrometer Tracing (formerly Spring Cloud Sleuth) or OpenTelemetry Java SDK.
 
 ### Dashboards
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 **JVM Dashboard**: heap usage (young/old/metaspace), GC pause (count, duration per generation), thread states (runnable/blocked/waiting), class loading, JIT compilation time, file descriptor count.
 
 
 ## Common Failures
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Failure: OutOfMemoryError
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 - **Symptoms**: Application crashes with `java.lang.OutOfMemoryError`. Heap dump on exit. 503s from load balancer.
 - **Root Cause**: Memory leak (unclosed streams, collections growing unbounded, ThreadLocal not cleaned). Heap too small for workload. Metaspace leak from dynamic class loading.
@@ -932,6 +1700,22 @@ Use Micrometer Tracing (formerly Spring Cloud Sleuth) or OpenTelemetry Java SDK.
 
 ### Failure: Full GC Storm
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 - **Symptoms**: Latency spikes, CPU high, throughput drops. GC log shows Full GC events in quick succession.
 - **Root Cause**: Old Gen fills up faster than concurrent GC can clear. Large object allocation (direct to Old Gen). GC fragmentation. Too many concurrent GC threads competing.
 - **Detection**: GC logs show Full GC events. `jstat -gcutil` shows Old Gen at > 90% after GC. `jmap -histo` shows large byte arrays.
@@ -939,6 +1723,22 @@ Use Micrometer Tracing (formerly Spring Cloud Sleuth) or OpenTelemetry Java SDK.
 - **Prevention**: Use G1GC with `-XX:MaxGCPauseMillis=200`. Set `-XX:G1HeapRegionSize=16m`. Monitor allocation rate with async-profiler.
 
 ### Failure: Thread Pool Exhaustion
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 - **Symptoms**: "RejectedExecutionException" in logs. Tasks queue up and time out. Deadlock between thread pools.
 - **Root Cause**: Task submitted faster than thread pool can process. Thread pool queue bounded. Deadlock where pool A waits for pool B, pool B waits for pool A.
@@ -948,6 +1748,22 @@ Use Micrometer Tracing (formerly Spring Cloud Sleuth) or OpenTelemetry Java SDK.
 
 ### Failure: ClassLoader Leak
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 - **Symptoms**: Metaspace grows unbounded, Full GC on Metaspace, eventually OOM: Metaspace.
 - **Root Cause**: Application redeploy (Tomcat) creates new ClassLoader each time. Old ClassLoader not garbage collected because some reference (often from a library thread) holds it alive. Common with thread pools initialized at deploy time.
 - **Detection**: `jstat -gcutil` shows Metaspace usage climbing. Heap dump shows many `ClassLoader` instances. PermGen/Metaspace GC before OOM.
@@ -955,6 +1771,22 @@ Use Micrometer Tracing (formerly Spring Cloud Sleuth) or OpenTelemetry Java SDK.
 - **Prevention**: Always use `ThreadFactory` that sets daemon threads. Use `Thread.setContextClassLoader(null)` for library threads. Test redeploy with `Profiler` to verify ClassLoader cleanup.
 
 ### Failure: Deadlock
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 - **Symptoms**: Threads stuck, no progress, application partially frozen. Thread dump shows threads in BLOCKED state all holding locks others need.
 - **Root Cause**: Circular lock dependency. Two+ threads each hold a lock and wait for another thread's lock. Classic dining philosophers.

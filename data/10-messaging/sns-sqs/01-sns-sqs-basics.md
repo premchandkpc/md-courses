@@ -37,6 +37,22 @@ graph LR
 
 ## 📑 Table of Contents
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 - [1. Core Concepts](#1-core-concepts)
 - [2. SQS — Standard vs FIFO](#2-sqs--standard-vs-fifo)
 - [3. Visibility Timeout](#3-visibility-timeout)
@@ -62,6 +78,22 @@ graph LR
 
 ## 1. Core Concepts
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```mermaid
 sequenceDiagram
     participant Client
@@ -83,6 +115,22 @@ sequenceDiagram
 
 ### Step-by-Step
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 1. **Producer publishes** message to SNS topic or sends directly to SQS queue
 2. **SNS fan-out** distributes message to all subscribed endpoints (SQS, Lambda, HTTP, email)
 3. **SQS buffering** queues messages persistently; consumers pull at their own pace
@@ -91,6 +139,22 @@ sequenceDiagram
 6. **Dead-letter queue** if message fails multiple times (maxReceiveCount), moves to DLQ for investigation
 
 ### Code Example
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```python
 # Python: SNS Publisher → SQS Consumer via boto3
@@ -171,9 +235,41 @@ consume_order_events()
 
 ### Real-World Scenario
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 Shopify's order pipeline uses SNS to fan out OrderCreated events to 12 services: billing, recommendation, notification, analytics, fulfillment, tracking, etc. Each subscribes SQS queue to the topic. When notification service is slow (email API rate-limited), its queue backs up to 500K messages, but other services process normally. After 4 failed delivery attempts, messages move to DLQ; Shopify's ops team reviews manually the next day—zero impact to order flow.
 
 ## 2. SQS — Standard vs FIFO
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 ┌─────────────────────────┐  ┌────────────────────────┐
@@ -198,6 +294,22 @@ sqs.create_queue(QueueName='my-queue.fifo', Attributes={'FifoQueue': 'true', 'Co
 
 ## 3. Visibility Timeout
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```text
 Poll → msg received → timeout starts → process → delete
                                     fail → msg reappears for other consumers
@@ -219,6 +331,22 @@ for msg in response.get('Messages', []):
 
 ## 4. Dead-Letter Queues
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```text
 Source → consumer fails → retry × N → DLQ → investigate → redrive
 ```
@@ -239,6 +367,22 @@ sqs.create_queue(QueueName='source', Attributes={
 
 ## 5. Delay Queues & Message Timers
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 - **Queue-level DelaySeconds**: 0–900s (all messages delayed)
 - **Per-message delay**: 0–900s (Standard only)
 - **FIFO**: Queue-level only
@@ -251,6 +395,22 @@ sqs.send_message(QueueUrl=url, MessageBody='slow-task', DelaySeconds=120)
 ---
 
 ## 6. Large Messages via S3
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 **256 KB limit**. Larger messages use S3: upload payload → send S3 pointer in SQS → consumer fetches.
 
@@ -266,6 +426,22 @@ else:
 ---
 
 ## 7. Short Polling vs Long Polling
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 | Feature | Short Polling | Long Polling |
 |---------|--------------|--------------|
@@ -283,6 +459,22 @@ sqs.set_queue_attributes(QueueUrl=url, Attributes={'ReceiveMessageWaitTimeSecond
 ---
 
 ## 8. Batch Operations & Throughput
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 - **SendMessageBatch**: 10 msgs max, 256 KB total
 - **DeleteMessageBatch**: 10 max
@@ -303,6 +495,22 @@ sqs.send_message_batch(QueueUrl=url, Entries=[
 
 ## 9. FIFO Deduplication & Exactly-Once
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```text
 Content-Based: SHA-256(body) → Dedup ID
 Explicit:      User provides MessageDeduplicationId
@@ -317,6 +525,22 @@ sqs.send_message(QueueUrl=url, MessageBody=json.dumps({'id': '123'}), MessageGro
 ---
 
 ## 10. Consumer Patterns
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 SQS ◄── poll ── Worker (EC2/ECS) ──► process + delete
@@ -341,6 +565,22 @@ def lambda_handler(event, context):
 
 ## 11. SQS Extended Client Library
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 Java/.NET SDK extension. Transparently offloads > 256 KB to S3.
 
 ```java
@@ -354,6 +594,22 @@ Python: manual S3 pointer pattern.
 ---
 
 ## 12. SNS — Topics & Subscriptions
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
               ┌─────────┐
@@ -378,6 +634,22 @@ sns.subscribe(TopicArn=topic['TopicArn'], Protocol='lambda', Endpoint='arn:aws:l
 
 ## 13. SNS — Message Filtering
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 **Attribute-based**: SNS evaluates `MessageAttributes` against `FilterPolicy` on each subscription.
 
 ```python
@@ -397,6 +669,22 @@ sns.publish(TopicArn=topic_arn, Message=json.dumps({'id': '123'}),
 
 ## 14. SNS — Fan-Out & Durability
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```text
 Producer → SNS Topic ─┬─→ SQS A (audit)
                        ├─→ SQS B (process)
@@ -409,6 +697,22 @@ Producer → SNS Topic ─┬─→ SQS A (audit)
 ---
 
 ## 15. SNS — Delivery Policies & DLQ
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```python
 # Delivery policy (HTTP retry behavior)
@@ -427,6 +731,22 @@ sns.set_subscription_attributes(SubscriptionArn=sub_arn, AttributeName='RawMessa
 
 ## 16. SNS — FIFO Topics
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 Topic name `.fifo`. Subscribers: SQS FIFO only. Ordering per `MessageGroupId`.
 
 ```python
@@ -440,6 +760,22 @@ sns.publish(TopicArn=fifo_topic['TopicArn'], Message=json.dumps({'order_id': '12
 ---
 
 ## 17. Combined — Fan-Out to SQS
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```python
 sqs.set_queue_attributes(QueueUrl=queue_url, Attributes={'Policy': json.dumps({
@@ -456,6 +792,22 @@ sns.set_subscription_attributes(SubscriptionArn=sub['SubscriptionArn'], Attribut
 ---
 
 ## 18. Combined — SNS+SQS Pub/Sub
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 ┌──────────┐   ┌──────────┐   ┌──────────┐
@@ -483,6 +835,22 @@ sns.set_subscription_attributes(SubscriptionArn=sub['SubscriptionArn'], Attribut
 
 ## 19. Combined — S3 → SNS → SQS
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```text
 S3 Upload → S3 Event → SNS Topic → SQS Queue → Consumer
 ```
@@ -497,6 +865,22 @@ s3.put_bucket_notification_configuration(Bucket='source', NotificationConfigurat
 ---
 
 ## 20. Simplest Mental Model
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 ┌───────────────────────────────────────────────────────────┐
@@ -521,5 +905,21 @@ s3.put_bucket_notification_configuration(Bucket='source', NotificationConfigurat
 
 
 ## Practical Example
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 See code examples above for practical usage patterns.

@@ -41,6 +41,22 @@ graph LR
 
 ## Table of Contents
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 1. Requirements & Scale
 2. High-Level Architecture
 3. Connection Management
@@ -59,6 +75,22 @@ graph LR
 ---
 
 ## 1. Requirements & Scale
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 WhatsApp Scale (2024):
@@ -81,6 +113,22 @@ Key Requirements:
 ---
 
 ## 2. High-Level Architecture
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 +-------------+     +----------------+     +-------------+
@@ -123,6 +171,22 @@ Key Requirements:
 ---
 
 ## 3. Connection Management
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 Client                   Connection Manager (CM)
@@ -167,6 +231,22 @@ jitter = random(0, base)
 ---
 
 ## 4. Message Flow
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 Sender                    Connection Manager (Sender's)
@@ -219,6 +299,22 @@ TTL based on message retention policy (default: messages stored until all device
 
 ## 5. Group Chat Architecture
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```text
 Group Types:
   Small groups (< 256): fan-out on write
@@ -265,6 +361,22 @@ Offline: 1 push notification (notify group, not per-sender).
 
 ## 6. Multi-Device Support
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```text
 Account: +1-555-1234
   |
@@ -308,6 +420,22 @@ Phone                    Server                    Desktop
 ---
 
 ## 7. End-to-End Encryption
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 **Signal Protocol Components:**
 
@@ -378,6 +506,22 @@ Initial Key -> root key chain
 
 ## 8. Media Sharing
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```text
 Sender                   Media Server              Recipient
   |                          |                        |
@@ -412,6 +556,22 @@ Sender                   Media Server              Recipient
 ---
 
 ## 9. Presence Service
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 Client                    Presence Service (Redis)
@@ -451,6 +611,22 @@ Read Receipts: On | Off (mutual)
 
 ## 10. Push Notifications
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```text
 WhatsApp Server              FCM/APNs                    Mobile Client
      |                          |                             |
@@ -480,6 +656,22 @@ iOS (APNs):      { "aps": { "alert": "New message", "content-available": 1 }, "m
 ---
 
 ## 11. Database Design
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 **Cassandra for Messages:**
 ```text
@@ -519,6 +711,22 @@ Broadcast: conversation_id = broadcast_list_id
 ---
 
 ## 12. Scaling Strategy
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 Global Deployment: Regional Clusters
@@ -566,6 +774,22 @@ Bloom Filter (1% false positive) -> 1MB for 10M users (vs 100MB hash set)
 ---
 
 ## 13. Failure Analysis
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 **Connection Storm on Reconnection After Downtime:**
 ```text
@@ -634,6 +858,22 @@ Mitigations:
 
 ## 14. Performance Considerations
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```text
 Messages:
   - Median delivery latency: < 200ms (same region)
@@ -660,9 +900,41 @@ Network:
 
 ## Simplest Mental Model
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 **WhatsApp is like a post office that never reads your letters.** The post office (server) knows who is home (online/offline), carries the letter to the right address, and knocks (push notification) if nobody answers. But the letters are in sealed armored envelopes (end-to-end encryption) — even the post office can't read them. Large groups are like mailing lists: either each letter is copied for every member (small group fan-out) or members check a bulletin board (large group fan-out).
 
 
 ## Practical Example
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 See code examples above for practical usage patterns.

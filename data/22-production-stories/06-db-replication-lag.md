@@ -44,6 +44,22 @@ graph LR
 
 ## Table of Contents
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 1. [Scenario A: Read-After-Write Inconsistency — User Writes → Read from Stale Replica → Duplicate Write](#scenario-a-read-after-write-inconsistency--user-writes--read-from-stale-replica--duplicate-write)
 2. [Scenario B: Replication Delay During Traffic Spike — Heavy Write Load → Replicas Fall Behind → Stale ETL → DW Inconsistency](#scenario-b-replication-delay-during-traffic-spike--heavy-write-load--replicas-fall-behind--stale-etl--dw-inconsistency)
 3. [Scenario C: Replication Slot Accumulation — pg_receivewal Slot Not Consumed → WAL Accumulation → Disk Full → Primary Crash](#scenario-c-replication-slot-accumulation--pg_receivewal-slot-not-consumed--wal-accumulation--disk-full--primary-crash)
@@ -57,7 +73,39 @@ graph LR
 
 ## Scenario A: Read-After-Write Inconsistency — User Writes → Read from Stale Replica → Duplicate Write
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Symptom
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 User: places order #87492 at 10:00:00 on primary.
@@ -71,6 +119,22 @@ Time to remediate: partial refund + database cleanup.
 ```
 
 ### Detection
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 
@@ -98,6 +162,22 @@ FROM pg_stat_replication;
 ```
 
 ### Investigation
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 
@@ -135,6 +215,22 @@ public List<Order> getOrders(Long userId) {
 ```
 
 ### Root Cause
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 READ-AFTER-WRITE INCONSISTENCY SEQUENCE
@@ -185,6 +281,22 @@ READ-AFTER-WRITE INCONSISTENCY SEQUENCE
 
 ### Mitigation
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```
 
 ── IMMEDIATE: STICKY READ WITH PRIMARY ROUTING
@@ -214,6 +326,22 @@ if (session.getAttribute("lastWrite") != null &&
 ```
 
 ### Permanent Fix
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```java
 ── APPLICATION-LEVEL READ-AFTER-WRITE CONSISTENCY ──────────────────────
@@ -271,7 +399,39 @@ primary_read_on_write_ttl = 5000  # 5 seconds
 
 ## Scenario B: Replication Delay During Traffic Spike — Heavy Write Load → Replicas Fall Behind → Stale ETL → DW Inconsistency
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Symptom
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 11:00:00 — Flash sale begins: 20,000 orders/minute peak
@@ -286,6 +446,22 @@ primary_read_on_write_ttl = 5000  # 5 seconds
 ```
 
 ### Detection
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 
@@ -318,6 +494,22 @@ $ top
 ```
 
 ### Investigation
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 
@@ -365,6 +557,22 @@ $ ping primary-db
 
 ### Root Cause
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```
 REPLICATION LAG WATERFALL
 ══════════════════════════
@@ -405,6 +613,22 @@ REPLICATION LAG WATERFALL
 
 ### Mitigation
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```
 
 ── IMMEDIATE: STOP NON-CRITICAL QUERIES ON REPLICA
@@ -443,6 +667,22 @@ END $$;
 ```
 
 ### Permanent Fix
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```sql
 ── REPLICA CONFIGURATION ───────────────────────────────────────────────
@@ -489,7 +729,39 @@ $ pt-heartbeat --monitor --database percona --master-server-id=1
 
 ## Scenario C: Replication Slot Accumulation — pg_receivewal Slot Not Consumed → WAL Accumulation → Disk Full → Primary Crash
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Symptom
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 03:00:00 — Logical replication slot created for CDC pipeline
@@ -507,6 +779,22 @@ $ pt-heartbeat --monitor --database percona --master-server-id=1
 ```
 
 ### Detection
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 
@@ -548,6 +836,22 @@ $ du -sh /data/postgresql/pg_wal/
 
 ### Investigation
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```
 
 ── 1. IDENTIFY THE UNUSED SLOT
@@ -582,6 +886,22 @@ total 0  ← ARCHIVE IS EMPTY! No WAL archiving configured!
 ```
 
 ### Root Cause
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 WAL ACCUMULATION LEADING TO DISK FULL
@@ -621,6 +941,22 @@ WAL ACCUMULATION LEADING TO DISK FULL
 
 ### Mitigation
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```
 
 ── STEP 1: DELETE THE UNUSED SLOT
@@ -652,6 +988,22 @@ $ systemctl restart debezium-connect
 ```
 
 ### Permanent Fix
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```sql
 ── PostgreSQL 14+ — Limit WAL retention per slot
@@ -701,7 +1053,39 @@ WHERE NOT active
 
 ## Scenario D: Network Partition — Replica Disconnected → Replication Gap Grows → Catch-Up I/O Storm
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Symptom
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 08:00:00  Network switch maintenance — replica loses connectivity to primary
@@ -718,6 +1102,22 @@ WHERE NOT active
 ```
 
 ### Detection
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 
@@ -742,6 +1142,22 @@ SHOW SLAVE STATUS\G
 ```
 
 ### Root Cause
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 
@@ -782,6 +1198,22 @@ NETWORK PARTITION CATCH-UP TIMELINE
 
 ### Mitigation
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```
 
 ── IMMEDIATE: STOP NON-CRITICAL QUERIES ON CATCHING-UP REPLICA
@@ -813,6 +1245,22 @@ WHERE application_name = 'replica-1';
 ```
 
 ### Permanent Fix
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```bash
 ── POSTGRESQL REPLICATION CONFIGURATION ────────────────────────────────
@@ -858,7 +1306,39 @@ min_wal_size = 1GB
 
 ## Scenario E: GTID Skip on Failover — Promoted Replica with Different GTID → Data Inconsistency
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Symptom
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 Primary server crashes at 22:00:00.
@@ -872,6 +1352,22 @@ Business: 1,247 orders are "lost" from the system.
 ```
 
 ### Detection
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 
@@ -907,6 +1403,22 @@ SELECT count(*) FROM orders;
 ```
 
 ### Root Cause
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 
@@ -950,6 +1462,22 @@ GTID INCONSISTENCY AFTER FAILOVER
 
 ### Mitigation
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```
 
 ── STEP 1: IDENTIFY THE GTID GAP
@@ -992,6 +1520,22 @@ START SLAVE;
 ```
 
 ### Permanent Fix
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```sql
 ── USE SEMI-SYNCHRONOUS REPLICATION FOR CRITICAL DATA ────────────────
@@ -1038,7 +1582,39 @@ synchronous_standby_names = 'FIRST 1 (replica-1)'
 
 ## Detection and Monitoring Reference
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### MySQL Replication Monitoring
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```sql
 ── SHOW SLAVE STATUS KEY FIELDS
@@ -1070,6 +1646,22 @@ pt-heartbeat --monitor --database percona --master-server-id=1
 
 ### PostgreSQL Replication Monitoring
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```sql
 ── PG_STAT_REPLICATION
 
@@ -1092,6 +1684,22 @@ FROM pg_replication_slots;
 
 ### Key Metrics Reference
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 | Metric | Source | Warning | Critical |
 |--------|--------|---------|----------|
 | `Seconds_Behind_Master` (MySQL) | SHOW SLAVE STATUS | > 10s | > 60s |
@@ -1107,7 +1715,39 @@ FROM pg_replication_slots;
 
 ## Mitigation Playbook
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Read-After-Write Inconsistency
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 1. ADD sticky write session: route user to primary for 5s after write
@@ -1117,6 +1757,22 @@ FROM pg_replication_slots;
 ```
 
 ### Replication Delay Emergency
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 1. STOP reporting queries on lagged replica (free I/O/CPU for replay)
@@ -1128,6 +1784,22 @@ FROM pg_replication_slots;
 
 ### Replication Slot/ WAL Emergency
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```
 1. DROP unused replication slots: SELECT pg_drop_replication_slot('name')
 2. VERIFY disk space freed: df -h /data
@@ -1138,6 +1810,22 @@ FROM pg_replication_slots;
 
 ### Network Partition Catch-Up
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```
 1. STOP app reads on replica (remove from LB)
 2. KILL heavy reporting queries on replica
@@ -1147,6 +1835,22 @@ FROM pg_replication_slots;
 ```
 
 ### GTID Failover Inconsistency
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 1. IDENTIFY GTID gap: SELECT gtid_subtract(new_primary, old_primary)
@@ -1160,7 +1864,39 @@ FROM pg_replication_slots;
 
 ## Permanent Fixes and Configuration Reference
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### MySQL Replication Configuration
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```ini
 # my.cnf — primary
@@ -1203,6 +1939,22 @@ rpl_semi_sync_slave_enabled = 1
 
 ### PostgreSQL Replication Configuration
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```ini
 # postgresql.conf — primary
 wal_level = replica
@@ -1230,6 +1982,22 @@ max_standby_streaming_delay = 600
 
 ## Lessons Learned
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 1. **Read-after-write consistency is an application problem, not a database problem.** The database provides eventual consistency — the application must handle it.
 2. **Seconds_Behind_Master is unreliable** for long-running queries. Use pt-heartbeat for true lag detection.
 3. **Each replication slot can consume gigabytes of WAL.** Monitor slot lag and set `max_slot_wal_keep_size` (PG 14+).
@@ -1244,6 +2012,22 @@ max_standby_streaming_delay = 600
 ---
 
 ## Related
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 - [Databases](../../08-databases/) — Outages, corruption, performance
 - [Distributed Systems](../../09-distributed-systems/) — Consensus, cascade failures

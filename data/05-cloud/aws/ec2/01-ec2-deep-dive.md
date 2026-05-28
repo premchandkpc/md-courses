@@ -33,6 +33,22 @@ graph LR
 
 ## Table of Contents
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 - [The Big Picture](#-the-big-picture)
 - [1. Instance Types](#1-instance-types)
 - [2. AMIs](#2-amis)
@@ -51,6 +67,22 @@ graph LR
 ---
 
 ## 🧭 The Big Picture
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
                        ┌─────────────────────────┐
@@ -75,7 +107,39 @@ graph LR
 
 ## 1. Instance Types
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Naming Convention
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 m5.xlarge
@@ -86,6 +150,22 @@ m5.xlarge
 
 ### Instance Families
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 | Family | Names | Use Case |
 |--------|-------|----------|
 | **General Purpose** | t3, t4g, m5, m6i | Web servers, code repos, dev/test |
@@ -95,6 +175,22 @@ m5.xlarge
 | **Accelerated Computing** | p4, p5, g5, trn1 | ML training, rendering, gaming |
 
 ### t3/T4g Burstable Performance
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 CPU Credits Model:
@@ -117,6 +213,22 @@ CPU Credits Model:
 
 ### Size Options
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 | Size | vCPU | Memory (GiB) | EBS Bandwidth |
 |------|------|-------------|--------------|
 | nano | 1 | 0.5 | Up to 0.5 Gbps |
@@ -134,7 +246,39 @@ CPU Credits Model:
 
 ## 2. AMIs
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### AMI Anatomy
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 ┌───────────────────────────────────┐
@@ -151,6 +295,22 @@ CPU Credits Model:
 
 ### AMI Categories
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 | Category | Source | Update Cadence |
 |----------|--------|----------------|
 | AWS provided | AWS | Daily/Weekly |
@@ -159,6 +319,22 @@ CPU Credits Model:
 | Custom (yours) | Built from instance | On demand |
 
 ### Creating a Custom AMI
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 Launch Instance
@@ -216,7 +392,39 @@ aws ec2 copy-image \
 
 ## 3. Security Groups
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Security Group vs NACL
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 Security Group (Instance Level)        NACL (Subnet Level)
@@ -232,6 +440,22 @@ Security Group (Instance Level)        NACL (Subnet Level)
 ```
 
 ### Security Group Rules
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```json
 {
@@ -258,6 +482,22 @@ Security Group (Instance Level)        NACL (Subnet Level)
 
 ### Rules Flow
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```text
 Inbound Internet Traffic
         │
@@ -279,6 +519,22 @@ Inbound Internet Traffic
 
 ### Best Practices
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 | Practice | Reason |
 |----------|--------|
 | Use security group references instead of IP | Dynamic, no management |
@@ -291,7 +547,39 @@ Inbound Internet Traffic
 
 ## 4. Key Pairs
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Key Pair Anatomy
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 ┌──────────────────────────┐
@@ -307,6 +595,22 @@ Inbound Internet Traffic
 ```
 
 ### SSH Authentication Flow
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 ssh -i my-key.pem ec2-user@<public-ip>
@@ -347,7 +651,39 @@ ssh -i my-key.pem ec2-user@<public-ip>
 
 ## 5. EBS Volumes
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### EBS Volume Types
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 | Type | Max IOPS | Max Throughput | Use Case |
 |------|----------|---------------|----------|
@@ -359,6 +695,22 @@ ssh -i my-key.pem ec2-user@<public-ip>
 | sc1 (HDD) | 250 | 250 MB/s | Cold data, backups |
 
 ### EBS vs Instance Store
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 EBS Volume (Persistent)        Instance Store (Ephemeral)
@@ -373,6 +725,22 @@ EBS Volume (Persistent)        Instance Store (Ephemeral)
 ```
 
 ### EBS Snapshots
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 Snapshot Flow:
@@ -409,7 +777,39 @@ aws ec2 create-volume \
 
 ## 6. Elastic IPs
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Elastic IP Flow
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 Allocate EIP
@@ -442,6 +842,22 @@ Allocate EIP
 
 ### Limits & Pricing
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 | Item | Limit | Cost |
 |------|-------|------|
 | EIPs per region | 5 (default, can increase) | Free when attached to running instance |
@@ -452,7 +868,39 @@ Allocate EIP
 
 ## 7. Placement Groups
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Placement Group Strategies
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 Cluster               Spread                 Partition
@@ -477,7 +925,39 @@ Low latency           High availability     Fault isolation
 
 ## 8. User Data
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### User Data Script
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```bash
 #!/bin/bash
@@ -505,6 +985,22 @@ aws elbv2 register-targets \
 ```
 
 ### Execution Flow
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 Instance Launch
@@ -536,7 +1032,39 @@ Instance Launch
 
 ## 9. Spot Instances
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Spot Pricing Model
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 Price per Instance Hour
@@ -554,6 +1082,22 @@ Price per Instance Hour
 ```
 
 ### Interruption Handling
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 Spot Instance receives termination notice
@@ -581,6 +1125,22 @@ Spot Instance receives termination notice
 
 ### Spot vs On-Demand vs Reserved
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 | Aspect | On-Demand | Reserved (1yr) | Reserved (3yr) | Spot |
 |--------|-----------|----------------|----------------|------|
 | Cost vs On-Demand | 100% | ~60% | ~40% | ~70% discount |
@@ -592,7 +1152,39 @@ Spot Instance receives termination notice
 
 ## 10. Auto Scaling Groups
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### ASG Architecture
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 ┌──────────────────────────────────────┐
@@ -616,6 +1208,22 @@ Spot Instance receives termination notice
 
 ### Scaling Policies
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```json
 {
   "TargetTrackingScalingPolicyConfiguration": {
@@ -630,6 +1238,22 @@ Spot Instance receives termination notice
 ```
 
 ### Lifecycle Hooks
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 ┌────────────┐
@@ -659,7 +1283,39 @@ Spot Instance receives termination notice
 
 ## 11. Launch Templates
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Launch Template Components
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```json
 {
@@ -699,6 +1355,22 @@ Spot Instance receives termination notice
 
 ### Versioning
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```text
 Launch Template: my-app
   Version 1: AMI v1.0, t3.medium, 30GB gp2
@@ -712,7 +1384,39 @@ Launch Template: my-app
 
 ## 12. Instance Metadata
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Metadata Endpoints
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 Link-local address: http://169.254.169.254/latest/meta-data/
@@ -764,6 +1468,22 @@ Available paths:
 
 ### Retrieving Metadata
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```bash
 # Get instance ID
 TOKEN=$(curl -X PUT "http://169.254.169.254/latest/api/token" \
@@ -782,6 +1502,22 @@ curl http://169.254.169.254/latest/meta-data/iam/security-credentials/my-role \
 
 ### IMDSv1 vs IMDSv2
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 | Feature | IMDSv1 | IMDSv2 |
 |---------|--------|--------|
 | Authentication | None | Session token required |
@@ -793,6 +1529,22 @@ curl http://169.254.169.254/latest/meta-data/iam/security-credentials/my-role \
 ---
 
 ## 🧠 Simplest Mental Model
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 EC2 INSTANCE     =  A computer you rent by the hour.

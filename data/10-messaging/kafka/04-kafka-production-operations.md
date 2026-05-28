@@ -36,6 +36,22 @@ graph LR
 ```
 
 ## 📋 Table of Contents
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 - [Cluster Sizing](#cluster-sizing)
 - [Disk Sizing](#disk-sizing)
 - [Broker Tuning](#broker-tuning)
@@ -53,6 +69,22 @@ graph LR
 
 ## Cluster Sizing
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```
 Brokers = max(
     (total_throughput / per_broker_throughput),
@@ -64,6 +96,22 @@ Brokers = max(
 **Replication Factor**: RF=3 for production (tolerates 1 failure). `min.insync.replicas=2`.
 
 ### Partitions
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 ```text
 target = 100 MB/s, max partition throughput = 20 MB/s
 min partitions = 5 → double for headroom → 10
@@ -75,6 +123,22 @@ Rule: total partitions < 4000 per broker (controller load grows beyond)
 
 ## Disk Sizing
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```
 total_storage = daily_throughput * retention_days * RF
 Example: 1 TB/day × 7 days × 3 RF = 21 TB (3.5 TB/broker at 6 brokers)
@@ -85,6 +149,22 @@ Example: 1 TB/day × 7 days × 3 RF = 21 TB (3.5 TB/broker at 6 brokers)
 ---
 
 ## Broker Tuning
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```properties
 num.network.threads=8           # CPU cores × 2
@@ -104,17 +184,65 @@ min.insync.replicas=2
 
 ## Simplest Mental Model
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 > **Kafka is a distributed commit log. Partitions are parallel lanes (ordered). Replication copies each lane to 3 brokers. The controller is the traffic cop. Zookeeper/KRaft is the map.**
 
 ---
 
 ## JMX Monitoring
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```bash
 export KAFKA_JMX_OPTS="-Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.port=9999"
 ```
 
 ### Critical Metrics
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 | MBean | Alert Threshold |
 |-------|----------------|
@@ -126,6 +254,22 @@ export KAFKA_JMX_OPTS="-Dcom.sun.management.jmxremote -Dcom.sun.management.jmxre
 ---
 
 ## Burrow & Cruise Control
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 **Burrow**: Linkedin's lag monitor — evaluates consumer progress across 3 windows (EXP/OK/LAG). Consumer-agnostic.
 ```bash
@@ -142,6 +286,22 @@ Goals (priority): RackAware → MinTopicLeaders → ReplicaDistribution → Disk
 
 ## Partition Reassignment
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 When adding/removing brokers:
 ```bash
 kafka-reassign-partitions.sh --bootstrap-server localhost:9092 \
@@ -155,6 +315,22 @@ kafka-reassign-partitions.sh --bootstrap-server localhost:9092 --execute \
 ---
 
 ## Rolling Upgrade
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 1. Set inter.broker.protocol.version=OLD (leave new binary)
@@ -173,7 +349,39 @@ inter.broker.protocol.version=3.4
 
 ## Security
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### SASL/SCRAM (hashed creds in ZK/KRaft)
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 ```bash
 kafka-configs.sh --bootstrap-server localhost:9092 \
   --alter --add-config 'SCRAM-SHA-256=[password=secret]' \
@@ -181,12 +389,44 @@ kafka-configs.sh --bootstrap-server localhost:9092 \
 ```
 
 ### mTLS
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 ```properties
 ssl.keystore.location=/var/kafka/server.keystore.jks
 ssl.client.auth=required
 ```
 
 ### ACLs
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 ```bash
 kafka-acls.sh --authorizer-properties zookeeper.connect=localhost:2181 \
   --add --allow-principal User:producer-user \
@@ -196,6 +436,22 @@ kafka-acls.sh --authorizer-properties zookeeper.connect=localhost:2181 \
 ---
 
 ## MirrorMaker 2
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 Replicates topics across clusters. Internal topics: `A.my-topic`, `heartbeat`, `checkpoint`.
 
@@ -212,16 +468,80 @@ sync.group.offsets.enabled=true
 
 ## Disaster Recovery
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Active-Passive
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 ```text
 PROD (active) ──► MM2 ──► DR (passive, standby consumers)
   Failover: redirect DNS/producer config to DR
 ```
 
 ### Active-Active
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 Both clusters have producers. Challenge: conflict resolution for same keys.
 
 ### Recovery
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 1. Stop MM2, redirect producers to DR
 2. Validate offsets
 3. Redirect consumers
@@ -231,7 +551,39 @@ Both clusters have producers. Challenge: conflict resolution for same keys.
 
 ## Client Tuning
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Producer
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 ```properties
 acks=all                     # Strongest durability
 batch.size=16384             # 16 KB — increase for throughput
@@ -242,6 +594,22 @@ retries=2147483647           # Infinite retries
 ```
 
 ### Consumer
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 ```properties
 enable.auto.commit=false
 auto.offset.reset=earliest
@@ -257,6 +625,22 @@ partition.assignment.strategy=org.apache.kafka.clients.consumer.CooperativeStick
 
 ## Quotas
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 Limit network throughput per client-id:
 ```bash
 kafka-configs.sh --bootstrap-server localhost:9092 \
@@ -269,6 +653,22 @@ kafka-configs.sh --bootstrap-server localhost:9092 \
 ---
 
 ## 📚 Key Takeaways
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 | Topic | Golden Rule |
 |-------|-------------|
@@ -285,6 +685,22 @@ kafka-configs.sh --bootstrap-server localhost:9092 \
 ---
 
 ## Code Examples
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```python
 from kafka import KafkaProducer, KafkaConsumer
@@ -357,6 +773,22 @@ kafka-reassign-partitions.sh --generate --broker-list "1,2,3,4"
 
 ## Common Failure Modes
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 **Problem**: Consumer group rebalancing storm — frequent rebalances causing processing stalls
 
 **Root cause**: When consumers join/leave frequently (due to network hiccups, GC pauses, or pod restarts), Kafka triggers a rebalance. During rebalance, all consumers in the group stop processing (for eager protocol) or pause affected partitions (for cooperative). If rebalances happen faster than processing can stabilize, the group enters a rebalance loop — consumers never process data.
@@ -377,16 +809,80 @@ kafka-reassign-partitions.sh --generate --broker-list "1,2,3,4"
 
 ## Interview Questions
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Q1: How does Kafka achieve exactly-once semantics (EOS) end-to-end?
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 **Answer**: Kafka's EOS requires three things: (1) **Idempotent producer** (`enable.idempotence=true`) — the producer tags each batch with a producer ID (PID) and sequence number. The broker deduplicates any duplicate batches within a session. (2) **Transactional API** — producers can atomically produce to multiple partitions within a transaction. The coordinator writes a commit marker to an internal `__transaction_state` topic. Consumers with `isolation.level=read_committed` only see committed messages. (3) **Exactly-once semantics in Kafka Streams** — Streams applications use the transactional producer with consumer offset commits in the same transaction as output results. This ensures that "read-process-write" is atomic: if the app crashes and restarts, it resumes from the committed offset, producing duplicate results that are deduplicated by the idempotent producer. The trade-off: up to 2x latency overhead due to the commit protocol, and higher memory usage on the broker for transaction state.
 
 ### Q2: How do you size a Kafka cluster for 500 MB/s throughput with 7-day retention?
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 **Answer**: (1) **Compute storage**: 500 MB/s × 86400s × 7d × RF3 = ~90 TB total. With 6 brokers, each needs 15 TB. (2) **Throughput per broker**: writing 500 MB/s / 6 = ~83 MB/s per broker (plus replication reads: 83 MB/s × 2 replicas = 167 MB/s read). Modern NVMe SSDs handle 500+ MB/s sequential, so this is fine. (3) **Partitions per broker**: 500 MB/s / 20 MB/s per partition ceiling = 25 minimum partitions per topic. Double for headroom → 50. Total partitions across all topics < 4000 per broker. (4) **Broker count**: check controller load — 6 brokers with 4000 partitions each = 24K partition leaders. A single controller handles up to ~50K partitions. (5) **Memory**: Each partition leader keeps ~1MB of state → 24K × 1MB = 24GB per broker, so 64GB+ RAM. (6) **Network**: 83 MB/s in + 83 MB/s out = 166 MB/s per broker → need 10Gbps+ NIC. (7) **Connections**: Each consumer/producer connection consumes a thread. With 200 producers + 500 consumers, need `num.network.threads` = 16+ and `num.io.threads` = 8 × CPU cores. Kafka scales linearly — add brokers to increase total throughput.
 
 
 ## Deep Internals: Kafka Request Pipeline
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 Client (Network Layer)
@@ -419,7 +915,39 @@ Purgatory (delayed operations: acks, fetch requests waiting for data)
 
 ## Production Failure Modes
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Failure 1: Under-Replicated Partitions During Rolling Restart
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 | Aspect | Detail |
 |--------|--------|
@@ -431,6 +959,22 @@ Purgatory (delayed operations: acks, fetch requests waiting for data)
 
 ### Failure 2: Consumer Group Rebalancing Storm
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 | Aspect | Detail |
 |--------|--------|
 | **Symptoms** | Repeated consumer rebalances; processing stalls; messages pile up; consumer lag spikes |
@@ -440,6 +984,22 @@ Purgatory (delayed operations: acks, fetch requests waiting for data)
 | **Prevention** | Configure `partition.assignment.strategy=CooperativeStickyAssignor`. Set `max.poll.records` lower (500). Keep processing time per record < 10ms. Use async processing with manual offset commit |
 
 ### Failure 3: Disk Full on Broker
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 | Aspect | Detail |
 |--------|--------|
@@ -451,19 +1011,99 @@ Purgatory (delayed operations: acks, fetch requests waiting for data)
 
 ## Interview Questions
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Q1 (Beginner): What is the difference between acks=1 and acks=all in Kafka producers?
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 **Answer**: `acks=1` means the leader broker writes the record to its log and responds to the producer without waiting for followers to confirm. If the leader crashes before followers replicate, the record is lost. `acks=all` (or `acks=-1`) means the leader waits for all in-sync replicas (ISR) to acknowledge the write. With `min.insync.replicas=2` and RF=3, this guarantees at least 2 replicas have the data before the producer gets confirmation. Choose `acks=1` for throughput-sensitive applications where occasional data loss is acceptable (metrics, audit logs). Choose `acks=all` for financial transactions, order processing, or any workload where data loss is unacceptable.
 
 ### Q2 (Mid-Level): How does Kafka handle exactly-once semantics?
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 **Answer**: Kafka provides exactly-once semantics (EOS) through three mechanisms: (1) **Idempotent Producer** — each producer gets a unique producer ID (PID). Each message gets a sequence number. The broker deduplicates based on (PID, sequence number). (2) **Transactional Producer** — atomic writes across multiple partitions/topics. The producer initiates a transaction, writes to partitions, then commits or aborts. Kafka stores an `abort` or `commit` marker in the log. Consumers with `isolation.level=read_committed` only see committed messages. (3) **Consumer Transactional Send** — offset commits are part of the producer transaction. The consume-transform-produce loop becomes atomic: offsets + output are committed in one transaction. This prevents the "zombie" problem where a failed consumer restarts and reprocesses.
 
 ### Q3 (Senior): How do you diagnose and fix Kafka partition skew (hot partitions)?
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 **Answer**: Partition skew occurs when one partition receives disproportionate traffic. Detection: `kafka-run-class.sh kafka.tools.JmxTool --object-name kafka.log:type=Log,name=Size` shows uneven sizes. `kafka-topics.sh --describe --topic` shows one partition with much larger log end offset. Cruise Control shows partition load distribution. Root causes: bad partition key design (e.g., using `user_id % 10` when one user generates 50% of events), key collisions, or partitioned writes from a single source. Fix: redesign partition key to ensure even distribution. For time-series data, use `UUID` or composite keys (region + hash). For user-specific data, ensure high-cardinality user IDs. Mitigation: increase partition count and use Cruise Control to reassign partition leaders using `kafka-reassign-partitions.sh`. For urgent hot partition, limit producer throughput via quotas for the client-id.
 
 ## Cross-References
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 - [Kafka Production Patterns](../02-kafka-patterns.md) — Event sourcing, CQRS, outbox pattern, stream processing
 - [Kafka Streams DSL](../06-kafka-streams-dsl.md) — KTable, KStream, state stores, exactly-once

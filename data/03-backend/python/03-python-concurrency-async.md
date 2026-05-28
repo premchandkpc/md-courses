@@ -35,6 +35,22 @@ graph LR
 
 ## 📑 Table of Contents
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 1. [The GIL — Why It Exists & How It Works](#1-the-gil--why-it-exists--how-it-works)
 2. [Threading Deep Dive](#2-threading-deep-dive)
 3. [Multiprocessing Deep Dive](#3-multiprocessing-deep-dive)
@@ -49,6 +65,22 @@ graph LR
 ---
 
 ## 1. The GIL — Why It Exists & How It Works
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 ┌─────────────────────────────────────────────────────────┐
@@ -68,6 +100,22 @@ graph LR
 The Global Interpreter Lock (GIL) is a mutex that prevents multiple native threads from executing Python bytecode simultaneously. It exists because CPython's memory management is **not thread-safe** — the reference counting (`Py_INCREF`/`Py_DECREF`) and garbage collector need protection.
 
 ### Bytecode Execution & Switching
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```python
 import sys
@@ -89,6 +137,22 @@ sys.setswitchinterval(0.001)  # 1ms — aggressive switching
 
 ### GIL Removal Efforts
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 | Project | Approach | Status |
 |---------|----------|--------|
 | **nogil** (Python 3.9 fork) | Per-interpreter locks, free-threaded | Merged into CPython 3.13 (experimental) |
@@ -105,6 +169,22 @@ sys.setswitchinterval(0.001)  # 1ms — aggressive switching
 ---
 
 ## 2. Threading Deep Dive
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 Threading Decision:
@@ -125,6 +205,22 @@ Threading Decision:
 ```
 
 ### Thread Basics
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```python
 import threading
@@ -151,6 +247,22 @@ print("All threads done")
 
 ### Daemon Threads
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```python
 # Daemon thread = killed when main thread exits
 # Good for background tasks, monitoring, heartbeats
@@ -167,6 +279,22 @@ print("Main exiting — daemon dies with me")
 ```
 
 ### Synchronisation Primitives
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```python
 import threading
@@ -201,6 +329,22 @@ barrier = threading.Barrier(3)  # wait until 3 threads arrive
 
 ### ThreadPoolExecutor
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```python
 from concurrent.futures import ThreadPoolExecutor
 
@@ -217,6 +361,22 @@ with ThreadPoolExecutor(max_workers=10) as ex:
 
 ### Thread-Local Storage
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```python
 # Each thread gets its own copy of data
 local_data = threading.local()
@@ -230,6 +390,22 @@ threading.Thread(target=worker).start()
 ```
 
 ### Queue — Thread-Safe Communication
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```python
 import queue
@@ -253,6 +429,22 @@ except queue.Empty:
 
 ## 3. Multiprocessing Deep Dive
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```python
 import multiprocessing as mp
 
@@ -275,6 +467,22 @@ with mp.Pool(processes=4) as pool:
 
 ### Start Methods on macOS
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```python
 # macOS defaults to 'spawn' (safer, slower)
 # 'fork' — copy parent memory (unsafe on macOS, deprecated)
@@ -289,6 +497,22 @@ p = ctx.Process(target=cpu_intensive, args=(5_000_000,))
 ```
 
 ### IPC Mechanisms
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```python
 # Queue — thread-safe, process-safe (pickle-based)
@@ -314,6 +538,22 @@ shm = shared_memory.SharedMemory(name='my_shm', create=True, size=1024)
 
 ### ProcessPoolExecutor
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```python
 from concurrent.futures import ProcessPoolExecutor
 
@@ -324,6 +564,22 @@ with ProcessPoolExecutor(max_workers=4) as ex:
 ```
 
 ### Synchronisation in Multiprocessing
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```python
 # Same primitives as threading, but process-safe
@@ -338,6 +594,22 @@ barrier = mp.Barrier(4)
 ---
 
 ## 4. Asyncio Deep Dive
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 Event Loop Lifecycle:
@@ -359,6 +631,22 @@ Event Loop Lifecycle:
 ```
 
 ### Core Concepts
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```python
 import asyncio
@@ -400,6 +688,22 @@ asyncio.run(main())  # creates + runs event loop
 
 ### Timeouts & Shielding
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```python
 # Timeout — raise exception after deadline
 try:
@@ -418,6 +722,22 @@ async def critical():
 
 ### Synchronisation in Asyncio
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```python
 # asyncio.Lock, Semaphore, Event, Condition — similar to threading but async
 sem = asyncio.Semaphore(5)  # limit concurrent connections
@@ -434,6 +754,22 @@ item = await q.get()
 
 ### TaskGroup (Python 3.11+)
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```python
 # Structured concurrency — if one task fails, all are cancelled
 async def main():
@@ -446,6 +782,22 @@ async def main():
 
 ### Eager Tasks (Python 3.12+)
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```python
 # Task starts executing immediately without yielding to event loop first
 # Useful for tiny coroutines where yielding overhead is significant
@@ -455,6 +807,22 @@ async def main():
 ```
 
 ### Async Generators & Context Managers
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```python
 # Async generator
@@ -479,6 +847,22 @@ async with DatabaseConnection() as conn:
 ---
 
 ## 5. Trio & Structured Concurrency
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```python
 import trio
@@ -515,6 +899,22 @@ async def main():
 ---
 
 ## 6. uvloop & Curio
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```python
 # uvloop — libuv-based event loop (2-4x faster than asyncio default)
@@ -559,6 +959,22 @@ async def main():
 
 ## 7. concurrent.futures
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```python
 from concurrent.futures import (
     ThreadPoolExecutor,
@@ -594,6 +1010,22 @@ results = executor.map(cpu_intensive, range(10))
 ---
 
 ## 8. Subprocess & Signals
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```python
 import subprocess
@@ -641,6 +1073,22 @@ signal.signal(signal.SIGINT, handle_sigint)
 
 ## 9. Parallelism vs Concurrency
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```
 ┌────────────────────────────────────────────────────────────┐
 │              Concurrency (deal with many things)           │
@@ -674,6 +1122,22 @@ signal.signal(signal.SIGINT, handle_sigint)
 
 ## 10. Simplest Mental Model
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```
 ┌─────────────────────────────────────────────────────────────┐
 │              PYTHON CONCURRENCY — MENTAL MODEL              │
@@ -702,6 +1166,22 @@ signal.signal(signal.SIGINT, handle_sigint)
 
 ## Practical Example
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```python
 # Basic usage
 result = function()
@@ -709,6 +1189,22 @@ print(result)
 ```
 
 ## Observability
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```mermaid
 flowchart LR
@@ -726,6 +1222,22 @@ flowchart LR
 
 ### Key Metrics
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 | Metric | Unit | Threshold | Indicates |
 |--------|------|-----------|-----------|
 | Request latency (p99) | ms | < 500ms | Application performance |
@@ -737,6 +1249,22 @@ flowchart LR
 
 ### Logs
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 - **ERROR**: Unhandled exceptions, connection failures, import errors, OOM
 - **WARN**: Slow API endpoints, retry attempts, pool exhaustion approaching
 - **INFO**: Server start/stop, worker lifecycle, config loaded
@@ -744,9 +1272,41 @@ flowchart LR
 
 ### Traces
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 Use OpenTelemetry Python SDK. Auto-instrument popular frameworks (Flask, FastAPI, Django). Propagate trace context via HTTP headers and message headers.
 
 ### Alerts
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 | Severity | Condition | Response |
 |----------|-----------|----------|
@@ -757,12 +1317,60 @@ Use OpenTelemetry Python SDK. Auto-instrument popular frameworks (Flask, FastAPI
 
 ### Dashboards
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 **Python Runtime Dashboard**: request latency (p50/p95/p99), error rate by endpoint, GC pauses, thread pool utilization, memory usage, connection pool status.
 
 
 ## Common Failures
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Failure: Memory Leak from Cyclic References
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 - **Symptoms**: RSS grows continuously, eventually OOM. Python GC runs frequently. Objects not freed.
 - **Root Cause**: Objects define `__del__` methods AND participate in reference cycles. Cyclic GC (gc.garbage) can't collect objects with `__del__`. Common with circular parent-child references in ORM models.
@@ -772,6 +1380,22 @@ Use OpenTelemetry Python SDK. Auto-instrument popular frameworks (Flask, FastAPI
 
 ### Failure: GIL Contention
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 - **Symptoms**: High CPU but low throughput. CPU-bound threads don't improve performance. Adding threads makes it worse.
 - **Root Cause**: Python's GIL prevents multiple threads from executing Python bytecode simultaneously. Threads waiting for GIL introduce context switch overhead. CPU-bound tasks in threads don't parallelize.
 - **Detection**: `perf top` shows `PyEval_EvalFrameEx` at high CPU. `py-spy` shows threads in `__pthread_cond_wait` (waiting for GIL).
@@ -779,6 +1403,22 @@ Use OpenTelemetry Python SDK. Auto-instrument popular frameworks (Flask, FastAPI
 - **Prevention**: Use `multiprocessing` for CPU-bound work. Use `asyncio` for I/O-bound. Use Numba/Cython for numerical work.
 
 ### Failure: Pickle Deserialization Attack
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 - **Symptoms**: Unauthorized code execution. Remote command execution. RCE vulnerability.
 - **Root Cause**: `pickle.loads()` on untrusted data executes arbitrary Python code during deserialization. Attackers craft malicious pickle payloads.
@@ -788,6 +1428,22 @@ Use OpenTelemetry Python SDK. Auto-instrument popular frameworks (Flask, FastAPI
 
 ### Failure: Slow Import at Startup
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 - **Symptoms**: Cold start takes > 30s. Container health check fails. Serverless function cold start > 5s.
 - **Root Cause**: Lazy imports in module scope. Heavy libraries imported at module level. Circular imports causing repeated resolution.
 - **Detection**: Profile startup with `python -X importtime -c "import app" 2> import.log` then `tuna import.log`.
@@ -795,6 +1451,22 @@ Use OpenTelemetry Python SDK. Auto-instrument popular frameworks (Flask, FastAPI
 - **Prevention**: Audit imports with `flake8-import-order`. Use `importlib.import_module` for heavy deps. Profile startup time in CI.
 
 ### Failure: asyncio Task Leak
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 - **Symptoms**: Memory grows, event loop runs forever, tasks never complete. asyncio.Task count increases monotonically.
 - **Root Cause**: `create_task()` called but task never awaited. Task falls through to garbage collection with "Task was destroyed but it is pending" warning. Common in fire-and-forget patterns.

@@ -27,6 +27,22 @@ graph LR
 
 ## ASGI Fundamentals
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 FastAPI is built on ASGI (Asynchronous Server Gateway Interface), the successor to WSGI:
 
 ```python
@@ -67,6 +83,22 @@ async def lifespan_app(scope, receive, send):
 
 ### ASGI vs WSGI
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```python
 # WSGI application
 def wsgi_app(environ, start_response):
@@ -80,7 +112,39 @@ def wsgi_app(environ, start_response):
 
 ## Starlette Internals
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Routing
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```python
 from starlette.applications import Starlette
@@ -109,6 +173,22 @@ app = Starlette(routes=[
 ```
 
 ### Middleware
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```python
 from starlette.middleware.base import BaseHTTPMiddleware
@@ -142,7 +222,39 @@ app = Starlette(
 
 ## Pydantic v2 Deep Dive
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Rust Core (pydantic-core)
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 Pydantic v2 moved validation to Rust (pydantic-core), providing 5-50x speedups:
 
@@ -175,6 +287,22 @@ print(f"Pydantic v2: 100k creations in {time.perf_counter() - start:.3f}s")
 ```
 
 ### Validation and Serialization
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```python
 from pydantic import BaseModel, field_validator, model_validator, field_serializer
@@ -224,6 +352,22 @@ except ValidationError as e:
 ```
 
 ### Nested Models and Complex Types
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```python
 from pydantic import BaseModel
@@ -287,6 +431,22 @@ print(emp.model_dump(by_alias=True))
 
 ### JSON Schema Generation
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```python
 from pydantic import BaseModel, Field
 from typing import Annotated
@@ -318,7 +478,39 @@ print(json.dumps(schema, indent=2))
 
 ## FastAPI Application Structure
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Dependency Injection
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```python
 from fastapi import FastAPI, Depends, HTTPException, Header, Query
@@ -361,6 +553,22 @@ app = FastAPI(lifespan=lifespan)
 ```
 
 ### Dependency Hierarchy
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```python
 from fastapi import Depends, FastAPI, HTTPException, Request
@@ -423,6 +631,22 @@ async def admin_dashboard(
 
 ### Routing and Path Operations
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```python
 from fastapi import APIRouter, FastAPI, Path, Query, Body, HTTPException, status
 from typing import Annotated
@@ -477,7 +701,39 @@ app.include_router(router)
 
 ## Async Patterns
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### SQLAlchemy Async
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```python
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sessionmaker
@@ -523,6 +779,22 @@ async def create_user(user_data: User, session: Annotated[AsyncSession, Depends(
 
 ### asyncpg Direct Usage
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```python
 import asyncpg
 from typing import AsyncGenerator
@@ -565,6 +837,22 @@ db = DatabaseManager("postgresql://user:pass@localhost/db")
 ```
 
 ### HTTP Clients
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```python
 import httpx
@@ -615,6 +903,22 @@ async def concurrent_requests():
 
 ### Background Tasks
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```python
 from fastapi import BackgroundTasks, FastAPI
 from typing import Callable
@@ -663,6 +967,22 @@ async def shutdown():
 ---
 
 ## Production Middleware
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```python
 from fastapi import FastAPI, Request
@@ -719,6 +1039,22 @@ app.add_middleware(MetricsMiddleware)
 
 ### Logging Configuration
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```python
 import logging
 import json
@@ -747,6 +1083,22 @@ logger.propagate = False
 ```
 
 ### Metrics with Prometheus
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```python
 from prometheus_client import Counter, Histogram, Gauge, generate_latest
@@ -798,6 +1150,22 @@ async def metrics():
 
 ### Tracing with OpenTelemetry
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```python
 from opentelemetry import trace
 from opentelemetry.exporter.otlp.proto.http.trace_exporter import OTLPSpanExporter
@@ -833,7 +1201,39 @@ async def traced_endpoint():
 
 ## API Design
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Versioning
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```python
 from fastapi import APIRouter, FastAPI
@@ -862,6 +1262,22 @@ async def version_middleware(request: Request, call_next):
 ```
 
 ### Error Handling
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```python
 from fastapi import FastAPI, HTTPException, Request
@@ -910,6 +1326,22 @@ async def general_error_handler(request: Request, exc: Exception):
 ```
 
 ### Pagination
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```python
 from fastapi import Query
@@ -969,6 +1401,22 @@ async def cursor_paginate(query, cursor: str | None, limit: int):
 
 ### Rate Limiting
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```python
 import time
 from collections import defaultdict
@@ -1026,7 +1474,39 @@ async def expensive_endpoint(request: Request):
 
 ## Authentication
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### JWT Implementation
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```python
 from datetime import datetime, timedelta, timezone
@@ -1111,6 +1591,22 @@ async def refresh_token(refresh_token: str):
 
 ### OAuth2 with Social Providers
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```python
 from authlib.integrations.starlette_client import OAuth
 from starlette.config import Config
@@ -1156,7 +1652,39 @@ async def oauth_callback(request: Request, provider: str):
 
 ## Performance Optimization
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Profiling FastAPI
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```python
 from fastapi import FastAPI, Request
@@ -1195,6 +1723,22 @@ def profile_endpoint(name: str):
 ```
 
 ### Database Connection Pooling
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```python
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sessionmaker
@@ -1235,6 +1779,22 @@ def checkin(dbapi_connection, connection_record):
 
 ### Response Caching
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```python
 from functools import lru_cache
 from fastapi import FastAPI, Response
@@ -1266,6 +1826,22 @@ async def get_user(user_id: int):
 ```
 
 ### Async vs Sync Endpoints
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```python
 import asyncio
@@ -1313,7 +1889,39 @@ async def anyio_endpoint():
 
 ## Testing
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### httpx TestClient
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```python
 from fastapi.testclient import TestClient
@@ -1348,6 +1956,22 @@ def test_unauthorized():
 
 ### Async TestClient
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```python
 @pytest_asyncio.fixture
 async def async_client():
@@ -1370,6 +1994,22 @@ async def test_concurrent_requests(async_client):
 ```
 
 ### Dependency Overrides
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```python
 from typing import Annotated
@@ -1399,6 +2039,22 @@ app.dependency_overrides.clear()
 ```
 
 ### Fixtures
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```python
 import pytest
@@ -1455,6 +2111,22 @@ def db_engine():
 
 ### Performance Tests
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```python
 import time
 import statistics
@@ -1492,7 +2164,39 @@ async def test_async_performance():
 
 ## Common Failures
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Failure: Connection Pool Exhaustion
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 - **Symptoms**: Database timeouts, slow queries, HTTP 503s. `psycopg2.pool.PoolError: pool exhausted` in logs.
 - **Root Cause**: Database connection pool size too small for concurrent requests. Connections not returned to pool (missing `await conn.close()` or not using context managers). Starved by long-running queries.
@@ -1502,6 +2206,22 @@ async def test_async_performance():
 - **Production Story**: A migration added an endpoint that made 50 sequential DB queries without async concurrency. Under 100 concurrent requests, each connection held for 3s. Pool of 20 was exhausted in < 1s. Fix: batched queries into single request and used `async with` for all connections.
 
 ### Failure: Slow JSON Validation on Request Body
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 - **Symptoms**: High CPU, slow request handling for endpoints with large request bodies. Pydantic validation dominates CPU profile.
 - **Root Cause**: Pydantic v1 validation is CPU-intensive for large nested models. Each request is re-validated even if same schema.

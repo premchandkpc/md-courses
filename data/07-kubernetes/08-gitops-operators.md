@@ -32,9 +32,41 @@ graph LR
 
 ## Scope
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 Production-grade reference for GitOps workflows with ArgoCD, progressive delivery with Argo Rollouts, Workflows & Events, operator pattern with controller-runtime, Helm/Kustomize packaging, and policy-as-code with OPA Gatekeeper / Kyverno.
 
 ## Table of Contents
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 - [GitOps Principles](#gitops-principles)
 - [ArgoCD Architecture](#argocd-architecture)
@@ -52,6 +84,22 @@ Production-grade reference for GitOps workflows with ArgoCD, progressive deliver
 ---
 
 ## GitOps Principles
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
   ┌─────────────────────────────────────────────────────────────┐
@@ -76,7 +124,39 @@ Production-grade reference for GitOps workflows with ArgoCD, progressive deliver
 
 ## ArgoCD Architecture
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Component Architecture
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
   ┌───────────────────────────────────────────────┐
@@ -103,6 +183,22 @@ Production-grade reference for GitOps workflows with ArgoCD, progressive deliver
 ```
 
 ### Application CRD
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```yaml
 apiVersion: argoproj.io/v1alpha1
@@ -141,7 +237,39 @@ spec:
 
 ## Sync Strategies & Waves
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Sync Flow
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
   Git Commit ──► ArgoCD detects drift
@@ -174,6 +302,22 @@ spec:
 
 ### Sync Waves Annotation
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```yaml
 apiVersion: v1
 kind: Namespace
@@ -200,6 +344,22 @@ metadata:
 ```
 
 ### Sync Hooks
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```yaml
 # PreSync hook: run DB migration before deployment
@@ -258,7 +418,39 @@ spec:
 
 ## ApplicationSets
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### ApplicationSet Generators
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```yaml
 apiVersion: argoproj.io/v1alpha1
@@ -335,7 +527,39 @@ spec:
 
 ## Argo Rollouts
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Blue-Green Deployment
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```yaml
 apiVersion: argoproj.io/v1alpha1
@@ -379,6 +603,22 @@ spec:
 ```
 
 ### Canary Deployment with Traffic Routing
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```yaml
 apiVersion: argoproj.io/v1alpha1
@@ -425,6 +665,22 @@ spec:
 ```
 
 ### Analysis Template
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```yaml
 apiVersion: argoproj.io/v1alpha1
@@ -486,7 +742,39 @@ spec:
 
 ## Argo Workflows
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### DAG Workflow
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```yaml
 apiVersion: argoproj.io/v1alpha1
@@ -559,6 +847,22 @@ spec:
 
 ### Cron Workflow
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```yaml
 apiVersion: argoproj.io/v1alpha1
 kind: CronWorkflow
@@ -587,7 +891,39 @@ spec:
 
 ## Argo Events
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Event Source + Sensor + Trigger
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```yaml
 # Event Source: listen for GitHub webhook
@@ -658,7 +994,39 @@ spec:
 
 ## Operator Pattern
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Reconciliation Loop
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
   ┌─────────────────────────────────────────────────────────────┐
@@ -690,6 +1058,22 @@ spec:
 ```
 
 ### controller-runtime Operator
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```go
 package controllers
@@ -839,6 +1223,22 @@ func (r *MyAppReconciler) SetupWithManager(mgr ctrl.Manager) error {
 
 ### CRD Definition
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```yaml
 apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
@@ -896,7 +1296,39 @@ spec:
 
 ## Helm Packaging
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Chart Structure
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
   charts/my-app/
@@ -921,6 +1353,22 @@ spec:
 ```
 
 ### Values and Templating
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```yaml
 # values.yaml
@@ -977,6 +1425,22 @@ affinity: {}
 
 ### Helm Hooks
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```yaml
 # templates/migration-job.yaml
 apiVersion: batch/v1
@@ -1001,7 +1465,39 @@ spec:
 
 ## Kustomize
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Base + Overlays Structure
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
   k8s/
@@ -1021,6 +1517,22 @@ spec:
 ```
 
 ### Kustomization Examples
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```yaml
 # base/kustomization.yaml
@@ -1100,7 +1612,39 @@ patches:
 
 ## OPA Gatekeeper / Kyverno
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### OPA Gatekeeper — Constraint Template
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```rego
 # templates/mandatory_labels_template.yaml
@@ -1152,6 +1696,22 @@ spec:
 ```
 
 ### Kyverno — ClusterPolicy
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```yaml
 apiVersion: kyverno.io/v1
@@ -1241,7 +1801,39 @@ spec:
 
 ## Failure Analysis
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### 1. ArgoCD Out of Sync (Stuck)
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
   Symptoms:
@@ -1268,6 +1860,22 @@ spec:
 
 ### 2. Rollout Stuck or Aborted
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```
   Symptoms:
     - Rollout phase: Paused (with abort condition)
@@ -1292,6 +1900,22 @@ spec:
 ```
 
 ### 3. Operator Reconciliation Loop Failure
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
   Symptoms:
@@ -1319,6 +1943,22 @@ spec:
 ```
 
 ### 4. Kyverno/Gatekeeper Policy Enforcement Issues
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
   Symptoms:

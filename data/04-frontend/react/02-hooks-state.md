@@ -7,6 +7,22 @@
 
 ## Hooks Execution Model
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```mermaid
 sequenceDiagram
     participant C as Component
@@ -32,6 +48,22 @@ sequenceDiagram
 
 
 ## 1. useState — The Foundation
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```jsx
 const [state, setState] = useState(initialValue);
@@ -80,6 +112,22 @@ setCount(c => c + 1); // ✅ Always gets latest state
 
 ### Step-by-Step
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 1. **Hook registration**: On mount, `useState` creates a hook node in the fiber's `memoizedState` linked list at position N
 2. **State retrieval**: On subsequent renders, React reads the hook at position N (position determined by call order)
 3. **Action queuing**: When `setState` is called, the action is added to the hook's update queue
@@ -88,6 +136,22 @@ setCount(c => c + 1); // ✅ Always gets latest state
 6. **Commit**: New state is committed and component re-renders with the new state value
 
 ### Code Example
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```javascript
 import React, { useState } from 'react';
@@ -126,9 +190,41 @@ function Counter() {
 
 ### Real-World Scenario
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 A form with 10 fields used `useState` for each field. When a user filled the form and submitted, 10 separate `setState` calls fired. In React 16, this triggered 10 separate re-renders (causing 500ms delay on slower devices). After upgrading to React 18, automatic batching merged all 10 updates into one re-render, reducing submission response time to 50ms.
 
 ### Diagram
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```mermaid
 sequenceDiagram
@@ -158,6 +254,22 @@ sequenceDiagram
 
 ## 2. useEffect — Side Effects Engine
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```jsx
 useEffect(() => {
   // Side effect code
@@ -166,6 +278,22 @@ useEffect(() => {
 ```
 
 ### Cleanup Patterns
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 | Resource | Cleanup |
 |---|---|
@@ -187,6 +315,22 @@ function useWebSocket(url) {
 ```
 
 ### Dependency Array Gotchas
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```jsx
 // ❌ Empty deps with external values → stale closure
@@ -212,6 +356,22 @@ useEffect(() => {
 ```
 
 ### Zigzag Effect Cleanup Race Conditions Under Load
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 **Production scenario**: User quickly toggles between two dashboards (`/dashboard/A` and `/dashboard/B`). Each dashboard starts a WebSocket connection + heavy data processing.
 
@@ -272,12 +432,44 @@ sequenceDiagram
 
 ## 3. useRef — Mutable Container
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```jsx
 const ref = useRef(initialValue);
 // ref.current — mutable, persists across renders, no re-render on change
 ```
 
 ### Three Use Cases
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 1. **DOM reference**: `ref={ref}` pattern
 2. **Instance variable**: Persist values across renders without causing re-render
@@ -294,6 +486,22 @@ function usePrevious(value) {
 
 ### useRef vs useState
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 | Aspect | useRef | useState |
 |---|---|---|
 | Triggers re-render | No | Yes |
@@ -305,6 +513,22 @@ function usePrevious(value) {
 
 ## 4. useMemo — Memoized Computation
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```jsx
 const sortedList = useMemo(
   () => items.sort((a, b) => a.name.localeCompare(b.name)),
@@ -313,6 +537,22 @@ const sortedList = useMemo(
 ```
 
 ### Over-Optimization Trap
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```jsx
 // ❌ UNNECESSARY: primitive computation doesn't benefit
@@ -336,6 +576,22 @@ const filtered = useMemo(
 
 ## 5. useCallback — Memoized Function
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```jsx
 const handleClick = useCallback(() => {
   doSomething(id);
@@ -343,6 +599,22 @@ const handleClick = useCallback(() => {
 ```
 
 ### Interview Tricky: When useCallback Causes MORE Re-Renders
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 **Question**: "Can useCallback ever cause more re-renders than it prevents?"
 
@@ -399,6 +671,22 @@ const handleDelete = useCallback((id) => {
 
 ## 6. useContext — Consuming Context
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```jsx
 const ThemeContext = createContext('light');
 
@@ -418,6 +706,22 @@ function App() {
 
 ### Context Re-Render Problem
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 **Every context consumer re-renders when context value changes, regardless of memo.**
 
 ```jsx
@@ -431,6 +735,22 @@ function NotificationBell() {
 ```
 
 ### Context Splitting Pattern
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 Split large context into smaller, purpose-specific contexts:
 
@@ -447,6 +767,22 @@ function NotificationBell() {
 ```
 
 ### Context Value Memoization
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```jsx
 function App({ children }) {
@@ -472,6 +808,22 @@ function App({ children }) {
 
 ## 7. useReducer — Complex State Logic
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```jsx
 function reducer(state, action) {
   switch (action.type) {
@@ -493,6 +845,22 @@ function Counter() {
 
 ### useReducer + Context = Global State
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```jsx
 const CounterContext = createContext(null);
 
@@ -511,6 +879,22 @@ function DeepChild() {
 ---
 
 ## 8. useLayoutEffect — Synchronous Effect
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 Runs synchronously after DOM mutations but BEFORE browser paint.
 
@@ -536,6 +920,22 @@ function Tooltip() {
 ---
 
 ## 9. useImperativeHandle — Exposing Imperative API
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```jsx
 const FancyInput = forwardRef((props, ref) => {
@@ -565,6 +965,22 @@ function Parent() {
 
 ## 10. useDebugValue — Custom Hook Label in DevTools
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```jsx
 function useOnlineStatus() {
   const [online, setOnline] = useState(navigator.onLine);
@@ -584,7 +1000,39 @@ useDebugValue(status, (s) => s ? '🟢 Online' : '🔴 Offline');
 
 ## 11. Custom Hooks — Composition Patterns
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### useDebounce
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 ```jsx
 function useDebounce(value, delay = 300) {
   const [debounced, setDebounced] = useState(value);
@@ -599,6 +1047,22 @@ function useDebounce(value, delay = 300) {
 ```
 
 ### useThrottle
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 ```jsx
 function useThrottle(value, interval = 300) {
   const [throttled, setThrottled] = useState(value);
@@ -623,6 +1087,22 @@ function useThrottle(value, interval = 300) {
 ```
 
 ### usePrevious
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 ```jsx
 function usePrevious(value) {
   const ref = useRef();
@@ -632,6 +1112,22 @@ function usePrevious(value) {
 ```
 
 ### useAsync
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 ```jsx
 function useAsync(asyncFn, deps = []) {
   const [state, setState] = useState({ data: null, loading: true, error: null });
@@ -652,6 +1148,22 @@ function useAsync(asyncFn, deps = []) {
 ```
 
 ### useIntersectionObserver
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 ```jsx
 function useIntersectionObserver(ref, options = {}) {
   const [isIntersecting, setIsIntersecting] = useState(false);
@@ -673,7 +1185,39 @@ function useIntersectionObserver(ref, options = {}) {
 
 ## 12. Rules of Hooks
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Why Order Matters — The Linked List
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 React relies on the **order of hook calls** being identical between renders. Each hook call reads from a linked list node in the fiber's `memoizedState` property:
 
@@ -723,6 +1267,22 @@ Each hook type stores different data in `memoizedState`:
 | `useSyncExternalStore` | Snapshot value |
 
 ### Mount vs Update Phase — Two Code Paths
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 React has **separate code paths** for the mount and update phases:
 
@@ -786,6 +1346,22 @@ sequenceDiagram
 
 ### What Happens With Conditional Hooks — Step by Step
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```jsx
 function Broken({ condition }) {
   const [val, setVal] = useState(0);      // Hook #0 — ALWAYS
@@ -826,6 +1402,22 @@ flowchart LR
 
 ### Exhaustive Deps — Why It Matters
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 The `exhaustive-deps` rule ensures all reactive values are in the dependency array:
 
 ```javascript
@@ -849,6 +1441,22 @@ function Profile({ userId }) {
 **Internal mechanism**: The lint rule checks that every variable referenced inside the effect callback is also in the deps array. It does this via static analysis (AST traversal), not runtime.
 
 ### The Stale Closure — Full Mechanics
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```javascript
 function Timer() {
@@ -878,6 +1486,22 @@ function Timer() {
 
 ### Lint Rules (eslint-plugin-react-hooks)
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```json
 {
   "rules": {
@@ -896,7 +1520,39 @@ The exhaustive-deps rule prevents:
 
 ## 13. Closure Traps in useEffect
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Classic setInterval + stale closure
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```jsx
 function Timer() {
@@ -939,6 +1595,22 @@ useEffect(() => {
 
 ## 14. Infinite Effect Loops
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```jsx
 // ❌ Infinite: setState triggers re-render, effect runs again
 useEffect(() => {
@@ -961,6 +1633,22 @@ useEffect(() => {
 ---
 
 ## 15. useCallback Stale Closures (Subtle)
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```jsx
 function Search() {
@@ -988,6 +1676,22 @@ function Search() {
 
 ## 16. useMemo Over-Optimization (Performance Cost)
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```jsx
 // ❌ Anti-pattern: memoizing everything
 const a = useMemo(() => x, [x]);
@@ -1009,6 +1713,22 @@ const c = useMemo(() => x + y, [x, y]);
 ---
 
 ## 17. useSyncExternalStore — External Store Subscription
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 React 18 hook for subscribing to external stores (Redux, Zustand, etc.) with tear-free reads during concurrent rendering.
 
@@ -1039,6 +1759,22 @@ function useOnlineStatus() {
 
 ## 18. useDeferredValue — Deferring Non-Urgent Updates
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```jsx
 function SearchResults({ query }) {
   const deferredQuery = useDeferredValue(query);
@@ -1062,6 +1798,22 @@ Use when you have a fast-updating input but expensive filtering/rendering of res
 ---
 
 ## 19. useTransition — Marking Updates as Non-Urgent
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```jsx
 function TabContainer() {
@@ -1093,7 +1845,39 @@ function TabContainer() {
 
 ## 20. Hook Composition Patterns
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Combining Multiple Hooks
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```jsx
 function useUserData(userId) {
@@ -1127,6 +1911,22 @@ function Dashboard() {
 
 ### Custom Hook Factory Pattern
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```jsx
 function createAsyncAction(apiCall) {
   return function useAsyncAction() {
@@ -1154,6 +1954,22 @@ const useCreatePost = createAsyncAction(createPost);
 
 ## 21. Hook Testing with renderHook
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```jsx
 import { renderHook, act } from '@testing-library/react';
 
@@ -1171,6 +1987,22 @@ test('useCounter works', () => {
 ```
 
 ### Testing Custom Hook with Provider
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```jsx
 function useCounterWithContext() {
@@ -1191,6 +2023,22 @@ test('useCounterWithContext', () => {
 ---
 
 ## 22. Production Failure: Stale WebSocket Closure (Backpressure Case)
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 **Scenario**: A real-time trading dashboard uses WebSocket for price updates.
 
@@ -1254,6 +2102,22 @@ useEffect(() => {
 
 ## 23. Interview: Why useCallback Can Increase Re-Renders (Deep Dive)
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 **Question**: "Explain how useCallback can paradoxically cause more re-renders than not using it."
 
 **Answer**: Consider a parent passing a callback to a memo'd child:
@@ -1301,6 +2165,22 @@ function Parent() {
 
 ## 24. Mermaid: Hook Dependencies Flow
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```mermaid
 graph TD
     A[Component Render] --> B{useCallback Deps Changed?}
@@ -1320,6 +2200,22 @@ graph TD
 
 ## 25. Performance: useMemo vs useCallback vs useEffect
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 | Hook | Returns | When it runs | Purpose |
 |---|---|---|---|
 | `useMemo` | Value (computed) | During render | Avoid expensive recomputation |
@@ -1329,6 +2225,22 @@ graph TD
 ---
 
 ## 26. State Initialization Patterns
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```jsx
 // Lazy initialization (expensive computation only runs once)
@@ -1358,6 +2270,22 @@ function Profile({ userId }) {
 
 ## 27. Shallow Comparison in Hooks
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 React's default comparison is **Object.is** (shallow):
 
 ```javascript
@@ -1376,6 +2304,22 @@ function areDepsEqual(oldDeps, newDeps) {
 ---
 
 ## 28. Mermaid: State Update Lifecycle
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```mermaid
 sequenceDiagram
@@ -1398,6 +2342,22 @@ sequenceDiagram
 ---
 
 ## 29. Production Failure: useEffect Missing Deps (Queued Messages)
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 **Real production scenario**: A customer chat application.
 
@@ -1444,6 +2404,22 @@ useEffect(() => {
 
 ## 30. useRef vs useState — Decision Matrix
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 | Need | Use |
 |---|---|
 | Track value without re-render | `useRef` |
@@ -1459,11 +2435,43 @@ useEffect(() => {
 
 ## 31. Simplest Mental Model — Hooks
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 > **Hooks are like numbered sticky notes on a whiteboard. React reads them in order (0, 1, 2...) every render. Rules of hooks = don't skip a note, don't reorder notes. `useState` = a sticky note with a value. `useEffect` = sticky note that says "run this after paint." `useRef` = a sticky note you can rewrite without ringing a bell. `useMemo` = scribble calculation result, only re-scribble if inputs changed.**
 
 ---
 
 ## 32. Mermaid: Hook Order Dependency
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```mermaid
 flowchart LR
@@ -1484,6 +2492,22 @@ flowchart LR
 ---
 
 ## 33. Interview: What Happens When You Call setState in useEffect with No Deps?
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```jsx
 function InfiniteLoop() {
@@ -1510,6 +2534,22 @@ useEffect(() => {
 
 ## 34. Mermaid: useEffect Cleanup Race
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```mermaid
 sequenceDiagram
     participant R1 as Render 1 (id=A)
@@ -1532,6 +2572,22 @@ sequenceDiagram
 
 ## 35. Hook Testing — Async Updates
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```jsx
 import { renderHook, act, waitFor } from '@testing-library/react';
 
@@ -1551,6 +2607,22 @@ test('useAsync handles loading states', async () => {
 ---
 
 ## 36. Advanced: Custom Hook — useUndoRedo
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```jsx
 function useUndoRedo(initialState) {
@@ -1603,6 +2675,22 @@ function useUndoRedo(initialState) {
 
 ## 37. Hook Patterns Quick Reference
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 | Pattern | Description |
 |---|---|
 | `useState` + lazy init | One-time expensive initial value |
@@ -1620,6 +2708,22 @@ function useUndoRedo(initialState) {
 ---
 
 ## 38. Interview: Rules of Hooks — Why ESLint is Necessary
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 **Question**: "Can't I just be careful about hook order myself?"
 
@@ -1641,6 +2745,22 @@ The lint rule is a static analysis that runs at build time — it does not rely 
 
 ## 39. Production Checklist for Hooks
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 - [ ] All `useEffect` have proper dependency arrays (lint rule enabled)
 - [ ] No missing cleanup in `useEffect` with subscriptions/timers
 - [ ] `useCallback` used only when function passed to memo'd child or as hook dep
@@ -1656,6 +2776,22 @@ The lint rule is a static analysis that runs at build time — it does not rely 
 ---
 
 ## Related
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 - [Networking](../../11-networking/) — HTTP, performance, optimization
 - [Security](../../13-security/) — CORS, authentication, XSS prevention

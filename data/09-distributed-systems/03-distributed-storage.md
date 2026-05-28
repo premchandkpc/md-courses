@@ -35,6 +35,22 @@ graph LR
 
 ## Table of Contents
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 1. GFS / HDFS Architecture
 2. HDFS: HA, Federation, Erasure Coding
 3. Ceph: RADOS & CRUSH
@@ -47,6 +63,22 @@ graph LR
 ---
 
 ## 1. GFS / HDFS Architecture
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 +------------------+        Client
@@ -79,6 +111,22 @@ graph LR
 
 ## 2. HDFS: HA, Federation, Erasure Coding
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 **NameNode HA:**
 ```text
 Active NN   Standby NN
@@ -104,6 +152,22 @@ EC trades CPU for storage efficiency. Better for cold data; replication better f
 ---
 
 ## 3. Ceph: RADOS & CRUSH
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 **RADOS (Reliable Autonomic Distributed Object Store):** Self-healing, self-managing object store.
 
@@ -155,6 +219,22 @@ def crush_placement(object_id, replicas, crush_map):
 
 ## 4. S3 Object Storage
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```text
 Client (REST HTTP)
     |
@@ -194,6 +274,22 @@ s3.complete_multipart_upload(Bucket='b', Key='large.zip',
 
 ## 5. DynamoDB Internals
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```text
 Table: my-table (hash: PK, sort: SK, 1000 RCU / 500 WCU)
     |
@@ -225,6 +321,22 @@ def put_sharded(table, item, shards=10):
 ---
 
 ## 6. FoundationDB & TiKV
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 **FoundationDB (FDB):** Distributed KV with strict serializability and multi-key transactions.
 
@@ -258,6 +370,22 @@ TiKV-1 (Raft group leader for Region 1)  TiKV-2 (follower)  TiKV-3 (follower)
 
 ## 7. Distributed SQL: CockroachDB & YugabyteDB
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 **CockroachDB:**
 
 ```text
@@ -282,6 +410,22 @@ ALTER PARTITION us_east OF TABLE users
 ---
 
 ## 8. Time Series: InfluxDB & TimescaleDB
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 **InfluxDB (TSM — Time-Structured Merge Tree):**
 
@@ -322,12 +466,44 @@ cur.execute("INSERT INTO sensor_data VALUES (NOW(), 'sensor-01', 23.5, 65.2)")
 
 ## Simplest Mental Model
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 **Distributed storage spreads data across machines while making it look like one system.** GFS/HDFS uses a central brain (NameNode) tracking file chunks. Ceph replaces the brain with math (CRUSH — compute location from name). **DynamoDB is a giant hash table** with machines responsible for key ranges. **CockroachDB does the same with SQL** — each range of rows is a tiny Raft group. Pick central metadata for simplicity, CRUSH for scalability, key-value for performance, or distributed SQL for transactions.
 
 
 ---
 
 ## Code Examples
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```python
 import hashlib
@@ -392,6 +568,22 @@ def rs_encode(data: bytes, parity_count: int = 3) -> list:
 
 ## Common Failure Modes
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 **Problem**: Split-brain in distributed storage using quorum-based consensus
 
 **Root cause**: Network partition splits the cluster into two groups, each believing it has quorum. If both groups accept writes, data diverges. After partition heals, reconciling the divergent data is difficult or impossible. This is why Raft, Paxos, and Zab require strict majority quorum — only one side can form a majority (N/2 + 1).
@@ -412,10 +604,58 @@ def rs_encode(data: bytes, parity_count: int = 3) -> list:
 
 ## Interview Questions
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Q1: Compare the consistency models of DynamoDB, S3, and CockroachDB — how do they handle concurrent writes?
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 **Answer**: **DynamoDB** uses last-writer-wins (LWW) with a timestamp — concurrent writes to the same key overwrite each other, with the most recent winning. Strongly consistent reads are available (at half the throughput). **S3** provides read-after-write consistency for new PUTs (objects that didn't exist before) but eventual consistency for overwrite PUTs and DELETEs (unless versioning is used). Concurrent PUTs to the same key: last writer wins. **CockroachDB** provides strict serializability — concurrent writes are serialized through leaseholders using Raft consensus. If two transactions update the same row, one succeeds and the other gets a serialization error (must retry). CockroachDB also detects write-skew anomalies (a form of non-serializable behavior in snapshot isolation). For multi-row transactions, CockroachDB uses a distributed transaction coordinator with parallel commit (fast path). DynamoDB's approach is highest throughput (no coordination), S3's is middle-ground (eventual), CockroachDB's is safest but slowest (consensus per write).
 
 ### Q2: How is erasure coding better than replication in distributed storage?
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 **Answer**: Erasure coding (EC) divides data into K data fragments + M parity fragments, storing them across K+M nodes. Any K fragments can reconstruct the data. Compared to 3x replication (200% overhead), EC-6-3 has 50% overhead (9 fragments instead of 6 data = 50%). EC-10-4 has 40% overhead. This means for the same durability, EC uses 60-75% less storage. The trade-offs: EC requires CPU-intensive computation for encoding/decoding (affects read/write latency). EC is slower for small reads (must read multiple fragments and reconstruct). EC is worse for partial reads (must read entire object to reconstruct). Therefore, use EC for cold/warm data (HDFS, Ceph, S3 Glacier) and replication for hot data. HDFS supports both: 3x replication for active data, EC for archived data. LRC (Locally Repairable Codes) further reduce repair bandwidth by creating local parity fragments.

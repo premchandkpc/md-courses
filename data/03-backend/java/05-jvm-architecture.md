@@ -6,6 +6,22 @@
 
 ## Layer 1: Beginner Mental Model
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 **Analogy**: JVM is like a theater. Script (bytecode) is language-agnostic (Java, Kotlin, Scala all compile to same bytecode). Director (JIT compiler) watches the script, recognizes popular scenes, pre-records them (optimizes hot code). Props (objects) stored in warehouse (heap). Actors (threads) read from script.
 
 **Why it matters**:
@@ -20,7 +36,39 @@
 
 ## Layer 4: Production Reality
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### JVM Failure Modes
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 | Failure | Symptoms | Root Cause | Fix |
 |---------|----------|-----------|-----|
@@ -34,6 +82,22 @@
 | **Synchronized Contention** | Lock wait times dominate CPU | Many threads competing for same lock | Use concurrent collections (ConcurrentHashMap), reduce synchronization |
 
 ### Production Incident: LinkedIn GC Tuning Crisis (2012)
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 **Context**: LinkedIn's search infrastructure used Java. During peak (Thanksgiving week), GC pauses spiked to 5+ seconds. Search latency degraded, user experience terrible.
 
@@ -71,7 +135,39 @@ java -XX:+UnlockExperimentalVMOptions -XX:+UseZGC -Xmx100g
 
 ## Layer 5: Staff Engineer Perspective
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### GC Algorithm Tradeoffs
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 | GC | Pause Time | Throughput | Latency | Cost |
 |----|-----------|-----------|---------|------|
@@ -81,6 +177,22 @@ java -XX:+UnlockExperimentalVMOptions -XX:+UseZGC -Xmx100g
 | **Shenandoah** | <10ms | Varies | Ultra-low | High (CPU) |
 
 ### Scaling Pattern: Startup → 1000 Services
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 **Stage 1**: Single JVM, 4GB heap, default GC
 - Pause time: 500ms (acceptable for batch)
@@ -105,7 +217,39 @@ java -XX:+UnlockExperimentalVMOptions -XX:+UseZGC -Xmx100g
 
 ## Layer 5: Interview Questions
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Level 1 (Junior)
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 **Q1: What's bytecode? Why does Java compile to bytecode?**
 A: Bytecode = intermediate representation (JVM's machine code). Platform-independent: one bytecode, runs on any JVM (Windows, Linux, Mac). Interpreter + JIT compiler can optimize at runtime.
@@ -118,6 +262,22 @@ A: JIT = Just-In-Time compiler. JVM watches which code runs frequently (profilin
 - Expected: Profile → compile, understand warmup time
 
 ### Level 2 (Mid-Level)
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 **Q3: Your service has 2-second GC pauses. How do you investigate?**
 A:
@@ -136,6 +296,22 @@ A: ClassLoaders load .class files (bytecode). Bootstrap = core JDK, Application 
 - Expected: Understand hierarchy, delegation model
 
 ### Level 3 (Senior)
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 **Q5: Design JVM tuning for high-frequency trading (ultra-low latency <1ms).**
 A:
@@ -162,6 +338,22 @@ A:
 - Expected: Know heap dump tools, analysis process
 
 ### Level 4 (Staff)
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 **Q7: Migrate 500 Java services from OpenJDK 8 to Java 21. Plan.**
 A:
@@ -192,6 +384,22 @@ A:
 
 ## Table of Contents
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 - [JVM Architecture Overview](#-jvm-architecture-overview)
 - [1. Class Loader Subsystem](#1-class-loader-subsystem)
 - [2. Runtime Data Areas](#2-runtime-data-areas)
@@ -208,6 +416,22 @@ A:
 ---
 
 ## 🧭 JVM Architecture Overview
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
                     ┌──────────────────────────────────────────────┐
@@ -281,7 +505,39 @@ mindmap
 
 ## 1. Class Loader Subsystem
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Three Built-in ClassLoaders
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
                     ┌─────────────────────────────────────────────┐
@@ -314,6 +570,22 @@ mindmap
 ```
 
 ### Class Loading Phases
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 ┌─────────────────────────────────────────────────────────────────┐
@@ -361,6 +633,22 @@ mindmap
 
 ### Parent Delegation Model
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```java
 // How ClassLoader.loadClass() works:
 protected Class<?> loadClass(String name, boolean resolve)
@@ -389,6 +677,22 @@ protected Class<?> loadClass(String name, boolean resolve)
 ```
 
 ### Custom ClassLoader
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```java
 public class FileClassLoader extends ClassLoader {
@@ -432,6 +736,22 @@ public class FileClassLoader extends ClassLoader {
 
 ### Why Parent Delegation?
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 | Benefit | Explanation |
 |---------|-------------|
 | Security | Core java.* classes never replaced by malicious code |
@@ -443,7 +763,39 @@ public class FileClassLoader extends ClassLoader {
 
 ## 2. Runtime Data Areas
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Memory Layout
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
                     ┌──────────────────────────────────────┐
@@ -483,6 +835,22 @@ public class FileClassLoader extends ClassLoader {
 
 ### Area Breakdown
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 | Area | Shared? | What it contains | Size Control |
 |------|---------|-----------------|--------------|
 | Heap | ✅ All threads | Objects, arrays, String pool | `-Xms`, `-Xmx` |
@@ -492,6 +860,22 @@ public class FileClassLoader extends ClassLoader {
 | Native Stack | ❌ Per thread | Native method calls | `-Xss` |
 
 ### Heap Structure (Generational)
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
                     ┌─────────────────────────────────────────────┐
@@ -528,6 +912,22 @@ public class FileClassLoader extends ClassLoader {
 
 ### Stack Frame Structure
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```text
 Each method call creates a Stack Frame:
 
@@ -561,7 +961,39 @@ Each method call creates a Stack Frame:
 
 ## 3. Execution Engine
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Interpreter + JIT Workflow
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
                     ┌─────────────────────────┐
@@ -589,6 +1021,22 @@ Each method call creates a Stack Frame:
 ```
 
 ### JIT Compilation Tiers (Java 8+ Tiered Compilation)
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 Level 0: Interpreted       — No compilation. Gather profiling data.
@@ -620,6 +1068,22 @@ JIT Thresholds:
 
 ### JIT Optimizations
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 | Optimization | Description |
 |-------------|-------------|
 | Method Inlining | Replace method call with method body |
@@ -634,6 +1098,22 @@ JIT Thresholds:
 | Type Specialization | Devirtualize interface calls at monomorphic sites |
 
 ### Escape Analysis Example
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```java
 // Without escape analysis — allocates on heap
@@ -659,7 +1139,39 @@ public String concat(String a, String b) {
 
 ## 4. Java Bytecode Basics
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Example: Simple Method → Bytecode
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```java
 // Source code
@@ -675,6 +1187,22 @@ public int add(int a, int b) {
 ```
 
 ### Example: Object Creation
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```java
 // Source code
@@ -692,6 +1220,22 @@ public String createMessage() {
 
 ### Common JVM Instructions
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 | Category | Instructions |
 |----------|-------------|
 | Load/Store | `aload`, `iload`, `lload`, `fload`, `dload`, `astore`, `istore` |
@@ -707,6 +1251,22 @@ public String createMessage() {
 
 ### Method Invocation Instructions
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 | Instruction | Used For | Resolution |
 |-------------|----------|------------|
 | `invokevirtual` | Instance method call (virtual dispatch) | Vtable lookup at runtime |
@@ -719,7 +1279,39 @@ public String createMessage() {
 
 ## 5. Just-In-Time (JIT) Compilation
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Compilation Flow
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 HotSpot Detection:
@@ -769,6 +1361,22 @@ HotSpot Detection:
 
 ### Code Cache
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```text
 -XX:InitialCodeCacheSize  = 255KB (typical)
 -XX:ReservedCodeCacheSize = 240MB (Java 8+)
@@ -792,6 +1400,22 @@ HotSpot Detection:
 
 ### Deoptimization
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```java
 // When assumptions change, JIT must deoptimize back to interpreter
 // Example: class hierarchy changes
@@ -806,7 +1430,39 @@ class A { void foo() { /* compiled assuming no override */ } }
 
 ## 6. Class Loading Deep Dive
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Loading a Class: Step by Step
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```java
 public class ClassLoadingDemo {
@@ -856,6 +1512,22 @@ class ChildClass extends ParentClass {
 
 ### When Does Class Loading Happen?
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```java
 // Triggers class loading (initialization):
 // 1. new, newarray, getstatic, putstatic, invokestatic
@@ -885,6 +1557,22 @@ public class LazyInitDemo {
 
 ### Class Loader Breakage: ClassCastException
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```java
 // Two different ClassLoaders load the same class name
 // → They are DIFFERENT types!
@@ -912,7 +1600,39 @@ class1.cast(obj2);  // ClassCastException!
 
 ## 7. Method Area & Constant Pool
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Runtime Constant Pool
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```java
 // Each class has a constant pool in Method Area
@@ -939,6 +1659,22 @@ public class ConstantPoolDemo {
 
 ### String Pool (Interned Strings)
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```java
 String s1 = "hello";                    // String pool (constant pool)
 String s2 = "hello";                    // Same reference
@@ -960,7 +1696,39 @@ s1 == s4;   // true (intern returns pool reference)
 
 ## 8. Stack & Stack Frames
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Recursive Call Stack
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```java
 public int factorial(int n) {
@@ -1001,6 +1769,22 @@ public int factorial(int n) {
 
 ### StackOverflowError
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```java
 // Infinite recursion → stack overflow
 public void infinite() {
@@ -1018,7 +1802,39 @@ public void infinite() {
 
 ## 9. JVM Tuning
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Common JVM Flags
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 Memory:
@@ -1051,6 +1867,22 @@ Diagnostics:
 
 ### Typical Production Configuration
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```bash
 java -Xms4g -Xmx4g \
      -Xss512k \
@@ -1070,6 +1902,22 @@ java -Xms4g -Xmx4g \
 
 ## ⚠️ Common Pitfalls
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 | Pitfall | Issue | Fix |
 |---------|-------|-----|
 | ClassNotFoundException | Class not on classpath | Check classpath, module visibility |
@@ -1084,6 +1932,22 @@ java -Xms4g -Xmx4g \
 ---
 
 ## 🧠 Simplest Mental Model
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 JVM              =  A computer inside your computer. It runs Java programs.
@@ -1118,6 +1982,22 @@ CLASSLOADER      =  A librarian who follows the chain of command:
 
 ## Observability
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```mermaid
 flowchart LR
     A[Java App] --> B[Metrics]
@@ -1134,6 +2014,22 @@ flowchart LR
 
 ### Key Metrics
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 | Metric | Unit | Threshold | Indicates |
 |--------|------|-----------|-----------|
 | JVM heap used | % | < 75% | Memory pressure |
@@ -1147,6 +2043,22 @@ flowchart LR
 
 ### Logs
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 - **ERROR**: Uncaught exceptions, OOM, stack traces, connection pool exhaustion, thread starvation
 - **WARN**: Slow queries, long GC pauses, retry attempts, deprecated API usage
 - **INFO**: Server start/stop, context initialization, config loaded, scheduled tasks
@@ -1154,9 +2066,41 @@ flowchart LR
 
 ### Traces
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 Use Micrometer Tracing (formerly Spring Cloud Sleuth) or OpenTelemetry Java SDK. Propagate trace context via MDC for log correlation.
 
 ### Alerts
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 | Severity | Condition | Response |
 |----------|-----------|----------|
@@ -1167,5 +2111,21 @@ Use Micrometer Tracing (formerly Spring Cloud Sleuth) or OpenTelemetry Java SDK.
 | P2 | Heap > 85% for 10min | Schedule capacity increase |
 
 ### Dashboards
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 **JVM Dashboard**: heap usage (young/old/metaspace), GC pause (count, duration per generation), thread states (runnable/blocked/waiting), class loading, JIT compilation time, file descriptor count.

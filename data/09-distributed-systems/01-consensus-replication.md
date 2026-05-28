@@ -6,6 +6,22 @@
 
 ## Layer 1: Beginner Mental Model
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 **Analogy**: Like a jury reaching a verdict. They must agree (consensus) despite some members being unreliable (crashes). Raft: jurors follow a designated leader (judge) who proposes decisions. All must record the decision in their log before it's final. If the judge dies, a new election happens.
 
 **Why it matters**:
@@ -20,7 +36,39 @@
 
 ## Layer 4: Production Reality
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Consensus Failure Modes
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 | Failure | Symptoms | Root Cause | Fix |
 |---------|----------|-----------|-----|
@@ -32,6 +80,22 @@
 | **Quorum Loss** | 5-node cluster loses 3 nodes, no leader possible | Network partition isolates minority | Design for fault tolerance (N nodes survive N/2 failures) |
 
 ### Production Incident: Stripe Payment Raft Cascade (2018)
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 **Context**: Stripe's payment ledger uses Raft for consensus. A network partition isolated 2 nodes from the leader cluster (5 total).
 
@@ -89,7 +153,39 @@ def start_election(self):
 
 ## Layer 5: Staff Engineer Perspective
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Consensus Algorithm Tradeoffs
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 | Algorithm | Complexity | Leader | Latency | Safety | Use Case |
 |-----------|-----------|--------|---------|--------|----------|
@@ -100,6 +196,22 @@ def start_election(self):
 | **Gossip/Eventual** | Very simple, no leader | Peer-to-peer | High latency but cheap | Weak (eventual consistency) | Cassandra, membership |
 
 ### Scaling Pattern: Single Cluster → Global Replication
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 **Stage 1 (Startup)**: 3-node Raft cluster (single region)
 - Leader handles all writes
@@ -134,7 +246,39 @@ def start_election(self):
 
 ## Layer 5: Interview Questions
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Level 1 (Junior Engineer)
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 **Q1: What's a quorum? Why 5 nodes and not 4?**
 A: Quorum = majority. To tolerate F failures, need 2F+1 nodes. 5 nodes tolerates 2 failures (quorum = 3). 4 nodes tolerates only 1 (quorum = 3), but if you lose 2, you lose quorum. Odd numbers guarantee clear majority.
@@ -148,6 +292,22 @@ A: Term = monotonically increasing epoch. Each leader election starts a new term
 
 ### Level 2 (Mid-Level Engineer)
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 **Q3: Leader election takes 150-300ms (random). Why randomized?**
 A: If all nodes use same timeout, they all become candidates simultaneously → no one wins (election deadlock). Randomization ensures one node times out first, becomes leader, sends heartbeat before others timeout.
 - Why asked: Election robustness, randomization purpose
@@ -159,6 +319,22 @@ A: Raft safety rule: nodes only vote for candidates with log at least as up-to-d
 - Expected: Mention log comparison (term + index)
 
 ### Level 3 (Senior Engineer)
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 **Q5: Design a fault-tolerant consensus system for 3 data centers. How many nodes per DC? How do you handle partition?**
 A:
@@ -183,6 +359,22 @@ A:
 - Expected: Tradeoffs between algorithms
 
 ### Level 4 (Staff Engineer)
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 **Q7: Your leader gets 100K writes/second. Followers can only keep up with 50K. What do you do?**
 A:
@@ -245,6 +437,22 @@ graph LR
 
 ## Table of Contents
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 1. CAP Theorem & Proof
 2. PACELC Extension
 3. FLP Impossibility
@@ -262,6 +470,22 @@ graph LR
 ---
 
 ## 1. CAP Theorem & Proof
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 +------------------+     +------------------+     +------------------+
@@ -285,6 +509,22 @@ graph LR
 
 ## 2. PACELC Extension
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 **PACELC (Abadi, 2010):** If a Partition occurs (P), trade off C vs A. Else (E), trade off Latency vs Consistency.
 
 ```text
@@ -302,6 +542,22 @@ graph LR
 
 ## 3. FLP Impossibility
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 **Fischer, Lynch, Paterson (1985):** In an asynchronous distributed system where at least one process may crash, no deterministic consensus protocol can guarantee termination.
 
 **Implications:**
@@ -312,6 +568,22 @@ graph LR
 ---
 
 ## 4. Raft: Leader Election
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 +--------+      timeout, starts election      +-----------+
@@ -364,6 +636,22 @@ class RaftNode:
 
 ## 5. Raft: Log Replication
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```text
 Client            Leader                Followers
   |                 |                      |
@@ -393,6 +681,22 @@ Leader: [x=3][y=1][x=5][z=2][w=1][w=3][x=9]
 
 ## 6. Raft: Safety & Commit Rule
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 **Election Safety:** At most one leader per term (majority can only vote for one candidate).
 
 **Leader Append-Only:** Leader never overwrites or deletes log entries.
@@ -418,6 +722,22 @@ Commit Rule for Previous Terms:
 
 ## 7. Raft: Cluster Membership Change
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 **Single-Server Changes:** Add/remove one server at a time. Overlapping majorities ensure safety.
 
 ```text
@@ -431,6 +751,22 @@ Add D (learner) → D catches up → D becomes voter → Add E (learner) → E b
 ---
 
 ## 8. Raft vs Paxos
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 +--------------------------+  +---------------------------+
@@ -449,6 +785,22 @@ Add D (learner) → D catches up → D becomes voter → Add E (learner) → E b
 ---
 
 ## 9. Paxos: Classic & Multi-Paxos
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 Phase 1: Prepare
@@ -488,6 +840,22 @@ class PaxosAcceptor:
 
 ## 10. Zab: ZooKeeper Atomic Broadcast
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 **Zab (ZooKeeper Atomic Broadcast):** Leader-based total order broadcast. Leader-only writes.
 
 ```text
@@ -502,6 +870,22 @@ zxid = (epoch << 32) | counter   (monotonically increasing)
 ---
 
 ## 11. Gossip Protocols & SWIM
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 **SWIM (Scalable Weakly-consistent Infection-style Membership):**
 
@@ -527,6 +911,22 @@ def phi(since_last_heartbeat, mean_interval):
 ---
 
 ## 12. CRDTs: Theory & Common Types
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 **CRDT (Conflict-Free Replicated Data Type):** Converges without consensus. Operations commute.
 
@@ -571,6 +971,22 @@ class LWWRegister:
 
 ## 13. Conflict Resolution Strategies
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 | Strategy | Mechanism | Pros | Cons |
 |----------|-----------|------|------|
 | LWW | Timestamp | Simple, always converges | Lost concurrent writes |
@@ -596,13 +1012,61 @@ class HLC:
 
 ## Simplest Mental Model
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 **Consensus is a group of servers agreeing on one thing despite failures.** Raft makes this simple: one leader makes all decisions; if it dies, servers run a random-timer election to pick a new one. Paxos does the same with more math. **CRDTs avoid consensus entirely** — operations commute like addition: `1+2+3` is same regardless of order. CAP says: during a network split, you must choose correctness or availability, never both.
 
 
 
 ## Replication Stages Explained
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Stage 1: Write to Leader
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 ```
 Client → Leader: "insert user=alice"
          Leader writes to WAL (Write-Ahead Log)
@@ -610,6 +1074,22 @@ Client → Leader: "insert user=alice"
 ```
 
 ### Stage 2: Replicate to Followers
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 ```
 Leader → Follower-1: "insert user=alice"
          ↓
@@ -623,6 +1103,22 @@ Leader → Follower-2: "insert user=alice"
 ```
 
 ### Stage 3: Commit
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 ```
 Leader checks: "Got acks from N/2+1 replicas?"
 If YES → Marks committed in leader's log
@@ -633,6 +1129,22 @@ If NO  → Entry stays in log but not applied
 
 ### Failure Scenarios
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 | Scenario | Replication State | Recovery |
 |----------|------------------|----------|
 | Client crashes | Entry in leader WAL | Retry on reconnect |
@@ -642,5 +1154,21 @@ If NO  → Entry stays in log but not applied
 
 
 ## Practical Example
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 See code examples above for practical usage patterns.

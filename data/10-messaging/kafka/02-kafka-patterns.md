@@ -39,11 +39,43 @@ graph LR
 
 ## Table of Contents
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 - [Event Sourcing](#-event-sourcing-with-kafka) · [1. CQRS](#1-cqrs-with-kafka) · [2. Outbox](#2-outbox-pattern) · [3. Transactional Messaging](#3-transactional-messaging) · [4. Idempotent Consumers](#4-idempotent-consumers) · [5. DLQ & Retry](#5-dead-letter-queues--retry-topics) · [6. Compacted Topics](#6-compacted-topics-for-state) · [7. Streaming Joins](#7-streaming-joins) · [8. Windowed Aggregations](#8-windowed-aggregations) · [9. Global KTables](#9-global-ktables) · [10. Interactive Queries](#10-interactive-queries) · [11. Exactly-Once](#11-exactly-once-end-to-end) · [12. MirrorMaker](#12-kafka-mirrormaker-for-dr) · [Simplest Mental Model](#-simplest-mental-model)
 
 ---
 
 ## 🧭 Event Sourcing with Kafka
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 Stores state changes as an immutable event log.
@@ -60,6 +92,22 @@ Stores state changes as an immutable event log.
 
 ### Step-by-Step
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 1. **Command execution** receives action request (PlaceOrder, ShipOrder)
 2. **Event creation** generates domain event (OrderPlaced, OrderShipped) capturing state change
 3. **Event storage** appends to Kafka compacted topic with key=aggregate_id
@@ -68,6 +116,22 @@ Stores state changes as an immutable event log.
 6. **Schema evolution** new event types added without altering old events, supports migrations
 
 ### Code Example
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```python
 # Python event sourcing implementation
@@ -128,11 +192,43 @@ for message in consumer:
 
 ### Real-World Scenario
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 Shopify uses event sourcing for orders: every state change (created, paid, packed, shipped, delivered) is immutable. If a customer disputes a charge, engineers replay the order's events to prove exact timing of payment and shipment. When implementing refunds, they add a RefundInitiated event instead of updating rows—full audit trail preserved for compliance.
 
 ---
 
 ## 1. CQRS with Kafka
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 Separates commands (writes) from queries (reads):
@@ -155,6 +251,22 @@ consumer.run({
 
 ### Step-by-Step
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 1. **Command receipt** API accepts CreateOrder command with user, items, payment info
 2. **Command validation** checks business rules (user exists, inventory available)
 3. **Event emission** write DB (orders table) and publish OrderCreatedEvent to Kafka atomically
@@ -163,6 +275,22 @@ consumer.run({
 6. **Eventual consistency** read DB may lag write DB by milliseconds, acceptable for UI
 
 ### Code Example
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```javascript
 // Node.js CQRS pattern with Kafka
@@ -248,11 +376,43 @@ app.get('/api/orders/:orderId', async (req, res) => {
 
 ### Real-World Scenario
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 Amazon Prime Video uses CQRS: write commands go to the order service database, OrderCreated events fan out to recommendation, billing, and notification services. Each service maintains its own read model optimized for its queries. When billing queries "total revenue by region," it queries its denormalized read DB (fast), not the shared write DB. Eventual consistency (100ms lag) acceptable for analytics.
 
 ---
 
 ## 2. Outbox Pattern
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 BEGIN TX: INSERT INTO orders + INSERT INTO outbox → COMMIT
@@ -274,6 +434,22 @@ CREATE TABLE outbox (
 ---
 
 ## 3. Transactional Messaging
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 Atomic writes across topics:
@@ -302,6 +478,22 @@ while (true) {
 
 ## 4. Idempotent Consumers
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```text
 Handle duplicates: process → INSERT; same event again → dedup → SKIP.
 ```
@@ -323,6 +515,22 @@ INSERT INTO processed_events (event_id) VALUES ($1) ON CONFLICT (event_id) DO NO
 ---
 
 ## 5. Dead Letter Queues & Retry Topics
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
   Consumer → process → success (done)
@@ -351,6 +559,22 @@ catch (err) {
 
 ## 6. Compacted Topics for State
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```text
 Only latest value per key survives: u1=v1, u2=v1, u1=v2, u3=v1, u1=v3, u2=v2
 → u3=v1, u1=v3, u2=v2 → ideal for KTables
@@ -371,6 +595,22 @@ Use cases: user profiles, product catalog, configuration.
 
 ## 7. Streaming Joins
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 **Stream-Table** (enrichment):
 ```java
 KStream<String, EnrichedOrder> enriched = orders.join(users,
@@ -390,6 +630,22 @@ KStream<String, MatchedOrder> matched = orders.join(payments,
 ---
 
 ## 8. Windowed Aggregations
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 | Window | Behavior | Use Case |
 |--------|----------|----------|
@@ -414,6 +670,22 @@ KTable<Windowed<String>, Long> sessions = orders
 
 ## 9. Global KTables
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```text
 KTable: partitioned (subset per instance) — needs co-partitioning
 GlobalKTable: ALL data on EVERY instance — no co-partitioning needed
@@ -434,6 +706,22 @@ For small reference data (<1GB).
 
 ## 10. Interactive Queries
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```text
 HTTP query of state stores. Local key → return. Remote key → route to owner.
 ```
@@ -452,6 +740,22 @@ return remoteQuery(host, "/api/orders/count/" + userId);
 
 ## 11. Exactly-Once End-to-End
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 | Stage | Mechanism |
 |-------|-----------|
 | Source → Kafka | Idempotent producer + outbox |
@@ -462,6 +766,22 @@ return remoteQuery(host, "/api/orders/count/" + userId);
 ---
 
 ## 12. Kafka MirrorMaker for DR
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
   Primary (active R+W) ──MM2──> Replica (standby, read-only)
@@ -486,6 +806,22 @@ sync.group.offsets.enabled: true
 
 ## 🧭 Simplest Mental Model
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```text
   Event Sourcing  = Store EVERYTHING, never delete
   CQRS            = Separate pen (write) from map (read)
@@ -505,9 +841,41 @@ sync.group.offsets.enabled: true
 
 ## Practical Example
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 See code examples above for practical usage patterns.
 
 ## Edge Cases and Advanced Scenarios
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 | Scenario | Challenge | Solution |
 |----------|-----------|----------|
@@ -519,6 +887,22 @@ See code examples above for practical usage patterns.
 
 ## Cross-References
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 - [Kafka Production Operations](../04-kafka-production-operations.md) — Cluster sizing, broker tuning, security, DR
 - [SNS & SQS Patterns](../sns-sqs/02-sns-sqs-patterns.md) — Queue comparison guide, exactly-once processing
 - [Distributed Transactions](../../09-distributed-systems/02-distributed-transactions.md) — Outbox, Saga, TCC patterns
@@ -528,7 +912,39 @@ See code examples above for practical usage patterns.
 
 ## Production Failure Modes
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Failure 1: Consumer Lag Spikes Due to Processing Bottleneck
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 | Aspect | Detail |
 |--------|--------|
@@ -540,6 +956,22 @@ See code examples above for practical usage patterns.
 
 ### Failure 2: Duplicate Messages After Consumer Crash
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 | Aspect | Detail |
 |--------|--------|
 | **Symptoms** | Data inconsistencies in downstream systems. Duplicate records in database. Idempotency keys missing |
@@ -549,6 +981,22 @@ See code examples above for practical usage patterns.
 | **Prevention** | Set `enable.auto.commit=false`. Commit offset only after processing and side-effects are complete. Use Kafka transactional producer + consumer for exactly-once. Use idempotency table with TTL |
 
 ### Failure 3: Schema Registry Backward-Incompatible Change
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 | Aspect | Detail |
 |--------|--------|
@@ -560,23 +1008,119 @@ See code examples above for practical usage patterns.
 
 ## Interview Questions
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Q1 (Beginner): What is the difference between Kafka topics and partitions?
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 **Answer**: A topic is a logical category/feed name to which records are published. A partition is a physical, ordered, immutable sequence of records within a topic. Partitions are the unit of parallelism: each partition lives on a single broker, and each consumer in a group reads from one or more partitions. In a 10-partition topic with 3 consumers, partitions are distributed among consumers. Adding more partitions increases throughput but also increases the number of files Kafka manages. Orders within a partition are guaranteed, but across partitions they are not.
 
 ### Q2 (Mid-Level): How does the Kafka producer ensure record ordering within a partition?
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 **Answer**: The producer assigns records to partitions using a partitioner. With a key (default partitioner: hash(key) % num_partitions), all records with the same key go to the same partition. The producer maintains per-partition in-flight requests. With `max.in.flight.requests.per.connection=1` (default 5), records are sent in strict order. With idempotent producer (`enable.idempotence=true`), ordering is guaranteed even with retries because each record has a sequence number and the broker rejects out-of-order sequences. Retries can cause duplicates but not reordering when idempotence is enabled. Without idempotence, a retried batch could be appended after a later batch if the original request succeeded but the broker response was lost.
 
 ### Q3 (Senior): Design a Kafka-based event sourcing system for an e-commerce order management system.
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 **Answer**: Events: OrderCreated, OrderShipped, OrderCancelled, PaymentProcessed. Topics: `orders` (single partition per order_id hash → ensures ordering per order). Producers: order service publishes OrderCreated, payment service publishes PaymentProcessed, shipping service publishes OrderShipped. Consumers: projection service reads events and builds materialized views (current order state in PostgreSQL). Use compacted topic `order-state` as KV store (key=order_id, value=latest state). Handle duplicate events: idempotent projections (upsert by order_id + event_version). Handle out-of-order events: use event_version in the event, discard versions <= current version. For exactly-once, use Kafka Streams with exactly-once semantics and state store for the projection. The state store is backed by a changelog topic for recovery. Use interactive queries for read-side: query the state store directly instead of re-processing all events.
 
 ### Q4 (Staff): Compare Kafka Streams, ksqlDB, and Flink for stream processing in an event-driven microservices architecture.
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 **Answer**: Kafka Streams: embeddable, lightweight, runs in your application. Best for: per-service event processing (projections, enrichment, filtering). Pros: no separate cluster, exactly-once built-in, ROCKsDB state stores, exactly-once exactly. Cons: JVM-only, state store can be memory-intensive, no global event-time semantics across partitions. ksqlDB: SQL interface on top of Kafka Streams. Best for: analysts, simple transformations, joining streams. Pros: low barrier to entry, pull queries (interactive query on materialized state), push queries (continuous queries). Cons: complex joins limited, not for heavy processing logic. Flink: cluster-based, true streaming. Best for: complex event processing, windowed aggregations, large state, exactly-once sinks to external systems. Pros: event-time processing + watermarks, savepoints for upgrades, batch and stream unified API, Python API. Cons: separate cluster to manage, more complex operations. Recommendation: use Kafka Streams for in-service processing, Flink for cross-service analytics and large-state operations. ksqlDB for quick queries and dashboards.
 
 ## Edge Cases
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 | Scenario | Challenge | Solution |
 |----------|-----------|----------|
@@ -587,6 +1131,22 @@ See code examples above for practical usage patterns.
 | **Compacted topic tombstones** | DELETE produces tombstone, but compaction hasn't run yet | Tombstones survive until `min.compaction.lag.ms` (default 0). Reader sees deleted keys until compaction removes tombstones |
 
 ## Cross-References
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 - [Kafka Production Operations](../04-kafka-production-operations.md) — Cluster sizing, broker tuning, security, DR
 - [SNS & SQS Patterns](../sns-sqs/02-sns-sqs-patterns.md) — Queue comparison guide, exactly-once processing

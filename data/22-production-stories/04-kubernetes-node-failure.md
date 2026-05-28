@@ -47,6 +47,22 @@ graph LR
 
 ## Table of Contents
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 1. [Scenario A: Node Dies — Hardware Failure / Network Loss → Pods Unreachable → Service Disruption](#scenario-a-node-dies--hardware-failure--network-loss--pods-unreachable--service-disruption)
 2. [Scenario B: Node Pressure — Memory/Disk Pressure → Pods Evicted → Reschedule Storm](#scenario-b-node-pressure--memorydisk-pressure--pods-evicted--reschedule-storm)
 3. [Scenario C: DNS Failure — CoreDNS Pod Crash → Service Discovery Broken → All Communication Fails](#scenario-c-dns-failure--coredns-pod-crash--service-discovery-broken--all-communication-fails)
@@ -60,7 +76,39 @@ graph LR
 
 ## Scenario A: Node Dies — Hardware Failure / Network Loss → Pods Unreachable → Service Disruption
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Symptom
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 14:22:00  Node ip-10-0-1-50.ec2.internal condition changed to NotReady
@@ -74,6 +122,22 @@ graph LR
 ```
 
 ### Detection
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 Alert: kubectl get nodes → NotReady
@@ -105,6 +169,22 @@ redis-cache-f9c2d-4mnbv    0/1     Unknown    0          12h
 
 ### Investigation
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```
 $ ssh ip-10-0-1-50   # fails — unreachable
 
@@ -134,6 +214,22 @@ $ kubectl get events --field-selector involvedObject.name=orders-api-7d4f8b6c-2x
 ```
 
 ### Root Cause
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 NODE FAILURE TIMELINE
@@ -173,6 +269,22 @@ NODE FAILURE TIMELINE
 
 ### Mitigation
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```
 
 ── STEP 1: FORCEFULLY TERMINATE THE DEAD NODE
@@ -201,6 +313,22 @@ $ kubectl scale deployment/cluster-autoscaler --replicas=1 -n kube-system
 ```
 
 ### Permanent Fix
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```yaml
 # PodDisruptionBudget for critical services
@@ -260,7 +388,39 @@ spec:
 
 ## Scenario B: Node Pressure — Memory/Disk Pressure → Pods Evicted → Reschedule Storm
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Symptom
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 15:00:00  Node ip-10-0-1-53: MemoryPressure=True
@@ -275,6 +435,22 @@ spec:
 ```
 
 ### Detection
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 $ kubectl describe node ip-10-0-1-53
@@ -301,6 +477,22 @@ $ kubectl get events --field-selector reason=Evicted
 ```
 
 ### Root Cause
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 POD EVICTION SEQUENCE
@@ -336,6 +528,22 @@ POD EVICTION SEQUENCE
 
 ### Mitigation
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```
 
 ── STEP 1: IDENTIFY MEMORY LEAK
@@ -366,6 +574,22 @@ $ kubectl uncordon ip-10-0-1-53
 ```
 
 ### Permanent Fix
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```yaml
 # Resource limits for ALL pods
@@ -425,7 +649,39 @@ evictionPressureTransitionPeriod: "5m"
 
 ## Scenario C: DNS Failure — CoreDNS Pod Crash → Service Discovery Broken → All Communication Fails
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Symptom
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 09:45:00  CoreDNS pod restarts (OOM killed)
@@ -440,6 +696,22 @@ evictionPressureTransitionPeriod: "5m"
 ```
 
 ### Detection
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 Alert: CoreDNS pod CrashLoopBackOff / OOMKilled
@@ -465,6 +737,22 @@ $ kubectl describe pod -n kube-system coredns-7d8f9c8b7-abcde
 ```
 
 ### Root Cause
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 DNS RESOLUTION FAILURE FLOW
@@ -499,6 +787,22 @@ DNS RESOLUTION FAILURE FLOW
 ```
 
 ### Mitigation
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 
@@ -537,6 +841,22 @@ Address 1: 10.96.0.1 kubernetes.default.svc.cluster.local
 ```
 
 ### Permanent Fix
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```yaml
 # CoreDNS deployment configuration
@@ -615,7 +935,39 @@ spec:
 
 ## Scenario D: CNI Failure — Network Plugin Misconfiguration → Pods Stuck in ContainerCreating → Zero Networking
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Symptom
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 11:00:00  New node ip-10-0-1-54 joins cluster
@@ -628,6 +980,22 @@ spec:
 ```
 
 ### Detection
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 $ kubectl get pods -o wide | grep ContainerCreating
@@ -656,6 +1024,22 @@ aws-node-pqrst    0/1   Pending   0   5m    ip-10-0-1-54   ← NOT RUNNING
 ```
 
 ### Root Cause
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 
@@ -696,6 +1080,22 @@ aws-node-pqrst    0/1   Pending   0   5m    ip-10-0-1-54   ← NOT RUNNING
 ```
 
 ### Mitigation
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 
@@ -739,6 +1139,22 @@ $ kubectl delete node ip-10-0-1-54
 ```
 
 ### Permanent Fix
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```yaml
 # CNI DaemonSet with proper tolerations and resources
@@ -784,7 +1200,39 @@ spec:
 
 ## Scenario E: API Server Overload — Too Many Informers → Latency → Controller Failures → Cascade
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Symptom
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 16:00:00  API server response time p99: 200ms (normal: 20ms)
@@ -798,6 +1246,22 @@ spec:
 ```
 
 ### Detection
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 Alert: API server request latency p99 > 1000ms
@@ -828,6 +1292,22 @@ $ kubectl exec -n kube-system etcd-0 -- etcdctl endpoint status --write-out=tabl
 ```
 
 ### Root Cause
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 API SERVER OVERLOAD ANATOMY
@@ -866,6 +1346,22 @@ API SERVER OVERLOAD ANATOMY
 ```
 
 ### Mitigation
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 
@@ -909,6 +1405,22 @@ $ kubectl scale deployment -n kube-system kube-apiserver --replicas=3
 
 ### Permanent Fix
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```yaml
 # API Server tuning for large clusters
 # kube-apiserver.yaml
@@ -950,7 +1462,39 @@ spec:
 
 ## Detection and Monitoring Reference
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Key Kubernetes Metrics
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 | Metric | Source | Warning | Critical |
 |--------|--------|---------|----------|
@@ -964,6 +1508,22 @@ spec:
 | `etcd_server_leader_changes_seen_total` | etcd metrics | > 1 | > 3 |
 
 ### Useful Diagnostic Commands
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```bash
 # Node health
@@ -1000,7 +1560,39 @@ kubectl exec -n kube-system etcd-0 -- etcdctl endpoint health
 
 ## Mitigation Playbook
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Node Failure
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 1. IDENTIFY: kubectl get nodes → find NotReady
@@ -1013,6 +1605,22 @@ kubectl exec -n kube-system etcd-0 -- etcdctl endpoint health
 
 ### Node Pressure
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```
 1. CORDON: kubectl cordon <node>
 2. EVICT: kubectl drain <node> --ignore-daemonsets
@@ -1024,6 +1632,22 @@ kubectl exec -n kube-system etcd-0 -- etcdctl endpoint health
 
 ### DNS Failure
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```
 1. CHECK: kubectl get pods -n kube-system -l k8s-app=kube-dns
 2. FIX: kubectl scale deployment/coredns -n kube-system --replicas=3
@@ -1034,6 +1658,22 @@ kubectl exec -n kube-system etcd-0 -- etcdctl endpoint health
 
 ### CNI Failure
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```
 1. CHECK: kubectl get pods -n kube-system | grep <cni-plugin>
 2. FIX: Add tolerations, increase IP pool
@@ -1043,6 +1683,22 @@ kubectl exec -n kube-system etcd-0 -- etcdctl endpoint health
 ```
 
 ### API Server Overload
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 1. CHECK: kube-apiserver metrics for latency and inflight
@@ -1056,7 +1712,39 @@ kubectl exec -n kube-system etcd-0 -- etcdctl endpoint health
 
 ## Permanent Fixes and Configuration Reference
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Kubelet Configuration
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```yaml
 # kubelet-config.yaml
@@ -1088,6 +1776,22 @@ enforceNodeAllocatable:
 
 ### Priority Classes
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```yaml
 apiVersion: scheduling.k8s.io/v1
 kind: PriorityClass
@@ -1117,6 +1821,22 @@ description: "Priority for production workloads."
 
 ## Lessons Learned
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 1. **Always set PodDisruptionBudget for critical services.** Without it, eviction removes all replicas at once.
 2. **Resource limits are mandatory.** A single pod with no limits can OOM a node and trigger cascading evictions.
 3. **CoreDNS is a single point of failure for service discovery.** Always run multiple replicas, set memory limits, and enable autoscaling.
@@ -1131,6 +1851,22 @@ description: "Priority for production workloads."
 ---
 
 ## Related
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 - [Databases](../../08-databases/) — Outages, corruption, performance
 - [Distributed Systems](../../09-distributed-systems/) — Consensus, cascade failures

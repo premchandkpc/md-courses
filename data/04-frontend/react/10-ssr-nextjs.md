@@ -6,6 +6,22 @@
 
 ## Layer 1: Beginner Mental Model
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 **Analogy**: Like ordering at a restaurant. CSR = you walk in, empty-handed, chef gives you empty plate and recipe, you cook it at your table (slow, noisy). SSR = chef cooks your meal in kitchen, serves you ready-to-eat (faster, interactive immediately). SSG = chef pre-cooked 100 popular meals yesterday, serves instantly from shelf.
 
 **Why it matters**:
@@ -20,7 +36,39 @@
 
 ## Layer 4: Production Reality
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### SSR/Next.js Failure Modes
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 | Failure | Symptoms | Root Cause | Fix |
 |---------|----------|-----------|-----|
@@ -34,6 +82,22 @@
 | **Router Cache Stale State** | Back button shows old data even after revalidate | Client-side router cache not cleared, 30s TTL expires slowly | Use `useRouter().refresh()`, shorter router cache TTL |
 
 ### Production Incident: Vercel Deploy with RSC Mismatch (2023)
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 **Context**: Large e-commerce app migrated to RSC. During peak shopping (Black Friday), users reported "adding to cart doesn't work" but no errors.
 
@@ -93,7 +157,39 @@ function ProductCard({ productId }) {
 
 ## Layer 5: Staff Engineer Perspective
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Rendering Strategy Tradeoffs
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 | Strategy | TTI | LCP | Cost | Use Case |
 |----------|-----|-----|------|----------|
@@ -105,6 +201,22 @@ function ProductCard({ productId }) {
 | **RSC (Server Only)** | 0.5-1s | 1-1.5s | Low (minimal JS) | Data-heavy apps, real-time feeds |
 
 ### Scaling Pattern: From Startup to 100M Users
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 **Stage 1 (Startup — 10K DAU)**:
 - CSR is fine, just deploy React app to Vercel
@@ -140,6 +252,22 @@ function ProductCard({ productId }) {
 
 ### Production Caching Strategy
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```
 Request → Edge Middleware
   ↓
@@ -164,7 +292,39 @@ Database
 
 ## Layer 5: Interview Questions
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Level 1 (Junior Engineer)
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 **Q1: What's the difference between SSR and CSR? When would you use each?**
 A: CSR = send empty HTML, load JS, render on browser. Fast interactivity once loaded, but TTI slow. Use for admin dashboards. SSR = render on server, send HTML. Fast TTI, better SEO. Use for marketing sites, e-commerce.
@@ -177,6 +337,22 @@ A: Server renders HTML, client loads JS bundle and attaches event listeners to t
 - Expected: Mentions static → interactive, event listeners
 
 ### Level 2 (Mid-Level Engineer)
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 **Q3: You see "Hydration mismatch" error. How do you debug?**
 A: 
@@ -194,6 +370,22 @@ A: SSR sends HTML + JS, client hydrates. RSC sends serialized component tree, ze
 - Expected: Mentions zero JS, data fetching, smaller bundles
 
 ### Level 3 (Senior Engineer)
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 **Q5: Design caching strategy for a product listing page with 10M SKUs. Consider: freshness, cost, performance.**
 A:
@@ -219,6 +411,22 @@ A:
 - Expected: Multiple concerns, mitigation strategy
 
 ### Level 4 (Staff Engineer)
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 **Q7: Architect a multi-tenant SaaS with per-tenant customization. How do you handle SSR/caching at scale (1000s of tenants)?**
 A:
@@ -256,6 +464,22 @@ A:
 
 ## SSR vs CSR vs SSG
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```mermaid
 graph TB
     subgraph CSR["Client-Side Render"]
@@ -292,6 +516,22 @@ graph TB
 
 ## 1. SSR Fundamentals
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 Server-Side Rendering converts React components to HTML on the server per request. Three phases:
 
 ```jsx
@@ -304,6 +544,22 @@ hydrateRoot(document.getElementById("root"), <App />);
 
 ### SSR vs SSG vs ISR
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 | Strategy | When HTML is built | Data freshness | Use case |
 |----------|-------------------|----------------|----------|
 | SSR | Every request | Latest | Personalized dashboards |
@@ -313,9 +569,41 @@ hydrateRoot(document.getElementById("root"), <App />);
 
 ## 2. React Server Components (RSC)
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 React 18+ introduces a fundamental architectural split: components run on the **server** OR the **client**, not both. RSC components render **once** on the server and send a serialized representation to the client — zero bundle size contribution.
 
 ### RSC Architecture — How It Works
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```mermaid
 sequenceDiagram
@@ -351,6 +639,22 @@ sequenceDiagram
 
 ### Server vs Client Boundaries — The "use client" Directive
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```jsx
 // 📁 ServerComponent.jsx — DEFAULT (no directive needed)
 // Runs on: Server ONLY
@@ -381,6 +685,22 @@ function LikeButton({ postId }) {
 ```
 
 ### The "use client" Boundary Rules
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```mermaid
 flowchart TD
@@ -422,6 +742,22 @@ export default async function Page() {
 ```
 
 ### Data Fetching Patterns with RSC
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```jsx
 // Pattern 1: Direct data access (no API route needed)
@@ -474,6 +810,22 @@ async function AnalyticsChart() {
 
 ### RSC Streaming — How Suspense Boundaries Stream Independently
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 Server components with Suspense boundaries stream incrementally. Each boundary is an independent stream unit:
 
 ```mermaid
@@ -496,6 +848,22 @@ sequenceDiagram
 **Cross-reference**: Streaming SSR works on top of HTTP chunked transfer encoding. See [Networking](../../11-networking/) for HTTP streaming concepts. See [Backend](../../03-backend/) for SQL/database access patterns from server components.
 
 ### Server Actions ("use server")
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```jsx
 // Form action — runs on server, no API route needed
@@ -533,6 +901,22 @@ function ProfileForm() {
 
 ### Mutations with useActionState (React 19)
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```jsx
 import { useActionState } from "react";
 
@@ -562,7 +946,39 @@ function UpdateName() {
 
 ## 3. Next.js App Router
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Route Groups & Conventions
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 | File | Purpose |
 |------|---------|
@@ -593,6 +1009,22 @@ export default async function BlogPost({ params }) {
 
 ### Data Fetching
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```jsx
 // Default: cached and deduplicated
 async function getPost(slug) {
@@ -619,6 +1051,22 @@ const userAgent = headers().get("user-agent");
 
 ### Static Generation & Metadata
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```jsx
 // generateStaticParams — pre-build pages at build time
 export async function generateStaticParams() {
@@ -638,6 +1086,22 @@ export async function generateMetadata({ params }) {
 ```
 
 ## 4. Rendering Strategies
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```jsx
 // Static (default) — fetch without dynamic functions or revalidate
@@ -660,6 +1124,22 @@ export const revalidate = 3600; // seconds
 ```
 
 ### Edge Runtime
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```jsx
 // app/api/edge/route.js
@@ -715,6 +1195,22 @@ export const config = {
 
 ## 5. Image Optimization
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```jsx
 import Image from "next/image";
 
@@ -744,6 +1240,22 @@ module.exports = {
 
 ## 6. Security
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```jsx
 // Server Actions — built-in CSRF protection (unforgeable action IDs)
 "use server";
@@ -770,6 +1282,22 @@ const csp = {
 
 ## 7. Caching Layers
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 Next.js has a multi-layered cache system:
 
 | Cache | Scope | Invalidated by |
@@ -791,6 +1319,22 @@ async function Post({ id }) {
 
 ### Cache Tags & On-Demand Revalidation
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```jsx
 // Tag any fetch
 fetch(url, { next: { tags: [`post-${id}`] } });
@@ -808,9 +1352,41 @@ export async function POST(request) {
 
 ## 8. Streaming SSR Architecture — Deep Dive
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 React 18 introduced `renderToPipeableStream` (Node.js) and `renderToReadableStream` (Edge), enabling HTML streaming. Instead of waiting for the entire page to render on the server, React sends HTML **progressively** as each part becomes available.
 
 ### How Streaming SSR Works
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```mermaid
 sequenceDiagram
@@ -843,6 +1419,22 @@ sequenceDiagram
 ```
 
 ### The HTML Stream Format
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 Each chunk from the server contains raw HTML plus inline scripts for Suspense boundary replacement:
 
@@ -884,6 +1476,22 @@ Each chunk from the server contains raw HTML plus inline scripts for Suspense bo
 ```
 
 ### Selective Hydration
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 After all HTML is streamed and JS bundles load, React performs **selective hydration** — hydrating one Suspense boundary at a time, prioritized by user interaction:
 
@@ -945,6 +1553,22 @@ app.get('/dashboard/:id', (req, res) => {
 
 ### Streaming SSR Backpressure
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 **Problem**: If a slow Suspense boundary delays content while the TCP buffer fills, the server can't flush more data → client stalls.
 
 | Mitigation | Description |
@@ -961,9 +1585,41 @@ app.get('/dashboard/:id', (req, res) => {
 
 ## 9. Hydration Deep Dive
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 Hydration is the process where React attaches event handlers and state to server-rendered HTML, making it interactive. Understanding hydration deeply is critical for SSR/Next.js debugging.
 
 ### The Hydration Contract
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 React expects the server-rendered DOM to **exactly match** the client-rendered VDOM tree:
 
@@ -979,6 +1635,22 @@ flowchart TD
 ```
 
 ### The Hydration Algorithm
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```javascript
 // Simplified hydration logic
@@ -1011,6 +1683,22 @@ function hydrateRoot(container, reactNode) {
 
 ### Hydration Mismatch — All Causes
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 | Cause | Example | Fix |
 |---|---|---|
 | **Timestamps** | Server: "2 min ago", Client: "3 min ago" | `suppressHydrationWarning` |
@@ -1022,6 +1710,22 @@ function hydrateRoot(container, reactNode) {
 | **Date formatting** | Server timezone ≠ client timezone | `useSyncExternalStore` |
 
 ### Progressive Hydration
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 Instead of hydrating the entire page at once, hydrate incrementally:
 
@@ -1045,6 +1749,22 @@ function Page() {
 
 ### Selective Hydration — Priority-Based
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```mermaid
 sequenceDiagram
     participant D as DOM
@@ -1063,6 +1783,22 @@ sequenceDiagram
 ```
 
 ### Debugging Hydration Mismatches
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```jsx
 // In development, React logs the mismatch details:
@@ -1090,6 +1826,22 @@ function findHydrationMismatch(rootElement) {
 ```
 
 ### Production Case: Airline Booking Datepicker
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 **Scenario**: An airline booking site renders departure dates server-side. The SSR generates dates in UTC, but the client renders in the user's timezone:
 
@@ -1121,6 +1873,22 @@ function DateOption({ date }) {
 
 ### Hydration Performance Checklist
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 - [ ] No browser API access during SSR render
 - [ ] All timestamps/dates use `suppressHydrationWarning` or client-only rendering
 - [ ] Third-party scripts deferred until after `hydrateRoot`
@@ -1138,6 +1906,22 @@ function DateOption({ date }) {
 
 ## 10. Summary
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 | Need | Solution |
 |------|----------|
 | SEO + fast FCP | SSR / SSG / ISR |
@@ -1152,6 +1936,22 @@ function DateOption({ date }) {
 
 ### Rendering Strategy Decision Matrix
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 | Factor | SSR | SSG | ISR | RSC + Streaming |
 |---|---|---|---|---|
 | Data freshness | ✅ Always fresh | ❌ Stale at build | ✅ Near-latest | ✅ Latest per request |
@@ -1165,6 +1965,22 @@ function DateOption({ date }) {
 ---
 
 ## Related
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 - [Networking](../../11-networking/) — HTTP, performance, optimization
 - [Security](../../13-security/) — CORS, authentication, XSS prevention

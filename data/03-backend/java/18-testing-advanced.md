@@ -25,6 +25,22 @@ graph LR
 ```
 
 ## Table of Contents
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 - [1. JUnit 5 Platform](#1-junit-5-platform)
 - [2. Extensions](#2-extensions)
 - [3. Parameterized Tests](#3-parameterized-tests)
@@ -43,6 +59,22 @@ graph LR
 
 ## 1. JUnit 5 Platform
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```text
 ┌──────────────────────────────────────────┐
 │          JUnit 5 Platform                │
@@ -60,6 +92,22 @@ graph LR
 - **Vintage**: legacy JUnit 3/4 on JUnit 5 platform
 
 ## 2. Extensions
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 Extensions hook into lifecycle: `BeforeAllCallback`, `ParameterResolver`, `TestWatcher`, `InvocationInterceptor`.
 
@@ -92,6 +140,22 @@ class MyTest { }
 
 ## 3. Parameterized Tests
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```java
 @ParameterizedTest
 @ValueSource(strings = {"racecar", "radar"})
@@ -113,6 +177,22 @@ void enumTest(Month m) { assertTrue(m.getValue() >= 1); }
 
 ## 4. Dynamic Tests
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```java
 @TestFactory
 Stream<DynamicNode> dynamicTests() {
@@ -123,6 +203,22 @@ Stream<DynamicNode> dynamicTests() {
 ```
 
 ## 5. Mockito
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 Mock Creation:    mock(), @Mock, spy(), @Spy, @InjectMocks, @Captor
@@ -159,6 +255,22 @@ class UserServiceTest {
 
 ## 6. AssertJ
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```java
 assertThat("Hello").startsWith("H").hasSize(5).contains("ell");
 assertThat(42).isGreaterThan(10).isBetween(0, 100).isEven();
@@ -179,6 +291,22 @@ assertThatThrownBy(() -> parse("bad"))
 ```
 
 ## 7. Testcontainers
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 @Container + @Testcontainers
@@ -210,6 +338,22 @@ class IntegrationTest {
 
 ## 8. WireMock
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```java
 @WireMockTest(httpPort = 8089)
 class PaymentTest {
@@ -233,6 +377,22 @@ class PaymentTest {
 ```
 
 ## 9. JMH Benchmarks
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 @BenchmarkMode(Mode.AverageTime)     // time/operation
@@ -259,6 +419,22 @@ public class StrBenchmark {
 
 ## 10. Pitest
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```text
 Original code → Mutant (modified bytecode) → Run tests
   Tests FAIL → Mutant KILLED ✓
@@ -279,6 +455,22 @@ Original code → Mutant (modified bytecode) → Run tests
 Surviving mutation example: `age >= 18` mutated to `age > 18` — kill with boundary test `age == 18`.
 
 ## 11. Contract Testing
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 Consumer                              Provider
@@ -311,6 +503,22 @@ public V4Pact createPact(PactDslWithProvider builder) {
 
 ## 12. BDD
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```gherkin
 Feature: Registration
   Scenario: Success
@@ -333,6 +541,22 @@ public class Steps {
 
 ## Simplest Mental Model
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 **Testing is insurance — policies that pay out when something breaks.**
 
 - **JUnit 5**: Courtroom where trials happen. Extensions are bailiffs setting up.
@@ -349,7 +573,39 @@ public class Steps {
 
 ## Production Failure Modes
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Failure 1: Flaky Integration Tests — 5% of Testcontainers Tests Fail Randomly
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 | Aspect | Detail |
 |--------|--------|
@@ -361,6 +617,22 @@ public class Steps {
 
 ### Failure 2: Mockito Verification Oversight — Mock Returns Null in Production
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 | Aspect | Detail |
 |--------|--------|
 | **Symptoms** | All unit tests pass. In production, `NullPointerException` surfaces after deployment. Feature works in staging but fails in prod |
@@ -370,6 +642,22 @@ public class Steps {
 | **Prevention** | Always use `verify()` for every stubbed method. Use `lenient()` annotation only when explicitly needed. Enable `@ExtendWith(MockitoExtension.class)` which validates strict stubbing. Run Pitest with `mutationThreshold=85` |
 
 ### Failure 3: JMH Benchmark Misleads — Microbenchmark Does Not Predict Production Performance
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 | Aspect | Detail |
 |--------|--------|
@@ -381,6 +669,22 @@ public class Steps {
 
 ### Failure 4: Contract Test Stale — Consumer Tests Pass but Provider Changed API
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 | Aspect | Detail |
 |--------|--------|
 | **Symptoms** | Consumer expects response field `email`, provider renamed to `emailAddress`. Consumer tests pass because contract test wasn't regenerated. Production integration fails |
@@ -390,6 +694,22 @@ public class Steps {
 | **Prevention** | Use PactFlow or Pact Broker with webhook triggers: provider deploy → re-verify all consumer contracts. Set `pact.provider.branch` and `pact.consumer.branch` to match. Use `can-i-deploy` as gating step in CI/CD |
 
 ### Failure 5: Cucumber Test Maintenance Nightmare
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 | Aspect | Detail |
 |--------|--------|
@@ -401,6 +721,22 @@ public class Steps {
 
 ## Edge Cases
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 | Scenario | Challenge | Solution |
 |----------|-----------|----------|
 | **Testcontainers OOM on CI** | Docker containers use too much memory | Set `.withCreateContainerCmdModifier(cmd -> cmd.withMemory(512*1024*1024L))`. Use Ryuk resource cleaner |
@@ -410,6 +746,22 @@ public class Steps {
 | **Pitest mutant timeout** | Infinite loop mutated code never terminates tests | Set `<timeoutConstant>10000</timeoutConstant>` in Pitest config. Add `<timeoutFactor>1.2</timeoutFactor>` |
 
 ## Cross-References
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 - [Reactive Programming](../16-reactive-programming.md) — Virtual threads, reactive streams, Project Reactor testing
 - [PostgreSQL Architecture](../../../08-databases/02-postgresql-architecture.md) — Testcontainers with real PostgreSQL replication

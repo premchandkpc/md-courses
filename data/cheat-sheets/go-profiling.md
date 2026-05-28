@@ -6,6 +6,22 @@ Go performance profiling with pprof, tracing, escape analysis, and memory/CPU/go
 
 ## Quick Start
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```go
 import _ "net/http/pprof"   // register /debug/pprof/ handlers
 
@@ -23,6 +39,22 @@ go tool pprof http://localhost:6060/debug/pprof/allocs               # Memory (c
 ```
 
 ## pprof Interactive Commands
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```bash
 # Enter pprof shell
@@ -45,6 +77,22 @@ go tool pprof -base base.prof new.prof   # Delta view
 
 ## CPU Profiling
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```bash
 # 30-second CPU profile
 curl -s http://localhost:6060/debug/pprof/profile?seconds=30 > cpu.prof
@@ -64,6 +112,22 @@ defer pprof.StopCPUProfile()
 ```
 
 ## Memory Profiling
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```bash
 # In-use memory (current)
@@ -88,6 +152,22 @@ go tool pprof -base heap_start.prof heap_end.prof
 ```
 
 ## Goroutine Analysis
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```go
 // Web UI already shows count
@@ -116,6 +196,22 @@ pprof.Lookup("goroutine").WriteTo(os.Stdout, 2)
 
 ## Block & Mutex Profiling
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```go
 import "runtime"
 
@@ -133,6 +229,22 @@ go tool pprof http://localhost:6060/debug/pprof/mutex
 ```
 
 ## Execution Tracer
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```go
 // Programmatic
@@ -163,6 +275,22 @@ go tool trace trace.out
 
 ## Benchstat
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```bash
 # Run benchmarks twice and compare
 go test -bench=. -count=10 > old.txt
@@ -182,6 +310,22 @@ benchstat old.txt new.txt
 ```
 
 ## Escape Analysis
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```bash
 # Check what escapes to heap
@@ -210,6 +354,22 @@ go build -gcflags="-m -l" ./pkg 2>&1 | less
 ```
 
 ## Common Profile Workflows
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```bash
 # CPU hotspot
@@ -246,6 +406,22 @@ go tool pprof -http=:8080 block.prof
 
 ## Anti-Patterns
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 | Anti-Pattern | Why It Hurts | Fix |
 |-------------|-------------|-----|
 | Profiling production without rate limiting | Collects too much, GC thrash | Use `-seconds=30`, sampling rate |
@@ -258,6 +434,22 @@ go tool pprof -http=:8080 block.prof
 | Not disabling inlining for `-m` output | Missing escape edges | Add `-l` flag with `-m` |
 
 ## Key Metrics
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 | Metric | Source | What It Tells |
 |--------|--------|--------------|

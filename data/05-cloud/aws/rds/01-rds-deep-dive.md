@@ -32,6 +32,22 @@ graph LR
 
 ## Table of Contents
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 - [The Big Picture](#-the-big-picture)
 - [1. DB Engines](#1-db-engines)
 - [2. Multi-AZ](#2-multi-az)
@@ -49,6 +65,22 @@ graph LR
 ---
 
 ## 🧭 The Big Picture
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
                         ┌─────────────────────────┐
@@ -77,7 +109,39 @@ graph LR
 
 ## 1. DB Engines
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Engine Comparison
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 | Feature | Aurora MySQL | Aurora PG | MySQL | PostgreSQL | SQL Server | Oracle | MariaDB |
 |---------|-------------|-----------|-------|-----------|------------|--------|---------|
@@ -89,6 +153,22 @@ graph LR
 | **License** | AWS | AWS | GPL | PostgreSQL | Microsoft | Oracle | GPL |
 
 ### Selecting an Engine
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 Engine Selection Decision Tree:
@@ -109,6 +189,22 @@ Need MySQL compatibility?
 ```
 
 ### Engine-Specific Features
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 MySQL:
@@ -133,7 +229,39 @@ Aurora:
 
 ## 2. Multi-AZ
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Architecture
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 Multi-AZ Deployment (Synchronous Replication)
@@ -156,6 +284,22 @@ Multi-AZ Deployment (Synchronous Replication)
 ```
 
 ### Failover Flow
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 Primary DB becomes unavailable
@@ -196,6 +340,22 @@ Primary DB becomes unavailable
 
 ### Multi-AZ vs Single-AZ
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 | Aspect | Single-AZ | Multi-AZ |
 |--------|-----------|----------|
 | SLA | 99.50% | 99.95% |
@@ -209,7 +369,39 @@ Primary DB becomes unavailable
 
 ## 3. Read Replicas
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Architecture
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 Read Replica Flow:
@@ -231,6 +423,22 @@ Read Replica Flow:
 
 ### Cross-Region Read Replica
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```text
 us-east-1                     eu-west-1
 ┌──────────────┐             ┌──────────────┐
@@ -245,6 +453,22 @@ Limitations:
 ```
 
 ### Promotion Flow
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 Promote Read Replica to Primary:
@@ -277,7 +501,39 @@ Common use: Disaster recovery promotion
 
 ## 4. Backups
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Automated Backup
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 ┌────────────────────────────────────────────┐
@@ -299,6 +555,22 @@ Common use: Disaster recovery promotion
 ```
 
 ### Point-in-Time Recovery (PITR)
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 Point-in-Time Recovery:
@@ -323,7 +595,39 @@ Point-in-Time Recovery:
 
 ## 5. Snapshots
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Manual Snapshot
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 Manual Snapshot:
@@ -337,6 +641,22 @@ Manual Snapshot:
 ```
 
 ### Snapshot Export to S3
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 RDS Snapshot ──export──> S3 (Parquet format)
@@ -374,7 +694,39 @@ aws rds restore-db-instance-from-db-snapshot \
 
 ## 6. Parameter Groups
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Parameter Group Types
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 ┌─────────────────────────────┐
@@ -394,6 +746,22 @@ aws rds restore-db-instance-from-db-snapshot \
 ```
 
 ### Custom Parameter Group Example (PostgreSQL)
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```json
 {
@@ -415,6 +783,22 @@ aws rds restore-db-instance-from-db-snapshot \
 
 ### Parameter Group Lifecycle
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```text
 Default PG ──> Create Custom PG ──> Modify parameters ──> Apply to DB
       │              │                     │                     │
@@ -426,7 +810,39 @@ Default PG ──> Create Custom PG ──> Modify parameters ──> Apply to D
 
 ## 7. Option Groups
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Option Groups vs Parameter Groups
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 Parameter Groups:
@@ -439,6 +855,22 @@ Option Groups:
 ```
 
 ### Common Options
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 | Engine | Option | Purpose |
 |--------|--------|---------|
@@ -454,7 +886,39 @@ Option Groups:
 
 ## 8. Encryption
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Encryption at Rest
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 RDS Encryption Flow:
@@ -481,6 +945,22 @@ Create DB Instance
 
 ### Encryption in Transit
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```text
 Application ──SSL/TLS──> RDS Instance
                          │
@@ -492,6 +972,22 @@ Application ──SSL/TLS──> RDS Instance
 ```
 
 ### IAM Database Authentication
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 ┌──────────┐  Generate auth token   ┌──────────┐
@@ -530,7 +1026,39 @@ def get_connection():
 
 ## 9. Performance Insights
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Performance Schema
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 ┌─────────────────────────────────────────────┐
@@ -553,6 +1081,22 @@ def get_connection():
 
 ### Retention Tiers
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 | Tier | Retention | Cost |
 |------|-----------|------|
 | Free (basic metrics) | 7 days | Free |
@@ -560,6 +1104,22 @@ def get_connection():
 | Full (2 years) | Up to 2 years | $0.030/hr per DB instance |
 
 ### Enabling Performance Insights
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```awscli
 aws rds create-db-instance \
@@ -572,7 +1132,39 @@ aws rds create-db-instance \
 
 ## 10. Auto-Scaling
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Storage Auto-Scaling
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 Storage Auto-Scaling Behavior:
@@ -598,6 +1190,22 @@ Storage Auto-Scaling Behavior:
 
 ### Maximum Storage Thresholds
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 | Engine | Maximum Storage |
 |--------|----------------|
 | MySQL (gp3) | 64 TB |
@@ -611,7 +1219,39 @@ Storage Auto-Scaling Behavior:
 
 ## 11. Maintenance Windows
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Maintenance Types
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 Maintenance Categories:
@@ -635,6 +1275,22 @@ Maintenance Categories:
 
 ### Window Configuration
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```json
 {
   "PreferredMaintenanceWindow": "sun:05:00-sun:06:00",
@@ -645,6 +1301,22 @@ Maintenance Categories:
 ```
 
 ### Maintenance Best Practices
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 | Practice | Why |
 |----------|-----|
@@ -658,6 +1330,22 @@ Maintenance Categories:
 ---
 
 ## 🧠 Simplest Mental Model
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 RDS INSTANCE    =  A managed database you rent.
@@ -704,6 +1392,22 @@ MAINTENANCE     =  The 1-hour window at 3am Sunday
 
 ## Observability
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```mermaid
 flowchart LR
     A[RDS] --> B[Metrics]
@@ -722,6 +1426,22 @@ flowchart LR
 
 ### Key Metrics
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 | Metric | Unit | Threshold | Indicates |
 |--------|------|-----------|-----------|
 | DatabaseConnections | count | < 80% of max_connections | Connection pool exhaustion |
@@ -734,6 +1454,22 @@ flowchart LR
 
 ### Logs
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 - **ERROR**: Connection failures, deadlock detected, out of shared memory, replication conflict
 - **WARN**: Long-running query (> 5s), autovacuum triggered, checkpoint frequency high
 - **INFO**: Backup started/completed, parameter group change, failover event
@@ -741,9 +1477,41 @@ flowchart LR
 
 ### Traces
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 Use AWS X-Ray or OpenTelemetry to trace database queries. Capture query text, duration, rows returned, and connection pool state.
 
 ### Alerts
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 | Severity | Condition | Response |
 |----------|-----------|----------|
@@ -755,6 +1523,22 @@ Use AWS X-Ray or OpenTelemetry to trace database queries. Capture query text, du
 
 ### Dashboards
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 **RDS Overview**: instance health, connections, CPU/memory, read/write latency, IOPS, storage space, network throughput.
 
 **Replication Dashboard**: replica lag, replication slot state, WAL generation rate, archive lag.
@@ -762,7 +1546,39 @@ Use AWS X-Ray or OpenTelemetry to trace database queries. Capture query text, du
 
 ## Common Failures
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Failure: Connection Pool Exhaustion
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 - **Symptoms**: New connections fail with "too many clients". Application timeouts. `FATAL: remaining connection slots are reserved for non-replication superuser connections`.
 - **Root Cause**: max_connections too low for workload. Application not closing connections. Connection pooling layer (pgbouncer/RDS Proxy) misconfigured. Idle connections from ORM (Hibernate/Sequelize).
@@ -773,6 +1589,22 @@ Use AWS X-Ray or OpenTelemetry to trace database queries. Capture query text, du
 
 ### Failure: Replication Lag > WAL Retention
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 - **Symptoms**: Read replicas fall behind, queries return stale data. Replica lag grows until replica needs rebuild. `ERROR: requested WAL segment XXX has already been removed`.
 - **Root Cause**: Replica CPU/I/O too slow to keep up with primary write rate. Long-running queries on replica block WAL replay. wal_keep_segments too low. Replication slot doesn't advance.
 - **Detection**: `ReplicaLag` CloudWatch metric > threshold. `pg_stat_replication.replay_lag` increasing. `replay_lag` in `pg_stat_replication`.
@@ -780,6 +1612,22 @@ Use AWS X-Ray or OpenTelemetry to trace database queries. Capture query text, du
 - **Prevention**: Monitor `wal_generation_rate` and ensure `wal_keep_segments` covers peak lag. Use replication slots with monitoring. Ensure replica has sufficient IOPS. Use read-only traffic to replicas only.
 
 ### Failure: Autovacuum Not Keeping Up
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 - **Symptoms**: Table bloat (table size >> actual data), XID wraparound risk, performance degradation. `pg_stat_user_tables.n_dead_tup` steadily increases.
 - **Root Cause**: High write throughput generates dead tuples faster than autovacuum can clean. Autovacuum throttled by default (cost_limit=200). Large tables need more aggressive tuning.
@@ -789,6 +1637,22 @@ Use AWS X-Ray or OpenTelemetry to trace database queries. Capture query text, du
 
 ### Failure: Long-Running Query
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 - **Symptoms**: High CPU, blocked vacuum, replication lag, connection pool exhaustion.
 - **Root Cause**: Missing index causing full table scan. Inefficient query plan. Data skew invalidating cached plan. Lock contention (DDL waiting for query).
 - **Detection**: `pg_stat_activity` shows query running > 5min. `pg_locks` shows granted=true, blocked=true. `state_change` timestamp old.
@@ -796,6 +1660,22 @@ Use AWS X-Ray or OpenTelemetry to trace database queries. Capture query text, du
 - **Prevention**: Set `statement_timeout`. Enable `auto_explain` for slow queries. Monitor `pg_stat_activity`. Regular `ANALYZE`. Query plan review in CI.
 
 ### Failure: Deadlock Detection
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 - **Symptoms**: Transaction aborted with "deadlock detected" error. Application retries.
 - **Root Cause**: Two transactions each hold locks the other needs. Circular lock dependency. Common with concurrent updates on multiple rows in different order.

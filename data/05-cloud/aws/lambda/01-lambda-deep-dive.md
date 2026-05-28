@@ -33,6 +33,22 @@ graph LR
 
 ## Table of Contents
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 - [The Big Picture](#-the-big-picture)
 - [1. Function Configuration](#1-function-configuration)
 - [2. Triggers](#2-triggers)
@@ -50,6 +66,22 @@ graph LR
 ---
 
 ## 🧭 The Big Picture
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
                      ┌─────────────────────────┐
@@ -78,7 +110,39 @@ graph LR
 
 ## 1. Function Configuration
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Core Configuration
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 ┌──────────────────────────────────────────────────┐
@@ -98,6 +162,22 @@ graph LR
 ```
 
 ### Memory vs CPU Allocation
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 Memory (MB)    CPU Allocation
@@ -121,6 +201,22 @@ NOTE: CPU scales linearly with memory
 ```
 
 ### Handler Signature (Python)
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```python
 # handler.py
@@ -153,6 +249,22 @@ def lambda_handler(event, context):
 
 ### Step-by-Step
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 1. **Function deployment**: Upload code + dependencies to AWS Lambda and configure memory/timeout
 2. **Event arrival**: Event source (S3, API Gateway, SQS) sends event to Lambda
 3. **Container allocation**: AWS allocates a container (cold start creates new one) or reuses warm container
@@ -161,6 +273,22 @@ def lambda_handler(event, context):
 6. **Result return**: Handler returns response (must be JSON-serializable for API Gateway, can be any for async)
 
 ### Code Example
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```python
 import json
@@ -218,9 +346,41 @@ def lambda_handler(event, context):
 
 ### Real-World Scenario
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 A company had a Lambda that processed 100 events/second from SQS. With default 128MB memory (1% vCPU), JSON parsing took 500ms per event, causing timeouts. After increasing memory to 1792MB (1 vCPU), the same code executed in 50ms, reducing p99 latency from 15 seconds to 100ms and cutting invocation errors from 20% to 0.1%.
 
 ### Diagram
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```mermaid
 sequenceDiagram
@@ -246,7 +406,39 @@ sequenceDiagram
 
 ## 2. Triggers
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Common Trigger Sources
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 SYNCHRONOUS (request-response):
@@ -290,7 +482,39 @@ POLL-BASED (streams/queues):
 
 ## 3. Event Source Mapping
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### SQS Event Source Mapping
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```json
 {
@@ -315,6 +539,22 @@ POLL-BASED (streams/queues):
 ```
 
 ### DynamoDB Streams Mapping
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 DynamoDB Table
@@ -343,6 +583,22 @@ DynamoDB Table
 
 ### SQS Batch Processing Flow
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```python
 import json
 
@@ -365,7 +621,39 @@ def lambda_handler(event, context):
 
 ## 4. Layers
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Layer Structure
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 Layer Package Structure:
@@ -384,6 +672,22 @@ layer.zip
 
 ### Usage
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```awscli
 # Publish layer
 aws lambda publish-layer-version \
@@ -400,6 +704,22 @@ aws lambda update-function-configuration \
 
 ### Layer Limits
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 | Limit | Value |
 |-------|-------|
 | Max layers per function | 5 |
@@ -411,7 +731,39 @@ aws lambda update-function-configuration \
 
 ## 5. VPC Integration
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### VPC-Attached Lambda
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 Without VPC:                        With VPC:
@@ -436,6 +788,22 @@ To access Internet + VPC:
 
 ### VPC Configuration
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```json
 {
   "VpcConfig": {
@@ -451,6 +819,22 @@ To access Internet + VPC:
 ```
 
 ### Cold Start Impact of VPC
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 Cold Start Time (approx)
@@ -474,7 +858,39 @@ Mitigation: Hyperplane ENI (AWS-managed)
 
 ## 6. Cold Starts
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Cold Start Anatomy
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 INIT Phase (cold start)                    INVOKE Phase (warm)
@@ -493,6 +909,22 @@ Warm start: ~1-10ms (init skipped)
 
 ### Cold Start Duration by Runtime
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 | Runtime | Cold Start (approx) | Notes |
 |---------|--------------------|-------|
 | Python 3.12 | 50-100ms | Fastest |
@@ -503,6 +935,22 @@ Warm start: ~1-10ms (init skipped)
 | Ruby 3.2 | 100-300ms | Moderate |
 
 ### Mitigation Strategies
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 | Strategy | Impact | Cost Implication |
 |----------|--------|-----------------|
@@ -518,7 +966,39 @@ Warm start: ~1-10ms (init skipped)
 
 ## 7. Reserved Concurrency
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### How It Works
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 Regional Concurrency Pool (e.g., 1000)
@@ -546,6 +1026,22 @@ Available to others = 300
 
 ### Benefits
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```text
 Protection from runaway functions:
   Without Reserved (1000 pool):
@@ -568,7 +1064,39 @@ aws lambda put-function-concurrency \
 
 ## 8. Provisioned Concurrency
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Provisioned vs Reserved
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 Reserved Concurrency:
@@ -582,6 +1110,22 @@ Provisioned Concurrency:
 ```
 
 ### Application Auto Scaling
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```json
 {
@@ -604,6 +1148,22 @@ Provisioned Concurrency:
 ```
 
 ### Warm Pool Lifecycle
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 Provisioned Concurrency Warm Pool
@@ -635,7 +1195,39 @@ Provisioned Concurrency Warm Pool
 
 ## 9. Destinations
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Destination Types
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 On Success / On Failure
@@ -648,6 +1240,22 @@ On Success / On Failure
 ```
 
 ### Configuration
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```json
 {
@@ -669,6 +1277,22 @@ On Success / On Failure
 ```
 
 ### Async Invocation Flow with Destinations
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 Invoke (async)
@@ -699,7 +1323,39 @@ Invoke (async)
 
 ## 10. Versions & Aliases
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Versioning
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 $LATEST (unstable, mutable)
@@ -720,6 +1376,22 @@ and its own concurrency configuration.
 
 ### Aliases
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```text
 Aliases point to versions (can be changed):
 ┌─────────┐     ┌───────────┐
@@ -734,6 +1406,22 @@ Aliases point to versions (can be changed):
 ```
 
 ### Weighted Aliases (Canary Deployments)
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 ┌──────────┐
@@ -760,7 +1448,39 @@ Controlled via routing config:
 
 ## 11. Best Practices
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Performance
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```do
 ├── Set memory based on workload needs (not minimum)
@@ -780,6 +1500,22 @@ Controlled via routing config:
 
 ### Security
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```text
 ┌──────────────────────────────────────────────┐
 │ Lambda Security Checklist                     │
@@ -798,6 +1534,22 @@ Controlled via routing config:
 
 ### Monitoring
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```cloudwatch
 # CloudWatch Metrics
 Invocations — count of function invocations
@@ -810,6 +1562,22 @@ ProvisionedConcurrencyUtilization — % of provisioned used
 ```
 
 ### Code Structure
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```python
 # ❌ BAD — global scope has expensive operations
@@ -845,6 +1613,22 @@ def get_table():
 ---
 
 ## 🧠 Simplest Mental Model
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 LAMBDA FUNCTION  =  A vending machine.
@@ -887,7 +1671,39 @@ VERSIONS        =  Frozen recipe cards. V1 = original snacks.
 
 ## Interview Questions
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Beginner Level
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 **Q1: What is AWS Lambda and what are its key limitations?**
 
@@ -907,6 +1723,22 @@ VERSIONS        =  Frozen recipe cards. V1 = original snacks.
 
 ### Intermediate Level
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 **Q3: How does Lambda's synchronous invocation flow work end-to-end, including scaling and concurrency?**
 
 **Answer**: 1) Invocation via API Gateway/ALB → Lambda service places request on internal queue. 2) Lambda service checks Reserved Concurrency → if exceeded, throttles with 429. 3) If capacity available, assigns an execution environment (sandbox) from the warm pool or creates a new one. 4) Sandbox runs handler with event, returns response. 5) Sandbox stays warm for ~5-15 minutes after last invocation (idle timeout). Scaling: Lambda starts with burst (500-3000 depending on region), then adds 500/min. Each sandbox processes one request at a time for sync invocations (concurrent requests = concurrent sandboxes). Provisioned Concurrency pre-creates sandboxes.
@@ -916,6 +1748,22 @@ VERSIONS        =  Frozen recipe cards. V1 = original snacks.
 **Answer**: **Lambda** — event-driven, short-lived (<15min), low volume, variable traffic, simple request-response. **Fargate** — long-running services (web servers, workers), predictable traffic patterns, need for larger resources (10GB+ memory), stateful workloads, container orchestration. Lambda auto-scales faster but has cold starts. Fargate ECS has constant latency but requires capacity planning. Cost: Lambda is cheaper for intermittent workloads (<10M invocations/month); Fargate is cheaper for steady-state high traffic. Choose Lambda for: webhooks, image processing, S3 events, IoT backends. Choose Fargate for: web APIs with consistent 1000+ RPS, ML inference, long-running streaming consumers.
 
 ### Senior Level
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 **Q5: Your Lambda function that processes S3 events is seeing high error rates and duplicate processing. Diagnose.**
 
@@ -929,6 +1777,22 @@ VERSIONS        =  Frozen recipe cards. V1 = original snacks.
 
 ### Staff/Principal Level
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 **Q7: Your company has 500 Lambda functions across 10 microservices. Tracing a single request across these functions is nearly impossible. Design the observability strategy.**
 
 **Why**: Tests ability to design observability for distributed serverless systems.
@@ -940,6 +1804,22 @@ VERSIONS        =  Frozen recipe cards. V1 = original snacks.
 **Answer**: 1) **Strangler Fig pattern**: API Gateway routes traffic to both old monolith and new Lambda functions. 2) **Extract first**: Identify bounded contexts (e.g., user management, orders, payments). Extract the smallest, least-coupled one first (e.g., user management). 3) **Lambda composition**: Use Step Functions to orchestrate multiple Lambda functions for complex flows (order processing: validate → charge → ship). 4) **Data migration**: Dual-write strategy — monolith writes to both old and new DB (Neptune migration). 5) **Performance**: Use SnapStart for Java (init time reduction by 90%). Use Lambda Response Streaming for large payloads. 6) **Networking**: VPC Lambda with ENI per SG — limit to subnets that need DB access; use RDS Proxy to avoid connection storms. 7) **Gradual shift**: 5% → 25% → 50% → 100% traffic to Lambda, monitoring error rates, latency, and cost. 8) **Rollback**: Use canary deployments with Lambda aliases and weighted routing. Keep old monolith running at 0% desired capacity for fast rollback.
 
 ### Tricky Edge Cases
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 **Q9**: A Lambda function triggered by an S3 event writes output to the same S3 bucket. The function goes into infinite recursion and by the time it's stopped, you've incurred $10K in charges. How does this happen and how do you prevent it?
 

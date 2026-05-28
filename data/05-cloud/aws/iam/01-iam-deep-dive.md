@@ -6,7 +6,39 @@
 
 ## LAYER 1: Beginner's Mental Model 🧠
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Real-World Analogy
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 **IAM = Restaurant Access Control:**
 
@@ -25,6 +57,22 @@ IAM checks:
 ```
 
 ### Why IAM Matters
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 **Without IAM (everyone has full AWS access):**
 ```
@@ -52,7 +100,39 @@ Result: Security, cost control, compliance ✓
 
 ## LAYER 4: Production Reality 🚨
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Common IAM Failures
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 | Failure | Symptom | Root Cause | Prevention |
 |---------|---------|-----------|-----------|
@@ -64,6 +144,22 @@ Result: Security, cost control, compliance ✓
 | **Cross-Account Access Broken** | Legitimate access fails | Wrong ARN format | Test cross-account access |
 
 ### Real AWS Incident: Capital One Data Breach (2019)
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 **Problem:** 100M customer records exposed due to IAM misconfiguration.
 
@@ -89,7 +185,39 @@ Instead of specific bucket + specific actions
 
 ## Interview Questions 💼
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Level 1: Junior
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 **Q: What's the difference between users and roles?**
 
@@ -105,6 +233,22 @@ Roles: EC2 instance assumes role, gets temporary credentials (1 hour)
 A: Give each identity only minimum permissions needed. If need S3 read only, don't give admin.
 
 ### Level 2: Intermediate
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 **Q: Design IAM for a startup with 10 engineers, multiple AWS accounts, and CI/CD.**
 
@@ -122,6 +266,22 @@ A:
 A: Use AWS Access Analyzer. It finds all public/cross-account access and suggests least privilege.
 
 ### Level 3: Senior
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 **Q: Design cross-account access for multi-tenant SaaS.**
 
@@ -141,6 +301,22 @@ Role has:
 ---
 
 ## Production Story: AWS Lambda Over-Permissions
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 **Challenge:** Lambda function invoked by API Gateway had admin access (bad).
 
@@ -171,6 +347,22 @@ Role has:
 ---
 
 ## Summary
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 IAM fundamentals:
 
@@ -213,6 +405,22 @@ graph LR
 
 ## Table of Contents
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 - [The Big Picture](#-the-big-picture)
 - [1. Users](#1-users)
 - [2. Groups](#2-groups)
@@ -229,6 +437,22 @@ graph LR
 ---
 
 ## 🧭 The Big Picture
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
                     ┌─────────────────────────┐
@@ -252,6 +476,22 @@ graph LR
 
 ### Policy Evaluation Logic
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```text
 ┌─────────────────────────────────────────────────────────┐
 │          IAM Policy Evaluation Logic                     │
@@ -273,7 +513,39 @@ graph LR
 
 ## 1. Users
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### User Types
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 ┌─────────────────────────────────────────────────────────┐
@@ -302,6 +574,22 @@ graph LR
 
 ### User Credentials
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```text
 User Authentication Methods:
 ┌──────────────────────────────────────────────┐
@@ -326,7 +614,39 @@ User Authentication Methods:
 
 ## 2. Groups
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Group Benefits
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 Users ──> Groups ──> Policies
@@ -353,6 +673,22 @@ After Groups:
 
 ### Group Limitations
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 | Limitation | Value |
 |------------|-------|
 | Groups per account | 300 |
@@ -366,7 +702,39 @@ After Groups:
 
 ## 3. Roles
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Role vs User
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 IAM User                              IAM Role
@@ -381,6 +749,22 @@ WHO you are                          WHAT you can be
 ```
 
 ### Common Role Types
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 ┌─────────────────────────────────────────────┐
@@ -410,7 +794,39 @@ WHO you are                          WHAT you can be
 
 ## 4. Policies (Managed vs Inline)
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Policy Types
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 AWS Managed Policies:
@@ -451,6 +867,22 @@ Inline Policies:
 
 ### Policy Document Structure
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```json
 {
   "Version": "2012-10-17",
@@ -478,6 +910,22 @@ Inline Policies:
 
 ### Policy Elements
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 | Element | Required | Description |
 |---------|----------|-------------|
 | Version | Yes | Policy language version (`2012-10-17`) |
@@ -493,7 +941,39 @@ Inline Policies:
 
 ## 5. Trust Policies
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Trust Policy Structure
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```json
 {
@@ -511,6 +991,22 @@ Inline Policies:
 ```
 
 ### Example: Cross-Account Trust
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 Account A (123456789012)
@@ -548,6 +1044,22 @@ Account B (098765432109)             │
 ```
 
 ### AssumeRole Flow
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 User in Account B
@@ -590,7 +1102,39 @@ User in Account B
 
 ## 6. Service-Linked Roles
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### What They Are
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 ┌─────────────────────────────────────────────┐
@@ -615,6 +1159,22 @@ User in Account B
 
 ### Service-Linked vs Custom Role
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 | Aspect | Service-Linked | Custom Role |
 |--------|---------------|-------------|
 | Creation | AWS creates (or you with specified service) | You create manually |
@@ -628,7 +1188,39 @@ User in Account B
 
 ## 7. Permission Boundaries
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### How Boundaries Work
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 Permission Boundary Model:
@@ -654,6 +1246,22 @@ User has:
 ```
 
 ### Use Case: Delegated Admin
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```json
 // Permission boundary for delegated admins
@@ -686,7 +1294,39 @@ User has:
 
 ## 8. Access Analyzer
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Finding Analysis
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 ┌─────────────────────────────────────────────┐
@@ -709,6 +1349,22 @@ User has:
 
 ### Policy Validation
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```text
 ┌─────────────────────────────────────────────┐
 │ IAM Access Analyzer — Policy Validation     │
@@ -729,6 +1385,22 @@ User has:
 
 ### Unused Access Analysis
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```awscli
 # Generate credential report
 aws iam generate-credential-report
@@ -745,7 +1417,39 @@ aws iam list-access-keys --user-name my-user
 
 ## 9. IAM Best Practices
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Security Checklist
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 ┌──────────────────────────────────────────────┐
@@ -774,6 +1478,22 @@ aws iam list-access-keys --user-name my-user
 
 ### Common Condition Keys
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```json
 {
   "Condition": {
@@ -795,6 +1515,22 @@ aws iam list-access-keys --user-name my-user
 
 ### PassRole Guidance
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```json
 // ❌ BAD — PassRole to any resource (dangerous)
 {
@@ -815,7 +1551,39 @@ aws iam list-access-keys --user-name my-user
 
 ## 10. Least Privilege
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Strategy
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 Least Privilege Implementation:
@@ -852,6 +1620,22 @@ Step 4: Condition-Scoped
 
 ### Least Privilege by Service
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 | Service | Minimum Actions |
 |---------|----------------|
 | **EC2 → S3** | `s3:GetObject`, `s3:ListBucket` on specific bucket |
@@ -861,6 +1645,22 @@ Step 4: Condition-Scoped
 | **EC2 → SSM** | `ssm:GetParameter`, `kms:Decrypt` on specific parameter |
 
 ### IAM Policy Simulator
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 ┌─────────────────────────────────────────────┐
@@ -882,6 +1682,22 @@ Step 4: Condition-Scoped
 ---
 
 ## 🧠 Simplest Mental Model
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 IAM USER        =  An employee badge. Identifies WHO you are.

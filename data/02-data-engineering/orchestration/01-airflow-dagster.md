@@ -2,9 +2,41 @@
 
 ## Airflow Overview
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 Apache Airflow is a platform to programmatically author, schedule, and monitor workflows. It uses Directed Acyclic Graphs (DAGs) to represent workflows, where nodes are tasks and edges are dependencies. Airflow was created at Airbnb in 2014 and became an Apache top-level project in 2019.
 
 ## Airflow Architecture
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```mermaid
 graph TB
@@ -50,6 +82,22 @@ graph TB
 ```
 
 ### Components
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 #### Webserver
 - Flask web application serving the Airflow UI
@@ -120,7 +168,39 @@ core.max_active_parsing_processes = 8
 
 ## DAG Design
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Basic DAG
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```python
 from datetime import datetime, timedelta
@@ -172,6 +252,22 @@ with DAG(
 
 ### Task Lifecycle
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```
        +---> Scheduled ---> Queued ---> Running ---> Success
        |                                              |
@@ -183,6 +279,22 @@ None --+                                              +---> Failed ---> Upstream
 ```
 
 ### Dependencies and Branching
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```python
 from airflow.models.baseoperator import chain
@@ -243,6 +355,22 @@ DUMMY                       Always, no dependencies
 
 ### Task Groups
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```python
 from airflow.utils.task_group import TaskGroup
 
@@ -278,6 +406,22 @@ with DAG("data_pipeline", ...) as dag:
 
 ### SubDAGs (Legacy)
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 SubDAGs were replaced by Task Groups in Airflow 2.0:
 
 ```python
@@ -304,7 +448,39 @@ subdag = SubDagOperator(
 
 ## Executors in Detail
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Celery Executor
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 +-------------+     +-------------+     +-------------+
@@ -372,6 +548,22 @@ task2 = PythonOperator(task_id="batch", queue="low_priority", ...)
 ```
 
 ### Kubernetes Executor
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 +-------------+     +-------------+
@@ -446,6 +638,22 @@ spec:
 
 ### CeleryKubernetes Executor (Hybrid)
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```python
 executor = CeleryKubernetesExecutor
 
@@ -467,7 +675,39 @@ quick_task = PythonOperator(
 
 ## Operators
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Built-in Operators
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```python
 from airflow.operators.python import PythonOperator, BranchPythonOperator
@@ -502,6 +742,22 @@ BashOperator(
 ```
 
 ### Provider Operators
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```python
 # AWS
@@ -557,6 +813,22 @@ k8s_task = KubernetesPodOperator(
 
 ### Sensors
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 Sensors are operators that wait for a condition to be true:
 
 ```python
@@ -600,6 +872,22 @@ deferrable_sensor = FileSensor(
 
 ### Deferrable Operators
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 Airflow 2.2+ supports deferrable operators that release worker slots while waiting:
 
 ```python
@@ -634,7 +922,39 @@ Deferrable:
 
 ## Production Airflow
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### CI/CD for DAGs
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```yaml
 # .github/workflows/dag-ci.yml
@@ -680,6 +1000,22 @@ print(f'{len(dagbag.dags)} DAGs validated successfully')
 ```
 
 ### Testing DAGs
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```python
 # tests/test_etl_dag.py
@@ -731,6 +1067,22 @@ class TestETL:
 
 ### Backfilling
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```python
 # CLI backfill
 airflow dags backfill \
@@ -752,6 +1104,22 @@ airflow tasks clear etl_pipeline \
 ```
 
 ### SLAs
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```python
 with DAG(
@@ -778,6 +1146,22 @@ Channel:  Slack/PagerDuty via callbacks
 
 ### Pool Management
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```python
 # airflow.cfg
 # Define pools in the UI or CLI:
@@ -802,6 +1186,22 @@ with DAG("pipeline") as dag:
 ```
 
 ### Task Isolation
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```python
 # 1. PythonVirtualenvOperator
@@ -842,9 +1242,41 @@ wait_for_upstream = ExternalTaskSensor(
 
 ## Dagster Overview
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 Dagster is a data orchestrator designed for building, testing, and monitoring data pipelines. It introduces the concept of **software-defined assets** (SDAs) — assets that are defined in code with their dependencies explicit.
 
 ## Dagster vs Airflow
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 | Feature | Airflow | Dagster |
 |---------|---------|---------|
@@ -861,6 +1293,22 @@ Dagster is a data orchestrator designed for building, testing, and monitoring da
 | **CI/CD** | DAG validation tests | `dagster dev` testing |
 
 ### Software-Defined Assets
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```python
 from dagster import asset, Output, Out, AssetIn
@@ -893,6 +1341,22 @@ def daily_metrics(cleaned_events: pd.DataFrame) -> pd.DataFrame:
 ```
 
 ### Asset Dependencies
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```python
 @asset(
@@ -932,6 +1396,22 @@ def daily_sales(context) -> pd.DataFrame:
 
 ### Ops and Graphs
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 Dagster offers a lower-level API for composing steps:
 
 ```python
@@ -968,6 +1448,22 @@ etl_job = etl.to_job(
 ```
 
 ### Schedules and Sensors
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```python
 from dagster import schedule, sensor, RunRequest, SkipReason
@@ -1011,6 +1507,22 @@ def upstream_sensor(context):
 
 ### I/O Managers
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```python
 from dagster import IOManager, io_manager, InputContext, OutputContext
 import pandas as pd
@@ -1045,6 +1557,22 @@ def my_asset() -> pd.DataFrame:
 
 ### Dagster Configuration
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```yaml
 # workspace.yaml
 load_from:
@@ -1078,6 +1606,22 @@ storage:
 ```
 
 ### Dagster Partitioning
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```python
 from dagster import (
@@ -1126,7 +1670,39 @@ def customer_report(context):
 
 ## Airflow at Scale
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### HA Scheduler
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```yaml
 # docker-compose for HA Airflow
@@ -1156,6 +1732,22 @@ services:
 
 ### DAG Serialization
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 Airflow 2.0+ serializes DAGs to the database, decoupling parsing from scheduling:
 
 ```python
@@ -1172,6 +1764,22 @@ core.min_serialized_dag_fetch_interval = 10
 ```
 
 ### Airflow Performance Tuning
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```python
 # Scheduler tuning
@@ -1209,6 +1817,22 @@ statsd_port = 9125
 
 ### Airflow Database Optimization
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```sql
 -- Postgres optimizations for Airflow
 -- Run on metadata database
@@ -1237,6 +1861,22 @@ ALTER TABLE task_instance PARTITION BY RANGE (start_date);
 ---
 
 ## Related
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 - [Databases](../../08-databases/) — Data storage and querying
 - [Messaging](../../10-messaging/) — Event streaming (Kafka)

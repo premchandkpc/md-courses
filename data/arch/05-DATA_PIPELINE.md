@@ -25,11 +25,43 @@ graph LR
 
 ## 1. Overview
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 The Content & Data Pipeline transforms raw markdown source files into interactive, rendered experiences. It parses markdown into an AST, extracts metadata and relationships, compiles scene graphs for the Visualization Engine, indexes content for search, and publishes events for downstream consumers. The pipeline is event-driven, incremental, and designed for real-time content updates.
 
 ---
 
 ## 2. End-to-End Content Pipeline
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
  ┌──────────┐    ┌──────────┐    ┌──────────┐    ┌──────────┐    ┌──────────┐
@@ -52,7 +84,39 @@ The Content & Data Pipeline transforms raw markdown source files into interactiv
 
 ## 3. Markdown Parser
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### 3.1 Plugin Architecture
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
  ┌─────────────────────────────────────────────────────────────────────┐
@@ -85,6 +149,22 @@ The Content & Data Pipeline transforms raw markdown source files into interactiv
 
 ### 3.2 Parser Configuration
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```json
 {
   "remarkPlugins": {
@@ -111,6 +191,22 @@ The Content & Data Pipeline transforms raw markdown source files into interactiv
 ---
 
 ## 4. AST Transformer
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
  ┌─────────────────────────────────────────────────────────────────────┐
@@ -160,6 +256,22 @@ The Content & Data Pipeline transforms raw markdown source files into interactiv
 
 ### 4.1 Code Block Classification
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```typescript
 interface ClassifiedCodeBlock {
   language: string
@@ -195,6 +307,22 @@ function classifyCodeBlock(language: string, content: string): CodeBlockType {
 ---
 
 ## 5. Scene Graph Compiler
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
  ┌─────────────────────────────────────────────────────────────────────┐
@@ -250,6 +378,22 @@ function classifyCodeBlock(language: string, content: string): CodeBlockType {
 
 ## 6. Content Types
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 | Type | Description | Rendering Strategy |
 |------|-------------|-------------------|
 | **article** | Full-length deep dive | Multi-section page with TOC |
@@ -265,6 +409,22 @@ function classifyCodeBlock(language: string, content: string): CodeBlockType {
 | **interview-qa** | Interview Q&A | Accordion: question → answer |
 
 ### 6.1 Content Type Detection
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```typescript
 function detectContentType(frontmatter: Frontmatter, ast: Root): ContentType {
@@ -287,6 +447,22 @@ function detectContentType(frontmatter: Frontmatter, ast: Root): ContentType {
 ---
 
 ## 7. Metadata Extraction
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```typescript
 interface ContentMetadata {
@@ -348,6 +524,22 @@ function extractMetadata(filePath: string, rawContent: string): ContentMetadata 
 
 ## 8. Content Versioning
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```
  ┌─────────────────────────────────────────────────────────────────────┐
  │                    CONTENT VERSIONING (Git-based)                    │
@@ -384,6 +576,22 @@ function extractMetadata(filePath: string, rawContent: string): ContentMetadata 
 ---
 
 ## 9. Search Indexing Pipeline
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
  Content Change Event (Kafka)
@@ -434,6 +642,22 @@ function extractMetadata(filePath: string, rawContent: string): ContentMetadata 
 
 ## 10. Event-Driven Architecture
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```
  ┌─────────────────────────────────────────────────────────────────────┐
  │                    KAFKA EVENT TOPICS                                │
@@ -480,6 +704,22 @@ function extractMetadata(filePath: string, rawContent: string): ContentMetadata 
 ---
 
 ## 11. Content Scheduling
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```json
 {
@@ -540,6 +780,22 @@ async function processScheduledContent(): Promise<void> {
 
 ## 12. Multi-Format Export
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```typescript
 interface ExportService {
   exportPDF(contentId: string, options?: PDFOptions): Promise<Buffer>
@@ -580,6 +836,22 @@ async function exportPDF(contentId: string): Promise<Buffer> {
 ---
 
 ## 13. Pipeline Performance Targets
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 | Stage | Target | Strategy |
 |-------|--------|----------|

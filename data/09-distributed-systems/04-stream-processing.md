@@ -36,6 +36,22 @@ graph LR
 
 ## Table of Contents
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 1. Stream Processing Semantics
 2. Stream vs Batch Unification
 3. Kafka Streams: Topology & Core Abstractions
@@ -53,6 +69,22 @@ graph LR
 ---
 
 ## 1. Stream Processing Semantics
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 +------------------+------------------+------------------+
@@ -75,6 +107,22 @@ graph LR
 
 ## 2. Stream vs Batch Unification
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 **Stream** = unbounded, event-triggered, incremental. **Batch** = bounded, scheduled, full recompute.
 
 **Stream-Table Duality:** A stream is a changelog of updates to a table. A table is a snapshot of a stream. `KTable` = compacted stream (latest per key). `KStream` = full history.
@@ -84,6 +132,22 @@ graph LR
 ---
 
 ## 3. Kafka Streams: Topology & Core Abstractions
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 Source Topic → SourceProcessor → StreamTask → Processor → SinkProcessor → Output Topic
@@ -100,6 +164,22 @@ Source Topic → SourceProcessor → StreamTask → Processor → SinkProcessor 
 ---
 
 ## 4. Kafka Streams: KStream, KTable, GlobalKTable
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```python
 builder = StreamBuilder()
@@ -128,6 +208,22 @@ products: GlobalKTable = builder.global_table("product-catalog")
 
 ## 5. Kafka Streams: State Stores
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```text
 StreamTask 0          StreamTask 1          StreamTask 2
 +---------------+     +---------------+     +---------------+
@@ -152,6 +248,22 @@ StreamTask 0          StreamTask 1          StreamTask 2
 
 ## 6. Kafka Streams: Exactly-Once Semantics
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```text
 Consume → Process → Produce (committed atomically)
     |                    |
@@ -173,6 +285,22 @@ props = {"processing.guarantee": "exactly_once_v2"}  # Kafka 3.0+
 ---
 
 ## 7. Kafka Streams: DSL Operators & Windowing
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 **Stateless operators:** `filter`, `map`, `flatMap`, `selectKey`, `peek`, `branch`, `merge`.
 
@@ -205,6 +333,22 @@ Session:  |--active--|gap|--active--|gap|  (gap-based)
 
 ## 8. Kafka Streams: Processor API
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```python
 class MyProcessor(Processor):
     def init(self, context):
@@ -228,6 +372,22 @@ class MyProcessor(Processor):
 ---
 
 ## 9. Flink: Architecture & DataStream API
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 JobManager — coordination, checkpoint management, scheduling
@@ -263,6 +423,22 @@ GROUP BY sensor_id, TUMBLE(ts, INTERVAL '10' SECOND);
 
 ## 10. Flink: Event Time & Watermarks
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 **Three time concepts:**
 - **Event Time:** When the event happened (in the record).
 - **Processing Time:** When Flink processes it.
@@ -289,6 +465,22 @@ Watermarks: 105      115       130      140      150
 ---
 
 ## 11. Flink: Windowing
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```java
 // Tumbling window
@@ -324,6 +516,22 @@ window.aggregate(new AggregateFunction<SensorReading, AvgAccum, Double>() {
 ---
 
 ## 12. Flink: State Management & Checkpointing
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 **Keyed State (per-key):**
 ```java
@@ -363,6 +571,22 @@ public class CountAverage extends RichFlatMapFunction<SensorReading, Double> {
 
 ## 13. Flink: Fault Tolerance
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 **Checkpointing — exactly-once via barrier alignment:**
 
 ```text
@@ -400,16 +624,80 @@ env.setRestartStrategy(RestartStrategies.exponentialDelayRestart(
 
 ## Simplest Mental Model
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 **Stream processing handles an infinite series of events without storing them all.** Kafka Streams turns Kafka topics into living tables — every message is an update to a key-value store. Flink breaks streams into tiny time-based batches (windows) with guaranteed consistency via checkpoints. **Both solve: "process data as it arrives, not later."** Use Kafka Streams when already in Kafka ecosystem; use Flink for complex event-time, large state, or batch + stream unification.
 
 
 ## Practical Example
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 See code examples above for practical usage patterns.
 
 ## Production Failure Modes
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Failure 1: Watermark Skew Causes Windowed Aggregation to Never Fire
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 | Aspect | Detail |
 |--------|--------|
@@ -421,6 +709,22 @@ See code examples above for practical usage patterns.
 
 ### Failure 2: Checkpoint Failure Rate Causes Job Restart Loop
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 | Aspect | Detail |
 |--------|--------|
 | **Symptoms** | Flink job repeatedly restarts. Checkpoint duration increases. Checkpoint size grows. Job never makes progress |
@@ -430,6 +734,22 @@ See code examples above for practical usage patterns.
 | **Prevention** | Use incremental checkpoints (save only diff, not full snapshot). Set `state.backend.incremental: true`. Tune RocksDB: `state.backend.rocksdb.block.cache-size`. Monitor checkpoint size: `lastCheckpointSize` metric. Add alert: consecutive checkpoint failures > 3 |
 
 ### Failure 3: Kafka Streams State Store Corruption After Crash
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 | Aspect | Detail |
 |--------|--------|
@@ -441,6 +761,22 @@ See code examples above for practical usage patterns.
 
 ### Failure 4: Flink Sink Backpressure Causes Pipeline Stall
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 | Aspect | Detail |
 |--------|--------|
 | **Symptoms** | End-to-end latency increases. Checkpoint duration spikes. Source consumption drops. Kafka consumer lag grows |
@@ -450,6 +786,22 @@ See code examples above for practical usage patterns.
 | **Prevention** | Buffer sink writes: 1000 events or 5s flush. Use blocking sinks with bounded buffer size. Add alert: `outPoolUsage > 0.8` for any operator. Ensure downstream system has capacity for peak throughput + 50% headroom |
 
 ### Failure 5: Exactly-Once Sink Duplicates in Failure Scenario
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 | Aspect | Detail |
 |--------|--------|
@@ -461,6 +813,22 @@ See code examples above for practical usage patterns.
 
 ## Edge Cases
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 | Scenario | Challenge | Solution |
 |----------|-----------|----------|
 | **Kafka partition rebalance during processing** | Unprocessed records reassigned to new consumer | Store offset in state store with processing status. Use Kafka Streams with exactly-once semantics |
@@ -471,27 +839,139 @@ See code examples above for practical usage patterns.
 
 ## Interview Questions
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Q1 (Beginner): What is stream processing and how is it different from batch processing?
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 **Answer**: Stream processing processes data in real-time as it arrives, with low latency (milliseconds to seconds). Batch processing processes data in fixed intervals (hourly, daily). Stream processing is: continuous, unbounded data, event-time aware, stateful. Batch is: finite dataset, scheduled, no concept of event time. Stream processing use cases: fraud detection (cancel transaction before it completes), real-time dashboard (current user count), anomaly detection (CPU spike alert). Batch processing: monthly billing, daily ETL, ML model training. Many systems are hybrid: Lambda architecture (batch + stream) or Kappa architecture (stream only).
 
 ### Q2 (Mid-Level): How does Flink handle event-time, watermarks, and late data?
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 **Answer**: Event time = when the event occurred (from the event timestamp). Watermark = a heuristic that says "no more events with timestamp < watermark are expected." Flink advances watermark based on event timestamps seen. When a watermark passes the end of a window, the window fires (produces result). Late data: events arriving after the watermark passed their window. Handling: (1) allowedLateness — define how long to wait for late events (e.g., 1 hour window with 5 min allowed lateness). When late event arrives, window recomputes and emits update. (2) Side output — route late events to a separate stream for later processing. (3) Ignore — simply discard late events (default behavior if no allowedLateness set). Best practice: set allowedLateness based on business requirement. For fraud detection: allowedLateness = 0 (must detect immediately). For analytics: allowedLateness = 5 min (accept some latency for completeness).
 
 ### Q3 (Senior): Design a real-time fraud detection pipeline using Flink and Kafka.
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 **Answer**: Components: Kafka topics: `transactions` (raw payment events), `user-profiles` (compacted, enriched user data), `fraud-alerts` (output). Flink job: (1) Source: consume `transactions` from Kafka with event-time watermark (max 1 min idleness). (2) Enrichment: async I/O join with `user-profiles` (KV store) via Redis lookup. (3) Feature computation: sliding windows (1 min, 5 min, 1 hour). Aggregations per user: transaction count, total amount, geo-location changes, velocity (transactions per minute). (4) ML inference: PMML model loaded at startup. Features vector → model scores transaction as fraud probability. Threshold: > 0.95 → block, > 0.8 → flag for review. (5) Sink: block transactions → Kafka `fraud-alerts` → downstream service calls bank API. Flagged → Kafka `fraud-reviews` → manual review queue. State management: per-user state stored in RocksDB (1 GB per million users). Operational considerations: metric: end-to-end latency < 100ms. Backpressure handling: if fraud model slow, buffer in Kafka. Exactly-once: idempotent sink to downstream (block idempotency). Failover: Flink savepoint every 5 min, restore from latest savepoint on failure.
 
 ### Q4 (Staff): Compare Apache Flink, Kafka Streams, and Apache Spark Structured Streaming for a production stream processing workload.
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 **Answer**: Flink: true streaming (event-by-event processing). Strengths: event-time semantics (watermarks, allowed lateness), complex state management (RocksDB, incremental checkpoints), exactly-once end-to-end with idempotent sinks. Weaknesses: operational complexity (job manager, task manager), JVM memory tuning. Best for: complex event processing, stateful joins, windowed aggregations, ML inference at low latency. Kafka Streams: embeddable, no separate cluster. Strengths: runs in application JVM, exactly-once built-in, KTable/KStream operations, interactive queries. Weaknesses: JVM-only, state is local (not distributed), scaling limited by partition count. Best for: per-service stream processing, projections, transformations. Spark Structured Streaming: micro-batch (not true streaming). Strengths: unified batch/stream API, large ecosystem (MLlib, SQL, GraphX), DataFrame API. Weaknesses: micro-batch latency (100ms+), no native event-time watermarks (uses processing time). Best for: ETL pipelines, large-scale aggregations with moderate latency, ML model training on streaming data. Recommendation: use Kafka Streams for in-service processing, Flink for cross-service low-latency pipelines, Spark for high-throughput ETL with 1-min+ latency tolerance.
 
 ### Q5 (Principal): Design a globally distributed streaming platform that guarantees exactly-once processing across regions.
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 **Answer**: Multi-region Kafka: separate Kafka cluster per region, with MirrorMaker 2 for cross-region replication. Topics are replicated asynchronously (active-active). Challenge: exactly-once across regions requires global transaction coordination. Solution: (1) Source events: assign globally unique ID (UUIDv7 with timestamp + region prefix). (2) Idempotent processing: each event processed at most once per region. Use Flink with exactly-once checkpoint per region. (3) Cross-region dedup: downstream sink (S3, BigQuery) deduplicates by event_id. (4) Transactions: avoid cross-region transactions. Use Saga pattern: per-region service performs local transaction, publishes event, other regions react. (5) Watermarks: each region has its own watermark based on local event time. No global watermark needed because windows are per-region. (6) Failover: Kafka cluster failover within region (KRaft controller). If entire region fails, other regions continue processing. Eventually consistent view across regions. (7) Monitoring: track global event lag (difference between latest event_id timestamp per region). Alert if any region falls behind by > 10 seconds. For true global exactly-once: use Google Cloud Pub/Sub with exactly-once delivery or use a strongly consistent store (Spanner) to track processed event IDs globally.
 
 ## Cross-References
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 - [Kafka Patterns](../../10-messaging/kafka/02-kafka-patterns.md) — Event sourcing, CQRS, stream-table duality
 - [Distributed Transactions](../02-distributed-transactions.md) — Saga, exactly-once semantics, outbox pattern

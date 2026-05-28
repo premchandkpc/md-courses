@@ -6,6 +6,22 @@
 
 ## Table of Contents
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 - [Core Concepts](#-core-concepts)
 - [1. Creating Threads](#1-creating-threads)
 - [2. Thread Lifecycle](#2-thread-lifecycle)
@@ -21,6 +37,22 @@
 ---
 
 ## 🧭 Core Concepts
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
                     ┌─────────────────────────────────┐
@@ -77,7 +109,39 @@ mindmap
 
 ## 1. Creating Threads
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Method 1: Extend Thread
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```java
 class DownloadTask extends Thread {
@@ -106,6 +170,22 @@ t2.join();   // wait for t2 to finish
 ```
 
 ### Method 2: Implement Runnable
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```java
 class FileProcessor implements Runnable {
@@ -139,6 +219,22 @@ new Thread(() -> System.out.println("Lambda thread")).start();
 
 ### Method 3: Implement Callable (with return value)
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```java
 class CalculationTask implements Callable<Integer> {
     private final int a;
@@ -165,6 +261,22 @@ Integer result = future.get();  // 8
 
 ### Thread vs Runnable vs Callable
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 | Aspect | Thread | Runnable | Callable |
 |--------|--------|----------|----------|
 | Extends | `Thread` | — | — |
@@ -179,7 +291,39 @@ Integer result = future.get();  // 8
 
 ## 2. Thread Lifecycle
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### States
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
                     ┌──────────────────────┐
@@ -219,6 +363,22 @@ Integer result = future.get();  // 8
 
 ### State Transitions
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```java
 Thread t = new Thread(() -> {
     System.out.println("Running");
@@ -239,6 +399,22 @@ System.out.println(t.getState());  // TERMINATED
 ```
 
 ### Important Methods
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```java
 // Sleep — pause current thread
@@ -263,6 +439,22 @@ while (!Thread.currentThread().isInterrupted()) {
 ```
 
 ### Daemon Threads
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```java
 // Daemon = background thread. JVM exits when only daemon threads remain.
@@ -294,7 +486,39 @@ user.start();  // JVM won't exit until this finishes
 
 ## 3. Synchronization
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### The Problem — Race Condition
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```java
 class Counter {
@@ -322,6 +546,22 @@ class Counter {
 
 ### Solution 1: synchronized Method
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```java
 class SynchronizedCounter {
     private int count = 0;
@@ -338,6 +578,22 @@ class SynchronizedCounter {
 ```
 
 ### Solution 2: synchronized Block
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```java
 class SharedData {
@@ -361,6 +617,22 @@ class SharedData {
 
 ### Solution 3: Static synchronized
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```java
 class StaticCounter {
     private static int globalCount = 0;
@@ -380,6 +652,22 @@ class StaticCounter {
 ```
 
 ### synchronized Internals
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
                     ┌─────────────────────────┐
@@ -407,6 +695,22 @@ synchronized block bytecode:
 ```
 
 ### wait() / notify() — Inter-Thread Communication
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```java
 class MessageQueue {
@@ -439,6 +743,22 @@ class MessageQueue {
 ```
 
 ### Wait/Notify Protocol
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 Producer                          Consumer
@@ -478,6 +798,22 @@ Producer                          Consumer
 
 ### volatile — Visibility (Not Atomicity)
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```java
 class FlagExample {
     private volatile boolean running = true;
@@ -512,6 +848,22 @@ public void increment() {
 
 ### synchronized vs volatile vs Atomic
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 | Aspect | synchronized | volatile | Atomic* |
 |--------|-------------|----------|---------|
 | Scope | Block/method | Field | Single variable |
@@ -525,7 +877,39 @@ public void increment() {
 
 ## 4. Locks & Atomic Variables
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### ReentrantLock
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```java
 class BankAccount {
@@ -558,6 +942,22 @@ class BankAccount {
 
 ### ReentrantLock vs synchronized
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 | Feature | synchronized | ReentrantLock |
 |---------|-------------|---------------|
 | Lock/unlock | Automatic | Manual (try/finally) |
@@ -569,6 +969,22 @@ class BankAccount {
 | Performance | Better (biased locking) | Slightly heavier |
 
 ### ReadWriteLock
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```java
 class ThreadSafeCache<K, V> {
@@ -608,6 +1024,22 @@ class ThreadSafeCache<K, V> {
 
 ### Atomic Classes (java.util.concurrent.atomic)
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```java
 // Basic atomic operations using CAS (Compare-And-Swap)
 AtomicInteger counter = new AtomicInteger(0);
@@ -632,6 +1064,22 @@ LongAccumulator accumulator = new LongAccumulator(Long::max, 0L);
 ```
 
 ### CAS (Compare-And-Swap) Internals
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 AtomicInteger.incrementAndGet():
@@ -663,6 +1111,22 @@ CAS Hardware:
 ```
 
 ### Condition (Replaces wait/notify)
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```java
 class BoundedBuffer<T> {
@@ -709,7 +1173,39 @@ class BoundedBuffer<T> {
 
 ## 5. Executor Framework
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### ThreadPoolExecutor
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```java
 ThreadPoolExecutor executor = new ThreadPoolExecutor(
@@ -722,6 +1218,22 @@ ThreadPoolExecutor executor = new ThreadPoolExecutor(
 ```
 
 ### Executors Factory Methods
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```java
 // Fixed thread pool — fixed number of threads
@@ -738,6 +1250,22 @@ ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(2);
 ```
 
 ### Submitting Tasks
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```java
 ExecutorService executor = Executors.newFixedThreadPool(4);
@@ -767,6 +1295,22 @@ executor.awaitTermination(5, TimeUnit.SECONDS);
 ```
 
 ### Future — Getting Results
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```java
 ExecutorService executor = Executors.newSingleThreadExecutor();
@@ -798,6 +1342,22 @@ future.isCancelled();   // check if cancelled
 
 ### Scheduled Tasks
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```java
 ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(2);
 
@@ -822,6 +1382,22 @@ scheduler.scheduleWithFixedDelay(
 
 ### Rejection Policies
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```java
 ThreadPoolExecutor executor = new ThreadPoolExecutor(
     2, 4, 60, TimeUnit.SECONDS,
@@ -839,7 +1415,39 @@ ThreadPoolExecutor executor = new ThreadPoolExecutor(
 
 ## 6. CompletableFuture
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Basic Usage
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```java
 // Create a completed future
@@ -857,6 +1465,22 @@ CompletableFuture<String> supply = CompletableFuture.supplyAsync(() -> {
 ```
 
 ### Chaining
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```java
 CompletableFuture<String> future = CompletableFuture.supplyAsync(() -> {
@@ -877,6 +1501,22 @@ CompletableFuture.supplyAsync(() -> "Data")
 ```
 
 ### Combining
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```java
 CompletableFuture<String> future1 = CompletableFuture.supplyAsync(() -> "Hello");
@@ -901,6 +1541,22 @@ CompletableFuture<Object> any = CompletableFuture.anyOf(future1, future2);
 
 ### Error Handling
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```java
 CompletableFuture.supplyAsync(() -> {
     if (Math.random() > 0.5) throw new RuntimeException("Failed");
@@ -917,6 +1573,22 @@ CompletableFuture.supplyAsync(() -> {
 ```
 
 ### AllOf Pattern
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```java
 // Fetch multiple users in parallel
@@ -943,7 +1615,39 @@ List<User> users = allUsers.get();
 
 ## 7. Fork/Join Framework
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### RecursiveTask
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```java
 class SumTask extends RecursiveTask<Long> {
@@ -989,6 +1693,22 @@ long result = pool.invoke(new SumTask(array, 0, array.length));
 
 ### Fork/Join Flow
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```text
                     ┌─────────────────────┐
                     │   SumTask(0, 100K)  │
@@ -1017,6 +1737,22 @@ long result = pool.invoke(new SumTask(array, 0, array.length));
 ```
 
 ### RecursiveAction (No Return Value)
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```java
 class ParallelSortTask extends RecursiveAction {
@@ -1057,6 +1793,22 @@ class ParallelSortTask extends RecursiveAction {
 
 ### Work-Stealing Algorithm
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```text
 ForkJoinPool has a deque per worker thread:
 
@@ -1078,7 +1830,39 @@ This minimizes contention and maximizes parallelism.
 
 ## 8. Thread Safety Patterns
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Immutability
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```java
 // Immutable objects are always thread-safe
@@ -1103,6 +1887,22 @@ public final class Point {    // final class — no subclassing
 ```
 
 ### ThreadLocal
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```java
 // Each thread gets its own copy
@@ -1140,6 +1940,22 @@ ThreadLocal<SimpleDateFormat> dateFormat =
 
 ### Confinement (Stack Confinement)
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```java
 // Objects confined to a single thread's stack
 public List<Integer> processItems(List<Integer> items) {
@@ -1160,7 +1976,39 @@ public List<Integer> processItems(List<Integer> items) {
 
 ## 9. Common Concurrency Problems
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Deadlock
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```java
 // ❌ DEADLOCK EXAMPLE
@@ -1196,6 +2044,22 @@ class DeadlockExample {
 ```
 
 ### Deadlock Prevention
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```java
 // ✅ FIX 1: Consistent lock ordering
@@ -1239,12 +2103,44 @@ public void transferWithTimeout(Account from, Account to, double amount)
 
 ### Livelock
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```java
 // Threads keep responding to each other without making progress
 // Solution: random backoff, priority ordering
 ```
 
 ### Starvation
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```java
 // Low-priority thread never gets CPU time
@@ -1253,12 +2149,44 @@ public void transferWithTimeout(Account from, Account to, double amount)
 
 ### Race Condition Detection
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```java
 // Symptoms: intermittent bugs, wrong values, inconsistent state
 // Detection: code review, thread analysis tools, stress testing
 ```
 
 ### Detection Tools
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 | Tool | Purpose |
 |------|---------|
@@ -1273,6 +2201,22 @@ public void transferWithTimeout(Account from, Account to, double amount)
 ---
 
 ## 🧠 Simplest Mental Model
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 THREAD         =  A worker in an office. Each worker has their own desk
@@ -1313,6 +2257,22 @@ THREADLOCAL    =  Personal locker for each worker. What's inside is
 
 ## Observability
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```mermaid
 flowchart LR
     A[Java App] --> B[Metrics]
@@ -1329,6 +2289,22 @@ flowchart LR
 
 ### Key Metrics
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 | Metric | Unit | Threshold | Indicates |
 |--------|------|-----------|-----------|
 | JVM heap used | % | < 75% | Memory pressure |
@@ -1342,6 +2318,22 @@ flowchart LR
 
 ### Logs
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 - **ERROR**: Uncaught exceptions, OOM, stack traces, connection pool exhaustion, thread starvation
 - **WARN**: Slow queries, long GC pauses, retry attempts, deprecated API usage
 - **INFO**: Server start/stop, context initialization, config loaded, scheduled tasks
@@ -1349,9 +2341,41 @@ flowchart LR
 
 ### Traces
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 Use Micrometer Tracing (formerly Spring Cloud Sleuth) or OpenTelemetry Java SDK. Propagate trace context via MDC for log correlation.
 
 ### Alerts
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 | Severity | Condition | Response |
 |----------|-----------|----------|
@@ -1362,5 +2386,21 @@ Use Micrometer Tracing (formerly Spring Cloud Sleuth) or OpenTelemetry Java SDK.
 | P2 | Heap > 85% for 10min | Schedule capacity increase |
 
 ### Dashboards
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 **JVM Dashboard**: heap usage (young/old/metaspace), GC pause (count, duration per generation), thread states (runnable/blocked/waiting), class loading, JIT compilation time, file descriptor count.

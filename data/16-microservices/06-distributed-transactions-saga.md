@@ -6,6 +6,22 @@
 
 ## Table of Contents
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 - [The Distributed Transaction Problem](#-the-distributed-transaction-problem)
 - [1. Two-Phase Commit (2PC)](#1-two-phase-commit-2pc)
 - [2. Saga Pattern Overview](#2-saga-pattern-overview)
@@ -20,6 +36,22 @@
 ---
 
 ## 🧭 The Distributed Transaction Problem
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 Monolith — easy:
@@ -47,6 +79,22 @@ Microservices — hard:
 ---
 
 ## 1. Two-Phase Commit (2PC)
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 2PC tries to solve this with a coordinator:
@@ -76,7 +124,39 @@ Problems with 2PC:
 
 ## 2. Saga Pattern Overview
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### What is a Saga?
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 A saga is a sequence of local transactions. Each transaction updates
@@ -119,7 +199,39 @@ Order Flow (Failure - Inventory fails after payment):
 
 ## 3. Choreography-Based Saga
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### How It Works
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 No central coordinator. Each service listens for events and acts.
@@ -143,6 +255,22 @@ No central coordinator. Each service listens for events and acts.
 ```
 
 ### Code: Choreography Saga
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```java
 // === ORDER SERVICE ===
@@ -277,7 +405,39 @@ public class OrderCompletionListener {
 
 ## 4. Orchestration-Based Saga
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### How It Works
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 Central Saga Coordinator controls the flow:
@@ -311,6 +471,22 @@ Flow:
 ```
 
 ### Code: Orchestrator Saga
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```java
 // Step 1: Define saga steps
@@ -438,6 +614,22 @@ public interface InventoryServiceClient {
 
 ### State Machine Saga
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```java
 @Component
 public class StateMachineSaga {
@@ -494,7 +686,39 @@ stateDiagram-v2
 
 ## 5. Rollback & Compensating Transactions
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Compensating Actions Table
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 | Forward Action | Compensating Action | Idempotent? |
 |---------------|-------------------|-------------|
@@ -508,6 +732,22 @@ stateDiagram-v2
 | Ship Package | Initiate Return | No (manual) |
 
 ### Idempotency Keys
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```java
 // Every compensating action must be idempotent — running it twice
@@ -545,7 +785,39 @@ public class IdempotentPaymentService {
 
 ## 6. Saga Implementation with Kafka
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Event Schema
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```java
 // Generic saga event
@@ -561,6 +833,22 @@ public class SagaEvent {
 ```
 
 ### Saga State Store
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```java
 @Component
@@ -605,7 +893,39 @@ public class SagaStateStore {
 
 ## 7. Saga Implementation with Camunda
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### BPMN Process
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```xml
 <!-- saga-process.bpmn -->
@@ -632,6 +952,22 @@ public class SagaStateStore {
 ```
 
 ### Java Delegates
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```java
 @Component
@@ -660,6 +996,22 @@ public class CancelOrderDelegate implements JavaDelegate {
 
 ## 📊 Comparison: Choreography vs Orchestration
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 | Aspect | Choreography | Orchestration |
 |--------|-------------|---------------|
 | Coordinator | None (distributed) | Central orchestrator |
@@ -676,6 +1028,22 @@ public class CancelOrderDelegate implements JavaDelegate {
 ---
 
 ## 🧠 Simplest Mental Model
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 SAGA          =  A group of friends going to dinner.

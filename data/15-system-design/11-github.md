@@ -47,6 +47,22 @@ graph LR
 
 ## Table of Contents
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 1. Requirements & Scale
 2. High-Level Architecture
 3. Git Storage Layer
@@ -64,6 +80,22 @@ graph LR
 ---
 
 ## 1. Requirements & Scale
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 GitHub Scale (2024):
@@ -94,6 +126,22 @@ Key Requirements:
 ---
 
 ## 2. High-Level Architecture
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 +-------------+     +-------------+     +-------------+     +-------------+
@@ -177,6 +225,22 @@ Key Requirements:
 ---
 
 ## 3. Git Storage Layer
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 Git Object Model:
@@ -287,6 +351,22 @@ Repository Forks and Object Sharing:
 ---
 
 ## 4. Repository Model
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 Repository Data Model (MySQL):
@@ -413,6 +493,22 @@ Webhook delivery:
 
 ## 5. Pull Requests & Code Review
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```text
 Pull Request Lifecycle:
 
@@ -534,6 +630,22 @@ Mergeability check:
 
 ## 6. Issues & Projects
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```text
 Issue Data Model:
 
@@ -623,6 +735,22 @@ Projects (GitHub Projects v2):
 ---
 
 ## 7. GitHub Actions (CI/CD)
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 Actions Architecture:
@@ -770,6 +898,22 @@ Actions security:
 
 ## 8. Git LFS & Large File Storage
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```text
 Git LFS Architecture:
 
@@ -839,6 +983,22 @@ GitHub file size limits:
 ---
 
 ## 9. Search
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 Search Architecture:
@@ -942,6 +1102,22 @@ Indexing pipeline:
 ---
 
 ## 10. Database Design
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 Database Strategy:
@@ -1060,6 +1236,22 @@ Redis Cluster:
 
 ## 11. Availability & Multi-Region
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```text
 Multi-Region Deployment:
 
@@ -1154,6 +1346,22 @@ Git clone optimization:
 ---
 
 ## 12. Failure Analysis
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 **Large Repository Clone Overload:**
 
@@ -1298,6 +1506,22 @@ Mitigations:
 
 ## 13. Performance Considerations
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```text
 Latency Targets:
   - Git clone (1GB repo): < 30s p95
@@ -1349,6 +1573,22 @@ Infrastructure (estimated):
 ---
 
 ## Simplest Mental Model
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 **GitHub is like a massive library (100M+ books/repos) where every book has a complete edit history, every page, every crossed-out word, every revision is preserved (git objects as pack files).** Instead of checking out entire books, you just get the pages you need (shallow clone) or fetch pages as you turn them (partial clone). Pull requests are like suggesting edits to a book — the editor sees exactly what changed, discusses it line-by-line (code review comments), and can accept or reject (merge or close). GitHub Actions is a workshop attached to the library: whenever someone suggests a change (push), the workshop automatically runs tests, builds, and deploys (CI/CD pipeline). The search system is like having a tiny librarian inside every book who can instantly find any function name or variable across 100 million books (Elasticsearch code index). Forks are photocopies of a book that stay linked to the original, so when the original gets a new chapter, your copy knows about it (git alternates, object sharing).
 

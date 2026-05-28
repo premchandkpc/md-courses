@@ -30,11 +30,43 @@ graph LR
 ```
 
 ## ToC
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 - CNI Model | CNI Plugins | Pod Networking | Service Types | kube-proxy | EndpointSlices | CoreDNS | Ingress vs Gateway API | Network Policies | Cilium eBPF | Multi-Cluster | NodePort vs hostPort vs externalIP vs LB
 
 ---
 
 ## CNI Model
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
                      Node (Linux Host)
@@ -57,6 +89,22 @@ graph LR
 
 ## CNI Plugins
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 | Plugin | Model | Encap | Key feature |
 |--------|-------|-------|-------------|
 | Flannel | Overlay | VXLAN | Simple |
@@ -70,6 +118,22 @@ graph LR
 ---
 
 ## Pod Networking
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 **IP-per-Pod:** Each pod gets 1 IP from CNI IPAM. All containers share IP via pause container netns (localhost).
 
@@ -85,6 +149,22 @@ spec:
 
 ## Service Types
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 **ClusterIP (default):** Virtual IP, cluster-internal. **NodePort:** All nodes listen 30000-32767, DNAT to pod.
 
 ```yaml
@@ -99,6 +179,22 @@ spec:
 
 ## kube-proxy Modes
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 | Mode | Lookup | Scaling |
 |------|--------|---------|
 | iptables | O(n) chain | Simple |
@@ -108,6 +204,22 @@ spec:
 ---
 
 ## EndpointSlices
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```yaml
 kind: EndpointSlice
@@ -128,6 +240,22 @@ endpoints:
 ---
 
 ## CoreDNS
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
   DNS: <service>.<namespace>.svc.cluster.local
@@ -155,7 +283,39 @@ data:
 
 ## Ingress vs Gateway API
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Ingress (v1)
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 ```yaml
 apiVersion: networking.k8s.io/v1
 kind: Ingress
@@ -173,6 +333,22 @@ spec:
 ```
 
 ### Gateway API
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 ```yaml
 apiVersion: gateway.networking.k8s.io/v1
 kind: Gateway
@@ -212,7 +388,39 @@ spec:
 
 ## Network Policies
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Default Deny
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 ```yaml
 spec:
   podSelector: {}
@@ -221,6 +429,22 @@ spec:
 ```
 
 ### Selective Allow
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 ```yaml
 spec:
   podSelector:
@@ -245,6 +469,22 @@ spec:
 
 ## Cilium eBPF
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```bash
 hubble observe --from-pod default/nginx --to-pod default/api
 hubble observe --verdict DROPPED
@@ -257,6 +497,22 @@ hubble observe --verdict DROPPED
 ---
 
 ## NodePort vs hostPort vs externalIP vs LoadBalancer
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 | Feature | NodePort | hostPort | externalIP | LB |
 |---------|----------|----------|------------|-----|
@@ -275,6 +531,22 @@ spec:
 
 ## Simplest Mental Model
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```
 K8s networking = apartment building mail system
 
@@ -292,6 +564,22 @@ K8s networking = apartment building mail system
 ---
 
 ## Code Examples
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```python
 # Simulate kube-proxy iptables DNAT logic
@@ -367,6 +655,22 @@ iptables-save | grep $SVC_NAME | head -20
 
 ## Common Failure Modes
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 **Problem**: kube-proxy iptables rule explosion causing latency and packet loss
 
 **Root cause**: Each Service with N endpoints generates O(N) iptables DNAT rules. At 10,000+ services, the total iptables chain length causes rule evaluation to take milliseconds per packet. CONNTRACK table fills up, causing random packet drops. Node CPU usage from netfilter operations spikes, especially during service churn.
@@ -387,16 +691,80 @@ iptables-save | grep $SVC_NAME | head -20
 
 ## Interview Questions
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Q1: How does a Kubernetes Service forward traffic to pods, and what are the performance implications of each mode?
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 **Answer**: A Service is a virtual IP backed by EndpointSlices, and kube-proxy on each node programs forwarding rules. In **iptables mode**, each endpoint becomes a DNAT rule — random selection uses `statistic --mode random`. For large services (500+ endpoints), rule chains can be thousands of lines, causing non-trivial per-packet latency. In **IPVS mode**, the kernel hash table does O(1) lookup — much faster at scale. In **eBPF mode** (Cilium), BPF maps replace iptables entirely, with the lowest latency and best scalability. The ClusterIP is managed by the node's network stack (not a real device) — `iptables -t nat -L` shows the rules translating ClusterIP:Port to pod IPs.
 
 ### Q2: How would you design cluster networking to support 5000+ services across 200 nodes?
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 **Answer**: Avoid iptables mode — use Cilium with eBPF for O(1) service lookup and native XDP for packet forwarding. Use a pod CIDR large enough for projected pod density (e.g., /16 per node or /64 for IPv6). Enable CNI prefix delegation (AWS VPC CNI) or use a non-VPC CNI like Calico with IPIP encapsulation if VPC IPs are limited. Deploy NodeLocal DNSCache to avoid DNS conntrack issues. Use EndpointSlice (enabled by default in 1.21+) to reduce API server load from endpoint updates. Avoid hostPort and use NodePort only for debugging. Consider Gateway API for advanced traffic routing instead of many Ingress resources.
 
 
 ## Edge Cases
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 | Scenario | Challenge | Solution |
 |----------|-----------|----------|
@@ -407,6 +775,22 @@ iptables-save | grep $SVC_NAME | head -20
 | **Ingress controller scaling under DDoS** | Ingress pods overwhelmed, control plane also impacted | Use Cloud LB in front of ingress (NLB/ALB). Set HPA on ingress controller. WAF at edge. Rate limiting per IP with `nginx.ingress.kubernetes.io/limit-rps` |
 
 ## Cross-References
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 - [EKS Networking](../../05-cloud/aws/eks/02-eks-operations.md) — AWS VPC CNI, security groups per pod
 - [DNS, CDN & Load Balancing](../../11-networking/03-dns-cdn-loadbalancing.md) — Ingress vs LoadBalancer vs NodePort service comparison

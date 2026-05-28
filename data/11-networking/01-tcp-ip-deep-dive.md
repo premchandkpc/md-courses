@@ -37,6 +37,22 @@ graph LR
 
 ## Table of Contents
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 1. [Ethernet Frame](#1-ethernet-frame)
 2. [IP Packet](#2-ip-packet)
 3. [TCP Segment](#3-tcp-segment)
@@ -61,6 +77,22 @@ graph LR
 
 ## 1. Ethernet Frame
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```
  7 bytes     1 byte     6 bytes     6 bytes     2 bytes     46-1500 bytes   4 bytes
 ┌──────────┬────────┬──────────┬──────────┬────────┬────────────────────┬──────────┐
@@ -76,6 +108,22 @@ graph LR
 
 ### Fields
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 - **Preamble** (7 bytes): Alternating 1/0 bits for clock synchronization
 - **SFD** (1 byte): Start Frame Delimiter — marks end of preamble
 - **Destination MAC** (6 bytes): Physical address of receiver
@@ -86,6 +134,22 @@ graph LR
 
 ### Step-by-Step
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 1. **Physical layer transmission** NIC generates preamble and SFD for clock synchronization
 2. **MAC address lookup** sender queries ARP to resolve IP to destination MAC
 3. **Frame construction** payload (IP packet) is wrapped with layer-2 headers
@@ -94,6 +158,22 @@ graph LR
 6. **Physical transmission** frame sent as electrical/optical signal over wire
 
 ### Code Example
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```python
 # Python: Parse Ethernet frame with scapy
@@ -126,9 +206,41 @@ print(f"Max TCP payload per frame: {MAX_PAYLOAD} bytes")
 
 ### Real-World Scenario
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 Facebook's internal data center fabric uses jumbo frames (9000 bytes MTU) for storage replication. When a single 1GB block is transferred, standard MTU would require 1M+ frames, generating millions of interrupts. With jumbo frames, it's only 111K frames—85% reduction in CPU overhead. Engineers discovered a misconfigured switch forcing standard MTU; replication bandwidth dropped from 40Gbps to 2Gbps until the jumbo frame config was restored.
 
 ### Jumbo Frames
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 Standard MTU:    1500 bytes
@@ -149,6 +261,22 @@ Requirements:
 ---
 
 ## 2. IP Packet
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 Bit:  0-3    4-7     8-15         16-18   19-31
@@ -172,6 +300,22 @@ Bit:  0-3    4-7     8-15         16-18   19-31
 
 ### Key Fields
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 - **Version** (4 bits): 4 = IPv4, 6 = IPv6
 - **IHL** (4 bits): Header length in 32-bit words (minimum 5 = 20 bytes)
 - **DSCP** (6 bits): Differentiated Services Code Point (QoS marking)
@@ -185,6 +329,22 @@ Bit:  0-3    4-7     8-15         16-18   19-31
 - **Header Checksum** (16 bits): Covering header only (recalculated at each hop)
 
 ### Fragmentation
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 Original packet:  4000 bytes payload, ID=123, DF=0
@@ -218,6 +378,22 @@ After fragmentation (MTU 1500):
 
 ## 3. TCP Segment
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```
 Bit:  0-15           16-31
     ┌──────────────────────────┐
@@ -244,6 +420,22 @@ Bit:  0-15           16-31
 
 ### Flags
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```
 SYN:  Synchronize sequence numbers (connection establishment)
 ACK:  Acknowledgment number is valid
@@ -257,6 +449,22 @@ NS:   Nonce Sum (ECN nonce, experimental)
 ```
 
 ### Options
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 MSS (Maximum Segment Size):
@@ -291,6 +499,22 @@ TCP Fast Open (TFO):
 ---
 
 ## 4. TCP State Machine
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
                     ┌────────────────────────────────────┐
@@ -359,6 +583,22 @@ TCP Fast Open (TFO):
 
 ### TIME-WAIT (2MSL)
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```
 TIME-WAIT duration: 2 * MSL (Maximum Segment Lifetime)
   - MSL: 30 seconds (RFC 1122) → TIME-WAIT = 60 seconds
@@ -379,6 +619,22 @@ Consequences:
 
 ### TIME-WAIT Assassination
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```
 If a host in TIME-WAIT receives a RST segment:
   → TIME-WAIT terminated early → connection closes immediately
@@ -393,7 +649,39 @@ Linux behavior: tcp_timewait_state_process():
 
 ## 5. Connection Establishment & Teardown
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### 3-Way Handshake
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 Client (active open)                 Server (passive open)
@@ -416,6 +704,22 @@ Latency:
 
 ### TCP Fast Open (TFO)
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```
 First connection:
   Client                          Server
@@ -435,6 +739,22 @@ Repeat connection:
 ```
 
 ### 4-Way Teardown
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 Active closer                     Passive closer
@@ -460,6 +780,22 @@ Active closer                     Passive closer
 
 ### Simultaneous Open
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```
 Both sides send SYN simultaneously:
   Host A                       Host B
@@ -475,6 +811,22 @@ Both sides send SYN simultaneously:
 
 ### Half-Close
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```
 After FIN/ACK exchange, one direction is closed:
   - Passive closer (still receiving from active closed) → can still send
@@ -486,7 +838,39 @@ After FIN/ACK exchange, one direction is closed:
 
 ## 6. TCP Flow Control
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Receive Window & Sliding Window
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 Sender's view of receiver's buffer:
@@ -508,6 +892,22 @@ wnd = min(rwnd, cwnd)  ← sender's effective window
 
 ### Window Scaling
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```
 Without window scaling:  max window = 65535 bytes
 With window scaling:     max window = 65535 * 2^14 = 1GB
@@ -527,6 +927,22 @@ TCP window auto-tuning (Linux):
 
 ### Zero Window
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```
 When receiver's buffer is full (rwnd = 0):
   → Sender cannot send data
@@ -540,6 +956,22 @@ When receiver's buffer is full (rwnd = 0):
 
 ## 7. TCP Congestion Control
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```
                    TCP Congestion Control
                     │
@@ -551,6 +983,22 @@ When receiver's buffer is full (rwnd = 0):
 ```
 
 ### CUBIC (Default on Linux)
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 CUBIC replaces BIC-TCP with a cubic function for window growth.
@@ -595,6 +1043,22 @@ Fast recovery:
 
 ### BBR (Bottleneck Bandwidth and Round-trip)
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```
 BBR uses bandwidth and RTT measurements (not packet loss!) to control sending rate.
 
@@ -635,6 +1099,22 @@ BBR v3 (2023+):
 
 ### Reno & NewReno
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```
 Reno (RFC 2581):
   - Slow start: cwnd doubles per RTT
@@ -648,6 +1128,22 @@ NewReno (RFC 6582):
 ```
 
 ### Vegas
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 Delay-based congestion control:
@@ -668,7 +1164,39 @@ Not widely deployed (Linux, but not default):
 
 ## 8. Nagle & Delayed ACK
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Nagle's Algorithm
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 Purpose: Reduce small packet overhead (tinygrams)
@@ -696,6 +1224,22 @@ setsockopt(fd, IPPROTO_TCP, TCP_NODELAY, &one, sizeof(one));
 
 ### Delayed ACK
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```
 RFC 1122: ACK delay ≤ 500ms (Linux default: 40ms or every 2nd segment)
 
@@ -714,6 +1258,22 @@ Quick ACK mode:
 ---
 
 ## 9. Keepalive
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 TCP keepalive — detects dead peers
@@ -736,7 +1296,39 @@ Application-level keepalive (recommended):
 
 ## 10. Retransmission & RTO
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### RTO Calculation (RFC 6298)
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 RTO = SRTT + max(G, 4 * RTTVAR)
@@ -765,6 +1357,22 @@ RTO backoff:
 ```
 
 ### Retransmission Strategies
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 1. Fast Retransmit (3 dupacks → retransmit)
@@ -796,7 +1404,39 @@ RTO backoff:
 
 ## 11. NIC Offloading
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Checksum Offload
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 NIC computes/verifies TCP/UDP/IP checksums in hardware
@@ -810,6 +1450,22 @@ Benefit: ~15-30% CPU savings for large transfers
 ```
 
 ### TSO (TCP Segmentation Offload)
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 Application sends large buffer (64KB) to kernel
@@ -828,6 +1484,22 @@ ethtool -K eth0 gso on             # Generic Segmentation Offload (software fall
 
 ### GRO (Generic Receive Offload)
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```
 NIC receives individual segments → hardware coalesces into larger buffer
   → Driver passes large skb to kernel
@@ -844,6 +1516,22 @@ ethtool -K eth0 lro on             # LRO (legacy, GRO replacement)
 ```
 
 ### RSS (Receive Side Scaling)
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 NIC distributes incoming packets across multiple RX queues:
@@ -872,6 +1560,22 @@ NIC distributes incoming packets across multiple RX queues:
 
 ### RPS/RFS (Receive Packet Steering / Flow Steering)
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```
 RPS: Software RSS (when NIC doesn't support RSS)
   - Kernel applies hash to decide which CPU processes packet
@@ -891,6 +1595,22 @@ XPS (Transmit Packet Steering):
 ---
 
 ## 12. Socket Buffers (sk_buff)
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 struct sk_buff — the fundamental data structure in Linux networking
@@ -932,6 +1652,22 @@ struct sk_buff — the fundamental data structure in Linux networking
 
 ### Buffer Layout
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```
 Headroom (reserved for headers):
   ┌────────────────────────────────────────────────┐
@@ -957,7 +1693,39 @@ skb_trim(skb, new_len);            // Remove trailing data
 
 ## 13. Linux TCP Tuning
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Core Parameters
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```bash
 # Buffer sizes (min, default, max)
@@ -1001,6 +1769,22 @@ net.ipv4.tcp_notsent_lowat = -1          # Wake application when notsent < thres
 
 ### High-Performance Settings
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```bash
 # For 10Gbps+ connections with many connections:
 net.core.rmem_max = 134217728           # 128MB max receive
@@ -1020,7 +1804,39 @@ net.ipv4.tcp_mtu_probing = 1            # Enable PLPMTUD
 
 ## 14. TCP in High BDP Networks
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Bandwidth-Delay Product
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 BDP = Bandwidth × RTT
@@ -1040,6 +1856,22 @@ BDP for common links:
 
 ### Window Scaling for High BDP
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```
 Needed: window ≥ BDP
 
@@ -1051,6 +1883,22 @@ Needed: window ≥ BDP
 ```
 
 ### BBR vs CUBIC on High BDP
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 CUBIC on high BDP (100ms RTT, 10Gbps):
@@ -1069,7 +1917,39 @@ BBR on high BDP:
 
 ## 15. Internals
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### TCP Receive Path (Linux net/ipv4/tcp_input.c)
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 tcp_v4_rcv(skb)
@@ -1095,6 +1975,22 @@ tcp_v4_rcv(skb)
 
 ### TCP Timer Wheel
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```
 Linux maintains per-socket TCP timers via a timer wheel:
 
@@ -1113,7 +2009,39 @@ All managed in struct inet_connection_sock (icsk_*):
 
 ## 16. Failure Analysis
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### SYN Flood
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 Attacker sends many SYN packets with spoofed source IPs
@@ -1132,6 +2060,22 @@ Mitigations:
 
 ### TIME-WAIT Exhaustion
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```
 High connection rate (thousands/sec):
   → 60s TIME-WAIT per connection
@@ -1146,6 +2090,22 @@ Solutions:
 ```
 
 ### Bufferbloat
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 Excessive buffering in network → high latency
@@ -1167,6 +2127,22 @@ Mitigation:
 
 ### Path MTU Discovery Black Hole
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```
 Firewall blocks ICMP "Fragmentation Needed" messages
 → Sender with DF=1 gets no response → connection stalls (PMTUD black hole)
@@ -1183,6 +2159,22 @@ Solutions:
 ```
 
 ### Connection Storms & Listen Overload
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 Many concurrent connections arriving:
@@ -1202,6 +2194,22 @@ Mitigation:
 ---
 
 ## 17. Edge Cases
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 - **Simultaneous open**: Both sides send SYN → transition to SYN_SENT then SYN_ACK_RCVD → rare but valid
 - **Half-close + data**: Passive closer can still send data after receiving FIN
@@ -1223,7 +2231,39 @@ Mitigation:
 
 ## 18. Performance
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Throughput Bottlenecks
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 Bottleneck           Limit for 10Gbps          Solution
@@ -1239,6 +2279,22 @@ Kernel context sw    ~5-10 Gbps per core     batch processing
 
 ### Optimal Block Sizes
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```
 send()/write() size:
   - Small writes (< 1KB): high syscall overhead per byte
@@ -1253,6 +2309,22 @@ MSS tuning:
 ```
 
 ### Single Connection Performance
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 Linux tuned for single TCP connection:
@@ -1270,7 +2342,39 @@ To exceed single-core throughput:
 
 ## Interview Questions
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Beginner Level
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 **Q1: Walk through what happens when you type google.com into a browser.**
 
@@ -1291,6 +2395,22 @@ To exceed single-core throughput:
 
 ### Intermediate Level
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 **Q3: How does TCP congestion control work? Explain slow start, congestion avoidance, and fast recovery.**
 
 **Answer**: 1) **Slow start**: cwnd starts at 10 MSS (~14KB). Each ACK doubles cwnd (exponential growth). Until ssthresh (slow start threshold, ~64KB default). 2) **Congestion avoidance**: After ssthresh, additive increase (cwnd += 1 MSS per RTT). On packet loss (triple duplicate ACK or timeout): Reno sets ssthresh = cwnd/2, cwnd = ssthresh, then additive increase. CUBIC (default Linux) uses cubic function for better throughput over high-BDP networks. 3) **Fast recovery**: On triple duplicate ACK, Reno retransmits lost segment, sets cwnd = ssthresh + 3 MSS, ACKs increase cwnd temporarily. TCP includes also: **FACK** (forward ACK for retransmission), **SACK** (selective ACK — only retransmit lost segments, not entire window). Modern Linux uses **TCP BBR** (model-based, not loss-based) which paces based on measured bandwidth and RTT.
@@ -1300,6 +2420,22 @@ To exceed single-core throughput:
 **Answer**: 1) **Client → Server (SYN)**: Sequence number = X (random, e.g., 28475839). SYN flag set. 2) **Server → Client (SYN-ACK)**: Acknowledgment = X+1. Sequence number = Y (server's random ISN). SYN + ACK flags set. 3) **Client → Server (ACK)**: Acknowledgment = Y+1. Sequence = X+1. ACK flag set. Connection established. What happens: Both sides synchronize initial sequence numbers (ISNs) for tracking bytes sent/received. The random ISN prevents TCP sequence prediction attacks (blind in-window attacks). SYN flood mitigation: SYN cookies (send SYN-ACK with encoded sequence number, if ACK comes with correct seq-1, allocate resources). Modern Linux: SYN cookies on by default under SYN flood.
 
 ### Senior Level
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 **Q5: A user reports that their application is experiencing "Connection timed out" but only for certain hosts. How do you diagnose this?**
 
@@ -1313,6 +2449,22 @@ To exceed single-core throughput:
 
 ### Staff/Principal Level
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 **Q7: Your company's TCP-based service in us-east-1 has high tail latency for users in Europe. You see packet loss is <0.1%. The bottleneck is NOT bandwidth. What is it?**
 
 **Why**: Tests understanding of TCP performance physics — latency not bandwidth.
@@ -1324,6 +2476,22 @@ To exceed single-core throughput:
 **Answer**: 1) **Global Anycast IP**: use AWS Global Accelerator or Cloudflare. BGP anycast routes to the nearest healthy origin. On failover, BGP advertisement withdrawn for unhealthy region → traffic routes to healthy region. 2) **TCP anycast challenge**: TCP state is per-server. If the new region doesn't have the TCP state, connection resets. Solution: **TCP connection migration** — QUIC (connection ID, not IP-based) migrates natively. For TCP: 3) **L4 load balancer with state replication**: use NGINX Plus or HAProxy with connection table sync across regions (expensive). 4) **Alternative proxy**: Envoy with active health checking + connection draining + client retry (application handles reconnect). 5) **Safe approach**: use **HTTP/3 (QUIC)** end-to-end — 0-RTT reconnect to new server. DNS failover with low TTL (60s) → clients reconnect to new IP. 6) **DNS-based**: Route53 health checks → failover record set. Clients detect connection loss → retry DNS → connect to new region. Best for modern apps that handle reconnect gracefully.
 
 ### Tricky Edge Cases
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 **Q9**: Your server sends a TCP segment with FIN flag but the client never closes the connection. The server's `ss` shows CLOSE_WAIT state. Why is the connection stuck?
 

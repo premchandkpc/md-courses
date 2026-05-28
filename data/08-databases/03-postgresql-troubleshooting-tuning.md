@@ -34,6 +34,22 @@ graph LR
 ```
 
 ## Table of Contents
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 1. [Configuration Tuning](#configuration-tuning)
 2. [Query Analysis](#query-analysis)
 3. [Query Optimization](#query-optimization)
@@ -48,7 +64,39 @@ graph LR
 
 ## Configuration Tuning
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Memory
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```sql
 shared_buffers = '4GB'               -- 25% of RAM
@@ -60,6 +108,22 @@ wal_buffers = '64MB'                 -- WAL staging
 
 ### I/O
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```sql
 random_page_cost = 1.1              -- 4.0 for HDD, 1.1 for NVMe
 seq_page_cost = 1.0
@@ -68,6 +132,22 @@ huge_pages = 'try'
 ```
 
 ### Checkpoint
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```sql
 checkpoint_timeout = '15min'
@@ -80,6 +160,22 @@ min_wal_size = '4GB'
 
 ### Parallelism & Connections
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```sql
 max_worker_processes = 16
 max_parallel_workers_per_gather = 4
@@ -90,13 +186,61 @@ max_connections = 100                -- each ~10MB overhead
 
 ## Query Analysis
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### EXPLAIN Variants
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```sql
 EXPLAIN (ANALYZE, BUFFERS, SETTINGS, WAL) SELECT ...;
 ```
 
 ### Reading Plans
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 Gather                                (parallel coordinator)
@@ -112,6 +256,22 @@ Gather                                (parallel coordinator)
 
 ### Plan Node Types
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```text
 Scan:  Seq Scan, Index Scan, Index-Only Scan, Bitmap Scan, TID Scan
 Join:  Nested Loop (small inner), Hash Join (med unindexed), Merge Join (sorted)
@@ -123,7 +283,39 @@ Agg:   HashAggregate (hash), GroupAggregate (sorted), Parallel Hash
 
 ## Query Optimization
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Composite Index Column Order
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 **Equality first, then range, then ORDER BY:**
 
@@ -133,6 +325,22 @@ CREATE INDEX ON t (a, b, c);  -- a=eq, b=range, c=sort
 ```
 
 ### Key Index Types
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```sql
 -- Partial: only index subset
@@ -150,6 +358,22 @@ CREATE INDEX idx_brin ON orders USING brin (created_at);
 
 ### CTE Optimization
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```sql
 -- PG12+: CTEs inline by default
 WITH high AS MATERIALIZED (SELECT ...)  -- force materialize
@@ -157,6 +381,22 @@ WITH high AS NOT MATERIALIZED (...)      -- force inline
 ```
 
 ### Statistics
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```sql
 ALTER TABLE users ALTER COLUMN email SET STATISTICS 1000;
@@ -169,6 +409,22 @@ CREATE STATISTICS s3 (ndistinct) ON (dept_id, role_id) FROM employees;
 ---
 
 ## Performance Metrics
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```sql
 -- Find long-running queries
@@ -203,6 +459,22 @@ maxwritten_clean > 0     → bgwriter_lru_maxpages too low
 
 ## Wait Events
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```text
 LWLock  → Buffer mapping, WAL insert contention
 Lock    → relation/tuple/page lock (DDL blocking)
@@ -227,6 +499,22 @@ FROM pg_stat_io WHERE read_time > 0;
 
 ## Index Maintenance
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```sql
 -- Bloat detection
 CREATE EXTENSION pgstattuple;
@@ -248,7 +536,39 @@ FROM pg_stat_user_tables;
 
 ## Connection Pooling
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### PgBouncer
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 Apps (200) → PgBouncer → PostgreSQL (50 conns)
@@ -270,6 +590,22 @@ auth_type = scram-sha-256
 ---
 
 ## Replication & Backup
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```sql
 -- Replication lag
@@ -299,6 +635,22 @@ wal-g backup-push /var/lib/pgsql/16/data
 
 ### PG16+ Features
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```sql
 -- pg_stat_io: I/O breakdown by backend type
 SELECT backend_type, reads, writes, read_time FROM pg_stat_io;
@@ -314,6 +666,22 @@ SELECT DISTINCT status, COUNT(*) FROM orders GROUP BY status;
 ---
 
 ## Simplest Mental Model
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 PostgreSQL tuning is like tuning a race car:
@@ -334,6 +702,22 @@ PostgreSQL tuning is like tuning a race car:
 ---
 
 ## Code Examples
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```python
 import psycopg2
@@ -387,6 +771,22 @@ BLOCKED=$(psql -Atc "SELECT pid FROM pg_stat_activity \
 
 ## Common Failure Modes
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 **Problem**: Connection pool exhaustion during traffic spikes
 
 **Root cause**: `max_connections` set too high (wastes memory per connection) or too low (rejects connections). Each connection consumes ~10MB. Apps that don't use connection pooling open-and-close rapidly, leaving behind `idle in transaction` sessions that hold locks.
@@ -407,16 +807,80 @@ BLOCKED=$(psql -Atc "SELECT pid FROM pg_stat_activity \
 
 ## Interview Questions
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Q1: How does PostgreSQL handle connection management and what's the recommended approach for high-traffic apps?
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 **Answer**: PostgreSQL uses a one-backend-process-per-connection model (multi-process). Each connection consumes ~10MB of memory. With 1000 connections, that's 10GB before any query work. The recommended approach is PgBouncer in transaction pooling mode — it multiplexes app connections into a smaller pool of Postgres connections. Transaction mode releases the backend after each transaction, so 200 app connections share 50 Postgres connections. For high-traffic apps, also set `idle_in_transaction_session_timeout` and use read replicas to distribute load.
 
 ### Q2: How would you diagnose and fix a sudden PostgreSQL performance degradation in production?
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 **Answer**: First check `pg_stat_activity` for long-running queries or blocking sessions. Use `pg_blocking_pids()` to find lock holders. Next check `pg_stat_bgwriter` — if `checkpoints_req >> checkpoints_timed`, increase `max_wal_size`. Check `pg_stat_user_tables` for bloat (high dead tuple count) and trigger a manual VACUUM if needed. Use `EXPLAIN (ANALYZE, BUFFERS)` on the slow query — look for sequential scans on large tables, mismatched row estimates, or Nested Loop joins where Hash Join would be better. Check wait events via `pg_stat_activity` — `LWLock` means buffer contention, `IO` means disk bottleneck. For I/O, check if `effective_io_concurrency` and `random_page_cost` are tuned for SSD.
 
 
 ## Comparison Table
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 | Aspect | Option A | Option B | Trade-off |
 | ---- | ---- | ---- | ---- |
@@ -426,6 +890,22 @@ BLOCKED=$(psql -Atc "SELECT pid FROM pg_stat_activity \
 | Cost | High | Low | Features vs Budget |
 
 ## Observability
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```mermaid
 flowchart LR
@@ -440,6 +920,22 @@ flowchart LR
 
 ### Key Metrics
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 | Metric | Unit | Threshold | Indicates |
 |--------|------|-----------|-----------|
 | Cache hit ratio (shared_buffers) | % | > 99% | Buffer cache effectiveness |
@@ -453,12 +949,44 @@ flowchart LR
 
 ### Logs
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 - **ERROR**: Deadlock detected, out of shared memory, connection failures, replication conflict
 - **WARN**: Long queries > 5s, checkpoint frequency high, autovacuum triggered, replication lag
 - **INFO**: Checkpoint complete, backup start/end, autovacuum run, config reload
 - **DEBUG**: Slow queries (enable `log_min_duration_statement`), lock waits
 
 ### Alerts
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 | Severity | Condition | Response |
 |----------|-----------|----------|
@@ -470,12 +998,60 @@ flowchart LR
 
 ### Dashboards
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 **PostgreSQL Overview**: active connections, cache hit ratio, transactions per second, query latency (p50/p99), dead tuple ratio, replication lag, autovacuum activity, checkpoint frequency.
 
 
 ## Common Failures
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Failure: Connection Pool Exhaustion
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 - **Symptoms**: New connections fail with "remaining connection slots reserved". Application timeouts and 500s.
 - **Root Cause**: max_connections too low. Application doesn't return connections. Idle-in-transaction sessions. Middleware pool (pgbouncer) undersized.
@@ -485,6 +1061,22 @@ flowchart LR
 
 ### Failure: Replication Lag
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 - **Symptoms**: Read replicas return stale data. Replica lag grows until WAL segments removed.
 - **Root Cause**: Replica cannot keep up with write rate. Long-running queries on replica block WAL replay. Insufficient replica IOPS.
 - **Detection**: `pg_stat_replication.replay_lag`. CloudWatch `ReplicaLag` metric. `pg_wal_lsn_diff()`.
@@ -492,6 +1084,22 @@ flowchart LR
 - **Prevention**: Monitor `wal_keep_segments`. Use replication slots. Ensure replica has sufficient IOPS.
 
 ### Failure: Autovacuum Bloat
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 - **Symptoms**: Table size >> data size. Query performance degrades. I/O increases.
 - **Root Cause**: High write rate generates dead tuples faster than autovacuum cleans. Autovacuum cost limit throttles cleanup.
@@ -501,6 +1109,22 @@ flowchart LR
 
 ### Failure: XID Wraparound
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 - **Symptoms**: Database becomes read-only, or crashes with "database is not accepting commands to avoid wraparound". Emergency.
 - **Root Cause**: Transaction ID (32-bit counter) wraps after 2B transactions. If autovacuum doesn't freeze XIDs before 2B, PostgreSQL stops accepting writes.
 - **Detection**: `SELECT age(datfrozenxid) FROM pg_database` approaching 2 billion. WARNING logs: "database X may be wrapped around".
@@ -508,6 +1132,22 @@ flowchart LR
 - **Prevention**: Ensure autovacuum is never disabled. Monitor `age(datfrozenxid)`. Set `autovacuum_freeze_max_age=500000000`.
 
 ### Failure: Checkpoint Storm
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 - **Symptoms**: Regular I/O spikes every checkpoint interval. WAL write latency spikes during checkpoint. Query latency spikes.
 - **Root Cause**: Checkpoint writes all dirty buffers at once. `max_wal_size` too small causes frequent checkpoints. `checkpoint_completion_target` too aggressive.

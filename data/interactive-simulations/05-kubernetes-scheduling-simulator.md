@@ -2,6 +2,22 @@
 
 ## Overview
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```mermaid
 graph TB
     P["Unscheduled Pod"] --> SQ["Scheduling Queue"]
@@ -28,6 +44,22 @@ Simulate how the Kubernetes scheduler places pods onto nodes. Covers the two-pha
 
 ## Actors/Components
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 | Actor | Role |
 |-------|------|
 | **API Server** | Stores all cluster state; scheduler watches via pod spec |
@@ -42,7 +74,39 @@ Simulate how the Kubernetes scheduler places pods onto nodes. Covers the two-pha
 
 ## State Machine
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Pod Scheduling State
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 ┌────────────┐
@@ -73,6 +137,22 @@ Simulate how the Kubernetes scheduler places pods onto nodes. Covers the two-pha
 ```
 
 ### Scheduling Cycle (Internal Scheduler State)
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
         ┌──────────────┐
@@ -116,7 +196,39 @@ Simulate how the Kubernetes scheduler places pods onto nodes. Covers the two-pha
 
 ## Animation Frames
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Frame 1: Pod Requested — Filtering Phase
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 Scheduler sees Pending Pod:
@@ -144,6 +256,22 @@ Feasible nodes: [Node-A, Node-B]
 ```
 
 ### Frame 2: Scoring Phase — Priority Calculation
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 Scoring plugins (default weights):
@@ -173,6 +301,22 @@ Winner: Node-A (higher score)
 ```
 
 ### Frame 3: Taints & Toleration Rules
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 Node-C has taint: "gpu=true:NoSchedule"
@@ -206,6 +350,22 @@ Effect types:
 ```
 
 ### Frame 4: Node Affinity
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 Pod spec has node affinity:
@@ -241,6 +401,22 @@ Score becomes: Node-B = base + 100 affinity bonus
 
 ## User Interactions
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 | Control | Type | Range/Options | Effect |
 |---------|------|---------------|--------|
 | **Cluster size** | slider | 1-10 nodes | Add/remove worker nodes |
@@ -260,6 +436,22 @@ Score becomes: Node-B = base + 100 affinity bonus
 ---
 
 ## Visual Transitions
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 | Event | Visual Effect |
 |-------|---------------|
@@ -282,6 +474,22 @@ Score becomes: Node-B = base + 100 affinity bonus
 
 ## Edge Cases
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 | Edge Case | Behavior |
 |-----------|----------|
 | **Zero feasible nodes** | Pod stays pending; scheduler backs off (exponential delay) |
@@ -302,6 +510,22 @@ Score becomes: Node-B = base + 100 affinity bonus
 
 ## Failure Modes
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 | Failure | Symptom | Recovery |
 |---------|---------|----------|
 | **No feasible nodes** | Pod stays in Pending | Scale up cluster; add toleration; relax constraints |
@@ -318,6 +542,22 @@ Score becomes: Node-B = base + 100 affinity bonus
 ---
 
 ## Metrics to Display
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 | Metric | Unit | Source |
 |--------|------|--------|
@@ -341,7 +581,39 @@ Score becomes: Node-B = base + 100 affinity bonus
 
 ## Scenario Walkthroughs
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Scenario 1: Basic Pod Scheduling — Default Strategy
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 **Setup:** 4 nodes (Node-A through Node-D), one unscheduled pod
 
@@ -412,6 +684,22 @@ Total scheduling time: ~10ms
 
 ### Scenario 2: Taint/Toleration — GPU Node Reservation
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 **Setup:** 4 nodes; Node-C has `gpu=true:NoSchedule` taint
 
 ```
@@ -462,6 +750,22 @@ Visual demonstration:
 ```
 
 ### Scenario 3: Node Affinity — Zonal Scheduling
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 **Setup:** 6 nodes spread across 3 zones; pod has zone affinity
 
@@ -527,6 +831,22 @@ Demonstrates: anti-affinity spreads across zones for HA
 
 ### Scenario 4: Pod Priority and Preemption
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 **Setup:** 3 nodes, all near capacity; high-priority pod arrives
 
 ```
@@ -584,6 +904,22 @@ vs. If Node-A had:
 
 ### Scenario 5: Bin Packing vs. Spread Strategy
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 **Setup:** 4 empty nodes, 8 identical pods
 
 ```
@@ -629,6 +965,22 @@ Trade-off: BinPack saves energy, spread gives fault tolerance
 ---
 
 ## Implementation Notes
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 **State Management:**
 - Node states: `capacity` and `allocated` resources (CPU, memory, ephemeral storage)

@@ -34,6 +34,22 @@ graph LR
 
 ## Table of Contents
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 - [The Big Picture](#-the-big-picture)
 - [1. Buckets & Objects](#1-buckets--objects)
 - [2. Storage Classes](#2-storage-classes)
@@ -51,6 +67,22 @@ graph LR
 ---
 
 ## 🧭 The Big Picture
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
                          ┌─────────────────────────┐
@@ -76,7 +108,39 @@ graph LR
 
 ## 1. Buckets & Objects
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Bucket Naming Rules
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 - Globally unique (across all AWS accounts, all regions)
 - 3-63 characters, lowercase, no underscores
@@ -84,6 +148,22 @@ graph LR
 - Can't be formatted like IP address
 
 ### Object Structure
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 ┌─────────────────────────────────────────┐
@@ -100,6 +180,22 @@ graph LR
 
 ### Anatomy of an S3 Key
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```text
 s3://bucket-name/path/to/object/file.txt
       │              │
@@ -108,6 +204,22 @@ s3://bucket-name/path/to/object/file.txt
 ```
 
 ### CRUD Operations
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```awscli
 # Create bucket
@@ -128,6 +240,22 @@ aws s3 cp large-file.iso s3://my-bucket/ \
 ```
 
 ### Multi-Part Upload Flow
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 Upload large file
@@ -153,6 +281,22 @@ Upload large file
 
 ### Step-by-Step
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 1. **Bucket creation**: Create a globally-unique namespace to store objects
 2. **Object upload**: Send object data to bucket with a unique key (path)
 3. **Metadata assignment**: Attach system metadata (ETag, ContentType) and custom metadata
@@ -161,6 +305,22 @@ Upload large file
 6. **Versioning (optional)**: Each write creates a new version if versioning is enabled
 
 ### Code Example
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```python
 import boto3
@@ -207,9 +367,41 @@ print(f"Downloaded from S3")
 
 ### Real-World Scenario
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 A SaaS company stored user documents in S3 without versioning. A data corruption bug deleted 5,000 customer files. Without versioning enabled, the files were permanently lost and unrecoverable. After adding versioning, similar incidents were detected within minutes and rolled back to the previous version. Versioning added ~30% to storage costs but saved the company from potential lawsuits due to data loss.
 
 ### Diagram
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```mermaid
 graph LR
@@ -236,7 +428,39 @@ graph LR
 
 ## 2. Storage Classes
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Comparison
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 | Class | Durability | Availability | Min Duration | Retrieval | Use Case |
 |-------|-----------|-------------|-------------|-----------|----------|
@@ -250,6 +474,22 @@ graph LR
 
 ### Cost Hierarchy
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```text
 Higher Cost ───────────────────────────────────────────► Lower Cost
 
@@ -259,6 +499,22 @@ Faster Access ◄─────────────────────
 ```
 
 ### Intelligent-Tiering
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 ┌─────────────────────────────────────────────┐
@@ -288,7 +544,39 @@ Faster Access ◄─────────────────────
 
 ## 3. Versioning
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### How It Works
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 Without Versioning                    With Versioning
@@ -303,6 +591,22 @@ Without Versioning                    With Versioning
 ```
 
 ### Enable Versioning
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```awscli
 # Enable versioning on a bucket
@@ -326,6 +630,22 @@ aws s3api delete-object \
 
 ### Delete Marker Behavior
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```text
 DELETE operation on versioned bucket:
         │
@@ -342,6 +662,22 @@ DELETE operation on versioned bucket:
 
 ### Versioning States
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 | State | Effect | Can Transition To |
 |-------|--------|------------------|
 | Unversioned (default) | Objects created with null version ID | Enabled or Suspended |
@@ -352,7 +688,39 @@ DELETE operation on versioned bucket:
 
 ## 4. Lifecycle Policies
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Lifecycle Rule Structure
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```json
 {
@@ -387,6 +755,22 @@ DELETE operation on versioned bucket:
 
 ### Lifecycle Flow
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```text
 Object Created
       │
@@ -414,6 +798,22 @@ Object Created
 
 ### Abort Incomplete Multipart Uploads
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```json
 {
   "AbortIncompleteMultipartUpload": {
@@ -426,7 +826,39 @@ Object Created
 
 ## 5. Encryption
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Encryption Options
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 Encryption at Rest (server-side):
@@ -457,6 +889,22 @@ Encryption at Rest (server-side):
 
 ### Encryption in Transit
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```text
 Client ─── HTTPS (TLS) ───> S3 Endpoint
                     │
@@ -464,6 +912,22 @@ Client ─── HTTPS (TLS) ───> S3 Endpoint
 ```
 
 ### Bucket Policy for Enforcing Encryption
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```json
 {
@@ -483,7 +947,39 @@ Client ─── HTTPS (TLS) ───> S3 Endpoint
 
 ## 6. Presigned URLs
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### How They Work
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 ┌────────┐  Request URL    ┌──────────┐
@@ -503,6 +999,22 @@ Client ─── HTTPS (TLS) ───> S3 Endpoint
 
 ### CLI Examples
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```awscli
 # Generate presigned URL for GET (default 3600s)
 aws s3 presign s3://my-bucket/file.pdf \
@@ -520,6 +1032,22 @@ aws s3api get-object --bucket my-bucket \
 
 ### Use Cases
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 | Use Case | Method | Expiration |
 |----------|--------|------------|
 | Private file sharing | GET | Hours (short-lived) |
@@ -531,7 +1059,39 @@ aws s3api get-object --bucket my-bucket \
 
 ## 7. Static Hosting
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Configuration
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 Static Website Endpoint:
@@ -561,6 +1121,22 @@ http://<bucket-name>.s3-website-<region>.amazonaws.com
 
 ### Bucket Policy for Public Read
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```json
 {
   "Version": "2012-10-17",
@@ -576,6 +1152,22 @@ http://<bucket-name>.s3-website-<region>.amazonaws.com
 ```
 
 ### Architecture with CloudFront
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
                        ┌──────────┐
@@ -598,7 +1190,39 @@ http://<bucket-name>.s3-website-<region>.amazonaws.com
 
 ## 8. Consistency Model
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Current Model (Strong Consistency)
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 As of December 2020 — Strong Read-After-Write Consistency
@@ -624,6 +1248,22 @@ LIST after WRITE:
 
 ### What Is Still Eventually Consistent
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 | Operation | Behavior |
 |-----------|----------|
 | List objects after delete | Delete marker visible immediately |
@@ -635,7 +1275,39 @@ LIST after WRITE:
 
 ## 9. Cross-Region Replication
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Replication Types
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 SRR (Same-Region Replication)           CRR (Cross-Region Replication)
@@ -654,6 +1326,22 @@ SRR (Same-Region Replication)           CRR (Cross-Region Replication)
 ```
 
 ### Setup Requirements
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```json
 {
@@ -679,6 +1367,22 @@ SRR (Same-Region Replication)           CRR (Cross-Region Replication)
 
 ### What Gets Replicated
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 | Item | Replicated? |
 |------|-------------|
 | New objects | ✅ Yes |
@@ -694,7 +1398,39 @@ SRR (Same-Region Replication)           CRR (Cross-Region Replication)
 
 ## 10. S3 Glacier
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Retrieval Options
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 | Retrieval Option | Speed | Cost | Min Storage |
 |-----------------|-------|------|-------------|
@@ -703,6 +1439,22 @@ SRR (Same-Region Replication)           CRR (Cross-Region Replication)
 | **Bulk** | 5-12 hours | Low | 90 days |
 
 ### Glacier vs Deep Archive
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 Feature                 Glacier             Deep Archive
@@ -716,6 +1468,22 @@ Use case                Quarterly access    Last resort
 ```
 
 ### Restore Flow
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 Object in Glacier
@@ -749,7 +1517,39 @@ Object in Glacier
 
 ## 11. Performance Optimization
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Best Practices
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 DO:
@@ -769,6 +1569,22 @@ DON'T:
 
 ### Key Prefix Strategy for High Throughput
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```text
 ❌ BAD: Sequential prefixes (partition hotspot)
   logs/2025/01/01/10:00:00-001.log
@@ -782,6 +1598,22 @@ DON'T:
 ```
 
 ### Performance Limits
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 S3 Performance:
@@ -801,6 +1633,22 @@ S3 Performance:
 
 ### S3 Transfer Acceleration
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```text
 Client (Tokyo) ───────────────────────────► S3 (Virginia)
         │                                        ▲
@@ -815,6 +1663,22 @@ Client (Tokyo) ─────────────────────�
 
 ### Multipart Upload with CLI
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```awscli
 # Configure multipart thresholds
 aws configure set s3.max_concurrent_requests 10
@@ -826,6 +1690,22 @@ aws configure set s3.max_bandwidth 100MB/s
 ---
 
 ## 🧠 Simplest Mental Model
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 S3 BUCKET        =  A warehouse with infinite shelves

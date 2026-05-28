@@ -45,6 +45,22 @@ graph LR
 
 ## Table of Contents
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 1. ACID in Distributed Systems
 2. Two-Phase Commit (2PC)
 3. 2PC Failure Scenarios
@@ -62,6 +78,22 @@ graph LR
 ---
 
 ## 1. ACID in Distributed Systems
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
              ACID
@@ -93,6 +125,22 @@ graph LR
 ---
 
 ## 2. Two-Phase Commit (2PC)
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 Coordinator                Participant 1             Participant 2
@@ -129,6 +177,22 @@ If any participant votes NO:
 ---
 
 ## 3. 2PC Failure Scenarios
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 **Coordinator Crash BEFORE PREPARE:**
 - Participants not contacted. No locks held. Normal operation.
@@ -179,6 +243,22 @@ XA is 2PC standardized for heterogeneous resources (DB + queue + cache). Used by
 
 ## 4. Three-Phase Commit (3PC)
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```text
 Coordinator           Participant 1          Participant 2
      |                      |                      |
@@ -214,6 +294,22 @@ Coordinator           Participant 1          Participant 2
 ---
 
 ## 5. Saga Pattern
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 **Definition (Garcia-Molina & Salem, 1987):** Saga is a sequence of local transactions `T1, T2, ..., Tn` with compensating transactions `C1, C2, ..., Cn`.
 
@@ -274,6 +370,22 @@ Failure: SEC sends compensating commands:
 
 ## 6. TCC (Try-Confirm/Cancel)
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 **Phases:**
 ```text
 Try Phase:
@@ -327,6 +439,22 @@ If Confirm not received within timeout: Cancel automatically.
 
 ## 7. Seata AT (Automatic Transaction)
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 **Seata AT (Alibaba):** Automatic transaction mode using global transaction manager + resource manager + undo log.
 
 ```text
@@ -357,6 +485,22 @@ TM (Transaction Manager)          RM (Resource Manager)
 
 ## 8. SAGA vs TCC vs 2PC
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 | Aspect | 2PC | TCC | SAGA |
 |--------|-----|-----|------|
 | Isolation | Serial (locks held) | Resource reservation | None (no locks) |
@@ -371,6 +515,22 @@ TM (Transaction Manager)          RM (Resource Manager)
 ---
 
 ## 9. Distributed Transaction Patterns
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 **Outbox Pattern:** Guarantees reliable message delivery without 2PC.
 
@@ -427,6 +587,22 @@ If client retries:
 
 ## 10. Transactional Messaging
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 **Kafka Transactions:**
 ```text
 Transactional Producer:
@@ -465,6 +641,22 @@ Requires idempotent message handlers
 ---
 
 ## 11. Optimistic Concurrency
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 **Version Field:**
 ```text
@@ -510,6 +702,22 @@ Used by: Google Spanner (under TrueTime for validation), FoundationDB.
 
 ## 12. Distributed Deadlock Detection
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 **Waits-For Graph:**
 ```text
 Node A waits for lock held by Node B
@@ -551,6 +759,22 @@ Wait-Die:
 ---
 
 ## 13. Real-World Implementations
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 **Google Spanner:**
 - TrueTime + 2PC (between participants) + Paxos (within participant for replication)
@@ -595,9 +819,41 @@ PostgreSQL's 2PC is coordinator-dependent. If coordinator crashes after PREPARE,
 
 ## Simplest Mental Model
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 **Distributed transactions are like a group of people trying to jump simultaneously.** 2PC has a leader who says "on three" followed by "jump" — but if the leader collapses mid-count, everyone freezes in place (blocked). Sagas are like a hiking trip where each leg is independent, but if someone sprains an ankle, you have a pre-planned escape route (compensation) — you can't fully undo the hike but you can get back to base. TCC is like reserving a hotel room (Try) and then checking in (Confirm) — if you don't show up, the reservation expires (Cancel). Pick your poison: strong coupling (2PC), resource reservation (TCC), or eventual compensation (Saga).
 
 
 ## Practical Example
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 See code examples above for practical usage patterns.

@@ -23,7 +23,39 @@ graph LR
 
 ## 1. Attention Mechanism
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### 1.1 Scaled Dot-Product Attention
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 The fundamental operation that powers transformers: each token attends to every other token.
 
@@ -71,6 +103,22 @@ print(f"Output: {output}")
 ```
 
 ### 1.2 Multi-Head Attention
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 Multiple attention heads capture different relationship patterns:
 
@@ -124,6 +172,22 @@ class MultiHeadAttention:
 
 ### 1.3 Cross-Attention
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 In encoder-decoder models, the decoder attends to encoder outputs:
 
 ```python
@@ -134,6 +198,22 @@ class CrossAttention(MultiHeadAttention):
 ```
 
 ### 1.4 Causal (Masked) Self-Attention
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 Prevents tokens from attending to future tokens:
 
@@ -162,7 +242,39 @@ def causal_self_attention(Q, K, V):
 
 ## 2. Transformer Architecture
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### 2.1 Encoder Block
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```python
 class TransformerEncoderBlock:
@@ -210,6 +322,22 @@ class LayerNorm:
 
 ### 2.2 Decoder Block
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```python
 class TransformerDecoderBlock:
     def __init__(self, d_model, n_heads, d_ff, dropout=0.1):
@@ -246,6 +374,22 @@ class TransformerDecoderBlock:
 ```
 
 ### 2.3 Full Transformer
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```python
 class Transformer:
@@ -307,7 +451,39 @@ class Transformer:
 
 ## 3. Positional Encoding
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### 3.1 Absolute Sinusoidal Positional Encoding
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```python
 class SinusoidalPositionalEncoding:
@@ -331,6 +507,22 @@ class SinusoidalPositionalEncoding:
 ```
 
 ### 3.2 Relative Positional Encoding
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```python
 class RelativePositionalEncoding:
@@ -403,6 +595,22 @@ class RoPE:
 
 ### 3.3 ALiBi (Attention with Linear Biases)
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```python
 class ALiBi:
     """
@@ -457,7 +665,39 @@ class ALiBi:
 
 ## 4. Layer Normalization Placement
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### 4.1 Post-LN (Original Transformer)
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```python
 class PostLNEncoderBlock:
@@ -479,6 +719,22 @@ class PostLNEncoderBlock:
 ```
 
 ### 4.2 Pre-LN (Modern Standard)
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```python
 class PreLNEncoderBlock:
@@ -506,6 +762,22 @@ class PreLNEncoderBlock:
 
 ### 4.3 Sandwich-LN
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```python
 class SandwichLNEncoderBlock:
     """Layer norm before AND after each sublayer"""
@@ -530,6 +802,22 @@ class SandwichLNEncoderBlock:
 
 ### 4.4 Comparison
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 | Variant | Norm Placement | Training Stability | Used In |
 |---------|---------------|-------------------|---------|
 | Post-LN | After residual | Unstable (needs warmup) | Original Transformer |
@@ -546,7 +834,39 @@ class SandwichLNEncoderBlock:
 
 ## 5. Feed-Forward Networks
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### 5.1 Standard FFN (SwiGLU variant)
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```python
 class FeedForward:
@@ -611,7 +931,39 @@ def gelu(x):
 
 ## 6. Key-Value (KV) Cache
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### 6.1 KV Cache Implementation
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 During autoregressive decoding, we cache previous keys and values to avoid recomputation:
 
@@ -689,6 +1041,22 @@ class DecoderWithKVCache:
 
 ### 6.2 Speculative Decoding
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```python
 class SpeculativeDecoder:
     """
@@ -751,6 +1119,22 @@ def softmax(x):
 
 ## 7. Flash Attention
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 Flash Attention computes exact attention without materializing the full N×N attention matrix:
 
 ```python
@@ -797,7 +1181,39 @@ def flash_attention(Q, K, V, block_size=64):
 
 ## 8. Major Transformer Variants
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### 8.1 BERT (Encoder-Only)
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```python
 class BERT:
@@ -845,6 +1261,22 @@ class NNLayer:
 ```
 
 ### 8.2 GPT (Decoder-Only)
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```python
 class GPT:
@@ -911,6 +1343,22 @@ class GPT:
 
 ### 8.3 Llama Architecture
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 Llama modifications over original transformer:
 - Pre-LN with RMS Norm
 - SwiGLU FFN (with 8/3 * d_model hidden dimension)
@@ -947,6 +1395,22 @@ class LlamaBlock:
 ```
 
 ### 8.4 Mistral / DeepSeek Architecture
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 Mistral introduces **sliding window attention** and **rolling buffer KV cache**:
 
@@ -1012,7 +1476,39 @@ class GroupedQueryAttention:
 
 ## 9. Scaling Laws and Compute-Optimal Training
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### 9.1 Chinchilla Optimal
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```python
 # Chinchilla scaling law parameters
@@ -1048,6 +1544,22 @@ print(f"Optimal tokens: {D_opt/1e12:.1f}T")
 
 ### 9.2 Compute-Optimal Training Recipe
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```python
 def suggest_training_recipe(model_size, compute_budget):
     N = model_size
@@ -1082,6 +1594,22 @@ print(f"70B model: {recipe['recommended_tokens']/1e12:.1f}T tokens needed")
 ```
 
 ### 9.3 Efficient Scaling Tricks
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```python
 class ScalingConfig:
@@ -1122,7 +1650,39 @@ for name, config in models.items():
 
 ## 10. Training Optimization
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### 10.1 Activation Checkpointing
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```python
 def checkpointed_forward(model, x, checkpoint_layers):
@@ -1140,6 +1700,22 @@ def checkpointed_forward(model, x, checkpoint_layers):
 ```
 
 ### 10.2 Tensor Parallelism
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```python
 # Model parallelism: split weights across devices
@@ -1160,7 +1736,39 @@ class TensorParallelLinear:
 
 ## 11. Evaluation and Inference
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### 11.1 Perplexity
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```python
 def compute_perplexity(model, tokens):
@@ -1173,6 +1781,22 @@ def compute_perplexity(model, tokens):
 ```
 
 ### 11.2 Inference Optimizations
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```python
 # Continuous batching
@@ -1199,6 +1823,22 @@ class ContinuousBatchingScheduler:
 
 ## 12. Exercise Problems
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 **Problem 1**: Implement scaled dot-product attention with causal masking from scratch. Verify that it produces correct autoregressive outputs.
 
 **Problem 2**: Implement group-query attention (GQA) and compare KV cache memory usage vs multi-head attention for the same model size.
@@ -1212,6 +1852,22 @@ class ContinuousBatchingScheduler:
 ---
 
 ## Related
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 - [Databases](../../08-databases/) — Vector search, embeddings storage
 - [Python Backend](../../03-backend/) — ML inference APIs

@@ -33,6 +33,22 @@ graph LR
 
 ## 📑 Table of Contents
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 1. [Testing Pyramid](#1-testing-pyramid)
 2. [pytest — The Modern Standard](#2-pytest--the-modern-standard)
 3. [pytest Advanced Features](#3-pytest-advanced-features)
@@ -50,6 +66,22 @@ graph LR
 ---
 
 ## 1. Testing Pyramid
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
          ╱╲
@@ -73,6 +105,22 @@ graph LR
 ---
 
 ## 2. pytest — The Modern Standard
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```python
 import pytest
@@ -118,6 +166,22 @@ def test_heavy_computation():
 
 ### Built-in Fixtures
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```python
 # monkeypatch — mock attributes, env vars, etc.
 def test_env(monkeypatch):
@@ -155,7 +219,39 @@ def test_api_call(mocker):
 
 ## 3. pytest Advanced Features
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Plugin Architecture
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```python
 # conftest.py — hook into pytest lifecycle
@@ -173,6 +269,22 @@ def pytest_configure(config):
 
 ### Useful Plugins
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```bash
 pip install pytest-xdist    # parallel: pytest -n auto
 pip install pytest-cov      # coverage
@@ -185,6 +297,22 @@ pip install pytest-sugar    # better UI
 ```
 
 ### Advanced Markers
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```python
 @pytest.mark.skip(reason="Not implemented yet")
@@ -206,6 +334,22 @@ pytest.mark.api
 ```
 
 ### Factories & Fakers
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```python
 import factory
@@ -232,6 +376,22 @@ def test_user_creation(db_session):
 ---
 
 ## 4. unittest — Built-in Framework
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```python
 import unittest
@@ -285,6 +445,22 @@ class TestExternalAPI(unittest.TestCase):
 
 ## 5. Hypothesis — Property-Based Testing
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```python
 from hypothesis import given, strategies as st, assume, settings, HealthCheck
 
@@ -336,6 +512,22 @@ def test_large_sample(lst):
 
 ## 6. Integration Testing
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```python
 # testcontainers — throwaway Docker services
 from testcontainers.postgres import PostgresContainer
@@ -368,6 +560,22 @@ def test_s3_upload():
 
 ## 7. Packaging Ecosystem
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```
 ┌─────────────────────────────────────────────────────┐
 │               Python Packaging Flow                  │
@@ -387,6 +595,22 @@ def test_s3_upload():
 ```
 
 ### pyproject.toml (modern standard, PEP 621)
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```toml
 [build-system]
@@ -416,6 +640,22 @@ testpaths = ["tests"]
 
 ### Tools Comparison
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 | Tool | Build Backend | Lock File | Workflow |
 |------|--------------|-----------|----------|
 | **pip + setuptools** | setuptools | No | `python -m build` |
@@ -429,7 +669,39 @@ testpaths = ["tests"]
 
 ## 8. Versioning & Environment Isolation
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Versioning (PEP 440)
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 N.N.N[abcN][.postN][.devN]
@@ -454,6 +726,22 @@ __version__ = "0.1.0"
 
 ### Environment Isolation Tools
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 | Tool | Creates | Lock File | Speed |
 |------|---------|-----------|-------|
 | **venv** (stdlib) | `.venv/` | — | Fast |
@@ -475,6 +763,22 @@ uv add requests  # add + lock
 ---
 
 ## 9. Linting, Formatting & Pre-commit
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 Code Quality Pipeline:
@@ -511,6 +815,22 @@ ignore_missing_imports = true
 
 ### .pre-commit-config.yaml
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```yaml
 repos:
   - repo: https://github.com/astral-sh/ruff-pre-commit
@@ -531,6 +851,22 @@ repos:
 ---
 
 ## 10. CI/CD Patterns
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```yaml
 # .github/workflows/test.yml — GitHub Actions matrix testing
@@ -561,6 +897,22 @@ jobs:
 
 ### tox — Test Across Python Versions
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```ini
 # tox.ini
 [tox]
@@ -583,6 +935,22 @@ tox -e py311      # run specific env
 ---
 
 ## 11. Coverage
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```python
 # .coveragerc or pyproject.toml
@@ -617,6 +985,22 @@ TOTAL              320     28     60      8     90%
 
 ## 12. Mocking Best Practices
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```
 When to Mock:
   ✅ External services (HTTP, DB, queue, S3)
@@ -632,6 +1016,22 @@ When NOT to Mock:
 ```
 
 ### Golden Rules
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 1. **Mock at the integration boundary**, not the implementation detail
 2. **Use `spec`** to avoid mock API drift from real API
@@ -657,6 +1057,22 @@ def test_create_charge_bad(mock_post):
 ---
 
 ## 13. Simplest Mental Model
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 ┌──────────────────────────────────────────────────────────────┐
@@ -690,6 +1106,22 @@ def test_create_charge_bad(mock_post):
 
 ## Observability
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```mermaid
 flowchart LR
     A[Python App] --> B[Metrics]
@@ -706,6 +1138,22 @@ flowchart LR
 
 ### Key Metrics
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 | Metric | Unit | Threshold | Indicates |
 |--------|------|-----------|-----------|
 | Request latency (p99) | ms | < 500ms | Application performance |
@@ -717,6 +1165,22 @@ flowchart LR
 
 ### Logs
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 - **ERROR**: Unhandled exceptions, connection failures, import errors, OOM
 - **WARN**: Slow API endpoints, retry attempts, pool exhaustion approaching
 - **INFO**: Server start/stop, worker lifecycle, config loaded
@@ -724,9 +1188,41 @@ flowchart LR
 
 ### Traces
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 Use OpenTelemetry Python SDK. Auto-instrument popular frameworks (Flask, FastAPI, Django). Propagate trace context via HTTP headers and message headers.
 
 ### Alerts
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 | Severity | Condition | Response |
 |----------|-----------|----------|
@@ -736,5 +1232,21 @@ Use OpenTelemetry Python SDK. Auto-instrument popular frameworks (Flask, FastAPI
 | P2 | Memory > 80% limit | Check for memory leak |
 
 ### Dashboards
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 **Python Runtime Dashboard**: request latency (p50/p95/p99), error rate by endpoint, GC pauses, thread pool utilization, memory usage, connection pool status.

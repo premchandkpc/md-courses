@@ -46,6 +46,22 @@ graph LR
 
 ## Table of Contents
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 1. [Process Lifecycle](#1-process-lifecycle)
 2. [fork Internals & COW](#2-fork-internals--cow)
 3. [clone Syscall](#3-clone-syscall)
@@ -68,6 +84,22 @@ graph LR
 ---
 
 ## 1. Process Lifecycle
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
          ┌─────┐
@@ -97,6 +129,22 @@ graph LR
 
 ### fork()
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```c
 pid_t pid = fork();
 if (pid == 0) {
@@ -113,6 +161,22 @@ if (pid == 0) {
 
 ### exec()
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```
 execve(path, argv, envp):
   1. Flush existing brk (heap)
@@ -126,6 +190,22 @@ execve(path, argv, envp):
 ```
 
 ### Zombie & Orphan
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 Zombie (defunct):
@@ -145,6 +225,22 @@ Orphan:
 ---
 
 ## 2. fork Internals & COW
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 fork() → kernel entry
@@ -188,6 +284,22 @@ fork() → kernel entry
 
 ### COW (Copy on Write) Details
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```
 Before fork:
   Parent: .text → R-X (shared read-exec), .data → RW-
@@ -217,6 +329,22 @@ vfork():
 
 ## 3. clone Syscall
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```c
 // clone() — unified syscall for fork, vfork, pthread_create
 // Flags determine how much is shared between parent and child
@@ -240,14 +368,94 @@ Key flags:
 ```
 
 ### fork() = clone(CLONE_CHILD_CLEARTID | CLONE_CHILD_SETTID | SIGCHLD)
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 ### vfork() = clone(CLONE_VFORK | CLONE_VM | SIGCHLD)  // shares memory, blocks parent
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 ### pthread_create() = clone(CLONE_VM | CLONE_FILES | CLONE_SIGHAND | CLONE_THREAD | CLONE_SETTLS | CLONE_PARENT_SETTID | CLONE_CHILD_CLEARTID)
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ---
 
 ## 4. Thread — pthreads & NPTL
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### NPTL (Native POSIX Threads Library)
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 NPTL: 1:1 threading model
@@ -274,6 +482,22 @@ NPTL: 1:1 threading model
 
 ### pthread_create Flow
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```
 pthread_create(&tid, attr, start_routine, arg)
   │
@@ -297,6 +521,22 @@ pthread_create(&tid, attr, start_routine, arg)
 
 ### Stack Size & Guard Pages
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```bash
 ulimit -s          # Default thread stack size (typically 8MB)
 ulimit -s 1024     # Set to 1MB (reduces per-thread memory overhead)
@@ -313,6 +553,22 @@ ulimit -s 1024     # Set to 1MB (reduces per-thread memory overhead)
 ---
 
 ## 5. Thread-Local Storage (TLS)
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 x86-64: TLS via FS segment register
@@ -341,6 +597,22 @@ TLS Layout:
 
 ### __thread (GCC)
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```c
 // Thread-local storage — each thread gets its own copy
 static __thread int counter = 0;
@@ -354,6 +626,22 @@ void *worker(void *arg) {
 ```
 
 ### pthread_key_create
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```c
 // Dynamic TLS — keys allocate destructors
@@ -374,6 +662,22 @@ void *get_value(void) {
 
 ### errno — TLS Magic
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```c
 // errno is NOT a global variable — it's a macro
 #define errno (*__errno_location())
@@ -389,6 +693,22 @@ void *get_value(void) {
 ---
 
 ## 6. Thread vs Process Comparison
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 | Aspect | Process | Thread |
 |--------|---------|--------|
@@ -406,6 +726,22 @@ void *get_value(void) {
 ---
 
 ## 7. Goroutines — G/M/P Model
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 Go Runtime Scheduler (G/M/P model)
@@ -437,6 +773,22 @@ Go Runtime Scheduler (G/M/P model)
 
 ### Scheduler Workflow
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```
 go func(...) → creates G, enqueues to P's local runqueue
 
@@ -455,6 +807,22 @@ Work stealing:
 
 ### sysmon (System Monitor)
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```
 sysmon thread (started at runtime init):
   - Runs every 10μs (periodic, independent of P)
@@ -467,6 +835,22 @@ sysmon thread (started at runtime init):
 ```
 
 ### Network Poller (netpoller)
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 go netpoll — integration with epoll/kqueue/IOCP
@@ -488,6 +872,22 @@ Completely transparent to goroutine code:
 
 ### GOMAXPROCS
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```go
 runtime.GOMAXPROCS(0)   // Get current (default = number of CPUs)
 runtime.GOMAXPROCS(16)  // Set to 16
@@ -506,7 +906,39 @@ runtime.GOMAXPROCS(16)  // Set to 16
 
 ## 8. Fibers & Coroutines
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Stackful vs Stackless
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 Stackful fibers:
@@ -533,6 +965,22 @@ Stackless coroutines:
 ```
 
 ### Fiber Implementations
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```cpp
 // C++ Boost.Fiber (stackful)
@@ -564,6 +1012,22 @@ co_resume(co);     // Resume after yield
 
 ### Goroutine Cost vs Fiber Cost
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```
 Goroutine:
   - Initial stack: ~2KB (dynamically grows → 1GB max)
@@ -587,7 +1051,39 @@ Python Coroutine:
 
 ## 9. NPTL (1:1) vs M:N Threading
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### 1:1 (NPTL — Linux)
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 Each user thread = one kernel thread
@@ -612,6 +1108,22 @@ Cons: Thread creation = syscall = ~1-10μs
 ```
 
 ### M:N (Go, Erlang, Haskell)
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 M user threads mapped to N kernel threads (usually M > N)
@@ -639,7 +1151,39 @@ Cons: Blocking syscall blocks M → runtime must compensate
 
 ## 10. Thread Pool Patterns
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Work-Stealing Thread Pool
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 ┌─────────────────────────────────────────────────────┐
@@ -671,6 +1215,22 @@ FIFO steal from top: Steal oldest (largest remaining work, cold cache)
 
 ### Thread Pool Sizing
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```
 CPU-bound tasks:
   N_threads = N_CPU
@@ -691,6 +1251,22 @@ Mixed:
 
 ## 11. Process vs Thread vs Goroutine vs Fiber Comparison
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 | Metric | Process | Thread (pthread) | Goroutine | Fiber (Boost) |
 |--------|---------|-----------------|-----------|---------------|
 | **Creation time** | ~10-50μs | ~1-10μs | ~0.1-0.5μs | ~0.05-0.3μs |
@@ -708,7 +1284,39 @@ Mixed:
 
 ## 12. Thread Affinity & CPU Pinning
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### pthread_setaffinity_np
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```c
 #include <pthread.h>
@@ -728,6 +1336,22 @@ rc = pthread_getaffinity_np(thread, sizeof(cpu_set_t), &cpuset);
 
 ### sched_setaffinity (process)
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```c
 // For the current process (all threads)
 cpu_set_t mask;
@@ -737,6 +1361,22 @@ sched_setaffinity(0, sizeof(mask), &mask);
 ```
 
 ### NUMA + Cache Locality
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 NUMA Node 0           NUMA Node 1
@@ -755,6 +1395,22 @@ Pinning strategy:
 ```
 
 ### libnuma
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```c
 #include <numa.h>
@@ -776,6 +1432,22 @@ if (numa_available() >= 0) {
 ---
 
 ## 13. LWP — Lightweight Process
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 LWP: A kernel thread that appears as a process to userspace.
@@ -803,7 +1475,39 @@ top -H: shows threads
 
 ## 14. Internals
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### task_struct
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```c
 // include/linux/sched.h
@@ -854,6 +1558,22 @@ struct task_struct {
 
 ### Goroutine Stack (Go)
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```go
 // Initial goroutine stack: ~2KB
 
@@ -871,6 +1591,22 @@ struct task_struct {
 ```
 
 ### Context Switch (Assembly)
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```asm
 ;; x86-64 switch_to (kernel context switch)
@@ -907,7 +1643,39 @@ switch_to(prev, next, last):
 
 ## 15. Failure Analysis
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Stack Overflow
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 Process (main thread):
@@ -928,6 +1696,22 @@ Goroutine:
 
 ### Thread Explosion
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```
 Cause:
   - Accepting connections and creating 1 thread/connection
@@ -943,6 +1727,22 @@ Symptoms:
 
 ### Priority Inversion (with threads)
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```
 High-pri thread waiting on low-pri thread because medium-pri preempts low-pri:
   - High priority: T_H (needs lock L)
@@ -955,6 +1755,22 @@ Solution:
 ```
 
 ### Goroutine Leak
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```go
 // Classic goroutine leak
@@ -977,6 +1793,22 @@ func leak() {
 
 ## 16. Edge Cases
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 - **vfork + exec**: vfork's borrowed address space: if child doesn't exec immediately → corrupts parent state → crashes
 - **fork + thread**: Forking a multi-threaded process: only forking thread exists in child; other threads vanish → locks may stay held
 - **pthread_atfork**: Register handlers to reinitialize locks after fork
@@ -995,7 +1827,39 @@ func leak() {
 
 ## 17. Performance
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Context Switch Cost Breakdown
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 Thread context switch (same process):
@@ -1027,6 +1891,22 @@ Fiber context switch:
 
 ### Creation Cost
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```
 Operation                    Time
 ─────────────────────────────────────
@@ -1040,6 +1920,22 @@ allocate goroutine stack 2KB ~0.1μs
 ```
 
 ### Thread Pool Benchmark
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 Fetch 1000 URLs (10ms latency each):
@@ -1055,6 +1951,22 @@ io_uring                 ~0.12s          1 thread
 
 ### Go Scheduler Performance
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```
 goroutine create:          ~0.3μs
 goroutine channel send:    ~50ns (uncontended)
@@ -1069,7 +1981,39 @@ GOMAXPROCS scaling:
 
 ## Interview Questions
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Beginner Level
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 **Q1: What is the difference between a process and a thread?**
 
@@ -1090,6 +2034,22 @@ GOMAXPROCS scaling:
 **Ideal answer**: Process context switch saves/restores: registers, program counter, stack pointer, page table (CR3 register), TLB flush. Thread context switch (same process): saves registers, PC, SP — page table stays the same, no TLB flush. This is why thread switches are ~2-5x faster.
 
 ### Intermediate Level
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 **Q3: How does the goroutine G/M/P scheduler work, and how is it different from OS threads?**
 
@@ -1112,6 +2072,22 @@ GOMAXPROCS scaling:
 
 ### Senior Level
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 **Q5: Design a thread pool for a high-throughput web server handling 50K concurrent connections. What pool size, queuing strategy, and rejection policy do you use?**
 
 **Why interviewers ask this**: Tests production system design with concurrency.
@@ -1129,6 +2105,22 @@ GOMAXPROCS scaling:
 
 ### Staff/Principal Level
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 **Q7: Your company is migrating from a monolith using OS threads to a microservice architecture. The new system uses goroutines/async but you see mysterious "connection reset" errors under load. What's happening?**
 
 **Why**: Tests cross-domain debugging — concurrency model + network + OS.
@@ -1140,6 +2132,22 @@ GOMAXPROCS scaling:
 **Answer**: **COW page table overhead**. `fork()` marks all pages Copy-on-Write. With 256GB RAM, the page table is enormous (~512MB for 4KB pages on x86) and walking it takes milliseconds. Also, 256GB × 64 bytes metadata = 16GB of kernel memory for struct pages. Fix: 1) Use `vfork()` if exec follows immediately. 2) Use `clone()` with `CLONE_VM` (threads). 3) Pre-warm with `MADV_WILLNEED`. 4) Consider using `posix_spawn()` instead. 5) Long-term: rewrite as microservice with gRPC calls instead of fork-per-request.
 
 ### Tricky Edge Cases
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 **Q9: Two threads increment a shared counter 1M times each. Expected value is 2M but you get 1,999,847. Explain the exact CPU-level sequence that causes this.**
 

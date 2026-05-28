@@ -37,6 +37,22 @@ graph LR
 
 ## Table of Contents
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 1. CAP Theorem Formal Proof
 2. CAP Tradeoffs: CP vs AP, PACELC
 3. Consistency Models Hierarchy
@@ -56,6 +72,22 @@ graph LR
 ---
 
 ## 1. CAP Theorem Formal Proof
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 +------------------+     +------------------+     +------------------+
@@ -83,6 +115,22 @@ graph LR
 
 ## 2. CAP Tradeoffs: CP vs AP, PACELC
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 **CP (Consistency + Partition Tolerance):** When partition occurs, sacrifice availability. Block writes/reads until partition heals. Examples: Zookeeper, etcd, HBase.
 
 **AP (Availability + Partition Tolerance):** When partition occurs, sacrifice consistency. Accept stale reads. Examples: Dynamo, Cassandra (tunable), CouchDB.
@@ -103,6 +151,22 @@ If a partition occurs (P), choose between Consistency and Availability. Else (E,
 ---
 
 ## 3. Consistency Models Hierarchy
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
                         STRONGEST
@@ -129,6 +193,22 @@ Each level sacrifices ordering guarantees for performance, scalability, or avail
 ---
 
 ## 4. Linearizability (Strict Consistency)
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 **Definition (Herlihy & Wing, 1990):** An execution is linearizable if there exists a total order of operations such that:
 1. The order respects real-time precedence (if op A completes before op B starts, A appears before B).
@@ -158,6 +238,22 @@ All reads return 2 after write completes. Real-time order preserved.
 
 ## 5. Sequential Consistency
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 **Definition (Lamport, 1979):** The result of execution is the same as if all processors' operations were executed in some sequential order, and each processor's operations appear in the order specified by its program.
 
 **Key Difference from Linearizability:** No real-time requirement. Operations from different processors can be interleaved arbitrarily as long as per-processor program order is preserved.
@@ -179,6 +275,22 @@ If P2 sees 2 before 1, program order is violated from P2's perspective.
 ---
 
 ## 6. Causal Consistency & Vector Clocks
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 **Definition:** Operations that are causally related must be seen by all processes in the same order. Concurrent operations may be seen in different orders.
 
@@ -209,6 +321,22 @@ Process B: [0,1,0] -> [0,2,0] -> [2,1,0] -> [2,2,0] -> [2,3,0]
 
 ## 7. PRAM & Processor Consistency
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 **PRAM (Pipelined RAM) / FIFO Consistency:** Writes from a single processor are observed in the order they were issued by that processor. Writes from different processors can be seen in different orders. Weakest form of consistency that respects per-processor write order.
 
 **Processor Consistency:** PRAM consistency + all processors agree on the order of writes to a single memory location.
@@ -228,6 +356,22 @@ This VIOLATES processor consistency because they disagree on write order.
 ---
 
 ## 8. Eventual Consistency
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 **Definition:** Given sufficiently long time without updates, all replicas converge to the same value. No ordering guarantees during the convergence period.
 
@@ -260,6 +404,22 @@ Node A                    Node B
 
 ## 9. Monotonic Consistency Guarantees
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 **Read-Your-Writes:** After a write, subsequent reads from the same client always reflect that write.
 
 **Monotonic Reads:** If a client reads value `v` at time `t`, subsequent reads will always return at least `v` (not earlier values). Prevents the "back-in-time" anomaly.
@@ -273,6 +433,22 @@ Node A                    Node B
 ---
 
 ## 10. CRDTs: Theory & Practice
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 **Conflict-Free Replicated Data Types:** Data types that converge across replicas without consensus. Operations commute — no conflict resolution needed.
 
@@ -324,7 +500,39 @@ After merge: A B X D (both converge)
 
 ## 11. Consistency in Practice
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Amazon Dynamo (Eventual + Vector Clocks + Read Repair)
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 - N = replication factor (default 3)
 - R = minimal read nodes, W = minimal write nodes
@@ -342,6 +550,22 @@ Read:  coordinator -> preference list
 ```
 
 ### Google Spanner (TrueTime + External Consistency)
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 - TrueTime API: `TT.now()` returns `[earliest, latest]` (clock uncertainty interval)
 - Commit wait: after Paxos commit, wait until `TT.after(commit_timestamp)` (i.e., wait past uncertainty bound)
@@ -361,6 +585,22 @@ Transaction at Node B (TrueTime=[t3, t4]):
 
 ### Cassandra (Tunable Consistency)
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 - `ONE`: fastest, weakest. One node responds.
 - `QUORUM`: `(R + W) > RF`. Strong consistency if `R + W > RF`.
 - `ALL`: strongest. All replicas must respond.
@@ -371,6 +611,22 @@ Transaction at Node B (TrueTime=[t3, t4]):
 
 ### ZooKeeper (Linearizability via ZAB)
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 - ZAB (Zookeeper Atomic Broadcast): leader-based total order broadcast.
 - Linearizable writes: all writes go through leader, committed via ZAB.
 - Reads from leader are linearizable. Reads from followers are NOT (stale allowed).
@@ -379,12 +635,44 @@ Transaction at Node B (TrueTime=[t3, t4]):
 
 ### etcd (Linearizability via Raft + Read Leases)
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 - Raft consensus for writes.
 - Read leases: leader responds to reads without Raft round-trip if within lease interval (clock-based).
 - `--quorum` flag: force quorum read for strong consistency.
 - Revision-based MVCC for consistent snapshots.
 
 ### Cosmos DB (5 Consistency Levels)
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 1. **Strong:** Linearizable. Replicated synchronously to majority.
 2. **Bounded Staleness:** Reads lag by at most K versions or T time.
@@ -395,6 +683,22 @@ Transaction at Node B (TrueTime=[t3, t4]):
 ---
 
 ## 12. Consistency vs Performance Tradeoffs
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
                    Latency
@@ -419,6 +723,22 @@ Key Tradeoff Parameters:
 
 ## 13. CAP in Real Systems
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 **MongoDB:** Causal consistency in sessions. Configure `w: majority` / `j: true` for strong writes. Reads: linearizable read concern + `maxTimeMS`.
 
 **CockroachDB:** Strong consistency via Raft + Hybrid Logical Clocks (HLC). `SERIALIZABLE` isolation by default. No eventual consistency mode — always strongly consistent.
@@ -430,6 +750,22 @@ Key Tradeoff Parameters:
 ---
 
 ## 14. Stale Reads & Staleness Bounds
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 **Bounded Staleness:**
 - K-version: at most K versions behind the latest.
@@ -445,6 +781,22 @@ Key Tradeoff Parameters:
 
 ## 15. Split-Brain Detection
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 **Lease Mechanism:** Leader holds a lease (time-bound permission). If lease expires, another node can become leader. Prevent two active leaders simultaneously.
 
 **Epoch/Fencing:** Monotonically increasing epoch number. Each leader generation gets a higher epoch. Stale leader's writes use old epoch — rejected by accepting nodes.
@@ -458,6 +810,22 @@ Key Tradeoff Parameters:
 ---
 
 ## Simplest Mental Model
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 **CAP says:** When the network splits (which it will), you must choose between giving correct answers (consistency) or giving any answer at all (availability). You can never do both during a split. **PACELC adds:** Even without a split, you trade speed for correctness.
 

@@ -6,6 +6,22 @@
 
 ## Layer 1: Beginner Mental Model
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 **Analogy**: Imagine a restaurant kitchen. Each order (state change) goes to a chef (React component). If the chef re-cooks the entire menu instead of just the one dish ordered, the kitchen gets congested. Optimization means: cook only what's ordered, batch orders together, and use assembly lines (virtualization) for large orders.
 
 **Why it matters**:
@@ -20,7 +36,39 @@
 
 ## Layer 4: Production Reality
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Performance Failure Modes
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 | Failure | Symptoms | Root Cause | Fix |
 |---------|----------|-----------|-----|
@@ -34,6 +82,22 @@
 | **Dead Memo** | Deep comparisons waste CPU checking unchanged props | Complex objects in memo comparison function | Use primitives or shallow compare, split contexts |
 
 ### Production Incident: Instagram Feed Scroll Jank (2016)
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 **Context**: Instagram's feed during major events (Oscars, World Cup) received millions of messages. Engineers optimized server/DB but ignored client rendering.
 
@@ -106,7 +170,39 @@ const Message = memo(({ message, onLike }) => {
 
 ## Layer 5: Staff Engineer Perspective
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Performance Tradeoff Table
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 | Strategy | Gain | Cost | When to Use |
 |----------|------|------|------------|
@@ -119,6 +215,22 @@ const Message = memo(({ message, onLike }) => {
 | **Web Workers** | Non-blocking compute | IPC overhead, debugging hard | Heavy JSON parsing, data transforms |
 
 ### Scaling Pattern: From Startup to 100M Users
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 **Stage 1 (Startup — 100K MAU)**:
 - Measure with Lighthouse
@@ -148,7 +260,39 @@ const Message = memo(({ message, onLike }) => {
 
 ## Layer 5: Interview Questions
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Level 1 (Junior Engineer)
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 **Q1: Why does React.memo not prevent re-renders sometimes?**
 A: React.memo only works if props are shallow-equal. If you pass a new object/function every render, memo sees it as "different" and renders anyway. Solution: use useMemo/useCallback to stabilize references.
@@ -161,6 +305,22 @@ A: useMemo memoizes a value (e.g., result of expensive computation). useCallback
 - Expected: Can explain both with examples
 
 ### Level 2 (Mid-Level Engineer)
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 **Q3: A memoized component takes 8ms to render 100 items. How would you optimize?**
 A: First, virtualize — render only visible ~30 items (8ms → 2ms render). Second, check memo is working (React DevTools Profiler "why did this render?"). Third, split state — if only like count changes, move it to separate context.
@@ -177,6 +337,22 @@ A: Context Provider re-renders all consumers when value changes. Check:
 - Expected: Recognize context thrashing, suggest split/atom state
 
 ### Level 3 (Senior Engineer)
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 **Q5: Design perf monitoring for a React app used by 10M users. What metrics matter?**
 A: 
@@ -201,6 +377,22 @@ A:
 - Expected: Understand selector pattern, granular subscriptions, bundle cost
 
 ### Level 4 (Staff Engineer)
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 **Q7: How would you approach perf optimization for a federated React application (multiple teams, multiple bundles)?**
 A:
@@ -236,6 +428,22 @@ A:
 
 ## Performance Optimization Checklist
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```mermaid
 graph TD
     A["Find bottleneck"] --> B{Type?}
@@ -258,7 +466,39 @@ graph TD
 
 ## 1. React Profiler
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### DevTools Profiler
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 The React DevTools Profiler records render timing per component as an interactive flamegraph. Each bar represents a commit; bar width = render duration. Components in gray did not re-render.
 
@@ -284,12 +524,44 @@ function onRender(
 
 ### Flamegraph Interpretation
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 - Wide bars = slow components → memoize or restructure.
 - Narrow bars between commits = wasted renders → check memo deps.
 - Renders appearing when props/state haven't changed → stale references.
 - "Why did this render?" — use `useWhyDidYouUpdate` debug hook during development.
 
 ### Flame Graph — Component-Level Breakdown
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```mermaid
 gantt
@@ -319,6 +591,22 @@ gantt
 
 ### Identifying Wasted Renders in Profiler
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 1. Open React DevTools → Profiler tab → Record
 2. Perform the action you want to optimize
 3. Look at the commit list in the right sidebar
@@ -334,6 +622,22 @@ gantt
 ```
 
 ### The "Why Did You Render" Pattern
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```jsx
 // Drop-in hook for development — logs unnecessary re-renders
@@ -372,6 +676,22 @@ function Parent() {
 
 ### Why Did You Render (wdyr) Library
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 For systematic detection across the entire app:
 
 ```bash
@@ -398,6 +718,22 @@ ExpensiveList.whyDidYouRender = true;
 ```
 
 ### React.memo Debugging
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 **Pattern**: `memo` appears to work but component still re-renders:
 
@@ -455,6 +791,22 @@ const handleClick = useCallback(() => {
 
 ### React DevTools Profiler — Ranked View
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 The "Ranked" view shows components sorted by render time within a commit:
 
 ```
@@ -474,6 +826,22 @@ Ranked commit #3 (12ms)
 3. Can it be virtualized? Only render visible portion
 
 ### Component Rendering Timelines
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 The Profiler's "Timeline" view (React 18+) shows **when** each component rendered across commits:
 
@@ -502,6 +870,22 @@ gantt
 ```
 
 ### Profiling in Production
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```jsx
 // React Profiler component — works in production
@@ -537,6 +921,22 @@ function App() {
 
 ### Performance Debugging Workflow
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```mermaid
 flowchart TD
     A[Start profiling] --> B[Perform slow interaction]
@@ -559,6 +959,22 @@ flowchart TD
 
 ### Production Debugging Checklist
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 - [ ] React DevTools Profiler used to identify slow components
 - [ ] "Why did this render?" checked for all unexpectedly re-rendering components
 - [ ] `React.memo` applied to components with stable props
@@ -573,6 +989,22 @@ flowchart TD
 **Cross-reference**: See [Production Issues](./07-production-issues.md) for error tracking and monitoring. See [Rendering Performance](./03-rendering-performance.md) for Fiber architecture and reconciliation optimizations.
 
 ## 2. Reconciliation & Fiber
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 React maintains a **Fiber tree** (linked list of fiber nodes). During reconciliation:
 
@@ -590,7 +1022,39 @@ React maintains a **Fiber tree** (linked list of fiber nodes). During reconcilia
 
 ## 3. Memoization
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### React.memo
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 Prevents re-render when props are shallow-equal. Always pair with `useMemo`/`useCallback` for reference-type props.
 
@@ -615,6 +1079,22 @@ function Parent() {
 
 ### useMemo / useCallback Trade-offs
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```jsx
 // Expensive computation — cache with useMemo
 const sorted = useMemo(
@@ -633,7 +1113,39 @@ const handleClick = useCallback(
 
 ## 4. Code Splitting
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### React.lazy + Suspense
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```jsx
 import { lazy, Suspense } from "react";
@@ -654,6 +1166,22 @@ function App() {
 ```
 
 ### Webpack / Vite Configuration
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```jsx
 // webpack splitChunks — separate vendor + shared chunks
@@ -676,6 +1204,22 @@ const Heavy = loadable(() => import("./Heavy"), { fallback: <Spinner /> });
 
 ## 5. Tree Shaking
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 Ensure bundler can eliminate dead code:
 
 - Use ES module imports (`import { debounce } from "lodash-es"` not `import _ from "lodash"`).
@@ -683,6 +1227,22 @@ Ensure bundler can eliminate dead code:
 - Avoid barrel files (`index.ts` re-exporting everything) — they prevent tree shaking.
 
 ## 6. Virtualization
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 Render only visible items. react-window and react-virtuoso are the primary options.
 
@@ -732,6 +1292,22 @@ function InfiniteFeed() {
 
 ## 7. Context Optimization
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 Context re-renders all consumers on any value change. Solutions:
 
 ```jsx
@@ -768,7 +1344,39 @@ function Avatar() {
 
 ## 8. Asset Optimization
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Images
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```jsx
 // next/image — automatic optimization, lazy loading, srcset
@@ -792,6 +1400,22 @@ Use WebP/AVIF with `<picture>` for universal browser support. Serve responsive `
 
 ### Fonts
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```jsx
 // next/font — self-hosted, subset, no layout shift
 import { Inter } from "next/font/google";
@@ -801,7 +1425,39 @@ const inter = Inter({ subsets: ["latin"] });
 
 ## 9. Rendering Optimizations
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Automatic Batching (React 18)
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 React 18 batches state updates inside promises, timeouts, and native events automatically:
 
@@ -821,6 +1477,22 @@ fetch("/data").then(() => {
 
 ### Layout Thrashing
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 Avoid repeated forced synchronous reflows. Batch DOM reads before writes:
 
 ```jsx
@@ -839,6 +1511,22 @@ el2.style.height = `${h2 + 10}px`;
 
 ### Passive Events
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 Use `{ passive: true }` for scroll/touch listeners to prevent the browser from waiting for `preventDefault`:
 
 ```jsx
@@ -853,6 +1541,22 @@ useEffect(() => {
 ```
 
 ### Web Workers (comlink)
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 Offload heavy computation off the main thread:
 
@@ -870,7 +1574,39 @@ const result = await worker.heavyCompute(largeArray);
 
 ## 10. Performance Monitoring
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Core Web Vitals
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```jsx
 import { onCLS, onFID, onLCP, onINP } from "web-vitals";
@@ -888,6 +1624,22 @@ onINP(reportVitals); // Interaction to Next Paint — < 200ms
 
 ### PerformanceObserver API
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```jsx
 const obs = new PerformanceObserver((list) => {
   for (const entry of list.getEntries()) {
@@ -900,6 +1652,22 @@ obs.observe({ entryTypes: ["longtask", "measure", "navigation"] });
 ```
 
 ### Lighthouse & Perf Budgets
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```json
 {
@@ -916,6 +1684,22 @@ obs.observe({ entryTypes: ["longtask", "measure", "navigation"] });
 
 ### Bundle Analysis
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```bash
 # webpack
 ANALYZE=true webpack --mode production
@@ -929,6 +1713,22 @@ vite build --mode analyze
 Track bundle size per commit with `bundlesize` or `size-limit` in CI.
 
 ## 11. Summary Checklist
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 | Concern | Technique | Key API |
 |---------|-----------|---------|
@@ -946,6 +1746,22 @@ Track bundle size per commit with `bundlesize` or `size-limit` in CI.
 
 ## Related
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 - [Networking](../../11-networking/) — HTTP, performance, optimization
 - [Security](../../13-security/) — CORS, authentication, XSS prevention
 - [Backend](../../03-backend/) — API design and contracts
@@ -954,5 +1770,21 @@ Track bundle size per commit with `bundlesize` or `size-limit` in CI.
 
 
 ## Practical Example
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 See code examples above for practical usage patterns.

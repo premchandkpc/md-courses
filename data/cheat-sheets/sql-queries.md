@@ -6,7 +6,39 @@ Essential SQL commands for database operations and querying.
 
 ## LAYER 1: Beginner's Mental Model 🧠
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Real-World Analogy
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 Imagine your database is a **library**:
 
@@ -36,6 +68,22 @@ Hands you the list
 
 ### Why SQL Matters (Business Impact)
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 **Without SQL (pre-database days):**
 - Store data in files/spreadsheets
 - Finding 1 record: read entire file (slow)
@@ -58,6 +106,22 @@ Hands you the list
 
 ### Step-by-Step
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 1. **Understand data model**: Map business domain to tables and relationships
 2. **Write SELECT with WHERE**: Filter rows matching criteria before processing
 3. **Use indexes on filter columns**: Ensure lookup columns (id, email, user_id) are indexed
@@ -67,6 +131,22 @@ Hands you the list
 7. **Optimize slow queries**: Add indexes, break complex queries, or denormalize strategically
 
 ### Code Example
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```sql
 -- Example: E-commerce analytics query with optimizations
@@ -134,9 +214,41 @@ ORDER BY u.created_at DESC;
 
 ### Real-World Scenario
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 Pinterest's user feed query was taking 30 seconds for newly-onboarded users due to a missing composite index. The query needed: `(user_id, created_at)` to find a user's pins efficiently. Without the index, the database scanned millions of rows. Adding this single index reduced query time to 50ms and prevented server timeouts. This taught them: always add indexes for columns used in WHERE, JOIN, and ORDER BY clauses together.
 
 ### Query Optimization Diagram
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```mermaid
 graph LR
@@ -156,7 +268,39 @@ graph LR
 
 ## LAYER 2: How SQL Works (Intermediate) 🔧
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Query Execution Pipeline
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```mermaid
 graph LR
@@ -200,6 +344,22 @@ graph LR
 
 ### Step-by-Step Execution
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 **Query:** `SELECT u.name, COUNT(o.id) FROM users u LEFT JOIN orders o ON u.id = o.user_id WHERE u.created_at > '2024-01-01' GROUP BY u.id HAVING COUNT(o.id) > 5;`
 
 ```
@@ -240,6 +400,22 @@ graph LR
 
 ### Key Concepts
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 **Index:** Speed lookup like book catalog instead of scanning shelf.
 
 ```sql
@@ -278,6 +454,22 @@ Cost dropped 35x. Database uses index now.
 
 ### Decision Tree: Which Query Pattern?
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```mermaid
 flowchart TD
     A["What do you need?"]
@@ -295,7 +487,39 @@ flowchart TD
 
 ## LAYER 3: Deep Internals — Query Optimization ⚙️
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### How PostgreSQL Optimizes Queries
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 **Index Types:**
 
@@ -377,6 +601,22 @@ Result: Nested loop + index lookups = milliseconds
 
 ### Query Plan Analysis
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```sql
 -- Real example from Stripe payment processing
 EXPLAIN ANALYZE 
@@ -401,6 +641,22 @@ Result: 2300ms → 145ms (16x faster!)
 ```
 
 ### Hidden Query Costs
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```sql
 -- What looks fast but isn't:
@@ -442,7 +698,39 @@ Executes subquery once.
 
 ## LAYER 4: Production Challenges 🚨
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Common Failures
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 | Failure | Symptom | Root Cause | Detection | Recovery |
 |---------|---------|-----------|-----------|----------|
@@ -456,6 +744,22 @@ Executes subquery once.
 | **Deadlock** | Transaction rolled back | Circular lock dependency | ERROR: deadlock detected | Retry, change access order |
 
 ### Real Production Incident: Uber Ride Matching Query
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 **Problem:** Ride matching queries (find nearby drivers) became 500ms slow during surge.
 
@@ -522,6 +826,22 @@ INCLUDE (location, rating);
 
 ### Observability: What to Monitor
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 **Key metrics:**
 
 ```sql
@@ -579,6 +899,22 @@ index_reads_total / (index_reads_total + seq_scans_total)
 
 ### Debugging Patterns
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 **Pattern: "Why is this query slow?"**
 
 ```bash
@@ -626,7 +962,39 @@ EXPLAIN ANALYZE SELECT ...;
 
 ## LAYER 5: Staff Engineer Perspective 👨‍💼
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Tradeoff Analysis
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 | Aspect | Normalized | Denormalized | Choice |
 |--------|-----------|------------|--------|
@@ -643,6 +1011,22 @@ EXPLAIN ANALYZE SELECT ...;
 - **Mixed**: Normalized + materialized views (feed caches)
 
 ### Scaling Patterns: 1M → 1B Records
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 Phase 1: 1M records
@@ -670,6 +1054,22 @@ Phase 5: 10B+ records
 ```
 
 ### Architecture Evolution: Stripe Payments
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 Year 1: Single PostgreSQL
@@ -702,6 +1102,22 @@ Year 5: Analytical layer
 
 ### Migration Strategy: Single DB → Distributed
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```
 Stage 1: Dual write
 ├─ New shard gets writes
@@ -730,7 +1146,39 @@ Stage 4: Cutover
 
 ## Interview Questions 💼
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Level 1: Junior
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 **Q: What's the difference between WHERE and HAVING?**
 
@@ -764,6 +1212,22 @@ CREATE INDEX idx_email ON users(email);
 ```
 
 ### Level 2: Intermediate
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 **Q: Explain the difference between INNER JOIN, LEFT JOIN, and FULL OUTER JOIN.**
 
@@ -805,6 +1269,22 @@ Seq Scan on users (cost=0.00..35000.00 rows=1000000)
 - **rows**: how many rows really returned
 
 ### Level 3: Senior
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 **Q: Design a query for real-time analytics: "hourly revenue by product in last 7 days"**
 
@@ -860,6 +1340,22 @@ EXPLAIN ANALYZE SELECT ...;
 
 ### Level 4: Staff Engineer
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 **Q: Design sharding strategy for 10B transaction records. How do you query across shards?**
 
 A:
@@ -903,6 +1399,22 @@ UPDATE video_stats SET view_count = view_count + 1 WHERE video_id=123;
 ---
 
 ## Production Story: Instagram Feed Query Performance 📸
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 **Challenge:** Instagram homepage feed query became 3 seconds slow (was 200ms) during 200M user base growth.
 
@@ -982,7 +1494,39 @@ Read path (instant):
 
 ## Debugging Patterns 🔍
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Pattern: "Why is my JOIN slow?"
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```bash
 # Check if join condition uses index
@@ -1001,6 +1545,22 @@ EXPLAIN SELECT ...;
 
 ### Pattern: "How many rows does this query return?"
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```sql
 -- Estimate (usually wrong)
 SELECT COUNT(*) FROM users;
@@ -1015,6 +1575,22 @@ ANALYZE users;  -- Update statistics
 ```
 
 ### Pattern: "Is my index actually being used?"
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```bash
 # Method 1: EXPLAIN
@@ -1037,7 +1613,39 @@ SET enable_seqscan = ON;
 
 ## Edge Cases & Critical Scenarios ⚠️
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Race Conditions
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```sql
 -- Two transactions at same time:
@@ -1053,6 +1661,22 @@ COMMIT;
 
 ### Deadlock
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```sql
 -- T1 and T2 deadlock:
 T1: UPDATE users SET ... WHERE id=1;
@@ -1066,6 +1690,22 @@ T2: UPDATE orders SET ... WHERE id=2;  ← Waits for T1
 
 ### Duplicate Key Errors
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```sql
 -- INSERT while other transaction inserts same key
 INSERT INTO users (email, name) VALUES ('test@example.com', 'Alice');
@@ -1078,6 +1718,22 @@ ON CONFLICT (email) DO UPDATE SET name = 'Bob';
 ```
 
 ### N+1 Query Problem
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```sql
 -- SLOW: Loop + queries
@@ -1096,7 +1752,39 @@ Total: milliseconds
 
 ## Hands-On Labs
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Lab 1: Query Optimization Challenge
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 **Data:** 100M orders table
 
@@ -1131,6 +1819,22 @@ LIMIT 10;
 
 ### Lab 2: Schema Design
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 Design schema for: **E-commerce with users, products, orders, reviews**
 
 Constraints:
@@ -1147,6 +1851,22 @@ Solution includes:
 
 ### Lab 3: Real-time Analytics
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 Build query for: **"top 10 products by sales in last hour, updated every minute"**
 
 Options:
@@ -1161,21 +1881,101 @@ Choose best approach and implement.
 
 ## Related Topics
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Prerequisites
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 - [Operating Systems (12-operating-systems/)](../../12-operating-systems/) — Disk I/O, memory
 - [Networking (11-networking/)](../../11-networking/) — Client-server communication
 
 ### Deep Dives
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 - [Databases (08-databases/)](../../08-databases/) — PostgreSQL internals, MVCC, WAL
 - [Performance Engineering (18-performance-engineering/)](../../18-performance-engineering/) — Profiling, benchmarking
 
 ### Related Patterns
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 - [Distributed Systems (09-distributed-systems/)](../../09-distributed-systems/) — Sharding, replication, consistency
 - [Backend API Design (03-backend/)](../../03-backend/) — Database layer design
 
 ---
 
 ## Summary & Next Steps
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 SQL mastery progression:
 
@@ -1204,6 +2004,22 @@ graph TB
 
 ## Database & Table Management
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```sql
 -- Databases
 CREATE DATABASE db_name;
@@ -1229,6 +2045,22 @@ TRUNCATE TABLE users;          -- Delete all rows, keep structure
 
 ## SELECT Queries
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```sql
 -- Basic selection
 SELECT * FROM users;
@@ -1253,6 +2085,22 @@ SELECT * FROM users WHERE status != 'deleted';
 
 ## Sorting & Limiting
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```sql
 -- Sorting
 SELECT * FROM users ORDER BY created_at DESC;
@@ -1265,6 +2113,22 @@ SELECT * FROM users ORDER BY created_at DESC LIMIT 5;
 ```
 
 ## Aggregation & Grouping
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```sql
 -- Aggregate functions
@@ -1295,6 +2159,22 @@ GROUP BY department;
 ```
 
 ## Joins
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```sql
 -- Inner join (default)
@@ -1334,6 +2214,22 @@ JOIN employees e2 ON e1.manager_id = e2.id;
 
 ## Subqueries
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```sql
 -- Subquery in WHERE
 SELECT * FROM users WHERE id IN (
@@ -1360,6 +2256,22 @@ SELECT * FROM users u WHERE EXISTS (
 ```
 
 ## INSERT, UPDATE, DELETE
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```sql
 -- Insert single row
@@ -1388,6 +2300,22 @@ DELETE FROM users;  -- Delete all rows
 ```
 
 ## Window Functions
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```sql
 -- Row number
@@ -1430,6 +2358,22 @@ FROM daily_sales;
 
 ## Common Table Expressions (CTE)
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```sql
 -- Basic CTE
 WITH user_orders AS (
@@ -1460,6 +2404,22 @@ SELECT * FROM ancestors;
 
 ## String Functions
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```sql
 CONCAT(col1, col2)           -- Concatenate strings
 UPPER(name)                  -- Convert to uppercase
@@ -1476,6 +2436,22 @@ FROM users;
 ```
 
 ## Date Functions
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```sql
 CURRENT_TIMESTAMP            -- Current date and time
@@ -1498,6 +2474,22 @@ SELECT * FROM orders WHERE created_at >= DATE_SUB(NOW(), INTERVAL 7 DAY);
 
 ## Indexes
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```sql
 -- Create index
 CREATE INDEX idx_email ON users(email);
@@ -1516,6 +2508,22 @@ EXPLAIN SELECT * FROM users WHERE email = 'john@example.com';
 
 ## Views
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```sql
 -- Create view
 CREATE VIEW active_users AS
@@ -1533,6 +2541,22 @@ DROP VIEW active_users;
 ```
 
 ## Transactions
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```sql
 -- Begin transaction
@@ -1556,6 +2580,22 @@ COMMIT;
 ```
 
 ## Performance Tips
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 1. **Use EXPLAIN** to analyze queries
 2. **Create indexes** on frequently filtered columns

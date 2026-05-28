@@ -41,6 +41,22 @@ graph LR
 
 ## Table of Contents
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 1. [Virtual Memory](#1-virtual-memory)
 2. [MMU & TLB](#2-mmu--tlb)
 3. [Page Fault Handling](#3-page-fault-handling)
@@ -62,6 +78,22 @@ graph LR
 ---
 
 ## 1. Virtual Memory
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 Process Virtual Address Space (x86-64, 48-bit)
@@ -101,6 +133,22 @@ Process Virtual Address Space (x86-64, 48-bit)
 
 ### Step-by-Step
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 1. **Application accesses memory** at virtual address 0x7fff1234
 2. **TLB lookup** checks translation lookaside buffer (cache) for VA→PA mapping
 3. **TLB miss** triggers page walk through page table hierarchy (PGD → PUD → PMD → PTE)
@@ -109,6 +157,22 @@ Process Virtual Address Space (x86-64, 48-bit)
 6. **TLB update** on successful translation, TLB caches mapping for future lookups (~1ns latency vs 100+ cycles for page walk)
 
 ### Code Example
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```python
 # Python: Virtual memory exploration
@@ -152,10 +216,42 @@ if __name__ == '__main__':
 
 ### Real-World Scenario
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 Google's Bigtable serving layer was experiencing 40% of CPU cycles in TLB misses (page table walks). Each cell server held 50GB working set with default 4KB pages, creating a 12.8M-entry page table. They switched to 2MB huge pages (52K page table entries), reducing TLB miss rate from 12% to 0.3%—throughput increased 23%, latency P99 dropped 15ms.
 - **Overcommit**: Kernel can allow allocating more virtual memory than physical RAM + swap
 
 ### Multi-Level Page Tables (x86-64 4-level)
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 VA bits:  47-39    38-30    29-21    20-12    11-0
@@ -183,6 +279,22 @@ VA bits:  47-39    38-30    29-21    20-12    11-0
 
 ### Huge Pages
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```
 Standard 4KB page → 512 entries per PT → 2MB range per page table
 
@@ -201,6 +313,22 @@ Transparent Huge Pages (THP):
 
 ## 2. MMU & TLB
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```
 CPU Core ──► MMU ──► TLB (cache) ──► Page Table Walk ──► Memory Controller
                      │                                      │
@@ -211,6 +339,22 @@ CPU Core ──► MMU ──► TLB (cache) ──► Page Table Walk ──►
 ```
 
 ### TLB Reach
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 TLB Reach = TLB_entries × Page_size
@@ -226,6 +370,22 @@ Example: Intel Skylake
 ```
 
 ### TLB Miss Handling
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 Hardware TLB Miss (x86):
@@ -246,6 +406,22 @@ ASID (Address Space ID):
 
 ### TLB Shootdown
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```
 When kernel modifies page table (e.g., munmap, mprotect):
   → Must invalidate TLB entries on ALL CPUs that may have cached them
@@ -260,6 +436,22 @@ Mitigation:
 ```
 
 ### hugetlb (HugeTLB)
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 Reserved huge pages (not transparent):
@@ -277,6 +469,22 @@ Advantages:
 ---
 
 ## 3. Page Fault Handling
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 Program access VA → MMU looks up page table → no valid PTE → page fault
@@ -304,6 +512,22 @@ Types of page faults:
 
 ### Demand Paging
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```
 Executable load:
   1. mmap executable → VMA created, PTEs not yet filled
@@ -318,6 +542,22 @@ Executable load:
 ```
 
 ### Copy on Write (COW)
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 fork() behavior:
@@ -337,6 +577,22 @@ fork() behavior:
 
 ### Page Cache
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```
 File-backed pages: stored in page cache (address_space)
   - Shared across processes that mmap the same file
@@ -353,6 +609,22 @@ Readahead:
 ---
 
 ## 4. Buddy Allocator
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 The buddy allocator manages physical page frames.
@@ -375,6 +647,22 @@ Free lists per migrate type per zone:
 
 ### Allocation & Free
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```
 Allocation:
   if (request order N has free):
@@ -395,6 +683,22 @@ Free:
 ```
 
 ### Migrate Types
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 Prevents permanent fragmentation:
@@ -419,6 +723,22 @@ When a migrate type is exhausted:
 
 ### Fragmentation Avoidance
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```
 /proc/pagetypeinfo shows free pages per order per migrate type
 
@@ -438,6 +758,22 @@ Anti-fragmentation strategies:
 
 ## 5. Slab/SLUB Allocator
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```
 Purpose: Kernel allocator for small objects (32 bytes - 8KB)
   - Avoids fragmentation from many small allocations
@@ -450,6 +786,22 @@ SLUB (default since Linux 2.6.23) vs SLAB:
 ```
 
 ### SLUB Structure
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 kmem_cache (e.g., task_struct_cache)
@@ -465,6 +817,22 @@ kmem_cache (e.g., task_struct_cache)
 ```
 
 ### Allocation Path
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 kmem_cache_alloc(cache, flags)
@@ -488,6 +856,22 @@ kmem_cache_alloc(cache, flags)
 
 ### kmalloc
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```
 kmalloc is just a set of pre-defined SLUB caches:
   kmalloc-8, kmalloc-16, kmalloc-32, ..., kmalloc-8M
@@ -501,6 +885,22 @@ kmalloc is just a set of pre-defined SLUB caches:
 ```
 
 ### Slab Coloring
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 Slab = one or more contiguous pages, divided into objects
@@ -516,6 +916,22 @@ Slab coloring:
 
 ## 6. OOM Killer
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```
 When: alloc_pages() fails watermark check, direct reclaim fails, no more swap
 
@@ -528,6 +944,22 @@ Sequence:
 ```
 
 ### oom_score Calculation
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 oom_score = points for:
@@ -543,6 +975,22 @@ oom_score = points for:
 
 ### oom_score_adj
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```
 /proc/<pid>/oom_score_adj: -1000 to +1000
 
@@ -557,6 +1005,22 @@ Use cases:
 
 ### panic_on_oom
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```
 /proc/sys/vm/panic_on_oom:
   0: OOM killer runs (default)
@@ -567,6 +1031,22 @@ For production: 0 — let OOM killer pick; but use memory cgroups to limit blast
 ```
 
 ### Memory Cgroup OOM
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 When a cgroup hits memory.max limit:
@@ -580,6 +1060,22 @@ Useful: Containers with hard limits get their own OOM without affecting other co
 ---
 
 ## 7. NUMA Memory Management
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 NUMA Node Structure
@@ -601,6 +1097,22 @@ NUMA distance:
 
 ### NUMA Memory Policy
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```
 set_mempolicy(mode, nodemask, maxnode)
 
@@ -616,6 +1128,22 @@ Per-process, per-VMA, or system default (via sysfs)
 ```
 
 ### Page Migration
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 Why migrate:
@@ -644,6 +1172,22 @@ AutoNUMA:
 
 ## 8. Swap — zswap & zram
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```
 ┌─────────────┐     ┌──────────┐     ┌──────────────┐
 │   Swap In    │     │  zswap   │     │   zram       │
@@ -658,6 +1202,22 @@ AutoNUMA:
 ```
 
 ### Swap Partition / File
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```bash
 # Swap partition
@@ -676,6 +1236,22 @@ cat /proc/swaps
 ```
 
 ### zswap
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 zswap: Compressed RAM cache for swap pages
@@ -696,6 +1272,22 @@ Behavior:
 ```
 
 ### zram
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 zram: Compressed RAM block device used as swap
@@ -720,6 +1312,22 @@ Use case: Systems with limited RAM but no swap disk (embedded, containers)
 
 ### zswap vs zram
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 | Feature | zswap | zram |
 |---------|-------|------|
 | Requires backing swap | Yes | No |
@@ -731,6 +1339,22 @@ Use case: Systems with limited RAM but no swap disk (embedded, containers)
 | Memory overhead | zpool structures | Block device structures |
 
 ### Swap Cache
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 Swap cache bridges swap and page cache:
@@ -748,7 +1372,39 @@ swap_info_struct:
 
 ## 9. Cgroup Memory Controller
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Key Files
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 /sys/fs/cgroup/memory/<cgroup>/
@@ -766,6 +1422,22 @@ swap_info_struct:
 ```
 
 ### Protection Model
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 memory.min (hard protection):
@@ -791,6 +1463,22 @@ memory.max (hard limit):
 ```
 
 ### Reclaim Pressure & PSI
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 PSI (Pressure Stall Information):
@@ -819,6 +1507,22 @@ PSI (Pressure Stall Information):
 
 ## 10. Page Cache
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```
 ┌──────────────────────────┐
 │        User buffer       │
@@ -842,6 +1546,22 @@ PSI (Pressure Stall Information):
 ```
 
 ### Dirty Page Writeback
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 dirty pages ← write operations modify page cache pages
@@ -867,6 +1587,22 @@ Tunables in /proc/sys/vm/:
 
 ### Readahead
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```
 Sequential read detection:
   - Kernel tracks per-file access pattern
@@ -886,6 +1622,22 @@ Initial readahead window:
 
 ## 11. mmap
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```
 void *mmap(void *addr, size_t length, int prot, int flags, int fd, off_t offset);
 
@@ -900,6 +1652,22 @@ Flags:
 ```
 
 ### mmap and Overcommit
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 Overcommit modes (/proc/sys/vm/overcommit_memory):
@@ -922,6 +1690,22 @@ Overcommit accounting:
 
 ### Private vs Shared
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```
 MAP_PRIVATE:
   - COW semantics: reads share page cache, writes trigger copy
@@ -935,6 +1719,22 @@ MAP_SHARED:
 ```
 
 ### Anonymous vs File-backed
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 Anonymous (MAP_ANONYMOUS):
@@ -953,6 +1753,22 @@ File-backed:
 ---
 
 ## 12. ASLR
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 Address Space Layout Randomization
@@ -974,6 +1790,22 @@ Bits of entropy (x86-64):
 
 ### Configuration
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```
 /proc/sys/kernel/randomize_va_space:
   0: No ASLR
@@ -986,6 +1818,22 @@ Per-process disable (if allowed):
 ```
 
 ### PIE (Position Independent Executable)
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 Non-PIE binary: always loads at fixed address (e.g., 0x400000)
@@ -1002,7 +1850,39 @@ But: other executable pages at fixed addresses (e.g., vDSO without ASLR in some 
 
 ## 13. Internals
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Page Table Entry (x86-64)
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```c
 // arch/x86/include/asm/pgtable_types.h
@@ -1023,6 +1903,22 @@ typedef struct { unsigned long pte; } pte_t;
 ```
 
 ### VM Area (VMA) Structure
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```c
 struct vm_area_struct {
@@ -1047,6 +1943,22 @@ struct vm_area_struct {
 ```
 
 ### Page Fault Handler
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```c
 // mm/memory.c
@@ -1075,7 +1987,39 @@ vm_fault_t handle_mm_fault(struct vm_area_struct *vma, unsigned long address,
 
 ## 14. Failure Analysis
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Out of Memory Scenarios
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 Scenario 1: Process leaks memory → OOM killer kills it
@@ -1095,6 +2039,22 @@ Scenario 3: Overcommit + fork bomb → OOM kills innocent
 
 ### Memory Corruption
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```
 Use-after-free:
   KASAN: "BUG: KASAN: use-after-free in function+offset"
@@ -1112,6 +2072,22 @@ Buffer overflow:
 
 ### Swap Thrashing
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```
 Symptom: System unresponsive, disk LED solid, high I/O wait
 /proc/meminfo: Si (swap in) and So (swap out) very high
@@ -1128,6 +2104,22 @@ Resolution:
 ---
 
 ## 15. Edge Cases
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 - **kmalloc vs vmalloc**: kmalloc requires physically contiguous, limited to 8MB; vmalloc uses page tables, can allocate large regions but has TLB overhead
 - **Memory compaction latency**: THP compaction can cause latency spikes (10-100ms) — mitigate with `madvise` mode or `defrag=defer+madvise`
@@ -1147,7 +2139,39 @@ Resolution:
 
 ## 16. Performance
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Key Tuning Parameters
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 # VM tuning (sysctl)
@@ -1168,6 +2192,22 @@ vm.nr_hugepages = 1024      # Pre-allocate 1024 huge pages (2GB)
 ```
 
 ### Latency Numbers
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 Operation                          Latency
@@ -1193,6 +2233,22 @@ mmap 1GB MAP_POPULATE               ~100ms (eager, all pages faulted)
 
 ### Memory Bandwidth
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```
 Single channel DDR5-4800:           ~38.4 GB/s
 Dual channel:                       ~76.8 GB/s
@@ -1210,7 +2266,39 @@ Cache bandwidth (per core):
 
 ## Interview Questions
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Beginner Level
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 **Q1: What is virtual memory and why do we need it?**
 
@@ -1230,6 +2318,22 @@ Cache bandwidth (per core):
 
 ### Intermediate Level
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 **Q3: Walk through what happens when a process accesses a page that's been swapped out.**
 
 **Answer**: **Page fault sequence**: 1) MMU can't find PTE → raises page fault. 2) Kernel checks fault address region (vm_area_struct). 3) If address is in swap cache, kernel reads page from swap device (SSD/disk). 4) Allocates physical page frame. 5) Reads data from swap, updates PTE. 6) Returns to user mode, re-executes faulting instruction. 7) Page is now in memory (major fault, ~10ms on SSD). Minor faults (PTE valid but not in TLB) take ~1µs.
@@ -1241,6 +2345,22 @@ Cache bandwidth (per core):
 **Answer**: **Buddy allocator** manages physical pages. Memory is divided into powers of 2 (order-0 = 4KB through order-10 = 4MB). Allocation: round up to next power of 2, split recursively until correct size. Free: check if buddy (same-order adjacent block) is also free → coalesce into larger block. Why used: fast allocation (O(log n)), minimal external fragmentation, and automatic coalescing. Limitation: internal fragmentation (e.g., 5KB allocation takes 8KB).
 
 ### Senior Level
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 **Q5: You have a 64GB Redis server. Periodically, Redis latency spikes to 200ms. What's happening?**
 
@@ -1254,6 +2374,22 @@ Cache bandwidth (per core):
 
 ### Staff/Principal Level
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 **Q7: Design a memory allocator for a real-time trading system that must never block for more than 10µs. How would you handle allocation without page faults?**
 
 **Why**: Tests deep understanding of kernel memory paths and real-time constraints.
@@ -1265,6 +2401,22 @@ Cache bandwidth (per core):
 **Answer**: **Overcommit + OOM behavior**. Linux overcommits memory (by default). JVM `-Xmx32g` plus JVM overhead (metaspace, thread stacks, code cache, native memory, GC) can exceed the overcommit limit. Or: **memory cgroup limit** — if the process hits its `memory.max` in cgroup v2, OOM killer triggers. Or: **NUMA node exhaustion** — if a socket's local memory is exhausted and remote memory is slower, but OOM doesn't care. Fix: 1) Set `vm.overcommit_memory = 2` (strict) or calculate actual RSS. 2) Use Native Memory Tracking: `-XX:NativeMemoryTracking=summary`. 3) Check `/proc/<pid>/status | grep VmRSS` vs `VmSize`. 4) Add swap (zram) as safety net. 5) Set `memory.min` in cgroup to protect the JVM.
 
 ### Tricky Edge Cases
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 **Q9: You mmap a 10GB file and read it sequentially. Why does the first access take 100ms but subsequent ones take 10µs?**
 

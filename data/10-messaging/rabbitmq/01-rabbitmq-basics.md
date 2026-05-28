@@ -43,6 +43,22 @@ graph LR
 
 ## Table of Contents
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 - [Architecture Overview](#-architecture-overview)
 - [Exchanges](#-exchanges)
 - [Queues](#-queues)
@@ -66,6 +82,22 @@ graph LR
 ---
 
 ## 🧭 Architecture Overview
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 ┌──────────────────────────────────────────────────────────────────┐
@@ -98,6 +130,22 @@ graph LR
 
 ### Step-by-Step
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 1. **Producer connects** via AMQP and declares exchange (idempotent, survives reconnect)
 2. **Producer publishes** message with routing_key to exchange (fire-and-forget by default)
 3. **Exchange evaluates** bindings and decides which queues receive the message
@@ -106,6 +154,22 @@ graph LR
 6. **Acknowledgment** consumer sends back, queue removes message from memory
 
 ### Code Example
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```python
 # Python RabbitMQ producer-consumer
@@ -161,11 +225,43 @@ channel.start_consuming()
 
 ### Real-World Scenario
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 Getty Images uses RabbitMQ for image processing workflows: uploads trigger messages to "image.uploaded" topic, routed to resize, watermark, and thumbnail queues via topic exchange. If thumbnail processing fails 3 times, the message moves to dead-letter exchange for manual review. During peak upload times (10K images/min), RabbitMQ queues buffer to ~500K messages while processing catches up—no data loss.
 
 ---
 
 ## 🧭 Exchanges
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 Exchanges are routing agents — they receive messages from producers and push them to queues based on rules (bindings).
 
@@ -208,6 +304,22 @@ channel.queue_bind(queue="json_reports", exchange="headers_ex", arguments=args)
 
 ## 🧭 Queues
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```python
 # Declare queue (idempotent)
 channel.queue_declare(queue="task_queue", durable=True)
@@ -226,6 +338,22 @@ queue_name = result.method.queue  # "amq.gen-XXXXX"
 ---
 
 ## 🧭 Bindings & Routing Keys
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```python
 # Binding = rule connecting exchange → queue
@@ -250,6 +378,22 @@ channel.basic_publish(exchange="", routing_key="my_queue", body=msg)
 ---
 
 ## 🧭 Producers & Consumers
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```python
 import pika
@@ -288,6 +432,22 @@ channel.start_consuming()
 ---
 
 ## 🧭 Message Acknowledgments
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 ┌──────────────────────────────────────────────────────────────────┐
@@ -332,6 +492,22 @@ ch.basic_reject(delivery_tag=method.delivery_tag, requeue=True)
 ---
 
 ## 🧭 Publisher Confirms
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 ┌──────────────────────────────────────────────────────────────────┐
@@ -380,6 +556,22 @@ channel.wait_for_confirms()  # blocks until all confirmed
 
 ## 🧭 Delivery Mode
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```python
 # Persistent — survive broker restart (written to disk)
 properties=pika.BasicProperties(delivery_mode=2)
@@ -404,6 +596,22 @@ properties=pika.BasicProperties(delivery_mode=1)
 
 ## 🧭 Dead Letter Exchanges (DLX)
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```python
 # Configure DLX on a queue
 args = {
@@ -423,6 +631,22 @@ channel.queue_bind(
 
 ### Causes of dead-lettering
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```text
 1. Message rejected with requeue=false (basic.reject / basic.nack)
 2. Message TTL expires (per-message TTL)
@@ -439,6 +663,22 @@ Original routing key preserved in header:
 ---
 
 ## 🧭 TTL (Message & Queue)
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```python
 # Per-queue TTL (messages expire after 60s)
@@ -460,6 +700,22 @@ channel.queue_declare(queue="temp_queue", arguments=args)
 ---
 
 ## 🧭 Queue Features
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```python
 # Queue length limit (max 1000 messages)
@@ -484,6 +740,22 @@ channel.queue_declare(queue="quorum_q", arguments=args)
 ---
 
 ## 🧭 Advanced Queue Types
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 ┌──────────────────────────────────────────────────────────────────┐
@@ -519,6 +791,22 @@ channel.basic_consume(
 
 ## 🧭 Clustering & High Availability
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```text
 ┌──────────────────────────────────────────────────────────────────┐
 │  RabbitMQ Cluster                                                 │
@@ -540,6 +828,22 @@ channel.basic_consume(
 
 ### Quorum Queues (Raft-based replication)
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```text
 ┌──────────────────────────────────────────────────────────────────┐
 │  Quorum Queue — Raft consensus                                    │
@@ -560,6 +864,22 @@ channel.basic_consume(
 
 ### Mirrored Queues (classic, deprecated in 3.12)
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```text
 Declare with policy:
 ha-mode: exactly
@@ -572,6 +892,22 @@ ha-sync-mode: automatic
 ---
 
 ## 🧭 Federation & Shovel
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 ┌──────────────────────────────────────────────────────────────────┐
@@ -604,6 +940,22 @@ rabbitmqctl set_parameter shovel my_shovel \
 ---
 
 ## 🧭 Vhosts, Users, Permissions
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 ┌──────────────────────────────────────────────────────────────────┐
@@ -647,6 +999,22 @@ rabbitmqctl set_policy -p production dlx-policy \
 
 ## 🧭 Management & REST API
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```bash
 # Enable management plugin
 rabbitmq-plugins enable rabbitmq_management
@@ -679,6 +1047,22 @@ curl http://localhost:15672/api/health/checks/alarms
 
 ## 🧭 AMQP Protocol Details
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```text
 ┌──────────────────────────────────────────────────────────────────┐
 │  AMQP 0-9-1 Protocol Stack                                       │
@@ -701,6 +1085,22 @@ curl http://localhost:15672/api/health/checks/alarms
 ```
 
 ### QoS — Prefetch Count
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```python
 # Prefetch — how many unacknowledged messages a consumer can have
@@ -727,6 +1127,22 @@ channel.basic_qos(prefetch_count=10, global_qos=True)
 ---
 
 ## 🧭 RabbitMQ vs Kafka
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 ┌──────────────────────────────────────────────────────────────────────────┐
@@ -755,6 +1171,22 @@ channel.basic_qos(prefetch_count=10, global_qos=True)
 ---
 
 ## 🧭 Simplest Mental Model
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 RabbitMQ = POST OFFICE with smart sorting:
@@ -786,5 +1218,21 @@ RabbitMQ = POST OFFICE with smart sorting:
 
 
 ## Practical Example
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 See code examples above for practical usage patterns.

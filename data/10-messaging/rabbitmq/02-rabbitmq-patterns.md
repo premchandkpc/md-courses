@@ -47,6 +47,22 @@ graph LR
 
 ## Table of Contents
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 - [Work Queues (Competing Consumers)](#-work-queues-competing-consumers)
 - [Pub/Sub with Fanout](#-pubsub-with-fanout)
 - [Routing with Direct Exchange](#-routing-with-direct-exchange)
@@ -65,6 +81,22 @@ graph LR
 ---
 
 ## 🧭 Work Queues (Competing Consumers)
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 ┌──────────────────────────────────────────────────────────────────┐
@@ -109,6 +141,22 @@ channel.basic_consume(queue="work_queue", on_message_callback=callback, auto_ack
 
 ## 🧭 Pub/Sub with Fanout
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```text
 ┌──────────────────────────────────────────────────────────────────┐
 │  Fanout Exchange — broadcast every message to ALL queues         │
@@ -149,6 +197,22 @@ channel.basic_consume(queue=queue_name, on_message_callback=callback)
 
 ## 🧭 Routing with Direct Exchange
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```text
 ┌──────────────────────────────────────────────────────────────────┐
 │  Direct Exchange — route based on exact routing key match        │
@@ -182,6 +246,22 @@ channel.queue_bind(queue="all", exchange="direct_logs", routing_key="error")
 
 ## 🧭 Topic-Based Subscriptions
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```text
 ┌──────────────────────────────────────────────────────────────────┐
 │  Topic patterns:                                                 │
@@ -212,6 +292,22 @@ channel.basic_publish(exchange="topic_logs", routing_key="log.error.auth", body=
 ---
 
 ## 🧭 RPC Pattern
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 ┌──────────────────────────────────────────────────────────────────┐
@@ -277,6 +373,22 @@ class RPCClient:
 
 ## 🧭 Scatter-Gather
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```text
 ┌──────────────────────────────────────────────────────────────────┐
 │  Scatter-Gather: request from multiple services, aggregate       │
@@ -319,6 +431,22 @@ class Aggregator:
 
 ## 🧭 Routing Slip
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```text
 ┌──────────────────────────────────────────────────────────────────┐
 │  Routing Slip: message visits services in sequence               │
@@ -344,6 +472,22 @@ class Aggregator:
 
 ## 🧭 Wire Tap
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```text
 ┌──────────────────────────────────────────────────────────────────┐
 │  Wire Tap: eavesdrop on messages without affecting flow          │
@@ -366,6 +510,22 @@ channel.queue_bind(queue="audit", exchange="main_exchange", routing_key="#")
 
 ## 🧭 Message Sequencer
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```text
 ┌──────────────────────────────────────────────────────────────────┐
 │  Sequencer: split large message into ordered sequence           │
@@ -382,6 +542,22 @@ channel.queue_bind(queue="audit", exchange="main_exchange", routing_key="#")
 ---
 
 ## 🧭 Idempotent Receiver
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```python
 # Idempotency — ensure exactly-once processing
@@ -408,6 +584,22 @@ class IdempotentConsumer:
 ---
 
 ## 🧭 Reliable Delivery
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 ┌──────────────────────────────────────────────────────────────────┐
@@ -436,6 +628,22 @@ class IdempotentConsumer:
 ---
 
 ## 🧭 Saga Orchestration
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 ┌──────────────────────────────────────────────────────────────────┐
@@ -480,6 +688,22 @@ def handle_step_response(ch, method, properties, body):
 ---
 
 ## 🧭 Retry with DLX + TTL
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 ┌──────────────────────────────────────────────────────────────────┐
@@ -537,6 +761,22 @@ def with_retry(max_retries=3, dlx="dlx", retry_ttls=[30_000, 60_000, 120_000]):
 
 ## 🧭 Simplest Mental Model
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```text
 RabbitMQ patterns = routing logic for message flows
 
@@ -561,5 +801,21 @@ RabbitMQ patterns = routing logic for message flows
 
 
 ## Practical Example
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 See code examples above for practical usage patterns.

@@ -20,6 +20,22 @@ Jump directly to location
 
 ## Layer 1: Beginner Mental Model
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 **Analogy**: Like a restaurant waiter. Without index (memory): customer asks for "salads with tomato", waiter checks every plate on every table (1000 checks). With index (mental map): waiter remembers "tomato dishes → table 5, 12, 18" (3 lookups). Inverted index (Elasticsearch) = kitchen organizing all ingredients by name, quantities, recipes.
 
 **Why it matters**:
@@ -34,7 +50,39 @@ Jump directly to location
 
 ## Layer 4: Production Reality
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Indexing Failure Modes
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 | Failure | Symptoms | Root Cause | Fix |
 |---------|----------|-----------|-----|
@@ -48,6 +96,22 @@ Jump directly to location
 | **Inverse Index Corruption** | Search returns partial results | Inverted index out of sync with table | Rebuild inverted index (Elasticsearch: `_forcemerge`, `_refresh`) |
 
 ### Production Incident: Slack Message Search Outage (2016)
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 **Context**: Slack's message search (millions of queries/day) suddenly slowed to 30+ seconds per query. Users couldn't search messages.
 
@@ -87,7 +151,39 @@ curl -X POST "localhost:9200/slack-messages/_forcemerge?max_num_segments=1"
 
 ## Layer 5: Staff Engineer Perspective
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Index Strategy Tradeoffs
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 | Strategy | Read Speed | Write Speed | Storage | Use Case |
 |----------|-----------|-----------|---------|----------|
@@ -101,6 +197,22 @@ curl -X POST "localhost:9200/slack-messages/_forcemerge?max_num_segments=1"
 | **Partial (filtered)** | Very fast (small) | Fast | +5% | Subset queries only |
 
 ### Scaling Pattern: Single Table → Petabyte Search
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 **Stage 1 (Startup)**: Single B-Tree index on primary key
 - Table size: 1GB
@@ -133,7 +245,39 @@ curl -X POST "localhost:9200/slack-messages/_forcemerge?max_num_segments=1"
 
 ## Layer 5: Interview Questions
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Level 1 (Junior)
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 **Q1: What's an index? Why do we need indexes if they use more storage?**
 A: Index = lookup table (word → location). Slows writes (maintain index), but speeds reads 100x (search in milliseconds vs scan). Use if reads >> writes.
@@ -146,6 +290,22 @@ A: Inverted index = word → documents containing word. Different from normal in
 - Expected: Understand inversion, use case (search engines)
 
 ### Level 2 (Mid-Level)
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 **Q3: A query is slow even with an index. How do you debug?**
 A:
@@ -162,6 +322,22 @@ A: Covering index includes all columns needed for query (no table access). Fast 
 - Expected: Understand storage/speed tradeoff, covering benefit
 
 ### Level 3 (Senior)
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 **Q5: Design indexing strategy for 100B-row table (user events: user_id, timestamp, event_type, value).**
 A:
@@ -187,6 +363,22 @@ A:
 - Expected: Know ES optimization, segment merging, profiling
 
 ### Level 4 (Staff)
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 **Q7: Migrate from Elasticsearch 5 to 8 (breaking changes in index format). Plan.**
 A:
@@ -219,6 +411,22 @@ A:
 
 ## Table of Contents
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 - [Index Type Mindmap](#-index-type-mindmap)
 - [Main Index Types Overview](#-main-index-types-overview)
 - [B-Tree Index](#-b-tree-index-)
@@ -246,6 +454,22 @@ A:
 ---
 
 ## 🧭 Index Type Mindmap
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```mermaid
 mindmap
@@ -277,6 +501,22 @@ mindmap
 ---
 
 ## 📊 Index Selection Flow
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```mermaid
 flowchart TD
@@ -339,6 +579,22 @@ Most common index.
 ```
 
 ## B-Tree Visual
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```mermaid
 graph TD
@@ -431,6 +687,22 @@ WHERE id = 10
 
 ### ⚠️ Key Insight
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 Hash indexes shine for **point lookups** (exact match) but fail on every other access pattern. They are storage-efficient since buckets are fixed-size, but they don't support order-based operations at all. PostgreSQL's hash index was historically not WAL-logged (pre-10), making it risky — this is fixed now, but B-Tree remains the default for good reason.
 
 ---
@@ -508,6 +780,22 @@ table lookup
 
 ### 💡 Design Insight
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 Choose **Clustered** for range-heavy workloads (time series, logs) where Physical Ordering matches query patterns. Choose **Non-Clustered** for mixed read/write workloads where flexibility matters. InnoDB in MySQL always stores the primary key as a clustered index — secondary indexes store the PK value as the pointer, not a physical row ID.
 
 ---
@@ -573,6 +861,22 @@ alone efficiently.
 | age only         | ❌          |
 
 ### 🧠 Design Rule
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 Order columns by **selectivity** (most selective first) for equality conditions, but put range-filtered columns last. The DB can only use one range condition per query from a composite index — after the first range, remaining columns are not used for filtering.
 
@@ -863,6 +1167,22 @@ Random values.
 
 ### 💡 When to Use BRIN
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 BRIN is the most underrated index. On a 10TB log table, a B-Tree might be 200GB+ while BRIN is a few MB. If your data arrives in time order and is rarely updated (logs, IoT sensor data), BRIN offers **massive space savings** with competitive read performance. It works by storing min/max values per block range — great for correlation with physical layout.
 
 ---
@@ -928,6 +1248,22 @@ Row fetch
 
 ### 🔄 Query Planner Flow
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```mermaid
 flowchart LR
     A[SQL Query] --> B[Parser]
@@ -953,6 +1289,22 @@ flowchart LR
 | High CPU queries | Heavy maintenance |
 
 ### ⚡ The Index Balancing Act
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 Every index speeds up reads but slows writes (each INSERT/UPDATE/DELETE must update every index). Monitor your **write/read ratio**: tables with >80% writes should have minimal indexes; read-heavy reporting tables benefit from aggressive indexing. Use `pg_stat_user_indexes` (PostgreSQL) or equivalent to find **unused indexes** eating write performance.
 

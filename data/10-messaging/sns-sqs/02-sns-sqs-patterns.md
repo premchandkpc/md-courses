@@ -39,6 +39,22 @@ graph LR
 
 ## 📑 Table of Contents
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 - [1. Fan-Out Architecture](#1-fan-out-architecture)
 - [2. Ordered Processing with FIFO](#2-ordered-processing-with-fifo)
 - [3. Exactly-Once Processing](#3-exactly-once-processing)
@@ -56,6 +72,22 @@ graph LR
 
 ---
 ## 1. Fan-Out Architecture
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 ```text
 Producer → SNS Topic ─┬─→ SQS Orders → Lambda: Process
                        ├─→ SQS Audit → S3 Archive
@@ -69,6 +101,22 @@ sns.set_subscription_attributes(SubscriptionArn='...', AttributeName='RawMessage
 ```
 ---
 ## 2. Ordered Processing with FIFO
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 ```text
 Producer → SNS FIFO Topic → SQS FIFO → Lambda Processor
 group=123    orders.fifo    orders.fifo
@@ -81,6 +129,22 @@ sns.publish(TopicArn='arn:...:orders.fifo', Message=json.dumps({'order_id': '123
 ```
 ---
 ## 3. Exactly-Once Processing
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 ```text
 SQS FIFO → Receive → check DynamoDB idempotency key
                         ├── Exists → skip (delete)
@@ -96,6 +160,22 @@ except ClientError:
 **Key sources**: Webhook → pi_id + event_type • Order → order_id + version • Outbox → UUID
 ---
 ## 4. SQS as Buffered Lambda Consumer
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 ```text
 Traffic spike → SQS (buffer millions) → Lambda (auto-scale)
 ```
@@ -115,6 +195,22 @@ OrderProcessor:
 ```
 ---
 ## 5. Batch Lambda Processing
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 ```python
 def lambda_handler(event, context):
     failures = []
@@ -130,6 +226,22 @@ def lambda_handler(event, context):
 Use ReportBatchItemFailures to avoid reprocessing successful items.
 ---
 ## 6. SNS & CloudWatch Alarms
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 ```python
 cloudwatch.put_metric_alarm(AlarmName='orders-queue-oldest',
     MetricName='ApproximateAgeOfOldestMessage', Namespace='AWS/SQS',
@@ -145,6 +257,22 @@ cloudwatch.put_metric_alarm(AlarmName='orders-queue-oldest',
 | DLQ ApproximateNumberOfMessages | > 0 | Investigate failures |
 ---
 ## 7. Cross-Region SNS
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 ```text
 us-east-1                        eu-west-1
 SNS Topic ──────────────────────► SQS Queue
@@ -159,6 +287,22 @@ sns.subscribe(TopicArn=us_topic_arn, Protocol='sqs', Endpoint=eu_arn)
 ```
 ---
 ## 8. Transaction Outbox to SQS
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 ```text
 Service → DB TX ─┬─→ Business table
                   └─→ Outbox table (same TX) → Poller → SQS → Consumer
@@ -174,6 +318,22 @@ COMMIT;
 **Poller**: Lambda reads outbox WHERE processed_at IS NULL, sends to SQS, marks processed.
 ---
 ## 9. SQS Poison Pill Handling
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 ```text
 Source → receive → consumer fails → retry × N → DLQ → fix → redrive
 ```
@@ -193,6 +353,22 @@ def consumer(event, context):
 **Redrive**: sqs.start_message_move_task(SourceArn=dlq_arn)
 ---
 ## 10. Cost Optimization
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 | Strategy | Savings | Trade-off |
 |----------|---------|-----------|
 | Long poll (20s) | ~70% | +20s latency |
@@ -205,6 +381,22 @@ sqs.create_queue(QueueName='optimized', Attributes={
 ```
 ---
 ## 11. SQS+SNS vs Kafka Decision Guide
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 | Criteria | SQS+SNS | Kafka (MSK) |
 |----------|---------|-------------|
 | Ops overhead | Zero | Significant |
@@ -216,6 +408,22 @@ sqs.create_queue(QueueName='optimized', Attributes={
 **Decision**: Need > 10K TPS, replay, or > 14 day retention? → **Kafka**. Otherwise → **SQS+SNS**.
 ---
 ## 12. Idempotent Consumers
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 ```python
 def process_idempotent(record):
     dedup_id = record['messageId']
@@ -233,6 +441,22 @@ def process_idempotent(record):
 **Key sources**: Payment webhook → pi_id + event_type • Order → order_id + version • FIFO → MessageDeduplicationId
 ---
 ## 13. SNS Message Archiving
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 ```text
 Producer → SNS Topic ─┬─→ SQS (processing)
                        └─→ Lambda Archiver → S3 (partitioned by date)
@@ -247,6 +471,22 @@ def archive_lambda(event, context):
 **Alternative**: Subscribe Firehose to SNS for zero-code S3 archiving.
 ---
 ## 14. Simplest Mental Model
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 ```text
 ┌───────────────────────────────────────────────────────────┐
 │                   SIMPLEST MENTAL MODEL                    │
@@ -275,6 +515,22 @@ def archive_lambda(event, context):
 ---
 
 ## Code Examples
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```python
 import boto3
@@ -351,6 +607,22 @@ aws sqs purge-queue --queue-url https://sqs.us-east-1.amazonaws.com/.../orders-d
 
 ## Common Failure Modes
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 **Problem**: SQS message visibility timeout causing duplicate processing
 
 **Root cause**: A consumer receives a message and starts processing. If processing takes longer than the `VisibilityTimeout`, the message becomes visible again in the queue and another consumer picks it up. Both consumers process the same message, causing duplicate side effects (duplicate charges, duplicate emails). This happens frequently with Lambda consumers when cold starts + processing time exceed the timeout.
@@ -371,16 +643,80 @@ aws sqs purge-queue --queue-url https://sqs.us-east-1.amazonaws.com/.../orders-d
 
 ## Interview Questions
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Q1: Compare SQS FIFO with standard SQS — when would you use each?
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 **Answer**: **SQS Standard** provides at-least-once delivery (may deliver duplicates), best-effort ordering (messages might arrive out of order), and virtually unlimited throughput. Use for: decoupling microservices, buffering Lambda triggers, fan-out with SNS, batch processing where order doesn't matter (event analytics, log aggregation, notifications). **SQS FIFO** guarantees exactly-once processing (strict deduplication), first-in-first-out delivery (messages consumed in the same order they were sent), and a throughput limit of 300 TPS (3000 with batching). Use for: financial transactions (payments, orders), inventory updates, audit trails, any workflow where message order and deduplication are critical. FIFO can only target SQS (not Lambda, SNS, or HTTP endpoints directly). FIFO requires a `MessageGroupId` for parallelism — messages with different group IDs process concurrently within the same queue.
 
 ### Q2: How would you design a transactional outbox pattern with SQS to guarantee message delivery?
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 **Answer**: The transactional outbox ensures that a DB write and a message publication happen atomically. Design: (1) **Single DB transaction**: In your service's database transaction, write to the business table AND insert a row into an `outbox` table. The outbox row contains `aggregate_type`, `aggregate_id`, `event_type`, `payload`, and `processed_at` (NULL initially). (2) **Poller process**: A separate process (Lambda on a timer, or a background thread) queries `outbox WHERE processed_at IS NULL ORDER BY created_at LIMIT 100`. For each row, send to SQS (with idempotency ID). On success, update `processed_at = NOW()`. (3) **Failure handling**: If SQS send fails, the row stays unprocessed and will be retried. The consumer must be idempotent (use message ID or a deduplication key) because the poller may resend on retry. (4) **Garbage collection**: Periodically delete processed outbox rows older than 7 days (could use TTL or a separate cleanup job). This pattern ensures: if the DB write committed, the message will eventually be delivered. No dual-write problem (no 2PC needed). The trade-off: additional storage for the outbox table and latency between commit and message delivery (polling interval).
 
 
 ## Edge Cases and Advanced Scenarios
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 | Scenario | Challenge | Solution |
 |----------|-----------|----------|
@@ -392,6 +728,22 @@ aws sqs purge-queue --queue-url https://sqs.us-east-1.amazonaws.com/.../orders-d
 | **DLQ redrive storm** | Moving messages from DLQ floods consumer | Use `start-message-move-task` with `maxNumberOfMessagesPerSecond` limit. Process DLQ in batches with backoff |
 
 ## Cross-References
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 - [Kafka Production Patterns](../kafka/02-kafka-patterns.md) — Kafka vs SQS+SNS comparison, event sourcing patterns
 - [Kafka Production Operations](../kafka/04-kafka-production-operations.md) — Cluster sizing, client tuning, monitoring

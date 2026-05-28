@@ -46,6 +46,22 @@ graph LR
 
 ## Table of Contents
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 1. [Scenario A: Lock Order Violation → Cascading Distributed Deadlock](#scenario-a-lock-order-violation--cascading-distributed-deadlock)
 2. [Scenario B: Saga Compensation Deadlock — Orphaned Refund Loop](#scenario-b-saga-compensation-deadlock--orphaned-refund-loop)
 3. [Scenario C: Optimistic Lock Escalation — Phantom Reads Trigger Row-Level Lock Cascade](#scenario-c-optimistic-lock-escalation--phantom-reads-trigger-row-level-lock-cascade)
@@ -60,7 +76,39 @@ graph LR
 
 ## Scenario A: Lock Order Violation → Cascading Distributed Deadlock
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Background
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 The platform processes 3.2M financial transactions daily across four core services:
 
@@ -94,6 +142,22 @@ Step 4: Notification Svc    ├── Insert notification        (WRITE lock on 
 ```
 
 ### The Change That Broke Everything
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 A new feature — "Instant Settlement with Priority Fees" — was deployed at Tuesday 14:00 UTC. The feature added a **priority queue** for high-value transactions (>€10K) that needed to lock fee tier records **before** account records, creating a lock order inversion.
 
@@ -133,6 +197,22 @@ def process_normal_transfer(tx: TransferRequest):
 ```
 
 ### Symptoms
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 **14:00:03** — Deploy completes. Initial health checks pass.
 
@@ -205,6 +285,22 @@ postgres=# SELECT state, wait_event, query FROM pg_stat_activity
 
 ### Timeline
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```
 14:00:00  │  T-0    │  Deploy "Instant Settlement with Priority Fees"
 14:01:00  │         │  High-value transactions start acquiring locks in new order
@@ -226,6 +322,22 @@ postgres=# SELECT state, wait_event, query FROM pg_stat_activity
 ```
 
 ### Root Cause
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 **Primary: Lock order violation between high-value and normal transaction paths.**
 
@@ -310,6 +422,22 @@ When a deadlock victim retried, the version had already been incremented by the 
 
 ### Transaction Lifecycle Flow (Detailed)
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```
 NORMAL TRANSACTION (baseline ~800ms):
   Client -> Coordinator -> AccountSvc -> LedgerSvc -> PaymentSvc -> NotificationSvc
@@ -341,6 +469,22 @@ DEADLOCK TRANSACTION (timeout at 30s):
 
 ### Lock Escalation Timeline
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```
 Lock queue depth (account_123): 14:00=0 14:01=1 14:04=2 14:10=5
 14:15=12 (retries compound) 14:20=28 14:30=67 (pool exhausted)
@@ -348,6 +492,22 @@ Lock queue depth (account_123): 14:00=0 14:01=1 14:04=2 14:10=5
 ```
 
 ### Database Deadlock Logs
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 **PostgreSQL deadlock log (account-db-01):**
 
@@ -419,6 +579,22 @@ RECORD LOCKS space id 42 page no 15 n bits 80
 ```
 
 ### Detection Mechanisms
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 **1. PostgreSQL Deadlock Detection (`deadlock_timeout` = 1s):**
 
@@ -492,7 +668,39 @@ etcd lock key pattern:
 
 ## Scenario B: Saga Compensation Deadlock — Orphaned Refund Loop
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Background
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 Not all transactions use 2PC. The platform also implements the **Saga pattern** for multi-step processes where full ACID isolation is not required. Sagas use compensating transactions for rollback:
 
@@ -512,6 +720,22 @@ Compensation:
 ```
 
 ### The Deadlock
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 On 2024-06-20, a ledger service database failure caused partial saga failure. The failure occurred **after Step 3 committed but before Step 4 completed**:
 
@@ -563,6 +787,22 @@ WAIT-FOR GRAPH (Saga Compensation Deadlock):
 
 ### The Orphan Problem
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 When Saga-890 (compensation) is killed as the deadlock victim:
 1. Its compensating transaction is rolled back
 2. The original saga's compensation is now incomplete
@@ -584,6 +824,22 @@ COMPENSATION STORM (3-cycle deadlock):
 ```
 
 ### Root Cause Analysis
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 **Primary: Saga framework lacked compensation isolation.**
 
@@ -615,6 +871,22 @@ UPDATE journal_entries SET status = 'REVERSED' WHERE id = 'je_56789';
 
 ### Mitigation
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```
 Immediate steps:
 
@@ -638,7 +910,39 @@ Immediate steps:
 
 ## Scenario C: Optimistic Lock Escalation — Phantom Reads Trigger Row-Level Lock Cascade
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Background
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 The platform's fee calculation engine uses optimistic locking with version columns:
 
@@ -662,6 +966,22 @@ CREATE TABLE account_fees (
 ```
 
 ### The Phantom Read Cascade
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 A new batch process — "End-of-Day Fee Assessment" — was deployed. It reads all active fee tiers and assesses fees against every account in those tiers:
 
@@ -700,6 +1020,22 @@ SELECT * FROM account_fees
 ```
 
 ### Lock Escalation
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 The retry logic re-executes the batch with `REPEATABLE READ` instead of `SERIALIZABLE`:
 
@@ -757,6 +1093,22 @@ PAGE LOCK EFFECT: Single page lock on Page 3 (rows account_001-200)
 
 ### Root Cause Analysis
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 **Primary: `REPEATABLE READ` allowed phantom reads, which caused the batch to process more rows than expected, escalating to page locks.**
 
 **Secondary: Batch UPDATE loop held locks incrementally rather than acquiring all needed locks upfront, creating a long window for contention.**
@@ -775,7 +1127,39 @@ SHOW max_locks_per_transaction;  -- default: 64
 
 ## Scenario D: Distributed Lock Manager Split-Brain — Dual Coordinator Path
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Background
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 The transaction manager uses **etcd** for distributed lock coordination across multiple instances:
 
@@ -786,6 +1170,22 @@ etcd(3 nodes): etcd-1(leader) <-> etcd-2(follower) <-> etcd-3(follower)
 ```
 
 ### The Split-Brain
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 A network partition isolates `etcd-2` and `etcd-3` from `etcd-1`:
 
@@ -819,6 +1219,22 @@ etcd-2 (new leader): Term 43 idx 1002 lock acct_1 acquired by Coord-2
 ```
 
 ### Clock Drift in Distributed Lock Timeout
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 Distributed lock leases depend on synchronized clocks. The platform ran on `chrony` with NTP servers, but three coordinator nodes had clock drift:
 
@@ -865,6 +1281,22 @@ Coord-2 (clock -1.25s behind etcd-1):
 
 ### Root Cause Analysis
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 **Primary: Network partition caused etcd leader re-election with stale reads, allowing dual lock acquisition.**
 
 **Secondary: Clock drift between coordinator nodes created overlapping lease validity windows, amplifying the split-brain window.**
@@ -872,6 +1304,22 @@ Coord-2 (clock -1.25s behind etcd-1):
 **Tertiary: No fencing mechanism (epoch-based or generation clock) to prevent stale coordinators from acting on released locks.**
 
 ### Fencing Token Solution
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 The fix introduces a fencing token (monotonically increasing generation counter):
 
@@ -899,7 +1347,39 @@ Post-split-brain mitigation:
 
 ## Detection and Monitoring Reference
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Database Deadlock Detection Configuration
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 **PostgreSQL:**
 
@@ -924,6 +1404,22 @@ innodb_status_output_locks = ON     # Include lock info in status
 
 ### Alert Definitions
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```
 Alert Name                    │ Condition                              │ Severity │ Action
 ─────────────────────────────┼────────────────────────────────────────┼──────────┼─────────────────────
@@ -941,6 +1437,22 @@ FencingTokenMismatch        │ rate(fencing_token_mismatch_total) > 0  │ P1  
 ```
 
 ### Log Aggregation Queries
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 **Splunk / Loki query to find deadlock victims:**
 
@@ -986,6 +1498,22 @@ ORDER BY COUNT(*) DESC;
 
 ### Metrics Dashboard
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```
 DEADLOCK MONITORING DASHBOARD
   Deadlocks/min: 2.3 | Lock Wait ms: 480 | Pool Usage: 67%
@@ -1005,7 +1533,39 @@ DEADLOCK MONITORING DASHBOARD
 
 ## Root Cause Analysis Patterns
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Pattern 1: Lock Order Violation (Most Common)
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 Detection: Wait-for graph a->b->a cycle. Locks from DIFFERENT services.
@@ -1015,6 +1575,22 @@ Fix: Enforce global lock order. Static analysis for violations. Runtime assertio
 
 ### Pattern 2: Long-Running Transaction Window
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```
 Detection: Deadlock rate correlates with tx duration. External I/O inside DB tx.
 Cause: HTTP calls inside @Transactional. Unbounded loops in tx scope.
@@ -1022,6 +1598,22 @@ Fix: Move I/O outside tx boundaries. Set timeouts. Split large operations.
 ```
 
 ### Pattern 3: Escalation Cascade
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 Detection: Sudden lock wait spike. Lock manager memory jumps. Blocked txns on unrelated rows.
@@ -1031,6 +1623,22 @@ Fix: Increase max_locks_per_transaction (temp). Batch with explicit ordering. Pa
 
 ### Pattern 4: Split-Brain Dual Acquisition
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```
 Detection: Two coordinators claim same lock. etcd stale reads after leader election.
 Cause: Network partition -> new etcd leader accepts writes without knowledge of previous locks.
@@ -1038,6 +1646,22 @@ Fix: Fencing tokens. Shorter election timeout. Stale read detection.
 ```
 
 ### Pattern 5: Compensation Storm
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 Detection: Deadlocks in saga compensation paths. Compensating vs normal tx deadlocking.
@@ -1047,7 +1671,39 @@ Fix: Reverse lock order for compensations. Idempotency keys. Isolated worker poo
 
 ## Mitigation Playbook
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Immediate (within 5 minutes)
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```bash
 # 1. Find blocking transactions
@@ -1065,6 +1721,22 @@ GROUP BY pid ORDER BY COUNT(*) DESC LIMIT 1;
 
 ### Short-term (within 15 minutes)
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```bash
 kubectl rollout undo deployment/transaction-manager -n payments
 etcdctl del /tx-locks/ --prefix
@@ -1074,6 +1746,22 @@ curl -X POST /saga-coordinator/clear-queue -H "Authorization: Bearer ${ADMIN_TOK
 ```
 
 ### Recovery (within 60 minutes)
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```bash
 # Find in-doubt prepared transactions
@@ -1089,6 +1777,22 @@ curl -X POST /dlq/replay -H "Content-Type: application/json" -d '{"limit":100,"s
 ```
 
 ### Communication Templates
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 INCIDENT DECLARATION: SEV-1 | Distributed tx deadlock
@@ -1128,7 +1832,39 @@ INCIDENT RESOLUTION:
 
 ## Permanent Fixes and Decision Framework
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### 2PC vs Saga Decision Tree
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 Starting a distributed transaction:
@@ -1168,6 +1904,22 @@ Starting a distributed transaction:
 
 ### Consistent Lock Ordering Documentation
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 Every service must declare its lock acquisition order in a shared document:
 
 ```
@@ -1203,26 +1955,138 @@ EXCEPTIONS:
 
 ### Code Review Checklist for Lock Safety
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```
 ### Transaction Boundaries
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 - [ ] @Transactional on smallest scope? I/O outside tx? Timeout <30s?
 
 ### Lock Ordering
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 - [ ] Follows global lock order? Multiple paths could invert order?
 - [ ] Compensating tx uses REVERSE order?
 
 ### Deadlock Prevention
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 - [ ] Known deadlock hazard with other tx types? Retries bounded?
 
 ### Distributed Locking
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 - [ ] Fencing token? Lease TTL appropriate? Circuit breaker?
 - [ ] Clock drift safety margin?
 
 ### Monitoring
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 - [ ] lock_wait_time metrics? Deadlock alerts? Health endpoint?
 ```
 
 ### Configuration Standards
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```yaml
 two_phase_commit:
@@ -1260,6 +2124,22 @@ circuit_breaker:
 
 ### Wait-Die vs Wound-Wait Configuration
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 The platform supports both algorithms for distributed locking:
 
 ```
@@ -1273,6 +2153,22 @@ Wound-Wait:
 ```
 
 ### Deadlock Detection Algorithm: Wait-For Graph Cycle Detection
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```python
 from typing import Dict, List, Set, Optional
@@ -1323,6 +2219,22 @@ class WaitForGraph:
 
 ### Postgres Deadlock Detection Internals
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```
 PostgreSQL Deadlock Detection:
   Timer (deadlock_timeout=1s) -> LockTableHasDeadlocks()
@@ -1333,6 +2245,22 @@ PostgreSQL Deadlock Detection:
 ```
 
 ### MySQL/InnoDB Deadlock Detection Internals
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 InnoDB Deadlock Detection (always ON, background thread):
@@ -1348,7 +2276,39 @@ InnoDB Deadlock Detection (always ON, background thread):
 
 ## Edge Cases and Failure Modes
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Edge Case 1: Partial Rollback in 2PC
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 When the coordinator sends `ROLLBACK` to all participants after a deadlock:
 
@@ -1407,6 +2367,22 @@ ROLLBACK PREPARED 'txA-20240315-78901';
 
 ### Edge Case 2: Orphaned Distributed Locks
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 When a coordinator crashes while holding an etcd lock, the lock lease TTL determines cleanup:
 
 ```
@@ -1444,6 +2420,22 @@ etcdctl del /tx-locks/txA-20240315-78901
 ```
 
 ### Edge Case 3: Clock Drift in Distributed Lock Timeout
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 As described in Scenario D, clock drift creates overlapping lock windows:
 
@@ -1497,6 +2489,22 @@ def check_lock_validity(lock):
 
 ### Edge Case 4: Split-Brain in Lock Management
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 When network partition causes dual lock managers (etcd Raft groups):
 
 ```
@@ -1511,6 +2519,22 @@ Use /health/leader endpoint to verify quorum before lock acquisition.
 ```
 
 ### Edge Case 5: Phantom Reads Causing Lock Escalation
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 As described in Scenario C, phantom reads can cause unexpected lock counts:
 
@@ -1528,6 +2552,22 @@ Mitigation:
 ```
 
 ### Edge Case 6: Cascading Aborts in Distributed Transactions
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 When one participant aborts due to deadlock during 2PC:
 
@@ -1550,7 +2590,39 @@ Solution:
 
 ## Lessons Learned
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Engineering Process Changes
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 1. **Lock order as API contract**. Every service declares lock acquisition order. PR template includes lock safety checklist.
 2. **Chaos engineering for deadlocks**. Test detection + mitigation in staging with injected lock contention.
@@ -1559,12 +2631,44 @@ Solution:
 
 ### Operational Changes
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 1. **Deadlock alerts = P1 above threshold**. Single deadlock is normal; 10+ in 5min is crisis.
 2. **Lock wait times in dashboards**. Invisible contention = undetected deadlocks.
 3. **Fast rollback target**. Reduce 60min to 15min with automated rollback triggers.
 4. **Automated orphan cleanup**. Reconciliation pipeline instead of manual 90min backlog clearance.
 
 ### Technology Choices
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 1. **PostgreSQL for strong consistency** with explicit lock management. Understand FOR UPDATE implications.
 2. **etcd with fencing tokens + clock drift monitoring**. Never trust lock leases alone.
@@ -1576,6 +2680,22 @@ Solution:
 ---
 
 ## Related
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 - [Databases](../../08-databases/) — Outages, corruption, performance
 - [Distributed Systems](../../09-distributed-systems/) — Consensus, cascade failures

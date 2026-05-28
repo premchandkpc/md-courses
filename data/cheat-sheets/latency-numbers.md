@@ -16,6 +16,22 @@ graph TB
 
 ## CPU & Memory Latencies
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```
 L1 cache reference:          0.5 ns
 Branch mispredict:           5 ns
@@ -34,6 +50,22 @@ Send packet CA -> Netherlands:  150,000,000 ns (150 ms)
 
 ### Step-by-Step
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 1. **Understand the magnitude scale** — each order of magnitude (ns → µs → ms → s) represents ~1000x slowdown
 2. **Profile your bottleneck** — measure actual latencies in your system before optimizing (avoid premature optimization)
 3. **Cache strategically** — L1/L2/L3 are exponentially faster than main memory; main memory is 100,000x faster than disk
@@ -42,6 +74,22 @@ Send packet CA -> Netherlands:  150,000,000 ns (150 ms)
 6. **Batch operations** — reduce number of disk seeks/network calls by combining requests
 
 ### Code Example
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```python
 # Latency profiling and optimization example
@@ -143,9 +191,41 @@ api_calls_parallel()               # ~0.5ms (3x faster)
 
 ### Real-World Scenario
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 LinkedIn's feed was timing out (p99 > 5 seconds) because the backend made 10 sequential database queries per feed request: 1 for user profile, 3 for recommendations, 4 for comments, 2 for engagements. Each query was 1-5ms individually. With sequential execution: 10 queries * 3ms = 30ms of actual work, but 10 * 500µs network overhead = 5ms latency added up to 35ms. By parallelizing queries and caching hot data in Redis (0.5ms lookups), they reduced feed latency from 5 seconds to 200ms and served 10x more concurrent users.
 
 ### Latency Scaling Diagram
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```mermaid
 graph LR
@@ -170,6 +250,22 @@ graph LR
 
 ## Interactive with Latency Analogies
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 | Latency | Real-world Analogy |
 |---------|-------------------|
 | 1 ns | Light travels 0.3 meters |
@@ -179,7 +275,39 @@ graph LR
 
 ## Common System Latencies
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Network
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 | Operation | Latency |
 |-----------|---------|
@@ -196,6 +324,22 @@ graph LR
 
 ### Database
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 | Operation | Latency |
 |-----------|---------|
 | Index lookup (B-tree) | 1-5 ms |
@@ -208,6 +352,22 @@ graph LR
 
 ### Cache
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 | Operation | Latency |
 |-----------|---------|
 | Memcached hit | 0.1-1 ms |
@@ -217,6 +377,22 @@ graph LR
 | Cache warm-up (1M items) | 10-60 seconds |
 
 ### Storage
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 | Operation | Latency |
 |-----------|---------|
@@ -231,6 +407,22 @@ graph LR
 
 ### Message Queues
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 | Operation | Latency |
 |-----------|---------|
 | In-memory queue (push) | <0.1 ms |
@@ -240,6 +432,22 @@ graph LR
 | Message delivery | 1-100 ms |
 
 ### Real-world Service Latencies
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 | Service | Typical P50 | Typical P99 |
 |---------|-------------|------------|
@@ -254,7 +462,39 @@ graph LR
 
 ## Acceptable Latencies (by context)
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### User-Facing
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 | Interaction Type | Target Latency |
 |-----------------|-----------------|
@@ -269,6 +509,22 @@ graph LR
 
 ### Internal/Backend
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 | Operation | Target Latency |
 |-----------|-----------------|
 | Cache lookup | <1 ms |
@@ -280,6 +536,22 @@ graph LR
 
 ## Latency SLOs
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 | Tier | P50 | P95 | P99 | P99.9 |
 |------|-----|-----|-----|-------|
 | Excellent | <10ms | <50ms | <100ms | <500ms |
@@ -289,7 +561,39 @@ graph LR
 
 ## Common Latency Optimizations
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Quick Wins
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 | Technique | Latency Reduction |
 |-----------|-------------------|
@@ -304,6 +608,22 @@ graph LR
 
 ### Medium Effort
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 | Technique | Latency Reduction |
 |-----------|-------------------|
 | Read replicas | 2-5x |
@@ -314,6 +634,22 @@ graph LR
 | Microservice decomposition | Depends on coupling |
 
 ## Latency Budget Example
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 **Target: 100 ms total latency**
 
@@ -332,7 +668,39 @@ Total:                         100 ms
 
 ## Measuring Latency
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Percentiles
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 P50 (Median):   50% of requests faster than this
@@ -346,6 +714,22 @@ Max:            Longest request (often outlier)
 
 ### Tools
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 - `ping` — Network latency
 - `curl -w` — HTTP request latency
 - `ab` — Apache Bench (load testing)
@@ -355,6 +739,22 @@ Max:            Longest request (often outlier)
 - `flamegraph` — Visualization
 
 ## Rule of Thumb
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 **Doubling latency roughly halves user satisfaction.**
 
@@ -367,6 +767,22 @@ Max:            Longest request (often outlier)
 ---
 
 ## Code Examples
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```python
 import time
@@ -440,6 +856,22 @@ mtr -r example.com
 
 ## Common Failure Modes
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 **Problem**: Tail latency amplification in fan-out architectures (the "long tail of slow")
 
 **Root cause**: When a request fans out to N downstream services, the P99 latency of the parent = P99 of the slowest child, not the average. If each of 50 services has 1% chance of being slow (P99 = 500ms), the chance that at least one service is slow = 1 - (0.99^50) ≈ 39.5%. The P99 of the parent can be 10x the median, and this gets exponentially worse with more dependencies.
@@ -460,10 +892,58 @@ mtr -r example.com
 
 ## Interview Questions
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Q1: What latency numbers should every engineer know, and how do they inform system design?
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 **Answer**: The critical numbers: L1 cache: 0.5ns, main memory: 100ns, SSD read: 0.1ms, HDD seek: 10ms, intra-DC round trip: 0.5ms, cross-country round trip: 50ms, intercontinental: 150ms. These inform every design decision: sequential disk reads are 100x faster than random (B-trees exploit this). In-memory caches are 1000x faster than disk (hence, cache everything). Network calls within a DC are 100x faster than cross-region. An SSD can do ~10K random IOPS vs HDD's ~100 IOPS. For a 100ms user-facing budget: DB query ~20ms, cache lookup ~2ms, external API < 50ms, serialization < 5ms, network ~20ms. Design for locality — minimize cross-DC calls, batch operations, use caching aggressively, and choose SSD over HDD for any latency-sensitive operation.
 
 ### Q2: How do you troubleshoot a sudden P99 latency spike from 50ms to 2000ms?
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 **Answer**: (1) Check if the spike correlates with a deployment, traffic increase, or external dependency. (2) Use percentiles breakout by service — is the spike global or isolated to one endpoint? (3) Check slowest traces — is it a specific DB query, an external API, or GC pause? (4) Check resource saturation: CPU, memory, disk I/O, network bandwidth, connection pool utilization. (5) Check for lock contention: database row locks, distributed locks, mutexes. (6) Check for GC: if Java, get GC logs; if Go, check GC pause times. (7) Look for the "slow one" in a pool — sometimes one slightly degraded node causes coordinated omission for the entire pool. (8) Check for TLS — a certificate rotation causing re-handshake. (9) Use coordinated omission-aware analysis: the spike may have been queueing, not slow processing. (10) If nothing else, CPU profiling (flame graphs) during the spike often reveals the cause.

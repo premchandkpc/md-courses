@@ -18,6 +18,22 @@ graph LR
 ```
 
 ## Table of Contents
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 1. Architecture Overview
 2. Workflow State Machine
 3. Decision & Activity Tasks
@@ -32,9 +48,41 @@ graph LR
 
 ## 1. Architecture Overview
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 A workflow engine orchestrates long-running, fault-tolerant business processes. It decouples workflow logic (the "what") from execution (the "how").
 
 ### Core Components
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 ┌─────────────────────────────────────────────────────────────────────┐
@@ -78,6 +126,22 @@ A workflow engine orchestrates long-running, fault-tolerant business processes. 
 
 ### Design Goals
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 | Goal | Approach |
 |------|----------|
 | Durability | Event-sourced workflow state, no in-memory state loss |
@@ -87,6 +151,22 @@ A workflow engine orchestrates long-running, fault-tolerant business processes. 
 | Observability | Complete history of every workflow execution |
 
 ### 1.1 Key Concepts
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 - **Workflow**: A state machine defining a business process (e.g., order fulfillment, subscription onboarding).
 - **Workflow Execution**: A single instance of a workflow, identified by a unique `workflow_id`.
@@ -100,7 +180,39 @@ A workflow engine orchestrates long-running, fault-tolerant business processes. 
 
 ## 2. Workflow State Machine
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### 2.1 State Machine Definition
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 A workflow is modeled as a deterministic state machine. Transitions are triggered by events (activity completion, timer, signal, external message).
 
@@ -137,6 +249,22 @@ Additional states: Paused, Cancelled, TimedOut, ContinuedAsNew
 
 ### 2.2 Workflow Definition (SDK Example)
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```
 class OrderWorkflow implements Workflow {
     private final OrderActivities activities = Workflow.newActivityStub(OrderActivities.class);
@@ -167,6 +295,22 @@ class OrderWorkflow implements Workflow {
 ```
 
 ### 2.3 Workflow Execution Flow
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 Client                                    Workflow Service                         Worker
@@ -220,7 +364,39 @@ Client                                    Workflow Service                      
 
 ## 3. Decision & Activity Tasks
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### 3.1 DecisionTask
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 A DecisionTask is dispatched to a workflow worker to determine the next step. The worker replays history and executes workflow code deterministically.
 
@@ -269,6 +445,22 @@ def process_decision_task(task):
 
 ### 3.2 ActivityTask
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 An ActivityTask is dispatched to an activity worker to execute a side effect.
 
 ```
@@ -309,6 +501,22 @@ now     task queued         task started        task completed
 
 ### 3.3 Task Queues & Routing
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 Task queues route tasks to specific worker pools.
 
 ```
@@ -347,7 +555,39 @@ Task queues route tasks to specific worker pools.
 
 ## 4. History Service & Event Sourcing
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### 4.1 Event Sourcing
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 Workflow state is derived entirely from an append-only event log. The workflow service never stores mutable state — it rebuilds state by replaying events.
 
@@ -378,6 +618,22 @@ Event log for workflow "order-12345":
 ```
 
 ### 4.2 Event Types
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 **Lifecycle events**:
 - `WorkflowExecutionStarted`
@@ -424,6 +680,22 @@ Event log for workflow "order-12345":
 
 ### 4.3 Event Storage
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 Events are stored in a sharded database table. The primary key is `(namespace_id, workflow_id, run_id)`.
 
 ```
@@ -460,6 +732,22 @@ def append_events(shard, namespace, workflow_id, run_id, expected_next_id, event
 
 ### 4.4 History Size Limits
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 Workflows can run for months, accumulating large histories. Limits:
 - Default: 50,000 events per workflow execution
 - Max: Configurable (200,000 typically, more with `ContinueAsNew`)
@@ -484,7 +772,39 @@ This creates a new `run_id` with a fresh event history, carrying forward only th
 
 ## 5. Deterministic Replay
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### 5.1 The Replay Guarantee
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 Workflow code must be **deterministic**: given the same history, it must produce the same decisions every time. This enables recovery after failure.
 
@@ -517,6 +837,22 @@ Workflow.newLinkedHashMap()
 ```
 
 ### 5.2 Replay Algorithm
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 def replay_workflow(history):
@@ -553,6 +889,22 @@ def replay_workflow(history):
 
 ### 5.3 Cache & Replay Optimization
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 Replaying 50,000 events on every decision task is expensive. Optimizations:
 
 **Sticky execution** (Temporal):
@@ -576,7 +928,39 @@ Replaying 50,000 events on every decision task is expensive. Optimizations:
 
 ## 6. Retry & Timeout Policies
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### 6.1 Retry Policy
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 RetryOptions retryOptions = RetryOptions.newBuilder()
@@ -627,6 +1011,22 @@ If `retryExpiration` is reached, the activity fails permanently regardless of re
 
 ### 6.2 Timeout Configuration
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```
 ActivityOptions options = ActivityOptions.newBuilder()
     .setScheduleToCloseTimeout(Duration.ofMinutes(5))
@@ -669,7 +1069,39 @@ On worker crash, the engine schedules the activity to a new worker with the last
 
 ## 7. Saga Pattern & Compensation
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### 7.1 Saga Overview
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 A Saga is a sequence of local transactions where each transaction has a compensating action to undo it. Two execution models:
 
@@ -679,6 +1111,22 @@ A Saga is a sequence of local transactions where each transaction has a compensa
 The workflow engine implements **orchestration-based sagas**.
 
 ### 7.2 Compensation Definition
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 class OrderSagaWorkflow implements Workflow {
@@ -713,6 +1161,22 @@ class OrderSagaWorkflow implements Workflow {
 
 ### 7.3 Compensation Execution
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 Compensations execute in **strict reverse order** (stack-based):
 
 ```
@@ -733,6 +1197,22 @@ Forward execution:           Compensation order:
 ```
 
 ### 7.4 Forward Recovery
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 Sometimes it's better to fix the forward path rather than roll back:
 
@@ -755,6 +1235,22 @@ def processOrder(OrderInput input):
 
 ### 7.5 Compensation vs. Retry Decision
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 | Scenario | Action |
 |----------|--------|
 | Transient failure (timeout, network) | Retry |
@@ -767,7 +1263,39 @@ def processOrder(OrderInput input):
 
 ## 8. Cron Scheduling
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### 8.1 Schedule-to-Workflow
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 // Register a cron schedule
@@ -796,6 +1324,22 @@ ScheduleHandle handle = TemporalClient.getScheduleService()
 
 ### 8.2 Cron Expression Support
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```
 // Unix-style cron: seconds minutes hours day-of-month month day-of-week
 // Example: 0 30 6 * * ? = every day at 6:30 AM
@@ -819,6 +1363,22 @@ Advanced:
 
 ### 8.3 Calendar-Based Triggers
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```
 AbstractCalendarTrigger:
   - Every N minutes/hours/days
@@ -839,6 +1399,22 @@ CalendarSpec calendar = CalendarSpec.newBuilder()
 ```
 
 ### 8.4 Backfill
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 Running missed schedules (e.g., after a system outage):
 
@@ -872,7 +1448,39 @@ If schedule is paused for 5 days:
 
 ## 9. Production Operations
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### 9.1 Scaling Workers
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 **Horizontal scaling**: Add more worker processes. Workers are stateless — they poll for tasks, execute, and respond.
 
@@ -913,6 +1521,22 @@ Worker polling:
 
 ### 9.2 Task Routing
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 **Weighted routing**: Route tasks to specific worker pools based on criteria:
 
 ```
@@ -945,6 +1569,22 @@ ShipmentResult scheduleShipment(ShippingAddress address) {
 ```
 
 ### 9.3 Rate Limiting
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 Rate limiting strategies:
@@ -989,6 +1629,22 @@ Internal service A: 1000 req/s ──▶ Workflow Engine
 ```
 
 ### 9.4 Observability
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 **Tracing** (OpenTelemetry):
 ```
@@ -1056,6 +1712,22 @@ Row 3: System Health
 
 ### 9.5 Database Considerations
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 **Schema design**:
 ```
 -- Sharded by namespace_id
@@ -1111,6 +1783,22 @@ CREATE TABLE task_queues (
 
 ### 9.6 Failure Modes
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 | Failure | Impact | Recovery |
 |---------|--------|----------|
 | Worker crash mid-activity | Activity times out, retried on other worker | Automatic (heartbeat timeout) |
@@ -1122,6 +1810,22 @@ CREATE TABLE task_queues (
 | SDK bug | Non-deterministic workflow | Versioning + fail to old version |
 
 ### 9.7 Versioning
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 @WorkflowMethod(version = "1.0")
@@ -1151,6 +1855,22 @@ WorkflowResult processOrder(OrderInput input) {
 ---
 
 ## References
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 - Temporal documentation: `docs.temporal.io`
 - Temporal source: `github.com/temporalio/temporal`

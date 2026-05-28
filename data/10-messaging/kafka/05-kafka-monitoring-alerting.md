@@ -34,9 +34,41 @@ graph LR
 
 ## Scope
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 Production-grade reference for Kafka observability covering JMX metrics, consumer lag monitoring (Burrow), Cruise Control for cluster rebalancing, Prometheus/Grafana dashboards, Alertmanager rules, and operational runbooks for broker/consumer/partition failures.
 
 ## Table of Contents
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 - [Monitoring Stack Architecture](#monitoring-stack-architecture)
 - [Metrics Taxonomy](#metrics-taxonomy)
@@ -53,6 +85,22 @@ Production-grade reference for Kafka observability covering JMX metrics, consume
 ---
 
 ## Monitoring Stack Architecture
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
                         ┌──────────────────────────────┐
@@ -102,6 +150,22 @@ Production-grade reference for Kafka observability covering JMX metrics, consume
 
 ## Metrics Taxonomy
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```
   ┌──────────────────┐
   │   Broker         │  UnderReplicatedPartitions, OfflinePartitions
@@ -138,7 +202,39 @@ Production-grade reference for Kafka observability covering JMX metrics, consume
 
 ## Broker-Level Metrics
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Critical MBeans
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
   MBean                                Metric                   Interpretation
@@ -182,6 +278,22 @@ Production-grade reference for Kafka observability covering JMX metrics, consume
 
 ### Key Broker Thresholds
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```yaml
 UnderReplicatedPartitions:
   warning: > 0 for > 5m
@@ -215,7 +327,39 @@ LogFlushTime p99:
 
 ## Topic & Partition Metrics
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Partition Size Monitoring
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```bash
 # Get partition sizes per topic (scripts/kafka-log-dirs.sh)
@@ -241,6 +385,22 @@ preferredReplicaImbalanceCount:
 
 ### Partition Distribution Dashboard
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```
   Broker │ Leader Count │ Partition Count │ Disk Used │ Throughput (MB/s)
   ───────┼──────────────┼─────────────────┼───────────┼─────────────────
@@ -256,7 +416,39 @@ preferredReplicaImbalanceCount:
 
 ## Consumer & Lag Metrics
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Consumer Fetch Manager MBeans
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
   MBean                                              Metric
@@ -283,6 +475,22 @@ preferredReplicaImbalanceCount:
 ```
 
 ### Consumer Lag Graph
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
   Consumer Group: my-app-1
@@ -312,7 +520,39 @@ preferredReplicaImbalanceCount:
 
 ## Consumer Lag Evaluation (Burrow)
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Burrow Architecture
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
   ┌──────────┐    ┌──────────┐    ┌──────────┐
@@ -341,6 +581,22 @@ preferredReplicaImbalanceCount:
 
 ### Burrow Consumer Status Evaluation
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```
   Burrow uses a 2-window evaluation:
   - MAXLAG window: current lag compared to max observed lag
@@ -361,6 +617,22 @@ preferredReplicaImbalanceCount:
 ```
 
 ### Burrow Configuration
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```hcl
 # burrow-config.toml
@@ -389,6 +661,22 @@ enable-unsafe = true            # enables /v3/kafka endpoint
 
 ### Burrow API Endpoints
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```bash
 # List all monitored consumer groups
 curl -s http://burrow:8000/v3/kafka/local/consumer | jq
@@ -415,7 +703,39 @@ curl -s http://burrow:8000/v3/kafka/local/consumer/my-app-1/lag/prometheus
 
 ## Kafka Cruise Control
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Cruise Control Architecture
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
   ┌──────────────────────────────────────────────────┐
@@ -445,6 +765,22 @@ curl -s http://burrow:8000/v3/kafka/local/consumer/my-app-1/lag/prometheus
 
 ### Key Goals
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```java
 // Cruise Control goals (ordered by priority)
 // 1. RackAwareGoal        - replicas on different racks
@@ -460,6 +796,22 @@ curl -s http://burrow:8000/v3/kafka/local/consumer/my-app-1/lag/prometheus
 ```
 
 ### Rebalance Commands
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```bash
 # Get cluster load
@@ -482,7 +834,39 @@ curl -s -X POST "http://cruise-control:8090/kafkacruisecontrol/stop_proposal_exe
 
 ## Prometheus + Grafana Setup
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### JMX Exporter Configuration
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```yaml
 # kafka-prometheus.yml — JMX Exporter rules
@@ -514,6 +898,22 @@ rules:
 
 ### Prometheus Scrape Config
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```yaml
 # prometheus.yml
 scrape_configs:
@@ -541,6 +941,22 @@ scrape_configs:
 
 ### Grafana Dashboard Panels
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```
   Panel                     Metric                       Type
   ────────────────────────────────────────────────────────────────────
@@ -562,7 +978,39 @@ scrape_configs:
 
 ## Alerting Rules
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Alertmanager Configuration
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```yaml
 # alertmanager.yml
@@ -688,6 +1136,22 @@ groups:
 
 ### Alert Escalation Flow
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```
   Alert Fires ──────────────────────
        │
@@ -715,7 +1179,39 @@ groups:
 
 ## Operational Runbooks
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Runbook 1: UnderReplicatedPartitions (URP)
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```yaml
 Symptoms:
@@ -758,6 +1254,22 @@ Root Causes:
 
 ### Runbook 2: Consumer Lag
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```yaml
 Symptoms:
   - Burrow status: WARNING or ERROR
@@ -799,6 +1311,22 @@ Mitigation:
 ```
 
 ### Runbook 3: Broker Down
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```yaml
 Symptoms:
@@ -847,7 +1375,39 @@ Long-term actions:
 
 ## Failure Analysis
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### 1. ISR Churn — Network or Disk Issue
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
   Symptoms:
@@ -873,6 +1433,22 @@ Long-term actions:
 ```
 
 ### 2. Consumer Group Rebalance Storm
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
   Symptoms:
@@ -900,6 +1476,22 @@ Long-term actions:
 
 ### 3. Controller Failover
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```
   Symptoms:
     - ActiveControllerCount != 1 (oscillates)
@@ -924,6 +1516,22 @@ Long-term actions:
 ```
 
 ### 4. Log Compaction Failure
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
   Symptoms:

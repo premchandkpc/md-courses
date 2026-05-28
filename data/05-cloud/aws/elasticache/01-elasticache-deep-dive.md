@@ -36,6 +36,22 @@ graph LR
 
 ## Table of Contents
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 - [The Big Picture](#-the-big-picture)
 - [1. Redis vs Memcached](#1-redis-vs-memcached)
 - [2. Cluster Modes](#2-cluster-modes)
@@ -52,6 +68,22 @@ graph LR
 ---
 
 ## 🧭 The Big Picture
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
                     ┌──────────────────────────────┐
@@ -78,7 +110,39 @@ graph LR
 
 ## 1. Redis vs Memcached
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Feature Comparison
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 | Feature | Redis (ElastiCache) | Memcached |
 |---------|--------------------|-----------|
@@ -95,6 +159,22 @@ graph LR
 | **Use case** | Complex caching, sessions, queues | Simple, high-throughput caching |
 
 ### Performance Comparison
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 Throughput (GET/SET operations/sec):
@@ -116,6 +196,22 @@ Latency: Both < 1ms (in-region, same AZ)
 
 ### When to Choose
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```text
 Choose REDIS when:
   ✓ Need persistence (cache as source of truth)
@@ -136,7 +232,39 @@ Choose MEMCACHED when:
 
 ## 2. Cluster Modes
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Redis Cluster Mode Disabled
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 ┌──────────────────────────────────────┐
@@ -161,6 +289,22 @@ Choose MEMCACHED when:
 ```
 
 ### Redis Cluster Mode Enabled
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 ┌──────────────────────────────────────────────┐
@@ -190,6 +334,22 @@ Choose MEMCACHED when:
 
 ### Sharding Example
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```redis
 # Keys are hashed to determine shard
 SET user:1234 "John"      # Slot 1234 → Shard 1
@@ -208,7 +368,39 @@ MGET {user}:1234 {user}:5678  # Same hash slot
 
 ## 3. Replication
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Multi-AZ Replication
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 Redis Replication Group (Multi-AZ enabled):
@@ -234,6 +426,22 @@ Redis Replication Group (Multi-AZ enabled):
 
 ### Replica Reads
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```text
 Application        Primary          Replica
    │                 │                 │
@@ -256,7 +464,39 @@ Application        Primary          Replica
 
 ## 4. Persistence
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### RDB Snapshots
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 RDB (Redis Database Backup):
@@ -277,6 +517,22 @@ RDB (Redis Database Backup):
 ```
 
 ### AOF (Append-Only File)
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 AOF Persistence:
@@ -303,6 +559,22 @@ AOF Persistence:
 
 ### Persistence Comparison
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 | Aspect | RDB | AOF | AOF+RDB (mixed) |
 |--------|-----|-----|------------------|
 | Data loss | Up to last snapshot | Up to 1 sec (everysec) | Minimal |
@@ -314,7 +586,39 @@ AOF Persistence:
 
 ## 5. Backup/Restore
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Automated Backups
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 ┌──────────────────────────────────────────────┐
@@ -334,6 +638,22 @@ AOF Persistence:
 ```
 
 ### Backup/Restore CLI
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```awscli
 # Create manual snapshot
@@ -358,6 +678,22 @@ aws elasticache create-cache-cluster \
 
 ### Seed a New Cluster
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```text
 1. Export snapshot to S3
 2. Download RDB file
@@ -372,7 +708,39 @@ production data (sanitized).
 
 ## 6. Parameter Groups
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Custom Parameter Group
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```json
 {
@@ -397,6 +765,22 @@ production data (sanitized).
 
 ### Key Parameters
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 | Parameter | Default | Description |
 |-----------|---------|-------------|
 | `maxmemory-policy` | volatile-lru | Eviction policy when memory full |
@@ -408,6 +792,22 @@ production data (sanitized).
 | `save` | 900 1 300 10 60 10000 | RDB snapshot frequency |
 
 ### Eviction Policies
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 maxmemory-policy options:
@@ -429,7 +829,39 @@ Recommended: allkeys-lru for most caching workloads
 
 ## 7. Security Groups
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### ElastiCache Security Model
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 ┌──────────────────────────────────────────────┐
@@ -457,6 +889,22 @@ Recommended: allkeys-lru for most caching workloads
 
 ### Security Group Rules
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```json
 {
   "IpPermissions": [
@@ -479,7 +927,39 @@ Recommended: allkeys-lru for most caching workloads
 
 ## 8. Subnet Groups
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Subnet Group Purpose
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 VPC (10.0.0.0/16)
@@ -499,6 +979,22 @@ VPC (10.0.0.0/16)
 ```
 
 ### CLI
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```awscli
 # Create subnet group
@@ -520,7 +1016,39 @@ aws elasticache create-cache-cluster \
 
 ## 9. Auto-Failover
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Failover Flow
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 Primary node failure detected
@@ -558,6 +1086,22 @@ Primary node failure detected
 
 ### Requirements for Auto-Failover
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```text
 Redis Cluster Mode ENABLED:
   • Requires at least 2 shards with 1+ replica each
@@ -572,6 +1116,22 @@ Redis Cluster Mode DISABLED:
 
 ### Failover Initiation
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```awscli
 # Manual failover (for testing)
 aws elasticache test-failover \
@@ -583,7 +1143,39 @@ aws elasticache test-failover \
 
 ## 10. Use Cases
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Caching Patterns
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 Lazy Caching (Cache-Aside):
@@ -613,6 +1205,22 @@ Write-Behind (Async):
 
 ### Common Patterns
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 | Pattern | Description | TTL |
 |---------|-------------|-----|
 | **Session store** | User session data (cart, auth) | 30-60 min |
@@ -624,6 +1232,22 @@ Write-Behind (Async):
 | **Geospatial** | GEOADD/GEORADIUS for location data | Variable |
 
 ### Real-World Example: DB Query Cache
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```python
 import redis
@@ -658,6 +1282,22 @@ def invalidate_user_orders(user_id: str):
 
 ### Session Store with Redis
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```python
 # Session handling with Redis
 from datetime import timedelta
@@ -685,6 +1325,22 @@ class SessionStore:
 ---
 
 ## 🧠 Simplest Mental Model
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 REDIS            =  A super-fast notebook (in-memory) where
@@ -730,6 +1386,22 @@ EVICTION         =  When your notebook is full, you have to
 
 ## Observability
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```mermaid
 flowchart LR
     A[ElastiCache] --> B[Metrics]
@@ -745,6 +1417,22 @@ flowchart LR
 
 ### Key Metrics
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 | Metric | Unit | Threshold | Indicates |
 |--------|------|-----------|-----------|
 | CPUUtilization | % | < 75% | Command complexity |
@@ -758,6 +1446,22 @@ flowchart LR
 
 ### Logs
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 - **ERROR**: OOM command denied, connection refused, replication broken
 - **WARN**: Evictions increasing, swap usage > 0, replication buffer growing
 - **INFO**: Cluster topology changes, failover events, config changes
@@ -765,9 +1469,41 @@ flowchart LR
 
 ### Traces
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 Trace cache operations with OpenTelemetry. Track cache hit/miss per key pattern. Monitor command latency distribution per command type.
 
 ### Alerts
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 | Severity | Condition | Response |
 |----------|-----------|----------|
@@ -778,6 +1514,22 @@ Trace cache operations with OpenTelemetry. Track cache hit/miss per key pattern.
 | P2 | Cache hit rate < 80% | Review caching strategy, warm cache |
 
 ### Dashboards
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 **Redis Overview**: CPU, memory usage, connections, hit rate, evictions, keyspace hits/misses, network I/O, command throughput.
 

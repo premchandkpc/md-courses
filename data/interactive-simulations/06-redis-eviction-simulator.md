@@ -2,6 +2,22 @@
 
 ## Overview
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```mermaid
 graph TB
     A["Write Request<br/>SET key value"] --> B{"Memory<br/>Full?"}
@@ -40,6 +56,22 @@ Simulate how Redis handles memory pressure under different maxmemory-policy conf
 
 ## Actors/Components
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 | Actor | Role |
 |-------|------|
 | **Redis Instance** | In-memory key-value store with configurable maxmemory |
@@ -56,7 +88,39 @@ Simulate how Redis handles memory pressure under different maxmemory-policy conf
 
 ## State Machine
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Eviction Cycle State Machine
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
                 ┌──────────┐
@@ -113,6 +177,22 @@ Simulate how Redis handles memory pressure under different maxmemory-policy conf
 
 ### Key Lifetime State
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```
                    ┌──────────┐
                    │ CREATED  │
@@ -138,7 +218,39 @@ Simulate how Redis handles memory pressure under different maxmemory-policy conf
 
 ## Animation Frames
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Frame 1: Memory Fills Up — Eviction Triggered
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 ┌──────────────────────────────────────────┐
@@ -165,6 +277,22 @@ Memory needed: 250 + 50 = 300 > 256 → EVICTION TRIGGERED!
 ```
 
 ### Frame 2: LRU Sampling and Eviction
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 Eviction pool (max 16 candidates):
@@ -196,6 +324,22 @@ Eviction pool (max 16 candidates):
 ```
 
 ### Frame 3: LFU vs LRU — Different Access Patterns
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 Scenario: Keys have different access patterns
@@ -233,6 +377,22 @@ KEY DIFFERENCE:
 
 ## User Interactions
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 | Control | Type | Range/Options | Effect |
 |---------|------|---------------|--------|
 | **Eviction policy** | dropdown | allkeys-lru, volatile-lru, allkeys-lfu, volatile-lfu, allkeys-random, volatile-random, volatile-ttl, noeviction | Select policy |
@@ -252,6 +412,22 @@ KEY DIFFERENCE:
 ---
 
 ## Visual Transitions
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 | Event | Visual Effect |
 |-------|---------------|
@@ -274,6 +450,22 @@ KEY DIFFERENCE:
 
 ## Edge Cases
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 | Edge Case | Behavior |
 |-----------|----------|
 | **No evictable keys (volatile policy, no TTL keys)** | Falls back to noeviction behavior — OOM on writes |
@@ -294,6 +486,22 @@ KEY DIFFERENCE:
 
 ## Failure Modes
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 | Failure | Symptom | Recovery |
 |---------|---------|----------|
 | **OOM with noeviction** | Write commands return OOM error | Increase maxmemory; switch policy; delete keys manually |
@@ -310,6 +518,22 @@ KEY DIFFERENCE:
 ---
 
 ## Metrics to Display
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 | Metric | Unit | Source |
 |--------|------|--------|
@@ -336,7 +560,39 @@ KEY DIFFERENCE:
 
 ## Scenario Walkthroughs
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Scenario 1: allkeys-lru — Cache with Working Set
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 **Setup:** maxmemory=1MB, policy=allkeys-lru, key count=200, uniform access
 
@@ -395,6 +651,22 @@ Conclusion: LRU keeps the hot working set, cycles through cold keys.
 
 ### Scenario 2: allkeys-lfu vs volatile-lru — Seasonal Hot Keys
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 **Setup:** maxmemory=512KB, 100 keys (most with TTL), access pattern = seasonal
 
 ```
@@ -450,6 +722,22 @@ KEY TAKEAWAY:
 
 ### Scenario 3: volatile-ttl — Precise Expiry-Based Eviction
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 **Setup:** maxmemory=1MB, policy=volatile-ttl, 150 keys (100 with TTL, 50 without)
 
 ```
@@ -504,6 +792,22 @@ Key observation:
 
 ### Scenario 4: noeviction — Write Failures
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 **Setup:** maxmemory=512KB, policy=noeviction, 100 keys filling memory
 
 ```
@@ -544,6 +848,22 @@ Observation:
 ```
 
 ### Scenario 5: allkeys-random — No Intelligence
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 **Setup:** maxmemory=256KB, 50 keys (5KB each), 50% hot, 50% cold
 
@@ -595,6 +915,22 @@ RESULT:
 ---
 
 ## Implementation Notes
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 **State Management:**
 - Maintain dictionary of keys: `{key: {value, ttl, lru_clock, lfu_counter, size}}`

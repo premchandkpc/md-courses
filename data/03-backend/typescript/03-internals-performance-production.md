@@ -29,6 +29,22 @@ graph LR
 
 ## Table of Contents
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 1. [1. Compiler Internals](#1-compiler-internals)
 2. [2. tsconfig: Compiler Options Deep Dive](#2-tsconfig-compiler-options-deep-dive)
 3. [3. Performance: Incremental Builds, skipLibCheck, isolatedModules](#3-performance-incremental-builds-skiplibcheck-isolatedmodules)
@@ -45,7 +61,39 @@ graph LR
 
 ## 1. Compiler Internals
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Parser
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 ```typescript
 // The parser creates an AST (Abstract Syntax Tree) from source text
 // Key phases: Scanner -> Parser -> AST
@@ -114,6 +162,22 @@ function getNodeAtPosition(sourceFile: any, pos: number): any {
 ```
 
 ### Binder
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 ```typescript
 // The binder creates Symbols and Scopes from the AST
 // It connects declarations to their references (name resolution)
@@ -166,6 +230,22 @@ enum ScopeKind {
 ```
 
 ### Checker
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 ```typescript
 // The checker is the heart of TypeScript
 // Key responsibilities: type inference, type compatibility, error reporting
@@ -233,6 +313,22 @@ interface IntersectionType extends Type {
 ```
 
 ### Emitter
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 ```typescript
 // The emitter transforms TypeScript AST back to JavaScript
 // Targets: ES3, ES5, ES2015-ESNext, and declaration files (.d.ts)
@@ -279,6 +375,22 @@ interface IntersectionType extends Type {
 ```
 
 ### End-to-End Compiler Flow
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 ```typescript
 // Simplified compiler pipeline
 function compile(sourceCode: string, fileName: string): CompileResult {
@@ -322,7 +434,39 @@ function createWatchProgram(configPath: string): void {
 
 ## 2. tsconfig: Compiler Options Deep Dive
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Strict Mode Family
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 ```typescript
 // All strict flags:
 // {
@@ -350,6 +494,22 @@ function createWatchProgram(configPath: string): void {
 ```
 
 ### Module Resolution Strategies
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 ```typescript
 // {
 //   "compilerOptions": {
@@ -374,6 +534,22 @@ function createWatchProgram(configPath: string): void {
 ```
 
 ### Output and Target Options
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 ```typescript
 // {
 //   "compilerOptions": {
@@ -407,6 +583,22 @@ function createWatchProgram(configPath: string): void {
 ```
 
 ### Advanced Error Checking
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 ```typescript
 // {
 //   "compilerOptions": {
@@ -441,6 +633,22 @@ function createWatchProgram(configPath: string): void {
 ```
 
 ### Project References
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 ```typescript
 // Root tsconfig.json (solution config)
 // {
@@ -494,7 +702,39 @@ function createWatchProgram(configPath: string): void {
 
 ## 3. Performance: Incremental Builds, skipLibCheck, isolatedModules
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Incremental Builds
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 ```typescript
 // tsconfig.json
 // {
@@ -544,6 +784,22 @@ function measureCompilation(): void {
 ```
 
 ### skipLibCheck
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 ```typescript
 // {
 //   "compilerOptions": {
@@ -588,6 +844,22 @@ console.log(estimateSkipLibCheckSavings(500));
 ```
 
 ### isolatedModules
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 ```typescript
 // {
 //   "compilerOptions": {
@@ -636,6 +908,22 @@ async function compileIsolated(files: string[]): Promise<void> {
 ```
 
 ### Performance Tips for Large Projects
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 ```typescript
 // 1. Use project references - split into logical packages
 // Root tsconfig.json with references array
@@ -679,7 +967,39 @@ type Role = typeof ROLES[number];
 
 ## 4. TypeScript with React
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### JSX and Component Typing
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 ```typescript
 import React, { ReactNode, PropsWithChildren, ComponentProps } from "react";
 
@@ -757,6 +1077,22 @@ FancyInput.displayName = "FancyInput";
 ```
 
 ### Generic React Components
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 ```typescript
 interface ListProps<T> {
   items: T[];
@@ -842,6 +1178,22 @@ function Select<V extends string>({
 ```
 
 ### Custom Hooks with Types
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 ```typescript
 import { useState, useEffect, useCallback, useReducer } from "react";
 
@@ -976,7 +1328,39 @@ function useForm<T extends Record<string, any>>(
 
 ## 5. TypeScript with Node.js
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Express Types
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 ```typescript
 import express, { Request, Response, NextFunction, RequestHandler } from "express";
 
@@ -1080,6 +1464,22 @@ function createCrudController<T extends { id: string }>(resource: string) {
 ```
 
 ### Koa Types and Middleware Typing
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 ```typescript
 import Koa from "koa";
 import Router from "@koa/router";
@@ -1140,7 +1540,39 @@ const pipeline = compose<ReqCtx>([
 
 ## 6. TypeScript in Large Codebases
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Module Resolution Strategies
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 ```typescript
 // Strategy 1: Project References (recommended for monorepos)
 // Root tsconfig.json with references to each package
@@ -1178,6 +1610,22 @@ const pipeline = compose<ReqCtx>([
 ```
 
 ### Barrel File Best Practices and Pitfalls
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 ```typescript
 // Problem: barrel files create long import chains
 // Bad barrel: exports everything from a directory
@@ -1212,6 +1660,22 @@ export type { User, UserRole } from "./types";
 ```
 
 ### Code Organization at Scale
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 ```typescript
 // Monorepo structure best practices:
 //
@@ -1279,7 +1743,39 @@ export type { User, UserRole } from "./types";
 
 ## 7. Migration from JS to TypeScript
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Strategy
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 ```typescript
 // Phase 1: Add TypeScript alongside JavaScript
 // 1. Add tsconfig.json with allowJs: true, checkJs: false
@@ -1303,6 +1799,22 @@ export type { User, UserRole } from "./types";
 ```
 
 ### Using @ts-check for Gradual Migration
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 ```typescript
 // @ts-check
 // This enables type checking in a .js file
@@ -1345,6 +1857,22 @@ const firstUser = first(users); // type: User | undefined
 ```
 
 ### Strict Mode Adoption Incrementally
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 ```typescript
 // Step 1: Add strictNullChecks
 // {
@@ -1387,7 +1915,39 @@ const firstUser = first(users); // type: User | undefined
 
 ## 8. Testing TypeScript Types
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### tsd Testing
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 ```typescript
 // tsd is a library for testing TypeScript types
 // Install: npm install --save-dev tsd
@@ -1434,6 +1994,22 @@ expectAssignable<User>({ id: "1", name: "Bob", email: "bob@test.com" });
 ```
 
 ### expect-type Testing
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 ```typescript
 // expect-type provides a more expressive API
 // Install: npm install --save-dev expect-type
@@ -1471,6 +2047,22 @@ expectTypeOf("abc" as UserId).toEqualTypeOf<UserId>();
 ```
 
 ### Conditional Type Tests Pattern
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 ```typescript
 // Type-level test harness using conditional types
 type TypeEqual<A, B> = A extends B ? (B extends A ? true : false) : false;
@@ -1521,7 +2113,39 @@ type TypeSystemTests = Describe<"Type System", {
 
 ## 9. Production Stories: Type Issues at Scale
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Common Production Type Issues
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 ```typescript
 // Issue 1: Type assertion abuse leading to runtime errors
 interface ApiUser { id: string; name: string; }
@@ -1558,6 +2182,22 @@ type Event = { type: string; payload: unknown };
 ```
 
 ### Slow Compilation at Scale
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 ```typescript
 // Case study: 1M+ line codebase at Meta scale
 interface ScaleMetrics {
@@ -1617,6 +2257,22 @@ function profileCompilation(configPath: string): void {
 ```
 
 ### Real-World Type Safety Lessons
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 ```typescript
 // Lesson 1: Always validate external data
 // Bad - assumes API contract:
@@ -1670,7 +2326,39 @@ function handleAction(action: { type: string }): void {
 
 ## 10. Monorepo with TypeScript: Nx, Turborepo
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Turborepo Configuration
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 ```typescript
 // turbo.json
 // {
@@ -1711,6 +2399,22 @@ function handleAction(action: { type: string }): void {
 ```
 
 ### Nx Configuration
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 ```typescript
 // workspace.json (Nx)
 // {
@@ -1746,6 +2450,22 @@ function handleAction(action: { type: string }): void {
 ```
 
 ### Workspace TypeScript Configuration
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 ```typescript
 // The key is shared tsconfig bases with incremental builds
 
@@ -1797,6 +2517,22 @@ function handleAction(action: { type: string }): void {
 ```
 
 ### Monorepo Build Scripts
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 ```typescript
 // package.json scripts:
 // {
@@ -1839,6 +2575,22 @@ function handleAction(action: { type: string }): void {
 ```
 
 ### Monorepo Best Practices Summary
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 ```typescript
 // 1. Use consistent TypeScript version across all packages
 // Lock it in package.json root:
@@ -1883,6 +2635,22 @@ function handleAction(action: { type: string }): void {
 
 ## Observability
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```mermaid
 flowchart LR
     A[Node.js/TS App] --> B[Metrics]
@@ -1899,6 +2667,22 @@ flowchart LR
 
 ### Key Metrics
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 | Metric | Unit | Threshold | Indicates |
 |--------|------|-----------|-----------|
 | Event loop lag | ms | < 50ms | Blocking sync operations |
@@ -1909,6 +2693,22 @@ flowchart LR
 
 ### Logs
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 - **ERROR**: Uncaught exceptions, promise rejections, connection pool exhaustion
 - **WARN**: Event loop lag > 100ms, memory threshold crossed
 - **INFO**: Server start/stop, module load, config loaded
@@ -1916,9 +2716,41 @@ flowchart LR
 
 ### Traces
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 Use OpenTelemetry JS SDK with auto-instrumentation. Propagate context through `AsyncLocalStorage`.
 
 ### Alerts
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 | Severity | Condition | Response |
 |----------|-----------|----------|
@@ -1928,12 +2760,60 @@ Use OpenTelemetry JS SDK with auto-instrumentation. Propagate context through `A
 
 ### Dashboards
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 **Node.js Runtime Dashboard**: event loop lag, GC pause time, heap used/total, active handles, libuv utilization.
 
 
 ## Common Failures
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Failure: Event Loop Starvation
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 - **Symptoms**: App unresponsive, timeouts, event loop lag > 1s. High CPU, low throughput.
 - **Root Cause**: Sync blocking on main thread: `JSON.parse` on huge payloads, `fs.readFileSync`, `crypto.pbkdf2Sync`, regex catastrophic backtracking.
@@ -1944,6 +2824,22 @@ Use OpenTelemetry JS SDK with auto-instrumentation. Propagate context through `A
 
 ### Failure: Memory Leak from Closures
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 - **Symptoms**: RSS grows continuously, OOMKilled. Heap snapshots show retained objects.
 - **Root Cause**: Closures capturing large scope. Event emitters with anonymous listeners that are never removed. Express route handlers in loops.
 - **Detection**: `v8.writeHeapSnapshot()` shows retained size growing. Chrome DevTools Memory tab via inspector.
@@ -1951,6 +2847,22 @@ Use OpenTelemetry JS SDK with auto-instrumentation. Propagate context through `A
 - **Prevention**: Use `emitter.once()`. Call `removeListener()` in cleanup. Avoid handlers in loops. Use WeakMap for caches.
 
 ### Failure: Async/Await Deadlock
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 - **Symptoms**: Requests hang, no errors, event loop responsive but no progress.
 - **Root Cause**: Promise that never resolves — missing await, forgotten resolve, circular wait in worker pool.
@@ -1960,6 +2872,22 @@ Use OpenTelemetry JS SDK with auto-instrumentation. Propagate context through `A
 
 ### Failure: Memory Bloat from Dependencies
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 - **Symptoms**: High memory baseline, slow startup, large node_modules.
 - **Root Cause**: Importing large libraries for small features (e.g., `lodash` for `_.pick`). Tree-shaking not configured properly.
 - **Detection**: `source-map-explorer` or `webpack-bundle-analyzer` shows large chunks.
@@ -1967,6 +2895,22 @@ Use OpenTelemetry JS SDK with auto-instrumentation. Propagate context through `A
 - **Prevention**: Audit bundle size in CI. Prefer native APIs over lodash. Use `tsup` or `esbuild` for bundling.
 
 ### Failure: Source Maps Leaking in Production
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 - **Symptoms**: Unauthenticated access to `.map` files reveals full source code. Security audit finding.
 - **Root Cause**: Build pipeline generates and deploys source maps to production without access controls.

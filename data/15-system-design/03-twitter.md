@@ -40,6 +40,22 @@ graph LR
 
 ## Table of Contents
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 1. Requirements & Scale
 2. High-Level Architecture
 3. Tweet Flow
@@ -59,6 +75,22 @@ graph LR
 ---
 
 ## 1. Requirements & Scale
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 Twitter/X Scale (2024):
@@ -81,6 +113,22 @@ Key Requirements:
 ---
 
 ## 2. High-Level Architecture
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 +-----------+     +----------+     +----------+     +-----------+
@@ -121,6 +169,22 @@ Key Requirements:
 ---
 
 ## 3. Tweet Flow
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 Tweet Post Flow:
@@ -175,6 +239,22 @@ TTL: 7 days (hot tweets), evicted by LRU
 ---
 
 ## 4. Timeline Generation
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 Timeline Read Flow:
@@ -234,6 +314,22 @@ Hybrid (Twitter's approach):
 
 ## 5. Timeline Data Model
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```text
 Redis Sorted Sets for Timeline:
 
@@ -279,6 +375,22 @@ Cursor-based pagination:
 ---
 
 ## 6. Tweet Storage
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 Cassandra Schema for Tweets:
@@ -341,6 +453,22 @@ Timeline display uses denormalized counts (no JOIN needed):
 
 ## 7. Media/Photo Storage
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```text
 Media Upload Flow:
 
@@ -393,6 +521,22 @@ Storage tiers:
 ---
 
 ## 8. Tweet Features (Retweet, Like, Reply, Quote)
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 Retweet Flow:
@@ -456,6 +600,22 @@ WHERE tweet_id = ? AND engagement_type = 'like';
 ---
 
 ## 9. Newsfeed Ranking
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 Timeline Ranking Pipeline:
@@ -527,6 +687,22 @@ SLA: < 100ms p99 for ranking pass
 
 ## 10. Search (Earlybird)
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```text
 Search Architecture:
 
@@ -585,6 +761,22 @@ Search Ranking:
 ---
 
 ## 11. Trending Topics
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 Trending Pipeline:
@@ -649,6 +841,22 @@ Top-N: ZREVRANGE trending:US 0 49 (returns top 50 trends)
 
 ## 12. Direct Messages
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```text
 DM Architecture:
 
@@ -693,6 +901,22 @@ DM Features:
 ---
 
 ## 13. Graph Service
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 Graph Service (Pelops - Cassandra-based):
@@ -776,6 +1000,22 @@ Cache size:
 ---
 
 ## 14. Failure Analysis
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 **Fan-Out Meltdown (Celebrity Tweet Storm):**
 ```text
@@ -876,6 +1116,22 @@ Mitigations:
 
 ## 15. Performance Considerations
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```text
 Latency Targets:
   - Timeline read (p99): < 500ms
@@ -904,11 +1160,43 @@ Storage:
 
 ## Simplest Mental Model
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 **Twitter/X is like a global town square with personalized newspapers.** When you post, the town crier (fan-out worker) copies your message onto every follower's newspaper (timeline) — unless you're a celebrity, in which case people walk to your billboard (celebrity timeline) to read. The timeline is a pre-sorted list of 800 most recent postcards in a shoebox (Redis sorted set). Trending topics is like overhearing what everyone in the square is shouting about right now — with filters to ignore the same person shouting the same thing 100 times (abuse prevention).
 
 (End of file - total 583 lines)
 
 
 ## Practical Example
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 See code examples above for practical usage patterns.

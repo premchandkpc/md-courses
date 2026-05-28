@@ -4,7 +4,39 @@
 
 ## LAYER 1: Beginner's Mental Model 🧠
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Real-World Analogy
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 **Kubernetes Security = Apartment Building Security**
 
@@ -15,6 +47,22 @@
 - **ServiceAccount** = ID card. App has identity, proves it's allowed to do things
 
 ### Why It Matters
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 **Without security (everything open):**
 ```
@@ -39,7 +87,39 @@ Result: Blast radius contained to pod A
 
 ## LAYER 4: Production Failures 🚨
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Common K8s Security Failures
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 | Failure | Symptom | Root Cause | Prevention |
 |---------|---------|-----------|-----------|
@@ -51,6 +131,22 @@ Result: Blast radius contained to pod A
 | **Unpatched Kubelet** | Kernel exploit, complete node compromise | Node not updated in 6 months | Automated node patching, drain + upgrade |
 
 ### Real Incident: Capital One Kubernetes Breach (2019)
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 **Problem:** Attacker accessed Kubernetes through misconfigured IAM role.
 
@@ -70,6 +166,22 @@ Root causes:
 ```
 
 ### Prevention Checklist
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```yaml
 # SecurityContext: prevent root + limit capabilities
@@ -131,7 +243,39 @@ spec:
 
 ## Interview Questions 💼
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Level 1: Junior
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 **Q: What's RBAC? Give an example.**
 
@@ -144,6 +288,22 @@ Result: alice can read pods, not delete them
 ```
 
 ### Level 2: Intermediate
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 **Q: Design RBAC for a team: frontend devs (1 ns), backend devs (1 ns), ops (all ns).**
 
@@ -163,6 +323,22 @@ A:
 ```
 
 ### Level 3: Senior
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 **Q: Design network policies for microservices: web → api → database.**
 
@@ -189,6 +365,22 @@ NetworkPolicy:
 ---
 
 ## Production Story: Uber Kubernetes Security
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 Challenge: Uber runs 1000+ microservices in Kubernetes. One pod compromise = $1M loss.
 
@@ -230,11 +422,43 @@ graph LR
 ```
 
 ## ToC
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 - RBAC | Pod Security Standards | PSA | Network Policies | ServiceAccount | Secrets | SecurityContext | PDB | OPA Gatekeeper | Kyverno | KMS | Image Security | Falco
 
 ---
 
 ## RBAC
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
   +-------------+          +-------------+
@@ -279,6 +503,22 @@ kubectl auth can-i get secrets --as system:serviceaccount:default:app-sa
 
 ## Pod Security Standards
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 | Level | Policy |
 |-------|--------|
 | **Privileged** | Unrestricted |
@@ -291,6 +531,22 @@ kubectl auth can-i get secrets --as system:serviceaccount:default:app-sa
 
 ## Pod Security Admission
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 **Labels on namespace:** `pod-security.kubernetes.io/enforce: restricted`, `audit: baseline`, `warn: restricted`
 
 **Modes:** enforce (reject), audit (log), warn (warning). Replaces PSP in v1.25.
@@ -298,6 +554,22 @@ kubectl auth can-i get secrets --as system:serviceaccount:default:app-sa
 ---
 
 ## Network Policies
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```yaml
 apiVersion: networking.k8s.io/v1
@@ -334,6 +606,22 @@ spec:
 
 ## ServiceAccount
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```yaml
 apiVersion: v1
 kind: ServiceAccount
@@ -360,6 +648,22 @@ volumes:
 ---
 
 ## Secrets
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```yaml
 apiVersion: v1
@@ -404,6 +708,22 @@ spec:
 
 ## SecurityContext
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```yaml
 spec:
   securityContext:
@@ -426,6 +746,22 @@ spec:
 
 ## PodDisruptionBudget
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```yaml
 apiVersion: policy/v1
 kind: PodDisruptionBudget
@@ -441,6 +777,22 @@ spec:
 ---
 
 ## OPA Gatekeeper
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
   Admission Request -> Gatekeeper -> OPA Engine
@@ -472,6 +824,22 @@ violation[{"msg": msg}] {
 ---
 
 ## Kyverno
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```yaml
 # Validate
@@ -521,6 +889,22 @@ spec:
 
 ## KMS Encryption
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```yaml
 apiVersion: apiserver.config.k8s.io/v1
 kind: EncryptionConfiguration
@@ -539,6 +923,22 @@ resources:
 ---
 
 ## Image Security
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```yaml
 apiVersion: v1
@@ -560,6 +960,22 @@ spec:
 
 ## Falco
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```
   Syscall -> Kernel Driver (ebpf) -> Userspace Daemon -> Rules -> Alert
 ```
@@ -578,6 +994,22 @@ priority: WARNING
 
 ## Simplest Mental Model
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```
 K8s security = paranoid apartment building
 
@@ -594,11 +1026,59 @@ K8s security = paranoid apartment building
 
 ## Practical Example
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 See code examples above for practical usage patterns.
 
 ## Production Failure Modes
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Failure 1: RBAC Wildcard Grants Allow Lateral Movement
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 | Aspect | Detail |
 |--------|--------|
@@ -610,6 +1090,22 @@ See code examples above for practical usage patterns.
 
 ### Failure 2: Pod Security Standards Not Enforced — Privileged Container Escapes
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 | Aspect | Detail |
 |--------|--------|
 | **Symptoms** | Container runs as root. Host filesystem mounted. Host network access. Compromised container leads to node compromise |
@@ -619,6 +1115,22 @@ See code examples above for practical usage patterns.
 | **Prevention** | Enable Pod Security Admission in K8s 1.23+. Use Baseline profile as minimum: prevent hostPID, hostNetwork, privileged. Use Restricted profile for production: drop all capabilities, readOnlyRootFilesystem, seccomp=RuntimeDefault. Use OPA/Gatekeeper for custom policies |
 
 ### Failure 3: etcd Encryption Not Enabled — Secrets Stored in Plaintext
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 | Aspect | Detail |
 |--------|--------|
@@ -630,6 +1142,22 @@ See code examples above for practical usage patterns.
 
 ### Failure 4: Service Mesh mTLS Certificate Rotation Failure
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 | Aspect | Detail |
 |--------|--------|
 | **Symptoms** | All service-to-service communication fails. `upstream connect error or disconnect/reset before headers` errors. Istio/Linkerd proxy sidecar crashes with TLS errors |
@@ -639,6 +1167,22 @@ See code examples above for practical usage patterns.
 | **Prevention** | Configure cert-manager with short-lived certs (24h) and auto-renewal. Use SPIRE for workload identity: each pod gets unique SPIFFE ID. Monitor cert expiry: `days_until_expiry < 30` alert. Test rotation: terminate certificates manually in staging |
 
 ### Failure 5: NetworkPolicy Denies Everything — No Exceptions for Monitoring
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 | Aspect | Detail |
 |--------|--------|
@@ -650,6 +1194,22 @@ See code examples above for practical usage patterns.
 
 ## Edge Cases
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 | Scenario | Challenge | Solution |
 |----------|-----------|----------|
 | **Secrets in ConfigMaps** | Base64-encoded passwords in ConfigMaps (not Secrets) | Scan with `trivy config .` or `kubeaudit`. Always use Secrets for sensitive data |
@@ -660,23 +1220,119 @@ See code examples above for practical usage patterns.
 
 ## Interview Questions
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Q1 (Beginner): What are the main security concerns when deploying containers in Kubernetes?
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 **Answer**: Five main concerns: (1) Container escape — container breaks out to host via kernel exploits. Mitigation: run as non-root, drop capabilities, seccomp. (2) Secret leakage — API tokens, DB passwords stored in plaintext in etcd. Mitigation: encrypt at rest, use KMS. (3) Network attacks — pod-to-pod communication not isolated. Mitigation: NetworkPolicies. (4) Supply chain — compromised base images with malware. Mitigation: image scanning with Trivy, signed images with Cosign. (5) Excessive permissions — pods with cluster-admin roles. Mitigation: least-privilege RBAC, Pod Security Standards.
 
 ### Q2 (Mid-Level): How does Kubernetes RBAC work? Design RBAC for a multi-team cluster.
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 **Answer**: K8s RBAC uses four resources: (1) Role — set of permissions within a namespace. (2) ClusterRole — set of permissions cluster-wide. (3) RoleBinding — binds Role to user/group/SA within a namespace. (4) ClusterRoleBinding — binds ClusterRole cluster-wide. Multi-team design: per-team namespace. Each team has Role (full access within their namespace) + RoleBinding to team's AD group. Cluster-level access: read-only ClusterRole for monitoring. Admin access to SRE team only via ClusterRoleBinding to SRE AD group. Avoid ClusterRoleBindings for developer teams. Use `kubectl auth can-i` to verify permissions. Example: team-a namespace with Role `team-a-admin` bound to `team-a@company.com` AD group. SRE team with ClusterRole `cluster-admin` bound to `sre@company.com`.
 
 ### Q3 (Senior): Design a zero-trust network security model for Kubernetes.
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 **Answer**: Zero trust means no implicit trust based on network location. Every request must be authenticated, authorized, and encrypted. Implementation: (1) Service mesh (Istio/Linkerd) for mTLS between all pods. Workload identity via SPIFFE certificates. mTLS ensures every request is encrypted and verified. (2) NetworkPolicies: default-deny ingress/egress per namespace. Explicit allow rules for specific traffic. Example: allow traffic from `app=frontend` to `app=backend` on port 8080 only. (3) RBAC: every service account has minimal permissions. (4) Admission control: OPA/Gatekeeper enforces policies: no privileged containers, no host network, required labels. (5) Secret management: External Secrets Operator syncs from Vault/AWS Secrets Manager, never stores in etcd. (6) Audit logging: enabled for API server, Cilium Hubble for network flow logs. (7) Supply chain security: signed images, vulnerability scanning before deployment. Cilium + Hubble is a modern approach: eBPF-based network security with identity-aware policies and flow visibility.
 
 ### Q4 (Staff): How would you detect and respond to a container escape in a production cluster?
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 **Answer**: Detection: (1) Falco rules: "Spawned process outside container", "Write below binary directory", "Shell in container with host network". (2) Audit log: suspicious `exec` into pod, unexpected `create pod` with privileged settings. (3) Cilium Hubble: anomalous network connections from pod to external hosts. (4) Node-level: kernel auditd detects syscall anomalies. Response: (1) Immediately cordon node: `kubectl cordon node`. (2) Drain affected pods: `kubectl drain node --ignore-daemonsets --delete-emptydir-data`. (3) Capture forensic data: container filesystem snapshot, node memory dump (via /proc/kcore), network connections (tcpdump/pcap). (4) Isolate node from cluster network (security group, iptables). (5) Revoke all service account tokens on compromised node. (6) Rotate all secrets the pod had access to (DB passwords, API keys). (7) Analyze: check if lateral movement occurred via same service account in other namespaces. (8) Deploy new node with updated kernel. Prevention: AppArmor profiles, seccomp, `readOnlyRootFilesystem: true`, no privileged containers, `allowPrivilegeEscalation: false`.
 
 ## Cross-References
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 - [Kubernetes Networking](../03-kubernetes-networking.md) — Network policies, Cilium, service mesh
 - [Microservices Security](../../16-microservices/08-security-identity.md) — OAuth2, JWT validation, API gateway

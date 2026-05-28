@@ -42,6 +42,22 @@ graph LR
 
 ## Table of Contents
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 1. [Scenario A: TTL Misconfiguration → Cache Poisoning Amplification — Blue-Green TTL Reduction Sets Off Cascading DNS Failure](#scenario-a-ttl-misconfiguration--cache-poisoning-amplification--blue-green-ttl-reduction-sets-off-cascading-dns-failure)
 2. [Scenario B: Upstream Resolver Cache Storm — ISP Resolver Overload Causes Regional Outage](#scenario-b-upstream-resolver-cache-storm--isp-resolver-overload-causes-regional-outage)
 3. [Scenario C: DNSSEC Validation Chain Break — Root Key Rollover Causes Widespread Resolution Failures](#scenario-c-dnssec-validation-chain-break--root-key-rollover-causes-widespread-resolution-failures)
@@ -54,6 +70,22 @@ graph LR
 ---
 
 ## Background: MeridianPay Architecture
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 COMPANY: MeridianPay — Fintech Platform
@@ -138,7 +170,39 @@ COMPANY: MeridianPay — Fintech Platform
 
 ## Scenario A: TTL Misconfiguration → Cache Poisoning Amplification — Blue-Green TTL Reduction Sets Off Cascading DNS Failure
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Symptom
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 12:30:00 — Users start seeing "server not found" errors in mobile app
@@ -155,6 +219,22 @@ COMPANY: MeridianPay — Fintech Platform
 ```
 
 ### Detection
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 ── APPLICATION-IMPACT SIGNALS
@@ -198,6 +278,22 @@ Cache Hit Ratio
 ```
 
 ### Investigation
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 ── INVESTIGATION LOG
@@ -384,6 +480,22 @@ T+00:20:00  — Additional discovery: the NEGATIVE CACHING EFFECT:
 
 ### Root Cause
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```
 ROOT CAUSE: TTL MISCONFIGURATION → CASCADE AMPLIFICATION
 ═══════════════════════════════════════════════════════════
@@ -453,6 +565,22 @@ ROOT CAUSE: TTL MISCONFIGURATION → CASCADE AMPLIFICATION
 ```
 
 ### Timeline
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 DETAILED INCIDENT TIMELINE
@@ -574,6 +702,22 @@ DETAILED INCIDENT TIMELINE
 
 ### Outage Propagation Diagram
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```
 OUTAGE PROPAGATION ═══ PROGRESSIVE CASCADE
 ══════════════════════════════════════════════════════════════════════════
@@ -644,6 +788,22 @@ OUTAGE PROPAGATION ═══ PROGRESSIVE CASCADE
 ```
 
 ### Technical Deep Dive
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 DNS RESOLUTION FLOW — NORMAL VS. OUTAGE
@@ -1018,6 +1178,22 @@ DNSSEC — WHY IT MATTERS AND HOW IT WORKS
 
 ### Mitigation
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```
 ── IMMEDIATE: TTL ROLLBACK
 
@@ -1182,6 +1358,22 @@ public DnsResolver {
 ```
 
 ### Resolution
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 ── PERMANENT FIX 1: DNSSEC DEPLOYMENT
@@ -1435,7 +1627,39 @@ groups:
 
 ## Scenario B: Upstream Resolver Cache Storm — ISP Resolver Overload Causes Regional Outage
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Symptom
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 09:00:00 — Major ISP (Comcast) rolls out resolver software update
@@ -1451,6 +1675,22 @@ groups:
 ```
 
 ### Detection
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 ── REGIONAL PATTERN DETECTION
@@ -1489,6 +1729,22 @@ Comcast DNS resolver bug:
 
 ### Investigation and Root Cause
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```
 UPSTREAM RESOLVER CACHE STORM
 ══════════════════════════════
@@ -1526,6 +1782,22 @@ UPSTREAM RESOLVER CACHE STORM
 ```
 
 ### Mitigation
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 ── WORKAROUNDS FOR ISP CACHE VIOLATION
@@ -1576,7 +1848,39 @@ $ aws route53 change-resource-record-sets \
 
 ## Scenario C: DNSSEC Validation Chain Break — Root Key Rollover Causes Widespread Resolution Failures
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Symptom
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 14:00:00 — IANA performs scheduled Root Zone KSK rollover
@@ -1593,6 +1897,22 @@ $ aws route53 change-resource-record-sets \
 ```
 
 ### Root Cause
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 DNSSEC VALIDATION CHAIN BREAK
@@ -1625,6 +1945,22 @@ DNSSEC VALIDATION CHAIN BREAK
 
 ### Detection
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```
 ── INTERNAL RESOLVER LOGS
 
@@ -1654,6 +1990,22 @@ $ unbound-anchor -v
 ```
 
 ### Mitigation
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 ── IMMEDIATE: DISABLE DNSSEC VALIDATION TEMPORARILY
@@ -1707,7 +2059,39 @@ $ dig +dnssec api.meridianpay.com @unbound.internal
 
 ## Scenario D: CNAME Chain Resolution Timeout — Deep CNAME Nesting Causes Latency Spikes
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Symptom
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 Payment service DNS resolution went from 5ms to 3,500ms after a routine change.
@@ -1727,6 +2111,22 @@ per resolution. At cache miss: 14 × 250ms (Route53 latency) = 3.5 seconds.
 ```
 
 ### Resolution
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 CNAME FLATTENING:
@@ -1760,7 +2160,39 @@ CNAME FLATTENING:
 
 ## Scenario E: Multi-Provider Failover Split-Brain — Partial Propagation Causes Geographic Inconsistency
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Symptom
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 During a Route53 partial outage (us-east-1 impaired), automated failover
@@ -1774,6 +2206,22 @@ shifted traffic to Cloudflare. However:
 ```
 
 ### Root Cause
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 SPLIT-BRAIN DNS:
@@ -1805,6 +2253,22 @@ SPLIT-BRAIN DNS:
 ```
 
 ### Resolution
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 ── FIX: UNIFIED DNSSEC KEYS ACROSS PROVIDERS
@@ -1859,7 +2323,39 @@ SPLIT-BRAIN DNS:
 
 ## Detection and Monitoring Reference
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### DNS Monitoring Metrics
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```yaml
 ── PROMETHEUS METRICS (CoreDNS exposed)
@@ -1980,6 +2476,22 @@ $ dig +dnssec api.meridianpay.com @9.9.9.9 +short
 
 ### Key Metrics Reference
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 | Metric | Source | Warning | Critical |
 |--------|--------|---------|----------|
 | `NXDOMAIN` rate | CoreDNS metrics | > 5% | > 20% |
@@ -1998,7 +2510,39 @@ $ dig +dnssec api.meridianpay.com @9.9.9.9 +short
 
 ## Mitigation Playbook
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### TTL Misconfiguration / Cache Poisoning
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 1. ROLLBACK TTL: Restore previous TTL values (300s+)
@@ -2013,6 +2557,22 @@ $ dig +dnssec api.meridianpay.com @9.9.9.9 +short
 
 ### Resolver Cache Violation (ISP ignoring TTL)
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```
 1. IDENTIFY affected ISPs: Geo-IP analysis of error locations
 2. VERIFY across resolvers: dig @isp-resolver vs @public-resolver
@@ -2023,6 +2583,22 @@ $ dig +dnssec api.meridianpay.com @9.9.9.9 +short
 ```
 
 ### DNSSEC Validation Failure
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 1. DISABLE validation: Set val-permissive-mode (Unbound) / bypass validation
@@ -2035,6 +2611,22 @@ $ dig +dnssec api.meridianpay.com @9.9.9.9 +short
 
 ### CNAME Chain Length
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```
 1. FLATTEN chains: Point to ALIAS record or final target directly
 2. MEASURE: audit-all-dns.sh — count CNAME hops per record
@@ -2044,6 +2636,22 @@ $ dig +dnssec api.meridianpay.com @9.9.9.9 +short
 ```
 
 ### Multi-Provider Split-Brain
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 1. UNIFY DNSSEC keys: Single signing provider with shared keys
@@ -2057,7 +2665,39 @@ $ dig +dnssec api.meridianpay.com @9.9.9.9 +short
 
 ## Permanent Fixes and Configuration Reference
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### DNS Designer: TTL Architecture
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```yaml
 ── TTL POLICY (enforced by CI/CD)
@@ -2116,6 +2756,22 @@ dns_ttl_policy:
 ```
 
 ### DNS Infrastructure: Reference Architecture
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```yaml
 ── DNS PROVIDER CONFIGURATION
@@ -2202,6 +2858,22 @@ server:
 ```
 
 ### DNS Testing and Validation
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```bash
 ── COMPREHENSIVE DNS AUDIT SCRIPT
@@ -2295,7 +2967,39 @@ exit $FAILURES
 
 ## Lessons Learned
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### DNS Design Patterns
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 1. **TTL is not just a performance optimization — it is a reliability control.** Short TTLs amplify failures by increasing query rate, cache coherency window, and negative caching impact. Always design TTL in tiers with a minimum floor.
 
@@ -2307,6 +3011,22 @@ exit $FAILURES
 
 ### TTL Management Strategy
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 5. **The minimum TTL should be 60s, not 30s.** The difference between 30s and 60s is negligible for blue-green deployments (1 minute to cut over vs 30 seconds) but halves the query load on authoritative servers and reduces amplification effects.
 
 6. **Increase TTL before making changes, not after.** Before changing a record: increase TTL 10x, wait 2× old TTL, then make the change. This ensures all resolvers have fresh, long-lived cache entries. After change, gradually reduce TTL if needed.
@@ -2314,6 +3034,22 @@ exit $FAILURES
 7. **Staged TTL increase before decommissioning records.** This is the single most preventable cause of DNS cache poisoning incidents. Never delete a DNS record while it still has valid TTL in any resolver's cache.
 
 ### Multi-Provider DNS Design
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 8. **Primary-secondary with consistent data beats active-active with split data.** Active-active DNS with different providers serving the same zone requires perfect synchronization. Primary-secondary with health-check failover is simpler to reason about and debug.
 
@@ -2323,6 +3059,22 @@ exit $FAILURES
 
 ### Observability for DNS
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 11. **DNS was "invisible" in monitoring before this incident.** We had p99 latency alerts for HTTP but not for DNS. The NXDOMAIN rate metric (now in Grafana) caught the next incident 4 minutes faster than our previous best detection time.
 
 12. **Synthetic DNS monitoring from multiple locations catches what infrastructure monitoring misses.** ISP resolver issues, geographic propagation delays, and middlebox interference are invisible from within the data center. Deploy synthetic monitors in at least 3 global regions.
@@ -2331,6 +3083,22 @@ exit $FAILURES
 
 ### Incident Response Improvements
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 14. **DNS incidents require cross-team coordination (SRE, platform, network, security).** The first 15 minutes were wasted assuming DDoS. A "DNS incident" Slack channel with the right team members pre-invited would have cut investigation time in half.
 
 15. **Cache flush procedures must be documented and tested.** In this incident, we couldn't flush Route53 cache (no public API), didn't have ISP NOC contacts ready, and had never tested CoreDNS negative cache override. The runbook now includes specific commands and contact information.
@@ -2338,6 +3106,22 @@ exit $FAILURES
 16. **The difference between a minor issue and a SEV-1 is the amplification factor.** Rare is the DNS incident caused by a single failure. Almost every DNS outage is a cascade: one stale record → poisoned CNAME chain → negative cache → retry storm → resolver overload. Mitigate the amplification vectors, not just the root cause.
 
 ### Edge Cases
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 17. **Stale cache after failover:** After shifting traffic to Cloudflare, some ISP resolvers continued returning old Route53 data for up to 24 hours. Workaround: use a CDN proxy (Cloudflare orange cloud) so the ISP resolver only sees Cloudflare's anycast IPs, which don't change.
 
@@ -2351,7 +3135,39 @@ exit $FAILURES
 
 ## Configuration Reference
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Route53 Zone Configuration
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```json
 ── SAMPLE ROUTE53 ZONE WITH DNSSEC + FAILOVER
@@ -2442,6 +3258,22 @@ exit $FAILURES
 
 ### Cloudflare Secondary Configuration
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```yaml
 ── CLOUDFLARE DNS SETTINGS (secondary/backup)
 
@@ -2479,6 +3311,22 @@ rate_limiting:
 ```
 
 ### CoreDNS Production Configuration
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```yaml
 ── COREDNS DEPLOYMENT (Kubernetes)
@@ -2564,6 +3412,22 @@ spec:
 ```
 
 ### Terraform DNS Module (Reference)
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```hcl
 ── TERRAFORM DNS MODULE
@@ -2673,6 +3537,22 @@ resource "aws_sns_topic" "dns_incidents" {
 
 ## Appendix: DNS Troubleshooting Commands
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```bash
 ── QUICK DIAGNOSTIC COMMANDS
 
@@ -2728,6 +3608,22 @@ $ python3 -c "import socket; print(socket.getaddrinfo('api.meridianpay.com', 443
 ---
 
 ## Related
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 - [Databases](../../08-databases/) — Outages, corruption, performance
 - [Distributed Systems](../../09-distributed-systems/) — Consensus, cascade failures

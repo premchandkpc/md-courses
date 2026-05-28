@@ -33,6 +33,22 @@ graph LR
 ```
 
 ## Table of Contents
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 - [Multi-AZ vs Read Replicas](#multi-az-vs-read-replicas)
 - [RDS Proxy](#rds-proxy)
 - [Aurora vs RDS Architecture](#aurora-vs-rds-architecture)
@@ -52,6 +68,22 @@ graph LR
 
 ## Multi-AZ vs Read Replicas
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```text
 Multi-AZ: Writer --sync--> Standby (diff AZ). Single endpoint. Auto-failover 60-120s. No read scaling.
 Read Replicas: Writer --async--> RR (same/cross region). Separate reader endpoint. Up to 15 replicas.
@@ -70,6 +102,22 @@ Read Replicas: Writer --async--> RR (same/cross region). Separate reader endpoin
 
 ## RDS Proxy
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 Fully managed connection pooler: app -> RDS Proxy -> RDS/Aurora.
 
 **Connection pooling**: Reuses DB connections across many clients. Essential for Lambda where each invocation creates a new connection - without Proxy, Lambda can exhaust DB max connections.
@@ -83,6 +131,22 @@ Fully managed connection pooler: app -> RDS Proxy -> RDS/Aurora.
 **Cost**: $0.015/hr per ACU. Each ACU handles ~2000 connections. Best for Lambda + RDS, serverless, connection-heavy apps.
 
 ## Aurora vs RDS Architecture
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 RDS: EC2 + EBS (block storage, max 16 TB)
@@ -102,17 +166,65 @@ Aurora's shared storage means replicas have zero copy overhead. Failover is fast
 
 ## Aurora Serverless v2 & Global Database
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 **Serverless v2**: Auto-scales 0.5 to 128 ACU (~2 GB memory + CPU each). Sub-second scaling with warm pool prevents cold starts. Supports Multi-AZ, Global DB, read replicas. vs v1: v2 has fine-grained 0.5 ACU, Multi-AZ, Global DB - v1 was single-AZ only.
 
 **Global Database**: Primary region -> async replication to secondaries. RPO < 1 second. Up to 16 read replicas per secondary. Promote to primary in ~1 minute for DR. Write forwarding from secondary to primary. For global applications needing low-latency reads worldwide.
 
 ## Aurora Parallel Query & RDS Custom
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 **Parallel Query**: Pushdown COUNT, SUM, AVG, GROUP BY to Aurora storage layer. Storage processes data in-place and returns only aggregated results. Up to 100x faster for analytic queries. No impact on OLTP workload. No extra cost.
 
 **RDS Custom**: Full OS + database access (SSH/RDP) for SQL Server and Oracle. AWS still manages backup, replication, failover. You manage OS patches, custom extensions, 3rd-party tools, kernel parameters. For BYOL and specific performance tuning needs.
 
 ## Performance Insights
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 DB load visualization: AAS (Average Active Sessions). Breakdown by Top SQL (which queries consume most load), Waits (IO:write, CPU, Lock), Hosts (which app server), Users (which DB user).
 
@@ -122,15 +234,63 @@ DB load visualization: AAS (Average Active Sessions). Breakdown by Top SQL (whic
 
 ## Blue/Green Deployments
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 Zero-downtime schema changes and major version upgrades. Blue (prod, current) <--sync--> Green (staging, upgraded + schema changes applied). Switchover in < 1 minute. No data loss. Rollback = point DNS back to Blue.
 
 ## Zero-Downtime Patching & Cross-Region Replicas
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 **Patching**: RDS Multi-AZ (patch standby -> failover -> patch old primary, < 60s). Aurora (storage layer patching, no downtime with Proxy). Major version upgrades: use Blue/Green deployments.
 
 **Cross-Region Replicas**: Async replication to other AWS regions. Uses KMS cross-region encryption keys. Promote any replica to standalone primary. For disaster recovery, local reads for global users, migration zero-downtime cutover.
 
 ## RDS Event Subscription Deep Dive
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 RDS Event Notifications via SNS. Categories with namespaces: **DB Instance** (creation, deletion, failover, maintenance, scaling, backup, configuration change, low storage, read replica), **DB Parameter Group** (reset, modification), **DB Security Group** (creation, deletion, revocation, authorization), **DB Snapshot** (creation, deletion, copy, sharing, restoration), **DB Cluster** (creation, deletion, failover, scaling, maintenance).
 
@@ -142,6 +302,22 @@ RDS Event Notifications via SNS. Categories with namespaces: **DB Instance** (cr
 
 ## Instance Scheduler & Automation
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 **Stop/Start scheduling**: AWS Instance Scheduler (Solution) on EC2 + DynamoDB + Lambda. Tag-based: `Schedule=office-hours`. Stop non-prod RDS instances off-hours (up to 70% savings). Start-stop doesn't affect storage billing.
 
 **Maintenance windows**: Defined 30-60m weekly. Fallback - occurs at next window if first fails. Allows pending modifications to apply. OS patching requires restart (less than 60s with Multi-AZ).
@@ -150,17 +326,65 @@ RDS Event Notifications via SNS. Categories with namespaces: **DB Instance** (cr
 
 ## Encryption at Rest & In Transit
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 **At rest**: AES-256 via KMS. Set at DB creation. Cannot encrypt existing unencrypted instance directly - create snapshot, restore to encrypted copy.
 
 **In transit**: TLS/SSL. Enforce via parameter group: MySQL `require_secure_transport=ON`, PostgreSQL `ssl=ON`. RDS provides regional certificate bundles.
 
 ## IAM Database Auth & Activity Streams
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 **IAM DB auth**: `generate_db_auth_token()` produces 15-min token used as DB password. No passwords in code. Setup: enable IAM DB auth -> create DB user with AWSAuthenticationPlugin -> app gets token -> uses as password. Centralized access control via IAM policies.
 
 **Activity Streams**: Real-time database audit to Kinesis. Captures SQL, login/logout, DDL, DML. < 1s latency. No DB plugin needed. Firehose to S3/OpenSearch. For compliance (GDPR, HIPAA, SOC 2, PCI DSS).
 
 ## RDS Proxy vs PgBouncer
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 | Feature | RDS Proxy | PgBouncer |
 |---------|-----------|-----------|
@@ -174,11 +398,43 @@ RDS Event Notifications via SNS. Categories with namespaces: **DB Instance** (cr
 
 ## Export to S3 & Event Notifications
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 **Export to S3**: Export snapshots to Apache Parquet (columnar, compressed) in S3. Per-table selection. Query with Athena, Redshift Spectrum, Glue ETL. No production impact. For data lakes, analytics, compliance archives.
 
 **Event Notifications**: RDS publishes to SNS. Categories: failover, backup, maintenance, scaling, creation/deletion, read replica, low storage. Subscribe email/Lambda/SQS.
 
 ## RDS Best Practices Summary
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 **HA**: Always Multi-AZ for production. Use RDS Proxy. Enable automated backups > 7 days. Enable deletion protection.
 
@@ -191,6 +447,22 @@ RDS Event Notifications via SNS. Categories with namespaces: **DB Instance** (cr
 **Monitoring**: Set CloudWatch alarms on CPUUtilization > 80%, DatabaseConnections > 80% of max, FreeStorageSpace < 10% (set storage autoscaling), ReplicaLag > 60s (check primary CPU). Performance Insights > 7 days for prod. Enhanced Monitoring for OS-level diagnostics.
 
 ## More RDS Features
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 **RDS Custom for Oracle/SQL Server**: Full OS + DB admin access via SSH/RDP. Customize database engine parameters, apply patches, install 3rd-party tools. Still get automated backups, automatic failover, built-in monitoring. For legacy apps requiring OS-level control. Supports up to 64 TiB storage (Oracle). Can't use Multi-AZ with certain customizations.
 
@@ -233,6 +505,22 @@ RDS Event Notifications via SNS. Categories with namespaces: **DB Instance** (cr
 
 ## Simplest Mental Model
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 > **RDS = managed parking garage for databases.**
 >
 > Multi-AZ = spare tire (sync, auto-failover). Read Replicas = valet parks a copy elsewhere (async, manual-promote). RDS Proxy = traffic cop directing drivers to open spots. Aurora = conveyor belt sharing one garage (6 copies across 3 floors, < 30s failover). Serverless = garage that auto-expands. Performance Insights = dashboard showing which queries cause traffic jams. Blue/Green = backup garage to test changes before switchover.
@@ -244,7 +532,39 @@ RDS Event Notifications via SNS. Categories with namespaces: **DB Instance** (cr
 
 ## Code Examples
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Python with RDS Proxy
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```python
 import psycopg2
@@ -270,6 +590,22 @@ conn.close()
 
 ### Node.js with Connection Pooling
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```javascript
 const { Pool } = require('pg');
 
@@ -291,6 +627,22 @@ pool.query('SELECT * FROM users', (err, res) => {
 ```
 
 ### Java with Aurora Cluster Endpoints
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```java
 String writerEndpoint = "writer.cluster-xxx.us-east-1.rds.amazonaws.com";
@@ -319,7 +671,39 @@ if (query.startsWith("SELECT")) {
 
 ## Common Failure Modes
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### 1. Connection Pool Exhaustion
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 **Problem**: Application cannot connect. "Too many connections" error.
 
@@ -348,6 +732,22 @@ Or fix leaks in app:
 
 ### 2. Read Replica Lag During High Write Load
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 **Problem**: Replica returns stale data. Application sees inconsistency.
 
 **Root cause**:
@@ -372,6 +772,22 @@ Fix:
 ```
 
 ### 3. Multi-AZ Failover Delays (60-120s)
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 **Problem**: Downtime during failover. Clients timeout.
 
@@ -402,6 +818,22 @@ Monitor failover events
 
 ### 4. Encryption Key Rotation Issues
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 **Problem**: Application loses connectivity after KMS key rotation.
 
 **Root cause**:
@@ -426,7 +858,39 @@ Monitor key rotation
 
 ## Interview Questions
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Q1: When should you use Aurora vs standard RDS?
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 **Answer**:
 
@@ -445,6 +909,22 @@ Monitor key rotation
 Trade-off: Aurora costs more but provides better reliability, faster failover, automatic repair.
 
 ### Q2: RDS Proxy vs app-level connection pool. Which to use?
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 **Answer**:
 
@@ -465,6 +945,22 @@ Trade-off: Aurora costs more but provides better reliability, faster failover, a
 - Isolation + efficiency
 
 ### Q3: How would you design for read-heavy workload with consistent data?
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 **Answer**:
 
@@ -505,12 +1001,44 @@ Balances cost + consistency
 
 ## Related
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 - [Databases internals](../../08-databases/)
 - [Distributed Systems patterns](../../09-distributed-systems/)
 - [Cloud Architecture](../)
 
 
 ## Observability
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```mermaid
 flowchart LR
@@ -530,6 +1058,22 @@ flowchart LR
 
 ### Key Metrics
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 | Metric | Unit | Threshold | Indicates |
 |--------|------|-----------|-----------|
 | DatabaseConnections | count | < 80% of max_connections | Connection pool exhaustion |
@@ -542,6 +1086,22 @@ flowchart LR
 
 ### Logs
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 - **ERROR**: Connection failures, deadlock detected, out of shared memory, replication conflict
 - **WARN**: Long-running query (> 5s), autovacuum triggered, checkpoint frequency high
 - **INFO**: Backup started/completed, parameter group change, failover event
@@ -549,9 +1109,41 @@ flowchart LR
 
 ### Traces
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 Use AWS X-Ray or OpenTelemetry to trace database queries. Capture query text, duration, rows returned, and connection pool state.
 
 ### Alerts
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 | Severity | Condition | Response |
 |----------|-----------|----------|
@@ -563,6 +1155,22 @@ Use AWS X-Ray or OpenTelemetry to trace database queries. Capture query text, du
 
 ### Dashboards
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 **RDS Overview**: instance health, connections, CPU/memory, read/write latency, IOPS, storage space, network throughput.
 
 **Replication Dashboard**: replica lag, replication slot state, WAL generation rate, archive lag.
@@ -570,7 +1178,39 @@ Use AWS X-Ray or OpenTelemetry to trace database queries. Capture query text, du
 
 ## Common Failures
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Failure: Connection Pool Exhaustion
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 - **Symptoms**: New connections fail with "too many clients". Application timeouts. `FATAL: remaining connection slots are reserved for non-replication superuser connections`.
 - **Root Cause**: max_connections too low for workload. Application not closing connections. Connection pooling layer (pgbouncer/RDS Proxy) misconfigured. Idle connections from ORM (Hibernate/Sequelize).
@@ -581,6 +1221,22 @@ Use AWS X-Ray or OpenTelemetry to trace database queries. Capture query text, du
 
 ### Failure: Replication Lag > WAL Retention
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 - **Symptoms**: Read replicas fall behind, queries return stale data. Replica lag grows until replica needs rebuild. `ERROR: requested WAL segment XXX has already been removed`.
 - **Root Cause**: Replica CPU/I/O too slow to keep up with primary write rate. Long-running queries on replica block WAL replay. wal_keep_segments too low. Replication slot doesn't advance.
 - **Detection**: `ReplicaLag` CloudWatch metric > threshold. `pg_stat_replication.replay_lag` increasing. `replay_lag` in `pg_stat_replication`.
@@ -588,6 +1244,22 @@ Use AWS X-Ray or OpenTelemetry to trace database queries. Capture query text, du
 - **Prevention**: Monitor `wal_generation_rate` and ensure `wal_keep_segments` covers peak lag. Use replication slots with monitoring. Ensure replica has sufficient IOPS. Use read-only traffic to replicas only.
 
 ### Failure: Autovacuum Not Keeping Up
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 - **Symptoms**: Table bloat (table size >> actual data), XID wraparound risk, performance degradation. `pg_stat_user_tables.n_dead_tup` steadily increases.
 - **Root Cause**: High write throughput generates dead tuples faster than autovacuum can clean. Autovacuum throttled by default (cost_limit=200). Large tables need more aggressive tuning.
@@ -597,6 +1269,22 @@ Use AWS X-Ray or OpenTelemetry to trace database queries. Capture query text, du
 
 ### Failure: Long-Running Query
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 - **Symptoms**: High CPU, blocked vacuum, replication lag, connection pool exhaustion.
 - **Root Cause**: Missing index causing full table scan. Inefficient query plan. Data skew invalidating cached plan. Lock contention (DDL waiting for query).
 - **Detection**: `pg_stat_activity` shows query running > 5min. `pg_locks` shows granted=true, blocked=true. `state_change` timestamp old.
@@ -604,6 +1292,22 @@ Use AWS X-Ray or OpenTelemetry to trace database queries. Capture query text, du
 - **Prevention**: Set `statement_timeout`. Enable `auto_explain` for slow queries. Monitor `pg_stat_activity`. Regular `ANALYZE`. Query plan review in CI.
 
 ### Failure: Deadlock Detection
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 - **Symptoms**: Transaction aborted with "deadlock detected" error. Application retries.
 - **Root Cause**: Two transactions each hold locks the other needs. Circular lock dependency. Common with concurrent updates on multiple rows in different order.

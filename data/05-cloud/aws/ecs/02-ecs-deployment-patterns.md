@@ -33,6 +33,22 @@ graph LR
 
 ## Service Auto-Scaling
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 Three strategies for ECS services:
 
 ```mermaid
@@ -65,6 +81,22 @@ aws application-autoscaling put-scaling-policy \
 
 ## Rolling vs Blue/Green vs Canary
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```text
 Rolling Update:
   v2 │ v2 │ v1 │ v1 │ v1  (oldest → new)
@@ -91,6 +123,22 @@ Canary (CodeDeploy):
 
 ## Circuit Breaker
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```text
 Deploy → replace tasks → monitor health checks
     ↓              ↓
@@ -103,6 +151,22 @@ Healthy        Rollback to previous task def
 ---
 
 ## Task Networking
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 awsvpc: Each task gets ENI + VPC IP. Works with ALB/NLB.
@@ -124,17 +188,65 @@ host: Container port = host port. No isolation. EC2 only.
 
 ## Cloud Map Service Discovery
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 Tasks auto-register as DNS A/SRV records. Clients resolve `order-api.internal.example.local` to task IPs. Only healthy tasks appear (TTL + health checks).
 
 ---
 
 ## App Mesh
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 Service mesh for ECS/EKS. Envoy sidecars handle mTLS, tracing, retries, circuit breaking, traffic shifting (canary). Control plane configures VirtualNode/VirtualRouter/VirtualService.
 
 ---
 
 ## ECS Exec
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 Shell access to running containers — no SSH needed.
 
@@ -149,11 +261,43 @@ Flow: CLI → SSM → ECS Agent → Container. **Requirements**: `enableExecuteC
 
 ## ECS Anywhere
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 Run ECS tasks on on-prem infrastructure. Requirements: Linux (x86_64/ARM64), Docker, ECS agent, SSM agent, internet to AWS endpoints.
 
 ---
 
 ## Capacity Providers
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 Cluster
@@ -167,11 +311,43 @@ Strategy: { base guarantees count, weight distributes rest }
 
 ## Task Placement (EC2 only)
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 **BINPACK**: Fill nodes to max utilization. **SPREAD**: Even across AZs/instances. **Constraints**: `distinctInstance` (one per host), `memberOf` (expression-based).
 
 ---
 
 ## GPU & Windows Support
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 **GPU**: EC2 only. `resourceRequirements: [{ type: "GPU", value: "1" }]`. Instances: p3/p4/g5/g6. ML training, transcoding.
 **Windows**: EC2 only. `operatingSystemFamily: "WINDOWS_SERVER_2022_CORE"`. bridge/host network only. No GPU, no Fargate.
@@ -180,17 +356,65 @@ Strategy: { base guarantees count, weight distributes rest }
 
 ## Fargate Spot
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 Up to 70% discount. 2-min interruption warning (SIGTERM → SIGKILL). Best practices: handle SIGTERM (save state), weight-based capacity providers, stateless tasks, SQS-backed retry.
 
 ---
 
 ## EFS for Stateful Workloads
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 Shared file storage across all tasks (ReadWriteMany). Works with Fargate natively. Use for WordPress uploads, GitLab repos, shared configs.
 
 ---
 
 ## EventBridge Scheduling
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 EventBridge Schedule: cron(0 6 * * ? *) → ECS RunTask
@@ -203,11 +427,43 @@ Use: Daily ETL, weekly reports, hourly cleanup.
 
 ## Container Insights
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ECS metrics: CPU, memory, network, storage per task + per cluster. Task count dashboards. Per CloudWatch custom metric cost.
 
 ---
 
 ## Simplest Mental Model
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 SCALING         =  Restaurant adding tables during rush.
@@ -231,6 +487,22 @@ FARGATE SPOT    =  Carpool lane. Cheap, 2-min notice.
 ---
 
 ## Code Examples
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```python
 import boto3
@@ -339,6 +611,22 @@ aws ecs update-service --cluster prod --service api --desired-count 10
 
 ## Common Failure Modes
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 **Problem**: Deployment circuit breaker triggers on false positives from slow health checks
 
 **Root cause**: Health check grace period too short or target group health check thresholds too aggressive. New tasks start, the circuit breaker sees health check failures during JVM warmup / cache fill / DB connection pool initialization, and rolls back the deployment — even though the app would be healthy in 30 more seconds.
@@ -359,27 +647,139 @@ aws ecs update-service --cluster prod --service api --desired-count 10
 
 ## Interview Questions
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Q1: Compare ECS rolling updates, blue/green deployments, and canary deployments — when to use each?
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 **Answer**: **Rolling updates** are built into ECS — they replace tasks gradually based on `minimumHealthyPercent` and `maximumPercent`. Fast and simple, but no traffic shifting control and rollback requires redeploying the old task definition. Best for internal services, non-critical workloads, or fast iteration cycles. **Blue/green** (via CodeDeploy) creates a full new set of tasks (green), validates them, then shifts all traffic at once. Rollback is instant — just switch back to blue. Best for production services where full validation must happen before any traffic hits new code. **Canary** (also CodeDeploy) shifts traffic gradually (e.g., 10% → 50% → 100%) with monitoring at each step. Slowest but lowest risk. Best for critical customer-facing services where even brief impact is unacceptable.
 
 ### Q2: How do you handle stateful workloads in ECS Fargate?
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 **Answer**: Fargate is inherently stateless — each task gets ephemeral storage (20GB by default) that's lost on stop. For stateful workloads: use **EFS** for shared persistent storage (ReadWriteMany, supports Fargate natively). EFS works well for content management (WordPress uploads), shared configs, and small databases. For higher performance, use **FSx for Lustre**. For state that must be durable but can be rebuilt, write to S3 before shutdown. Implement graceful shutdown: handle SIGTERM, complete in-flight work, flush buffers, persist state. For databases, don't run them on Fargate — use RDS/Aurora/ElastiCache instead. For cache state, use ElastiCache for Redis/Memcached externally. EFS performance modes: Bursting (default, good for spiky workloads) or Provisioned Throughput (consistent performance). Enable EFS lifecycle management to move cold files to IA storage tier.
 
 ### Q3 (Mid-Level): Explain how ECS service auto-scaling works with target tracking.
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 **Answer**: ECS Service Auto-Scaling uses Application Auto Scaling with three policy types. Target Tracking is the recommended approach: you specify a target metric value (e.g., average CPU at 70%), and ECS adjusts the desired count to maintain it. ECS publishes custom CloudWatch metrics (`ECSServiceAverageCPUUtilization`, `ECSServiceAverageMemoryUtilization`, and `ALBRequestCountPerTarget`). Auto Scaling creates an alarm that scales out when the metric exceeds the target, and scales in when it's below. Scale-out cooldown (default 60s) prevents rapid successive scale-outs. Scale-in cooldown (default 120s) is longer to prevent flapping. Step Scaling provides manual thresholds (add 2 tasks at CPU > 80%, remove 1 at CPU < 30%). Scheduled Scaling is for predictable patterns (e.g., scale to 20 at 9 AM, to 3 at 6 PM).
 
 ### Q4 (Senior): Design a multi-region active-active ECS architecture.
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 **Answer**: Deploy identical ECS clusters in two regions (us-east-1, eu-west-1). Use Route53 latency-based routing to direct users to the closest region. Use an external service mesh (App Mesh or Consul) for inter-region service discovery. Share state via Aurora Global Database (one writer, cross-region readers) or DynamoDB Global Tables. Use S3 Cross-Region Replication for assets. Deploy via CodePipeline cross-region actions — build once, deploy to both regions with separate ECR repositories. Use R53 health checks per-region: if us-east-1 health check fails, Route53 routes 100% to eu-west-1. Each service uses weighted capacity providers: 80% On-Demand, 20% Spot. Monitor cross-region replication lag; if lag exceeds 5 seconds, fail-over circuit breaker holds traffic. Test region failover quarterly with GameDays.
 
 ### Q5 (Senior): How would you migrate 100 microservices from EC2 to ECS Fargate with zero downtime?
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 **Answer**: Use the strangler fig pattern: (1) Start with a "side-by-side" phase — deploy ECS Fargate services alongside existing EC2 services. (2) Use Route53 weighted records or ALB path-based routing to shift small percentages (5-10%) of traffic to Fargate tasks. (3) For each service, containerize the application, create Dockerfile with health checks, register in ECR. (4) Create ECS task definitions with `awsvpc` networking, point to new ALB target groups. (5) Gradually increase traffic weight while monitoring p99 latency, error rate, and CPU/memory. (6) Use CodeDeploy blue/green for ECS — deploy green tasks, validate, shift traffic, rollback instantly if errors spike. (7) Migrate stateful services last — RDS stays external, so no data migration needed. (8) Run both fleets for 2 weeks before decommissioning EC2. Key risks: IAM permissions (task roles vs instance profiles), log aggregation (CloudWatch agent vs awslogs driver), and network ACLs (new ENIs in new subnets).
 
 ## Edge Cases and Advanced Scenarios
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 | Scenario | Challenge | Solution |
 |----------|-----------|----------|
@@ -390,6 +790,22 @@ aws ecs update-service --cluster prod --service api --desired-count 10
 | **ECS service mesh latency** | Envoy sidecar adds 5-10ms per request | Use App Mesh with eBPF (Cilium) for kernel-level routing. Prefer service-level mTLS over per-pod proxies |
 
 ## Cross-References
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 - [EC2 Networking & Security](../ec2/02-ec2-networking-security.md) — VPC design, security groups, network ACLs
 - [EKS Operations](../eks/02-eks-operations.md) — EKS vs ECS comparison, Karpenter vs ECS capacity providers

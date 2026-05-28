@@ -31,6 +31,22 @@ graph LR
 
 ## Table of Contents
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 - [JPA vs Hibernate vs JDBC](#-jpa-vs-hibernate-vs-jdbc)
 - [1. Entity Mapping](#1-entity-mapping)
 - [2. Relationships](#2-relationships)
@@ -48,6 +64,22 @@ graph LR
 ---
 
 ## 🧭 JPA vs Hibernate vs JDBC
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
                     ┌──────────────────────────────┐
@@ -82,6 +114,22 @@ graph LR
 
 ### Level of Abstraction
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 | Layer | Abstraction | You Write | Speed |
 |-------|-------------|-----------|-------|
 | JDBC | Raw SQL | `PreparedStatement.executeQuery()` | Fastest |
@@ -92,7 +140,39 @@ graph LR
 
 ## 1. Entity Mapping
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Basic Entity
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```java
 @Entity
@@ -136,6 +216,22 @@ public class User {
 
 ### Column Types Mapping
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```java
 @Entity
 public class Product {
@@ -174,7 +270,39 @@ public class Product {
 
 ## 2. Relationships
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### @OneToOne
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```java
 @Entity
@@ -200,6 +328,22 @@ public class Profile {
 ```
 
 ### @OneToMany / @ManyToOne
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```java
 @Entity
@@ -238,6 +382,22 @@ public class Order {
 
 ### @ManyToMany
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```java
 @Entity
 public class Student {
@@ -264,6 +424,22 @@ public class Course {
 ```
 
 ### Relationship Fetch Types
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 FetchType.LAZY:
@@ -295,7 +471,39 @@ IMPORTANT: EAGER on collections = N+1 problem risk!
 
 ## 3. Entity Lifecycle
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### States
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
                     ┌──────────────────────┐
@@ -322,6 +530,22 @@ IMPORTANT: EAGER on collections = N+1 problem risk!
 ```
 
 ### Lifecycle Methods
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```java
 @Entity
@@ -361,6 +585,22 @@ public class Product {
 ```
 
 ### EntityManager Operations
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```java
 @Repository
@@ -418,7 +658,39 @@ public class ProductRepository {
 
 ## 4. Primary Keys
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### ID Generation Strategies
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```java
 // 1. IDENTITY — DB auto-increment (PostgreSQL SERIAL, MySQL AUTO_INCREMENT)
@@ -462,6 +734,22 @@ private Long id;
 
 ### Composite Primary Key
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```java
 // Method 1: @IdClass
 public class OrderId implements Serializable {
@@ -498,7 +786,39 @@ public class Order {
 
 ## 5. JPQL & Criteria API
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### JPQL (Java Persistence Query Language)
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```java
 @Repository
@@ -566,6 +886,22 @@ public class UserRepository {
 
 ### Criteria API — Type-Safe Queries
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```java
 public List<User> searchUsers(String name, Status status, Integer minAge) {
     CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -599,7 +935,39 @@ public List<User> searchUsers(String name, Status status, Integer minAge) {
 
 ## 6. Caching
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### First-Level Cache (Persistence Context)
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 ┌──────────────────────────────────────────────┐
@@ -624,6 +992,22 @@ public List<User> searchUsers(String name, Status status, Integer minAge) {
 ```
 
 ### Second-Level Cache (Shared)
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```java
 // 1. Enable in application.yml
@@ -654,6 +1038,22 @@ public class User {
 
 ### Cache Concurrency Strategies
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 | Strategy | Reads | Writes | Use Case |
 |----------|-------|--------|----------|
 | READ_ONLY | ✅ Fast | ❌ Not allowed | Reference data (countries, statuses) |
@@ -665,7 +1065,39 @@ public class User {
 
 ## 7. Performance Tuning
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### N+1 Query Problem
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```java
 // ❌ N+1 — for each user, 1 extra query for orders
@@ -700,6 +1132,22 @@ List<User> findAllWithOrders();
 
 ### Batch Operations
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```java
 // Batch inserts — much faster
 // In application.yml:
@@ -723,6 +1171,22 @@ public void batchInsert(List<Product> products) {
 
 ### Hibernate Statistics
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```yaml
 # Enable statistics (dev only!)
 spring:
@@ -737,6 +1201,22 @@ spring:
 
 ### Performance Tips
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 | Tip | Impact |
 |-----|--------|
 | Use `@BatchSize` on collections | Reduces N+1 to N/20+1 |
@@ -750,7 +1230,39 @@ spring:
 
 ## 8. Inheritance Strategies
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Inheritance Mapping
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```java
 // STRATEGY 1: SINGLE TABLE (default)
@@ -795,6 +1307,22 @@ public abstract class Payment { ... }
 
 ### Mapped Superclass
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```java
 // Not an entity itself, just provides mapping for subclasses
 @MappedSuperclass
@@ -821,7 +1349,39 @@ public class User extends BaseEntity {
 
 ## 9. Concurrency & Locking
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Optimistic Locking
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```java
 // Version field — automatically incremented on update
@@ -856,6 +1416,22 @@ public void purchase(Long productId, int quantity) {
 ```
 
 ### Pessimistic Locking
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```java
 // Locks the database row — prevents concurrent access
@@ -895,6 +1471,22 @@ public class ProductRepository {
 
 ### Lock Mode Comparison
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 | Lock Mode | Read | Write | Timeout? | Deadlock? |
 |-----------|------|-------|----------|-----------|
 | NONE | ✅ | ✅ | — | Low |
@@ -908,7 +1500,39 @@ public class ProductRepository {
 
 ## 🔄 Hibernate Internal Flow
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Query Execution
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 EntityManager.find(User.class, 1L)
@@ -984,6 +1608,22 @@ EntityManager.find(User.class, 1L)
 
 ### Flush Process
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```text
 em.flush() or transaction commit
     │
@@ -1018,6 +1658,22 @@ em.flush() or transaction commit
 
 ## ⚠️ Common Pitfalls
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 | Pitfall | Issue | Fix |
 |---------|-------|-----|
 | N+1 queries | Extra queries for lazy collections | JOIN FETCH, @EntityGraph, @BatchSize |
@@ -1034,6 +1690,22 @@ em.flush() or transaction commit
 ---
 
 ## 🧠 Simplest Mental Model
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 JPA         =  A language translator. You speak Java (@Entity, @Column),

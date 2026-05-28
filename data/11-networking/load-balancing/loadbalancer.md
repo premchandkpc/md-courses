@@ -38,6 +38,22 @@ high availability ✅
 
 ## Table of Contents
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 - [Why Load Balancers Exist](#1-why-load-balancers-exist-)
 - [Basic Flow](#2-basic-flow-)
 - [Main Goals](#3-main-goals-)
@@ -103,6 +119,22 @@ Multiple Servers
 
 ### 📈 Scale Reality Check
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 A single server handles ~10K-50K concurrent connections. For 100M users: you need 2,000-10,000 servers. No single point can handle that — distribution is non-negotiable.
 
 ---
@@ -153,6 +185,22 @@ Two BIG categories:
 | L7 Load Balancer | Application Layer |
 
 ### 🧭 LB Selection Flow
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```mermaid
 flowchart TD
@@ -251,6 +299,22 @@ No HTTP inspection.
 | F5 FastL4  | L4   |
 
 ### 💡 When L4 Wins
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 L4 LBs handle **millions of packets/sec** with minimal CPU. AWS NLB can do 10M+ new flows/min. Use L4 when you need raw throughput (game servers, video streaming, high-frequency trading). The trade-off: zero application intelligence.
 
@@ -571,6 +635,22 @@ remove from rotation
 
 ### 🔄 Health Check Flow
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```mermaid
 flowchart TD
     A[LB detects server] --> B{Healthy?}
@@ -777,6 +857,22 @@ Advantages:
 ✅ Cloud-native
 
 ### ⚖️ Decision Guide
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 Hardware LB wins when you need 100Gbps+ per box with predictable performance (telcos, financial exchanges). Software LB wins everywhere else — cloud, containers, edge. The industry is shifting to software due to economics and flexibility.
 

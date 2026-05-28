@@ -3,6 +3,22 @@
 
 ## Overview
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```mermaid
 graph LR
     A["Command"] -->|Parse| B["Execute"]
@@ -15,6 +31,22 @@ Key quantities and capacity estimates for system design interviews and productio
 
 ## Storage Units
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 | Unit | Size |
 |------|------|
 | 1 Byte | 8 bits |
@@ -26,6 +58,22 @@ Key quantities and capacity estimates for system design interviews and productio
 
 ## Network Bandwidth
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 | Type | Speed |
 |------|-------|
 | 1 Mbps | 125 KB/sec |
@@ -36,6 +84,22 @@ Key quantities and capacity estimates for system design interviews and productio
 
 ## Time Units (in seconds)
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 | Unit | Seconds |
 |------|---------|
 | 1 millisecond (ms) | 10⁻³ |
@@ -43,6 +107,22 @@ Key quantities and capacity estimates for system design interviews and productio
 | 1 nanosecond (ns) | 10⁻⁹ |
 
 ## Typical QPS (Queries Per Second)
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 | Service | Typical QPS | Peak QPS |
 |---------|-------------|----------|
@@ -53,7 +133,39 @@ Key quantities and capacity estimates for system design interviews and productio
 
 ## Users & Requests
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Daily Active Users (DAU) to QPS
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 ```
 1 million DAU ≈ 12 QPS (if evenly distributed)
 10 million DAU ≈ 120 QPS
@@ -64,13 +176,61 @@ Key quantities and capacity estimates for system design interviews and productio
 **Conversion factor**: DAU × average requests per user per day / 86,400 seconds
 
 ### Traffic Patterns
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 - Peak traffic: 2-3x average
 - Burst: 5-10x average
 - Plan capacity for peak + 50% headroom
 
 ## Database Numbers
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Storage Estimation
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 **User profile (1M users)**
 - Per user: ~2 KB (ID, name, email, metadata)
@@ -89,6 +249,22 @@ Key quantities and capacity estimates for system design interviews and productio
 
 ### Query Performance Targets
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 | Operation | Target Latency |
 |-----------|-----------------|
 | Database lookup (indexed) | 1-10 ms |
@@ -97,6 +273,22 @@ Key quantities and capacity estimates for system design interviews and productio
 | Cache miss + DB | 10-50 ms |
 
 ### Replication & Sharding
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 **Master-Slave Replication**
 - Replication lag: 10-100 ms (LAN)
@@ -108,7 +300,39 @@ Key quantities and capacity estimates for system design interviews and productio
 
 ## Cache Numbers
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Cache Performance
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 | Cache Type | Hit Ratio | Latency |
 |-----------|-----------|---------|
@@ -121,6 +345,22 @@ Key quantities and capacity estimates for system design interviews and productio
 
 ### Cache TTL Guidelines
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 | Data Type | TTL |
 |-----------|-----|
 | User session | 1 hour |
@@ -132,7 +372,39 @@ Key quantities and capacity estimates for system design interviews and productio
 
 ## Message Queue Numbers
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Throughput Targets
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 | Queue Type | QPS |
 |-----------|-----|
@@ -143,6 +415,22 @@ Key quantities and capacity estimates for system design interviews and productio
 
 ### Lag/Latency
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 | Operation | Latency |
 |-----------|---------|
 | Produce message | 1-10 ms |
@@ -151,7 +439,39 @@ Key quantities and capacity estimates for system design interviews and productio
 
 ## Server Capacity
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Single Server Limits
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 | Metric | Typical Value |
 |--------|---|
@@ -165,6 +485,22 @@ Key quantities and capacity estimates for system design interviews and productio
 
 ### Throughput per Server
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 | Technology | QPS |
 |-----------|-----|
 | Apache/nginx | 1,000-10,000 |
@@ -175,7 +511,39 @@ Key quantities and capacity estimates for system design interviews and productio
 
 ## Latency Breakdown
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Typical Request Flow (100 ms total)
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 Client network latency:     5 ms
@@ -194,7 +562,39 @@ Total:                    100 ms
 
 ## Scalability Numbers
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Horizontal Scaling
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 | Metric | Guideline |
 |--------|-----------|
@@ -205,24 +605,104 @@ Total:                    100 ms
 
 ### Vertical Scaling Limits
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 CPU bound: 64-256 cores
 Memory bound: 1-4 TB
 Network bound: 25-100 Gbps
 
 ## Mobile & Web Numbers
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Mobile App
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 - Typical data transfer: 1-5 MB per session
 - Battery impact: 5-10% per hour of use
 - Typical requests: 50-200 per user per day
 
 ### Web Browser
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 - Page load time target: < 3 seconds
 - Time to interactive: < 5 seconds
 - Assets per page: 50-100 resources
 - Average page size: 2-5 MB
 
 ## Estimation Template
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 1. Clarify requirements
@@ -255,6 +735,22 @@ Network bound: 25-100 Gbps
 
 ## Quick Estimation Rules
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 - **Memory for 1B records**: ~1 TB (1 KB per record)
 - **Disk for 1B records**: ~100 GB (compressed)
 - **Network bandwidth for 1M QPS**: 100 Mbps (assuming 100 bytes per request)
@@ -263,5 +759,21 @@ Network bound: 25-100 Gbps
 
 
 ## Practical Example
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 See code examples above for practical usage patterns.

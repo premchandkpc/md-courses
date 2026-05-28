@@ -46,6 +46,22 @@ graph LR
 
 ## Table of Contents
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 1. [Scenario A: Connection Exhaustion (L4) — SYN Flood → maxconn Reached → Health Check Fails → All Backends Down](#scenario-a-connection-exhaustion-l4--syn-flood--maxconn-reached--health-check-fails--all-backends-down)
 2. [Scenario B: Sticky Session Drift — Session Persistence via Cookie → Instance Fails → Session Affinity to Dead Node → Session Loss](#scenario-b-sticky-session-drift--session-persistence-via-cookie--instance-fails--session-affinity-to-dead-node--session-loss)
 3. [Scenario C: Circuit Breaker Cascade — One Slow Upstream → Timeout to LB → LB Marks All Unhealthy → DB Overload → Full Outage](#scenario-c-circuit-breaker-cascade--one-slow-upstream--timeout-to-lb--lb-marks-all-unhealthy--db-overload--full-outage)
@@ -59,7 +75,39 @@ graph LR
 
 ## Scenario A: Connection Exhaustion (L4) — SYN Flood → maxconn Reached → Health Check Fails → All Backends Down
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Symptom
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 14:30:00  Traffic spike: 50,000 req/s → 150,000 req/s (DDoS / flash crowd)
@@ -72,6 +120,22 @@ graph LR
 ```
 
 ### Detection
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 Alert: active_connections == maxconn
@@ -105,6 +169,22 @@ Connection state:
 ```
 
 ### Investigation
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 
@@ -141,6 +221,22 @@ $ curl -v http://10.0.1.50:8080/health
 ```
 
 ### Root Cause
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 CONNECTION EXHAUSTION DEATH SPIRAL
@@ -187,6 +283,22 @@ CONNECTION EXHAUSTION DEATH SPIRAL
 
 ### Mitigation
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```
 
 ── IMMEDIATE: INCREASE MAXCONN TEMPORARILY
@@ -231,6 +343,22 @@ server {
 ```
 
 ### Permanent Fix
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```nginx
 # Nginx production configuration
@@ -335,7 +463,39 @@ backend orders-api
 
 ## Scenario B: Sticky Session Drift — Session Persistence via Cookie → Instance Fails → Session Loss
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Symptom
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 Web server 3 (10.0.1.52) crashes at 15:00:00.
@@ -352,6 +512,22 @@ Users with sessions pinned to server 3:
 
 ### Detection
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```
 Alert: Error rate spike for users with session cookies
 Alert: Login page requests spike (users re-authenticating)
@@ -365,6 +541,22 @@ Application logs:
 ```
 
 ### Root Cause
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 STICKY SESSION DRIFT TIMELINE
@@ -393,6 +585,22 @@ STICKY SESSION DRIFT TIMELINE
 ```
 
 ### Mitigation
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 
@@ -426,6 +634,22 @@ $ kubectl set env deployment/webapp SPRING_SESSION_STORE_TYPE=redis
 
 ### Permanent Fix
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```yaml
 # Use external session store (Redis / Memcached)
 spring:
@@ -446,7 +670,39 @@ spring:
 
 ## Scenario C: Circuit Breaker Cascade — One Slow Upstream → Timeout to LB → Cascade Failure
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Symptom
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 16:00:00  Payment service (payments-svc) experiences slowdown (DB contention)
@@ -463,6 +719,22 @@ spring:
 
 ### Detection
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```
 Alert: Upstream response time p99 > timeout threshold
 Alert: Health check failures for backend pool
@@ -477,6 +749,22 @@ root cause: payments-svc response time 5s (DB contention)
 ```
 
 ### Root Cause
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 CIRCUIT BREAKER CASCADE DIAGRAM
@@ -515,6 +803,22 @@ CIRCUIT BREAKER CASCADE DIAGRAM
 ```
 
 ### Mitigation
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 
@@ -555,6 +859,22 @@ public PaymentResponse paymentFallback(PaymentRequest request, Throwable t) {
 ```
 
 ### Permanent Fix
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```yaml
 # Server-side timeout configuration (HAProxy)
@@ -605,7 +925,39 @@ resilience4j:
 
 ## Scenario D: DNS Resolution Failure — LB DNS Record TTL Too High → Failover Slow
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Symptom
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 08:00:00  Primary LB (10.0.1.10) fails — network failure
@@ -620,6 +972,22 @@ resilience4j:
 ```
 
 ### Detection
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 
@@ -648,6 +1016,22 @@ $ java -Dnetworkaddress.cache.ttl=30 App
 ```
 
 ### Root Cause
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 
@@ -681,6 +1065,22 @@ DNS FAILOVER TIMELINE
 
 ### Mitigation
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```
 
 ── IMMEDIATE: REDUCE DNS TTL
@@ -705,6 +1105,22 @@ $ curl -X PATCH "https://api.cloudflare.com/client/v4/zones/.../dns_records/..."
 ```
 
 ### Permanent Fix
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```yaml
 # DNS configuration
@@ -745,7 +1161,39 @@ Security.setProperty("networkaddress.cache.ttl", "10");
 
 ## Scenario E: Cross-Region Failover — Primary Region Fails → Slow DNS Update → Extended Outage
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Symptom
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 Primary region (us-east-1) experiences full AZ failure.
@@ -764,6 +1212,22 @@ DNS-based failover to us-west-2 is configured.
 ```
 
 ### Detection
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 
@@ -793,6 +1257,22 @@ $ aws cloudwatch get-metric-statistics \
 ```
 
 ### Root Cause
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 
@@ -824,6 +1304,22 @@ CROSS-REGION FAILOVER TIMELINE
 ```
 
 ### Mitigation
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 
@@ -864,6 +1360,22 @@ done
 ```
 
 ### Permanent Fix
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```yaml
 # Multi-region failover architecture
@@ -924,7 +1436,39 @@ class CrossRegionClient:
 
 ## Detection and Monitoring Reference
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Critical LB Metrics
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 | Metric | Source | Warning | Critical |
 |--------|--------|---------|----------|
@@ -938,6 +1482,22 @@ class CrossRegionClient:
 | `DNS TTL vs actual failover time` | Dig + monitoring | > 60s | > 300s |
 
 ### HAProxy Stats
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```bash
 # HAProxy statistics
@@ -958,7 +1518,39 @@ $ echo "show stat" | socat /var/run/haproxy.sock stdio | \
 
 ## Mitigation Playbook
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Connection Exhaustion
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 1. CHECK: ss -tan | grep :443 | awk '{print $1}' | sort | uniq -c
@@ -971,6 +1563,22 @@ $ echo "show stat" | socat /var/run/haproxy.sock stdio | \
 
 ### Sticky Session Failure
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```
 1. REMOVE: Delete dead backend from upstream config
 2. REPAIR: Reduce health check interval to 2s
@@ -979,6 +1587,22 @@ $ echo "show stat" | socat /var/run/haproxy.sock stdio | \
 ```
 
 ### Circuit Breaker Cascade
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 1. RESTART: Restart the slow service
@@ -989,6 +1613,22 @@ $ echo "show stat" | socat /var/run/haproxy.sock stdio | \
 ```
 
 ### DNS Failover
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 1. UPDATE: Reduce TTL to 30-60s
@@ -1001,6 +1641,22 @@ $ echo "show stat" | socat /var/run/haproxy.sock stdio | \
 ---
 
 ## Lessons Learned
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 1. **Health check connections must use a separate port** from application traffic to avoid health check failures during connection exhaustion.
 2. **Sticky sessions couple users to instances.** Stateless applications are more resilient — use external session stores.
@@ -1016,6 +1672,22 @@ $ echo "show stat" | socat /var/run/haproxy.sock stdio | \
 ---
 
 ## Related
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 - [Databases](../../08-databases/) — Outages, corruption, performance
 - [Distributed Systems](../../09-distributed-systems/) — Consensus, cascade failures

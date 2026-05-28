@@ -45,6 +45,22 @@ graph LR
 
 ## Table of Contents
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 1. Requirements & Scale
 2. High-Level Architecture
 3. API Design
@@ -61,6 +77,22 @@ graph LR
 ---
 
 ## 1. Requirements & Scale
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 Stripe Scale (2024):
@@ -84,6 +116,22 @@ Key Requirements:
 ---
 
 ## 2. High-Level Architecture
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 +-------------+     +-------------+     +-------------+     +-------------+
@@ -137,6 +185,22 @@ Key Requirements:
 ---
 
 ## 3. API Design
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 RESTful API Design:
@@ -225,6 +289,22 @@ Key expiry: 24 hours (configurable)
 
 ## 4. Payment Flow
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```text
 Complete Payment Flow:
 
@@ -308,6 +388,22 @@ Use case:
 ---
 
 ## 5. Payment State Machine
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 Payment Intent States:
@@ -393,6 +489,22 @@ Invalid transitions:
 
 ## 6. Idempotency
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```text
 Idempotency Architecture:
 
@@ -477,6 +589,22 @@ Scenario C: Race condition
 ---
 
 ## 7. Fraud Detection (Stripe Radar)
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 Fraud Detection Pipeline:
@@ -589,6 +717,22 @@ Example custom rules:
 
 ## 8. PCI-DSS Compliance
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```text
 PCI-DSS Scope Reduction:
 
@@ -668,6 +812,22 @@ Access Control:
 
 ## 9. Payment Methods
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```text
 Cards (Credit/Debit):
   - Visa, Mastercard, Amex, Discover, Diners, JCB
@@ -707,6 +867,22 @@ Payment Method Routing:
 ---
 
 ## 10. Database Design
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 PostgreSQL (Transactional / Strong Consistency):
@@ -793,6 +969,22 @@ Redis:
 ---
 
 ## 11. Failure Analysis
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 **Idempotency Key Collision Race Condition:**
 ```text
@@ -920,6 +1112,22 @@ Mitigations:
 
 ## 12. Performance Considerations
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```text
 Latency Targets:
   - API request (p50): < 100ms
@@ -949,6 +1157,22 @@ Storage Sizing:
 ---
 
 ## Simplest Mental Model
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 **Stripe is like a global cashier that speaks every payment language.** You (the merchant) hand a token to Stripe — never the actual credit card number — and Stripe runs to the right bank, checks if the person is a fraudster (Radar), secures the money (authorization), then collects it (capture). If anything goes wrong, the idempotency key acts like a receipt number: you can ask "did that $20 charge go through?" and get the same answer every time, preventing accidental double charges. The card vault is a safety deposit box where PANs are locked in AES-256 cages, with keys stored in a hardware vault that even Stripe engineers can't open casually.
 

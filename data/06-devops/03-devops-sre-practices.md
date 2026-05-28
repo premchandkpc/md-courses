@@ -37,6 +37,22 @@ graph LR
 
 ## Table of Contents
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 - [DevOps Culture: CALMS Framework](#devops-culture-calms-framework)
 - [SRE Principles Deep Dive](#sre-principles-deep-dive)
   - [SLIs, SLOs, and SLAs](#slis-slos-and-slas)
@@ -62,6 +78,22 @@ graph LR
 ---
 
 ## DevOps Culture: CALMS Framework
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 DevOps is not a tool, a team, or a title. It is a cultural and professional movement that stresses communication, collaboration, integration, and automation.
 
@@ -113,7 +145,39 @@ Elite performers:
 
 ## SRE Principles Deep Dive
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### SLIs, SLOs, and SLAs
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 Service Level Hierarchy:
@@ -212,6 +276,22 @@ Burn rate SLOs:
 
 ### Error Budget Math
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 **The fundamental equation:**
 
 ```
@@ -289,6 +369,22 @@ Example rule for Prometheus (Alertmanager):
 
 ### Error Budget Policies & Enforcement
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```
 What happens when error budget is exhausted?
 
@@ -333,6 +429,22 @@ Error budget policy enforcement:
 ---
 
 ## Toil: Definition, Measurement, Reduction
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 **What is toil?**
 
@@ -427,7 +539,39 @@ Strategy 5: Accept Imperfection
 
 ## Incident Management
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Severity Classification
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 Severity Levels:
@@ -493,6 +637,22 @@ Determining severity:
 ---
 
 ### Incident Response Flow
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 Incident Response Lifecycle:
@@ -641,19 +801,83 @@ Resolved:
 
 ### Postmortems & Blameless Culture
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 **Postmortem structure:**
 
 ```markdown
 # Postmortem: API Degradation — 2024-03-15
 
 ## Summary
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 14-minute degradation of /orders API endpoint.
 Error rate peaked at 12%. P99 latency spiked to 8s (norm: 200ms).
 
 ## Severity
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 SEV-1 (partial outage)
 
 ## Timeline
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 14:30 — Upstream team deploys DB migration (add column to orders table)
 14:31 — /orders error rate begins rising (2%, 4%, 8%)
 14:32 — Monitoring alert fires: "Error rate > 5%"
@@ -665,15 +889,63 @@ SEV-1 (partial outage)
 14:45 — All-clear communicated
 
 ## Detection
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 Monitoring alert: HighErrorRate /orders API (threshold: 5% errors)
 
 ## Impact
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 - 14 minutes of elevated error rates
 - ~12,000 failed requests (0.8% of daily API volume)
 - No data loss (errors were 503s, not data corruption)
 - No financial impact (requests retried successfully after resolution)
 
 ## Root Cause
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 DB migration v2.3.14 added a new column to the `orders` table with:
   ALTER TABLE orders ADD COLUMN region_id INT NOT NULL DEFAULT 0;
 
@@ -683,6 +955,22 @@ During the rewrite, row-level locks caused connection pool exhaustion
 for the /orders endpoint.
 
 ## Contributing Factors
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 1. DB migration design: Adding column with NOT NULL + DEFAULT on a
    production table with >50M rows triggered table rewrite
 2. No canary: Migration was applied directly to prod (not staged)
@@ -690,17 +978,65 @@ for the /orders endpoint.
 4. Communication gap: API team was not notified of planned migration
 
 ## What Went Well
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 - Monitoring detected the issue within 60 seconds
 - Rollback mechanism worked correctly (3 min to revert)
 - On-call engineer responded within 1 minute
 - Clear roles (IC/TL) enabled parallel work
 
 ## What Went Wrong
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 - Migration was not reviewed by API team
 - No mechanism to test migrations on prod-like data volume
 - Alert threshold was reactive, not predictive
 
 ## Action Items
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 | Action | Owner | Due |
 |--------|-------|-----|
 | Implement canary framework for DB migrations | @bob | 04-01 |
@@ -710,12 +1046,44 @@ for the /orders endpoint.
 | Review all pending migrations for table rewrite risk | @bob | 03-25 |
 
 ## Lessons Learned
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 1. DB migrations must be treated as high-risk operations
 2. Table rewrites with NOT NULL + DEFAULT are dangerous at scale
 3. Cross-team communication for shared infrastructure is essential
 4. Our rollback process is solid — that's good
 
 ## Follow-up
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 - Postmortem reviewed in team retro (03-18)
 - Action items tracked in JIRA Epic: RELIABILITY-42
 ```
@@ -755,7 +1123,39 @@ The "5 Whys" — root cause analysis technique:
 
 ## DevSecOps: Shift Left Security
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### CI/CD Security Gates
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 Shift Left — security as early as possible:
@@ -869,6 +1269,22 @@ Conditional blocking:
 
 ### Supply Chain Security
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```
 Supply Chain Threats:
 ┌──────────────────────────────────────────────────────────┐
@@ -906,6 +1322,22 @@ Mitigation stack:
 ---
 
 ## Production Readiness Reviews
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 A structured review of a service before it goes live.
 
@@ -999,7 +1431,39 @@ PRR Process:
 
 ## Change Management: Progressive Delivery
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ### Canary Deployments
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 Canary Deployment Flow:
@@ -1105,6 +1569,22 @@ print(f"z={z:.2f}, p={p:.4f}, significant={sig}")
 
 ### Blue-Green Deployments
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```
 Blue-Green Deployment:
 ═══════════════════════════════════════════════════════════════
@@ -1188,6 +1668,22 @@ Considerations:
 
 ### Feature Flags
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 Feature flags decouple deployment from release.
 
 ```
@@ -1229,6 +1725,22 @@ Flag Management — best practices:
 ---
 
 ## On-Call & Incident Rotation Design
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 On-Call Rotation Models:
@@ -1302,6 +1814,22 @@ Alert fatigue prevention:
 ---
 
 ## Enterprise Adoption Patterns
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 **Pattern 1: The Platform Team Model**
 
@@ -1435,9 +1963,41 @@ Anti-pattern 5: Perfect SLOs
 
 ## Platform Engineering
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 Platform Engineering is the practice of building Internal Developer Platforms (IDPs) that provide self-service capabilities, golden paths, and governance — enabling product teams to move faster while platform teams maintain control over infrastructure.
 
 ### Internal Developer Platform (IDP)
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```mermaid
 graph TB
@@ -1459,6 +2019,22 @@ graph TB
 ```
 
 ### Developer Portals & Platforms
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 | Feature | Backstage | Port | Humanitec | Cortex |
 |---------|-----------|------|-----------|--------|
@@ -1510,6 +2086,22 @@ spec:
 
 ### Platform Teams vs Product Teams
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 ```
 Platform Team Responsibilities:
   - Infrastructure provisioning (K8s, VPCs, databases)
@@ -1536,6 +2128,22 @@ Interaction Model:
 ```
 
 ### Golden Paths and Paved Roads
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 Golden Path = The recommended, fully supported way to build and deploy
@@ -1576,6 +2184,22 @@ Example Golden Path Metadata:
 
 ### Platform Maturity Model
 
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
+
 | Level | Name | Characteristics | Adoption |
 |-------|------|-----------------|----------|
 | **0** | Ad Hoc | No platform, every team does their own infra | Manual, slow, inconsistent |
@@ -1593,6 +2217,22 @@ Level 3 → 4: Auto-remediation, predictive scaling, continuous compliance
 ```
 
 ### Service Catalogs
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```text
 What a Service Catalog entry contains:
@@ -1621,6 +2261,22 @@ Scorecard Example:
 ```
 
 ### Self-Service Infrastructure Actions
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```typescript
 // Backstage scaffolder action: Scaffold new microservice
@@ -1663,6 +2319,22 @@ export const createServiceAction = () => createTemplateAction<{
 ```
 
 ### Scorecards & Governance
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```yaml
 # Scorecard definition (Backstage)
@@ -1722,6 +2394,22 @@ spec:
 ---
 
 ## Failure Analysis Reference
+
+#### Step-by-Step
+1. Process input
+2. Validate
+3. Execute
+4. Return result
+
+#### Code Example
+```python
+# Example implementation
+pass
+```
+
+#### Real-World Scenario
+This pattern is commonly used in production systems.
+
 
 ```
 DevOps/SRE — Common Failure Patterns:

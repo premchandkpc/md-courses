@@ -33,28 +33,150 @@
       filter: drop-shadow(0 0 8px rgba(0, 212, 255, 0.4));
     }
   }
-</style>
+
+  /* ─── Skip Link ─── */
+  .skip-link {
+    position:fixed;top:-100%;left:8px;z-index:10000;
+    padding:8px 16px;background:var(--accent);color:#000;
+    font-size:13px;font-weight:600;border-radius:0 0 6px 6px;
+    text-decoration:none;transition:top .15s;
+  }
+  .skip-link:focus { top:0; }
+
+  /* ─── Skeleton Loading ─── */
+  @keyframes shimmer {
+    0% { background-position:200% 0; }
+    100% { background-position:-200% 0; }
+  }
+  .skeleton {
+    background:linear-gradient(90deg,var(--bg3) 25%,var(--bg4) 50%,var(--bg3) 75%);
+    background-size:200% 100%;animation:shimmer 1.5s ease-in-out infinite;
+    border-radius:4px;
+  }
+  .skeleton-line { height:14px; margin-bottom:10px; width:100%; }
+  .skeleton-line:nth-child(2) { width:85%; }
+  .skeleton-line:nth-child(3) { width:70%; }
+  .skeleton-line:nth-child(4) { width:90%; }
+  .skeleton-line:nth-child(5) { width:60%; }
+  .skeleton-heading { height:24px; width:55%; margin-bottom:18px; }
+
+  /* ─── Focus Visible ─── */
+  :focus-visible {
+    outline:2px solid var(--accent);
+    outline-offset:2px;
+  }
+  .tree-item:focus-visible,
+  .topic-box:focus-visible,
+  .recent-item:focus-visible,
+  .control-btn:focus-visible,
+  .layer-btn:focus-visible,
+  .sidebar-btn:focus-visible {
+    outline:2px solid var(--accent);
+    outline-offset:-2px;
+  }
+
+  /* ─── Content Image Fade-in ─── */
+  .md img {
+    opacity:0;transition:opacity .4s ease;
+  }
+  .md img.loaded,
+  .md img[src] { opacity:1; }
+
+  /* ─── Touch Feedback ─── */
+  .tree-item,.topic-box,.control-btn,.layer-btn,.sidebar-btn {
+    -webkit-tap-highlight-color:rgba(96,165,250,.2);
+    touch-action:manipulation;
+  }
+
+  /* ─── Mobile Bottom Nav ─── */
+  .bottom-nav {
+    display:none;position:fixed;bottom:0;left:0;right:0;
+    height:52px;background:var(--bg2);border-top:1px solid var(--border);
+    z-index:150;align-items:center;justify-content:space-around;
+    padding:0 4px;backdrop-filter:blur(12px);
+    -webkit-backdrop-filter:blur(12px);
+  }
+  .bottom-nav-btn {
+    display:flex;flex-direction:column;align-items:center;gap:2px;
+    background:none;border:none;color:var(--fg3);cursor:pointer;
+    padding:6px 12px;border-radius:6px;font-size:10px;font-weight:500;
+    transition:color .15s;font-family:var(--font-display);
+    -webkit-tap-highlight-color:rgba(96,165,250,.2);
+  }
+  .bottom-nav-btn:hover { color:var(--fg); }
+  .bottom-nav-btn .nav-icon { font-size:18px; line-height:1; }
+  @media(max-width:900px){
+    .bottom-nav { display:flex; }
+    .content-body { padding-bottom:80px; }
+    .floating-controls { bottom:64px; }
+    .kb-panel { bottom:120px; }
+  }
+
+  /* ─── Print Styles ─── */
+  @media print {
+    body { overflow:visible !important; background:#fff; color:#000; }
+    .app { display:block; height:auto; }
+    .sidebar,.toc-sidebar,.float-toc,.floating-controls,
+    .kb-panel,.scroll-progress,.bottom-nav,
+    .header-right,.inpage-search,.search-overlay,
+    .page-transition,.diagram-controls,.copy-btn { display:none !important; }
+    .content { overflow:visible !important; }
+    .content-body { max-width:100%; padding:0 !important; overflow:visible !important; }
+    .content-header { border:none; padding:0 0 12px; }
+    .md { font-size:12pt; line-height:1.6; }
+    .md pre { border:1px solid #ccc; background:#f5f5f5; break-inside:avoid; }
+    .md img { border:1px solid #ccc; max-width:100%; }
+    .md a { color:#000; text-decoration:underline; }
+    .md code { border:1px solid #ddd; }
+    .md .layer-section.hidden-l { opacity:1 !important; max-height:none !important; }
+    .page-transition,.diagram-fullscreen { display:none !important; }
+    .start-screen { display:flex !important; height:auto; padding:20px 0; }
+    .start-screen-header .big-icon { font-size:36px; }
+    .start-screen-header h1 { font-size:22px; }
+    .topics-grid { grid-template-columns:repeat(4,1fr); gap:12px; }
+  }
+
+  /* ─── Reduced Motion ─── */
+  @media(prefers-reduced-motion:reduce){
+    .skeleton { animation:none; }
+    .md img { opacity:1; transition:none; }
+    .md .layer-section,.content-body,.page-transition,.floating-btn,
+    .sidebar,.lightbox img,.float-toc,.float-toc-item,
+    .search-overlay,.kb-panel,.diagram-fullscreen { transition:none !important; animation:none !important; }
+    .content-body.loading { opacity:1; transform:none; }
+  }
+
+  /* ─── Content scroll-triggered fade ─── */
+  .content-fade-in {
+    opacity:0;transform:translateY(12px);
+    transition:opacity .4s ease,transform .4s ease;
+  }
+  .content-fade-in.visible {
+    opacity:1;transform:translateY(0);
+  }
+
 </head>
 <body>
-<div class="app">
+<a href="#fileContent" class="skip-link">Skip to content</a>
+<div class="app" role="application" aria-label="Knowledge Universe Reader">
 
   <!-- Sidebar -->
-  <div class="sidebar" id="sidebar">
+  <div class="sidebar" id="sidebar" role="navigation" aria-label="File explorer">
     <div class="sidebar-header">
       <h2>Explorer</h2>
       <div class="sidebar-toolbar">
-        <button class="sidebar-btn" id="homeBtn" data-action="home" title="Home">🏠</button>
-        <button class="sidebar-btn" id="bookmarkToggle" title="Bookmarks">⭐</button>
-        <button class="sidebar-btn" id="collapseSidebar" title="Toggle sidebar">◀</button>
+        <button class="sidebar-btn" id="homeBtn" data-action="home" title="Home" aria-label="Go to home">🏠</button>
+        <button class="sidebar-btn" id="bookmarkToggle" title="Bookmarks" aria-label="Toggle bookmarks">⭐</button>
+        <button class="sidebar-btn" id="collapseSidebar" title="Toggle sidebar" aria-label="Toggle sidebar">◀</button>
       </div>
     </div>
     <div class="sidebar-search">
-      <input type="text" id="search" placeholder="Search files..." autocomplete="off">
+      <input type="text" id="search" placeholder="Search files..." autocomplete="off" aria-label="Search files">
     </div>
-    <div class="search-status" id="searchStatus"></div>
-    <div class="recent-label" id="recentToggle"><span class="arrow">▶</span> Recent</div>
+    <div class="search-status" id="searchStatus" role="status" aria-live="polite"></div>
+    <div class="recent-label" id="recentToggle" tabindex="0" role="button" aria-expanded="true"><span class="arrow">▶</span> Recent</div>
     <div class="recent-list" id="recentList"></div>
-    <div class="tree-scroll" id="tree"></div>
+    <div class="tree-scroll" id="tree" role="tree" aria-label="File tree"></div>
   </div>
 
   <!-- Content -->

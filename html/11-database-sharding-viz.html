@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Database Sharding: Distribution & Scale</title>
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: #0f172a; color: #e2e8f0; }
+
+    header {
+      background: #1e293b;
+      padding: 20px;
+      border-bottom: 1px solid #334155;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    h1 { font-size: 24px; }
+
+    .back-link {
+      color: #60a5fa;
+      text-decoration: none;
+      font-size: 14px;
+      padding: 8px 12px;
+      border: 1px solid #334155;
+      border-radius: 4px;
+    }
+
+    .back-link:hover { background: #334155; }
+
+    .container { display: flex; height: calc(100vh - 60px); }
+
+    #canvas {
+      flex: 1;
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+      position: relative;
+    }
+
+    .controls {
+      width: 300px;
+      background: #1e293b;
+      border-left: 1px solid #334155;
+      padding: 20px;
+      overflow-y: auto;
+    }
+
+    .control-group {
+      margin-bottom: 20px;
+    }
+
+    .control-group label {
+      display: block;
+      font-size: 13px;
+      text-transform: uppercase;
+      color: #94a3b8;
+      margin-bottom: 8px;
+      font-weight: 600;
+    }
+
+    button {
+      background: #3b82f6;
+      color: white;
+      border: none;
+      padding: 10px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      width: 100%;
+      transition: all 0.2s;
+      margin-bottom: 8px;
+    }
+
+    button:hover { background: #2563eb; }
+
+    input[type="range"] {
+      width: 100%;
+      cursor: pointer;
+    }
+
+    .status {
+      background: #334155;
+      padding: 12px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-family: monospace;
+      margin: 10px 0;
+    }
+
+    .info-text {
+      font-size: 12px;
+      color: #cbd5e1;
+      line-height: 1.6;
+      margin: 10px 0;
+    }
+
+    svg { display: block; width: 100%; height: 100%; }
+
+    .shard-label { font-size: 13px; font-weight: 600; }
+    .data-point { opacity: 0.8; }
+
+    .legend {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      font-size: 12px;
+      margin-top: 15px;
+      padding-top: 15px;
+      border-top: 1px solid #334155;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .legend-dot { width: 10px; height: 10px; border-radius: 50%; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>🎨 Database Sharding: Distribution & Scale</h1>
+    <a href="../data/08-databases/11-database-sharding.md" class="back-link">← Back to Docs</a>
+  </header>
+
+  <div class="container">
+    <div id="canvas">
+      <svg></svg>
+    </div>
+
+    <div class="controls">
+      <div class="control-group">
+        <label>Shard Count</label>
+        <input type="range" min="2" max="8" value="4" onchange="app.setShardsCount(this.value); app.render();">
+        <span id="shard-count">4 shards</span>
+      </div>
+
+      <div class="control-group">
+        <label>Add Data Points</label>
+        <button onclick="app.addDataPoints(10)">+ 10 Records</button>
+        <button onclick="app.addDataPoints(50)">+ 50 Records</button>
+        <button onclick="app.clear()">Clear</button>
+      </div>
+
+      <div class="status">
+        <div>Total Records: <span id="total-records">0</span></div>
+        <div>Avg per Shard: <span id="avg-per-shard">0</span></div>
+        <div>Skew: <span id="skew">0%</span></div>
+      </div>
+
+      <div class="control-group">
+        <label>Sharding Strategy</label>
+        <button onclick="app.strategy('hash')">Hash-Based</button>
+        <button onclick="app.strategy('range')">Range-Based</button>
+        <button onclick="app.strategy('directory')">Directory</button>
+      </div>
+
+      <div class="info-text">
+        <strong>Hash-based:</strong> Uniform distribution, hard to rebalance.
+      </div>
+
+      <div class="info-text">
+        <strong>Range-based:</strong> Easy to query ranges, risk of hotspots.
+      </div>
+
+      <div class="info-text">
+        <strong>Directory:</strong> Most flexible, requires lookup table.
+      </div>
+
+      <div class="legend">
+        <div class="legend-item">
+          <div class="legend-dot" style="background: #3b82f6;"></div>
+          <span>Balanced</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-dot" style="background: #fbbf24;"></div>
+          <span>Hotspot</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-dot" style="background: #ef4444;"></div>
+          <span>Skewed</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const app = {
+      state: {
+        shardsCount: 4,
+        data: [],
+        strategy: 'hash'
+      },
+
+      init() {
+        this.svg = d3.select('svg');
+        this.addDataPoints(50);
+        this.render();
+      },
+
+      setShardsCount(count) {
+        this.state.shardsCount = parseInt(count);
+        document.getElementById('shard-count').textContent = count + ' shards';
+      },
+
+      addDataPoints(count) {
+        for (let i = 0; i < count; i++) {
+          const id = Math.floor(Math.random() * 10000);
+          this.state.data.push({ id, value: Math.random() * 100 });
+        }
+        this.updateStats();
+        this.render();
+      },
+
+      strategy(type) {
+        this.state.strategy = type;
+        this.render();
+      },
+
+      getShard(id) {
+        if (this.state.strategy === 'hash') {
+          return Math.abs(id) % this.state.shardsCount;
+        } else if (this.state.strategy === 'range') {
+          const range = 10000 / this.state.shardsCount;
+          return Math.floor(id / range) % this.state.shardsCount;
+        } else {
+          // directory - pseudo-random but consistent
+          return Math.floor((id * 7919) % this.state.shardsCount);
+        }
+      },
+
+      updateStats() {
+        const total = this.state.data.length;
+        const shardCounts = new Array(this.state.shardsCount).fill(0);
+
+        this.state.data.forEach(d => {
+          const shard = this.getShard(d.id);
+          shardCounts[shard]++;
+        });
+
+        const avg = total / this.state.shardsCount;
+        const max = Math.max(...shardCounts);
+        const skew = max > 0 ? Math.round((max - avg) / avg * 100) : 0;
+
+        document.getElementById('total-records').textContent = total;
+        document.getElementById('avg-per-shard').textContent = avg.toFixed(1);
+        document.getElementById('skew').textContent = skew + '%';
+      },
+
+      clear() {
+        this.state.data = [];
+        this.updateStats();
+        this.render();
+      },
+
+      render() {
+        const width = this.svg.node().parentElement.clientWidth;
+        const height = this.svg.node().parentElement.clientHeight;
+
+        // Shard positions (horizontal line)
+        const shardWidth = width / (this.state.shardsCount + 1);
+        const shardY = height / 3;
+
+        // Count records per shard
+        const shardCounts = new Array(this.state.shardsCount).fill(0);
+        this.state.data.forEach(d => {
+          const shard = this.getShard(d.id);
+          shardCounts[shard]++;
+        });
+
+        const maxCount = Math.max(...shardCounts, 1);
+
+        // Draw shards
+        const shards = this.svg.selectAll('.shard').data(
+          d3.range(this.state.shardsCount),
+          d => d
+        );
+
+        shards.enter().append('g')
+          .attr('class', 'shard')
+          .merge(shards)
+          .attr('transform', (d, i) => `translate(${shardWidth * (i + 1)}, ${shardY})`);
+
+        // Shard rectangles
+        this.svg.selectAll('.shard').selectAll('rect').data(d => [d]).join(
+          enter => enter.append('rect')
+            .attr('x', -30)
+            .attr('y', -30)
+            .attr('width', 60)
+            .attr('height', 60)
+            .attr('fill', '#334155')
+            .attr('stroke', '#64748b')
+            .attr('stroke-width', 2)
+            .attr('rx', 4),
+          update => update
+        ).attr('fill', (d) => {
+          const count = shardCounts[d];
+          const ratio = count / maxCount;
+          if (ratio > 0.7) return '#ef4444';
+          if (ratio > 0.5) return '#fbbf24';
+          return '#3b82f6';
+        });
+
+        // Shard labels
+        this.svg.selectAll('.shard').selectAll('text').data(d => [d]).join(
+          enter => enter.append('text')
+            .attr('class', 'shard-label')
+            .attr('text-anchor', 'middle')
+            .attr('dy', '-10')
+            .attr('fill', '#e2e8f0'),
+          update => update
+        ).text((d) => `S${d} (${shardCounts[d]})`);
+
+        // Draw data points
+        const dataPoints = this.svg.selectAll('.data-group').data([null]);
+        const dataGroup = dataPoints.enter().append('g')
+          .attr('class', 'data-group')
+          .merge(dataPoints);
+
+        const points = dataGroup.selectAll('.data-point').data(this.state.data, d => d.id);
+
+        points.enter().append('circle')
+          .attr('class', 'data-point')
+          .attr('r', 3)
+          .attr('fill', '#60a5fa')
+          .attr('opacity', 0.6)
+          .merge(points)
+          .transition()
+          .duration(300)
+          .attr('cx', d => {
+            const shard = this.getShard(d.id);
+            const x = shardWidth * (shard + 1);
+            return x + (Math.random() - 0.5) * 40;
+          })
+          .attr('cy', d => shardY + 80 + Math.random() * 100);
+
+        points.exit().remove();
+
+        this.updateStats();
+      }
+    };
+
+    window.addEventListener('load', () => app.init());
+  </script>
+</body>
+</html>

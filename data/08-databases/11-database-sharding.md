@@ -1,5 +1,7 @@
 # Topic 11: Sharding & Distributed Databases
 
+[🎨 Interactive Visualization](../../html/11-database-sharding-viz.html)
+
 **Level:** Advanced | **Time:** 60 mins | **Production Critical:** ⭐⭐⭐⭐
 
 ---

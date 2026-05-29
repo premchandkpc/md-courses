@@ -1,5 +1,7 @@
 # Topic 08: Connection Pooling & Resource Management
 
+[🎨 Interactive Visualization](../../html/08-connection-pooling-viz.html)
+
 **Level:** Intermediate-Advanced | **Time:** 45 mins | **Production Critical:** ⭐⭐⭐
 
 ---

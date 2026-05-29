@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>React Fiber: Reconciliation Engine</title>
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: #0f172a; color: #e2e8f0; }
+
+    header {
+      background: #1e293b;
+      padding: 20px;
+      border-bottom: 1px solid #334155;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    h1 { font-size: 24px; }
+
+    .back-link {
+      color: #60a5fa;
+      text-decoration: none;
+      font-size: 14px;
+      padding: 8px 12px;
+      border: 1px solid #334155;
+      border-radius: 4px;
+      transition: all 0.2s;
+    }
+
+    .back-link:hover { background: #334155; border-color: #60a5fa; }
+
+    .container { display: flex; height: calc(100vh - 60px); }
+
+    #canvas {
+      flex: 1;
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+      position: relative;
+    }
+
+    .controls {
+      width: 300px;
+      background: #1e293b;
+      border-left: 1px solid #334155;
+      padding: 20px;
+      overflow-y: auto;
+    }
+
+    .control-group {
+      margin-bottom: 20px;
+    }
+
+    .control-group label {
+      display: block;
+      font-size: 13px;
+      text-transform: uppercase;
+      color: #94a3b8;
+      margin-bottom: 8px;
+      font-weight: 600;
+    }
+
+    button {
+      background: #3b82f6;
+      color: white;
+      border: none;
+      padding: 10px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      width: 100%;
+      transition: all 0.2s;
+    }
+
+    button:hover { background: #2563eb; }
+    button:active { transform: scale(0.98); }
+
+    .status {
+      background: #334155;
+      padding: 12px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-family: monospace;
+      margin: 10px 0;
+    }
+
+    .phase-render { color: #fbbf24; }
+    .phase-commit { color: #34d399; }
+    .info-text {
+      font-size: 12px;
+      color: #cbd5e1;
+      line-height: 1.6;
+      margin: 10px 0;
+    }
+
+    svg { display: block; width: 100%; height: 100%; }
+
+    .node-text { pointer-events: none; font-size: 12px; font-weight: 500; }
+    .phase-label { font-size: 11px; opacity: 0.8; }
+
+    .legend {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      font-size: 12px;
+      margin-top: 15px;
+      padding-top: 15px;
+      border-top: 1px solid #334155;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .legend-dot { width: 10px; height: 10px; border-radius: 50%; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>🎨 React Fiber: Reconciliation Engine</h1>
+    <a href="../data/04-frontend/react/02-react-internals/02-fiber-reconciliation-engine.md" class="back-link">← Back to Docs</a>
+  </header>
+
+  <div class="container">
+    <div id="canvas">
+      <svg></svg>
+    </div>
+
+    <div class="controls">
+      <div class="control-group">
+        <label>Visualization</label>
+        <button onclick="app.startRender()">Start Render Phase</button>
+        <button onclick="app.pauseRender()">Pause</button>
+        <button onclick="app.commitPhase()">→ Commit Phase</button>
+        <button onclick="app.reset()">Reset</button>
+      </div>
+
+      <div class="status">
+        <div>Phase: <span id="phase-name" class="phase-render">Idle</span></div>
+        <div>Time: <span id="phase-time">0ms</span></div>
+        <div>Fiber Queue: <span id="queue-count">0</span></div>
+      </div>
+
+      <div class="control-group">
+        <label>Scenario</label>
+        <button onclick="app.scenario('simple')">Simple Update</button>
+        <button onclick="app.scenario('complex')">Complex Tree</button>
+        <button onclick="app.scenario('interrupt')">Interruption</button>
+      </div>
+
+      <div class="info-text">
+        <strong>Render Phase:</strong> Interruptible work. React can pause to handle high-priority updates (user input, animations).
+      </div>
+
+      <div class="info-text">
+        <strong>Commit Phase:</strong> Atomic DOM updates. Cannot pause - ensures consistent DOM state.
+      </div>
+
+      <div class="legend">
+        <div class="legend-item">
+          <div class="legend-dot" style="background: #3b82f6;"></div>
+          <span>Pending</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-dot" style="background: #fbbf24;"></div>
+          <span>Rendering</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-dot" style="background: #34d399;"></div>
+          <span>Committed</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-dot" style="background: #ef4444;"></div>
+          <span>Error</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Fiber Tree Visualization App
+    const app = {
+      state: {
+        phase: 'idle', // idle, rendering, paused, committed
+        time: 0,
+        queue: [],
+        tree: null,
+        scenario: 'simple'
+      },
+
+      scenarios: {
+        simple: {
+          nodes: [
+            { id: 'root', parent: null, name: 'App', depth: 0 },
+            { id: 'header', parent: 'root', name: 'Header', depth: 1 },
+            { id: 'main', parent: 'root', name: 'Main', depth: 1 },
+            { id: 'list', parent: 'main', name: 'List', depth: 2 },
+            { id: 'items', parent: 'list', name: 'Items', depth: 3 }
+          ]
+        },
+        complex: {
+          nodes: [
+            { id: 'root', parent: null, name: 'App', depth: 0 },
+            { id: 'nav', parent: 'root', name: 'Nav', depth: 1 },
+            { id: 'sidebar', parent: 'root', name: 'Sidebar', depth: 1 },
+            { id: 'main', parent: 'root', name: 'Main', depth: 1 },
+            { id: 'header', parent: 'main', name: 'Header', depth: 2 },
+            { id: 'content', parent: 'main', name: 'Content', depth: 2 },
+            { id: 'footer', parent: 'main', name: 'Footer', depth: 2 },
+            { id: 'cards', parent: 'content', name: 'Cards', depth: 3 },
+            { id: 'card1', parent: 'cards', name: 'Card 1', depth: 4 },
+            { id: 'card2', parent: 'cards', name: 'Card 2', depth: 4 }
+          ]
+        }
+      },
+
+      init() {
+        this.setupSVG();
+        this.load(this.scenarios.simple);
+        this.render();
+      },
+
+      setupSVG() {
+        this.svg = d3.select('svg');
+        this.svg.append('defs').append('marker')
+          .attr('id', 'arrow')
+          .attr('markerWidth', 10)
+          .attr('markerHeight', 10)
+          .attr('refX', 8)
+          .attr('refY', 3)
+          .attr('orient', 'auto')
+          .append('path')
+          .attr('d', 'M0,0 L0,6 L9,3 z')
+          .attr('fill', '#64748b');
+      },
+
+      load(scenario) {
+        this.state.scenario = scenario;
+        this.state.tree = {
+          nodes: [...scenario.nodes],
+          links: scenario.nodes
+            .filter(n => n.parent)
+            .map(n => ({ source: n.parent, target: n.id }))
+        };
+        this.state.queue = scenario.nodes.map(n => n.id);
+      },
+
+      scenario(name) {
+        this.state.phase = 'idle';
+        this.load(this.scenarios[name]);
+        this.updateUI();
+        this.render();
+      },
+
+      startRender() {
+        if (this.state.phase === 'idle' || this.state.phase === 'paused') {
+          this.state.phase = 'rendering';
+          this.state.time = 0;
+          this.animateRender();
+        }
+      },
+
+      pauseRender() {
+        this.state.phase = 'paused';
+      },
+
+      commitPhase() {
+        this.state.phase = 'committed';
+        // Mark all nodes as committed
+        this.state.tree.nodes.forEach(n => n.state = 'committed');
+        this.render();
+      },
+
+      reset() {
+        this.state.phase = 'idle';
+        this.state.time = 0;
+        this.state.tree.nodes.forEach(n => delete n.state);
+        this.render();
+      },
+
+      animateRender() {
+        if (this.state.phase !== 'rendering') return;
+
+        // Simulate work on next fiber
+        if (this.state.queue.length > 0) {
+          const nodeId = this.state.queue.shift();
+          const node = this.state.tree.nodes.find(n => n.id === nodeId);
+          if (node) node.state = 'rendering';
+
+          this.state.time += 5;
+          this.updateUI();
+          this.render();
+
+          // Continue after brief delay
+          setTimeout(() => this.animateRender(), 200);
+        } else {
+          this.state.phase = 'paused';
+        }
+      },
+
+      updateUI() {
+        const phaseEl = document.getElementById('phase-name');
+        const stateMap = { idle: 'Idle', rendering: 'Rendering (Interruptible)', paused: 'Paused', committed: 'Committed' };
+        phaseEl.textContent = stateMap[this.state.phase];
+        phaseEl.className = this.state.phase === 'rendering' ? 'phase-render' :
+                           this.state.phase === 'committed' ? 'phase-commit' : '';
+
+        document.getElementById('phase-time').textContent = this.state.time + 'ms';
+        document.getElementById('queue-count').textContent = this.state.queue.length;
+      },
+
+      render() {
+        const width = this.svg.node().parentElement.clientWidth;
+        const height = this.svg.node().parentElement.clientHeight;
+
+        // Hierarchy layout
+        const hierarchy = d3.hierarchy(
+          this.state.tree.nodes.find(n => n.parent === null),
+          d => {
+            const id = d.id;
+            return this.state.tree.nodes.filter(n => n.parent === id);
+          }
+        );
+
+        const tree = d3.tree().size([width - 40, height - 40]);
+        const root = tree(hierarchy);
+
+        // Update links
+        const links = this.svg.selectAll('.link').data(root.links(), d => d.source.data.id + '-' + d.target.data.id);
+
+        links.enter().append('line')
+          .attr('class', 'link')
+          .attr('stroke', '#64748b')
+          .attr('stroke-width', 2)
+          .attr('marker-end', 'url(#arrow)')
+          .merge(links)
+          .attr('x1', d => d.source.x)
+          .attr('y1', d => d.source.y)
+          .attr('x2', d => d.target.x)
+          .attr('y2', d => d.target.y);
+
+        links.exit().remove();
+
+        // Update nodes
+        const nodes = this.svg.selectAll('.node').data(root.descendants(), d => d.data.id);
+
+        const nodeEnter = nodes.enter().append('g')
+          .attr('class', 'node')
+          .attr('transform', d => `translate(${d.x},${d.y})`);
+
+        nodeEnter.append('circle')
+          .attr('r', 20)
+          .attr('fill', d => {
+            const state = d.data.state;
+            if (state === 'rendering') return '#fbbf24';
+            if (state === 'committed') return '#34d399';
+            return '#3b82f6';
+          })
+          .attr('stroke', '#e2e8f0')
+          .attr('stroke-width', 2);
+
+        nodeEnter.append('text')
+          .attr('class', 'node-text')
+          .attr('text-anchor', 'middle')
+          .attr('dy', '0.3em')
+          .text(d => d.data.name);
+
+        nodes.merge(nodeEnter)
+          .transition()
+          .duration(100)
+          .attr('transform', d => `translate(${d.x},${d.y})`)
+          .select('circle')
+          .attr('fill', d => {
+            const state = d.data.state;
+            if (state === 'rendering') return '#fbbf24';
+            if (state === 'committed') return '#34d399';
+            return '#3b82f6';
+          });
+
+        nodes.exit().remove();
+      }
+    };
+
+    // Start app on load
+    window.addEventListener('load', () => app.init());
+  </script>
+</body>
+</html>

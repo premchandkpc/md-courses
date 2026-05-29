@@ -1,5 +1,7 @@
 # React Fiber & Reconciliation: How React Actually Works
 
+[🎨 Interactive Visualization](../../../../html/02-fiber-reconciliation-engine-viz.html)
+
 **Level:** Advanced | **Time:** 60 mins | **Interview:** 🔥🔥🔥 Critical
 
 ---

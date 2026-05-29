@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Error Boundaries: Building Resilient React Apps</title>
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: #0f172a; color: #e2e8f0; }
+
+    header {
+      background: #1e293b;
+      padding: 20px;
+      border-bottom: 1px solid #334155;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    h1 { font-size: 24px; }
+
+    .back-link {
+      color: #60a5fa;
+      text-decoration: none;
+      font-size: 14px;
+      padding: 8px 12px;
+      border: 1px solid #334155;
+      border-radius: 4px;
+    }
+
+    .back-link:hover { background: #334155; }
+
+    .container { display: flex; height: calc(100vh - 60px); }
+
+    #canvas {
+      flex: 1;
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+      position: relative;
+      overflow: auto;
+    }
+
+    .controls {
+      width: 300px;
+      background: #1e293b;
+      border-left: 1px solid #334155;
+      padding: 20px;
+      overflow-y: auto;
+    }
+
+    .control-group {
+      margin-bottom: 20px;
+    }
+
+    .control-group label {
+      display: block;
+      font-size: 13px;
+      text-transform: uppercase;
+      color: #94a3b8;
+      margin-bottom: 8px;
+      font-weight: 600;
+    }
+
+    button {
+      background: #3b82f6;
+      color: white;
+      border: none;
+      padding: 10px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      width: 100%;
+      margin-bottom: 8px;
+      transition: all 0.2s;
+    }
+
+    button:hover { background: #2563eb; }
+    button.active { background: #10b981; }
+
+    .status {
+      background: #334155;
+      padding: 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-family: monospace;
+      margin: 10px 0;
+      line-height: 1.8;
+    }
+
+    .info-text {
+      font-size: 12px;
+      color: #cbd5e1;
+      line-height: 1.6;
+      margin: 10px 0;
+    }
+
+    svg { display: block; width: 100%; height: 100%; }
+
+    .component-box {
+      fill: #334155;
+      stroke: #64748b;
+      stroke-width: 2;
+      rx: 4;
+    }
+
+    .component-text {
+      fill: #e2e8f0;
+      font-size: 12px;
+      font-weight: 600;
+      text-anchor: middle;
+      dy: '0.3em';
+    }
+
+    .error-indicator {
+      fill: #ef4444;
+      stroke: #dc2626;
+      stroke-width: 2;
+    }
+
+    .error-boundary-box {
+      fill: none;
+      stroke: #10b981;
+      stroke-width: 2;
+      stroke-dasharray: 5,5;
+      rx: 8;
+    }
+
+    .legend {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      font-size: 12px;
+      margin-top: 15px;
+      padding-top: 15px;
+      border-top: 1px solid #334155;
+    }
+
+    .legend-item { display: flex; align-items: center; gap: 8px; }
+    .legend-dot { width: 10px; height: 10px; border-radius: 50%; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>🎨 Error Boundaries: Building Resilient React Apps</h1>
+    <a href="../data/04-frontend/react/35-error-handling/01-error-boundaries-and-patterns.md" class="back-link">← Back to Docs</a>
+  </header>
+
+  <div class="container">
+    <div id="canvas">
+      <svg></svg>
+    </div>
+
+    <div class="controls">
+      <div class="control-group">
+        <label>Error Scenario</label>
+        <button id="no-boundary" onclick="app.setScenario('no-boundary')" class="active">No Boundary</button>
+        <button id="with-boundary" onclick="app.setScenario('with-boundary')">With Boundary</button>
+      </div>
+
+      <div class="control-group">
+        <label>Trigger Error</label>
+        <button onclick="app.triggerRenderError()">Render Error</button>
+        <button onclick="app.triggerEventError()">Event Handler Error</button>
+        <button onclick="app.triggerAsyncError()">Async Error</button>
+      </div>
+
+      <div class="status">
+        <div>Scenario: <strong id="scenario-type">No Boundary</strong></div>
+        <div>Error State: <strong id="error-state" style="color: #ef4444;">None</strong></div>
+        <div>Caught: <strong id="error-caught" style="color: #60a5fa;">No</strong></div>
+      </div>
+
+      <div class="info-text">
+        <strong>Error Boundaries:</strong> Class components that catch render errors in child components.
+      </div>
+
+      <div class="info-text">
+        <strong>Caught errors:</strong> Render phase, lifecycle methods, constructors, child renders.
+      </div>
+
+      <div class="info-text">
+        <strong>NOT caught:</strong> Event handlers (use try/catch), async errors, SSR errors.
+      </div>
+
+      <div class="control-group">
+        <button onclick="app.reset()" style="margin-top: 10px;">↻ Reset</button>
+      </div>
+
+      <div class="legend">
+        <div class="legend-item">
+          <div class="legend-dot" style="background: #3b82f6;"></div>
+          <span>Component</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-dot" style="background: #10b981;"></div>
+          <span>Error Boundary</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-dot" style="background: #ef4444;"></div>
+          <span>Error</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-dot" style="background: #fbbf24;"></div>
+          <span>Fallback UI</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const app = {
+      state: {
+        scenario: 'no-boundary', // no-boundary, with-boundary
+        errorState: null, // null, render-error, event-error, async-error
+        errorCaught: false,
+        errorMessage: ''
+      },
+
+      init() {
+        this.svg = d3.select('svg');
+        this.render();
+      },
+
+      setScenario(scenario) {
+        this.state.scenario = scenario;
+        this.state.errorState = null;
+        this.state.errorCaught = false;
+        document.getElementById('scenario-type').textContent =
+          scenario === 'no-boundary' ? 'No Boundary' : 'With Boundary';
+        document.querySelectorAll('.control-group button:nth-child(-n+2)').forEach(b => b.classList.remove('active'));
+        document.getElementById(scenario).classList.add('active');
+        this.updateStatus();
+        this.render();
+      },
+
+      triggerRenderError() {
+        if (this.state.scenario === 'with-boundary') {
+          this.state.errorCaught = true;
+          this.state.errorMessage = 'Cannot read property "map" of undefined';
+        } else {
+          this.state.errorMessage = 'Cannot read property "map" of undefined';
+        }
+        this.state.errorState = 'render-error';
+        this.updateStatus();
+        this.render();
+      },
+
+      triggerEventError() {
+        // Event errors are NOT caught by Error Boundary
+        this.state.errorCaught = false;
+        this.state.errorMessage = 'Button click handler threw';
+        this.state.errorState = 'event-error';
+        this.updateStatus();
+        this.render();
+      },
+
+      triggerAsyncError() {
+        // Async errors are NOT caught by Error Boundary
+        this.state.errorCaught = false;
+        this.state.errorMessage = 'Unhandled promise rejection';
+        this.state.errorState = 'async-error';
+        this.updateStatus();
+        this.render();
+      },
+
+      reset() {
+        this.state.errorState = null;
+        this.state.errorCaught = false;
+        this.state.errorMessage = '';
+        this.updateStatus();
+        this.render();
+      },
+
+      updateStatus() {
+        const errorText = this.state.errorState ?
+          (this.state.errorState === 'render-error' ? 'Render Error' :
+           this.state.errorState === 'event-error' ? 'Event Error' :
+           'Async Error') : 'None';
+
+        document.getElementById('error-state').textContent = errorText;
+        document.getElementById('error-caught').textContent =
+          this.state.errorCaught ? 'Yes (Caught)' : (this.state.errorState ? 'No (Uncaught)' : 'No');
+        document.getElementById('error-caught').style.color =
+          this.state.errorCaught ? '#10b981' : (this.state.errorState ? '#ef4444' : '#60a5fa');
+      },
+
+      render() {
+        const width = this.svg.node().parentElement.clientWidth;
+        const height = this.svg.node().parentElement.clientHeight;
+
+        this.svg.selectAll('*').remove();
+
+        if (this.state.scenario === 'no-boundary') {
+          this.renderNoBoundary(width, height);
+        } else {
+          this.renderWithBoundary(width, height);
+        }
+      },
+
+      renderNoBoundary(width, height) {
+        const centerX = width / 2;
+        const startY = 80;
+
+        // App component
+        const appNode = { x: centerX, y: startY, label: '<App>' };
+
+        // Child components
+        const children = [
+          { x: centerX - 150, y: startY + 100, label: '<Header>' },
+          { x: centerX, y: startY + 100, label: '<Dashboard>' },
+          { x: centerX + 150, y: startY + 100, label: '<Footer>' }
+        ];
+
+        const grandchildren = [
+          { x: centerX - 150, y: startY + 200, label: '<DashCard>' },
+          { x: centerX, y: startY + 200, label: '<Chart>' },
+          { x: centerX + 150, y: startY + 200, label: '<Stats>' }
+        ];
+
+        // Draw links
+        const allNodes = [appNode, ...children, ...grandchildren];
+        const links = [
+          { source: appNode, target: children[0] },
+          { source: appNode, target: children[1] },
+          { source: appNode, target: children[2] },
+          { source: children[0], target: grandchildren[0] },
+          { source: children[1], target: grandchildren[1] },
+          { source: children[2], target: grandchildren[2] }
+        ];
+
+        links.forEach(link => {
+          this.svg.append('line')
+            .attr('x1', link.source.x)
+            .attr('y1', link.source.y)
+            .attr('x2', link.target.x)
+            .attr('y2', link.target.y)
+            .attr('stroke', '#64748b')
+            .attr('stroke-width', 2);
+        });
+
+        // Draw nodes
+        const drawNode = (node, isErrorNode) => {
+          const g = this.svg.append('g');
+
+          g.append('rect')
+            .attr('class', isErrorNode ? 'error-indicator' : 'component-box')
+            .attr('x', node.x - 40)
+            .attr('y', node.y - 25)
+            .attr('width', 80)
+            .attr('height', 50);
+
+          g.append('text')
+            .attr('class', 'component-text')
+            .attr('x', node.x)
+            .attr('y', node.y)
+            .text(node.label);
+        };
+
+        // Determine error node
+        const errorNode = this.state.errorState ? children[1] : null;
+
+        [appNode, ...children, ...grandchildren].forEach(node => {
+          const isError = errorNode && (node === errorNode || node === grandchildren[1]);
+          drawNode(node, isError);
+        });
+
+        // If error, show crash indicator
+        if (this.state.errorState) {
+          this.svg.append('text')
+            .attr('x', centerX)
+            .attr('y', height - 100)
+            .attr('text-anchor', 'middle')
+            .attr('font-size', '14px')
+            .attr('font-weight', 'bold')
+            .attr('fill', '#ef4444')
+            .text('❌ Uncaught Error - App Crashes');
+
+          this.svg.append('text')
+            .attr('x', centerX)
+            .attr('y', height - 70)
+            .attr('text-anchor', 'middle')
+            .attr('font-size', '12px')
+            .attr('fill', '#fbbf24')
+            .text(this.state.errorMessage);
+        } else {
+          this.svg.append('text')
+            .attr('x', centerX)
+            .attr('y', height - 50)
+            .attr('text-anchor', 'middle')
+            .attr('font-size', '14px')
+            .attr('font-weight', 'bold')
+            .attr('fill', '#10b981')
+            .text('✓ App Healthy');
+        }
+      },
+
+      renderWithBoundary(width, height) {
+        const centerX = width / 2;
+        const startY = 80;
+
+        // ErrorBoundary wrapper
+        const boundaryRect = {
+          x: centerX - 200,
+          y: startY,
+          width: 400,
+          height: 350
+        };
+
+        // App component (inside boundary)
+        const appNode = { x: centerX, y: startY + 50, label: '<App>' };
+
+        // Child components
+        const children = [
+          { x: centerX - 150, y: startY + 130, label: '<Header>' },
+          { x: centerX, y: startY + 130, label: '<Dashboard>' },
+          { x: centerX + 150, y: startY + 130, label: '<Footer>' }
+        ];
+
+        const grandchildren = [
+          { x: centerX - 150, y: startY + 210, label: '<DashCard>' },
+          { x: centerX, y: startY + 210, label: '<Chart>' },
+          { x: centerX + 150, y: startY + 210, label: '<Stats>' }
+        ];
+
+        // Draw boundary box first
+        this.svg.append('rect')
+          .attr('class', 'error-boundary-box')
+          .attr('x', boundaryRect.x)
+          .attr('y', boundaryRect.y)
+          .attr('width', boundaryRect.width)
+          .attr('height', boundaryRect.height);
+
+        // Boundary label
+        this.svg.append('text')
+          .attr('x', boundaryRect.x + 10)
+          .attr('y', boundaryRect.y + 20)
+          .attr('font-size', '12px')
+          .attr('font-weight', 'bold')
+          .attr('fill', '#10b981')
+          .text('<ErrorBoundary>');
+
+        // Draw links
+        const allNodes = [appNode, ...children, ...grandchildren];
+        const links = [
+          { source: appNode, target: children[0] },
+          { source: appNode, target: children[1] },
+          { source: appNode, target: children[2] },
+          { source: children[0], target: grandchildren[0] },
+          { source: children[1], target: grandchildren[1] },
+          { source: children[2], target: grandchildren[2] }
+        ];
+
+        links.forEach(link => {
+          this.svg.append('line')
+            .attr('x1', link.source.x)
+            .attr('y1', link.source.y)
+            .attr('x2', link.target.x)
+            .attr('y2', link.target.y)
+            .attr('stroke', '#64748b')
+            .attr('stroke-width', 2);
+        });
+
+        // Draw nodes
+        const drawNode = (node, isErrorNode) => {
+          const g = this.svg.append('g');
+
+          g.append('rect')
+            .attr('class', isErrorNode ? 'error-indicator' : 'component-box')
+            .attr('x', node.x - 40)
+            .attr('y', node.y - 25)
+            .attr('width', 80)
+            .attr('height', 50);
+
+          g.append('text')
+            .attr('class', 'component-text')
+            .attr('x', node.x)
+            .attr('y', node.y)
+            .text(node.label);
+        };
+
+        // Determine error node
+        const errorNode = this.state.errorState ? children[1] : null;
+
+        [appNode, ...children, ...grandchildren].forEach(node => {
+          const isError = this.state.errorState && this.state.errorState === 'render-error' &&
+                         (node === errorNode || node === grandchildren[1]);
+          drawNode(node, isError);
+        });
+
+        // Show status
+        if (this.state.errorState === 'render-error') {
+          this.svg.append('text')
+            .attr('x', centerX)
+            .attr('y', height - 100)
+            .attr('text-anchor', 'middle')
+            .attr('font-size', '14px')
+            .attr('font-weight', 'bold')
+            .attr('fill', '#10b981')
+            .text('✓ Error Caught & Handled');
+
+          this.svg.append('text')
+            .attr('x', centerX)
+            .attr('y', height - 70)
+            .attr('text-anchor', 'middle')
+            .attr('font-size', '12px')
+            .attr('fill', '#fbbf24')
+            .text('Fallback UI shown to user');
+
+          // Fallback UI indicator
+          this.svg.append('rect')
+            .attr('x', centerX - 80)
+            .attr('y', height - 50)
+            .attr('width', 160)
+            .attr('height', 35)
+            .attr('fill', 'rgba(251, 191, 36, 0.1)')
+            .attr('stroke', '#fbbf24')
+            .attr('stroke-width', 1)
+            .attr('rx', 4);
+
+          this.svg.append('text')
+            .attr('x', centerX)
+            .attr('y', height - 30)
+            .attr('text-anchor', 'middle')
+            .attr('font-size', '12px')
+            .attr('fill', '#fbbf24')
+            .text('Something went wrong');
+        } else if (this.state.errorState === 'event-error' || this.state.errorState === 'async-error') {
+          this.svg.append('text')
+            .attr('x', centerX)
+            .attr('y', height - 80)
+            .attr('text-anchor', 'middle')
+            .attr('font-size', '14px')
+            .attr('font-weight', 'bold')
+            .attr('fill', '#fbbf24')
+            .text('⚠ Error NOT Caught by Boundary');
+
+          this.svg.append('text')
+            .attr('x', centerX)
+            .attr('y', height - 50)
+            .attr('text-anchor', 'middle')
+            .attr('font-size', '12px')
+            .attr('fill', '#cbd5e1')
+            .text(this.state.errorState === 'event-error' ?
+            'Event handler errors need try/catch' :
+            'Async errors need await/try/catch');
+        } else {
+          this.svg.append('text')
+            .attr('x', centerX)
+            .attr('y', height - 50)
+            .attr('text-anchor', 'middle')
+            .attr('font-size', '14px')
+            .attr('font-weight', 'bold')
+            .attr('fill', '#10b981')
+            .text('✓ App Healthy');
+        }
+      }
+    };
+
+    window.addEventListener('load', () => app.init());
+  </script>
+</body>
+</html>

@@ -1,5 +1,7 @@
 # Compound Components Pattern: Building Flexible Component APIs
 
+[🎨 Interactive Visualization](../../../../html/06-compound-components-pattern-viz.html)
+
 **Level:** Intermediate-Advanced | **Time:** 45 mins | **Interview:** 🔥 Critical
 
 ---

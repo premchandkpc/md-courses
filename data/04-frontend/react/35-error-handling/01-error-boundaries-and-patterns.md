@@ -1,5 +1,7 @@
 # Error Boundaries & Error Handling: Building Resilient React Apps
 
+[🎨 Interactive Visualization](../../html/35-error-boundaries-and-patterns-viz.html)
+
 **Level:** Intermediate-Advanced | **Time:** 45 mins | **Interview:** 🔥 Critical
 
 ---

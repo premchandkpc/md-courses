@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Compound Components: Flexible Component APIs</title>
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: #0f172a; color: #e2e8f0; }
+
+    header {
+      background: #1e293b;
+      padding: 20px;
+      border-bottom: 1px solid #334155;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    h1 { font-size: 24px; }
+
+    .back-link {
+      color: #60a5fa;
+      text-decoration: none;
+      font-size: 14px;
+      padding: 8px 12px;
+      border: 1px solid #334155;
+      border-radius: 4px;
+    }
+
+    .back-link:hover { background: #334155; }
+
+    .container { display: flex; height: calc(100vh - 60px); }
+
+    #canvas {
+      flex: 1;
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+      position: relative;
+      overflow: auto;
+    }
+
+    .controls {
+      width: 300px;
+      background: #1e293b;
+      border-left: 1px solid #334155;
+      padding: 20px;
+      overflow-y: auto;
+    }
+
+    .control-group {
+      margin-bottom: 20px;
+    }
+
+    .control-group label {
+      display: block;
+      font-size: 13px;
+      text-transform: uppercase;
+      color: #94a3b8;
+      margin-bottom: 8px;
+      font-weight: 600;
+    }
+
+    button {
+      background: #3b82f6;
+      color: white;
+      border: none;
+      padding: 10px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      width: 100%;
+      margin-bottom: 8px;
+      transition: all 0.2s;
+    }
+
+    button:hover { background: #2563eb; }
+
+    .status {
+      background: #334155;
+      padding: 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-family: monospace;
+      margin: 10px 0;
+      line-height: 1.8;
+    }
+
+    .info-text {
+      font-size: 12px;
+      color: #cbd5e1;
+      line-height: 1.6;
+      margin: 10px 0;
+    }
+
+    svg { display: block; width: 100%; height: 100%; }
+
+    .component-box {
+      fill: #334155;
+      stroke: #64748b;
+      stroke-width: 2;
+      rx: 4;
+    }
+
+    .component-text {
+      fill: #e2e8f0;
+      font-size: 12px;
+      font-weight: 600;
+      text-anchor: middle;
+      dy: '0.3em';
+    }
+
+    .context-arrow {
+      fill: none;
+      stroke: #60a5fa;
+      stroke-width: 2;
+      marker-end: url(#arrow);
+    }
+
+    .legend {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      font-size: 12px;
+      margin-top: 15px;
+      padding-top: 15px;
+      border-top: 1px solid #334155;
+    }
+
+    .legend-item { display: flex; align-items: center; gap: 8px; }
+    .legend-dot { width: 10px; height: 10px; border-radius: 50%; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>🎨 Compound Components: Flexible Component APIs</h1>
+    <a href="../data/04-frontend/react/06-component-architecture/02-compound-components-pattern.md" class="back-link">← Back to Docs</a>
+  </header>
+
+  <div class="container">
+    <div id="canvas">
+      <svg></svg>
+    </div>
+
+    <div class="controls">
+      <div class="control-group">
+        <label>Components</label>
+        <button onclick="app.showExample('tabs')">Tabs Component</button>
+        <button onclick="app.showExample('dropdown')">Dropdown Component</button>
+        <button onclick="app.showExample('accordion')">Accordion Component</button>
+      </div>
+
+      <div class="status">
+        <div>Active Component: <strong id="active-component">Tabs</strong></div>
+        <div>Composition: <strong id="composition-type">Flexible</strong></div>
+      </div>
+
+      <div class="control-group">
+        <label>Interaction</label>
+        <button onclick="app.triggerInteraction()">Simulate User Click</button>
+        <button onclick="app.toggleContext()">Toggle Context Value</button>
+      </div>
+
+      <div class="info-text">
+        <strong>Compound components</strong> split behavior across sub-components that share context. No 50-prop monolith - just composable pieces.
+      </div>
+
+      <div class="info-text">
+        <strong>Context flow:</strong> Parent component owns state, subcomponents consume it via useContext hook.
+      </div>
+
+      <div class="info-text">
+        <strong>Benefits:</strong> Flexible layouts, smaller props API, cleaner JSX, powers Headless UI & Radix.
+      </div>
+
+      <div class="legend">
+        <div class="legend-item">
+          <div class="legend-dot" style="background: #3b82f6;"></div>
+          <span>Parent</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-dot" style="background: #60a5fa;"></div>
+          <span>Subcomponent</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-dot" style="background: #fbbf24;"></div>
+          <span>Active</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-dot" style="background: #34d399;"></div>
+          <span>Context Provider</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const app = {
+      state: {
+        example: 'tabs',
+        activeTab: 0,
+        contextValue: { activeTab: 0, setActiveTab: () => {} },
+        highlightedComponent: null
+      },
+
+      examples: {
+        tabs: {
+          name: 'Tabs Component',
+          nodes: [
+            { id: 'Tabs', x: 100, y: 100, label: '<Tabs>', isParent: true },
+            { id: 'Tabs.List', x: 80, y: 200, label: '<Tabs.List>' },
+            { id: 'Tabs.Trigger', x: 120, y: 280, label: '<Tabs.Trigger>' },
+            { id: 'Tabs.Trigger2', x: 160, y: 280, label: '<Tabs.Trigger>' },
+            { id: 'Tabs.Content', x: 80, y: 360, label: '<Tabs.Content>' },
+            { id: 'Tabs.Content2', x: 160, y: 360, label: '<Tabs.Content>' }
+          ],
+          links: [
+            { source: 'Tabs', target: 'Tabs.List' },
+            { source: 'Tabs.List', target: 'Tabs.Trigger' },
+            { source: 'Tabs.List', target: 'Tabs.Trigger2' },
+            { source: 'Tabs', target: 'Tabs.Content' },
+            { source: 'Tabs', target: 'Tabs.Content2' }
+          ]
+        },
+        dropdown: {
+          name: 'Dropdown Component',
+          nodes: [
+            { id: 'Dropdown', x: 100, y: 100, label: '<Dropdown>', isParent: true },
+            { id: 'Dropdown.Trigger', x: 80, y: 200, label: '<Dropdown.Trigger>' },
+            { id: 'Dropdown.Menu', x: 120, y: 200, label: '<Dropdown.Menu>' },
+            { id: 'Dropdown.Item', x: 80, y: 280, label: '<Dropdown.Item>' },
+            { id: 'Dropdown.Item2', x: 120, y: 280, label: '<Dropdown.Item>' },
+            { id: 'Dropdown.Separator', x: 160, y: 280, label: '<Dropdown.Separator>' }
+          ],
+          links: [
+            { source: 'Dropdown', target: 'Dropdown.Trigger' },
+            { source: 'Dropdown', target: 'Dropdown.Menu' },
+            { source: 'Dropdown.Menu', target: 'Dropdown.Item' },
+            { source: 'Dropdown.Menu', target: 'Dropdown.Item2' },
+            { source: 'Dropdown.Menu', target: 'Dropdown.Separator' }
+          ]
+        },
+        accordion: {
+          name: 'Accordion Component',
+          nodes: [
+            { id: 'Accordion', x: 100, y: 100, label: '<Accordion>', isParent: true },
+            { id: 'Accordion.Item', x: 80, y: 200, label: '<Accordion.Item>' },
+            { id: 'Accordion.Trigger', x: 60, y: 280, label: '<Accordion.Trigger>' },
+            { id: 'Accordion.Content', x: 120, y: 280, label: '<Accordion.Content>' },
+            { id: 'Accordion.Item2', x: 160, y: 200, label: '<Accordion.Item>' },
+            { id: 'Accordion.Trigger2', x: 140, y: 280, label: '<Accordion.Trigger>' }
+          ],
+          links: [
+            { source: 'Accordion', target: 'Accordion.Item' },
+            { source: 'Accordion.Item', target: 'Accordion.Trigger' },
+            { source: 'Accordion.Item', target: 'Accordion.Content' },
+            { source: 'Accordion', target: 'Accordion.Item2' },
+            { source: 'Accordion.Item2', target: 'Accordion.Trigger2' }
+          ]
+        }
+      },
+
+      init() {
+        this.svg = d3.select('svg');
+        this.svg.append('defs').append('marker')
+          .attr('id', 'arrow')
+          .attr('markerWidth', 10)
+          .attr('markerHeight', 10)
+          .attr('refX', 8)
+          .attr('refY', 3)
+          .attr('orient', 'auto')
+          .append('path')
+          .attr('d', 'M0,0 L0,6 L9,3 z')
+          .attr('fill', '#64748b');
+
+        this.showExample('tabs');
+      },
+
+      showExample(name) {
+        this.state.example = name;
+        document.getElementById('active-component').textContent = this.examples[name].name;
+        this.render();
+      },
+
+      triggerInteraction() {
+        this.state.activeTab = (this.state.activeTab + 1) % 2;
+        this.render();
+      },
+
+      toggleContext() {
+        this.state.highlightedComponent = this.state.highlightedComponent ? null : 'context';
+        this.render();
+      },
+
+      render() {
+        const example = this.examples[this.state.example];
+        const width = this.svg.node().parentElement.clientWidth;
+        const height = this.svg.node().parentElement.clientHeight;
+
+        // Draw links first (under nodes)
+        const links = this.svg.selectAll('line.link').data(example.links, d => `${d.source}-${d.target}`);
+
+        links.enter().append('line')
+          .attr('class', 'link')
+          .attr('stroke', '#64748b')
+          .attr('stroke-width', 2)
+          .merge(links)
+          .attr('x1', d => {
+            const sourceNode = example.nodes.find(n => n.id === d.source);
+            return sourceNode ? sourceNode.x : 0;
+          })
+          .attr('y1', d => {
+            const sourceNode = example.nodes.find(n => n.id === d.source);
+            return sourceNode ? sourceNode.y : 0;
+          })
+          .attr('x2', d => {
+            const targetNode = example.nodes.find(n => n.id === d.target);
+            return targetNode ? targetNode.x : 0;
+          })
+          .attr('y2', d => {
+            const targetNode = example.nodes.find(n => n.id === d.target);
+            return targetNode ? targetNode.y : 0;
+          });
+
+        links.exit().remove();
+
+        // Draw nodes
+        const nodes = this.svg.selectAll('g.component').data(example.nodes, d => d.id);
+
+        const nodeEnter = nodes.enter().append('g')
+          .attr('class', 'component')
+          .attr('transform', d => `translate(${d.x},${d.y})`);
+
+        nodeEnter.append('rect')
+          .attr('class', 'component-box')
+          .attr('width', 80)
+          .attr('height', 50)
+          .attr('x', -40)
+          .attr('y', -25);
+
+        nodeEnter.append('text')
+          .attr('class', 'component-text')
+          .text(d => d.label);
+
+        // Update colors
+        nodes.merge(nodeEnter).select('rect')
+          .attr('fill', d => {
+            if (d.isParent) return '#3b82f6';
+            if (d.id.includes('Trigger')) return this.state.activeTab === 0 ? '#fbbf24' : '#60a5fa';
+            if (d.id.includes('Item')) return '#60a5fa';
+            return '#60a5fa';
+          })
+          .attr('stroke', d => d.isParent ? '#3b82f6' : '#60a5fa');
+
+        nodes.exit().remove();
+
+        // Draw context indicator if active
+        if (this.state.highlightedComponent === 'context') {
+          const contextBox = this.svg.selectAll('rect.context-box').data([null]);
+          contextBox.enter().append('rect')
+            .attr('class', 'context-box')
+            .attr('x', 30)
+            .attr('y', 70)
+            .attr('width', 140)
+            .attr('height', 320)
+            .attr('fill', 'rgba(52, 211, 153, 0.05)')
+            .attr('stroke', '#34d399')
+            .attr('stroke-width', 2)
+            .attr('rx', 4);
+
+          const contextLabel = this.svg.selectAll('text.context-label').data([null]);
+          contextLabel.enter().append('text')
+            .attr('class', 'context-label')
+            .attr('x', 40)
+            .attr('y', 85)
+            .attr('fill', '#34d399')
+            .attr('font-size', '12px')
+            .attr('font-weight', 'bold')
+            .text('Context Provider');
+        }
+      }
+    };
+
+    window.addEventListener('load', () => app.init());
+  </script>
+</body>
+</html>

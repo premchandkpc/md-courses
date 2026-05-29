@@ -1,209 +1,49 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Continuous Improvement</title>
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: #0f172a;
-      color: #e2e8f0;
-    }
-    header {
-      background: #1e293b;
-      padding: 20px;
-      border-bottom: 1px solid #334155;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    h1 { font-size: 24px; font-weight: 600; }
-    h2 { font-size: 18px; margin: 20px 0 15px 0; color: #cbd5e1; }
-    .back-link {
-      color: #60a5fa;
-      text-decoration: none;
-      font-size: 14px;
-      padding: 8px 12px;
-      border: 1px solid #334155;
-      border-radius: 4px;
-      transition: all 0.2s;
-    }
-    .back-link:hover { background: #334155; }
-    .container { display: flex; height: calc(100vh - 60px); }
-    #canvas {
-      flex: 1;
-      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-      overflow-y: auto;
-      padding: 20px;
-    }
-    .controls {
-      width: 320px;
-      background: #1e293b;
-      border-left: 1px solid #334155;
-      padding: 20px;
-      overflow-y: auto;
-    }
-    .control-group { margin-bottom: 20px; }
-    .control-group label {
-      display: block;
-      font-size: 12px;
-      text-transform: uppercase;
-      color: #94a3b8;
-      margin-bottom: 8px;
-      font-weight: 600;
-    }
-    button {
-      background: #3b82f6;
-      color: white;
-      border: none;
-      padding: 10px 16px;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 14px;
-      width: 100%;
-      margin-bottom: 8px;
-      transition: all 0.2s;
-    }
-    button:hover { background: #2563eb; }
-    .status {
-      background: #334155;
-      padding: 12px;
-      border-radius: 6px;
-      font-size: 12px;
-      font-family: monospace;
-      margin: 10px 0;
-      border-left: 3px solid #60a5fa;
-    }
-    .status > div { margin: 4px 0; }
-    .info-text {
-      font-size: 12px;
-      color: #cbd5e1;
-      line-height: 1.6;
-      margin: 12px 0;
-    }
-    .content-box {
-      background: #334155;
-      padding: 15px;
-      border-radius: 8px;
-      margin: 15px 0;
-    }
-    .item {
-      padding: 12px;
-      background: #1e293b;
-      border-left: 3px solid #60a5fa;
-      border-radius: 4px;
-      font-size: 13px;
-      line-height: 1.5;
-      margin-bottom: 8px;
-      transition: all 0.2s;
-    }
-    .item:hover { background: #334155; border-left-color: #3b82f6; }
-    .item.active { border-left-color: #10b981; background: rgba(16, 185, 129, 0.1); }
-    .item-title { font-weight: 600; color: #e2e8f0; margin-bottom: 4px; }
-    .item-desc { font-size: 12px; color: #cbd5e1; }
-  </style>
-</head>
-<body>
-  <header>
-    <h1>🎨 Continuous Improvement</h1>
-    <a href="../data/00-foundations/README.md" class="back-link">← Back to Notes</a>
-  </header>
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Continuous Improvement</title><style>*{margin:0;padding:0;box-sizing:border-box;}body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:#0f172a;color:#e2e8f0;}header{background:#1e293b;padding:20px;border-bottom:1px solid #334155;display:flex;justify-content:space-between;align-items:center;}h1{font-size:24px;font-weight:600;}h2{font-size:18px;margin:20px 0 15px 0;color:#cbd5e1;}.back-link{color:#60a5fa;text-decoration:none;font-size:14px;padding:8px 12px;border:1px solid #334155;border-radius:4px;transition:all 0.2s;}.back-link:hover{background:#334155;}.container{display:flex;height:calc(100vh - 60px);}#canvas{flex:1;background:linear-gradient(135deg,#0f172a 0%,#1e293b 100%);overflow-y:auto;padding:20px;}.controls{width:320px;background:#1e293b;border-left:1px solid #334155;padding:20px;overflow-y:auto;}.control-group{margin-bottom:20px;}.control-group label{display:block;font-size:12px;text-transform:uppercase;color:#94a3b8;margin-bottom:8px;font-weight:600;}button{background:#3b82f6;color:white;border:none;padding:10px 16px;border-radius:6px;cursor:pointer;font-size:14px;width:100%;margin-bottom:8px;transition:all 0.2s;}button:hover{background:#2563eb;}.status{background:#334155;padding:12px;border-radius:6px;font-size:12px;font-family:monospace;margin:10px 0;border-left:3px solid #60a5fa;}.status > div{margin:4px 0;}.info-text{font-size:12px;color:#cbd5e1;line-height:1.6;margin:12px 0;}.content-box{background:#334155;padding:15px;border-radius:8px;margin:15px 0;}.item{padding:12px;background:#1e293b;border-left:3px solid #60a5fa;border-radius:4px;font-size:13px;line-height:1.5;margin-bottom:8px;transition:all 0.2s;}.item:hover{background:#334155;border-left-color:#3b82f6;}.item.active{border-left-color:#10b981;background:rgba(16,185,129,0.1);}.item-title{font-weight:600;color:#e2e8f0;margin-bottom:4px;}.item-desc{font-size:12px;color:#cbd5e1;}</style></head><body><header><h1>🎨 Continuous Improvement</h1><a href="../data/00-foundations/README.md" class="back-link">← Back to Notes</a></header><div class="container"><div id="canvas"><h2>Interactive Learning</h2><div id="content-main" class="content-box"><div style="color:#94a3b8;text-align:center;padding:40px;">Click "Load" to view content</div><canvas id="viz-canvas" width="600" height="300"></canvas><script>const canvas = document.getElementById('viz-canvas');if(canvas){const ctx = canvas.getContext('2d');app.drawVisualization = function(){ctx.fillStyle = '#334155';ctx.fillRect(0,0,canvas.width,canvas.height);ctx.fillStyle = '#60a5fa';ctx.font = '14px sans-serif';ctx.textAlign = 'center';ctx.fillText('Topic Visualization',canvas.width/2,canvas.height/2);};}</script></div><div class="controls"><div class="control-group"><label>Controls</label><button onclick="app.load()">Load Content</button><button onclick="app.nextStep()">Next Step</button><button onclick="app.reset()">Reset</button></div><div class="status"><div>Status: <strong id="status">Ready</strong></div><div>Progress: <strong id="progress">0%</strong></div></div><div class="control-group"><label>Info</label><div class="info-text">Interactive visualization for learning</div></div></div></div><script>
+ const app = {
+ state: { loaded: false, step: 0 },
+ content: ["Concept from Continuous Improvement", "Learn and explore"],
 
-  <div class="container">
-    <div id="canvas">
-      <h2>Interactive Learning</h2>
-      <div id="content-main" class="content-box">
-        <div style="color:#94a3b8;text-align:center;padding:40px;">Click "Load" to view content</div>
-      
-    <canvas id="viz-canvas" width="600" height="300"></canvas>
-    <script>
-      const canvas = document.getElementById('viz-canvas');
-      if (canvas) {
-        const ctx = canvas.getContext('2d');
-        app.drawVisualization = function() {
-          ctx.fillStyle = '#334155';
-          ctx.fillRect(0, 0, canvas.width, canvas.height);
-          ctx.fillStyle = '#60a5fa';
-          ctx.font = '14px sans-serif';
-          ctx.textAlign = 'center';
-          ctx.fillText('Topic Visualization', canvas.width/2, canvas.height/2);
-        };
-      }
-    </script>
-    </div>
-    <div class="controls">
-      <div class="control-group">
-        <label>Controls</label>
-        <button onclick="app.load()">Load Content</button>
-        <button onclick="app.nextStep()">Next Step</button>
-        <button onclick="app.reset()">Reset</button>
-      </div>
+ init() { this.render(); },
 
-      <div class="status">
-        <div>Status: <strong id="status">Ready</strong></div>
-        <div>Progress: <strong id="progress">0%</strong></div>
-      </div>
+ load() {
+ this.state.loaded = true;
+ setTimeout(() => this.drawVisualization(), 100);
+ this.state.step = 0;
+ this.render();
+ },
 
-      <div class="control-group">
-        <label>Info</label>
-        <div class="info-text">Interactive visualization for learning</div>
-      </div>
-    </div>
-  </div>
+ nextStep() {
+ if (this.state.loaded) {
+ this.state.step = (this.state.step + 1) % this.content.length;
+ this.render();
+ }
+ },
 
-  <script>
-    const app = {
-      state: { loaded: false, step: 0 },
-      content: ["Concept from Continuous Improvement", "Learn and explore"],
+ reset() {
+ this.state = { loaded: false, step: 0 };
+ this.render();
+ },
 
-      init() { this.render(); },
+ render() {
+ const container = document.getElementById('content-main');
+ const status = document.getElementById('status');
+ const progress = document.getElementById('progress');
 
-      load() {
-        this.state.loaded = true;
-        setTimeout(() => this.drawVisualization(), 100);
-        this.state.step = 0;
-        this.render();
-      },
+ if (this.state.loaded) {
+ const items = this.content.map((item, idx) => `
+ <div class="item ${idx === this.state.step ? 'active' : ''}"><div class="item-title">${idx === this.state.step ? '→' : '•'} ${item.split(':')[0]}</div><div class="item-desc">${item.split(':').length > 1 ? item.split(':')[1].trim() : item}</div></div>
+ `).join('');
 
-      nextStep() {
-        if (this.state.loaded) {
-          this.state.step = (this.state.step + 1) % this.content.length;
-          this.render();
-        }
-      },
+ container.innerHTML = `<div class="item-list">${items}</div>`;
+ status.textContent = '✓ Active';
+ progress.textContent = `${Math.round((this.state.step + 1) / this.content.length * 100)}%`;
+ } else {
+ container.innerHTML = '<div style="color:#94a3b8;text-align:center;padding:40px;">Click "Load" to view content</div>';
+ status.textContent = 'Ready';
+ progress.textContent = '0%';
+ }
+ }
+ };
 
-      reset() {
-        this.state = { loaded: false, step: 0 };
-        this.render();
-      },
-
-      render() {
-        const container = document.getElementById('content-main');
-        const status = document.getElementById('status');
-        const progress = document.getElementById('progress');
-
-        if (this.state.loaded) {
-          const items = this.content.map((item, idx) => `
-            <div class="item ${idx === this.state.step ? 'active' : ''}">
-              <div class="item-title">${idx === this.state.step ? '→' : '•'} ${item.split(':')[0]}</div>
-              <div class="item-desc">${item.split(':').length > 1 ? item.split(':')[1].trim() : item}</div>
-            </div>
-          `).join('');
-
-          container.innerHTML = `<div class="item-list">${items}</div>`;
-          status.textContent = '✓ Active';
-          progress.textContent = `${Math.round((this.state.step + 1) / this.content.length * 100)}%`;
-        } else {
-          container.innerHTML = '<div style="color:#94a3b8;text-align:center;padding:40px;">Click "Load" to view content</div>';
-          status.textContent = 'Ready';
-          progress.textContent = '0%';
-        }
-      }
-    };
-
-    window.addEventListener('load', () => app.init());
-  </script>
-</body>
-</html>
+ window.addEventListener('load', () => app.init());
+ </script></body></html>

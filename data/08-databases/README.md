@@ -754,7 +754,7 @@ Comprehensive coverage of relational and NoSQL databases from fundamentals to ad
 ## 🗂️ File Structure
 
 ```
-/databases/
+/08-databases/
 ├── README.md (This file)
 ├── GETTING_STARTED.md (Quick start guide)
 ├── CONTENT_INVENTORY.md (File listing)

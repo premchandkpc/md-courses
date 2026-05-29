@@ -747,7 +747,7 @@ No coverage beyond AWS RDS/ElastiCache and database indexes.
 **What should exist:**
 
 ```text
-data/databases/
+data/08-databases/
 ├── postgresql/
 │   ├── 01-postgresql-architecture.md
 │   ├── 02-mvcc-vacuum.md

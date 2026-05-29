@@ -8,7 +8,7 @@ Phase 6 delivered 10 new files (5 HTML visualizations + 5 comprehensive markdown
 ## HTML Visualization Files (Interactive D3.js)
 
 ### 1. PostgreSQL Index Visual Analysis
-**File:** `/databases/postgres/02-intermediate/01-index-visual-analysis.html`
+**File:** `/08-databases/postgres/02-intermediate/01-index-visual-analysis.html`
 **Size:** ~700 lines | **Charts:** 7 interactive D3.js visualizations
 
 **Contents:**
@@ -32,7 +32,7 @@ Phase 6 delivered 10 new files (5 HTML visualizations + 5 comprehensive markdown
 ---
 
 ### 2. MongoDB Sharding & Distribution Visual
-**File:** `/databases/mongodb/02-intermediate/03-sharding-distribution-visual.html`
+**File:** `/08-databases/mongodb/02-intermediate/03-sharding-distribution-visual.html`
 **Size:** ~800 lines | **Charts:** 7 interactive D3.js visualizations
 
 **Contents:**
@@ -56,7 +56,7 @@ Phase 6 delivered 10 new files (5 HTML visualizations + 5 comprehensive markdown
 ---
 
 ### 3. DynamoDB Global Tables & Partitioning Visual
-**File:** `/databases/dynamodb/02-intermediate/02-global-tables-partitioning-visual.html`
+**File:** `/08-databases/dynamodb/02-intermediate/02-global-tables-partitioning-visual.html`
 **Size:** ~850 lines | **Charts:** 7 interactive D3.js visualizations
 
 **Contents:**
@@ -80,7 +80,7 @@ Phase 6 delivered 10 new files (5 HTML visualizations + 5 comprehensive markdown
 ---
 
 ### 4. Redis Caching, Memory Management & Eviction Visual
-**File:** `/databases/redis/01-basics/02-caching-eviction-visual.html`
+**File:** `/08-databases/redis/01-basics/02-caching-eviction-visual.html`
 **Size:** ~900 lines | **Charts:** 7 interactive D3.js visualizations
 
 **Contents:**
@@ -104,7 +104,7 @@ Phase 6 delivered 10 new files (5 HTML visualizations + 5 comprehensive markdown
 ---
 
 ### 5. MySQL Transactions, Isolation Levels & Locking Visual
-**File:** `/databases/mysql/02-intermediate/02-transactions-locking-visual.html`
+**File:** `/08-databases/mysql/02-intermediate/02-transactions-locking-visual.html`
 **Size:** ~950 lines | **Charts:** 7 interactive D3.js visualizations
 
 **Contents:**
@@ -130,7 +130,7 @@ Phase 6 delivered 10 new files (5 HTML visualizations + 5 comprehensive markdown
 ## Markdown Guide Files (Comprehensive Explanations)
 
 ### 1. PostgreSQL Index Types, Selection & Performance Deep Dive
-**File:** `/databases/postgres/02-intermediate/03-indexes-explained.md`
+**File:** `/08-databases/postgres/02-intermediate/03-indexes-explained.md`
 **Size:** ~2,000 words | **Code Examples:** 30+ SQL examples
 
 **Contents:**
@@ -155,7 +155,7 @@ Phase 6 delivered 10 new files (5 HTML visualizations + 5 comprehensive markdown
 ---
 
 ### 2. MongoDB Sharding: Design, Pitfalls & Production Scaling
-**File:** `/databases/mongodb/02-intermediate/04-sharding-design.md`
+**File:** `/08-databases/mongodb/02-intermediate/04-sharding-design.md`
 **Size:** ~2,500 words | **Code Examples:** 40+ JavaScript examples
 
 **Contents:**
@@ -179,7 +179,7 @@ Phase 6 delivered 10 new files (5 HTML visualizations + 5 comprehensive markdown
 ---
 
 ### 3. DynamoDB Partition Key Design: Avoiding Hot Partitions
-**File:** `/databases/dynamodb/02-intermediate/04-partition-key-design.md`
+**File:** `/08-databases/dynamodb/02-intermediate/04-partition-key-design.md`
 **Size:** ~2,200 words | **Code Examples:** 35+ Python examples
 
 **Contents:**
@@ -203,7 +203,7 @@ Phase 6 delivered 10 new files (5 HTML visualizations + 5 comprehensive markdown
 ---
 
 ### 4. Redis Caching Strategies: Patterns & Production Patterns
-**File:** `/databases/redis/01-basics/03-caching-strategies.md`
+**File:** `/08-databases/redis/01-basics/03-caching-strategies.md`
 **Size:** ~2,400 words | **Code Examples:** 45+ Python examples
 
 **Contents:**
@@ -230,7 +230,7 @@ Phase 6 delivered 10 new files (5 HTML visualizations + 5 comprehensive markdown
 ---
 
 ### 5. MySQL Transactions, ACID Properties & Isolation Levels Deep Dive
-**File:** `/databases/mysql/02-intermediate/03-transactions-guide.md`
+**File:** `/08-databases/mysql/02-intermediate/03-transactions-guide.md`
 **Size:** ~2,600 words | **Code Examples:** 50+ SQL/Python examples
 
 **Contents:**
@@ -277,7 +277,7 @@ MySQL:       2 files (1 HTML + 1 MD)  - transactions, locking
 
 ### File Organization
 ```
-/databases/
+/08-databases/
 ├── postgres/02-intermediate/
 │   ├── 01-index-visual-analysis.html        (NEW)
 │   └── 03-indexes-explained.md              (NEW)

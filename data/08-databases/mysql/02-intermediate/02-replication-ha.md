@@ -401,11 +401,11 @@ SHOW SLAVE STATUS\G
 - **HA**: Master-master, group replication, load balancing
 - **Monitoring**: Lag, IO thread status, binlog size
 
-Next: [[../03-advanced/01-sharding.md|Sharding & Scaling]]
+Next: [[02-replication-ha.md|High Availability & Replication]]
 
 ---
 
 **See Also:**
 - [[01-transactions-locks.md|Transactions & Locking]]
-- [[../../postgres/02-advanced/01-replication.md|PostgreSQL Replication]]
+- [[../../postgres/02-intermediate/02-replication-scaling.md|PostgreSQL Replication]]
 - [[../../dynamodb/06-scaling/01-global-tables.md|DynamoDB Global Tables]]

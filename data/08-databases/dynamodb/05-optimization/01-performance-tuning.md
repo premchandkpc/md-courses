@@ -414,4 +414,4 @@ Decision: Provisioned for predictable workload
 - **Monitoring:** CloudWatch metrics, latency percentiles
 - **Capacity:** Right-size based on traffic patterns
 
-Next: [[../06-scaling/01-scaling-strategies.md|Scaling Strategies]]
+Next: [[../06-scaling/01-global-tables.md|Global Tables & Scaling]]

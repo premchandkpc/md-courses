@@ -60,7 +60,8 @@
       "Bash(xargs -I {} basename {})",
       "Bash(node -c data/read.html)",
       "Bash(python3 validate_syntax.py data)",
-      "Bash(python3 validate_syntax.py)"
+      "Bash(python3 validate_syntax.py)",
+      "Bash(xargs basename -a)"
     ],
     "additionalDirectories": [
       "/private/tmp"

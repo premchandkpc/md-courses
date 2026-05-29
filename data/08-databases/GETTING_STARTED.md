@@ -7,7 +7,7 @@ Welcome to the comprehensive database systems guide. This structure covers **rel
 ## 📚 Structure Overview
 
 ```
-/databases/
+/08-databases/
 ├── README.md (Main index with all topics)
 ├── GETTING_STARTED.md (This file)
 │
@@ -195,7 +195,7 @@ Each topic is presented in **two formats**:
 ## 🚀 Next Steps
 
 **Absolute Beginner:**
-1. Read `/databases/README.md` for high-level overview
+1. Read `/08-databases/README.md` for high-level overview
 2. Choose your database type (relational vs NoSQL)
 3. Start with 01-basics for chosen database
 4. Work through examples locally

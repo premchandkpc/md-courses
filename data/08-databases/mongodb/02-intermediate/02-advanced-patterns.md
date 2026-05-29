@@ -370,7 +370,7 @@ db.serverStatus()
 - **Connection Pooling**: Critical for concurrent applications
 - **Profiling**: Find and fix slow queries systematically
 
-Next: [[../../../comparison-guide.md|Comparison & Selection]]
+Next: [[../../COMPARISON_GUIDE.md|Comparison & Selection]]
 
 ---
 

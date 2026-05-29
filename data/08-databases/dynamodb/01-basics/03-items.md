@@ -450,4 +450,4 @@ table.update_item(
 - **Scan**: Slow, reads entire table (avoid!)
 - **Expression**: SET, ADD, REMOVE, DELETE, ConditionExpression
 
-Next: [[../02-intermediate/01-queries-advanced.md|Advanced Queries & Filters]]
+Next: [[../02-intermediate/01-advanced-queries.md|Advanced Queries & Filters]]

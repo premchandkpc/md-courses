@@ -22,9 +22,17 @@ Run both together: `make viz` (starts Node on :3000 + Vite on :5173).
 ## Content Layout
 
 - All content lives in `data/` as Markdown (`.md`) + HTML (`.html`) files.
-- Organized by numbered domain folders: `00-foundations/` through `25-software-engineering/`.
-- Plus `arch/`, `cheat-sheets/`.
+- 474 files (397 MD + 77 HTML), ~365K lines across 25 numbered domain folders + `arch/`, `cheat-sheets/`, `components/`.
 - Served via JSON API at `/api/tree`, `/api/file?path=...`, `/api/search?q=...`, `/api/stats`.
+
+## Largest Domains
+
+| Domain | Files | Lines |
+|--------|------:|------:|
+| 15-system-design | 86 | 44,591 |
+| 04-frontend | 76 | 28,980 |
+| 08-databases | 72 | 37,893 |
+| 03-backend | 44 | 56,986 |
 
 ## Key Commands
 
@@ -35,25 +43,26 @@ make frontend-build     # Production build (tsc -b && vite build)
 make frontend-typecheck # tsc --noEmit
 make viz                # Node :3000 + Vite :5173 concurrently
 make clean              # rm -rf frontend/node_modules frontend/dist
+npm run lint --prefix frontend  # ESLint (React frontend only)
 python3 server.py       # Python server on :3000
 ```
 
-No tests, no CI, no lint for the main project. React frontend has ESLint (`npm run lint --prefix frontend`).
+No tests, no CI, no lint for the main project.
 
-## Utility Scripts (root, Python)
+## Scripts
 
-Used for batch content enhancements and conversions (past phases):
+All batch conversion utilities are in `scripts/` (Python):
 `analyze-code-syntax.py`, `batch-convert-backend.py`, `batch7-embedder.py`, `convert-diagrams.py`, `enhance_files.py`, `process_batch7.py`, `scan-all-domains.py`, `strip_placeholders.py`, `validate_syntax.py`.
 
 ## Node Requirement
 
 `data/server.js` requires Node >=14 (per `package.json` `engines`).
-`server.py` requires Python 3.
 
 ## Known Gotchas
 
 - `data/read.html` is a **vanilla JS SPA** — no React, no bundler. Edit the file directly.
-- The React frontend (`frontend/`) is a separate app with its own `package.json` and TypeScript config.
+- The React frontend (`frontend/`) is a separate app with its own `package.json`, TypeScript config, and ESLint.
+- `data/databases/` was merged into `data/08-databases/`. The source dir no longer exists.
+- 04-frontend has 76 files (was 1) — React/JS content was expanded significantly.
+- Stale phase/docs moved to `docs/archive/`. Utility scripts moved to `scripts/`.
 - AUX files (`.DS_Store`) accumulate easily — clean with `find . -name '.DS_Store' -delete`.
-- `data/databases/` was merged into `data/08-databases/`. The source directory no longer exists.
-- Stale phase/docs moved to `docs/archive/`. Utility scripts moved to `scripts/`. Root is clean.

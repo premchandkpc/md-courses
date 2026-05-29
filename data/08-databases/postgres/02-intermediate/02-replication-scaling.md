@@ -401,7 +401,7 @@ Auto-scaling (Managed):
 - **Backup**: PITR with base backup + WAL archiving
 - **Multi-region**: Cross-region async replica for DR, higher latency
 
-Next: [[../../comparison-guide.md|Database Comparison & Selection]]
+Next: [[../COMPARISON_GUIDE.md|Database Comparison & Selection]]
 
 ---
 

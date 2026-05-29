@@ -335,7 +335,7 @@ FINAL_SUMMARY.md (this file)
 
 ## 💾 Deployment Ready
 
-All files in: `/data/databases/`
+All files in: `/data/08-databases/`
 
 Can be:
 - Deployed to web server as markdown
@@ -470,7 +470,7 @@ Visual: 4 files
 **Coverage:** Basics to advanced, all databases
 **Ready:** For learning, reference, decision-making, production
 
-**Location:** `/data/databases/`
+**Location:** `/data/08-databases/`
 
 All cross-linked, indexed, navigation-ready.
 

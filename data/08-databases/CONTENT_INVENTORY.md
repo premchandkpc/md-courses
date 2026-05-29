@@ -289,7 +289,7 @@
 
 All content located at:
 ```
-/Users/ramyachowdary/Documents/prem-work/md-courses/data/databases/
+/Users/ramyachowdary/Documents/prem-work/md-courses/data/08-databases/
 ```
 
 Access via:

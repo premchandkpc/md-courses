@@ -4,181 +4,139 @@ Knowledge Universe — Engineering education platform.
 
 ```
 md-courses/
+├── AGENTS.md              # AI agent instructions
+├── AI-REVIEW.md           # Comprehensive content inventory
+├── ARCHIVE.md             # Archive index (stale docs moved)
+├── CODE_OF_CONDUCT.md
+├── CONTRIBUTING.md
+├── ENHANCEMENTS_REPAIRS_ROADMAP.md  # Active enhancement roadmap
+├── LICENSE                # MIT
+├── Makefile               # Build/run commands
 ├── README.md              # Overview & quick start
-├── STRUCTURE.md           # This file — directory guide
-├── ARCHIVE.md             # Legacy docs status
-├── TECH_DEBT.md           # Known tech debt
+├── SECURITY.md
+├── STRUCTURE.md           # This file
 ├── package.json           # Node.js project metadata
-├── MERMAID_TEMPLATES.md   # Diagram templates (reference)
+├── server.py              # Python server (alternative)
 │
 ├── data/                  # Content + web server
-│   ├── server.js          # Express-like HTTP server (no deps)
-│   ├── read.html          # Single-page viewer app
-│   ├── read.css           # Viewer styles (extracted)
+│   ├── server.js          # Node.js HTTP server (zero deps)
+│   ├── read.html          # Legacy SPA viewer (~2000 lines)
+│   ├── read.css           # Viewer styles
 │   ├── API.md             # API documentation
-│   │
-│   ├── 00-foundations/    # Core CS fundamentals
-│   ├── 01-ai-ml/          # AI/ML engineering
-│   │   ├── fundamentals/
-│   │   ├── deep-learning/
-│   │   ├── llm-engineering/
-│   │   ├── agentic-ai/
-│   │   ├── ai-production/
-│   │   └── mlops/
-│   │
+│   ├── 00-foundations/    # CS fundamentals
+│   ├── 01-ai-ml/          # AI/ML engineering (7 subdirs)
 │   ├── 02-data-engineering/
-│   │   ├── storage-formats/
-│   │   ├── processing/
-│   │   ├── streaming/
-│   │   ├── orchestration/
-│   │   ├── warehouse-lakehouse/
-│   │   └── data-quality-governance/
-│   │
-│   ├── 03-backend/        # Backend engineering (Go, Java, Python, TS)
-│   ├── 04-frontend/       # Frontend (React focus)
-│   ├── 05-cloud/          # Cloud (AWS, etc.)
-│   ├── 06-devops/         # DevOps (Docker, CI/CD)
-│   ├── 07-kubernetes/     # Kubernetes
-│   ├── 08-databases/      # Database design & internals
+│   ├── 03-backend/        # Backend (44 files, largest lines)
+│   ├── 04-frontend/       # Frontend (76 files, expanded)
+│   ├── 05-cloud/          # Cloud (19 files)
+│   ├── 06-devops/         # DevOps (11 files)
+│   ├── 07-kubernetes/     # Kubernetes (13 files)
+│   ├── 08-databases/      # Database systems (72 files, merged)
 │   ├── 09-distributed-systems/
-│   ├── 10-messaging/      # Event systems (Kafka, RabbitMQ, SNS/SQS)
-│   ├── 11-networking/     # TCP/IP, HTTP, TLS, DNS, LB
+│   ├── 10-messaging/
+│   ├── 11-networking/
 │   ├── 12-operating-systems/
 │   ├── 13-security/
 │   ├── 14-sre-observability/
-│   ├── 15-system-design/  # High-level system design
+│   ├── 15-system-design/  # System design (86 files, largest count)
 │   ├── 16-microservices/
 │   ├── 17-software-architecture/
 │   ├── 18-performance-engineering/
 │   ├── 19-testing/
-│   ├── 20-interviews/     # Interview prep
-│   ├── 21-roadmaps/       # Learning roadmaps
+│   ├── 20-interviews/
+│   ├── 21-roadmaps/
 │   ├── 22-production-stories/
-│   ├── 23-projects/       # Hands-on projects
+│   ├── 23-projects/
 │   ├── 24-low-level-design/
 │   ├── 25-software-engineering/
-│   ├── arch/              # Architecture reference
-│   └── cheat-sheets/      # Quick reference sheets
+│   ├── arch/              # Architecture reference (9 files)
+│   ├── cheat-sheets/      # Quick reference (13 files)
+│   └── components/        # Shared components (7 files)
+│
+├── frontend/              # Modern React app
+│   ├── src/
+│   │   ├── App.tsx        # Main app component
+│   │   ├── main.tsx       # Entry point
+│   │   ├── components/    # React components
+│   │   ├── stores/        # Zustand stores
+│   │   ├── machines/      # XState state machines
+│   │   ├── engine/        # Core engine
+│   │   ├── hooks/         # React hooks
+│   │   ├── lib/           # Utilities
+│   │   └── types/         # TypeScript types
+│   ├── vite.config.ts     # Vite config (proxies /api → :3000)
+│   └── package.json       # React 19, TS, Tailwind v4, XState, Zustand
+│
+├── scripts/               # Python utility scripts
+│   ├── analyze-code-syntax.py
+│   ├── batch-convert-backend.py
+│   ├── batch7-embedder.py
+│   ├── convert-diagrams.py
+│   ├── enhance_files.py
+│   ├── process_batch7.py
+│   ├── scan-all-domains.py
+│   ├── strip_placeholders.py
+│   └── validate_syntax.py
+│
+├── docs/
+│   └── archive/           # Stale phase/initiative docs (32 files)
 │
 ├── .claude/               # Claude Code settings
-└── .code-review-graph/    # Knowledge graph (auto-generated)
+├── .code-review-graph/    # Knowledge graph (auto-generated)
+└── .gitignore
 ```
 
----
+## Numbering Convention
+
+Domain folders are numbered `00-` through `25-` for ordering:
+- `00` Foundations → `25` Software Engineering
+
+## Content Format
+
+- **Markdown** (`.md`) with code blocks, Mermaid diagrams
+- **HTML** (`.html`) with D3.js interactive visualizations (77 total)
+- LAYER tags for difficulty levels (L1-L5) in some domains
 
 ## Key Files
-
-### Server
 
 | File | Purpose |
 |------|---------|
 | `data/server.js` | Serves content & API (Node.js, no dependencies) |
 | `data/API.md` | Complete API documentation |
-
-### Viewer
-
-| File | Purpose |
-|------|---------|
-| `data/read.html` | Single-page React-like app |
-| `data/read.css` | Extracted styles (external) |
-
-### Documentation
-
-| File | Purpose |
-|------|---------|
-| `README.md` | Overview & setup |
-| `STRUCTURE.md` | This file — explains layout |
-| `ARCHIVE.md` | Legacy docs status |
-| `TECH_DEBT.md` | Known issues |
-
----
-
-## Numbering Convention
-
-Domain folders are numbered for ordering:
-- `00-` Foundations
-- `01-` AI/ML
-- `02-` Data Engineering
-- ...
-- `25-` Software Engineering
-
-Helps organize ~25 major engineering domains.
-
----
-
-## Content Format
-
-All files are **Markdown** (`.md`) unless noted:
-- Headers with anchors for navigation
-- Code blocks with syntax highlighting
-- Mermaid diagrams (graphs, flowcharts, UML)
-- LAYER tags for difficulty levels (L1-L5)
-
----
-
-## Getting Started
-
-1. **Start server:**
-   ```bash
-   npm start
-   # or: node data/server.js
-   ```
-
-2. **Open browser:**
-   ```
-   http://localhost:3000
-   ```
-
-3. **Browse content:**
-   - Sidebar tree navigation
-   - Search (sidebar input)
-   - Full-text search (⌘K or ⌘F)
-
-4. **API reference:**
-   - See `data/API.md`
-
----
-
-## Architecture
-
-### Frontend (data/read.html)
-- Single-page app (no framework)
-- ~2000 lines (HTML + CSS + JS)
-- Features: tree nav, TOC, search, themes, zoom, layers
-
-### Backend (data/server.js)
-- Tiny HTTP server (~300 lines)
-- Zero dependencies (Node.js built-ins only)
-- Routes: `/api/tree`, `/api/file`, `/api/search`, `/api/stats`
-
-### Data (data/ folders)
-- Markdown files (~350 total)
-- Nested by domain & subdomain
-- Mermaid diagrams embedded
-
----
+| `data/read.html` | Single-page viewer app |
+| `data/read.css` | Viewer styles |
+| `AGENTS.md` | AI agent instructions |
+| `AI-REVIEW.md` | Content inventory & quality review |
 
 ## Commands
 
 ```bash
-# Install (if using npm)
-npm install
-
-# Start server (port 3000)
-npm start
-
-# Custom port
-node data/server.js 8080
-
-# View API docs
-cat data/API.md
+npm start                  # Start server (port 3000)
+make frontend              # Start Vite dev server (port 5173)
+make viz                   # Both together
+make frontend-build        # Production build (tsc -b && vite build)
+make frontend-typecheck    # TypeScript type check
+node data/server.js 8080   # Custom port
 ```
 
----
+## Architecture
 
-## Maintenance
+### Server (data/server.js)
+- Tiny HTTP server (~380 lines)
+- Zero dependencies (Node.js built-ins only)
+- Routes: `/api/tree`, `/api/file`, `/api/search`, `/api/stats`
 
-- **Update content:** Edit `.md` files in `data/` folders
-- **Rebuild graph:** The knowledge graph (`.code-review-graph/`) auto-updates
-- **Review legacy:** Check `ARCHIVE.md` for outdated docs
-- **Track debt:** See `TECH_DEBT.md`
+### Legacy Viewer (data/read.html)
+- Single-page app (no framework)
+- ~2000 lines (HTML + CSS + JS inline)
+- Features: tree nav, TOC, search, themes, zoom, layers
+
+### React Frontend (frontend/)
+- React 19 + Vite + TypeScript + Tailwind v4
+- XState for state machines, Zustand for stores
+- Pixi.js, ECharts, xyflow for visualizations
+
+### Content (data/ folders)
+- 474 files, ~365K lines across 28 directories
+- 77 interactive HTML visualizations with D3.js
+- Mermaid diagrams embedded in Markdown

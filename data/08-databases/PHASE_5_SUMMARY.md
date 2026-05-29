@@ -258,7 +258,7 @@ Navigation: 7 files (19%)
 ## 🔍 File Structure Overview
 
 ```
-/databases/
+/08-databases/
 ├── README.md                          # Main index
 ├── GETTING_STARTED.md                 # 4 learning paths
 ├── COMPARISON_GUIDE.md                # Decision matrix

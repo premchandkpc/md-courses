@@ -423,7 +423,7 @@
 ## 📁 Final Structure
 
 ```
-/databases/
+/08-databases/
 ├── README.md (Updated: Full navigation, all links)
 ├── GETTING_STARTED.md (Learning paths, quick start)
 ├── CONTENT_INVENTORY.md (File listing & status)

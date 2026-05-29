@@ -451,4 +451,4 @@ Next: [[02-scaling-strategies.md|Scaling Strategies & Limits]]
 **See Also:**
 - [[01-performance-tuning.md|Performance Tuning]]
 - [[../../mysql/02-intermediate/02-replication-ha.md|MySQL Replication]]
-- [[../../postgres/02-advanced/01-replication.md|PostgreSQL Replication]]
+- [[../../postgres/02-intermediate/02-replication-scaling.md|PostgreSQL Replication]]

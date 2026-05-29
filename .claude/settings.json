@@ -62,7 +62,8 @@
       "Bash(python3 validate_syntax.py data)",
       "Bash(python3 validate_syntax.py)",
       "Bash(xargs basename -a)",
-      "Bash(grep \"\\\\.md$\")"
+      "Bash(grep \"\\\\.md$\")",
+      "Read(//Users/ramyachowdary/**)"
     ],
     "additionalDirectories": [
       "/private/tmp"

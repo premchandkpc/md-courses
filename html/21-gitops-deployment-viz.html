@@ -108,7 +108,7 @@
 <body>
   <header>
     <h1>🎨 Gitops Deployment</h1>
-    <a href="../data/09-distributed-systems/index.md" class="back-link">← Back to Notes</a>
+    <a href="../data/09-distributed-systems/README.md" class="back-link">← Back to Notes</a>
   </header>
 
   <div class="container">
@@ -116,9 +116,28 @@
       <h2>Interactive Learning</h2>
       <div id="content-main" class="content-box">
         <div style="color:#94a3b8;text-align:center;padding:40px;">Click "Load" to view content</div>
-      </div>
+      
+    <canvas id="viz-canvas" width="600" height="250"></canvas>
+    <script>
+      const canvas = document.getElementById('viz-canvas');
+      if (canvas) {
+        const ctx = canvas.getContext('2d');
+        app.drawVisualization = function() {
+          ctx.fillStyle = '#1e293b';
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+          const colors = ['#60a5fa', '#10b981', '#fbbf24'];
+          const data = [65, 75, 55];
+          const barWidth = 80;
+          data.forEach((v, i) => {
+            ctx.fillStyle = colors[i];
+            const x = 100 + i * 140;
+            const h = (v / 100) * 150;
+            ctx.fillRect(x, canvas.height - h - 30, barWidth, h);
+          });
+        };
+      }
+    </script>
     </div>
-
     <div class="controls">
       <div class="control-group">
         <label>Controls</label>
@@ -148,6 +167,7 @@
 
       load() {
         this.state.loaded = true;
+        setTimeout(() => this.drawVisualization(), 100);
         this.state.step = 0;
         this.render();
       },

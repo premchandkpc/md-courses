@@ -108,7 +108,7 @@
 <body>
   <header>
     <h1>🎨 E2E Testing</h1>
-    <a href="../data/13-security/index.md" class="back-link">← Back to Notes</a>
+    <a href="../data/13-security/README.md" class="back-link">← Back to Notes</a>
   </header>
 
   <div class="container">
@@ -116,9 +116,30 @@
       <h2>Interactive Learning</h2>
       <div id="content-main" class="content-box">
         <div style="color:#94a3b8;text-align:center;padding:40px;">Click "Load" to view content</div>
-      </div>
+      
+    <canvas id="viz-canvas" width="600" height="250"></canvas>
+    <script>
+      const canvas = document.getElementById('viz-canvas');
+      if (canvas) {
+        const ctx = canvas.getContext('2d');
+        app.drawVisualization = function() {
+          ctx.fillStyle = '#1e293b';
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+          ctx.strokeStyle = '#60a5fa';
+          ctx.lineWidth = 2;
+          ctx.beginPath();
+          const data = [10, 15, 22, 30, 40, 52, 65];
+          const step = canvas.width / (data.length - 1);
+          data.forEach((v, i) => {
+            const x = i * step;
+            const y = canvas.height - (v / 100) * canvas.height;
+            i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+          });
+          ctx.stroke();
+        };
+      }
+    </script>
     </div>
-
     <div class="controls">
       <div class="control-group">
         <label>Controls</label>
@@ -148,6 +169,7 @@
 
       load() {
         this.state.loaded = true;
+        setTimeout(() => this.drawVisualization(), 100);
         this.state.step = 0;
         this.render();
       },

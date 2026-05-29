@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>State Pattern</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: #0f172a; color: #e2e8f0; }
+    header { background: #1e293b; padding: 20px; border-bottom: 1px solid #334155; display: flex; justify-content: space-between; align-items: center; }
+    h1 { font-size: 24px; }
+    .back-link { color: #60a5fa; text-decoration: none; font-size: 14px; padding: 8px 12px; border: 1px solid #334155; border-radius: 4px; }
+    .container { display: flex; height: calc(100vh - 60px); }
+    #canvas { flex: 1; background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); overflow: auto; padding: 20px; }
+    .controls { width: 300px; background: #1e293b; border-left: 1px solid #334155; padding: 20px; overflow-y: auto; }
+    .control-group { margin-bottom: 20px; }
+    .control-group label { display: block; font-size: 13px; text-transform: uppercase; color: #94a3b8; margin-bottom: 8px; font-weight: 600; }
+    button { background: #3b82f6; color: white; border: none; padding: 10px 16px; border-radius: 6px; cursor: pointer; font-size: 14px; width: 100%; margin-bottom: 8px; }
+    .states { background: #334155; padding: 15px; border-radius: 8px; margin: 20px 0; }
+    .state { padding: 12px; background: #1e293b; margin: 8px 0; border-radius: 4px; border-left: 3px solid #60a5fa; font-size: 11px; text-align: center; }
+    .state.active { border-left-color: #fbbf24; background: rgba(251, 191, 36, 0.1); }
+    .status { background: #334155; padding: 12px; border-radius: 6px; font-size: 12px; font-family: monospace; margin: 10px 0; }
+    .info-text { font-size: 12px; color: #cbd5e1; line-height: 1.6; margin: 10px 0; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>🎨 State Pattern</h1>
+    <a href="../data/15-design-patterns/02-behavioral-patterns.md" class="back-link">← Back to Notes</a>
+  </header>
+  <div class="container">
+    <div id="canvas">
+      <h2 style="margin-bottom: 20px;">State Transitions</h2>
+      <div class="states" id="states"></div>
+    </div>
+    <div class="controls">
+      <div class="control-group">
+        <label>Transition</label>
+        <button onclick="app.start()">Start</button>
+        <button onclick="app.pause()">Pause</button>
+        <button onclick="app.stop()">Stop</button>
+      </div>
+      <div class="status">
+        <div>Current: <strong id="current">Idle</strong></div>
+        <div>Can Transition: <strong id="can">Yes</strong></div>
+      </div>
+      <div class="info-text">
+        <strong>Behavioral:</strong> State encapsulation
+      </div>
+      <div class="info-text">
+        <strong>Transitions:</strong> Context behavior
+      </div>
+      <div class="info-text">
+        <strong>Use case:</strong> State machines
+      </div>
+    </div>
+  </div>
+  <script>
+    const app = {
+      state: { current: 'idle' },
+      states: ['idle', 'running', 'paused', 'stopped'],
+      init() { this.render(); },
+      start() { this.state.current = 'running'; this.render(); },
+      pause() { if(this.state.current === 'running') this.state.current = 'paused'; this.render(); },
+      stop() { this.state.current = 'stopped'; this.render(); },
+      render() {
+        const statesDiv = document.getElementById('states');
+        statesDiv.innerHTML = this.states.map(s => `
+          <div class="state ${this.state.current === s ? 'active' : ''}">
+            ${this.state.current === s ? '→' : '○'} ${s.toUpperCase()}
+          </div>
+        `).join('');
+        document.getElementById('current').textContent = this.state.current.toUpperCase();
+        document.getElementById('can').textContent = 'Yes';
+      }
+    };
+    window.addEventListener('load', () => app.init());
+  </script>
+</body>
+</html>

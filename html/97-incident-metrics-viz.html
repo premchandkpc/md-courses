@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Incident Metrics</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: #0f172a; color: #e2e8f0; }
+    header { background: #1e293b; padding: 20px; border-bottom: 1px solid #334155; display: flex; justify-content: space-between; align-items: center; }
+    h1 { font-size: 24px; }
+    .back-link { color: #60a5fa; text-decoration: none; font-size: 14px; padding: 8px 12px; border: 1px solid #334155; border-radius: 4px; }
+    .container { display: flex; height: calc(100vh - 60px); }
+    #canvas { flex: 1; background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); overflow: auto; padding: 20px; }
+    .controls { width: 300px; background: #1e293b; border-left: 1px solid #334155; padding: 20px; overflow-y: auto; }
+    .control-group { margin-bottom: 20px; }
+    .control-group label { display: block; font-size: 13px; text-transform: uppercase; color: #94a3b8; margin-bottom: 8px; font-weight: 600; }
+    button { background: #3b82f6; color: white; border: none; padding: 10px 16px; border-radius: 6px; cursor: pointer; font-size: 14px; width: 100%; margin-bottom: 8px; }
+    .metrics { background: #334155; padding: 15px; border-radius: 8px; margin: 20px 0; }
+    .metric { padding: 10px; background: #1e293b; margin: 8px 0; border-radius: 4px; border-left: 3px solid #60a5fa; font-size: 11px; display: flex; justify-content: space-between; }
+    .status { background: #334155; padding: 12px; border-radius: 6px; font-size: 12px; font-family: monospace; margin: 10px 0; }
+    .info-text { font-size: 12px; color: #cbd5e1; line-height: 1.6; margin: 10px 0; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>🎨 Incident Metrics</h1>
+    <a href="../data/16-production-incidents/01-incident-postmortems-case-studies.md" class="back-link">← Back to Notes</a>
+  </header>
+  <div class="container">
+    <div id="canvas">
+      <h2 style="margin-bottom: 20px;">Key Metrics</h2>
+      <div class="metrics" id="metrics"></div>
+    </div>
+    <div class="controls">
+      <div class="control-group">
+        <label>Load Metrics</label>
+        <button onclick="app.loadMetrics()">Show</button>
+        <button onclick="app.reset()">Reset</button>
+      </div>
+      <div class="status">
+        <div>MTTD: <strong id="mttd">-</strong></div>
+        <div>MTTR: <strong id="mttr">-</strong></div>
+      </div>
+      <div class="info-text">
+        <strong>MTTD:</strong> Mean time to detect
+      </div>
+      <div class="info-text">
+        <strong>MTTR:</strong> Mean time to resolve
+      </div>
+      <div class="info-text">
+        <strong>Goal:</strong> Minimize both
+      </div>
+    </div>
+  </div>
+  <script>
+    const app = {
+      state: { loaded: false },
+      metrics: [
+        {name: 'MTTD (Mean Time to Detect)', value: '5 minutes'},
+        {name: 'MTTR (Mean Time to Resolve)', value: '30 minutes'},
+        {name: 'MTBF (Mean Time Between Failures)', value: '45 days'},
+        {name: 'Incident Frequency', value: '2-3 per month'}
+      ],
+      init() { this.render(); },
+      loadMetrics() { this.state.loaded = true; this.render(); },
+      reset() { this.state.loaded = false; this.render(); },
+      render() {
+        const metricsDiv = document.getElementById('metrics');
+        if(this.state.loaded) {
+          metricsDiv.innerHTML = this.metrics.map(m => `
+            <div class="metric">
+              <span>${m.name}</span>
+              <span>${m.value}</span>
+            </div>
+          `).join('');
+          document.getElementById('mttd').textContent = '5 min';
+          document.getElementById('mttr').textContent = '30 min';
+        } else {
+          metricsDiv.innerHTML = '<div style="color:#94a3b8;text-align:center;padding:20px;">Click "Show"</div>';
+        }
+      }
+    };
+    window.addEventListener('load', () => app.init());
+  </script>
+</body>
+</html>

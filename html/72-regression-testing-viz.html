@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Regression Testing</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: #0f172a; color: #e2e8f0; }
+    header { background: #1e293b; padding: 20px; border-bottom: 1px solid #334155; display: flex; justify-content: space-between; align-items: center; }
+    h1 { font-size: 24px; }
+    .back-link { color: #60a5fa; text-decoration: none; font-size: 14px; padding: 8px 12px; border: 1px solid #334155; border-radius: 4px; }
+    .container { display: flex; height: calc(100vh - 60px); }
+    #canvas { flex: 1; background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); overflow: auto; padding: 20px; }
+    .controls { width: 300px; background: #1e293b; border-left: 1px solid #334155; padding: 20px; overflow-y: auto; }
+    .control-group { margin-bottom: 20px; }
+    .control-group label { display: block; font-size: 13px; text-transform: uppercase; color: #94a3b8; margin-bottom: 8px; font-weight: 600; }
+    button { background: #3b82f6; color: white; border: none; padding: 10px 16px; border-radius: 6px; cursor: pointer; font-size: 14px; width: 100%; margin-bottom: 8px; }
+    .suite { background: #334155; padding: 15px; border-radius: 8px; margin: 20px 0; }
+    .feature { padding: 10px; background: #1e293b; margin: 8px 0; border-radius: 4px; border-left: 3px solid #60a5fa; font-size: 11px; }
+    .feature.pass { border-left-color: #10b981; background: rgba(16, 185, 129, 0.1); }
+    .feature.fail { border-left-color: #ef4444; background: rgba(239, 68, 68, 0.1); }
+    .status { background: #334155; padding: 12px; border-radius: 6px; font-size: 12px; font-family: monospace; margin: 10px 0; }
+    .info-text { font-size: 12px; color: #cbd5e1; line-height: 1.6; margin: 10px 0; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>🎨 Regression Testing</h1>
+    <a href="../data/14-testing/03-performance-security-regression-testing.md" class="back-link">← Back to Notes</a>
+  </header>
+  <div class="container">
+    <div id="canvas">
+      <h2 style="margin-bottom: 20px;">Test Suite Results</h2>
+      <div class="suite" id="suite"></div>
+    </div>
+    <div class="controls">
+      <div class="control-group">
+        <label>Action</label>
+        <button onclick="app.runFull()">Run Full Suite</button>
+        <button onclick="app.reset()">Reset</button>
+      </div>
+      <div class="status">
+        <div>Tests: <strong id="total">0/5</strong></div>
+        <div>Regressions: <strong id="regressions">None</strong></div>
+      </div>
+      <div class="info-text">
+        <strong>Golden:</strong> Baseline snapshots
+      </div>
+      <div class="info-text">
+        <strong>Diff:</strong> Visual comparison
+      </div>
+      <div class="info-text">
+        <strong>CI/CD:</strong> Automated execution
+      </div>
+    </div>
+  </div>
+  <script>
+    const app = {
+      state: { running: false },
+      features: [
+        {name: 'Login flow', pass: true},
+        {name: 'Dashboard', pass: true},
+        {name: 'Settings', pass: true},
+        {name: 'API endpoint', pass: true},
+        {name: 'Search', pass: true}
+      ],
+      init() { this.render(); },
+      runFull() { this.state.running = true; this.render(); },
+      reset() { this.state.running = false; this.render(); },
+      render() {
+        const suiteDiv = document.getElementById('suite');
+        if(this.state.running) {
+          suiteDiv.innerHTML = this.features.map(f => `
+            <div class="feature ${f.pass ? 'pass' : 'fail'}">
+              ${f.pass ? '✓' : '✗'} ${f.name}
+            </div>
+          `).join('');
+          const passed = this.features.filter(f => f.pass).length;
+          document.getElementById('total').textContent = `${passed}/${this.features.length}`;
+          document.getElementById('regressions').textContent = passed === this.features.length ? 'None' : 'Found';
+        } else {
+          suiteDiv.innerHTML = '<div style="color:#94a3b8;text-align:center;padding:20px;">Click "Run Full Suite"</div>';
+          document.getElementById('total').textContent = '0/5';
+        }
+      }
+    };
+    window.addEventListener('load', () => app.init());
+  </script>
+</body>
+</html>

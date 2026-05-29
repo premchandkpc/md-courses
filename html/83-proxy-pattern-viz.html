@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Proxy Pattern</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: #0f172a; color: #e2e8f0; }
+    header { background: #1e293b; padding: 20px; border-bottom: 1px solid #334155; display: flex; justify-content: space-between; align-items: center; }
+    h1 { font-size: 24px; }
+    .back-link { color: #60a5fa; text-decoration: none; font-size: 14px; padding: 8px 12px; border: 1px solid #334155; border-radius: 4px; }
+    .container { display: flex; height: calc(100vh - 60px); }
+    #canvas { flex: 1; background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); overflow: auto; padding: 20px; }
+    .controls { width: 300px; background: #1e293b; border-left: 1px solid #334155; padding: 20px; overflow-y: auto; }
+    .control-group { margin-bottom: 20px; }
+    .control-group label { display: block; font-size: 13px; text-transform: uppercase; color: #94a3b8; margin-bottom: 8px; font-weight: 600; }
+    button { background: #3b82f6; color: white; border: none; padding: 10px 16px; border-radius: 6px; cursor: pointer; font-size: 14px; width: 100%; margin-bottom: 8px; }
+    .access { background: #334155; padding: 15px; border-radius: 8px; margin: 20px 0; }
+    .entity { padding: 12px; background: #1e293b; margin: 8px 0; border-radius: 4px; border-left: 3px solid #60a5fa; font-size: 11px; text-align: center; }
+    .proxy { border-left-color: #fbbf24; background: rgba(251, 191, 36, 0.1); }
+    .real { border-left-color: #10b981; background: rgba(16, 185, 129, 0.1); }
+    .status { background: #334155; padding: 12px; border-radius: 6px; font-size: 12px; font-family: monospace; margin: 10px 0; }
+    .info-text { font-size: 12px; color: #cbd5e1; line-height: 1.6; margin: 10px 0; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>🎨 Proxy Pattern</h1>
+    <a href="../data/15-design-patterns/03-structural-patterns.md" class="back-link">← Back to Notes</a>
+  </header>
+  <div class="container">
+    <div id="canvas">
+      <h2 style="margin-bottom: 20px;">Access Control</h2>
+      <div class="access" id="access"></div>
+    </div>
+    <div class="controls">
+      <div class="control-group">
+        <label>Request</label>
+        <button onclick="app.requestDirect()">Direct Access</button>
+        <button onclick="app.requestViaProxy()">Via Proxy</button>
+      </div>
+      <div class="status">
+        <div>Status: <strong id="status">-</strong></div>
+        <div>Control: <strong id="control">None</strong></div>
+      </div>
+      <div class="info-text">
+        <strong>Structural:</strong> Placeholder object
+      </div>
+      <div class="info-text">
+        <strong>Control:</strong> Access management
+      </div>
+      <div class="info-text">
+        <strong>Use case:</strong> Lazy loading, auth
+      </div>
+    </div>
+  </div>
+  <script>
+    const app = {
+      state: { mode: '' },
+      init() { this.render(); },
+      requestDirect() { this.state.mode = 'direct'; this.render(); },
+      requestViaProxy() { this.state.mode = 'proxy'; this.render(); },
+      render() {
+        const accessDiv = document.getElementById('access');
+        if(this.state.mode === 'direct') {
+          accessDiv.innerHTML = `
+            <div class="entity real">Real Object</div>
+            <div style="font-size:10px; color:#ef4444; text-align:center; padding:5px;">⚠️ No access control</div>
+          `;
+          document.getElementById('status').textContent = 'Direct';
+          document.getElementById('control').textContent = 'None';
+        } else if(this.state.mode === 'proxy') {
+          accessDiv.innerHTML = `
+            <div class="entity proxy">Proxy</div>
+            <div style="font-size:10px; color:#10b981; text-align:center; padding:5px;">✓ Access granted</div>
+            <div class="entity real">Real Object</div>
+          `;
+          document.getElementById('status').textContent = 'Via Proxy';
+          document.getElementById('control').textContent = 'Yes';
+        } else {
+          accessDiv.innerHTML = '<div style="color:#94a3b8;text-align:center;padding:20px;">Select access method</div>';
+          document.getElementById('status').textContent = '-';
+        }
+      }
+    };
+    window.addEventListener('load', () => app.init());
+  </script>
+</body>
+</html>

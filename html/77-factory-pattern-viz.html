@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Factory Pattern</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: #0f172a; color: #e2e8f0; }
+    header { background: #1e293b; padding: 20px; border-bottom: 1px solid #334155; display: flex; justify-content: space-between; align-items: center; }
+    h1 { font-size: 24px; }
+    .back-link { color: #60a5fa; text-decoration: none; font-size: 14px; padding: 8px 12px; border: 1px solid #334155; border-radius: 4px; }
+    .container { display: flex; height: calc(100vh - 60px); }
+    #canvas { flex: 1; background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); overflow: auto; padding: 20px; }
+    .controls { width: 300px; background: #1e293b; border-left: 1px solid #334155; padding: 20px; overflow-y: auto; }
+    .control-group { margin-bottom: 20px; }
+    .control-group label { display: block; font-size: 13px; text-transform: uppercase; color: #94a3b8; margin-bottom: 8px; font-weight: 600; }
+    button { background: #3b82f6; color: white; border: none; padding: 10px 16px; border-radius: 6px; cursor: pointer; font-size: 14px; width: 100%; margin-bottom: 8px; }
+    .factory { background: #334155; padding: 15px; border-radius: 8px; margin: 20px 0; }
+    .product { padding: 10px; background: #1e293b; margin: 8px 0; border-radius: 4px; border-left: 3px solid #60a5fa; font-size: 11px; }
+    .status { background: #334155; padding: 12px; border-radius: 6px; font-size: 12px; font-family: monospace; margin: 10px 0; }
+    .info-text { font-size: 12px; color: #cbd5e1; line-height: 1.6; margin: 10px 0; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>🎨 Factory Pattern</h1>
+    <a href="../data/15-design-patterns/01-creational-patterns.md" class="back-link">← Back to Notes</a>
+  </header>
+  <div class="container">
+    <div id="canvas">
+      <h2 style="margin-bottom: 20px;">Object Creation</h2>
+      <div class="factory" id="factory"></div>
+    </div>
+    <div class="controls">
+      <div class="control-group">
+        <label>Create Product</label>
+        <button onclick="app.create('CarFactory')">Car</button>
+        <button onclick="app.create('BicycleFactory')">Bicycle</button>
+      </div>
+      <div class="status">
+        <div>Products: <strong id="count">0</strong></div>
+        <div>Last: <strong id="last">-</strong></div>
+      </div>
+      <div class="info-text">
+        <strong>Creational:</strong> Object creation
+      </div>
+      <div class="info-text">
+        <strong>Factory:</strong> Defers instantiation
+      </div>
+      <div class="info-text">
+        <strong>Use case:</strong> Polymorphism
+      </div>
+    </div>
+  </div>
+  <script>
+    const app = {
+      state: { products: [] },
+      factories: {
+        'CarFactory': {name: 'Car', icon: '🚗'},
+        'BicycleFactory': {name: 'Bicycle', icon: '🚲'}
+      },
+      init() { this.render(); },
+      create(factory) {
+        const product = this.factories[factory];
+        if(product) {
+          this.state.products.push(product);
+          this.render();
+        }
+      },
+      render() {
+        const factDiv = document.getElementById('factory');
+        if(this.state.products.length) {
+          factDiv.innerHTML = this.state.products.map(p => `
+            <div class="product">
+              ${p.icon} ${p.name}
+            </div>
+          `).join('');
+          document.getElementById('count').textContent = this.state.products.length;
+          document.getElementById('last').textContent = this.state.products[this.state.products.length - 1].name;
+        } else {
+          factDiv.innerHTML = '<div style="color:#94a3b8;text-align:center;padding:20px;">Create product</div>';
+          document.getElementById('count').textContent = '0';
+        }
+      }
+    };
+    window.addEventListener('load', () => app.init());
+  </script>
+</body>
+</html>

@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CI Testing Pipeline</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: #0f172a; color: #e2e8f0; }
+    header { background: #1e293b; padding: 20px; border-bottom: 1px solid #334155; display: flex; justify-content: space-between; align-items: center; }
+    h1 { font-size: 24px; }
+    .back-link { color: #60a5fa; text-decoration: none; font-size: 14px; padding: 8px 12px; border: 1px solid #334155; border-radius: 4px; }
+    .container { display: flex; height: calc(100vh - 60px); }
+    #canvas { flex: 1; background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); overflow: auto; padding: 20px; }
+    .controls { width: 300px; background: #1e293b; border-left: 1px solid #334155; padding: 20px; overflow-y: auto; }
+    .control-group { margin-bottom: 20px; }
+    .control-group label { display: block; font-size: 13px; text-transform: uppercase; color: #94a3b8; margin-bottom: 8px; font-weight: 600; }
+    button { background: #3b82f6; color: white; border: none; padding: 10px 16px; border-radius: 6px; cursor: pointer; font-size: 14px; width: 100%; margin-bottom: 8px; }
+    .pipeline { background: #334155; padding: 15px; border-radius: 8px; margin: 20px 0; }
+    .stage { padding: 10px; background: #1e293b; margin: 8px 0; border-radius: 4px; border-left: 3px solid #60a5fa; font-size: 11px; }
+    .stage.pass { border-left-color: #10b981; background: rgba(16, 185, 129, 0.1); }
+    .stage.fail { border-left-color: #ef4444; background: rgba(239, 68, 68, 0.1); }
+    .status { background: #334155; padding: 12px; border-radius: 6px; font-size: 12px; font-family: monospace; margin: 10px 0; }
+    .info-text { font-size: 12px; color: #cbd5e1; line-height: 1.6; margin: 10px 0; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>🎨 CI Testing Pipeline</h1>
+    <a href="../data/14-testing/03-performance-security-regression-testing.md" class="back-link">← Back to Notes</a>
+  </header>
+  <div class="container">
+    <div id="canvas">
+      <h2 style="margin-bottom: 20px;">Pipeline Stages</h2>
+      <div class="pipeline" id="pipeline"></div>
+    </div>
+    <div class="controls">
+      <div class="control-group">
+        <label>Action</label>
+        <button onclick="app.triggerBuild()">Trigger Build</button>
+        <button onclick="app.reset()">Reset</button>
+      </div>
+      <div class="status">
+        <div>Status: <strong id="status">Idle</strong></div>
+        <div>Stage: <strong id="stage">-</strong></div>
+      </div>
+      <div class="info-text">
+        <strong>GitHub Actions:</strong> CI/CD
+      </div>
+      <div class="info-text">
+        <strong>Lint:</strong> Code quality
+      </div>
+      <div class="info-text">
+        <strong>Test:</strong> Automated execution
+      </div>
+    </div>
+  </div>
+  <script>
+    const app = {
+      state: { stage: -1 },
+      stages: [
+        {name: 'Checkout', pass: true},
+        {name: 'Install Dependencies', pass: true},
+        {name: 'Lint', pass: true},
+        {name: 'Unit Tests', pass: true},
+        {name: 'E2E Tests', pass: true},
+        {name: 'Build', pass: true}
+      ],
+      init() { this.render(); },
+      triggerBuild() {
+        this.state.stage = 0;
+        const interval = setInterval(() => {
+          if(this.state.stage < this.stages.length - 1) {
+            this.state.stage++;
+            this.render();
+          } else {
+            clearInterval(interval);
+          }
+        }, 500);
+        this.render();
+      },
+      reset() { this.state.stage = -1; this.render(); },
+      render() {
+        const pipelineDiv = document.getElementById('pipeline');
+        pipelineDiv.innerHTML = this.stages.map((s, i) => `
+          <div class="stage ${this.state.stage >= i ? 'pass' : ''}">
+            ${this.state.stage >= i ? '✓' : '○'} ${s.name}
+          </div>
+        `).join('');
+        document.getElementById('status').textContent = this.state.stage === -1 ? 'Idle' : this.state.stage === this.stages.length - 1 ? '✓ Success' : 'Running';
+        document.getElementById('stage').textContent = this.state.stage >= 0 && this.state.stage < this.stages.length ? this.stages[this.state.stage].name : '-';
+      }
+    };
+    window.addEventListener('load', () => app.init());
+  </script>
+</body>
+</html>

@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Decorator Pattern</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: #0f172a; color: #e2e8f0; }
+    header { background: #1e293b; padding: 20px; border-bottom: 1px solid #334155; display: flex; justify-content: space-between; align-items: center; }
+    h1 { font-size: 24px; }
+    .back-link { color: #60a5fa; text-decoration: none; font-size: 14px; padding: 8px 12px; border: 1px solid #334155; border-radius: 4px; }
+    .container { display: flex; height: calc(100vh - 60px); }
+    #canvas { flex: 1; background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); overflow: auto; padding: 20px; }
+    .controls { width: 300px; background: #1e293b; border-left: 1px solid #334155; padding: 20px; overflow-y: auto; }
+    .control-group { margin-bottom: 20px; }
+    .control-group label { display: block; font-size: 13px; text-transform: uppercase; color: #94a3b8; margin-bottom: 8px; font-weight: 600; }
+    button { background: #3b82f6; color: white; border: none; padding: 10px 16px; border-radius: 6px; cursor: pointer; font-size: 14px; width: 100%; margin-bottom: 8px; }
+    .object { background: #334155; padding: 15px; border-radius: 8px; margin: 20px 0; }
+    .component { padding: 15px; background: #1e293b; border-radius: 4px; border: 2px solid #60a5fa; text-align: center; font-size: 11px; margin: 10px 0; }
+    .decorator { background: #1e293b; padding: 10px; border-left: 3px solid #fbbf24; margin: 5px 0; border-radius: 4px; font-size: 10px; }
+    .status { background: #334155; padding: 12px; border-radius: 6px; font-size: 12px; font-family: monospace; margin: 10px 0; }
+    .info-text { font-size: 12px; color: #cbd5e1; line-height: 1.6; margin: 10px 0; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>🎨 Decorator Pattern</h1>
+    <a href="../data/15-design-patterns/03-structural-patterns.md" class="back-link">← Back to Notes</a>
+  </header>
+  <div class="container">
+    <div id="canvas">
+      <h2 style="margin-bottom: 20px;">Object Decoration</h2>
+      <div class="object" id="object"></div>
+    </div>
+    <div class="controls">
+      <div class="control-group">
+        <label>Add Behavior</label>
+        <button onclick="app.addDecorator('Logging')">+ Logging</button>
+        <button onclick="app.addDecorator('Cache')">+ Cache</button>
+        <button onclick="app.reset()">Reset</button>
+      </div>
+      <div class="status">
+        <div>Decorators: <strong id="count">0</strong></div>
+        <div>Composed: <strong id="composed">Base</strong></div>
+      </div>
+      <div class="info-text">
+        <strong>Structural:</strong> Add responsibility
+      </div>
+      <div class="info-text">
+        <strong>Flexible:</strong> Runtime composition
+      </div>
+      <div class="info-text">
+        <strong>Use case:</strong> Middleware, auth
+      </div>
+    </div>
+  </div>
+  <script>
+    const app = {
+      state: { decorators: [] },
+      init() { this.render(); },
+      addDecorator(d) {
+        if(this.state.decorators.length < 2) {
+          this.state.decorators.push(d);
+          this.render();
+        }
+      },
+      reset() { this.state.decorators = []; this.render(); },
+      render() {
+        const objDiv = document.getElementById('object');
+        let html = '<div class="component">📦 Base Object</div>';
+        this.state.decorators.forEach(d => {
+          html += `<div class="decorator">↳ ${d} Decorator</div>`;
+        });
+        objDiv.innerHTML = html;
+        document.getElementById('count').textContent = this.state.decorators.length;
+        const composed = this.state.decorators.length > 0 ? this.state.decorators.join(' + ') : 'Base';
+        document.getElementById('composed').textContent = composed;
+      }
+    };
+    window.addEventListener('load', () => app.init());
+  </script>
+</body>
+</html>

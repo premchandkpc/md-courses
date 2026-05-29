@@ -1,64 +1,80 @@
 <!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="description" content="Interactive learning visualization">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes"><title>Monitoring Data | Engineering Knowledge</title><style>*{margin:0;padding:0;box-sizing:border-box;}body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:#0f172a;color:#e2e8f0;}header{background:#1e293b;padding:20px;border-bottom:1px solid #334155;display:flex;justify-content:space-between;align-items:center;}h1{font-size:24px;font-weight:600;}h2{font-size:18px;margin:20px 0 15px 0;color:#cbd5e1;}.back-link{color:#60a5fa;text-decoration:none;font-size:14px;padding:8px 12px;border:1px solid #334155;border-radius:4px;transition:all 0.2s;}.back-link:hover{background:#334155;}.container{display:flex;height:calc(100vh - 60px);}#canvas{flex:1;background:linear-gradient(135deg,#0f172a 0%,#1e293b 100%);overflow-y:auto;padding:20px;}.controls{width:320px;background:#1e293b;border-left:1px solid #334155;padding:20px;overflow-y:auto;}.control-group{margin-bottom:20px;}.control-group label{display:block;font-size:12px;text-transform:uppercase;color:#94a3b8;margin-bottom:8px;font-weight:600;}button{background:#3b82f6;color:white;border:none;padding:10px 16px;border-radius:6px;cursor:pointer;font-size:14px;width:100%;margin-bottom:8px;transition:all 0.2s;}button:hover{background:#2563eb;}.status{background:#334155;padding:12px;border-radius:6px;font-size:12px;font-family:monospace;margin:10px 0;border-left:3px solid #60a5fa;}.status > div{margin:4px 0;}.info-text{font-size:12px;color:#cbd5e1;line-height:1.6;margin:12px 0;}.content-box{background:#334155;padding:15px;border-radius:8px;margin:15px 0;}.item{padding:12px;background:#1e293b;border-left:3px solid #60a5fa;border-radius:4px;font-size:13px;line-height:1.5;margin-bottom:8px;transition:all 0.2s;}.item:hover{background:#334155;border-left-color:#3b82f6;}.item.active{border-left-color:#10b981;background:rgba(16,185,129,0.1);}.item-title{font-weight:600;color:#e2e8f0;margin-bottom:4px;}.item-desc{font-size:12px;color:#cbd5e1;}
     .progress-fill { transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
-  
     button:focus-visible { outline: 2px solid #60a5fa; outline-offset: 2px; }
     a:focus-visible { outline: 2px solid #60a5fa; outline-offset: 2px; }
-  
     button:active { opacity: 0.8; }
-  
     @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
     @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
     .fade-in { animation: fadeIn 0.3s ease-in; }
     .slide-up { animation: slideUp 0.3s ease-out; }
-  
     .status { box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08); }
     .item { box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); }
     button { box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); }
     button:hover { box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15); }
-  
     button:hover { transform: translateY(-2px); }
     .item:hover { transform: translateX(4px); }
-  
     .modal-backdrop { backdrop-filter: blur(4px); }
-  
     .item, button { transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); }
-  
     .item.active { box-shadow: 0 0 10px rgba(16, 185, 129, 0.3), inset 0 0 10px rgba(16, 185, 129, 0.1); }
-  
     @media (prefers-reduced-motion: reduce) {
       * { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
     }
-  
     @media (prefers-contrast: more) {
       body { color: #ffffff; }
       .item { border-left-width: 4px; }
     }
-  
     @media (max-width: 768px) {
       .container { flex-direction: column; }
       .controls { width: 100%; border-left: none; border-top: 1px solid #334155; }
       h1 { font-size: 20px; }
       button { padding: 12px 16px; font-size: 16px; }
     }
-  
     @media print {
       .controls { display: none; }
       body { background: white; color: black; }
       a { color: black; }
     }
-  
     @media (prefers-color-scheme: light) {
       body { background: #f8fafc; color: #1e293b; }
       header { background: #e2e8f0; border-bottom-color: #cbd5e1; }
       .status { background: #e2e8f0; }
       .item { background: #f1f5f9; }
     }
-  
     :root { --text-contrast: #e2e8f0; --bg-contrast: #0f172a; }
+    /* Critical CSS for above-the-fold content */
+    @media (min-width: 0) {
+      body, header, h1, button { animation: none; }
+    }
   </style>
   <!-- Keyboard shortcuts: Alt+L = Load, Alt+N = Next, Alt+R = Reset -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "LearningResource",
+    "name": "Interactive Visualization",
+    "description": "Interactive learning visualization",
+    "learningResourceType": "Interactive Resource",
+    "inLanguage": "en"
+  }
+    if (window.performance) {
+      window.addEventListener('load', () => {
+        const perfData = window.performance.timing;
+        const pageLoadTime = perfData.loadEventEnd - perfData.navigationStart;
+        console.log('Page load time:', pageLoadTime, 'ms');
+      });
+    }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="dns-prefetch" href="https://cdn.example.com">
+<meta name="theme-color" content="#3b82f6">
+  <!-- Security headers (configure server) -->
+  <!-- X-Content-Type-Options: nosniff -->
+  <!-- X-Frame-Options: SAMEORIGIN -->
+  <!-- X-XSS-Protection: 1; mode=block -->
+
+  <!-- Performance budget: <50KB uncompressed, <15KB gzipped -->
 </head><body><a href="#content" style="position:absolute;top:-40px;left:0;background:#000;color:#fff;padding:8px;text-decoration:none;z-index:100;">Skip to content</a><header><h1>🎨 Monitoring Data</h1><a href="../data/02-data-engineering/README.md" class="back-link">← Back to Notes</a></header><div class="container"><div id="canvas" aria-label="Content area"><h2 role="main">Interactive Learning</h2><div id="content-main" class="content-box"><div style="color:#94a3b8;text-align:center;padding:40px;">Click "Load" to view content</div><canvas id="viz-canvas" width="600" height="300"></canvas><script>const canvas = document.getElementById('viz-canvas');if(canvas){const ctx = canvas.getContext('2d');app.drawVisualization = function(){ctx.fillStyle = '#334155';ctx.fillRect(0,0,canvas.width,canvas.height);ctx.fillStyle = '#60a5fa';ctx.font = '14px sans-serif';ctx.textAlign = 'center';ctx.fillText('Topic Visualization',canvas.width/2,canvas.height/2);};}
     const focusableElements = 'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
     const modal = document.querySelector('.modal');
@@ -78,13 +94,18 @@
         }
       });
     }
-  </script></div><div class="controls" aria-label="Control panel"><div class="control-group"><label>Controls</label><button type="button" onclick="app.load()" title="Load content (Alt+L)">Load Content</button><button type="button" onclick="app.nextStep()" title="Next step (Alt+N)">Next Step</button><button type="button" onclick="app.reset()" title="Reset (Alt+R)">Reset</button></div><div class="status" role="status" aria-live="polite"><div>Status: <strong id="status">Ready</strong></div><div>Progress: <strong id="progress">0%</strong></div></div><div class="control-group"><label>Info</label><div class="info-text">Interactive visualization for learning</div></div></div></div><script>
+    if (window.performance) {
+      window.addEventListener('load', () => {
+        const perfData = window.performance.timing;
+        const pageLoadTime = perfData.loadEventEnd - perfData.navigationStart;
+        console.log('Page load time:', pageLoadTime, 'ms');
+      });
+    }
+  </script></div><div class="controls" aria-label="Control panel"><div class="control-group"><label>Controls</label><button type="button" onclick="app.load()" title="Load content (Alt+L)" aria-pressed="false">Load Content</button><button type="button" onclick="app.nextStep()" title="Next step (Alt+N)" aria-pressed="false">Next Step</button><button type="button" onclick="app.reset()" title="Reset (Alt+R)" aria-pressed="false">Reset</button></div><div class="status" role="status" aria-live="polite"><div>Status: <strong id="status">Ready</strong></div><div>Progress: <strong id="progress">0%</strong></div></div><div class="control-group"><label>Info</label><div class="info-text">Interactive visualization for learning</div></div></div></div><script>
  const app = {
  state: { loaded: false, step: 0 },
  content: ["Concept from Monitoring Data", "Learn and explore"],
-
  init() { this.loadState(); this.render(); this.saveState(); },
-      
       loadState() {
         const saved = localStorage.getItem(window.location.pathname);
         if (saved) this.state = JSON.parse(saved);
@@ -92,36 +113,30 @@
       saveState() {
         localStorage.setItem(window.location.pathname, JSON.stringify(this.state));
       },
-
  load() {
  this.state.loaded = true;
  setTimeout(() => this.drawVisualization(), 100);
  this.state.step = 0;
  this.render(); this.saveState();
  },
-
  nextStep() {
  if (this.state.loaded) {
  this.state.step = (this.state.step + 1) % this.content.length;
  this.render(); this.saveState();
  }
  },
-
  reset() {
  this.state = { loaded: false, step: 0 };
  this.render(); this.saveState();
  },
-
  render() {
  const container = document.getElementById('content-main');
  const status = document.getElementById('status');
  const progress = document.getElementById('progress');
-
  if (this.state.loaded) {
  const items = this.content.map((item, idx) => `
  <div class="item ${idx === this.state.step ? 'active' : ''}"><div class="item-title">${idx === this.state.step ? '→' : '•'} ${item.split(':')[0]}</div><div class="item-desc">${item.split(':').length > 1 ? item.split(':')[1].trim() : item}</div></div>
  `).join('');
-
  container.innerHTML = `<div class="item-list">${items}</div>`;
  status.textContent = '✓ Active';
  progress.textContent = `${Math.round((this.state.step + 1) / this.content.length * 100)}%`;
@@ -132,9 +147,12 @@
  }
  }
  };
-
- window.addEventListener('load', () => app.init());
- 
+    try {
+      app.init();
+    } catch (error) {
+      console.error('App initialization failed:', error);
+      document.getElementById('status').textContent = 'Error: ' + error.message;
+    }
     const focusableElements = 'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
     const modal = document.querySelector('.modal');
     if (modal) {
@@ -153,9 +171,28 @@
         }
       });
     }
+    if (window.performance) {
+      window.addEventListener('load', () => {
+        const perfData = window.performance.timing;
+        const pageLoadTime = perfData.loadEventEnd - perfData.navigationStart;
+        console.log('Page load time:', pageLoadTime, 'ms');
+      });
+    }
   </script>
   <footer style="background:#0f172a;border-top:1px solid #334155;padding:15px 20px;text-align:center;font-size:11px;color:#64748b;">
     <div>Interactive Learning Visualization</div>
     <div style="margin-top:5px;"><a href="https://github.com" style="color:#60a5fa;text-decoration:none;">View Source</a></div>
   </footer>
+  <!-- Analytics: Replace with your analytics provider -->
+  <script>
+    if (window.location.hostname !== 'localhost') {
+      // Add analytics code here
+    }
+  </script>
+  <!-- Service Worker support for offline capabilities -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js').catch(() => {});
+    }
+  </script>
 </body></html>

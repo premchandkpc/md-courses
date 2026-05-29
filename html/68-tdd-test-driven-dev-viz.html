@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Test-Driven Development</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: #0f172a; color: #e2e8f0; }
+    header { background: #1e293b; padding: 20px; border-bottom: 1px solid #334155; display: flex; justify-content: space-between; align-items: center; }
+    h1 { font-size: 24px; }
+    .back-link { color: #60a5fa; text-decoration: none; font-size: 14px; padding: 8px 12px; border: 1px solid #334155; border-radius: 4px; }
+    .container { display: flex; height: calc(100vh - 60px); }
+    #canvas { flex: 1; background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); overflow: auto; padding: 20px; }
+    .controls { width: 300px; background: #1e293b; border-left: 1px solid #334155; padding: 20px; overflow-y: auto; }
+    .control-group { margin-bottom: 20px; }
+    .control-group label { display: block; font-size: 13px; text-transform: uppercase; color: #94a3b8; margin-bottom: 8px; font-weight: 600; }
+    button { background: #3b82f6; color: white; border: none; padding: 10px 16px; border-radius: 6px; cursor: pointer; font-size: 14px; width: 100%; margin-bottom: 8px; }
+    .cycle { background: #334155; padding: 15px; border-radius: 8px; margin: 20px 0; }
+    .stage { padding: 10px; background: #1e293b; margin: 8px 0; border-radius: 4px; border-left: 3px solid #60a5fa; font-size: 11px; }
+    .stage.red { border-left-color: #ef4444; background: rgba(239, 68, 68, 0.1); }
+    .stage.green { border-left-color: #10b981; background: rgba(16, 185, 129, 0.1); }
+    .status { background: #334155; padding: 12px; border-radius: 6px; font-size: 12px; font-family: monospace; margin: 10px 0; }
+    .info-text { font-size: 12px; color: #cbd5e1; line-height: 1.6; margin: 10px 0; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>🎨 Test-Driven Development</h1>
+    <a href="../data/14-testing/02-test-coverage-tdd-bdd.md" class="back-link">← Back to Notes</a>
+  </header>
+  <div class="container">
+    <div id="canvas">
+      <h2 style="margin-bottom: 20px;">Red-Green-Refactor Cycle</h2>
+      <div class="cycle" id="cycle"></div>
+    </div>
+    <div class="controls">
+      <div class="control-group">
+        <label>Next Step</label>
+        <button onclick="app.nextStep()">Progress</button>
+        <button onclick="app.reset()">Reset</button>
+      </div>
+      <div class="status">
+        <div>Phase: <strong id="phase">-</strong></div>
+        <div>Cycle: <strong id="cycle_num">0</strong></div>
+      </div>
+      <div class="info-text">
+        <strong>Red:</strong> Write failing test
+      </div>
+      <div class="info-text">
+        <strong>Green:</strong> Pass minimum code
+      </div>
+      <div class="info-text">
+        <strong>Refactor:</strong> Improve design
+      </div>
+    </div>
+  </div>
+  <script>
+    const app = {
+      state: { step: 0 },
+      stages: [
+        {name: 'Red: Test fails', color: 'red'},
+        {name: 'Green: Test passes', color: 'green'},
+        {name: 'Refactor: Clean code', color: 'green'}
+      ],
+      init() { this.render(); },
+      nextStep() { this.state.step = (this.state.step + 1) % 9; this.render(); },
+      reset() { this.state.step = 0; this.render(); },
+      render() {
+        const cycleDiv = document.getElementById('cycle');
+        cycleDiv.innerHTML = this.stages.map((s, i) => {
+          const isActive = (this.state.step % 3) === i;
+          return `<div class="stage ${s.color}" style="opacity:${isActive ? 1 : 0.6}">
+            ${isActive ? '→ ' : '• '} ${s.name}
+          </div>`;
+        }).join('');
+        const phaseNames = ['Red', 'Green', 'Refactor'];
+        document.getElementById('phase').textContent = phaseNames[this.state.step % 3];
+        document.getElementById('cycle_num').textContent = Math.floor(this.state.step / 3) + 1;
+      }
+    };
+    window.addEventListener('load', () => app.init());
+  </script>
+</body>
+</html>

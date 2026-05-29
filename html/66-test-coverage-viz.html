@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Test Coverage</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: #0f172a; color: #e2e8f0; }
+    header { background: #1e293b; padding: 20px; border-bottom: 1px solid #334155; display: flex; justify-content: space-between; align-items: center; }
+    h1 { font-size: 24px; }
+    .back-link { color: #60a5fa; text-decoration: none; font-size: 14px; padding: 8px 12px; border: 1px solid #334155; border-radius: 4px; }
+    .container { display: flex; height: calc(100vh - 60px); }
+    #canvas { flex: 1; background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); overflow: auto; padding: 20px; }
+    .controls { width: 300px; background: #1e293b; border-left: 1px solid #334155; padding: 20px; overflow-y: auto; }
+    .control-group { margin-bottom: 20px; }
+    .control-group label { display: block; font-size: 13px; text-transform: uppercase; color: #94a3b8; margin-bottom: 8px; font-weight: 600; }
+    button { background: #3b82f6; color: white; border: none; padding: 10px 16px; border-radius: 6px; cursor: pointer; font-size: 14px; width: 100%; margin-bottom: 8px; }
+    .coverage { background: #334155; padding: 15px; border-radius: 8px; margin: 20px 0; }
+    .metric { padding: 10px; background: #1e293b; margin: 8px 0; border-radius: 4px; display: flex; justify-content: space-between; align-items: center; font-size: 11px; }
+    .meter { background: #0f172a; flex: 1; height: 4px; margin-left: 10px; border-radius: 2px; overflow: hidden; }
+    .fill { height: 100%; background: #10b981; }
+    .status { background: #334155; padding: 12px; border-radius: 6px; font-size: 12px; font-family: monospace; margin: 10px 0; }
+    .info-text { font-size: 12px; color: #cbd5e1; line-height: 1.6; margin: 10px 0; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>🎨 Test Coverage</h1>
+    <a href="../data/14-testing/02-test-coverage-tdd-bdd.md" class="back-link">← Back to Notes</a>
+  </header>
+  <div class="container">
+    <div id="canvas">
+      <h2 style="margin-bottom: 20px;">Coverage Report</h2>
+      <div class="coverage" id="coverage"></div>
+    </div>
+    <div class="controls">
+      <div class="control-group">
+        <label>Generate Report</label>
+        <button onclick="app.generateReport()">Generate</button>
+        <button onclick="app.reset()">Reset</button>
+      </div>
+      <div class="status">
+        <div>Statements: <strong id="statements">0%</strong></div>
+        <div>Branches: <strong id="branches">0%</strong></div>
+      </div>
+      <div class="info-text">
+        <strong>Istanbul:</strong> Coverage tool
+      </div>
+      <div class="info-text">
+        <strong>Target:</strong> 80%+ coverage
+      </div>
+      <div class="info-text">
+        <strong>Branch:</strong> All conditions tested
+      </div>
+    </div>
+  </div>
+  <script>
+    const app = {
+      state: { generated: false },
+      metrics: [
+        {name: 'Statements', value: 85},
+        {name: 'Branches', value: 72},
+        {name: 'Functions', value: 90},
+        {name: 'Lines', value: 87}
+      ],
+      init() { this.render(); },
+      generateReport() { this.state.generated = true; this.render(); },
+      reset() { this.state.generated = false; this.render(); },
+      render() {
+        const covDiv = document.getElementById('coverage');
+        if(this.state.generated) {
+          covDiv.innerHTML = this.metrics.map(m => `
+            <div class="metric">
+              <span>${m.name}</span>
+              <div class="meter"><div class="fill" style="width:${m.value}%"></div></div>
+              <span style="width:50px; text-align:right;">${m.value}%</span>
+            </div>
+          `).join('');
+          document.getElementById('statements').textContent = `${this.metrics[0].value}%`;
+          document.getElementById('branches').textContent = `${this.metrics[1].value}%`;
+        } else {
+          covDiv.innerHTML = '<div style="color:#94a3b8;text-align:center;padding:20px;">Click Generate</div>';
+        }
+      }
+    };
+    window.addEventListener('load', () => app.init());
+  </script>
+</body>
+</html>

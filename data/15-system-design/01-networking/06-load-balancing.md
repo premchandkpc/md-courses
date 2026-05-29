@@ -1,6 +1,6 @@
 # Load Balancing Deep Dive - L5 Networking
 
-> **[🎨 View Interactive Diagram](load-balancing-architecture.html)** | [← Back to Index](../../systems-index.html)
+> **[🎨 View Interactive Diagram](load-balancing-architecture.html)** | [🎨 Algorithms Simulator](../../../html/11-load-balancing-algorithms-viz.html) | [← Back to Index](../../systems-index.html)
 
 *"10 backend servers. How distribute 100K requests/sec fairly?"*
 

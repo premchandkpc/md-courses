@@ -1,5 +1,7 @@
 # 🚪 API Gateway — Complete Deep Dive
 
+[🎨 Interactive Visualization](../../../html/04-api-gateway-routing-viz.html)
+
 **Related**: [Service Discovery](/16-microservices/03-service-discovery.md) · [Circuit Breaker](/16-microservices/05-circuit-breaker-resilience.md) · [Load Balancers](/11-networking/load-balancing/loadbalancer.md)
 
 ---

@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Saga Pattern & Distributed Transactions</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: #0f172a; color: #e2e8f0; }
+    header { background: #1e293b; padding: 20px; border-bottom: 1px solid #334155; display: flex; justify-content: space-between; align-items: center; }
+    h1 { font-size: 24px; }
+    .back-link { color: #60a5fa; text-decoration: none; font-size: 14px; padding: 8px 12px; border: 1px solid #334155; border-radius: 4px; }
+    .back-link:hover { background: #334155; }
+    .container { display: flex; height: calc(100vh - 60px); }
+    #canvas { flex: 1; background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); overflow: auto; padding: 20px; }
+    .controls { width: 300px; background: #1e293b; border-left: 1px solid #334155; padding: 20px; overflow-y: auto; }
+    .control-group { margin-bottom: 20px; }
+    .control-group label { display: block; font-size: 13px; text-transform: uppercase; color: #94a3b8; margin-bottom: 8px; font-weight: 600; }
+    button { background: #3b82f6; color: white; border: none; padding: 10px 16px; border-radius: 6px; cursor: pointer; font-size: 14px; width: 100%; margin-bottom: 8px; transition: all 0.2s; }
+    button:hover { background: #2563eb; }
+    button.active { background: #10b981; }
+    .status { background: #334155; padding: 12px; border-radius: 6px; font-size: 12px; font-family: monospace; margin: 10px 0; line-height: 1.8; }
+    .info-text { font-size: 12px; color: #cbd5e1; line-height: 1.6; margin: 10px 0; }
+    .flow-grid { display: grid; grid-template-columns: 1fr; gap: 15px; margin: 20px 0; }
+    .flow-step { padding: 15px; background: #334155; border-radius: 8px; border-left: 4px solid #60a5fa; font-size: 12px; }
+    .flow-step.success { border-left-color: #10b981; }
+    .flow-step.failure { border-left-color: #ef4444; }
+    .flow-step.compensation { border-left-color: #fbbf24; }
+    .legend { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 12px; margin-top: 15px; padding-top: 15px; border-top: 1px solid #334155; }
+    .legend-item { display: flex; align-items: center; gap: 8px; }
+    .legend-dot { width: 10px; height: 10px; border-radius: 50%; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>🎨 Saga Pattern & Distributed Transactions</h1>
+    <a href="../data/16-microservices/06-distributed-transactions-saga.md" class="back-link">← Back to Docs</a>
+  </header>
+  <div class="container">
+    <div id="canvas">
+      <h2 style="margin-bottom: 20px;">Saga Execution Flow</h2>
+      <div id="flowSteps" class="flow-grid"></div>
+    </div>
+    <div class="controls">
+      <div class="control-group">
+        <label>Saga Type</label>
+        <button id="orchestration" onclick="app.setType('orchestration')" class="active">Orchestration</button>
+        <button id="choreography" onclick="app.setType('choreography')">Choreography</button>
+      </div>
+      <div class="status">
+        <div>Type: <strong id="type">Orchestration</strong></div>
+        <div>Step: <strong id="step">Idle</strong></div>
+        <div>Status: <strong id="saga-status">Ready</strong></div>
+      </div>
+      <div class="control-group">
+        <label>Control</label>
+        <button onclick="app.executeSaga()">Execute Saga</button>
+        <button onclick="app.triggerFailure()">Trigger Failure</button>
+        <button onclick="app.reset()">Reset</button>
+      </div>
+      <div class="info-text">
+        <strong>Orchestration:</strong> Central coordinator manages steps and rollback.
+      </div>
+      <div class="info-text">
+        <strong>Choreography:</strong> Services emit events, others react (loosely coupled).
+      </div>
+      <div class="info-text">
+        <strong>Compensating:</strong> Undo previous steps on failure (e.g., refund payment).
+      </div>
+      <div class="legend">
+        <div class="legend-item">
+          <div class="legend-dot" style="background: #60a5fa;"></div>
+          <span>Pending</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-dot" style="background: #10b981;"></div>
+          <span>Success</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-dot" style="background: #ef4444;"></div>
+          <span>Failed</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-dot" style="background: #fbbf24;"></div>
+          <span>Compensating</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script>
+    const app = {
+      state: { type: 'orchestration', step: 0, failed: false, compensating: false },
+      steps: {
+        orchestration: [
+          { name: '1. Create Order', service: 'Order Service', action: 'Create' },
+          { name: '2. Charge Payment', service: 'Payment Service', action: 'Charge' },
+          { name: '3. Reserve Inventory', service: 'Inventory Service', action: 'Reserve' },
+          { name: '4. Send Confirmation', service: 'Notification', action: 'Notify' }
+        ],
+        choreography: [
+          { name: '1. Order Created', service: 'Order Service', action: 'Event: OrderCreated' },
+          { name: '2. Payment Charged', service: 'Payment Service', action: 'Event: PaymentCharged' },
+          { name: '3. Inventory Reserved', service: 'Inventory Service', action: 'Event: InventoryReserved' },
+          { name: '4. Confirmation Sent', service: 'Notification', action: 'Event: Confirmed' }
+        ]
+      },
+      init() { this.render(); },
+      setType(t) { this.state.type = t; this.state.step = 0; this.state.failed = false; this.state.compensating = false; document.querySelectorAll('.control-group:first-child button').forEach(b => b.classList.remove('active')); document.getElementById(t).classList.add('active'); this.render(); },
+      executeSaga() {
+        if (this.state.step < this.steps[this.state.type].length && !this.state.failed) {
+          this.state.step++;
+          this.render();
+        }
+      },
+      triggerFailure() {
+        if (this.state.step > 0 && !this.state.compensating) {
+          this.state.failed = true;
+          this.state.compensating = true;
+          this.render();
+        }
+      },
+      reset() { this.state = { type: this.state.type, step: 0, failed: false, compensating: false }; this.render(); },
+      render() {
+        const flowDiv = document.getElementById('flowSteps');
+        const steps = this.steps[this.state.type];
+        flowDiv.innerHTML = '';
+
+        steps.forEach((s, i) => {
+          const div = document.createElement('div');
+          let status = 'pending';
+          if (i < this.state.step && !this.state.failed) status = 'success';
+          else if (this.state.failed && i >= this.state.step - 1) status = this.state.compensating ? 'compensation' : 'failure';
+
+          div.className = `flow-step ${status}`;
+          div.innerHTML = `
+            <strong>${s.name}</strong><br/>
+            Service: ${s.service}<br/>
+            Action: ${s.action}
+          `;
+          flowDiv.appendChild(div);
+        });
+
+        document.getElementById('type').textContent = this.state.type === 'orchestration' ? 'Orchestration' : 'Choreography';
+        document.getElementById('step').textContent = this.state.step === 0 ? 'Idle' : `Step ${this.state.step}/${steps.length}`;
+        document.getElementById('saga-status').textContent = this.state.compensating ? 'Rolling Back' : (this.state.failed ? 'Failed' : (this.state.step === steps.length ? 'Complete' : 'In Progress'));
+      }
+    };
+    window.addEventListener('load', () => app.init());
+  </script>
+</body>
+</html>

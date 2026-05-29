@@ -1,6 +1,6 @@
 # HTTP/HTTPS Deep Dive - L5 Networking
 
-> **[🎨 View Interactive Diagram](http-architecture.html)** | [← Back to Index](../../systems-index.html)
+> **[🎨 View Interactive Diagram](http-architecture.html)** | [🎨 Caching Headers Simulator](../../../html/02-http-caching-headers-viz.html) | [← Back to Index](../../systems-index.html)
 
 *"GET request takes 500ms. Why? What can you optimize?"*
 

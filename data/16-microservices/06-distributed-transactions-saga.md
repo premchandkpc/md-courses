@@ -1,5 +1,7 @@
 # 🔄 Distributed Transactions & Saga Pattern — Complete Deep Dive
 
+[🎨 Interactive Visualization](../../../html/06-saga-pattern-transactions-viz.html)
+
 **Related**: [Architecture Patterns](/16-microservices/01-architecture-patterns.md) · [CQRS & Event Sourcing](/16-microservices/07-observability-monitoring.md) · [Resilience Patterns](/16-microservices/05-circuit-breaker-resilience.md)
 
 ---

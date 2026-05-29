@@ -1,5 +1,7 @@
 # 🔍 Service Discovery — Complete Deep Dive
 
+[🎨 Interactive Visualization](../../../html/03-service-discovery-registry-viz.html)
+
 **Related**: [API Gateway](/16-microservices/04-api-gateway.md) · [Circuit Breaker](/16-microservices/05-circuit-breaker-resilience.md) · [Kubernetes](/07-kubernetes/README.md)
 
 ---

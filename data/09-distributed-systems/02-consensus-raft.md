@@ -5,6 +5,7 @@
 >
 > - [Raft Distributed Systems V2](./raft-distributed-systems-v2.html) — Watch election storms, split-brain, voting pressure under partition.
 > - [raft-consensus.html](./raft-consensus.html) — Term progression, log replication.
+> - [Raft Consensus Simulator](../../../html/13-consensus-algorithms-raft-viz.html) — Interactive election and log replication.
 
 > **Scope**: Raft decomposition (leader election, log replication, safety, membership changes, log compaction), leader election mechanics, log replication protocol, safety guarantees, joint consensus for membership changes, snapshot/compaction, optimizations (batching, pipelining, read-only queries), Raft vs Paxos comparison, failure analysis, Raft implementations (etcd, Consul, TiKV, MongoDB, RethinkDB, Apache Ratis).
 >

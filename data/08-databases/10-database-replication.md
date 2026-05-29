@@ -1,5 +1,7 @@
 # Topic 10: Database Replication & Multi-Master Architectures
 
+[🎨 Interactive Visualization](../../html/10-database-replication-sync-viz.html)
+
 **Level:** Intermediate-Advanced | **Time:** 60 mins | **Production Critical:** ⭐⭐⭐⭐
 
 ---

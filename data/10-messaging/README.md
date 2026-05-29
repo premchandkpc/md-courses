@@ -2,6 +2,8 @@
 
 The backbone of event-driven architecture. Covers message brokers, streaming platforms, event-driven patterns, message delivery semantics, idempotency, ordering guarantees, and their practical applications in building decoupled, scalable, and reliable distributed systems.
 
+> **[🎨 Message Queue Ordering Simulator](../../html/07-message-queues-ordering-viz.html)** — See FIFO vs Priority queue behavior live.
+
 ## Messaging Architecture Overview
 
 ```mermaid

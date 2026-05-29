@@ -1,6 +1,6 @@
 # TCP/IP Protocol Stack Deep Dive - L5 Networking
 
-> **[🎨 View Interactive Diagram](tcp-ip-architecture.html)** | [← Back to Index](../../systems-index.html)
+> **[🎨 View Interactive Diagram](tcp-ip-architecture.html)** | [🎨 TCP Lifecycle Simulator](../../../html/09-tcp-connection-lifecycle-viz.html) | [← Back to Index](../../systems-index.html)
 
 *"Why does establishing a connection take 100ms? What happens in that three-way handshake?"*
 

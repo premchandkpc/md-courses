@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Database Replication & Consistency</title>
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: #0f172a; color: #e2e8f0; }
+    header { background: #1e293b; padding: 20px; border-bottom: 1px solid #334155; display: flex; justify-content: space-between; align-items: center; }
+    h1 { font-size: 24px; }
+    .back-link { color: #60a5fa; text-decoration: none; font-size: 14px; padding: 8px 12px; border: 1px solid #334155; border-radius: 4px; }
+    .back-link:hover { background: #334155; }
+    .container { display: flex; height: calc(100vh - 60px); }
+    #canvas { flex: 1; background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); overflow: auto; }
+    .controls { width: 300px; background: #1e293b; border-left: 1px solid #334155; padding: 20px; overflow-y: auto; }
+    .control-group { margin-bottom: 20px; }
+    .control-group label { display: block; font-size: 13px; text-transform: uppercase; color: #94a3b8; margin-bottom: 8px; font-weight: 600; }
+    button { background: #3b82f6; color: white; border: none; padding: 10px 16px; border-radius: 6px; cursor: pointer; font-size: 14px; width: 100%; margin-bottom: 8px; transition: all 0.2s; }
+    button:hover { background: #2563eb; }
+    button.active { background: #10b981; }
+    .status { background: #334155; padding: 12px; border-radius: 6px; font-size: 12px; font-family: monospace; margin: 10px 0; line-height: 1.8; }
+    .info-text { font-size: 12px; color: #cbd5e1; line-height: 1.6; margin: 10px 0; }
+    svg { display: block; width: 100%; height: 100%; }
+    .db-box { stroke-width: 2; rx: 4; }
+    .db-text { fill: #e2e8f0; font-size: 12px; font-weight: 600; text-anchor: middle; }
+    .legend { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 12px; margin-top: 15px; padding-top: 15px; border-top: 1px solid #334155; }
+    .legend-item { display: flex; align-items: center; gap: 8px; }
+    .legend-dot { width: 10px; height: 10px; border-radius: 50%; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>🎨 Database Replication & Consistency</h1>
+    <a href="../data/08-databases/10-database-replication.md" class="back-link">← Back to Docs</a>
+  </header>
+  <div class="container">
+    <div id="canvas"><svg></svg></div>
+    <div class="controls">
+      <div class="control-group">
+        <label>Replication Mode</label>
+        <button id="sync" onclick="app.setMode('sync')" class="active">Synchronous</button>
+        <button id="async" onclick="app.setMode('async')">Asynchronous</button>
+        <button id="multimaster" onclick="app.setMode('multimaster')">Multi-Master</button>
+      </div>
+      <div class="status">
+        <div>Mode: <strong id="mode">Synchronous</strong></div>
+        <div>Replication Lag: <strong id="lag">0ms</strong></div>
+        <div>Consistency: <strong id="consistency" style="color: #10b981;">Strong</strong></div>
+      </div>
+      <div class="control-group">
+        <label>Simulate</label>
+        <button onclick="app.writeData()">Write Data</button>
+        <button onclick="app.simulateLag()">Simulate Lag</button>
+        <button onclick="app.reset()">Reset</button>
+      </div>
+      <div class="info-text">
+        <strong>Synchronous:</strong> Wait for replicas to ack. Slower writes, strong consistency.
+      </div>
+      <div class="info-text">
+        <strong>Asynchronous:</strong> Ack immediately. Fast writes, eventual consistency.
+      </div>
+      <div class="info-text">
+        <strong>Multi-Master:</strong> Both accept writes. High availability, conflict resolution needed.
+      </div>
+      <div class="legend">
+        <div class="legend-item">
+          <div class="legend-dot" style="background: #3b82f6;"></div>
+          <span>Primary</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-dot" style="background: #60a5fa;"></div>
+          <span>Replica</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-dot" style="background: #fbbf24;"></div>
+          <span>Lagging</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script>
+    const app = {
+      state: { mode: 'sync', lag: 0, writeCount: 0 },
+      init() { this.svg = d3.select('svg'); this.render(); },
+      setMode(m) { this.state.mode = m; this.state.lag = 0; this.state.writeCount = 0; document.querySelectorAll('.control-group:first-child button').forEach(b => b.classList.remove('active')); document.getElementById(m).classList.add('active'); this.render(); },
+      writeData() { this.state.writeCount++; if (this.state.mode === 'async') this.state.lag += 50; this.render(); },
+      simulateLag() { this.state.lag = Math.min(500, this.state.lag + 100); this.render(); },
+      reset() { this.state = { mode: this.state.mode, lag: 0, writeCount: 0 }; this.render(); },
+      render() {
+        const width = this.svg.node().parentElement.clientWidth;
+        const height = this.svg.node().parentElement.clientHeight;
+        this.svg.selectAll('*').remove();
+
+        if (this.state.mode === 'sync') {
+          const primary = { x: width / 2 - 150, y: height / 2 };
+          const replicas = [
+            { x: width / 2 + 150, y: height / 2 - 100 },
+            { x: width / 2 + 150, y: height / 2 + 100 }
+          ];
+
+          // Primary
+          this.svg.append('rect').attr('class', 'db-box').attr('x', primary.x - 50).attr('y', primary.y - 40).attr('width', 100).attr('height', 80).attr('fill', '#3b82f6');
+          this.svg.append('text').attr('class', 'db-text').attr('x', primary.x).attr('y', primary.y - 10).text('Primary');
+          this.svg.append('text').attr('text-anchor', 'middle').attr('x', primary.x).attr('y', primary.y + 20).attr('fill', '#cbd5e1').attr('font-size', '10px').text('Writes');
+
+          replicas.forEach((r, i) => {
+            this.svg.append('rect').attr('class', 'db-box').attr('x', r.x - 50).attr('y', r.y - 40).attr('width', 100).attr('height', 80).attr('fill', '#60a5fa');
+            this.svg.append('text').attr('class', 'db-text').attr('x', r.x).attr('y', r.y - 10).text(`Replica ${i + 1}`);
+            this.svg.append('text').attr('text-anchor', 'middle').attr('x', r.x).attr('y', r.y + 20).attr('fill', '#cbd5e1').attr('font-size', '10px').text('Reads');
+
+            // Sync replication - arrows both ways
+            this.svg.append('line').attr('x1', primary.x + 50).attr('y1', primary.y).attr('x2', r.x - 50).attr('y2', r.y).attr('stroke', '#10b981').attr('stroke-width', 2).attr('marker-end', 'url(#arrowhead)');
+            this.svg.append('line').attr('x1', r.x - 50).attr('y1', r.y - 10).attr('x2', primary.x + 50).attr('y2', primary.y - 10).attr('stroke', '#10b981').attr('stroke-width', 2).attr('marker-end', 'url(#arrowhead)');
+            this.svg.append('text').attr('x', (primary.x + r.x) / 2).attr('y', primary.y - 30).attr('text-anchor', 'middle').attr('fill', '#10b981').attr('font-size', '10px').text('ACK');
+          });
+        } else if (this.state.mode === 'async') {
+          const primary = { x: width / 2 - 150, y: height / 2 };
+          const replicas = [
+            { x: width / 2 + 150, y: height / 2 - 100 },
+            { x: width / 2 + 150, y: height / 2 + 100 }
+          ];
+
+          this.svg.append('rect').attr('class', 'db-box').attr('x', primary.x - 50).attr('y', primary.y - 40).attr('width', 100).attr('height', 80).attr('fill', '#3b82f6');
+          this.svg.append('text').attr('class', 'db-text').attr('x', primary.x).attr('y', primary.y - 10).text('Primary');
+          this.svg.append('text').attr('text-anchor', 'middle').attr('x', primary.x).attr('y', primary.y + 20).attr('fill', '#cbd5e1').attr('font-size', '10px').text('Writes');
+
+          replicas.forEach((r, i) => {
+            const color = this.state.lag > 200 ? '#fbbf24' : '#60a5fa';
+            this.svg.append('rect').attr('class', 'db-box').attr('x', r.x - 50).attr('y', r.y - 40).attr('width', 100).attr('height', 80).attr('fill', color);
+            this.svg.append('text').attr('class', 'db-text').attr('x', r.x).attr('y', r.y - 10).text(`Replica ${i + 1}`);
+            this.svg.append('text').attr('text-anchor', 'middle').attr('x', r.x).attr('y', r.y + 20).attr('fill', '#cbd5e1').attr('font-size', '10px').text(this.state.lag > 0 ? `lag: ${this.state.lag}ms` : 'Reads');
+
+            this.svg.append('line').attr('x1', primary.x + 50).attr('y1', primary.y).attr('x2', r.x - 50).attr('y2', r.y).attr('stroke', '#fbbf24').attr('stroke-width', 2).attr('stroke-dasharray', '5,5').attr('marker-end', 'url(#arrowhead)');
+          });
+        } else {
+          const db1 = { x: width / 2 - 150, y: height / 2 };
+          const db2 = { x: width / 2 + 150, y: height / 2 };
+
+          [db1, db2].forEach((db, i) => {
+            this.svg.append('rect').attr('class', 'db-box').attr('x', db.x - 50).attr('y', db.y - 40).attr('width', 100).attr('height', 80).attr('fill', '#ec4899');
+            this.svg.append('text').attr('class', 'db-text').attr('x', db.x).attr('y', db.y - 10).text(`Master ${i + 1}`);
+            this.svg.append('text').attr('text-anchor', 'middle').attr('x', db.x).attr('y', db.y + 20).attr('fill', '#cbd5e1').attr('font-size', '10px').text('R/W');
+          });
+
+          // Bidirectional replication
+          this.svg.append('line').attr('x1', db1.x + 50).attr('y1', db1.y - 20).attr('x2', db2.x - 50).attr('y2', db2.y - 20).attr('stroke', '#ec4899').attr('stroke-width', 2).attr('marker-end', 'url(#arrowhead)');
+          this.svg.append('line').attr('x1', db2.x - 50).attr('y1', db2.y + 20).attr('x2', db1.x + 50).attr('y2', db1.y + 20).attr('stroke', '#ec4899').attr('stroke-width', 2).attr('marker-end', 'url(#arrowhead)');
+        }
+
+        document.getElementById('mode').textContent = this.state.mode === 'sync' ? 'Synchronous' : (this.state.mode === 'async' ? 'Asynchronous' : 'Multi-Master');
+        document.getElementById('lag').textContent = this.state.lag + 'ms';
+        document.getElementById('consistency').textContent = this.state.lag > 0 ? 'Eventual' : 'Strong';
+        document.getElementById('consistency').style.color = this.state.lag > 0 ? '#fbbf24' : '#10b981';
+      }
+    };
+    window.addEventListener('load', () => app.init());
+  </script>
+</body>
+</html>

@@ -1,5 +1,6 @@
 # 🛡️ Circuit Breaker & Resilience Patterns — Complete Deep Dive
 
+[🎨 Interactive Visualization](../../../html/05-circuit-breaker-resilience-viz.html)
 
 > **Run the live simulator**: [circuit-breaker.html](/16-microservices/circuit-breaker.html) — click buttons to trigger state transitions and watch the circuit breaker react.
 

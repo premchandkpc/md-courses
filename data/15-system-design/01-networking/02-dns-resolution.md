@@ -1,6 +1,6 @@
 # DNS Resolution Deep Dive - L5 Networking
 
-> **[🎨 View Interactive Diagram](dns-architecture.html)** | [← Back to Index](../../systems-index.html)
+> **[🎨 View Interactive Diagram](dns-architecture.html)** | [🎨 DNS Caching Simulator](../../../html/08-dns-resolution-caching-viz.html) | [← Back to Index](../../systems-index.html)
 
 *"You type example.com. How does your computer find 93.184.216.34?"*
 

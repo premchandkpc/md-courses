@@ -1,6 +1,6 @@
 # Network Performance & Optimization Deep Dive - L5 Networking
 
-> **[🎨 View Interactive Diagram](network-performance-architecture.html)** | [← Back to Index](../../systems-index.html)
+> **[🎨 View Interactive Diagram](network-performance-architecture.html)** | [🎨 Rate Limiting Simulator](../../../html/01-rate-limiting-token-bucket-viz.html) | [← Back to Index](../../systems-index.html)
 
 *"Why is my app slow? How do I identify network bottlenecks?"*
 

@@ -1,5 +1,7 @@
 # ⚡ Distributed Caching — Complete Deep Dive
 
+> **[🎨 Cache Strategies Simulator](../../../html/12-caching-strategies-viz.html)** — Explore LRU/TTL/Write-Through strategies interactively.
+>
 > **Scope**: Caching strategies (cache-aside, read-through, write-through, write-behind, refresh-ahead), eviction policies (LRU, LFU, ARC, LIRS, TinyLFU, 2Q), Redis cluster internals, Memcached internals, cache invalidation patterns, caching at scale (Netflix EVCache, Twitter Twemproxy, Facebook mcrouter), consistent hashing variants, cache stampede prevention, failure modes and monitoring.
 >
 > **Related**: [01-cap-consistency.md](/09-distributed-systems/01-cap-consistency.md) | [04-distributed-transactions.md](/09-distributed-systems/04-distributed-transactions.md)

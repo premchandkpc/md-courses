@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Circuit Breaker & Resilience Patterns</title>
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: #0f172a; color: #e2e8f0; }
+    header { background: #1e293b; padding: 20px; border-bottom: 1px solid #334155; display: flex; justify-content: space-between; align-items: center; }
+    h1 { font-size: 24px; }
+    .back-link { color: #60a5fa; text-decoration: none; font-size: 14px; padding: 8px 12px; border: 1px solid #334155; border-radius: 4px; }
+    .back-link:hover { background: #334155; }
+    .container { display: flex; height: calc(100vh - 60px); }
+    #canvas { flex: 1; background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); overflow: auto; }
+    .controls { width: 300px; background: #1e293b; border-left: 1px solid #334155; padding: 20px; overflow-y: auto; }
+    .control-group { margin-bottom: 20px; }
+    .control-group label { display: block; font-size: 13px; text-transform: uppercase; color: #94a3b8; margin-bottom: 8px; font-weight: 600; }
+    button { background: #3b82f6; color: white; border: none; padding: 10px 16px; border-radius: 6px; cursor: pointer; font-size: 14px; width: 100%; margin-bottom: 8px; transition: all 0.2s; }
+    button:hover { background: #2563eb; }
+    .status { background: #334155; padding: 12px; border-radius: 6px; font-size: 12px; font-family: monospace; margin: 10px 0; line-height: 1.8; }
+    .info-text { font-size: 12px; color: #cbd5e1; line-height: 1.6; margin: 10px 0; }
+    svg { display: block; width: 100%; height: 100%; }
+    .state-box { stroke-width: 2; rx: 8; }
+    .state-text { fill: #e2e8f0; font-size: 14px; font-weight: 600; text-anchor: middle; }
+    .legend { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 12px; margin-top: 15px; padding-top: 15px; border-top: 1px solid #334155; }
+    .legend-item { display: flex; align-items: center; gap: 8px; }
+    .legend-dot { width: 10px; height: 10px; border-radius: 50%; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>🎨 Circuit Breaker & Resilience Patterns</h1>
+    <a href="../data/16-microservices/05-circuit-breaker-resilience.md" class="back-link">← Back to Docs</a>
+  </header>
+  <div class="container">
+    <div id="canvas"><svg></svg></div>
+    <div class="controls">
+      <div class="control-group">
+        <label>Trigger Events</label>
+        <button onclick="app.successCall()">✓ Success</button>
+        <button onclick="app.failureCall()">✗ Failure</button>
+        <button onclick="app.triggerTimeout()">⏱ Timeout</button>
+      </div>
+      <div class="status">
+        <div>State: <strong id="state">CLOSED</strong></div>
+        <div>Failures: <strong id="failures">0/5</strong></div>
+        <div>Time in State: <strong id="time">0s</strong></div>
+      </div>
+      <div class="control-group">
+        <button onclick="app.reset()">Reset Circuit</button>
+      </div>
+      <div class="info-text">
+        <strong>CLOSED:</strong> Normal operation, requests pass through.
+      </div>
+      <div class="info-text">
+        <strong>OPEN:</strong> Failures exceeded threshold, requests rejected immediately.
+      </div>
+      <div class="info-text">
+        <strong>HALF-OPEN:</strong> Testing recovery, limited requests allowed.
+      </div>
+      <div class="legend">
+        <div class="legend-item">
+          <div class="legend-dot" style="background: #10b981;"></div>
+          <span>Closed</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-dot" style="background: #ef4444;"></div>
+          <span>Open</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-dot" style="background: #fbbf24;"></div>
+          <span>Half-Open</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script>
+    const app = {
+      state: { current: 'CLOSED', failures: 0, successes: 0, timeInState: 0 },
+      config: { failureThreshold: 5, successThreshold: 2, timeout: 30 },
+      init() { this.svg = d3.select('svg'); this.startTimer(); this.render(); },
+      startTimer() { setInterval(() => { if (this.state.current !== 'CLOSED') this.state.timeInState++; this.render(); }, 1000); },
+      successCall() {
+        if (this.state.current === 'CLOSED') { this.state.failures = 0; }
+        else if (this.state.current === 'HALF_OPEN') { this.state.successes++; if (this.state.successes >= this.config.successThreshold) { this.state.current = 'CLOSED'; this.state.failures = 0; this.state.successes = 0; this.state.timeInState = 0; } }
+        this.render();
+      },
+      failureCall() {
+        if (this.state.current === 'CLOSED') { this.state.failures++; if (this.state.failures >= this.config.failureThreshold) this.state.current = 'OPEN'; }
+        else if (this.state.current === 'HALF_OPEN') { this.state.current = 'OPEN'; this.state.timeInState = 0; this.state.successes = 0; }
+        this.render();
+      },
+      triggerTimeout() {
+        if (this.state.current === 'OPEN' && this.state.timeInState >= this.config.timeout) { this.state.current = 'HALF_OPEN'; this.state.timeInState = 0; this.state.successes = 0; }
+        this.render();
+      },
+      reset() { this.state = { current: 'CLOSED', failures: 0, successes: 0, timeInState: 0 }; this.render(); },
+      render() {
+        const width = this.svg.node().parentElement.clientWidth;
+        const height = this.svg.node().parentElement.clientHeight;
+        this.svg.selectAll('*').remove();
+        const centerX = width / 2;
+        const startY = height / 2 - 100;
+
+        // State boxes
+        const states = [
+          { label: 'CLOSED', x: centerX - 150, y: startY, color: '#10b981', active: this.state.current === 'CLOSED' },
+          { label: 'OPEN', x: centerX, y: startY, color: '#ef4444', active: this.state.current === 'OPEN' },
+          { label: 'HALF-OPEN', x: centerX + 150, y: startY, color: '#fbbf24', active: this.state.current === 'HALF_OPEN' }
+        ];
+
+        states.forEach(s => {
+          this.svg.append('rect').attr('class', 'state-box').attr('x', s.x - 60).attr('y', s.y - 40).attr('width', 120).attr('height', 80).attr('fill', s.color).attr('opacity', s.active ? 1 : 0.3);
+          this.svg.append('text').attr('class', 'state-text').attr('x', s.x).attr('y', s.y - 5).text(s.label);
+          if (s.active) {
+            this.svg.append('circle').attr('cx', s.x).attr('cy', s.y + 50).attr('r', 30).attr('fill', 'none').attr('stroke', s.color).attr('stroke-width', 2);
+          }
+        });
+
+        // Transitions
+        this.svg.append('line').attr('x1', centerX - 90).attr('y1', startY).attr('x2', centerX - 60).attr('y2', startY).attr('stroke', '#64748b').attr('stroke-width', 2).attr('marker-end', 'url(#arrowhead)');
+        this.svg.append('text').attr('x', centerX - 75).attr('y', startY - 10).attr('font-size', '11px').attr('fill', '#94a3b8').text('Fail × 5');
+
+        this.svg.append('line').attr('x1', centerX + 60).attr('y1', startY).attr('x2', centerX + 90).attr('y2', startY).attr('stroke', '#64748b').attr('stroke-width', 2).attr('marker-end', 'url(#arrowhead)');
+        this.svg.append('text').attr('x', centerX + 75).attr('y', startY - 10).attr('font-size', '11px').attr('fill', '#94a3b8').text('Timeout');
+
+        this.svg.append('line').attr('x1', centerX + 150).attr('y1', startY + 40).attr('x2', centerX + 150).attr('y2', startY + 100).attr('x2', centerX).attr('y2', startY + 140).attr('stroke', '#64748b').attr('stroke-width', 2).attr('marker-end', 'url(#arrowhead)');
+        this.svg.append('text').attr('x', centerX + 100).attr('y', startY + 110).attr('font-size', '11px').attr('fill', '#94a3b8').text('Fail');
+
+        this.svg.append('line').attr('x1', centerX - 150).attr('y1', startY - 40).attr('x2', centerX - 150).attr('y2', startY - 100).attr('x2', centerX + 100).attr('y2', startY - 140).attr('stroke', '#64748b').attr('stroke-width', 2).attr('marker-end', 'url(#arrowhead)');
+        this.svg.append('text').attr('x', centerX - 100).attr('y', startY - 110).attr('font-size', '11px').attr('fill', '#94a3b8').text('Success × 2');
+
+        document.getElementById('state').textContent = this.state.current;
+        document.getElementById('failures').textContent = this.state.failures + '/' + this.config.failureThreshold;
+        document.getElementById('time').textContent = this.state.timeInState + 's';
+      }
+    };
+    window.addEventListener('load', () => app.init());
+  </script>
+</body>
+</html>

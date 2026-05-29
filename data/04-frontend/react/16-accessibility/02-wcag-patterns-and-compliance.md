@@ -143,7 +143,7 @@ const COLORS = {
 </button>
 ```
 
-**Key principle:** Use semantic HTML (`<button>`, `<a>`, `<form>`) instead of custom `<div>` elements. You get keyboard support for free.
+**Key principle:** Use semantic HTML (`<button>`, `<a>`, `<form>`) instead of custom `<div>` elements. You get keyboard support for free. The [Compound Components](../../06-component-architecture/02-compound-components-pattern.md) pattern shows how to build accessible subcomponents with proper ARIA attributes and focus management, and [Advanced Form Patterns](../../08-forms/02-advanced-form-patterns.md) demonstrates accessible form inputs with error handling.
 
 ---
 

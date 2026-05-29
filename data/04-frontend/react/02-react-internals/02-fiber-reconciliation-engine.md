@@ -257,7 +257,7 @@ Commit (sync):         47ms → 50ms (cannot pause)
 
 ## 5. Batching & State Updates
 
-React batches multiple state updates into a single render.
+React batches multiple state updates into a single render. This is especially important for state management libraries like Redux and Zustand (see [Redux/Zustand Patterns](../../05-state-management/02-redux-zustand-patterns.md) for how dispatch queues fiber work).
 
 ### Automatic Batching (React 18+)
 

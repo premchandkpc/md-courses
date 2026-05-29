@@ -167,7 +167,7 @@ function DataFetcher() {
 
 ## 3. Advanced Error Boundary: Scoped & Granular
 
-Wrap Error Boundaries around risky sections (not entire app).
+Wrap Error Boundaries around risky sections (not entire app). This pattern is critical for forms and submission errors (see [Advanced Form Patterns](../../08-forms/02-advanced-form-patterns.md) for handling async submission failures).
 
 ```javascript
 function Dashboard() {

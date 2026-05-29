@@ -154,5 +154,6 @@ class Constants {
 ## Visualizations
 
 - [Interactive Chess Board](chess-board-viz.html) — playable chess with valid move highlighting, piece hierarchy diagram, and move log
+- [Chess Class Diagram](chess-class-viz.html) — interactive UML diagram with clickable classes and live code snippets
 
 **Next**: [Splitwise Design](04-splitwise.md) · [File System Design](05-file-system.md)

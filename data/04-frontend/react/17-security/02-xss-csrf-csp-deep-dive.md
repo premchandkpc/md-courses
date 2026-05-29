@@ -226,6 +226,9 @@ function TransferForm() {
 // ❌ VULNERABLE: SameSite=None (old code)
 // Set-Cookie: sessionId=xyz; SameSite=None; Secure;
 // Attacker's site can trigger requests WITH cookie
+
+// See [Advanced Form Patterns](../../08-forms/02-advanced-form-patterns.md) for implementing CSRF tokens in form submission.
+// For error handling on CSRF failures, see [Error Boundaries](../../35-error-handling/01-error-boundaries-and-patterns.md).
 ```
 
 ---

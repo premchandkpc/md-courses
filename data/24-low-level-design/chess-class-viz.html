@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chess — Class Diagram Visualizer</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: #1a1a2e; color: #e0e0e0; min-height: 100vh;
+  display: flex; justify-content: center; align-items: center; padding: 20px;
+}
+.back-link { position: fixed; top: 16px; left: 20px; z-index: 100; }
+.back-link a { color: #8e9ef0; text-decoration: none; font-size: 14px; }
+.back-link a:hover { text-decoration: underline; }
+.container { display: flex; flex-direction: column; align-items: center; gap: 14px; width: 100%; max-width: 800px; }
+h1 { font-size: 22px; font-weight: 600; text-align: center; }
+h1 small { display: block; font-size: 12px; font-weight: 400; color: #888; margin-top: 2px; }
+.canvas-wrap { width: 100%; background: #16213e; border-radius: 12px; padding: 8px; overflow-x: auto; }
+canvas { display: block; width: 100%; height: auto; }
+.legend { display: flex; gap: 20px; font-size: 12px; color: #888; flex-wrap: wrap; justify-content: center; }
+.legend-item { display: flex; align-items: center; gap: 6px; }
+.legend-item .box { width: 14px; height: 14px; border-radius: 3px; display: inline-block; }
+.legend-item .line { width: 24px; height: 2px; display: inline-block; border-top: 2px solid #666; }
+.code-box {
+  width: 100%; background: #16213e; border-radius: 8px; padding: 12px 16px;
+  font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; line-height: 1.7;
+  min-height: 40px; overflow-x: auto;
+}
+.code-box .hl { color: #f1c40f; }
+.code-box .kw { color: #8e9ef0; }
+.code-box .comment { color: #666; }
+</style>
+</head>
+<body>
+<div class="back-link">← <a href="03-chess-game.md">Back to Chess LLD</a></div>
+<div class="container">
+  <h1>🏛️ Chess Class Diagram <small>UML hierarchy — click a class to see its code</small></h1>
+  <div class="canvas-wrap"><canvas id="canvas" width="780" height="520"></canvas></div>
+  <div class="legend">
+    <span class="legend-item"><span class="box" style="background:#4a6fa5"></span> Abstract Class</span>
+    <span class="legend-item"><span class="box" style="background:#2ecc71"></span> Concrete Class</span>
+    <span class="legend-item"><span class="box" style="background:#e67e22"></span> Interface</span>
+    <span class="legend-item"><span class="line"></span> Inheritance</span>
+    <span class="legend-item"><span style="color:#888">┄┄</span> Composition</span>
+  </div>
+  <div class="code-box" id="codeBox">
+    <span class="comment">// Click a class in the diagram above to see its Java code</span>
+  </div>
+</div>
+<script>
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+const W = 780, H = 520;
+canvas.width = W; canvas.height = H;
+
+const classes = [
+  { id: 'game', name: 'Game', type: 'concrete', color: '#2ecc71',
+    rows: ['- board: Board', '- currentTurn: Color', '- moveHistory: List<Move>', '- status: GameStatus'],
+    methods: ['+ makeMove(from,to): boolean', '+ undoMove(): void', '+ isValidMove(): boolean', '+ getValidMoves(): List'],
+    x: 550, y: 300, w: 200, h: 140,
+    code: `class Game {\n    Board board;\n    Color currentTurn;\n    List<Move> moveHistory;\n    GameStatus status;\n\n    boolean makeMove(Position from, Position to) { … }\n    void undoMove() { … }\n    boolean isValidMove(Position from, Position to) { … }\n    List<Position> getValidMoves(Position pos) { … }\n    boolean isInCheck(Color c) { … }\n    boolean isCheckmate(Color c) { … }\n}` },
+  { id: 'board', name: 'Board', type: 'concrete', color: '#2ecc71',
+    rows: ['- squares: Piece[8][8]', '- capturedWhite: List<Piece>', '- capturedBlack: List<Piece>'],
+    methods: ['+ getPiece(Pos): Piece', '+ setPiece(Pos,Piece): void', '+ isInBounds(Pos): boolean'],
+    x: 320, y: 320, w: 190, h: 120,
+    code: `class Board {\n    Piece[][] squares = new Piece[8][8];\n    List<Piece> capturedWhite;\n    List<Piece> capturedBlack;\n\n    Piece getPiece(Position pos) { … }\n    void setPiece(Position pos, Piece p) { … }\n    boolean isInBounds(Position pos) { … }\n    boolean isPathClear(Position from, Position to) { … }\n}` },
+  { id: 'piece', name: 'Piece', type: 'abstract', color: '#4a6fa5',
+    rows: ['- color: Color', '- position: Position', '- hasMoved: boolean'],
+    methods: ['+ getValidMoves(Board): List', '+ getType(): PieceType'],
+    x: 30, y: 100, w: 180, h: 110,
+    code: `abstract class Piece {\n    Color color;\n    Position position;\n    boolean hasMoved;\n\n    abstract List<Move> getValidMoves(Board board);\n    abstract PieceType getType();\n}` },
+  { id: 'king', name: 'King', type: 'concrete', color: '#2ecc71',
+    parent: 'piece', x: 30, y: 250, w: 150, h: 70,
+    rows: [], methods: ['+ getValidMoves(): List', '+ getType(): PieceType'],
+    code: `class King extends Piece {\n    List<Move> getValidMoves(Board b) {\n        // 1 sq any direction + castling\n        …\n    }\n    PieceType getType() { return KING; }\n}` },
+  { id: 'queen', name: 'Queen', type: 'concrete', color: '#2ecc71',
+    parent: 'piece', x: 190, y: 250, w: 160, h: 70,
+    rows: [], methods: ['+ getValidMoves(): List', '+ getType(): PieceType'],
+    code: `class Queen extends Piece {\n    List<Move> getValidMoves(Board b) {\n        // Any direction, any distance\n        …\n    }\n    PieceType getType() { return QUEEN; }\n}` },
+  { id: 'pawn', name: 'Pawn', type: 'concrete', color: '#2ecc71',
+    parent: 'piece', x: 30, y: 350, w: 150, h: 70,
+    rows: [], methods: ['+ getValidMoves(): List', '+ getType(): PieceType'],
+    code: `class Pawn extends Piece {\n    List<Move> getValidMoves(Board b) {\n        // 1 fwd, 2 from start, en passant, promotion\n        …\n    }\n    PieceType getType() { return PAWN; }\n}` },
+  { id: 'rook', name: 'Rook', type: 'concrete', color: '#2ecc71',
+    parent: 'piece', x: 350, y: 250, w: 150, h: 70,
+    rows: [], methods: ['+ getValidMoves(): List', '+ getType(): PieceType'],
+    code: `class Rook extends Piece {\n    List<Move> getValidMoves(Board b) {\n        // Horizontal/vertical\n        …\n    }\n    PieceType getType() { return ROOK; }\n}` },
+  { id: 'bishop', name: 'Bishop', type: 'concrete', color: '#2ecc71',
+    parent: 'piece', x: 190, y: 350, w: 160, h: 70,
+    rows: [], methods: ['+ getValidMoves(): List', '+ getType(): PieceType'],
+    code: `class Bishop extends Piece {\n    List<Move> getValidMoves(Board b) {\n        // Diagonal\n        …\n    }\n    PieceType getType() { return BISHOP; }\n}` },
+  { id: 'knight', name: 'Knight', type: 'concrete', color: '#2ecc71',
+    parent: 'piece', x: 350, y: 350, w: 160, h: 70,
+    rows: [], methods: ['+ getValidMoves(): List', '+ getType(): PieceType'],
+    code: `class Knight extends Piece {\n    List<Move> getValidMoves(Board b) {\n        // L-shape, jumps over pieces\n        …\n    }\n    PieceType getType() { return KNIGHT; }\n}` },
+  { id: 'move', name: 'Move', type: 'concrete', color: '#e67e22',
+    rows: ['- from: Position', '- to: Position', '- movedPiece: Piece', '- capturedPiece: Piece', '- isCastling: boolean'],
+    methods: [], x: 530, y: 80, w: 200, h: 120,
+    code: `class Move {\n    Position from;\n    Position to;\n    Piece movedPiece;\n    Piece capturedPiece;\n    boolean isCastling;\n    boolean isEnPassant;\n    boolean isPromotion;\n    PieceType promotionType;  // QUEEN default\n}` },
+  { id: 'position', name: 'Position', type: 'concrete', color: '#e67e22',
+    rows: ['- row: int', '- col: int'],
+    methods: ['+ equals(Object): boolean', '+ hashCode(): int'],
+    x: 530, y: 220, w: 180, h: 95,
+    code: `class Position {\n    int row;\n    int col;\n\n    boolean equals(Object o) { … }\n    int hashCode() { return row * 8 + col; }\n}` },
+];
+
+function draw() {
+  ctx.clearRect(0, 0, W, H);
+  ctx.fillStyle = '#16213e'; ctx.fillRect(0, 0, W, H);
+
+  // Helper: draw a class box
+  function drawClass(cls) {
+    const { x, y, w, h, name, color, type, rows, methods } = cls;
+
+    // Arrow from child to parent
+    if (cls.parent) {
+      const parent = classes.find(c => c.id === cls.parent);
+      if (parent) {
+        ctx.beginPath();
+        ctx.moveTo(x + w / 2, y);
+        ctx.lineTo(parent.x + parent.w / 2, parent.y + parent.h);
+        ctx.strokeStyle = '#4a4a6a'; ctx.lineWidth = 2;
+        ctx.stroke();
+        // Hollow triangle at parent
+        const tipX = parent.x + parent.w / 2, tipY = parent.y + parent.h;
+        ctx.beginPath();
+        ctx.moveTo(tipX, tipY + 8);
+        ctx.lineTo(tipX - 8, tipY);
+        ctx.lineTo(tipX + 8, tipY);
+        ctx.closePath();
+        ctx.fillStyle = '#16213e'; ctx.fill();
+        ctx.strokeStyle = '#4a4a6a'; ctx.lineWidth = 2; ctx.stroke();
+      }
+    }
+
+    // Box shadow
+    ctx.shadowColor = 'rgba(0,0,0,0.3)'; ctx.shadowBlur = 8;
+
+    // Header
+    ctx.fillStyle = color; ctx.beginPath();
+    ctx.roundRect(x, y, w, 26, 4);
+    ctx.fill();
+
+    // Body
+    ctx.shadowBlur = 0;
+    ctx.fillStyle = '#1a2a3e'; ctx.beginPath();
+    ctx.roundRect(x, y + 26, w, h - 26, 0, 0, 4, 4);
+    ctx.fill();
+
+    ctx.strokeStyle = color + '66'; ctx.lineWidth = 1; ctx.stroke();
+
+    // Name
+    ctx.fillStyle = '#fff'; ctx.font = 'bold 12px -apple-system, sans-serif';
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    let nameLabel = name;
+    if (type === 'abstract') nameLabel = '«abstract» ' + name;
+    ctx.fillText(nameLabel, x + w / 2, y + 13);
+
+    // Separator
+    ctx.strokeStyle = color + '44'; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(x, y + 26); ctx.lineTo(x + w, y + 26); ctx.stroke();
+
+    // Fields
+    ctx.fillStyle = '#aaa'; ctx.font = '10px -apple-system, sans-serif';
+    ctx.textAlign = 'left'; ctx.textBaseline = 'top';
+    rows.forEach((r, i) => ctx.fillText(r, x + 6, y + 30 + i * 16));
+
+    // Methods separator
+    if (methods.length > 0 && rows.length > 0) {
+      const sepY = y + 30 + rows.length * 16 + 2;
+      ctx.strokeStyle = color + '33'; ctx.lineWidth = 0.5;
+      ctx.beginPath(); ctx.moveTo(x + 4, sepY); ctx.lineTo(x + w - 4, sepY); ctx.stroke();
+    }
+
+    // Methods
+    ctx.fillStyle = '#8e9ef0'; ctx.font = '10px -apple-system, sans-serif';
+    ctx.textAlign = 'left'; ctx.textBaseline = 'top';
+    const mStart = y + 30 + rows.length * 16 + 6;
+    methods.forEach((m, i) => ctx.fillText(m, x + 6, mStart + i * 16));
+  }
+
+  // Draw connections first
+  for (const cls of classes) {
+    if (cls.parent) {
+      const parent = classes.find(c => c.id === cls.parent);
+      if (parent) {
+        ctx.beginPath();
+        ctx.moveTo(cls.x + cls.w / 2, cls.y);
+        ctx.lineTo(parent.x + parent.w / 2, parent.y + parent.h);
+        ctx.strokeStyle = '#4a4a6a'; ctx.lineWidth = 2;
+        ctx.stroke();
+        const tipX = parent.x + parent.w / 2, tipY = parent.y + parent.h;
+        ctx.beginPath();
+        ctx.moveTo(tipX, tipY + 8);
+        ctx.lineTo(tipX - 8, tipY);
+        ctx.lineTo(tipX + 8, tipY);
+        ctx.closePath();
+        ctx.fillStyle = '#16213e'; ctx.fill();
+        ctx.strokeStyle = '#4a4a6a'; ctx.lineWidth = 2; ctx.stroke();
+      }
+    }
+  }
+
+  // Draw board → piece connection (composition)
+  const boardCls = classes.find(c => c.id === 'board');
+  const pieceCls = classes.find(c => c.id === 'piece');
+  if (boardCls && pieceCls) {
+    ctx.beginPath();
+    ctx.moveTo(boardCls.x, boardCls.y + boardCls.h * 0.5);
+    ctx.lineTo(pieceCls.x + pieceCls.w, pieceCls.y + pieceCls.h * 0.3);
+    ctx.strokeStyle = '#666'; ctx.lineWidth = 1; ctx.setLineDash([4,3]); ctx.stroke();
+    ctx.setLineDash([]);
+    // Diamond
+    const dx = boardCls.x, dy = boardCls.y + boardCls.h * 0.5;
+    ctx.fillStyle = '#666'; ctx.beginPath();
+    ctx.moveTo(dx, dy-5); ctx.lineTo(dx-5, dy); ctx.lineTo(dx, dy+5); ctx.lineTo(dx+5, dy);
+    ctx.closePath(); ctx.fill();
+  }
+
+  // Draw Game → Board composition
+  const gameCls = classes.find(c => c.id === 'game');
+  if (gameCls && boardCls) {
+    ctx.beginPath();
+    ctx.moveTo(gameCls.x, gameCls.y + gameCls.h * 0.4);
+    ctx.lineTo(boardCls.x + boardCls.w, boardCls.y + boardCls.h * 0.3);
+    ctx.strokeStyle = '#666'; ctx.lineWidth = 1; ctx.setLineDash([4,3]); ctx.stroke();
+    ctx.setLineDash([]);
+  }
+
+  // Draw classes
+  for (const cls of classes) drawClass(cls);
+
+  // Legend label
+  ctx.fillStyle = '#4a4a6a'; ctx.font = '10px -apple-system, sans-serif';
+  ctx.textAlign = 'left'; ctx.textBaseline = 'bottom';
+  ctx.fillText('UML Class Diagram — Chess LLD', 10, H - 6);
+}
+
+// RoundRect polyfill for canvas
+if (!CanvasRenderingContext2D.prototype.roundRect) {
+  CanvasRenderingContext2D.prototype.roundRect = function(x, y, w, h, r1, r2, r3, r4) {
+    const t = { tl: r1 || 0, tr: r2 || r1 || 0, br: r3 || r1 || 0, bl: r4 || r1 || 0 };
+    this.moveTo(x + t.tl, y);
+    this.lineTo(x + w - t.tr, y);
+    this.quadraticCurveTo(x + w, y, x + w, y + t.tr);
+    this.lineTo(x + w, y + h - t.br);
+    this.quadraticCurveTo(x + w, y + h, x + w - t.br, y + h);
+    this.lineTo(x + t.bl, y + h);
+    this.quadraticCurveTo(x, y + h, x, y + h - t.bl);
+    this.lineTo(x, y + t.tl);
+    this.quadraticCurveTo(x, y, x + t.tl, y);
+    this.closePath();
+  };
+}
+
+// Click handling  
+canvas.addEventListener('click', e => {
+  const rect = canvas.getBoundingClientRect();
+  const x = (e.clientX - rect.left) * (W / rect.width);
+  const y = (e.clientY - rect.top) * (H / rect.height);
+
+  for (const cls of classes) {
+    if (x >= cls.x && x <= cls.x + cls.w && y >= cls.y && y <= cls.y + cls.h) {
+      document.getElementById('codeBox').innerHTML = cls.code.replace(/\n/g, '<br>').replace(/(abstract|class|extends|void|boolean|int|List|Piece|Color|Position|Move|enum|static|final)/g, '<span class="kw">$1</span>').replace(/\/\/.*/g, m => '<span class="comment">' + m + '</span>').replace(/(\{|\})/g, '<span class="hl">$1</span>');
+      return;
+    }
+  }
+});
+
+// Init
+draw();
+document.getElementById('codeBox').innerHTML = '<span class="comment">// Click a class in the diagram above to see its Java code</span>';
+</script>
+</body>
+</html>

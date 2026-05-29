@@ -124,5 +124,6 @@ Most teams do lightweight async review (GitHub PRs). Save formal inspections for
 ## Visualization
 
 - [PR Pipeline Animation](pr-flow-viz.html) — step through the code review lifecycle from submit to merge
+- [PR Size Analyzer](pr-size-viz.html) — drag to see estimated review time and split recommendations
 
 **Related**: [Testing Guide](/19-testing/README.md) · [Software Architecture](/17-software-architecture/README.md) · [Git Internals](/25-software-engineering/01-git-internals.md)

@@ -543,8 +543,9 @@ const UserProfile = ({ userId }) => {
 - [ ] Separate server state (TanStack Query) from client state (Redux/Zustand)
 - [ ] Slice store by domain (user, cart, UI, etc.) — avoid monolithic reducer
 - [ ] Use React.memo + Redux to prevent unnecessary child re-renders
-- [ ] Profile with React DevTools Profiler before optimizing
+- [ ] Profile with React DevTools Profiler before optimizing (see [React Fiber](../../02-react-internals/02-fiber-reconciliation-engine.md) for render phases)
 - [ ] For Zustand, use `subscribe` for non-React consumers (services, workers)
+- [ ] Avoid store state for frequently-changing values (see [Advanced Form Patterns](../../08-forms/02-advanced-form-patterns.md) for form state management)
 
 ---
 

@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PR Size Analyzer — Code Review Estimator</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: #1a1a2e; color: #e0e0e0; min-height: 100vh;
+  display: flex; justify-content: center; align-items: center; padding: 20px;
+}
+.back-link { position: fixed; top: 16px; left: 20px; z-index: 100; }
+.back-link a { color: #8e9ef0; text-decoration: none; font-size: 14px; }
+.back-link a:hover { text-decoration: underline; }
+.container { display: flex; flex-direction: column; align-items: center; gap: 16px; width: 100%; max-width: 640px; }
+h1 { font-size: 22px; font-weight: 600; text-align: center; }
+h1 small { display: block; font-size: 12px; font-weight: 400; color: #888; margin-top: 2px; }
+.slider-card {
+  width: 100%; background: #16213e; border-radius: 12px; padding: 24px 28px;
+  display: flex; flex-direction: column; gap: 20px;
+}
+.slider-row { display: flex; flex-direction: column; gap: 6px; }
+.slider-row .top { display: flex; justify-content: space-between; }
+.slider-row .top label { font-size: 13px; color: #ccc; }
+.slider-row .top .val { font-size: 20px; font-weight: 700; color: #f1c40f; }
+.slider-row .sub { font-size: 11px; color: #666; }
+input[type=range] { width: 100%; accent-color: #4a6fa5; height: 6px; }
+.result-card {
+  width: 100%; background: #1a2a3e; border: 2px solid #4a6fa5; border-radius: 12px;
+  padding: 20px 24px; display: flex; flex-direction: column; gap: 12px;
+}
+.result-card .category {
+  font-size: 14px; font-weight: 600; padding: 4px 12px; border-radius: 6px;
+  text-align: center; text-transform: uppercase; letter-spacing: 1px;
+}
+.result-card .cat-small { background: #2ecc7133; color: #2ecc71; border: 1px solid #2ecc7144; }
+.result-card .cat-medium { background: #f1c40f33; color: #f1c40f; border: 1px solid #f1c40f44; }
+.result-card .cat-large { background: #e67e2233; color: #e67e22; border: 1px solid #e67e2244; }
+.result-card .cat-xlarge { background: #e74c3c33; color: #e74c3c; border: 1px solid #e74c3c44; }
+.result-card .detail { font-size: 13px; color: #aaa; line-height: 1.7; }
+.result-card .detail .hl { color: #f1c40f; }
+.result-card .detail .green { color: #2ecc71; }
+.result-card .detail .red { color: #e74c3c; }
+.guidelines { width: 100%; }
+.guidelines table { width: 100%; border-collapse: collapse; font-size: 12px; }
+.guidelines th, .guidelines td { padding: 6px 10px; text-align: center; border-bottom: 1px solid #2a2a4a; }
+.guidelines th { color: #888; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px; font-size: 10px; }
+.guidelines td { color: #ccc; }
+.presets { display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; }
+.presets .btn {
+  background: #2a2a4a; color: #e0e0e0; border: 1px solid #444; padding: 5px 12px;
+  border-radius: 6px; cursor: pointer; font-size: 11px; transition: all 0.2s;
+}
+.presets .btn:hover { background: #3a3a5a; }
+</style>
+</head>
+<body>
+<div class="back-link">← <a href="02-code-review.md">Back to Code Review Guide</a></div>
+<div class="container">
+  <h1>📏 PR Size Analyzer <small>Drag the slider — see review time + guidance</small></h1>
+  <div class="presets">
+    <button class="btn" data-lines="30">Typo fix (30)</button>
+    <button class="btn" data-lines="80">Small feature (80)</button>
+    <button class="btn" data-lines="200">Medium feature (200)</button>
+    <button class="btn" data-lines="500">Large refactor (500)</button>
+    <button class="btn" data-lines="1200">Monster PR (1200)</button>
+  </div>
+  <div class="slider-card">
+    <div class="slider-row">
+      <div class="top">
+        <label>Lines Changed</label>
+        <span class="val" id="linesVal">150</span>
+      </div>
+      <input type="range" id="linesSlider" min="1" max="2000" value="150">
+      <div class="sub">Including additions + deletions</div>
+    </div>
+    <div class="slider-row">
+      <div class="top">
+        <label>Files Changed</label>
+        <span class="val" id="filesVal">4</span>
+      </div>
+      <input type="range" id="filesSlider" min="1" max="50" value="4">
+      <div class="sub">Number of files in the PR</div>
+    </div>
+  </div>
+  <div class="result-card" id="resultCard">
+    <div class="category cat-medium" id="categoryBadge">MEDIUM</div>
+    <div class="detail" id="detailText">
+      <span class="hl">150 lines</span> across <span class="hl">4 files</span>.
+      Estimated review time: <span class="hl">20-40 min</span>.
+    </div>
+    <div class="detail" id="adviceText">
+      <span class="green">✓</span> Reasonable size. Review focuses on correctness and design.
+    </div>
+  </div>
+  <div class="guidelines">
+    <table>
+      <tr><th>Size</th><th>Lines</th><th>Review Time</th><th>Notes</th></tr>
+      <tr><td style="color:#2ecc71">Small</td><td>&lt; 100</td><td>10-15 min</td><td>Ideal; single concern</td></tr>
+      <tr><td style="color:#f1c40f">Medium</td><td>100-300</td><td>20-40 min</td><td>Reasonable</td></tr>
+      <tr><td style="color:#e67e22">Large</td><td>300-800</td><td>60+ min</td><td>Warn reviewer; split if possible</td></tr>
+      <tr><td style="color:#e74c3c">X-Large</td><td>800+</td><td>Too large</td><td>Split into multiple PRs</td></tr>
+    </table>
+  </div>
+</div>
+<script>
+const linesSlider = document.getElementById('linesSlider');
+const filesSlider = document.getElementById('filesSlider');
+const linesVal = document.getElementById('linesVal');
+const filesVal = document.getElementById('filesVal');
+const categoryBadge = document.getElementById('categoryBadge');
+const detailText = document.getElementById('detailText');
+const adviceText = document.getElementById('adviceText');
+
+function compute() {
+  const lines = parseInt(linesSlider.value);
+  const files = parseInt(filesSlider.value);
+  linesVal.textContent = lines;
+  filesVal.textContent = files;
+
+  let cat, catClass, time, advice;
+  if (lines < 100) {
+    cat = 'SMALL';
+    catClass = 'cat-small';
+    time = '10-15 min';
+    advice = '✓ Ideal size. Single concern — fast, thorough review possible.';
+  } else if (lines < 300) {
+    cat = 'MEDIUM';
+    catClass = 'cat-medium';
+    time = '20-40 min';
+    advice = '✓ Reasonable size. Review focuses on correctness and design.';
+  } else if (lines < 800) {
+    cat = 'LARGE';
+    catClass = 'cat-large';
+    time = '60+ min';
+    advice = '⚠ Large PR. Consider splitting into smaller logical chunks. Warn your reviewer.';
+  } else {
+    cat = 'X-LARGE';
+    catClass = 'cat-xlarge';
+    time = 'Too large!';
+    advice = '✕ Split this PR! A 2000-line PR gets a glance, not a review. Aim for &lt;300 lines.';
+  }
+
+  if (files > 15 && lines > 200) {
+    advice += ' Also, ' + files + ' files is a lot — review fatigue sets in after 10 files.';
+  }
+
+  categoryBadge.textContent = cat;
+  categoryBadge.className = 'category ' + catClass;
+  detailText.innerHTML = `<span class="hl">${lines} lines</span> across <span class="hl">${files} ${files === 1 ? 'file' : 'files'}</span>. Estimated review time: <span class="hl">${time}</span>.`;
+  adviceText.innerHTML = advice;
+}
+
+linesSlider.addEventListener('input', compute);
+filesSlider.addEventListener('input', compute);
+
+document.querySelectorAll('[data-lines]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    linesSlider.value = parseInt(btn.dataset.lines);
+    filesSlider.value = Math.max(1, Math.round(parseInt(btn.dataset.lines) / 40));
+    compute();
+  });
+});
+
+// Init
+compute();
+</script>
+</body>
+</html>

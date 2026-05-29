@@ -185,6 +185,10 @@ function TabsContent({ value, children }) {
 Tabs.List = TabsList;
 Tabs.Trigger = TabsTrigger;
 Tabs.Content = TabsContent;
+
+// Note: This pattern uses Context for state sharing (see [Redux/Zustand Patterns](../../05-state-management/02-redux-zustand-patterns.md)
+// for comparison when compound components need global state or [React Fiber](../../02-react-internals/02-fiber-reconciliation-engine.md) for
+// understanding how context changes trigger re-renders).
 ```
 
 ---

@@ -4,6 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Knowledge Universe</title>
+<meta name="description" content="Engineering Knowledge Universe — explore topics in depth with layered content, diagrams, and full-text search">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
@@ -146,6 +148,19 @@
     .content-body.loading { opacity:1; transform:none; }
   }
 
+  /* ─── Offline indicator ─── */
+  body.offline .content-body::after {
+    content:'⚠️ Offline — some features may be unavailable';
+    position:fixed;bottom:56px;left:50%;transform:translateX(-50%);
+    background:var(--yellow-bg);color:var(--yellow);
+    border:1px solid var(--yellow);padding:6px 16px;
+    border-radius:20px;font-size:11px;font-weight:600;
+    z-index:250;white-space:nowrap;pointer-events:none;
+  }
+  @media(max-width:900px){
+    body.offline .content-body::after { bottom:60px; font-size:10px; padding:4px 12px; }
+  }
+
   /* ─── Content scroll-triggered fade ─── */
   .content-fade-in {
     opacity:0;transform:translateY(12px);
@@ -180,8 +195,8 @@
   </div>
 
   <!-- Content -->
-  <div class="content">
-    <div class="scroll-progress" id="scrollProgress"><div class="fill" id="scrollFill"></div></div>
+  <div class="content" role="main">
+    <div class="scroll-progress" id="scrollProgress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-label="Reading progress"><div class="fill" id="scrollFill"></div></div>
     <div class="content-header">
       <div class="header-left">
         <div class="domain-row" id="domainRow" style="display:none">
@@ -196,76 +211,83 @@
         </div>
       </div>
       <div class="header-right">
-        <div class="file-stats" id="fileStats" style="display:none">
+        <div class="file-stats" id="fileStats" style="display:none" aria-label="File statistics">
           <span class="stat">📝 <span id="wordCount">0</span> words</span>
           <span class="stat">⏱ <span id="readingTime">0</span> min</span>
           <span class="stat">📑 <span id="sectionCount">0</span> sections</span>
         </div>
-        <div class="header-controls">
-          <button class="control-btn" id="zoomOut" title="Decrease font size">A−</button>
-          <button class="control-btn" id="zoomReset" title="Reset font size">A</button>
-          <button class="control-btn" id="zoomIn" title="Increase font size">A+</button>
-          <button class="control-btn" id="themeBtn" title="Toggle theme">🌓</button>
-          <button class="control-btn" id="ftsBtn" title="Search all files">🔍</button>
-          <button class="control-btn" id="fullscreenBtn" title="Fullscreen reading">⛶</button>
+        <div class="header-controls" role="toolbar" aria-label="Content controls">
+          <button class="control-btn" id="zoomOut" title="Decrease font size" aria-label="Decrease font size">A−</button>
+          <button class="control-btn" id="zoomReset" title="Reset font size" aria-label="Reset font size">A</button>
+          <button class="control-btn" id="zoomIn" title="Increase font size" aria-label="Increase font size">A+</button>
+          <button class="control-btn" id="themeBtn" title="Toggle theme" aria-label="Toggle color theme">🌓</button>
+          <button class="control-btn" id="ftsBtn" title="Search all files" aria-label="Search all files">🔍</button>
+          <button class="control-btn" id="fullscreenBtn" title="Fullscreen reading" aria-label="Toggle fullscreen">⛶</button>
         </div>
       </div>
     </div>
     <div class="toggles-row" id="togglesRow" style="display:none;padding:8px 28px;border-bottom:1px solid var(--border)">
-      <span class="toggles-label">Focus:</span>
-      <div class="layer-toggles" id="layerToggles">
-        <button class="layer-btn l1 on" data-layer="1"><span>L1 · Beginner</span></button>
-        <button class="layer-btn l2 on" data-layer="2"><span>L2 · Intermediate</span></button>
-        <button class="layer-btn l3 on" data-layer="3"><span>L3 · Advanced</span></button>
-        <button class="layer-btn l4 on" data-layer="4"><span>L4 · Production</span></button>
-        <button class="layer-btn l5 on" data-layer="5"><span>L5 · Staff</span></button>
+      <span class="toggles-label" id="layerLabel">Focus:</span>
+      <div class="layer-toggles" id="layerToggles" role="radiogroup" aria-labelledby="layerLabel">
+        <button class="layer-btn l1 on" data-layer="1" role="radio" aria-checked="true" aria-label="Layer 1 Beginner"><span>L1 · Beginner</span></button>
+        <button class="layer-btn l2 on" data-layer="2" role="radio" aria-checked="true" aria-label="Layer 2 Intermediate"><span>L2 · Intermediate</span></button>
+        <button class="layer-btn l3 on" data-layer="3" role="radio" aria-checked="true" aria-label="Layer 3 Advanced"><span>L3 · Advanced</span></button>
+        <button class="layer-btn l4 on" data-layer="4" role="radio" aria-checked="true" aria-label="Layer 4 Production"><span>L4 · Production</span></button>
+        <button class="layer-btn l5 on" data-layer="5" role="radio" aria-checked="true" aria-label="Layer 5 Staff"><span>L5 · Staff</span></button>
       </div>
     </div>
-    <div id="start" class="start-screen">
+    <div id="start" class="start-screen" role="region" aria-label="Home">
       <div class="start-screen-header">
         <div class="big-icon">📚</div>
         <h1>Engineering Knowledge Universe</h1>
         <p>Explore topics in depth</p>
       </div>
-      <div class="topics-grid" id="topicsGrid"></div>
+      <div class="topics-grid" id="topicsGrid" role="list" aria-label="Topics"></div>
     </div>
     <div id="fileView" style="display:none;flex:1;overflow:hidden;flex-direction:column;">
-      <div class="inpage-search" id="inpageSearch">
-        <input type="text" id="inpageSearchInput" placeholder="Find in page..." autocomplete="off">
-        <span class="match-count" id="inpageMatchCount"></span>
-        <button class="nav-btn" id="inpagePrev">▲</button>
-        <button class="nav-btn" id="inpageNext">▼</button>
-        <button class="close-ips" id="inpageClose">✕</button>
+      <div class="inpage-search" id="inpageSearch" role="search" aria-label="Find in page">
+        <input type="text" id="inpageSearchInput" placeholder="Find in page..." autocomplete="off" aria-label="Find in page">
+        <span class="match-count" id="inpageMatchCount" role="status" aria-live="polite"></span>
+        <button class="nav-btn" id="inpagePrev" aria-label="Previous match">▲</button>
+        <button class="nav-btn" id="inpageNext" aria-label="Next match">▼</button>
+        <button class="close-ips" id="inpageClose" aria-label="Close find in page">✕</button>
       </div>
-      <div class="content-body md" id="fileContent"></div>
+      <div class="content-body md" id="fileContent" tabindex="-1"></div>
     </div>
   </div>
 
   <div class="toc-sidebar" id="tocSidebar"></div>
-  <div class="lightbox" id="lightbox">
-    <button class="lb-close" data-action="closeLightbox">✕</button>
+  <div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Image preview">
+    <button class="lb-close" data-action="closeLightbox" aria-label="Close image preview">✕</button>
     <img id="lightboxImg" src="" alt="">
   </div>
-  <div class="diagram-fullscreen" id="diagramFullscreen">
-    <button class="close-btn" data-action="closeDiagramFullscreen">✕</button>
+  <div class="diagram-fullscreen" id="diagramFullscreen" role="dialog" aria-modal="true" aria-label="Diagram fullscreen">
+    <button class="close-btn" data-action="closeDiagramFullscreen" aria-label="Close diagram">✕</button>
     <div class="fs-content" id="fsContent"></div>
   </div>
   <div class="floating-controls">
-    <button class="floating-btn" id="backTopBtn" title="Back to top">↑</button>
-    <button class="floating-btn" id="kbToggle" title="Keyboard shortcuts">⌘</button>
+    <button class="floating-btn" id="backTopBtn" title="Back to top" aria-label="Scroll to top">↑</button>
+    <button class="floating-btn" id="kbToggle" title="Keyboard shortcuts" aria-label="Toggle keyboard shortcuts">⌘</button>
+  </div>
+  <div class="bottom-nav" id="bottomNav" role="navigation" aria-label="Mobile navigation">
+    <button class="bottom-nav-btn" id="mobileHome" aria-label="Home"><span class="nav-icon">🏠</span>Home</button>
+    <button class="bottom-nav-btn" id="mobileSearch" aria-label="Search"><span class="nav-icon">🔍</span>Search</button>
+    <button class="bottom-nav-btn" id="mobileToc" aria-label="Table of contents"><span class="nav-icon">📋</span>TOC</button>
+    <button class="bottom-nav-btn" id="mobileTheme" aria-label="Toggle theme"><span class="nav-icon">🌓</span>Theme</button>
+    <button class="bottom-nav-btn" id="mobileSidebar" aria-label="Toggle sidebar"><span class="nav-icon">☰</span>Files</button>
   </div>
   <div class="float-toc" id="floatToc"><div class="float-toc-label">On this page</div></div>
-  <div class="search-overlay" id="searchOverlay">
+  <div class="search-overlay" id="searchOverlay" role="dialog" aria-modal="true" aria-label="Search all files">
     <div class="search-panel">
       <div class="search-panel-header">
-        <input type="text" id="ftsInput" placeholder="Search all files..." autocomplete="off">
-        <button class="close-so" id="ftsClose">✕</button>
+        <input type="text" id="ftsInput" placeholder="Search all files..." autocomplete="off" aria-label="Search query">
+        <button class="close-so" id="ftsClose" aria-label="Close search">✕</button>
       </div>
-      <div class="search-panel-body" id="ftsResults"></div>
+      <div class="search-panel-body" id="ftsResults" role="listbox" aria-label="Search results"></div>
     </div>
   </div>
   <div class="page-transition" id="pageTransition"></div>
-  <div class="kb-panel" id="kbPanel">
+  <div class="kb-panel" id="kbPanel" role="dialog" aria-label="Keyboard shortcuts">
     <h3>Keyboard Shortcuts</h3>
     <div class="kb-row"><span class="desc">Search files</span><span class="key">⌘K</span></div>
     <div class="kb-row"><span class="desc">Find in page</span><span class="key">⌘F</span></div>
@@ -289,6 +311,9 @@ const CONFIG = {
   zoomStep: 0.1,
   zoomMin: 0.8,
   zoomMax: 1.5,
+  fetchTimeout: 15000,
+  cacheTTL: 60000,
+  retryMax: 2,
 };
 
 const STATE = {
@@ -305,7 +330,98 @@ const STATE = {
   isFullscreen: false,
   searchIndex: null,
   searchIndexTime: 0,
+  contentCache: {},
+  abortController: null,
+  isOnline: navigator.onLine,
+  observer: null,
 };
+
+// ─── Enhanced Fetch with AbortController, Timeout & Retry ───
+async function fetchWithRetry(url, options = {}) {
+  const { timeout = CONFIG.fetchTimeout, retries = CONFIG.retryMax } = options;
+  let lastErr;
+  for (let attempt = 0; attempt <= retries; attempt++) {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), timeout);
+    try {
+      const r = await fetch(url, { ...options, signal: controller.signal });
+      clearTimeout(timer);
+      if (!r.ok) throw new Error(`HTTP ${r.status}`);
+      return r;
+    } catch (e) {
+      clearTimeout(timer);
+      lastErr = e;
+      if (e.name === 'AbortError') break;
+      if (attempt < retries) await new Promise(r => setTimeout(r, 500 * (attempt + 1)));
+    }
+  }
+  throw lastErr || new Error('Fetch failed');
+}
+
+// ─── Content Cache ───
+function getCachedContent(path) {
+  const entry = STATE.contentCache[path];
+  if (entry && Date.now() - entry.time < CONFIG.cacheTTL) return entry.data;
+  return null;
+}
+
+function setCachedContent(path, data) {
+  STATE.contentCache[path] = { data, time: Date.now() };
+}
+
+// ─── Safe localStorage ───
+function safeLocalGet(key, fallback = null) {
+  try { return localStorage.getItem(key); } catch { return fallback; }
+}
+
+function safeLocalSet(key, val) {
+  try { localStorage.setItem(key, val); return true; } catch { return false; }
+}
+
+function safeLocalRemove(key) {
+  try { localStorage.removeItem(key); } catch { /* noop */ }
+}
+
+// ─── Skeleton Loading ───
+function showSkeleton(container) {
+  const lines = Array.from({ length: 5 }, (_, i) =>
+    `<div class="skeleton skeleton-line"></div>`
+  ).join('');
+  container.innerHTML = `<div class="skeleton skeleton-heading"></div>${lines}`;
+}
+
+// ─── Network Status ───
+function setupNetworkMonitor() {
+  window.addEventListener('online', () => {
+    STATE.isOnline = true;
+    document.body.classList.remove('offline');
+  });
+  window.addEventListener('offline', () => {
+    STATE.isOnline = false;
+    document.body.classList.add('offline');
+  });
+}
+
+// ─── Content Fade Observer ───
+function observeContentFade(container) {
+  if (window.matchMedia('(prefers-reduced-motion:reduce)').matches) return;
+  if (STATE.observer) STATE.observer.disconnect();
+  STATE.observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        STATE.observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.05, rootMargin: '0px 0px -40px 0px' });
+
+  container.querySelectorAll('p, h2, h3, h4, pre, blockquote, ul, ol, table, img, .diagram-container').forEach(el => {
+    if (!el.closest('.mermaid-wrap, pre') && !el.closest('.html-live-block')) {
+      el.classList.add('content-fade-in');
+      STATE.observer.observe(el);
+    }
+  });
+}
 
 const DOMAIN_ICONS = {
   'ai-ml':'🤖','backend':'⚙️','cloud':'☁️','kubernetes':'☸️','databases':'🗄️',
@@ -322,6 +438,7 @@ document.addEventListener('DOMContentLoaded', init);
 
 async function init() {
   loadPersistentState();
+  setupNetworkMonitor();
   attachEventDelegation();
   mermaid.initialize({
     startOnLoad: false,
@@ -348,12 +465,22 @@ async function init() {
     });
   });
 
+  // Image lazy load fade-in
+  document.addEventListener('load', (e) => {
+    if (e.target.tagName === 'IMG') e.target.classList.add('loaded');
+  }, true);
+
   await loadTree();
   renderTree();
   renderTopics();
   renderRecentFiles();
   attachTreeEvents();
   attachNavigationEvents();
+  setupMobileNav();
+  setupKeyboardTreeNav();
+  setupFocusManagement();
+  setupLayerKeyboardNav();
+  setupImageErrorHandler();
 }
 
 function attachNavigationEvents() {
@@ -377,7 +504,7 @@ function attachNavigationEvents() {
 
 // ─── State Persistence ───
 function loadPersistentState() {
-  const stored = localStorage.getItem('kb-state');
+  const stored = safeLocalGet('kb-state');
   if (stored) {
     try {
       const data = JSON.parse(stored);
@@ -387,6 +514,7 @@ function loadPersistentState() {
       STATE.activeLayers = new Set(data.activeLayers || ['1', '2', '3', '4', '5']);
     } catch (e) {
       console.error('Failed to load state:', e);
+      safeLocalRemove('kb-state');
     }
   }
 }
@@ -398,7 +526,7 @@ function savePersistentState() {
     zoomLevel: STATE.zoomLevel,
     activeLayers: Array.from(STATE.activeLayers),
   };
-  localStorage.setItem('kb-state', JSON.stringify(data));
+  safeLocalSet('kb-state', JSON.stringify(data));
 }
 
 // ─── Event Delegation ───
@@ -697,7 +825,7 @@ async function loadFile(path) {
   document.getElementById('togglesRow').style.display = 'flex';
 
   STATE.currentPath = path;
-  localStorage.setItem('lastViewedFile', path);
+  safeLocalSet('lastViewedFile', path);
   addToRecentFiles(path);
 
   const name = path.split('/').pop().replace(/\.md$/, '');
@@ -729,25 +857,41 @@ async function loadFile(path) {
   }
 
   const body = document.getElementById('fileContent');
-  body.innerHTML = '<span class="loading" style="color:var(--fg3)">Loading...</span>';
+  showSkeleton(body);
+
+  // Check cache first
+  const cached = getCachedContent(path);
+  if (cached) {
+    STATE.currentContent = cached;
+    renderContent(body, STATE.currentContent);
+    buildTOC();
+    computeStats(body);
+    applyZoom();
+    return;
+  }
 
   // Strip leading / for API (server resolves relative to data/ root)
   const apiPath = path.replace(/^\//, '');
   try {
-    const r = await fetch(CONFIG.api + '/file?path=' + encodeURIComponent(apiPath));
+    const r = await fetchWithRetry(CONFIG.api + '/file?path=' + encodeURIComponent(apiPath));
     const d = await r.json();
     if (d.error) {
       body.innerHTML = `<p>Error: ${esc(d.error)}</p>`;
       return;
     }
     STATE.currentContent = d.content || '';
+    setCachedContent(path, STATE.currentContent);
     renderContent(body, STATE.currentContent);
     buildTOC();
     computeStats(body);
     applyZoom();
   } catch (e) {
     console.error('Failed to load file:', e);
-    body.innerHTML = '<p>Failed to load file</p>';
+    if (!STATE.isOnline) {
+      body.innerHTML = '<p style="color:var(--fg3);text-align:center;padding:40px">You appear to be offline. Check your connection and try again.</p>';
+    } else {
+      body.innerHTML = '<p style="color:var(--fg3);text-align:center;padding:40px">Failed to load file. <button class="control-btn" onclick="loadFile(\'' + esc(path) + '\')" style="margin-top:8px">Retry</button></p>';
+    }
   }
 }
 
@@ -785,6 +929,13 @@ document.addEventListener('DOMContentLoaded', () => {
     toggle.addEventListener('click', () => {
       list.classList.toggle('show');
       toggle.classList.toggle('open');
+      toggle.setAttribute('aria-expanded', list.classList.contains('show'));
+    });
+    toggle.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        toggle.click();
+      }
     });
   }
 });
@@ -1301,7 +1452,7 @@ ftsInput.addEventListener('keydown', (e) => {
 async function doFTS(q) {
   ftsResults.innerHTML = '<div class="search-status-text">Searching…</div>';
   try {
-    const r = await fetch(`/api/search?q=${encodeURIComponent(q)}`);
+    const r = await fetchWithRetry(`/api/search?q=${encodeURIComponent(q)}`, { timeout: 10000 });
     const d = await r.json();
     if (!d.results || d.results.length === 0) {
       ftsResults.innerHTML = '<div class="search-status-text">No results found</div>';
@@ -1623,6 +1774,184 @@ document.getElementById('zoomOut').addEventListener('click', () => changeZoom(-C
 document.getElementById('zoomReset').addEventListener('click', () => changeZoom(0));
 document.getElementById('zoomIn').addEventListener('click', () => changeZoom(CONFIG.zoomStep));
 document.getElementById('lightbox').addEventListener('click', closeLightbox);
+
+// ═══════════════════════════════════════════════════════════════
+// MOBILE BOTTOM NAV
+// ═══════════════════════════════════════════════════════════════
+
+function setupMobileNav() {
+  const nav = document.getElementById('bottomNav');
+  if (!nav) return;
+
+  document.getElementById('mobileHome')?.addEventListener('click', goHome);
+  document.getElementById('mobileSearch')?.addEventListener('click', () => {
+    if (STATE.currentPath) openInpageSearch();
+    else openSearchOverlay();
+  });
+  document.getElementById('mobileToc')?.addEventListener('click', () => {
+    const ftoc = document.getElementById('floatToc');
+    if (ftoc) ftoc.classList.toggle('show');
+    setTimeout(() => { if (ftoc) ftoc.classList.remove('show'); }, 3000);
+  });
+  document.getElementById('mobileTheme')?.addEventListener('click', () => {
+    document.getElementById('themeBtn').click();
+  });
+  document.getElementById('mobileSidebar')?.addEventListener('click', toggleSidebar);
+}
+
+// ═══════════════════════════════════════════════════════════════
+// KEYBOARD TREE NAVIGATION
+// ═══════════════════════════════════════════════════════════════
+
+function setupKeyboardTreeNav() {
+  const tree = document.getElementById('tree');
+  if (!tree) return;
+
+  tree.addEventListener('keydown', (e) => {
+    const items = Array.from(tree.querySelectorAll('.tree-item'));
+    const current = document.activeElement;
+    const idx = items.indexOf(current);
+    if (idx === -1) return;
+
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      const next = items[idx + 1];
+      if (next) { next.focus(); if (next.dataset.path) navigateTo(next.dataset.path); }
+    }
+    if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      const prev = items[idx - 1];
+      if (prev) { prev.focus(); if (prev.dataset.path) navigateTo(prev.dataset.path); }
+    }
+    if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
+      e.preventDefault();
+      const toggle = current.querySelector('.tree-toggle');
+      if (toggle) toggle.click();
+    }
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      if (current.dataset.path) navigateTo(current.dataset.path);
+    }
+  });
+}
+
+// ═══════════════════════════════════════════════════════════════
+// LAYER KEYBOARD NAVIGATION
+// ═══════════════════════════════════════════════════════════════
+
+function setupLayerKeyboardNav() {
+  const toggles = document.getElementById('layerToggles');
+  if (!toggles) return;
+
+  toggles.addEventListener('keydown', (e) => {
+    const btns = Array.from(toggles.querySelectorAll('.layer-btn'));
+    const cur = document.activeElement;
+    const idx = btns.indexOf(cur);
+    if (idx === -1) return;
+
+    if (e.key === 'ArrowRight') {
+      e.preventDefault();
+      const next = btns[(idx + 1) % btns.length];
+      next.focus();
+    }
+    if (e.key === 'ArrowLeft') {
+      e.preventDefault();
+      const prev = btns[(idx - 1 + btns.length) % btns.length];
+      prev.focus();
+    }
+    if (e.key === ' ' || e.key === 'Enter') {
+      e.preventDefault();
+      cur.click();
+    }
+  });
+}
+
+// ═══════════════════════════════════════════════════════════════
+// FOCUS MANAGEMENT FOR MODALS
+// ═══════════════════════════════════════════════════════════════
+
+function setupFocusManagement() {
+  const overlays = [
+    document.getElementById('searchOverlay'),
+    document.getElementById('lightbox'),
+    document.getElementById('diagramFullscreen'),
+    document.getElementById('kbPanel'),
+  ].filter(Boolean);
+
+  let currentTrap = null;
+
+  function makeHandler(container) {
+    return function(e) {
+      if (e.key !== 'Tab') return;
+      const focusable = container.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
+      if (!focusable.length) return;
+      const first = focusable[0], last = focusable[focusable.length - 1];
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault(); last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault(); first.focus();
+      }
+    };
+  }
+
+  function activate(el) {
+    const handler = makeHandler(el);
+    el.addEventListener('keydown', handler);
+    currentTrap = { el, handler };
+    const first = el.querySelector('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
+    if (first) first.focus();
+  }
+
+  function deactivate() {
+    if (currentTrap) {
+      currentTrap.el.removeEventListener('keydown', currentTrap.handler);
+      currentTrap = null;
+    }
+  }
+
+  const observer = new MutationObserver(() => {
+    deactivate();
+    for (const el of overlays) {
+      if (el.classList.contains('open') || el.classList.contains('show')) {
+        activate(el);
+        break;
+      }
+    }
+  });
+
+  overlays.forEach(el => observer.observe(el, { attributes: true, attributeFilter: ['class'] }));
+}
+
+// ═══════════════════════════════════════════════════════════════
+// IMAGE ERROR HANDLER
+// ═══════════════════════════════════════════════════════════════
+
+function setupImageErrorHandler() {
+  document.addEventListener('error', (e) => {
+    if (e.target.tagName === 'IMG') {
+      e.target.style.display = 'none';
+      const fallback = document.createElement('span');
+      fallback.textContent = '[Image failed to load]';
+      fallback.style.cssText = 'color:var(--fg3);font-size:13px;font-style:italic';
+      e.target.parentNode?.insertBefore(fallback, e.target.nextSibling);
+    }
+  }, true);
+}
+
+// ═══════════════════════════════════════════════════════════════
+// ENHANCED RENDER CONTENT WRAPPER
+// ═══════════════════════════════════════════════════════════════
+
+const origRenderContent = renderContent;
+renderContent = function(container, text) {
+  try {
+    origRenderContent(container, text);
+    observeContentFade(container);
+  } catch (e) {
+    console.error('Content render failed:', e);
+    container.innerHTML = '<p style="color:var(--fg3);text-align:center;padding:40px">Something went wrong rendering this file.</p>';
+  }
+};
 </script>
 </body>
 </html>

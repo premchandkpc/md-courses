@@ -1,5 +1,7 @@
 # 09: Performance Optimization — Deep Reference
 
+[🎨 Interactive Visualization](../../../../html/09-performance-optimization-viz.html)
+
 > **Scope**: Profiling, rendering optimization, bundle optimization, code splitting, lazy loading, virtualization, memoization, CWV, Lighthouse, perf budgets
 
 ---

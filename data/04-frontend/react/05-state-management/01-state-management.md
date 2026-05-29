@@ -1,5 +1,7 @@
 # 04: State Management — Deep Reference
 
+[🎨 Interactive Visualization](../../../../html/05-state-management-patterns-viz.html)
+
 > **Scope**: Local state, lifted state, Context API, useReducer, Redux, Zustand, Jotai, XState, URL state, server state (TanStack Query), state persistence, undo/redo, optimistic vs pessimistic updates.
 
 ---

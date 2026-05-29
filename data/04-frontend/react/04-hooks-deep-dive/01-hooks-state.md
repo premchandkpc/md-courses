@@ -1,5 +1,7 @@
 # 02: Hooks & State Management — Deep Reference
 
+[🎨 Interactive Visualization](../../../../html/04-hooks-dependency-graph-viz.html)
+
 > **Scope**: useState, useEffect, useRef, useMemo, useCallback, useContext, useReducer, useLayoutEffect, useImperativeHandle, useDebugValue, custom hooks, rules of hooks, closure traps, infinite loops, stale closures, context re-renders, useSyncExternalStore, useDeferredValue, useTransition, hook composition, hook testing.
 
 ---

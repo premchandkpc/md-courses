@@ -1,5 +1,7 @@
 # Bundlers
 
+[🎨 Interactive Visualization](../../../../html/24-bundlers-code-splitting-viz.html)
+
 ## Tree Shaking
 
 Tree shaking (dead code elimination) removes unused exports from the final bundle. Webpack and Rollup both perform tree shaking at the module boundary level.

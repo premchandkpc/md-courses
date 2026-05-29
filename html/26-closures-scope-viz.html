@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Closures & Scope Chain</title>
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: #0f172a; color: #e2e8f0; }
+    header { background: #1e293b; padding: 20px; border-bottom: 1px solid #334155; display: flex; justify-content: space-between; align-items: center; }
+    h1 { font-size: 24px; }
+    .back-link { color: #60a5fa; text-decoration: none; font-size: 14px; padding: 8px 12px; border: 1px solid #334155; border-radius: 4px; }
+    .back-link:hover { background: #334155; }
+    .container { display: flex; height: calc(100vh - 60px); }
+    #canvas { flex: 1; background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); overflow: auto; }
+    .controls { width: 300px; background: #1e293b; border-left: 1px solid #334155; padding: 20px; overflow-y: auto; }
+    .control-group { margin-bottom: 20px; }
+    .control-group label { display: block; font-size: 13px; text-transform: uppercase; color: #94a3b8; margin-bottom: 8px; font-weight: 600; }
+    button { background: #3b82f6; color: white; border: none; padding: 10px 16px; border-radius: 6px; cursor: pointer; font-size: 14px; width: 100%; margin-bottom: 8px; transition: all 0.2s; }
+    button:hover { background: #2563eb; }
+    button.active { background: #10b981; }
+    .status { background: #334155; padding: 12px; border-radius: 6px; font-size: 12px; font-family: monospace; margin: 10px 0; }
+    .info-text { font-size: 12px; color: #cbd5e1; line-height: 1.6; margin: 10px 0; }
+    svg { display: block; width: 100%; height: 100%; }
+    .scope-box { stroke-width: 2; rx: 4; }
+    .scope-text { fill: #e2e8f0; font-size: 12px; font-weight: 600; text-anchor: middle; }
+    .var-text { fill: #60a5fa; font-size: 11px; }
+    .legend { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 12px; margin-top: 15px; padding-top: 15px; border-top: 1px solid #334155; }
+    .legend-item { display: flex; align-items: center; gap: 8px; }
+    .legend-dot { width: 10px; height: 10px; border-radius: 50%; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>🎨 Closures & Scope Chain</h1>
+    <a href="../data/04-frontend/react/26-javascript-engine/01-javascript-engine.md" class="back-link">← Back to Docs</a>
+  </header>
+  <div class="container">
+    <div id="canvas"><svg></svg></div>
+    <div class="controls">
+      <div class="control-group">
+        <label>Example</label>
+        <button id="simple" onclick="app.setExample('simple')" class="active">Simple</button>
+        <button id="nested" onclick="app.setExample('nested')">Nested</button>
+        <button id="factory" onclick="app.setExample('factory')">Factory</button>
+      </div>
+      <div class="status">
+        <div>Scope Chain: <strong id="chain">Global → Function</strong></div>
+        <div>Captured: <strong id="captured">Yes</strong></div>
+      </div>
+      <div class="control-group">
+        <button onclick="app.showDetail()">Show Detail</button>
+        <button onclick="app.reset()">Reset</button>
+      </div>
+      <div class="info-text">
+        <strong>Closure:</strong> Function + reference to outer scope variables.
+      </div>
+      <div class="info-text">
+        <strong>Scope chain:</strong> Inner can access outer, but outer can't access inner.
+      </div>
+      <div class="info-text">
+        <strong>Memory:</strong> Closed-over variables kept in memory as long as function exists.
+      </div>
+      <div class="legend">
+        <div class="legend-item">
+          <div class="legend-dot" style="background: #3b82f6;"></div>
+          <span>Global Scope</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-dot" style="background: #60a5fa;"></div>
+          <span>Function Scope</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-dot" style="background: #fbbf24;"></div>
+          <span>Captured Var</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script>
+    const app = {
+      state: { example: 'simple', showDetail: false },
+      init() { this.svg = d3.select('svg'); this.render(); },
+      setExample(e) { this.state.example = e; this.state.showDetail = false; document.querySelectorAll('.control-group:first-child button').forEach(b => b.classList.remove('active')); document.getElementById(e).classList.add('active'); this.render(); },
+      showDetail() { this.state.showDetail = !this.state.showDetail; this.render(); },
+      reset() { this.state.showDetail = false; this.render(); },
+      render() {
+        const width = this.svg.node().parentElement.clientWidth;
+        const height = this.svg.node().parentElement.clientHeight;
+        this.svg.selectAll('*').remove();
+        const centerX = width / 2;
+
+        if (this.state.example === 'simple') {
+          // Global scope
+          this.svg.append('rect').attr('class', 'scope-box').attr('x', 50).attr('y', 50).attr('width', width - 100).attr('height', height - 100).attr('fill', 'rgba(59, 130, 246, 0.05)').attr('stroke', '#3b82f6');
+          this.svg.append('text').attr('x', 70).attr('y', 75).attr('class', 'scope-text').text('Global Scope').attr('text-anchor', 'start').attr('fill', '#3b82f6');
+
+          // Function scope
+          this.svg.append('rect').attr('class', 'scope-box').attr('x', 150).attr('y', 150).attr('width', width - 300).attr('height', 200).attr('fill', 'rgba(96, 165, 250, 0.05)').attr('stroke', '#60a5fa');
+          this.svg.append('text').attr('x', 170).attr('y', 175).attr('class', 'scope-text').text('Function Scope').attr('text-anchor', 'start').attr('fill', '#60a5fa');
+
+          // Variables
+          this.svg.append('text').attr('x', centerX).attr('y', 220).attr('class', 'var-text').text('x = 10');
+          this.svg.append('text').attr('x', centerX).attr('y', 250).attr('class', 'var-text').text('y = 20 (captured)').attr('fill', '#fbbf24');
+
+          // Inner function
+          this.svg.append('circle').attr('cx', centerX).attr('cy', 320).attr('r', 30).attr('fill', '#10b981');
+          this.svg.append('text').attr('x', centerX).attr('y', 328).attr('text-anchor', 'middle').attr('fill', '#e2e8f0').attr('font-size', '12px').text('Closure');
+
+          // Arrow showing closure access
+          this.svg.append('line').attr('x1', centerX).attr('y1', 290).attr('x2', centerX).attr('y2', 350).attr('stroke', '#fbbf24').attr('stroke-width', 2).attr('marker-end', 'url(#arrowhead)');
+        } else if (this.state.example === 'nested') {
+          // 3 levels of nesting
+          const scopes = [
+            { x: 50, y: 50, w: width - 100, h: height - 100, label: 'Global', color: '#3b82f6' },
+            { x: 120, y: 120, w: width - 240, h: height - 240, label: 'Outer', color: '#60a5fa' },
+            { x: 190, y: 190, w: width - 380, h: height - 380, label: 'Inner', color: '#10b981' }
+          ];
+          scopes.forEach(s => {
+            this.svg.append('rect').attr('class', 'scope-box').attr('x', s.x).attr('y', s.y).attr('width', s.w).attr('height', s.h).attr('fill', `rgba(96, 165, 250, 0.03)`).attr('stroke', s.color);
+            this.svg.append('text').attr('x', s.x + 20).attr('y', s.y + 30).attr('fill', s.color).attr('font-size', '12px').attr('font-weight', 'bold').text(s.label);
+          });
+          this.svg.append('text').attr('x', centerX).attr('y', 280).attr('text-anchor', 'middle').attr('fill', '#fbbf24').attr('font-size', '12px').text('Inner can access all outer scopes');
+        } else {
+          // Factory pattern
+          const factoryBox = { x: centerX - 100, y: 100, w: 200, h: 150 };
+          this.svg.append('rect').attr('class', 'scope-box').attr('x', factoryBox.x).attr('y', factoryBox.y).attr('width', factoryBox.w).attr('height', factoryBox.h).attr('fill', 'rgba(96, 165, 250, 0.1)').attr('stroke', '#60a5fa');
+          this.svg.append('text').attr('x', centerX).attr('y', 130).attr('text-anchor', 'middle').attr('fill', '#60a5fa').attr('font-size', '12px').attr('font-weight', 'bold').text('makeCounter()');
+          this.svg.append('text').attr('x', centerX).attr('y', 160).attr('text-anchor', 'middle').attr('fill', '#fbbf24').attr('font-size', '11px').text('count = 0');
+          this.svg.append('text').attr('x', centerX).attr('y', 180).attr('text-anchor', 'middle').attr('fill', '#fbbf24').attr('font-size', '11px').text('(captured)');
+
+          // Multiple closures
+          const closures = [
+            { x: centerX - 100, y: 320, label: 'c1()' },
+            { x: centerX, y: 320, label: 'c2()' },
+            { x: centerX + 100, y: 320, label: 'c3()' }
+          ];
+          closures.forEach(c => {
+            this.svg.append('circle').attr('cx', c.x).attr('cy', c.y).attr('r', 25).attr('fill', '#10b981');
+            this.svg.append('text').attr('x', c.x).attr('y', c.y + 5).attr('text-anchor', 'middle').attr('fill', '#e2e8f0').attr('font-size', '11px').text(c.label);
+            this.svg.append('line').attr('x1', centerX).attr('y1', 230).attr('x2', c.x).attr('y2', 295).attr('stroke', '#fbbf24').attr('stroke-width', 1).attr('stroke-dasharray', '3,3');
+          });
+          this.svg.append('text').attr('x', centerX).attr('y', height - 80).attr('text-anchor', 'middle').attr('fill', '#10b981').attr('font-size', '12px').text('Each closure has own access to captured variables');
+        }
+      }
+    };
+    window.addEventListener('load', () => app.init());
+  </script>
+</body>
+</html>

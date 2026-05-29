@@ -1,5 +1,7 @@
 # JavaScript Engine (V8)
 
+[🎨 Closures Visualization](../../../../html/26-closures-scope-viz.html) | [🎨 Modules Visualization](../../../../html/26-module-systems-resolution-viz.html)
+
 ## Overview
 
 V8 is Google's open-source JavaScript engine, written in C++, used in Chrome, Node.js, Deno, and Electron. React's runtime performance is fundamentally shaped by how V8 compiles and optimizes JavaScript code.

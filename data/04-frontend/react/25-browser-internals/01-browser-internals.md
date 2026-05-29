@@ -1,5 +1,7 @@
 # Browser Internals
 
+[🎨 Interactive Visualization](../../../../html/25-prototype-chain-viz.html)
+
 ## The Rendering Pipeline
 
 The browser converts HTML/CSS/JS into pixels through a sequence of stages:

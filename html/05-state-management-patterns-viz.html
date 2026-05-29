@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>State Management Patterns</title>
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: #0f172a; color: #e2e8f0; }
+    header { background: #1e293b; padding: 20px; border-bottom: 1px solid #334155; display: flex; justify-content: space-between; align-items: center; }
+    h1 { font-size: 24px; }
+    .back-link { color: #60a5fa; text-decoration: none; font-size: 14px; padding: 8px 12px; border: 1px solid #334155; border-radius: 4px; }
+    .back-link:hover { background: #334155; }
+    .container { display: flex; height: calc(100vh - 60px); }
+    #canvas { flex: 1; background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); overflow: auto; }
+    .controls { width: 300px; background: #1e293b; border-left: 1px solid #334155; padding: 20px; overflow-y: auto; }
+    .control-group { margin-bottom: 20px; }
+    .control-group label { display: block; font-size: 13px; text-transform: uppercase; color: #94a3b8; margin-bottom: 8px; font-weight: 600; }
+    button { background: #3b82f6; color: white; border: none; padding: 10px 16px; border-radius: 6px; cursor: pointer; font-size: 14px; width: 100%; margin-bottom: 8px; transition: all 0.2s; }
+    button:hover { background: #2563eb; }
+    button.active { background: #10b981; }
+    .status { background: #334155; padding: 12px; border-radius: 6px; font-size: 12px; font-family: monospace; margin: 10px 0; }
+    .info-text { font-size: 12px; color: #cbd5e1; line-height: 1.6; margin: 10px 0; }
+    svg { display: block; width: 100%; height: 100%; }
+    .state-box { fill: #334155; stroke: #64748b; stroke-width: 2; rx: 4; }
+    .state-text { fill: #e2e8f0; font-size: 12px; font-weight: 600; text-anchor: middle; }
+    .legend { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 12px; margin-top: 15px; padding-top: 15px; border-top: 1px solid #334155; }
+    .legend-item { display: flex; align-items: center; gap: 8px; }
+    .legend-dot { width: 10px; height: 10px; border-radius: 50%; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>🎨 State Management Patterns</h1>
+    <a href="../data/04-frontend/react/05-state-management/01-state-management.md" class="back-link">← Back to Docs</a>
+  </header>
+  <div class="container">
+    <div id="canvas"><svg></svg></div>
+    <div class="controls">
+      <div class="control-group">
+        <label>Pattern</label>
+        <button id="local" onclick="app.setPattern('local')" class="active">Local State</button>
+        <button id="context" onclick="app.setPattern('context')">Context API</button>
+        <button id="redux" onclick="app.setPattern('redux')">Redux/Zustand</button>
+      </div>
+      <div class="status">
+        <div>Pattern: <strong id="pattern">Local State</strong></div>
+        <div>Scope: <strong id="scope">Component</strong></div>
+        <div>Updates: <strong id="updates">Direct</strong></div>
+      </div>
+      <div class="control-group">
+        <label>Interaction</label>
+        <button onclick="app.updateState()">Update State</button>
+        <button onclick="app.reset()">Reset</button>
+      </div>
+      <div class="info-text">
+        <strong>Local:</strong> Simplest, isolated to component.
+      </div>
+      <div class="info-text">
+        <strong>Context:</strong> Share across tree, avoid prop drilling.
+      </div>
+      <div class="info-text">
+        <strong>Redux/Zustand:</strong> Global, predictable, best for complex apps.
+      </div>
+      <div class="legend">
+        <div class="legend-item">
+          <div class="legend-dot" style="background: #3b82f6;"></div>
+          <span>Component</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-dot" style="background: #60a5fa;"></div>
+          <span>State Container</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script>
+    const app = {
+      state: { pattern: 'local', updateCount: 0 },
+      init() { this.svg = d3.select('svg'); this.render(); },
+      setPattern(p) { this.state.pattern = p; this.state.updateCount = 0; document.querySelectorAll('.control-group:first-child button').forEach(b => b.classList.remove('active')); document.getElementById(p).classList.add('active'); this.updateStatus(); this.render(); },
+      updateState() { this.state.updateCount++; this.updateStatus(); this.render(); },
+      reset() { this.state.updateCount = 0; this.updateStatus(); this.render(); },
+      updateStatus() {
+        const info = {
+          local: { pattern: 'Local State', scope: 'Component', updates: 'Direct' },
+          context: { pattern: 'Context API', scope: 'Tree', updates: 'Via Provider' },
+          redux: { pattern: 'Redux/Zustand', scope: 'Global', updates: 'Via Dispatch' }
+        };
+        const curr = info[this.state.pattern];
+        document.getElementById('pattern').textContent = curr.pattern;
+        document.getElementById('scope').textContent = curr.scope;
+        document.getElementById('updates').textContent = curr.updates;
+      },
+      render() {
+        const width = this.svg.node().parentElement.clientWidth;
+        const height = this.svg.node().parentElement.clientHeight;
+        this.svg.selectAll('*').remove();
+        const centerX = width / 2;
+        const centerY = height / 2;
+
+        if (this.state.pattern === 'local') {
+          // Component with local state
+          const comp = { x: centerX, y: centerY, label: '<Component>' };
+          this.svg.append('rect').attr('class', 'state-box').attr('x', comp.x - 50).attr('y', comp.y - 25).attr('width', 100).attr('height', 50).attr('fill', '#3b82f6');
+          this.svg.append('text').attr('class', 'state-text').attr('x', comp.x).attr('y', comp.y - 5).text(comp.label);
+          this.svg.append('text').attr('text-anchor', 'middle').attr('x', comp.x).attr('y', comp.y + 20).attr('fill', '#60a5fa').attr('font-size', '11px').text(`count: ${this.state.updateCount}`);
+        } else if (this.state.pattern === 'context') {
+          // Provider with consumers
+          const provider = { x: centerX, y: centerY - 80, label: '<Provider>' };
+          this.svg.append('rect').attr('class', 'state-box').attr('x', provider.x - 60).attr('y', provider.y - 25).attr('width', 120).attr('height', 50).attr('fill', '#60a5fa');
+          this.svg.append('text').attr('class', 'state-text').attr('x', provider.x).attr('y', provider.y).text(provider.label);
+
+          const consumers = [
+            { x: centerX - 100, y: centerY + 80 },
+            { x: centerX, y: centerY + 80 },
+            { x: centerX + 100, y: centerY + 80 }
+          ];
+          consumers.forEach((c, i) => {
+            this.svg.append('line').attr('x1', provider.x).attr('y1', provider.y + 25).attr('x2', c.x).attr('y2', c.y - 25).attr('stroke', '#64748b').attr('stroke-width', 2);
+            this.svg.append('rect').attr('class', 'state-box').attr('x', c.x - 40).attr('y', c.y - 25).attr('width', 80).attr('height', 50).attr('fill', '#3b82f6');
+            this.svg.append('text').attr('class', 'state-text').attr('x', c.x).attr('y', c.y).text(`Consumer${i + 1}`);
+          });
+        } else {
+          // Global store
+          const store = { x: centerX, y: centerY - 80, label: 'Global Store' };
+          this.svg.append('rect').attr('class', 'state-box').attr('x', store.x - 60).attr('y', store.y - 25).attr('width', 120).attr('height', 50).attr('fill', '#ec4899');
+          this.svg.append('text').attr('class', 'state-text').attr('x', store.x).attr('y', store.y - 5).text(store.label);
+          this.svg.append('text').attr('text-anchor', 'middle').attr('x', store.x).attr('y', store.y + 20).attr('fill', '#fbbf24').attr('font-size', '11px').text(`state: ${this.state.updateCount}`);
+
+          const comps = [{ x: centerX - 80, y: centerY + 80 }, { x: centerX + 80, y: centerY + 80 }];
+          comps.forEach((c, i) => {
+            this.svg.append('line').attr('x1', store.x).attr('y1', store.y + 25).attr('x2', c.x).attr('y2', c.y - 25).attr('stroke', '#64748b').attr('stroke-width', 2).attr('marker-end', 'url(#arrowhead)');
+            this.svg.append('rect').attr('class', 'state-box').attr('x', c.x - 40).attr('y', c.y - 25).attr('width', 80).attr('height', 50).attr('fill', '#3b82f6');
+            this.svg.append('text').attr('class', 'state-text').attr('x', c.x).attr('y', c.y).text(`Comp${i + 1}`);
+          });
+        }
+      }
+    };
+    window.addEventListener('load', () => app.init());
+  </script>
+</body>
+</html>

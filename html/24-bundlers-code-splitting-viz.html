@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bundlers & Code Splitting</title>
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: #0f172a; color: #e2e8f0; }
+    header { background: #1e293b; padding: 20px; border-bottom: 1px solid #334155; display: flex; justify-content: space-between; align-items: center; }
+    h1 { font-size: 24px; }
+    .back-link { color: #60a5fa; text-decoration: none; font-size: 14px; padding: 8px 12px; border: 1px solid #334155; border-radius: 4px; }
+    .back-link:hover { background: #334155; }
+    .container { display: flex; height: calc(100vh - 60px); }
+    #canvas { flex: 1; background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); overflow: auto; }
+    .controls { width: 300px; background: #1e293b; border-left: 1px solid #334155; padding: 20px; overflow-y: auto; }
+    .control-group { margin-bottom: 20px; }
+    .control-group label { display: block; font-size: 13px; text-transform: uppercase; color: #94a3b8; margin-bottom: 8px; font-weight: 600; }
+    button { background: #3b82f6; color: white; border: none; padding: 10px 16px; border-radius: 6px; cursor: pointer; font-size: 14px; width: 100%; margin-bottom: 8px; transition: all 0.2s; }
+    button:hover { background: #2563eb; }
+    button.active { background: #10b981; }
+    .status { background: #334155; padding: 12px; border-radius: 6px; font-size: 12px; font-family: monospace; margin: 10px 0; line-height: 1.8; }
+    .info-text { font-size: 12px; color: #cbd5e1; line-height: 1.6; margin: 10px 0; }
+    svg { display: block; width: 100%; height: 100%; }
+    .bundle-box { stroke-width: 2; rx: 4; }
+    .bundle-text { fill: #e2e8f0; font-size: 12px; font-weight: 600; text-anchor: middle; }
+    .size-text { fill: #60a5fa; font-size: 11px; text-anchor: middle; }
+    .legend { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 12px; margin-top: 15px; padding-top: 15px; border-top: 1px solid #334155; }
+    .legend-item { display: flex; align-items: center; gap: 8px; }
+    .legend-dot { width: 10px; height: 10px; border-radius: 50%; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>🎨 Bundlers & Code Splitting</h1>
+    <a href="../data/04-frontend/react/24-bundlers/01-bundlers.md" class="back-link">← Back to Docs</a>
+  </header>
+  <div class="container">
+    <div id="canvas"><svg></svg></div>
+    <div class="controls">
+      <div class="control-group">
+        <label>Bundle Strategy</label>
+        <button id="monolithic" onclick="app.setStrategy('monolithic')" class="active">Monolithic</button>
+        <button id="split" onclick="app.setStrategy('split')">Code Split</button>
+        <button id="treeshake" onclick="app.setStrategy('treeshake')">Tree Shake</button>
+      </div>
+      <div class="status">
+        <div>Strategy: <strong id="strategy">Monolithic</strong></div>
+        <div>Bundle Size: <strong id="size">850KB</strong></div>
+        <div>Loaded: <strong id="loaded">Initial</strong></div>
+      </div>
+      <div class="control-group">
+        <label>Simulate</label>
+        <button onclick="app.loadChunk()">Load Route</button>
+        <button onclick="app.reset()">Reset</button>
+      </div>
+      <div class="info-text">
+        <strong>Monolithic:</strong> All code in one bundle, loaded upfront.
+      </div>
+      <div class="info-text">
+        <strong>Code split:</strong> Break into chunks, load on-demand.
+      </div>
+      <div class="info-text">
+        <strong>Tree shake:</strong> Remove unused code before bundling.
+      </div>
+      <div class="legend">
+        <div class="legend-item">
+          <div class="legend-dot" style="background: #3b82f6;"></div>
+          <span>Loaded</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-dot" style="background: #64748b;"></div>
+          <span>On-Demand</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-dot" style="background: #ef4444;"></div>
+          <span>Unused</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script>
+    const app = {
+      state: { strategy: 'monolithic', loadedChunks: [] },
+      init() { this.svg = d3.select('svg'); this.render(); },
+      setStrategy(s) { this.state.strategy = s; this.state.loadedChunks = []; document.querySelectorAll('.control-group:first-child button').forEach(b => b.classList.remove('active')); document.getElementById(s).classList.add('active'); this.updateStatus(); this.render(); },
+      loadChunk() { if (this.state.strategy !== 'monolithic' && !this.state.loadedChunks.includes('route1')) { this.state.loadedChunks.push('route1'); } this.updateStatus(); this.render(); },
+      reset() { this.state.loadedChunks = []; this.updateStatus(); this.render(); },
+      updateStatus() {
+        const info = {
+          monolithic: { name: 'Monolithic', size: '850KB', loaded: 'All upfront' },
+          split: { name: 'Code Split', size: '250KB', loaded: 'Initial: ' + (this.state.loadedChunks.length > 0 ? '350KB' : '250KB') },
+          treeshake: { name: 'Tree Shaken', size: '520KB', loaded: 'Unused removed' }
+        };
+        const curr = info[this.state.strategy];
+        document.getElementById('strategy').textContent = curr.name;
+        document.getElementById('size').textContent = curr.size;
+        document.getElementById('loaded').textContent = curr.loaded;
+      },
+      render() {
+        const width = this.svg.node().parentElement.clientWidth;
+        const height = this.svg.node().parentElement.clientHeight;
+        this.svg.selectAll('*').remove();
+        const centerX = width / 2;
+        const centerY = height / 2;
+
+        if (this.state.strategy === 'monolithic') {
+          const bundle = { x: centerX, y: centerY, size: 150 };
+          this.svg.append('rect').attr('class', 'bundle-box').attr('x', bundle.x - bundle.size).attr('y', bundle.y - bundle.size).attr('width', bundle.size * 2).attr('height', bundle.size * 2).attr('fill', '#3b82f6');
+          this.svg.append('text').attr('class', 'bundle-text').attr('x', bundle.x).attr('y', bundle.y - 20).text('Main Bundle');
+          this.svg.append('text').attr('class', 'size-text').attr('x', bundle.x).attr('y', bundle.y + 20).text('850KB');
+          this.svg.append('text').attr('text-anchor', 'middle').attr('x', centerX).attr('y', height - 50).attr('fill', '#fbbf24').attr('font-size', '12px').text('All code loaded upfront 📦');
+        } else if (this.state.strategy === 'split') {
+          const mainChunk = { x: centerX - 120, y: centerY - 80, size: 70 };
+          const chunk1 = { x: centerX, y: centerY - 80, size: 70 };
+          const chunk2 = { x: centerX + 120, y: centerY - 80, size: 70 };
+
+          const chunks = [mainChunk, chunk1, chunk2];
+          chunks.forEach((c, i) => {
+            const isLoaded = i === 0 || this.state.loadedChunks.includes('route1');
+            this.svg.append('rect').attr('class', 'bundle-box').attr('x', c.x - c.size).attr('y', c.y - c.size).attr('width', c.size * 2).attr('height', c.size * 2).attr('fill', isLoaded ? '#3b82f6' : '#64748b');
+            this.svg.append('text').attr('class', 'bundle-text').attr('x', c.x).attr('y', c.y - 10).text(i === 0 ? 'Main' : `Route${i}`);
+            this.svg.append('text').attr('class', 'size-text').attr('x', c.x).attr('y', c.y + 15).text('250KB');
+          });
+          this.svg.append('text').attr('text-anchor', 'middle').attr('x', centerX).attr('y', height - 50).attr('fill', '#10b981').attr('font-size', '12px').text('Load chunks on-demand 🚀');
+        } else {
+          const used = { x: centerX - 80, y: centerY, size: 100 };
+          const unused = { x: centerX + 80, y: centerY, size: 50 };
+          this.svg.append('rect').attr('class', 'bundle-box').attr('x', used.x - used.size).attr('y', used.y - used.size).attr('width', used.size * 2).attr('height', used.size * 2).attr('fill', '#3b82f6');
+          this.svg.append('text').attr('class', 'bundle-text').attr('x', used.x).attr('y', used.y).text('Used Code');
+          this.svg.append('text').attr('class', 'size-text').attr('x', used.x).attr('y', used.y + 40).text('520KB');
+
+          this.svg.append('rect').attr('class', 'bundle-box').attr('x', unused.x - unused.size).attr('y', unused.y - unused.size).attr('width', unused.size * 2).attr('height', unused.size * 2).attr('fill', '#ef4444').attr('opacity', 0.3);
+          this.svg.append('text').attr('class', 'bundle-text').attr('x', unused.x).attr('y', unused.y).attr('fill', '#ef4444').text('Removed');
+          this.svg.append('text').attr('class', 'size-text').attr('x', unused.x).attr('y', unused.y + 30).text('330KB');
+
+          this.svg.append('text').attr('text-anchor', 'middle').attr('x', centerX).attr('y', height - 50).attr('fill', '#10b981').attr('font-size', '12px').text('Dead code eliminated 🌳');
+        }
+      }
+    };
+    window.addEventListener('load', () => app.init());
+  </script>
+</body>
+</html>

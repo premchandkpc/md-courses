@@ -1,5 +1,7 @@
 # 03: Rendering & Performance — Deep Reference
 
+[🎨 Async/Await Visualization](../../../../html/03-async-await-execution-viz.html)
+
 > 🎮 **Interactive Simulators**: [VDOM Diff](/04-frontend/react/39-visual-simulations/vdom-diff.html) · [State Batching](/04-frontend/react/39-visual-simulations/state-batching.html) · [Re-render Tree](/04-frontend/react/39-visual-simulations/rerender-tree.html)
 
 > **Scope**: Virtual DOM diffing, reconciliation, Fiber architecture, render phases, batching, concurrent mode, lanes, transitions, Suspense, lazy loading, code splitting, memo, PureComponent, shouldComponentUpdate, key optimization, list virtualization, profiling, flame graphs, wasted renders, bailout heuristics, commit waterfalls, passive effects, layout effects, N+1 render problem, state update batching, automatic batching in React 18, flushSync.

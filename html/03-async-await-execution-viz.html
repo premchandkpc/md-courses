@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Async/Await Execution Timeline</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: #0f172a; color: #e2e8f0; }
+    header { background: #1e293b; padding: 20px; border-bottom: 1px solid #334155; display: flex; justify-content: space-between; align-items: center; }
+    h1 { font-size: 24px; }
+    .back-link { color: #60a5fa; text-decoration: none; font-size: 14px; padding: 8px 12px; border: 1px solid #334155; border-radius: 4px; }
+    .back-link:hover { background: #334155; }
+    .container { display: flex; height: calc(100vh - 60px); }
+    #canvas { flex: 1; background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); overflow: auto; padding: 20px; }
+    .controls { width: 300px; background: #1e293b; border-left: 1px solid #334155; padding: 20px; overflow-y: auto; }
+    .control-group { margin-bottom: 20px; }
+    .control-group label { display: block; font-size: 13px; text-transform: uppercase; color: #94a3b8; margin-bottom: 8px; font-weight: 600; }
+    button { background: #3b82f6; color: white; border: none; padding: 10px 16px; border-radius: 6px; cursor: pointer; font-size: 14px; width: 100%; margin-bottom: 8px; transition: all 0.2s; }
+    button:hover { background: #2563eb; }
+    button.active { background: #10b981; }
+    .status { background: #334155; padding: 12px; border-radius: 6px; font-size: 12px; font-family: monospace; margin: 10px 0; line-height: 1.8; }
+    .info-text { font-size: 12px; color: #cbd5e1; line-height: 1.6; margin: 10px 0; }
+    .timeline { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 20px 0; }
+    .timeline-item { padding: 15px; border-radius: 8px; border-left: 4px solid; text-align: center; font-size: 12px; }
+    .timeline-item.pending { background: #334155; border-color: #60a5fa; color: #60a5fa; }
+    .timeline-item.running { background: rgba(251, 191, 36, 0.1); border-color: #fbbf24; color: #fbbf24; animation: pulse 1.5s infinite; }
+    .timeline-item.resolved { background: rgba(16, 185, 129, 0.1); border-color: #10b981; color: #10b981; }
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+    .legend { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 12px; margin-top: 15px; padding-top: 15px; border-top: 1px solid #334155; }
+    .legend-item { display: flex; align-items: center; gap: 8px; }
+    .legend-dot { width: 10px; height: 10px; border-radius: 50%; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>🎨 Async/Await Execution Timeline</h1>
+    <a href="../data/04-frontend/react/03-rendering-pipeline/01-rendering-performance.md" class="back-link">← Back to Docs</a>
+  </header>
+  <div class="container">
+    <div id="canvas">
+      <h2 style="margin-bottom: 20px;">Execution Flow</h2>
+      <div id="timeline" class="timeline"></div>
+      <div id="status" style="margin-top: 30px; padding: 15px; background: #334155; border-radius: 8px; font-size: 12px; line-height: 1.8;"></div>
+    </div>
+    <div class="controls">
+      <div class="control-group">
+        <label>Scenario</label>
+        <button id="simple-async" onclick="app.setScenario('simple')" class="active">Simple</button>
+        <button id="parallel" onclick="app.setScenario('parallel')">Parallel</button>
+        <button id="error" onclick="app.setScenario('error')">Error Handling</button>
+      </div>
+      <div class="status">
+        <div>Scenario: <strong id="scenario">Simple</strong></div>
+        <div>Status: <strong id="status-text">Idle</strong></div>
+        <div>Steps: <strong id="steps">0</strong></div>
+      </div>
+      <div class="control-group">
+        <label>Control</label>
+        <button onclick="app.run()">Run Async</button>
+        <button onclick="app.reset()">Reset</button>
+      </div>
+      <div class="info-text">
+        <strong>Async:</strong> Marks function returns Promise automatically.
+      </div>
+      <div class="info-text">
+        <strong>Await:</strong> Pauses execution until Promise resolves/rejects.
+      </div>
+      <div class="info-text">
+        <strong>Under the hood:</strong> Syntactic sugar for Promise chaining.
+      </div>
+      <div class="legend">
+        <div class="legend-item">
+          <div class="legend-dot" style="background: #60a5fa;"></div>
+          <span>Pending</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-dot" style="background: #fbbf24;"></div>
+          <span>Running</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-dot" style="background: #10b981;"></div>
+          <span>Resolved</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script>
+    const app = {
+      state: { scenario: 'simple', step: 0, running: false },
+      scenarios: {
+        simple: [
+          { label: 'Call fn()', status: 'running' },
+          { label: 'Await API', status: 'running' },
+          { label: 'Process data', status: 'running' },
+          { label: 'Return result', status: 'resolved' }
+        ],
+        parallel: [
+          { label: 'Call fn1()', status: 'running' },
+          { label: 'Call fn2()', status: 'running' },
+          { label: 'Promise.all wait', status: 'running' },
+          { label: 'All done', status: 'resolved' }
+        ],
+        error: [
+          { label: 'Call fn()', status: 'running' },
+          { label: 'Await API', status: 'running' },
+          { label: 'Error thrown', status: 'pending' },
+          { label: 'Catch handler', status: 'resolved' }
+        ]
+      },
+      init() { this.render(); },
+      setScenario(s) { this.state.scenario = s; this.state.step = 0; this.state.running = false; document.querySelectorAll('.control-group:first-child button').forEach(b => b.classList.remove('active')); document.getElementById(s === 'simple' ? 'simple-async' : (s === 'parallel' ? 'parallel' : 'error')).classList.add('active'); this.render(); },
+      run() {
+        if (!this.state.running) {
+          this.state.running = true;
+          this.state.step = 0;
+          this.animate();
+        }
+      },
+      animate() {
+        if (this.state.step < this.scenarios[this.state.scenario].length) {
+          this.state.step++;
+          this.render();
+          setTimeout(() => this.animate(), 500);
+        } else {
+          this.state.running = false;
+        }
+      },
+      reset() { this.state.step = 0; this.state.running = false; this.render(); },
+      render() {
+        const timeline = document.getElementById('timeline');
+        const statusDiv = document.getElementById('status');
+        const scenario = this.scenarios[this.state.scenario];
+
+        timeline.innerHTML = '';
+        scenario.forEach((item, i) => {
+          const div = document.createElement('div');
+          const isActive = i < this.state.step;
+          div.className = `timeline-item ${isActive ? item.status : 'pending'}`;
+          div.textContent = item.label;
+          timeline.appendChild(div);
+        });
+
+        const scenarioText = this.state.scenario === 'simple' ? 'Simple Await' : this.state.scenario === 'parallel' ? 'Parallel Awaits' : 'Error Handling';
+        document.getElementById('scenario').textContent = scenarioText;
+        document.getElementById('status-text').textContent = this.state.running ? 'Running...' : (this.state.step === scenario.length ? 'Complete' : 'Idle');
+        document.getElementById('steps').textContent = this.state.step + '/' + scenario.length;
+
+        const statusText = this.state.scenario === 'simple' ?
+          '1. Call async function\n2. Await pauses execution\n3. Promise resolves\n4. Resume execution' :
+          this.state.scenario === 'parallel' ?
+          '1. Multiple awaits\n2. Promise.all waits for all\n3. Faster than sequential\n4. All results ready' :
+          '1. Call async function\n2. Error in try block\n3. Catch triggered\n4. Execution continues';
+        statusDiv.innerHTML = statusText.split('\n').map(s => `<div>${s}</div>`).join('');
+      }
+    };
+    window.addEventListener('load', () => app.init());
+  </script>
+</body>
+</html>

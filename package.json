@@ -7,7 +7,11 @@
   "scripts": {
     "start": "node data/server.js",
     "serve": "node data/server.js 3000",
-    "dev": "node data/server.js 8080"
+    "dev": "node data/server.js 8080",
+    "frontend": "npm run dev --prefix frontend",
+    "frontend:build": "npm run build --prefix frontend",
+    "frontend:typecheck": "npx tsc --noEmit --prefix frontend",
+    "viz": "echo 'Starting API server + frontend...' && node data/server.js 3000 & npm run dev --prefix frontend"
   },
   "keywords": [
     "engineering",

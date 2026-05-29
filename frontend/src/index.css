@@ -1,0 +1,32 @@
+@import "tailwindcss";
+
+@theme {
+  --color-infra-950: #060a10;
+  --color-infra-900: #0b0e14;
+  --color-infra-800: #111620;
+  --color-infra-700: #1a2332;
+  --color-infra-600: #253045;
+  --color-infra-500: #3a4a66;
+  --color-infra-400: #5a6e91;
+  --color-infra-300: #8a9bb8;
+  --color-infra-200: #bcc8db;
+  --color-infra-100: #e3eaf0;
+  --color-accent-cyan: #00d4ff;
+  --color-accent-green: #3fb950;
+  --color-accent-orange: #f0883e;
+  --color-accent-red: #f85149;
+  --color-accent-yellow: #fbbf24;
+  --color-accent-purple: #a78bfa;
+}
+
+body {
+  margin: 0;
+  background: var(--color-infra-950);
+  color: var(--color-infra-200);
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+/* React Flow dark theme overrides */
+.react-flow__node {
+  font-family: 'JetBrains Mono', monospace;
+}

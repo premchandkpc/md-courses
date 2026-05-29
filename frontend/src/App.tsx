@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { ServiceTopology } from './components/topology/ServiceTopology'
 import { KafkaTopology } from './components/topology/KafkaTopology'
@@ -7,6 +7,8 @@ import { LatencyChart, ThroughputGauge, CausalityTimeline } from './components/d
 import { StateMachineViewer } from './components/state-machine/StateMachineViewer'
 import { SimulationControls } from './components/ui/SimulationControls'
 import { FileTree } from './components/ui/FileTree'
+import { FileContentViewer } from './components/content/FileContentViewer'
+import { VisualizationGallery } from './components/content/VisualizationGallery'
 import { useSimulationStore } from './stores/simulation-store'
 import { kafkaBrokerMachine } from './machines/kafka-broker'
 import { kubernetesPodMachine } from './machines/kubernetes-pod'
@@ -26,7 +28,6 @@ function App() {
   const [activeTab, setActiveTab] = useState<Tab>('topology')
   const [sidebarOpen, setSidebarOpen] = useState(true)
   const [selectedFile, setSelectedFile] = useState<string | null>(null)
-  const tickRef = useRef<number>(0)
   const tick = useSimulationStore((s) => s.tick)
   const running = useSimulationStore((s) => s.running)
   const speed = useSimulationStore((s) => s.speed)
@@ -182,15 +183,19 @@ function App() {
               )}
 
               {activeTab === 'explorer' && (
-                <div className="rounded-xl border border-infra-700 p-8 bg-infra-900 text-center">
-                  <p className="text-infra-400 font-mono text-sm mb-2">
-                    {selectedFile
-                      ? `Selected: ${selectedFile}`
-                      : 'Select a file from the sidebar to view its content'}
-                  </p>
-                  <p className="text-infra-500 text-[10px] font-mono">
-                    API: /api/file?path={selectedFile ? encodeURIComponent(selectedFile) : '...'}
-                  </p>
+                <div className="rounded-xl border border-infra-700 p-5 bg-infra-900">
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="text-[10px] font-mono text-infra-400 uppercase tracking-wider">
+                      {selectedFile || 'No file selected'}
+                    </div>
+                    <div className="text-[9px] font-mono text-infra-500">
+                      {selectedFile?.endsWith('.html') ? '🖼️ Interactive' : selectedFile?.endsWith('.md') ? '📝 Markdown' : ''}
+                    </div>
+                  </div>
+                  <div className="border-t border-infra-700 pt-3">
+                    <FileContentViewer filePath={selectedFile} />
+                    <VisualizationGallery filePath={selectedFile} />
+                  </div>
                 </div>
               )}
             </motion.div>

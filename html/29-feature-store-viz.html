@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Feature Store</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: #0f172a; color: #e2e8f0; }
+    header { background: #1e293b; padding: 20px; border-bottom: 1px solid #334155; display: flex; justify-content: space-between; align-items: center; }
+    h1 { font-size: 24px; }
+    .back-link { color: #60a5fa; text-decoration: none; font-size: 14px; padding: 8px 12px; border: 1px solid #334155; border-radius: 4px; }
+    .container { display: flex; height: calc(100vh - 60px); }
+    #canvas { flex: 1; background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); overflow: auto; padding: 20px; }
+    .controls { width: 300px; background: #1e293b; border-left: 1px solid #334155; padding: 20px; overflow-y: auto; }
+    .control-group { margin-bottom: 20px; }
+    .control-group label { display: block; font-size: 13px; text-transform: uppercase; color: #94a3b8; margin-bottom: 8px; font-weight: 600; }
+    button { background: #3b82f6; color: white; border: none; padding: 10px 16px; border-radius: 6px; cursor: pointer; font-size: 14px; width: 100%; margin-bottom: 8px; }
+    .feature-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 20px 0; }
+    .feature { background: #334155; padding: 15px; border-radius: 8px; border-left: 3px solid #60a5fa; }
+    .feature h3 { margin-bottom: 8px; font-size: 12px; }
+    .feature-item { font-size: 11px; color: #cbd5e1; margin: 4px 0; }
+    .status { background: #334155; padding: 12px; border-radius: 6px; font-size: 12px; font-family: monospace; margin: 10px 0; }
+    .info-text { font-size: 12px; color: #cbd5e1; line-height: 1.6; margin: 10px 0; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>🎨 Feature Store</h1>
+    <a href="../data/01-ai-ml/ai-production/01-production-ai.md" class="back-link">← Back to Notes</a>
+  </header>
+  <div class="container">
+    <div id="canvas">
+      <h2 style="margin-bottom: 20px;">Feature Management</h2>
+      <div class="feature-grid" id="features"></div>
+    </div>
+    <div class="controls">
+      <div class="control-group">
+        <label>Source</label>
+        <button onclick="app.setSource('batch')">Batch Features</button>
+        <button onclick="app.setSource('online')">Online Features</button>
+      </div>
+      <div class="status">
+        <div>Source: <strong id="source">Batch</strong></div>
+        <div>Latency: <strong id="latency">Minutes</strong></div>
+      </div>
+      <div class="info-text">
+        <strong>Batch:</strong> Historical feature computation
+      </div>
+      <div class="info-text">
+        <strong>Online:</strong> Real-time feature serving
+      </div>
+      <div class="info-text">
+        <strong>Version control:</strong> Track feature changes
+      </div>
+    </div>
+  </div>
+  <script>
+    const app = {
+      state: { source: 'batch' },
+      sources: {
+        batch: {
+          title: 'Batch Features',
+          items: ['user_total_spent', 'avg_purchase_value', 'days_since_purchase'],
+          latency: 'Minutes'
+        },
+        online: {
+          title: 'Online Features',
+          items: ['real_time_cart_value', 'session_events', 'device_fingerprint'],
+          latency: 'Milliseconds'
+        }
+      },
+      init() { this.render(); },
+      setSource(s) { this.state.source = s; this.render(); },
+      render() {
+        const src = this.sources[this.state.source];
+        const featuresDiv = document.getElementById('features');
+        featuresDiv.innerHTML = `
+          <div class="feature">
+            <h3>${src.title}</h3>
+            ${src.items.map(item => `<div class="feature-item">• ${item}</div>`).join('')}
+          </div>
+          <div class="feature">
+            <h3>Characteristics</h3>
+            <div class="feature-item">Latency: ${src.latency}</div>
+            <div class="feature-item">Freshness: High</div>
+            <div class="feature-item">Scale: Large</div>
+          </div>
+        `;
+        document.getElementById('source').textContent = src.title.split(' ')[0];
+        document.getElementById('latency').textContent = src.latency;
+      }
+    };
+    window.addEventListener('load', () => app.init());
+  </script>
+</body>
+</html>

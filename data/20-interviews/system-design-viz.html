@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>System Design — Architecture Builder</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: #1a1a2e; color: #e0e0e0; min-height: 100vh;
+  display: flex; justify-content: center; align-items: center; padding: 20px;
+}
+.back-link { position: fixed; top: 16px; left: 20px; z-index: 100; }
+.back-link a { color: #8e9ef0; text-decoration: none; font-size: 14px; }
+.back-link a:hover { text-decoration: underline; }
+.container { display: flex; flex-direction: column; gap: 10px; width: 100%; max-width: 960px; }
+h1 { font-size: 20px; font-weight: 600; text-align: center; }
+h1 small { display: block; font-size: 11px; font-weight: 400; color: #888; margin-top: 2px; }
+.main-area { display: flex; gap: 10px; }
+.toolbar { width: 140px; flex-shrink: 0; display: flex; flex-direction: column; gap: 4px; }
+.toolbar .title { font-size: 10px; color: #888; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+.tool-btn {
+  background: #2a2a4a; border: 1px solid #3a3a5a; border-radius: 6px; padding: 6px 8px;
+  cursor: grab; font-size: 11px; text-align: center; transition: all 0.15s; user-select: none;
+  display: flex; align-items: center; gap: 6px;
+}
+.tool-btn:hover { background: #3a3a5a; border-color: #4a6fa5; }
+.tool-btn .icon { font-size: 16px; }
+.tool-btn .lbl { font-size: 10px; color: #ccc; }
+.canvas-wrap {
+  flex: 1; background: #16213e; border-radius: 10px; overflow: hidden; position: relative; min-height: 500px;
+}
+#canvas { display: block; width: 100%; height: 100%; cursor: default; }
+.top-bar { display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; align-items: center; }
+.top-bar .btn {
+  background: #2a2a4a; color: #e0e0e0; border: 1px solid #444; padding: 5px 12px;
+  border-radius: 6px; cursor: pointer; font-size: 11px; transition: all 0.2s;
+}
+.top-bar .btn:hover { background: #3a3a5a; }
+.top-bar .btn.go { background: #27ae60; border-color: #2ecc71; }
+.top-bar .btn.go:hover { background: #2ecc71; }
+.top-bar .btn.danger { background: #c0392b; border-color: #e74c3c; }
+.top-bar .btn.danger:hover { background: #e74c3c; }
+.top-bar .preset { font-size: 10px; padding: 4px 8px; }
+.tag { display: inline-block; font-size: 10px; padding: 1px 6px; border-radius: 3px; margin: 1px; }
+.tag.client { background: #3498db33; color: #3498db; }
+.tag.server { background: #2ecc7133; color: #2ecc71; }
+.tag.data { background: #e74c3c33; color: #e74c3c; }
+.tag.cache { background: #f1c40f33; color: #f1c40f; }
+.tag.messaging { background: #9b59b633; color: #9b59b6; }
+.infrastructure { background: #e67e2233; color: #e67e22; }
+@media (max-width: 700px) { .toolbar { width: 100px; } .tool-btn { font-size: 10px; padding: 4px 6px; } }
+</style>
+</head>
+<body>
+<div class="back-link">← <a href="03-system-design-interview.md">Back to System Design Interview</a></div>
+<div class="container">
+  <h1>🏗️ Architecture Builder <small>Drag components onto canvas — build any system design</small></h1>
+  <div class="top-bar">
+    <button class="btn go" data-preset="urlshortener">URL Shortener</button>
+    <button class="btn go" data-preset="chat">Chat System</button>
+    <button class="btn go" data-preset="newsfeed">News Feed</button>
+    <button class="btn danger" id="clearBtn">Clear</button>
+    <span style="font-size:11px;color:#666">Click components to add, drag to move, double-click to remove</span>
+  </div>
+  <div class="main-area">
+    <div class="toolbar" id="toolbar"></div>
+    <div class="canvas-wrap"><canvas id="canvas" width="700" height="500"></canvas></div>
+  </div>
+</div>
+<script>
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+let W = 700, H = 500;
+
+function resize() {
+  const rect = canvas.parentElement.getBoundingClientRect();
+  W = rect.width; H = rect.height;
+  canvas.width = W; canvas.height = H;
+  draw();
+}
+window.addEventListener('resize', resize);
+
+const componentDefs = [
+  { icon: '🖥️', label: 'Client', tag: 'client',
+    draw: (x,y,w,h) => { ctx.fillStyle = '#3498db'; ctx.beginPath(); ctx.roundRect(x,y,w,h,6); ctx.fill(); ctx.fillStyle='#fff'; ctx.font='bold 20px sans-serif'; ctx.textAlign='center'; ctx.textBaseline='middle'; ctx.fillText('📱', x+w/2, y+h/2-8); ctx.font='10px sans-serif'; ctx.fillText('Client', x+w/2, y+h/2+14); } },
+  { icon: '🌐', label: 'CDN', tag: 'infrastructure',
+    draw: (x,y,w,h) => { ctx.fillStyle = '#e67e22'; ctx.beginPath(); ctx.roundRect(x,y,w,h,6); ctx.fill(); ctx.fillStyle='#fff'; ctx.font='bold 20px sans-serif'; ctx.textAlign='center'; ctx.textBaseline='middle'; ctx.fillText('🌐', x+w/2, y+h/2-8); ctx.font='10px sans-serif'; ctx.fillText('CDN', x+w/2, y+h/2+14); } },
+  { icon: '⚖️', label: 'Load Balancer', tag: 'infrastructure',
+    draw: (x,y,w,h) => { ctx.fillStyle = '#1abc9c'; ctx.beginPath(); ctx.roundRect(x,y,w,h,6); ctx.fill(); ctx.fillStyle='#fff'; ctx.font='bold 20px sans-serif'; ctx.textAlign='center'; ctx.textBaseline='middle'; ctx.fillText('⚖️', x+w/2, y+h/2-8); ctx.font='9px sans-serif'; ctx.fillText('LB', x+w/2, y+h/2+14); } },
+  { icon: '🔀', label: 'API Gateway', tag: 'server',
+    draw: (x,y,w,h) => { ctx.fillStyle = '#2ecc71'; ctx.beginPath(); ctx.roundRect(x,y,w,h,6); ctx.fill(); ctx.fillStyle='#fff'; ctx.font='bold 20px sans-serif'; ctx.textAlign='center'; ctx.textBaseline='middle'; ctx.fillText('🔀', x+w/2, y+h/2-8); ctx.font='9px sans-serif'; ctx.fillText('Gateway', x+w/2, y+h/2+14); } },
+  { icon: '🌍', label: 'Web Server', tag: 'server',
+    draw: (x,y,w,h) => { ctx.fillStyle = '#27ae60'; ctx.beginPath(); ctx.roundRect(x,y,w,h,6); ctx.fill(); ctx.fillStyle='#fff'; ctx.font='bold 20px sans-serif'; ctx.textAlign='center'; ctx.textBaseline='middle'; ctx.fillText('🌍', x+w/2, y+h/2-8); ctx.font='10px sans-serif'; ctx.fillText('Web', x+w/2, y+h/2+14); } },
+  { icon: '⚙️', label: 'App Server', tag: 'server',
+    draw: (x,y,w,h) => { ctx.fillStyle = '#2ecc71'; ctx.beginPath(); ctx.roundRect(x,y,w,h,6); ctx.fill(); ctx.fillStyle='#fff'; ctx.font='bold 20px sans-serif'; ctx.textAlign='center'; ctx.textBaseline='middle'; ctx.fillText('⚙️', x+w/2, y+h/2-8); ctx.font='9px sans-serif'; ctx.fillText('App', x+w/2, y+h/2+14); } },
+  { icon: '🗄️', label: 'Database', tag: 'data',
+    draw: (x,y,w,h) => { ctx.fillStyle = '#e74c3c'; ctx.beginPath(); ctx.roundRect(x,y,w,h,6); ctx.fill(); ctx.fillStyle='#fff'; ctx.font='bold 20px sans-serif'; ctx.textAlign='center'; ctx.textBaseline='middle'; ctx.fillText('🗄️', x+w/2, y+h/2-8); ctx.font='9px sans-serif'; ctx.fillText('DB', x+w/2, y+h/2+14); } },
+  { icon: '📦', label: 'Cache (Redis)', tag: 'cache',
+    draw: (x,y,w,h) => { ctx.fillStyle = '#f1c40f'; ctx.beginPath(); ctx.roundRect(x,y,w,h,6); ctx.fill(); ctx.fillStyle='#1a1a2e'; ctx.font='bold 20px sans-serif'; ctx.textAlign='center'; ctx.textBaseline='middle'; ctx.fillText('📦', x+w/2, y+h/2-8); ctx.font='8px sans-serif'; ctx.fillText('Redis', x+w/2, y+h/2+14); } },
+  { icon: '📬', label: 'Queue (Kafka)', tag: 'messaging',
+    draw: (x,y,w,h) => { ctx.fillStyle = '#9b59b6'; ctx.beginPath(); ctx.roundRect(x,y,w,h,6); ctx.fill(); ctx.fillStyle='#fff'; ctx.font='bold 20px sans-serif'; ctx.textAlign='center'; ctx.textBaseline='middle'; ctx.fillText('📬', x+w/2, y+h/2-8); ctx.font='9px sans-serif'; ctx.fillText('Kafka', x+w/2, y+h/2+14); } },
+  { icon: '🔧', label: 'Worker', tag: 'server',
+    draw: (x,y,w,h) => { ctx.fillStyle = '#1abc9c'; ctx.beginPath(); ctx.roundRect(x,y,w,h,6); ctx.fill(); ctx.fillStyle='#fff'; ctx.font='bold 20px sans-serif'; ctx.textAlign='center'; ctx.textBaseline='middle'; ctx.fillText('🔧', x+w/2, y+h/2-8); ctx.font='9px sans-serif'; ctx.fillText('Worker', x+w/2, y+h/2+14); } },
+  { icon: '🔍', label: 'Search (ES)', tag: 'data',
+    draw: (x,y,w,h) => { ctx.fillStyle = '#c0392b'; ctx.beginPath(); ctx.roundRect(x,y,w,h,6); ctx.fill(); ctx.fillStyle='#fff'; ctx.font='bold 20px sans-serif'; ctx.textAlign='center'; ctx.textBaseline='middle'; ctx.fillText('🔍', x+w/2, y+h/2-8); ctx.font='9px sans-serif'; ctx.fillText('ES', x+w/2, y+h/2+14); } },
+  { icon: '☁️', label: 'Object Storage', tag: 'data',
+    draw: (x,y,w,h) => { ctx.fillStyle = '#2980b9'; ctx.beginPath(); ctx.roundRect(x,y,w,h,6); ctx.fill(); ctx.fillStyle='#fff'; ctx.font='bold 18px sans-serif'; ctx.textAlign='center'; ctx.textBaseline='middle'; ctx.fillText('☁️', x+w/2, y+h/2-8); ctx.font='9px sans-serif'; ctx.fillText('S3', x+w/2, y+h/2+14); } },
+];
+
+let components = [];
+let connections = [];
+let compId = 0;
+let dragComp = null, dragOffX = 0, dragOffY = 0;
+let connStart = null;
+
+function addComponent(defIdx, x, y) {
+  const def = componentDefs[defIdx];
+  components.push({ id: compId++, defIdx, x, y, w: 80, h: 60, label: def.label });
+  draw();
+}
+
+function findComp(x, y) {
+  for (let i = components.length - 1; i >= 0; i--) {
+    const c = components[i];
+    if (x >= c.x && x <= c.x + c.w && y >= c.y && y <= c.y + c.h) return c;
+  }
+  return null;
+}
+
+function draw() {
+  ctx.clearRect(0, 0, W, H);
+  ctx.fillStyle = '#16213e'; ctx.fillRect(0, 0, W, H);
+
+  // Grid
+  ctx.strokeStyle = '#1a2a4a'; ctx.lineWidth = 0.5;
+  for (let x = 0; x < W; x += 30) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke(); }
+  for (let y = 0; y < H; y += 30) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke(); }
+
+  // Connections
+  for (const conn of connections) {
+    const from = components.find(c => c.id === conn.from);
+    const to = components.find(c => c.id === conn.to);
+    if (!from || !to) continue;
+    const fx = from.x + from.w / 2, fy = from.y + from.h;
+    const tx = to.x + to.w / 2, ty = to.y;
+    ctx.beginPath(); ctx.moveTo(fx, fy); ctx.lineTo(tx, ty);
+    ctx.strokeStyle = conn.label ? '#8e9ef088' : '#3a3a5a'; ctx.lineWidth = 2; ctx.stroke();
+    // Arrow
+    const angle = Math.atan2(ty - fy, tx - fx);
+    ctx.beginPath(); ctx.moveTo(tx, ty);
+    ctx.lineTo(tx - 8 * Math.cos(angle - 0.4), ty - 8 * Math.sin(angle - 0.4));
+    ctx.lineTo(tx - 8 * Math.cos(angle + 0.4), ty - 8 * Math.sin(angle + 0.4));
+    ctx.closePath(); ctx.fillStyle = '#8e9ef088'; ctx.fill();
+    // Label
+    if (conn.label) {
+      const mx = (fx + tx) / 2, my = (fy + ty) / 2;
+      ctx.fillStyle = '#8e9ef0'; ctx.font = '10px -apple-system, sans-serif';
+      ctx.textAlign = 'center'; ctx.textBaseline = 'bottom';
+      ctx.fillText(conn.label, mx, my - 4);
+    }
+  }
+
+  // Components
+  for (const c of components) {
+    const def = componentDefs[c.defIdx];
+    ctx.shadowColor = 'rgba(0,0,0,0.3)'; ctx.shadowBlur = 6;
+    def.draw(c.x, c.y, c.w, c.h);
+    ctx.shadowBlur = 0;
+    // Border
+    ctx.strokeStyle = 'rgba(255,255,255,0.1)'; ctx.lineWidth = 1; ctx.stroke();
+    // Label
+    ctx.fillStyle = 'rgba(255,255,255,0.5)'; ctx.font = '9px -apple-system, sans-serif';
+    ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+    ctx.fillText(c.label, c.x + c.w/2, c.y + c.h + 2);
+  }
+
+  // Instructions
+  ctx.fillStyle = '#4a4a6a'; ctx.font = '11px -apple-system, sans-serif';
+  ctx.textAlign = 'left'; ctx.textBaseline = 'bottom';
+  ctx.fillText('🖱 Click a component → click canvas. Drag to move. Double-click to remove.', 10, H - 6);
+}
+
+function loadPreset(name) {
+  components = []; connections = []; compId = 0;
+  const cw = 80, ch = 60, gapX = 30, gapY = 40;
+  const CX = 80;
+  function add(x, y, defIdx) { components.push({ id: compId++, defIdx, x, y, w: cw, h: ch, label: componentDefs[defIdx].label }); }
+
+  if (name === 'urlshortener') {
+    add(50, 40, 0); // Client
+    add(50, 140, 1); // CDN → actually we'll put it beside
+    // Rebuild
+    components = [];
+    add(30, 20, 0); // Client
+    add(30, 120, 2); // LB
+    add(30, 220, 5); // App
+    add(30, 340, 6); // DB
+    connections = [
+      { from: 0, to: 1, label: 'HTTP' },
+      { from: 1, to: 2, label: 'encode' },
+      { from: 2, to: 3, label: 'store' },
+    ];
+    add(150, 120, 7); // Redis
+    add(150, 220, 9); // Worker
+    connections.push({ from: 2, to: 4, label: 'cache' });
+    connections.push({ from: 3, to: 4, label: 'lookup' });
+  } else if (name === 'chat') {
+    add(30, 20, 0); // Client
+    add(30, 130, 2); // LB
+    add(30, 240, 5); // App Server (chat service)
+    add(30, 350, 6); // DB (messages)
+    connections = [
+      { from: 0, to: 1, label: 'WebSocket' },
+      { from: 1, to: 2, label: 'route' },
+      { from: 2, to: 3, label: 'persist' },
+    ];
+    add(160, 130, 7); // Redis (presence)
+    add(160, 240, 8); // Kafka (message queue)
+    add(160, 350, 9); // Worker (push notification)
+    connections.push({ from: 2, to: 4, label: 'presence' });
+    connections.push({ from: 2, to: 5, label: 'publish' });
+    connections.push({ from: 5, to: 6, label: 'deliver' });
+  } else if (name === 'newsfeed') {
+    add(30, 20, 0); // Client
+    add(30, 130, 2); // LB
+    add(30, 240, 5); // App
+    add(30, 350, 6); // DB
+    connections = [
+      { from: 0, to: 1, label: 'HTTP' },
+      { from: 1, to: 2, label: 'route' },
+      { from: 2, to: 3, label: 'store' },
+    ];
+    add(160, 130, 7); // Redis (feed cache)
+    add(160, 240, 8); // Kafka (fan-out)
+    add(160, 350, 10); // ES (search)
+    connections.push({ from: 2, to: 4, label: 'fan-out' });
+    connections.push({ from: 4, to: 5, label: 'publish' });
+    connections.push({ from: 3, to: 6, label: 'index' });
+  }
+  draw();
+}
+
+function clearCanvas() {
+  components = []; connections = []; compId = 0; draw();
+}
+
+// Toolbar
+const toolbar = document.getElementById('toolbar');
+componentDefs.forEach((def, i) => {
+  const btn = document.createElement('div'); btn.className = 'tool-btn';
+  btn.innerHTML = `<span class="icon">${def.icon}</span><span class="lbl">${def.label}</span> <span class="tag ${def.tag}">${def.tag}</span>`;
+  btn.addEventListener('click', () => {
+    // Click on toolbar adds component at center of visible area
+    addComponent(i, W/2 - 40, H/2 - 30);
+  });
+  toolbar.appendChild(btn);
+});
+
+// Canvas events
+canvas.addEventListener('mousedown', e => {
+  const rect = canvas.getBoundingClientRect();
+  const x = (e.clientX - rect.left) * (W / rect.width);
+  const y = (e.clientY - rect.top) * (H / rect.height);
+  const c = findComp(x, y);
+  if (c) {
+    dragComp = c; dragOffX = x - c.x; dragOffY = y - c.y;
+  } else {
+    // Click on empty space: start connection or nothing
+    connStart = null;
+  }
+});
+
+canvas.addEventListener('mousemove', e => {
+  if (!dragComp) return;
+  const rect = canvas.getBoundingClientRect();
+  const x = (e.clientX - rect.left) * (W / rect.width);
+  const y = (e.clientY - rect.top) * (H / rect.height);
+  dragComp.x = Math.max(0, Math.min(W - dragComp.w, x - dragOffX));
+  dragComp.y = Math.max(0, Math.min(H - dragComp.h, y - dragOffY));
+  draw();
+});
+
+canvas.addEventListener('mouseup', () => { dragComp = null; });
+
+canvas.addEventListener('dblclick', e => {
+  const rect = canvas.getBoundingClientRect();
+  const x = (e.clientX - rect.left) * (W / rect.width);
+  const y = (e.clientY - rect.top) * (H / rect.height);
+  const c = findComp(x, y);
+  if (c) {
+    connections = connections.filter(conn => conn.from !== c.id && conn.to !== c.id);
+    components = components.filter(comp => comp.id !== c.id);
+    draw();
+  }
+});
+
+// Right-click to connect
+canvas.addEventListener('contextmenu', e => {
+  e.preventDefault();
+  const rect = canvas.getBoundingClientRect();
+  const x = (e.clientX - rect.left) * (W / rect.width);
+  const y = (e.clientY - rect.top) * (H / rect.height);
+  const c = findComp(x, y);
+  if (!connStart) {
+    if (c) connStart = c.id;
+  } else {
+    if (c && c.id !== connStart) {
+      const label = prompt('Connection label (optional):', '');
+      connections.push({ from: connStart, to: c.id, label: label || '' });
+      draw();
+    }
+    connStart = null;
+  }
+});
+
+// Preset buttons
+document.querySelectorAll('[data-preset]').forEach(btn => {
+  btn.addEventListener('click', () => loadPreset(btn.dataset.preset));
+});
+document.getElementById('clearBtn').addEventListener('click', clearCanvas);
+
+// Init
+resize();
+loadPreset('urlshortener');
+</script>
+</body>
+</html>

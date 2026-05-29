@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Stream Processing</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: #0f172a; color: #e2e8f0; }
+    header { background: #1e293b; padding: 20px; border-bottom: 1px solid #334155; display: flex; justify-content: space-between; align-items: center; }
+    h1 { font-size: 24px; }
+    .back-link { color: #60a5fa; text-decoration: none; font-size: 14px; padding: 8px 12px; border: 1px solid #334155; border-radius: 4px; }
+    .container { display: flex; height: calc(100vh - 60px); }
+    #canvas { flex: 1; background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); overflow: auto; padding: 20px; }
+    .controls { width: 300px; background: #1e293b; border-left: 1px solid #334155; padding: 20px; overflow-y: auto; }
+    .control-group { margin-bottom: 20px; }
+    .control-group label { display: block; font-size: 13px; text-transform: uppercase; color: #94a3b8; margin-bottom: 8px; font-weight: 600; }
+    button { background: #3b82f6; color: white; border: none; padding: 10px 16px; border-radius: 6px; cursor: pointer; font-size: 14px; width: 100%; margin-bottom: 8px; }
+    .stream { background: #334155; padding: 15px; border-radius: 8px; margin: 20px 0; min-height: 150px; }
+    .event { padding: 8px; background: #1e293b; margin: 5px 0; border-radius: 4px; border-left: 3px solid #60a5fa; font-size: 11px; }
+    .event.processed { border-left-color: #10b981; }
+    .status { background: #334155; padding: 12px; border-radius: 6px; font-size: 12px; font-family: monospace; margin: 10px 0; }
+    .info-text { font-size: 12px; color: #cbd5e1; line-height: 1.6; margin: 10px 0; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>🎨 Stream Processing</h1>
+    <a href="../data/02-data-engineering/streaming/01-stream-processing.md" class="back-link">← Back to Notes</a>
+  </header>
+  <div class="container">
+    <div id="canvas">
+      <h2 style="margin-bottom: 20px;">Event Stream</h2>
+      <div class="stream" id="stream"></div>
+    </div>
+    <div class="controls">
+      <div class="control-group">
+        <label>Action</label>
+        <button onclick="app.addEvent()">Add Event</button>
+        <button onclick="app.reset()">Clear</button>
+      </div>
+      <div class="status">
+        <div>Total: <strong id="total">0</strong></div>
+        <div>Processed: <strong id="processed">0</strong></div>
+      </div>
+      <div class="info-text">
+        <strong>Kafka:</strong> Distributed event streaming
+      </div>
+      <div class="info-text">
+        <strong>Flink:</strong> Stream processing framework
+      </div>
+      <div class="info-text">
+        <strong>Windowing:</strong> Time-based aggregations
+      </div>
+    </div>
+  </div>
+  <script>
+    const app = {
+      state: { total: 0, processed: 0 },
+      init() { this.render(); },
+      addEvent() { this.state.total++; if(Math.random() < 0.8) this.state.processed++; this.render(); },
+      reset() { this.state = { total: 0, processed: 0 }; this.render(); },
+      render() {
+        const streamDiv = document.getElementById('stream');
+        streamDiv.innerHTML = `
+          <div class="event ${this.state.processed > 0 ? 'processed' : ''}">
+            ${this.state.total > 0 ? `Event ${this.state.total}: ${this.state.total % 2 === 0 ? 'user_login' : 'user_purchase'}` : 'Waiting for events...'}
+          </div>
+        `;
+        document.getElementById('total').textContent = this.state.total;
+        document.getElementById('processed').textContent = this.state.processed;
+      }
+    };
+    window.addEventListener('load', () => app.init());
+  </script>
+</body>
+</html>

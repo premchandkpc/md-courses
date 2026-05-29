@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Service Mesh & Istio</title>
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: #0f172a; color: #e2e8f0; }
+    header { background: #1e293b; padding: 20px; border-bottom: 1px solid #334155; display: flex; justify-content: space-between; align-items: center; }
+    h1 { font-size: 24px; }
+    .back-link { color: #60a5fa; text-decoration: none; font-size: 14px; padding: 8px 12px; border: 1px solid #334155; border-radius: 4px; }
+    .container { display: flex; height: calc(100vh - 60px); }
+    #canvas { flex: 1; background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); overflow: auto; }
+    .controls { width: 300px; background: #1e293b; border-left: 1px solid #334155; padding: 20px; overflow-y: auto; }
+    .control-group { margin-bottom: 20px; }
+    .control-group label { display: block; font-size: 13px; text-transform: uppercase; color: #94a3b8; margin-bottom: 8px; font-weight: 600; }
+    button { background: #3b82f6; color: white; border: none; padding: 10px 16px; border-radius: 6px; cursor: pointer; font-size: 14px; width: 100%; margin-bottom: 8px; }
+    .status { background: #334155; padding: 12px; border-radius: 6px; font-size: 12px; font-family: monospace; margin: 10px 0; }
+    .info-text { font-size: 12px; color: #cbd5e1; line-height: 1.6; margin: 10px 0; }
+    svg { display: block; width: 100%; height: 100%; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>🎨 Service Mesh & Istio</h1>
+    <a href="../data/07-kubernetes/02-advanced-k8s.md" class="back-link">← Back to Notes</a>
+  </header>
+  <div class="container">
+    <div id="canvas"><svg></svg></div>
+    <div class="controls">
+      <div class="control-group">
+        <label>Traffic Policy</label>
+        <button onclick="app.setPolicy('round-robin')">Round Robin</button>
+        <button onclick="app.setPolicy('weighted')">Weighted</button>
+        <button onclick="app.setPolicy('canary')">Canary</button>
+      </div>
+      <div class="status">
+        <div>Policy: <strong id="policy">Round Robin</strong></div>
+        <div>v1: <strong id="v1">50%</strong></div>
+        <div>v2: <strong id="v2">50%</strong></div>
+      </div>
+      <div class="info-text">
+        <strong>Sidecar:</strong> Envoy proxy per pod
+      </div>
+      <div class="info-text">
+        <strong>Control plane:</strong> Istiod manages config
+      </div>
+      <div class="info-text">
+        <strong>Features:</strong> Traffic, security, observability
+      </div>
+    </div>
+  </div>
+  <script>
+    const app = {
+      state: { policy: 'round-robin', v1: 50, v2: 50 },
+      init() { this.svg = d3.select('svg'); this.render(); },
+      setPolicy(p) { this.state.policy = p; if(p==='round-robin') {this.state.v1=50;this.state.v2=50;} else if(p==='weighted') {this.state.v1=70;this.state.v2=30;} else {this.state.v1=90;this.state.v2=10;} this.render(); },
+      render() {
+        const width = this.svg.node().parentElement.clientWidth;
+        const height = this.svg.node().parentElement.clientHeight;
+        this.svg.selectAll('*').remove();
+
+        const y = height / 2;
+        this.svg.append('circle').attr('cx', 50).attr('cy', y).attr('r', 25).attr('fill', '#60a5fa');
+        this.svg.append('text').attr('x', 50).attr('y', y+3).attr('text-anchor', 'middle').attr('fill', '#e2e8f0').attr('font-size', '11px').text('Client');
+
+        this.svg.append('line').attr('x1', 85).attr('y1', y-20).attr('x2', width-100).attr('y2', y-50).attr('stroke', '#60a5fa').attr('stroke-width', 2);
+        this.svg.append('line').attr('x1', 85).attr('y1', y+20).attr('x2', width-100).attr('y2', y+50).attr('stroke', '#fbbf24').attr('stroke-width', 2);
+
+        this.svg.append('circle').attr('cx', width-50).attr('cy', y-50).attr('r', 20).attr('fill', '#10b981');
+        this.svg.append('text').attr('x', width-50).attr('y', y-46).attr('text-anchor', 'middle').attr('fill', '#e2e8f0').attr('font-size', '11px').text('v1');
+
+        this.svg.append('circle').attr('cx', width-50).attr('cy', y+50).attr('r', 20).attr('fill', '#fbbf24');
+        this.svg.append('text').attr('x', width-50).attr('y', y+54).attr('text-anchor', 'middle').attr('fill', '#0f172a').attr('font-size', '11px').text('v2');
+
+        document.getElementById('policy').textContent = this.state.policy.replace('-', ' ').toUpperCase();
+        document.getElementById('v1').textContent = this.state.v1 + '%';
+        document.getElementById('v2').textContent = this.state.v2 + '%';
+      }
+    };
+    window.addEventListener('load', () => app.init());
+  </script>
+</body>
+</html>

@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kubernetes Ingress</title>
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: #0f172a; color: #e2e8f0; }
+    header { background: #1e293b; padding: 20px; border-bottom: 1px solid #334155; display: flex; justify-content: space-between; align-items: center; }
+    h1 { font-size: 24px; }
+    .back-link { color: #60a5fa; text-decoration: none; font-size: 14px; padding: 8px 12px; border: 1px solid #334155; border-radius: 4px; }
+    .container { display: flex; height: calc(100vh - 60px); }
+    #canvas { flex: 1; background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); overflow: auto; }
+    .controls { width: 300px; background: #1e293b; border-left: 1px solid #334155; padding: 20px; overflow-y: auto; }
+    .control-group { margin-bottom: 20px; }
+    .control-group label { display: block; font-size: 13px; text-transform: uppercase; color: #94a3b8; margin-bottom: 8px; font-weight: 600; }
+    button { background: #3b82f6; color: white; border: none; padding: 10px 16px; border-radius: 6px; cursor: pointer; font-size: 14px; width: 100%; margin-bottom: 8px; }
+    .status { background: #334155; padding: 12px; border-radius: 6px; font-size: 12px; font-family: monospace; margin: 10px 0; }
+    .info-text { font-size: 12px; color: #cbd5e1; line-height: 1.6; margin: 10px 0; }
+    svg { display: block; width: 100%; height: 100%; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>🎨 Kubernetes Ingress</h1>
+    <a href="../data/07-kubernetes/03-kubernetes-networking.md" class="back-link">← Back to Notes</a>
+  </header>
+  <div class="container">
+    <div id="canvas"><svg></svg></div>
+    <div class="controls">
+      <div class="control-group">
+        <label>Route</label>
+        <button onclick="app.route('api')">API (/api)</button>
+        <button onclick="app.route('web')">Web (/)</button>
+        <button onclick="app.route('admin')">Admin (/admin)</button>
+      </div>
+      <div class="status">
+        <div>Route: <strong id="route">-</strong></div>
+        <div>Service: <strong id="service">-</strong></div>
+      </div>
+      <div class="info-text">
+        <strong>Ingress:</strong> Exposes HTTP(S) routes to services
+      </div>
+      <div class="info-text">
+        <strong>Path-based:</strong> Route by URL path
+      </div>
+      <div class="info-text">
+        <strong>Host-based:</strong> Route by domain
+      </div>
+    </div>
+  </div>
+  <script>
+    const app = {
+      state: { route: '' },
+      routes: {
+        api: { path: '/api', service: 'api-svc', port: 8000 },
+        web: { path: '/', service: 'web-svc', port: 80 },
+        admin: { path: '/admin', service: 'admin-svc', port: 9000 }
+      },
+      init() { this.svg = d3.select('svg'); this.render(); },
+      route(r) { this.state.route = r; this.render(); },
+      render() {
+        const width = this.svg.node().parentElement.clientWidth;
+        const height = this.svg.node().parentElement.clientHeight;
+        this.svg.selectAll('*').remove();
+
+        const y = height / 2;
+        this.svg.append('circle').attr('cx', 50).attr('cy', y).attr('r', 25).attr('fill', '#60a5fa');
+        this.svg.append('text').attr('x', 50).attr('y', y+3).attr('text-anchor', 'middle').attr('fill', '#e2e8f0').attr('font-size', '12px').text('Client');
+        this.svg.append('line').attr('x1', 80).attr('y1', y).attr('x2', width-150).attr('y2', y).attr('stroke', '#64748b').attr('stroke-width', 2).attr('marker-end', 'url(#arrowhead)');
+
+        this.svg.append('rect').attr('x', width-120).attr('y', y-40).attr('width', 100).attr('height', 80).attr('fill', '#334155').attr('rx', 4);
+        this.svg.append('text').attr('x', width-70).attr('y', y-20).attr('text-anchor', 'middle').attr('fill', '#e2e8f0').attr('font-size', '11px').attr('font-weight', 'bold').text('Ingress');
+
+        if(this.state.route) {
+          const route = this.routes[this.state.route];
+          document.getElementById('route').textContent = route.path;
+          document.getElementById('service').textContent = route.service;
+        }
+      }
+    };
+    window.addEventListener('load', () => app.init());
+  </script>
+</body>
+</html>

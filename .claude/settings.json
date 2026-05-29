@@ -58,7 +58,9 @@
       "Bash(awk '/^function renderContent/,/^}$/{print NR\": \"$0}' /Users/ramyachowdary/Documents/prem-work/md-courses/data/read.html)",
       "Bash(awk '{print $NF}')",
       "Bash(xargs -I {} basename {})",
-      "Bash(node -c data/read.html)"
+      "Bash(node -c data/read.html)",
+      "Bash(python3 validate_syntax.py data)",
+      "Bash(python3 validate_syntax.py)"
     ],
     "additionalDirectories": [
       "/private/tmp"

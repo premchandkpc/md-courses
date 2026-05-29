@@ -54,6 +54,6 @@ Used for batch content enhancements and conversions (past phases):
 
 - `data/read.html` is a **vanilla JS SPA** — no React, no bundler. Edit the file directly.
 - The React frontend (`frontend/`) is a separate app with its own `package.json` and TypeScript config.
-- README stats are outdated (says 228 files / 203K lines; actual is ~535 files / 380K+ lines).
 - AUX files (`.DS_Store`) accumulate easily — clean with `find . -name '.DS_Store' -delete`.
 - `data/databases/` was merged into `data/08-databases/`. The source directory no longer exists.
+- Stale phase/docs moved to `docs/archive/`. Utility scripts moved to `scripts/`. Root is clean.

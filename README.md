@@ -21,10 +21,11 @@ A comprehensive, production-graded knowledge base spanning 25 domains of softwar
 
 | Metric | Value |
 |--------|-------|
-| Total files | 228 |
-| Markdown documents | 227 |
-| Total lines of content | ~203,000 |
-| Repository size | ~11 MB |
+| Total files | 535+ |
+| Markdown documents | 440+ |
+| HTML visualizations | 77 |
+| Total lines of content | ~380,000 |
+| Repository size | ~13 MB |
 | Domains covered | 25 numbered + 3 supplemental |
 | Languages/technologies | Java, Go, Python, TypeScript, Kotlin, Rust, React, Next.js |
 | Cloud platforms | AWS (deep), GCP, Azure |

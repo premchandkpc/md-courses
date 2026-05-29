@@ -7,10 +7,12 @@
 <meta name="description" content="Engineering Knowledge Universe — explore topics in depth with layered content, diagrams, and full-text search">
 <meta property="og:title" content="Engineering Knowledge Universe">
 <meta property="og:description" content="Explore engineering topics in depth — AI/ML, backend, cloud, Kubernetes, databases, system design, and more.">
+<meta name="excerpt" content="Engineering Knowledge Universe — explore topics in depth with layered content, diagrams, and full-text search">
 <meta property="og:type" content="article">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Engineering Knowledge Universe">
 <meta name="twitter:description" content="Explore engineering topics in depth with layered content, diagrams, and full-text search.">
+<meta name="theme-color" content="#0d1117">
 <link rel="canonical" href="/">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -140,8 +142,8 @@
     .md .layer-section.hidden-l { opacity:1 !important; max-height:none !important; }
     .page-transition,.diagram-fullscreen { display:none !important; }
     .start-screen { display:flex !important; height:auto; padding:20px 0; }
-    .start-screen-header .big-icon { font-size:36px; }
-    .start-screen-header h1 { font-size:22px; }
+    .start-screen-intro .big-icon { font-size:36px; }
+    .start-screen-intro h1 { font-size:22px; }
     .topics-grid { grid-template-columns:repeat(4,1fr); gap:12px; }
   }
 
@@ -177,6 +179,7 @@
     opacity:1;transform:translateY(0);
   }
 
+</style>
 </head>
 <body>
 <a href="#fileContent" class="skip-link">Skip to content</a>
@@ -244,10 +247,12 @@
       </div>
     </div>
     <main id="start" class="start-screen post-content entry-content article" role="region" aria-label="Home">
-      <article class="start-screen-header">
+      <article class="start-screen-intro" itemscope itemtype="https://schema.org/Article">
         <div class="big-icon">📚</div>
         <h1>Engineering Knowledge Universe</h1>
         <p>A curated collection of engineering knowledge spanning AI/ML, backend development, cloud computing, Kubernetes, databases, messaging, SRE, microservices, software architecture, system design, frontend, DevOps, networking, operating systems, security, performance engineering, testing, and data engineering. Each topic is organized into multiple layers from beginner to staff level, with interactive diagrams, code examples, and full-text search across all content.</p>
+        <p>Explore 25+ domains of software engineering through layered content designed for progressive learning. Start with beginner-friendly fundamentals and advance to staff-level architecture patterns. Content includes interactive Mermaid diagrams, code snippets in multiple languages, real-world production patterns, and detailed explanations of complex systems. Use the sidebar to navigate topics, toggle layers to filter by depth, search across all files, and bookmark content for later review.</p>
+        <p>Built for engineers who want to go deep: each topic includes beginner concepts (L1), intermediate patterns (L2), advanced architecture (L3), production considerations (L4), and staff-level design decisions (L5). Every page includes a table of contents, keyboard shortcuts, theme support, and print-friendly formatting.</p>
       </article>
       <div class="topics-grid" id="topicsGrid" role="list" aria-label="Topics"></div>
     </main>
@@ -298,13 +303,16 @@
     <h3>Keyboard Shortcuts</h3>
     <div class="kb-row"><span class="desc">Search files</span><span class="key">⌘K</span></div>
     <div class="kb-row"><span class="desc">Find in page</span><span class="key">⌘F</span></div>
-    <div class="kb-row"><span class="desc">Sidebar</span><span class="key">⌘B</span></div>
+    <div class="kb-row"><span class="desc">Sidebar toggle</span><span class="key">⌘B</span></div>
     <div class="kb-row"><span class="desc">Theme toggle</span><span class="key">⌘T</span></div>
-    <div class="kb-row"><span class="desc">Top</span><span class="key">⌘↑</span></div>
+    <div class="kb-row"><span class="desc">Scroll to top</span><span class="key">⌘↑</span></div>
     <div class="kb-row"><span class="desc">Zoom −</span><span class="key">⌘−</span></div>
     <div class="kb-row"><span class="desc">Zoom +</span><span class="key">⌘+</span></div>
     <div class="kb-row"><span class="desc">Fullscreen</span><span class="key">⌘F</span></div>
     <div class="kb-row"><span class="desc">Layers 1−5</span><span class="key">1−5</span></div>
+    <div class="kb-row"><span class="desc">Go home</span><span class="key">⌘H</span></div>
+    <div class="kb-row"><span class="desc">Keyboard help</span><span class="key">?</span></div>
+    <div class="kb-row"><span class="desc">Close modal</span><span class="key">Esc</span></div>
   </div>
 </div>
 
@@ -839,6 +847,11 @@ async function loadFile(path) {
   document.getElementById('fileTitle').textContent = name;
   document.getElementById('fileSubtitle').textContent = path;
 
+  // Dynamic page title
+  const domainDir = path.match(/^\d{2}-([^/]+)/);
+  const domainName = domainDir ? domainDir[1].replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase()) : '';
+  document.title = domainName ? `${name} — ${domainName} — Knowledge Universe` : `${name} — Knowledge Universe`;
+
   // Breadcrumb
   const segs = path.split('/');
   let bc = '';
@@ -864,6 +877,12 @@ async function loadFile(path) {
   }
 
   const body = document.getElementById('fileContent');
+
+  // Save scroll of current file before switching
+  if (STATE.currentPath && STATE.currentPath !== path) {
+    saveScrollPosition(STATE.currentPath);
+  }
+
   showSkeleton(body);
 
   // Check cache first
@@ -874,6 +893,7 @@ async function loadFile(path) {
     buildTOC();
     computeStats(body);
     applyZoom();
+    restoreScrollPosition(path);
     return;
   }
 
@@ -892,6 +912,7 @@ async function loadFile(path) {
     buildTOC();
     computeStats(body);
     applyZoom();
+    restoreScrollPosition(path);
   } catch (e) {
     console.error('Failed to load file:', e);
     if (!STATE.isOnline) {
@@ -1143,11 +1164,15 @@ function renderContent(container, text) {
       wrapper.innerHTML = code;
       placeholder.replaceWith(wrapper);
 
+      // Remove previously injected html-live scripts
+      document.querySelectorAll('script[data-htmllive]').forEach(s => s.remove());
+
       // Execute scripts in the html-live block
       wrapper.querySelectorAll('script').forEach(s => {
         const ns = document.createElement('script');
         ns.textContent = s.textContent;
         ns.async = false;
+        ns.setAttribute('data-htmllive', '');
         document.head.appendChild(ns);
       });
     }
@@ -1270,10 +1295,14 @@ function closeDiagramFullscreen() {
 }
 
 function goHome() {
+  if (STATE.currentPath) {
+    saveScrollPosition(STATE.currentPath);
+  }
   document.getElementById('start').style.display = 'flex';
   document.getElementById('fileView').style.display = 'none';
   document.getElementById('togglesRow').style.display = 'none';
   STATE.currentPath = '';
+  document.title = 'Knowledge Universe';
   localStorage.removeItem('lastViewedFile');
   document.querySelectorAll('.tree-item.active').forEach(el => el.classList.remove('active'));
   history.pushState({ path: '' }, '', window.location.pathname);
@@ -1392,6 +1421,14 @@ function applyTheme(theme) {
   document.documentElement.setAttribute('data-theme', theme);
   localStorage.setItem('kb-theme', theme);
   document.getElementById('themeBtn').textContent = theme === 'dark' ? '🌓' : '☀️';
+  // Update theme-color meta for browser chrome
+  let meta = document.querySelector('meta[name="theme-color"]');
+  if (!meta) {
+    meta = document.createElement('meta');
+    meta.name = 'theme-color';
+    document.head.appendChild(meta);
+  }
+  meta.content = theme === 'dark' ? '#0d1117' : '#ffffff';
 }
 
 function detectTheme() {
@@ -1727,6 +1764,10 @@ document.addEventListener('keydown', (e) => {
     e.preventDefault();
     document.getElementById('themeBtn').click();
   }
+  if (meta && e.key === 'h') {
+    e.preventDefault();
+    goHome();
+  }
 });
 
 // ═══════════════════════════════════════════════════════════════
@@ -1872,6 +1913,39 @@ function setupLayerKeyboardNav() {
     }
   });
 }
+
+// ═══════════════════════════════════════════════════════════════
+// SCROLL POSITION PERSISTENCE
+// ═══════════════════════════════════════════════════════════════
+
+let savedScrollPositions = {};
+
+function loadScrollPositions() {
+  try {
+    const raw = safeLocalGet('kb-scroll-positions');
+    savedScrollPositions = raw ? JSON.parse(raw) : {};
+  } catch {
+    savedScrollPositions = {};
+  }
+}
+
+function saveScrollPosition(path) {
+  if (!path || !document.getElementById('fileContent')) return;
+  const body = document.getElementById('fileContent');
+  savedScrollPositions[path] = body.scrollTop;
+  try { safeLocalSet('kb-scroll-positions', JSON.stringify(savedScrollPositions)); } catch {}
+}
+
+function restoreScrollPosition(path) {
+  if (!path) return;
+  const pos = savedScrollPositions[path];
+  if (typeof pos === 'number') {
+    const body = document.getElementById('fileContent');
+    if (body) requestAnimationFrame(() => body.scrollTo(0, pos));
+  }
+}
+
+loadScrollPositions();
 
 // ═══════════════════════════════════════════════════════════════
 // FOCUS MANAGEMENT FOR MODALS

@@ -241,12 +241,12 @@ body{
 .start-screen{
   display:flex;flex-direction:column;height:100%;padding:40px;overflow-y:auto;
 }
-.start-screen-header{
+.start-screen-intro{
   text-align:center;margin-bottom:40px;flex-shrink:0;
 }
-.start-screen-header .big-icon{font-size:56px;margin-bottom:8px}
-.start-screen-header h1{font-size:28px;font-weight:800;letter-spacing:-.02em;margin-bottom:6px}
-.start-screen-header p{color:var(--fg2);font-size:14px;line-height:1.6}
+.start-screen-intro .big-icon{font-size:56px;margin-bottom:8px}
+.start-screen-intro h1{font-size:28px;font-weight:800;letter-spacing:-.02em;margin-bottom:6px}
+.start-screen-intro p{color:var(--fg2);font-size:14px;line-height:1.6}
 .topics-grid{
   display:grid;grid-template-columns:repeat(3,1fr);gap:20px;flex:1;
 }

@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PostgreSQL Indexes: Interactive Analysis</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #0f1419;
+            color: #e0e6ed;
+            padding: 40px 20px;
+        }
+        .container { max-width: 1400px; margin: 0 auto; }
+        h1 { font-size: 32px; margin-bottom: 10px; color: #4a9eff; text-align: center; }
+        .subtitle { text-align: center; color: #99a9b8; margin-bottom: 40px; font-size: 14px; }
+
+        .visuals-grid { display: grid; gap: 40px; }
+        .visual-card {
+            background: #1a2332;
+            border: 1px solid #2d4158;
+            border-radius: 8px;
+            padding: 30px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+        .visual-card h2 {
+            font-size: 20px;
+            color: #4a9eff;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #2d4158;
+        }
+        .visual-card p {
+            color: #99a9b8;
+            font-size: 13px;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        svg { background: #0f1419; border-radius: 6px; }
+        .node { cursor: pointer; }
+        .node circle { stroke: #4a9eff; stroke-width: 2px; }
+        .node text { font-size: 12px; pointer-events: none; }
+        .link { stroke: #2d4158; stroke-width: 2px; fill: none; }
+
+        .bar { transition: all 0.3s ease; cursor: pointer; }
+        .bar:hover { opacity: 0.8; }
+        .axis-label { font-size: 12px; color: #99a9b8; }
+
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        .control-btn {
+            background: #2d4158;
+            border: 1px solid #4a9eff;
+            color: #4a9eff;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.3s;
+        }
+        .control-btn:hover {
+            background: #4a9eff;
+            color: #0f1419;
+        }
+        .control-btn.active {
+            background: #4a9eff;
+            color: #0f1419;
+        }
+
+        .legend {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+            font-size: 12px;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .legend-color { width: 20px; height: 20px; border-radius: 4px; }
+
+        .metric { background: #2d4158; padding: 15px; border-radius: 4px; margin: 10px 0; }
+        .metric-label { color: #99a9b8; font-size: 12px; margin-bottom: 5px; }
+        .metric-value { color: #4a9eff; font-size: 20px; font-weight: bold; }
+
+        .comparison-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; margin-top: 20px; }
+        .comparison-card { background: #0f1419; border: 1px solid #2d4158; padding: 15px; border-radius: 4px; }
+        .comparison-card h4 { color: #4a9eff; margin-bottom: 10px; }
+        .comparison-card p { font-size: 12px; color: #99a9b8; line-height: 1.6; }
+
+        .tooltip {
+            position: absolute;
+            background: #1a2332;
+            border: 1px solid #4a9eff;
+            padding: 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s;
+            z-index: 1000;
+        }
+        .tooltip.active { opacity: 1; }
+
+        .heatmap-cell {
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .heatmap-cell:hover {
+            stroke: #4a9eff;
+            stroke-width: 2px;
+        }
+
+        .animation-demo {
+            position: relative;
+            height: 400px;
+            background: #0f1419;
+            border: 1px solid #2d4158;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 PostgreSQL Indexes: Interactive Analysis</h1>
+        <p class="subtitle">Understand index types, performance trade-offs, and selection strategy with interactive visualizations</p>
+
+        <div class="visuals-grid">
+
+            <!-- VISUAL 1: Composite Index Order -->
+            <div class="visual-card">
+                <h2>1. Composite Index Order Impact</h2>
+                <p><strong>What:</strong> How index column order affects query performance. Indexes must be queried left-to-right.</p>
+                <p><strong>Example:</strong> CREATE INDEX idx (a, b, c) — Column 'a' must be in WHERE clause to use index.</p>
+                <div class="controls">
+                    <button class="control-btn active" onclick="updateCompositeDemo('abc')">Index: (a, b, c)</button>
+                    <button class="control-btn" onclick="updateCompositeDemo('bca')">Index: (b, c, a)</button>
+                    <button class="control-btn" onclick="updateCompositeDemo('cab')">Index: (c, a, b)</button>
+                </div>
+                <svg id="composite-svg" width="100%" height="300"></svg>
+                <div id="composite-legend" class="legend"></div>
+            </div>
+
+            <!-- VISUAL 2: B-tree Structure -->
+            <div class="visual-card">
+                <h2>2. B-tree Index Structure & Growth</h2>
+                <p><strong>What:</strong> How B-tree nodes split as data grows. Shows why indexes are efficient (3-4 levels for 1B rows).</p>
+                <p><strong>Interactive:</strong> Click "Insert" to watch the tree rebalance and split nodes.</p>
+                <div class="controls">
+                    <button class="control-btn" onclick="btreeInsert()">Insert Value</button>
+                    <button class="control-btn" onclick="btreeReset()">Reset Tree</button>
+                </div>
+                <svg id="btree-svg" width="100%" height="350"></svg>
+                <div class="metric">
+                    <div class="metric-label">Tree Levels</div>
+                    <div class="metric-value" id="btree-levels">1</div>
+                </div>
+            </div>
+
+            <!-- VISUAL 3: BRIN vs B-tree Storage -->
+            <div class="visual-card">
+                <h2>3. Storage Comparison: BRIN vs B-tree</h2>
+                <p><strong>BRIN:</strong> For huge sequential tables (1B+ rows). Stores min/max per 128-page block.</p>
+                <p><strong>B-tree:</strong> General purpose. Balanced tree structure, works everywhere.</p>
+                <svg id="storage-svg" width="100%" height="300"></svg>
+                <div class="comparison-grid">
+                    <div class="comparison-card">
+                        <h4>B-tree (100M rows)</h4>
+                        <p>Storage: 2GB | Speed: <1ms | Use: Most queries</p>
+                    </div>
+                    <div class="comparison-card">
+                        <h4>BRIN (1B rows)</h4>
+                        <p>Storage: 10MB | Speed: 100ms | Use: Huge sequential</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VISUAL 4: Cost Curve -->
+            <div class="visual-card">
+                <h2>4. Index Cost Trade-off Curve</h2>
+                <p><strong>Y-axis:</strong> Query time (ms) | Insert time (ms) | Total cost</p>
+                <p><strong>X-axis:</strong> Number of indexes on table</p>
+                <p><strong>Sweet spot:</strong> Usually 2-4 indexes. More = diminishing returns.</p>
+                <div class="controls">
+                    <button class="control-btn active" onclick="updateCostCurve('query')">Read Performance</button>
+                    <button class="control-btn" onclick="updateCostCurve('write')">Write Performance</button>
+                    <button class="control-btn" onclick="updateCostCurve('both')">Total Cost</button>
+                </div>
+                <svg id="cost-svg" width="100%" height="300"></svg>
+            </div>
+
+            <!-- VISUAL 5: Decision Tree -->
+            <div class="visual-card">
+                <h2>5. Index Selection Decision Tree</h2>
+                <p><strong>What:</strong> Interactive flowchart to choose the right index type.</p>
+                <p><strong>Follow:</strong> Start at top, click branches to explore recommendations.</p>
+                <svg id="decision-svg" width="100%" height="400"></svg>
+            </div>
+
+            <!-- VISUAL 6: Real Scenarios -->
+            <div class="visual-card">
+                <h2>6. Real-World Scenario Overlays</h2>
+                <p><strong>What:</strong> Three production databases showing actual index usage patterns.</p>
+                <div class="controls">
+                    <button class="control-btn active" onclick="showScenario('ecommerce')">E-commerce (100M orders)</button>
+                    <button class="control-btn" onclick="showScenario('logging')">Logging (1B rows/year)</button>
+                    <button class="control-btn" onclick="showScenario('search')">Full-text Search (10M articles)</button>
+                </div>
+                <svg id="scenario-svg" width="100%" height="300"></svg>
+                <div id="scenario-details" class="comparison-grid"></div>
+            </div>
+
+            <!-- VISUAL 7: Selection Heatmap -->
+            <div class="visual-card">
+                <h2>7. Index Type Selection Heatmap</h2>
+                <p><strong>What:</strong> Recommendation intensity for each index type given data size and query type.</p>
+                <p><strong>Color:</strong> Green = recommended | Yellow = maybe | Red = avoid</p>
+                <svg id="heatmap-svg" width="100%" height="400"></svg>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Color scheme
+        const colors = {
+            primary: '#4a9eff',
+            success: '#34d399',
+            warning: '#fbbf24',
+            danger: '#ef4444',
+            muted: '#99a9b8',
+            bg: '#1a2332'
+        };
+
+        // ===== VISUAL 1: Composite Index Order =====
+        function updateCompositeDemo(indexOrder) {
+            const svg = d3.select('#composite-svg');
+            svg.selectAll('*').remove();
+
+            const width = svg.node().clientWidth;
+            const height = 300;
+            const margin = { top: 20, right: 20, bottom: 20, left: 20 };
+
+            const queries = [
+                { name: 'WHERE a = ?', canUse: true, cols: [indexOrder[0]] },
+                { name: 'WHERE a = ? AND b = ?', canUse: indexOrder[0] === 'a' && indexOrder[1] === 'b', cols: [indexOrder[0], indexOrder[1]] },
+                { name: 'WHERE b = ?', canUse: false, cols: ['b'] },
+                { name: 'WHERE a = ? ORDER BY c', canUse: indexOrder[0] === 'a' && indexOrder[2] === 'c', cols: [indexOrder[0], indexOrder[2]] },
+                { name: 'WHERE c = ? AND a = ?', canUse: false, cols: ['c', 'a'] }
+            ];
+
+            const g = svg.append('g').attr('transform', `translate(${margin.left},${margin.top})`);
+
+            const barHeight = 30;
+            const bars = g.selectAll('g').data(queries).enter().append('g')
+                .attr('transform', (d, i) => `translate(0,${i * (barHeight + 10)})`);
+
+            bars.append('rect')
+                .attr('width', d => d.canUse ? 200 : 80)
+                .attr('height', barHeight)
+                .attr('rx', 4)
+                .style('fill', d => d.canUse ? colors.success : colors.danger)
+                .style('opacity', 0.8);
+
+            bars.append('text')
+                .attr('x', 10)
+                .attr('y', barHeight / 2)
+                .attr('dy', '0.35em')
+                .style('fill', '#0f1419')
+                .style('font-weight', 'bold')
+                .style('font-size', '12px')
+                .text(d => d.canUse ? '✓ Fast' : '✗ Slow');
+
+            bars.append('text')
+                .attr('x', width - 300)
+                .attr('y', barHeight / 2)
+                .attr('dy', '0.35em')
+                .style('fill', colors.muted)
+                .style('font-size', '12px')
+                .text(d => d.name);
+
+            // Legend
+            const indexArray = indexOrder.split('');
+            d3.select('#composite-legend').html(`
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #4a9eff;"></div>
+                    Index order: (${indexArray.join(', ')})
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: ${colors.success};"></div>
+                    Index helps query
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: ${colors.danger};"></div>
+                    Index not used
+                </div>
+            `);
+        }
+        updateCompositeDemo('abc');
+
+        // ===== VISUAL 2: B-tree Structure =====
+        let btreeData = { nodes: [{ id: 0, values: [50] }], links: [] };
+        let btreeInsertCount = 0;
+
+        function btreeInsert() {
+            btreeInsertCount++;
+            const newValue = Math.floor(Math.random() * 100);
+
+            // Simplified tree growth
+            const level = Math.floor(Math.log2(btreeInsertCount + 1));
+            const nodeCount = Math.pow(2, level);
+
+            btreeData.nodes = [];
+            for (let i = 0; i < nodeCount; i++) {
+                btreeData.nodes.push({ id: i, values: [Math.floor((i + 1) * 100 / nodeCount)] });
+            }
+
+            renderBtree();
+            d3.select('#btree-levels').text(level + 1);
+        }
+
+        function btreeReset() {
+            btreeInsertCount = 0;
+            btreeData = { nodes: [{ id: 0, values: [50] }], links: [] };
+            renderBtree();
+            d3.select('#btree-levels').text('1');
+        }
+
+        function renderBtree() {
+            const svg = d3.select('#btree-svg');
+            svg.selectAll('*').remove();
+
+            const width = svg.node().clientWidth;
+            const height = 350;
+
+            const g = svg.append('g').attr('transform', `translate(${width / 2},50)`);
+
+            const nodeSize = 60;
+            const levelHeight = 100;
+            const nodeCount = btreeData.nodes.length;
+
+            btreeData.nodes.forEach((node, i) => {
+                const level = Math.floor(Math.log2(i + 1));
+                const posInLevel = i - (Math.pow(2, level) - 1);
+                const nodesInLevel = Math.pow(2, level);
+                const x = (posInLevel - nodesInLevel / 2) * 120;
+                const y = level * levelHeight;
+
+                g.append('circle')
+                    .attr('cx', x)
+                    .attr('cy', y)
+                    .attr('r', nodeSize / 2)
+                    .style('fill', colors.primary)
+                    .style('opacity', 0.7);
+
+                g.append('text')
+                    .attr('x', x)
+                    .attr('y', y)
+                    .attr('text-anchor', 'middle')
+                    .attr('dy', '0.35em')
+                    .style('fill', '#0f1419')
+                    .style('font-weight', 'bold')
+                    .style('font-size', '12px')
+                    .text(node.values[0]);
+            });
+        }
+        renderBtree();
+
+        // ===== VISUAL 3: Storage Comparison =====
+        function renderStorage() {
+            const svg = d3.select('#storage-svg');
+            svg.selectAll('*').remove();
+
+            const data = [
+                { type: 'B-tree (100M rows)', size: 2000, color: colors.primary },
+                { type: 'BRIN (1B rows)', size: 10, color: colors.success },
+                { type: 'GIN (10M docs)', size: 800, color: colors.warning }
+            ];
+
+            const width = svg.node().clientWidth;
+            const height = 300;
+            const margin = { top: 20, right: 20, bottom: 60, left: 60 };
+
+            const g = svg.append('g').attr('transform', `translate(${margin.left},${margin.top})`);
+
+            const scaleX = d3.scaleBand()
+                .domain(data.map(d => d.type))
+                .range([0, width - margin.left - margin.right])
+                .padding(0.3);
+
+            const scaleY = d3.scaleLinear()
+                .domain([0, 2500])
+                .range([height - margin.top - margin.bottom, 0]);
+
+            g.selectAll('rect').data(data).enter().append('rect')
+                .attr('x', d => scaleX(d.type))
+                .attr('y', d => scaleY(d.size))
+                .attr('width', scaleX.bandwidth())
+                .attr('height', d => height - margin.top - margin.bottom - scaleY(d.size))
+                .style('fill', d => d.color)
+                .style('opacity', 0.8);
+
+            g.append('g')
+                .attr('transform', `translate(0,${height - margin.top - margin.bottom})`)
+                .call(d3.axisBottom(scaleX))
+                .style('color', colors.muted);
+
+            g.append('text')
+                .attr('x', width / 2)
+                .attr('y', height - margin.bottom + 50)
+                .attr('text-anchor', 'middle')
+                .style('fill', colors.muted)
+                .style('font-size', '12px')
+                .text('Index Type');
+
+            g.append('text')
+                .attr('transform', 'rotate(-90)')
+                .attr('y', -margin.left + 15)
+                .attr('x', -(height - margin.top - margin.bottom) / 2)
+                .attr('text-anchor', 'middle')
+                .style('fill', colors.muted)
+                .style('font-size', '12px')
+                .text('Storage (MB)');
+        }
+        renderStorage();
+
+        // ===== VISUAL 4: Cost Curve =====
+        function updateCostCurve(type) {
+            const svg = d3.select('#cost-svg');
+            svg.selectAll('*').remove();
+
+            const width = svg.node().clientWidth;
+            const height = 300;
+            const margin = { top: 20, right: 20, bottom: 40, left: 60 };
+
+            const indexCount = [0, 1, 2, 3, 4, 5, 6, 7];
+            let data;
+
+            if (type === 'query') {
+                data = indexCount.map(n => ({ x: n, y: 1000 * Math.exp(-n / 2) }));
+            } else if (type === 'write') {
+                data = indexCount.map(n => ({ x: n, y: 100 + n * 50 }));
+            } else {
+                data = indexCount.map(n => {
+                    const query = 1000 * Math.exp(-n / 2);
+                    const write = 100 + n * 50;
+                    return { x: n, y: query * 0.7 + write * 0.3 };
+                });
+            }
+
+            const g = svg.append('g').attr('transform', `translate(${margin.left},${margin.top})`);
+
+            const scaleX = d3.scaleLinear()
+                .domain([0, 7])
+                .range([0, width - margin.left - margin.right]);
+
+            const scaleY = d3.scaleLinear()
+                .domain([0, Math.max(...data.map(d => d.y)) * 1.2])
+                .range([height - margin.top - margin.bottom, 0]);
+
+            const line = d3.line()
+                .x(d => scaleX(d.x))
+                .y(d => scaleY(d.y));
+
+            g.append('path')
+                .datum(data)
+                .attr('d', line)
+                .style('stroke', colors.primary)
+                .style('stroke-width', 3)
+                .style('fill', 'none');
+
+            g.selectAll('circle').data(data).enter().append('circle')
+                .attr('cx', d => scaleX(d.x))
+                .attr('cy', d => scaleY(d.y))
+                .attr('r', 4)
+                .style('fill', colors.primary);
+
+            g.append('g')
+                .attr('transform', `translate(0,${height - margin.top - margin.bottom})`)
+                .call(d3.axisBottom(scaleX).tickFormat(d => d + ' indexes'))
+                .style('color', colors.muted);
+
+            g.append('g')
+                .call(d3.axisLeft(scaleY))
+                .style('color', colors.muted);
+
+            g.append('text')
+                .attr('x', width / 2)
+                .attr('y', height - 10)
+                .attr('text-anchor', 'middle')
+                .style('fill', colors.muted)
+                .style('font-size', '12px')
+                .text('Number of Indexes');
+
+            g.append('text')
+                .attr('transform', 'rotate(-90)')
+                .attr('y', -margin.left + 15)
+                .attr('x', -(height - margin.top - margin.bottom) / 2)
+                .attr('text-anchor', 'middle')
+                .style('fill', colors.muted)
+                .style('font-size', '12px')
+                .text('Time (ms)');
+        }
+        updateCostCurve('query');
+
+        // ===== VISUAL 5: Decision Tree =====
+        function renderDecisionTree() {
+            const svg = d3.select('#decision-svg');
+            svg.selectAll('*').remove();
+
+            const width = svg.node().clientWidth;
+            const height = 400;
+
+            const data = {
+                name: 'Index needed?',
+                children: [
+                    {
+                        name: 'Query frequency?',
+                        children: [
+                            { name: '<1/sec → Skip', value: 'Skip' },
+                            {
+                                name: '1-100/sec',
+                                children: [
+                                    { name: 'Data size?', children: [
+                                        { name: '<1M → B-tree', value: 'B-tree' },
+                                        { name: '>100M → BRIN', value: 'BRIN' }
+                                    ]}
+                                ]
+                            },
+                            {
+                                name: '>100/sec',
+                                children: [
+                                    { name: 'Query type?', children: [
+                                        { name: 'Equality → B-tree', value: 'B-tree' },
+                                        { name: 'JSON/Array → GIN', value: 'GIN' },
+                                        { name: 'Geographic → SPGIST', value: 'SPGIST' }
+                                    ]}
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            };
+
+            const g = svg.append('g').attr('transform', `translate(${width / 2},20)`);
+
+            const tree = d3.tree().size([width - 60, height - 60]);
+            const root = d3.hierarchy(data);
+            tree(root);
+
+            // Links
+            g.selectAll('line').data(root.links()).enter().append('line')
+                .attr('x1', d => d.source.x)
+                .attr('y1', d => d.source.y)
+                .attr('x2', d => d.target.x)
+                .attr('y2', d => d.target.y)
+                .style('stroke', colors.muted)
+                .style('stroke-width', 1);
+
+            // Nodes
+            const nodes = g.selectAll('g').data(root.descendants()).enter().append('g')
+                .attr('transform', d => `translate(${d.x},${d.y})`);
+
+            nodes.append('circle')
+                .attr('r', 25)
+                .style('fill', d => d.data.value ? colors.success : colors.primary)
+                .style('opacity', 0.8);
+
+            nodes.append('text')
+                .attr('text-anchor', 'middle')
+                .attr('dy', '0.35em')
+                .style('fill', '#0f1419')
+                .style('font-size', '11px')
+                .style('font-weight', 'bold')
+                .text(d => d.data.name.length > 15 ? d.data.name.substring(0, 13) + '...' : d.data.name);
+        }
+        renderDecisionTree();
+
+        // ===== VISUAL 6: Real Scenarios =====
+        function showScenario(scenario) {
+            const scenarios = {
+                ecommerce: {
+                    title: 'E-commerce (100M orders)',
+                    queries: [
+                        { name: 'User orders', freq: '10K/sec', index: 'B-tree(userId, createdAt)', impact: 'Critical' },
+                        { name: 'Recent orders', freq: '5K/sec', index: 'BRIN(createdAt)', impact: 'High' },
+                        { name: 'Status filter', freq: '1K/sec', index: 'None (low selectivity)', impact: 'Low' }
+                    ],
+                    indexCount: 2,
+                    storageUsed: '2.5 GB indexes / 500 GB data'
+                },
+                logging: {
+                    title: 'Logging (1B rows/year)',
+                    queries: [
+                        { name: 'Time range', freq: '100/sec', index: 'BRIN(timestamp)', impact: 'High' },
+                        { name: 'Session lookup', freq: '50/sec', index: 'B-tree(sessionId, timestamp)', impact: 'High' },
+                        { name: 'Error type', freq: '10/sec', index: 'None (analytical)', impact: 'Low' }
+                    ],
+                    indexCount: 2,
+                    storageUsed: '1.5 GB indexes / 1000 GB data'
+                },
+                search: {
+                    title: 'Full-text Search (10M articles)',
+                    queries: [
+                        { name: 'Text search', freq: '1K/sec', index: 'GIN(tsvector)', impact: 'Critical' },
+                        { name: 'Author filter', freq: '500/sec', index: 'B-tree(author, createdAt)', impact: 'High' },
+                        { name: 'Category', freq: '200/sec', index: 'B-tree(category)', impact: 'Medium' }
+                    ],
+                    indexCount: 3,
+                    storageUsed: '3 GB indexes / 150 GB data'
+                }
+            };
+
+            const s = scenarios[scenario];
+            const html = `
+                <div class="comparison-card">
+                    <h4>Queries</h4>
+                    <p>${s.queries.map(q => `<strong>${q.name}</strong> (${q.freq})<br/>→ ${q.index}<br/>`).join('')}</p>
+                </div>
+                <div class="comparison-card">
+                    <h4>Stats</h4>
+                    <p><strong>Indexes:</strong> ${s.indexCount}<br/><strong>Storage:</strong> ${s.storageUsed}</p>
+                </div>
+            `;
+            d3.select('#scenario-details').html(html);
+
+            // Update visualization
+            const svg = d3.select('#scenario-svg');
+            svg.selectAll('*').remove();
+
+            const width = svg.node().clientWidth;
+            const height = 300;
+            const margin = { top: 20, right: 20, bottom: 40, left: 60 };
+
+            const g = svg.append('g').attr('transform', `translate(${margin.left},${margin.top})`);
+
+            const scaleX = d3.scaleBand()
+                .domain(s.queries.map(q => q.name))
+                .range([0, width - margin.left - margin.right])
+                .padding(0.3);
+
+            const freqMap = { 'Critical': 10000, 'High': 5000, 'Medium': 1000, 'Low': 100 };
+            const scaleY = d3.scaleLinear()
+                .domain([0, 15000])
+                .range([height - margin.top - margin.bottom, 0]);
+
+            g.selectAll('rect').data(s.queries).enter().append('rect')
+                .attr('x', d => scaleX(d.name))
+                .attr('y', d => scaleY(freqMap[d.impact]))
+                .attr('width', scaleX.bandwidth())
+                .attr('height', d => height - margin.top - margin.bottom - scaleY(freqMap[d.impact]))
+                .style('fill', d => {
+                    if (d.impact === 'Critical') return colors.danger;
+                    if (d.impact === 'High') return colors.warning;
+                    if (d.impact === 'Medium') return colors.primary;
+                    return colors.success;
+                })
+                .style('opacity', 0.8);
+
+            g.append('g')
+                .attr('transform', `translate(0,${height - margin.top - margin.bottom})`)
+                .call(d3.axisBottom(scaleX))
+                .style('color', colors.muted);
+
+            g.append('text')
+                .attr('x', width / 2)
+                .attr('y', height - 10)
+                .attr('text-anchor', 'middle')
+                .style('fill', colors.muted)
+                .style('font-size', '12px')
+                .text('Query Impact');
+        }
+        showScenario('ecommerce');
+
+        // ===== VISUAL 7: Heatmap =====
+        function renderHeatmap() {
+            const svg = d3.select('#heatmap-svg');
+            svg.selectAll('*').remove();
+
+            const indexTypes = ['B-tree', 'BRIN', 'GIN', 'Hash', 'GiST', 'SPGIST'];
+            const queryTypes = ['Equality', 'Range', 'JSON/Array', 'Text Search', 'Geographic'];
+
+            const data = [
+                { index: 'B-tree', query: 'Equality', score: 10 },
+                { index: 'B-tree', query: 'Range', score: 10 },
+                { index: 'B-tree', query: 'JSON/Array', score: 3 },
+                { index: 'B-tree', query: 'Text Search', score: 2 },
+                { index: 'B-tree', query: 'Geographic', score: 2 },
+
+                { index: 'BRIN', query: 'Equality', score: 4 },
+                { index: 'BRIN', query: 'Range', score: 9 },
+                { index: 'BRIN', query: 'JSON/Array', score: 1 },
+                { index: 'BRIN', query: 'Text Search', score: 1 },
+                { index: 'BRIN', query: 'Geographic', score: 2 },
+
+                { index: 'GIN', query: 'Equality', score: 5 },
+                { index: 'GIN', query: 'Range', score: 2 },
+                { index: 'GIN', query: 'JSON/Array', score: 10 },
+                { index: 'GIN', query: 'Text Search', score: 10 },
+                { index: 'GIN', query: 'Geographic', score: 2 },
+
+                { index: 'Hash', query: 'Equality', score: 8 },
+                { index: 'Hash', query: 'Range', score: 1 },
+                { index: 'Hash', query: 'JSON/Array', score: 1 },
+                { index: 'Hash', query: 'Text Search', score: 1 },
+                { index: 'Hash', query: 'Geographic', score: 1 },
+
+                { index: 'GiST', query: 'Equality', score: 3 },
+                { index: 'GiST', query: 'Range', score: 4 },
+                { index: 'GiST', query: 'JSON/Array', score: 2 },
+                { index: 'GiST', query: 'Text Search', score: 3 },
+                { index: 'GiST', query: 'Geographic', score: 9 },
+
+                { index: 'SPGIST', query: 'Equality', score: 3 },
+                { index: 'SPGIST', query: 'Range', score: 5 },
+                { index: 'SPGIST', query: 'JSON/Array', score: 1 },
+                { index: 'SPGIST', query: 'Text Search', score: 1 },
+                { index: 'SPGIST', query: 'Geographic', score: 10 }
+            ];
+
+            const width = svg.node().clientWidth;
+            const height = 400;
+            const cellSize = 50;
+
+            const g = svg.append('g').attr('transform', `translate(100,40)`);
+
+            const colorScale = d3.scaleLinear()
+                .domain([1, 5.5, 10])
+                .range([colors.danger, colors.warning, colors.success]);
+
+            g.selectAll('rect').data(data).enter().append('rect')
+                .attr('x', d => queryTypes.indexOf(d.query) * cellSize)
+                .attr('y', d => indexTypes.indexOf(d.index) * cellSize)
+                .attr('width', cellSize - 2)
+                .attr('height', cellSize - 2)
+                .style('fill', d => colorScale(d.score))
+                .style('stroke', colors.muted)
+                .style('stroke-width', 1)
+                .attr('class', 'heatmap-cell');
+
+            // Labels
+            g.selectAll('.query-label').data(queryTypes).enter().append('text')
+                .attr('x', (d, i) => i * cellSize + cellSize / 2)
+                .attr('y', -10)
+                .attr('text-anchor', 'middle')
+                .style('fill', colors.muted)
+                .style('font-size', '12px')
+                .text(d => d);
+
+            g.selectAll('.index-label').data(indexTypes).enter().append('text')
+                .attr('x', -10)
+                .attr('y', (d, i) => i * cellSize + cellSize / 2)
+                .attr('text-anchor', 'end')
+                .attr('dy', '0.35em')
+                .style('fill', colors.muted)
+                .style('font-size', '12px')
+                .text(d => d);
+
+            // Legend
+            const legend = svg.append('g').attr('transform', `translate(${width - 200},20)`);
+            legend.append('rect').attr('x', 0).attr('y', 0).attr('width', 20).attr('height', 20)
+                .style('fill', colors.success);
+            legend.append('text').attr('x', 30).attr('y', 10).attr('dy', '0.35em')
+                .style('fill', colors.muted).style('font-size', '12px').text('Highly Recommended');
+
+            legend.append('rect').attr('x', 0).attr('y', 30).attr('width', 20).attr('height', 20)
+                .style('fill', colors.warning);
+            legend.append('text').attr('x', 30).attr('y', 40).attr('dy', '0.35em')
+                .style('fill', colors.muted).style('font-size', '12px').text('Maybe Use');
+
+            legend.append('rect').attr('x', 0).attr('y', 60).attr('width', 20).attr('height', 20)
+                .style('fill', colors.danger);
+            legend.append('text').attr('x', 30).attr('y', 70).attr('dy', '0.35em')
+                .style('fill', colors.muted).style('font-size', '12px').text('Avoid');
+        }
+        renderHeatmap();
+    </script>
+</body>
+</html>

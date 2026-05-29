@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MongoDB Replication & Sharding</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f5f7fa; padding: 40px 20px; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        h1 { color: #1a202c; margin-bottom: 40px; text-align: center; font-size: 32px; }
+        .section { margin-bottom: 40px; }
+        .section-title { font-size: 24px; color: #2d3748; margin-bottom: 20px; border-bottom: 3px solid #ed8936; padding-bottom: 10px; }
+
+        .architecture-box { background: white; border-radius: 8px; padding: 30px; margin: 20px 0; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        .node { display: inline-block; background: linear-gradient(135deg, #ed8936 0%, #c05621 100%); color: white; padding: 15px 20px; margin: 10px; border-radius: 6px; font-weight: 600; min-width: 120px; text-align: center; }
+        .secondary { background: linear-gradient(135deg, #ecc94b 0%, #d69e2e 100%); }
+        .primary { background: linear-gradient(135deg, #ed8936 0%, #c05621 100%); }
+        .arrow { display: inline-block; margin: 0 10px; color: #ed8936; font-size: 20px; }
+
+        .card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-bottom: 30px; }
+        .card { background: white; border-radius: 8px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); border-left: 4px solid #ed8936; }
+        .card h3 { color: #2d3748; margin-bottom: 12px; font-size: 18px; }
+        .card p { color: #718096; line-height: 1.6; font-size: 14px; }
+        .card ul { color: #718096; margin-left: 20px; margin-top: 10px; }
+        .card li { margin-bottom: 8px; }
+
+        .comparison-table { width: 100%; border-collapse: collapse; background: white; border-radius: 8px; overflow: hidden; margin: 20px 0; }
+        .comparison-table th { background: linear-gradient(135deg, #ed8936 0%, #c05621 100%); color: white; padding: 15px; text-align: left; font-weight: 600; }
+        .comparison-table td { padding: 12px 15px; border-bottom: 1px solid #e2e8f0; }
+        .comparison-table tr:hover { background: #f7fafc; }
+        .comparison-table tr:nth-child(even) { background: #f9fafb; }
+
+        .sharding-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin: 20px 0; }
+        .shard { background: linear-gradient(135deg, #ed8936 0%, #c05621 100%); color: white; padding: 20px; border-radius: 6px; text-align: center; }
+        .shard-header { font-weight: 600; margin-bottom: 10px; }
+        .shard-content { font-size: 13px; opacity: 0.9; }
+
+        .stat-box { background: linear-gradient(135deg, #ed8936 0%, #c05621 100%); color: white; padding: 20px; border-radius: 8px; margin: 10px; display: inline-block; min-width: 200px; text-align: center; }
+        .stat-number { font-size: 32px; font-weight: bold; }
+        .stat-label { font-size: 14px; opacity: 0.9; margin-top: 5px; }
+
+        .flow-diagram { background: white; border-radius: 8px; padding: 30px; text-align: center; margin: 20px 0; }
+        .step { display: inline-block; background: #edf2f7; color: #2d3748; padding: 15px 20px; margin: 10px; border-radius: 6px; font-weight: 600; min-width: 140px; border: 2px solid #ed8936; }
+        .flow-arrow { display: inline-block; margin: 0 10px; color: #ed8936; font-size: 24px; }
+
+        .best-practice { background: #fffaf0; border-left: 4px solid #ed8936; padding: 15px; border-radius: 4px; margin: 15px 0; }
+        .best-practice strong { color: #c05621; }
+
+        .cost-analysis { background: white; border-radius: 8px; padding: 20px; margin: 20px 0; }
+        .cost-row { display: grid; grid-template-columns: 150px 1fr; gap: 20px; padding: 15px 0; border-bottom: 1px solid #e2e8f0; }
+        .cost-row:last-child { border-bottom: none; }
+        .cost-label { font-weight: 600; color: #2d3748; }
+        .cost-value { color: #718096; }
+
+        .issue-card { background: #fff5f5; border-left: 4px solid #f56565; padding: 15px; border-radius: 4px; margin: 10px 0; }
+        .issue-card strong { color: #c53030; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>MongoDB Replication & Sharding Architecture</h1>
+
+        <div class="section">
+            <div class="section-title">Replica Sets: High Availability</div>
+            <div class="architecture-box">
+                <div style="text-align: center; margin: 20px 0;">
+                    <div class="node primary">Primary<br/>Writes</div>
+                    <div class="arrow">↓</div>
+                </div>
+                <div style="text-align: center;">
+                    <div class="node secondary">Secondary 1<br/>Reads</div>
+                    <span style="margin: 0 20px;">←→</span>
+                    <div class="node secondary">Secondary 2<br/>Reads</div>
+                    <span style="margin: 0 20px;">←→</span>
+                    <div class="node secondary">Secondary 3<br/>Reads</div>
+                </div>
+                <p style="text-align: center; margin-top: 20px; color: #718096; font-size: 14px;">
+                    <strong>If Primary fails:</strong> Automatic election → Secondary becomes primary → Zero downtime
+                </p>
+            </div>
+
+            <div class="card-grid">
+                <div class="card">
+                    <h3>Write Concern Levels</h3>
+                    <ul>
+                        <li><strong>w: 1</strong> - Primary only (fast, risky)</li>
+                        <li><strong>w: 3</strong> - All 3 replicas (slow, safe)</li>
+                        <li><strong>w: "majority"</strong> - Half + 1 (balanced)</li>
+                        <li><strong>j: true</strong> - Journaled (durable)</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h3>Read Preference</h3>
+                    <ul>
+                        <li><strong>primary</strong> - Consistent (default)</li>
+                        <li><strong>secondary</strong> - Offload reads, eventual consistent</li>
+                        <li><strong>nearest</strong> - Lowest latency</li>
+                        <li><strong>primaryPreferred</strong> - Fallback to secondary</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h3>Benefits</h3>
+                    <ul>
+                        <li>Automatic failover &lt;10s</li>
+                        <li>Read scaling (read from secondaries)</li>
+                        <li>Backup via secondary</li>
+                        <li>Maintenance windows</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Sharding: Horizontal Scaling</div>
+            <div class="card" style="background: #fffaf0; margin-bottom: 20px;">
+                <h3 style="color: #c05621;">Shard Key = Critical Decision</h3>
+                <p>Cannot change without resharding entire dataset. Must have high cardinality, even distribution, and align with query patterns.</p>
+            </div>
+
+            <div class="sharding-grid">
+                <div class="shard">
+                    <div class="shard-header">Shard 1</div>
+                    <div class="shard-content">
+                        CustomerId<br/>0-1M<br/>
+                        <span style="opacity: 0.7;">~167GB</span>
+                    </div>
+                </div>
+                <div class="shard">
+                    <div class="shard-header">Shard 2</div>
+                    <div class="shard-content">
+                        CustomerId<br/>1M-2M<br/>
+                        <span style="opacity: 0.7;">~167GB</span>
+                    </div>
+                </div>
+                <div class="shard">
+                    <div class="shard-header">Shard 3</div>
+                    <div class="shard-content">
+                        CustomerId<br/>2M-3M<br/>
+                        <span style="opacity: 0.7;">~167GB</span>
+                    </div>
+                </div>
+            </div>
+
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>Shard Key Type</th>
+                        <th>Cardinality</th>
+                        <th>Distribution</th>
+                        <th>Result</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>✓ userId</strong></td>
+                        <td>Millions of values</td>
+                        <td>Even</td>
+                        <td>Balanced shards, good throughput</td>
+                    </tr>
+                    <tr>
+                        <td><strong>✗ gender</strong></td>
+                        <td>3 values (M, F, ?)</td>
+                        <td>Uneven</td>
+                        <td>Hot shards, bottleneck</td>
+                    </tr>
+                    <tr>
+                        <td><strong>✗ timestamp</strong></td>
+                        <td>High but monotonic</td>
+                        <td>Sequential</td>
+                        <td>Writes go to newest shard only (hotspot)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>✓ (region, customerId)</strong></td>
+                        <td>High compound</td>
+                        <td>Very even</td>
+                        <td>Best distribution, no hotspots</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Sharded Cluster Architecture</div>
+            <div class="architecture-box">
+                <p style="margin-bottom: 15px; font-weight: 600; color: #2d3748;">Full Production Setup:</p>
+                <div style="margin: 15px 0; padding: 15px; background: #f7fafc; border-radius: 6px;">
+                    <p style="margin: 5px 0;"><strong>Shard 1 (Replica Set)</strong></p>
+                    <p style="margin: 5px 0; color: #718096; font-size: 13px;">Primary ← → Secondary 1 ← → Secondary 2</p>
+                    <p style="margin: 10px 0 5px 0;"><strong>Shard 2 (Replica Set)</strong></p>
+                    <p style="margin: 5px 0; color: #718096; font-size: 13px;">Primary ← → Secondary 1 ← → Secondary 2</p>
+                    <p style="margin: 10px 0 5px 0;"><strong>Shard 3 (Replica Set)</strong></p>
+                    <p style="margin: 5px 0; color: #718096; font-size: 13px;">Primary ← → Secondary 1 ← → Secondary 2</p>
+                    <p style="margin: 10px 0 5px 0;"><strong>Plus:</strong> Config Servers (3) + Mongos Routers (2+)</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Real-World Scaling Example</div>
+            <div class="card" style="border-left-color: #48bb78;">
+                <h3>Single Server → 3-Shard Cluster</h3>
+                <table style="width: 100%; margin-top: 15px;">
+                    <tr style="border-bottom: 1px solid #e2e8f0;">
+                        <td style="padding: 10px; font-weight: 600;">Before</td>
+                        <td style="padding: 10px;">500GB data, 100K ops/sec, 80% CPU</td>
+                    </tr>
+                    <tr style="background: #f7fafc; border-bottom: 1px solid #e2e8f0;">
+                        <td style="padding: 10px; font-weight: 600;">After (3 shards)</td>
+                        <td style="padding: 10px;">3x capacity (300K+ ops/sec), each shard ~33% CPU, ~167GB data</td>
+                    </tr>
+                </table>
+                <div style="margin-top: 15px;">
+                    <div class="stat-box">
+                        <div class="stat-number">3x</div>
+                        <div class="stat-label">Throughput increase</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Monitoring Sharded Clusters</div>
+            <div class="card-grid">
+                <div class="card">
+                    <h3>sh.status()</h3>
+                    <p>Shows all shards, databases, collections, chunk distribution, balancer status. Run regularly to catch imbalance.</p>
+                </div>
+                <div class="card">
+                    <h3>Chunk Distribution</h3>
+                    <p>Should be balanced. If Shard1=500 chunks, Shard2=100, Shard3=50 → Bad shard key or new data pattern.</p>
+                </div>
+                <div class="card">
+                    <h3>Balancer</h3>
+                    <p>Automatic process. Moves chunks to balance. Can be disabled for maintenance window.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Common Sharding Issues & Solutions</div>
+
+            <div class="issue-card">
+                <strong>Hotspot Shard (90% traffic to 1 shard)</strong><br/>
+                Cause: Bad shard key choice (low cardinality, monotonic, or skewed distribution)<br/>
+                Solution: Reshard with compound key (region + customerId)
+            </div>
+
+            <div class="issue-card">
+                <strong>Uneven Distribution</strong><br/>
+                Example: Shard1=50M docs, Shard2=40M, Shard3=45M, Shard4=2M<br/>
+                Fix: Reshard with better key or add suffix prefix
+            </div>
+
+            <div class="issue-card">
+                <strong>New Shard Gets No Data</strong><br/>
+                Check: Balancer running? Chunk size reasonable?<br/>
+                Monitor: sh.getBalancerState(), sh.isBalancerRunning()
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Cost Analysis: Scaling Progression</div>
+            <div class="cost-analysis">
+                <div class="cost-row">
+                    <div class="cost-label">Single Server</div>
+                    <div class="cost-value">$300/month (100K ops/sec)</div>
+                </div>
+                <div class="cost-row">
+                    <div class="cost-label">+ High Availability</div>
+                    <div class="cost-value">$600/month (replica set)</div>
+                </div>
+                <div class="cost-row">
+                    <div class="cost-label">3 Shards (basic)</div>
+                    <div class="cost-value">$900/month (3 × primary servers)</div>
+                </div>
+                <div class="cost-row">
+                    <div class="cost-label">3 Shards + HA</div>
+                    <div class="cost-value">$1,900/month (3 × replica set)</div>
+                </div>
+                <div class="cost-row">
+                    <div class="cost-label">ROI: Worth at</div>
+                    <div class="cost-value">200K+ ops/sec, 200GB+ data</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Best Practices</div>
+            <div class="card-grid">
+                <div class="card">
+                    <h3>Shard Key Design</h3>
+                    <ul>
+                        <li>High cardinality (millions of values)</li>
+                        <li>Even distribution (avoid skew)</li>
+                        <li>Query-aligned (if queries by userId, use userId)</li>
+                        <li>NOT monotonic (avoid timestamp)</li>
+                        <li>Consider compound keys</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h3>Operational</h3>
+                    <ul>
+                        <li>Always use replica sets within shards</li>
+                        <li>Monitor balancer continuously</li>
+                        <li>Backup before and after migration</li>
+                        <li>Test with production-like load</li>
+                        <li>Plan chunk size strategy</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h3>Avoid</h3>
+                    <ul>
+                        <li>Changing shard key (very expensive)</li>
+                        <li>Low cardinality keys</li>
+                        <li>Monotonic sequences (ids, timestamps)</li>
+                        <li>Unbalanced distribution</li>
+                        <li>Transactions spanning shards (slow)</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Replica Sets vs Sharding</div>
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>Aspect</th>
+                        <th>Replica Sets</th>
+                        <th>Sharding</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Purpose</strong></td>
+                        <td>High availability (HA)</td>
+                        <td>Horizontal scaling</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Throughput</strong></td>
+                        <td>Single server limit</td>
+                        <td>Scales with # shards</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Data</strong></td>
+                        <td>Full copy on each server</td>
+                        <td>Split across shards</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Queries</strong></td>
+                        <td>Any query works</td>
+                        <td>Must include shard key</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Use Both</strong></td>
+                        <td colspan="2">Yes! Shard 1 is a replica set, Shard 2 is a replica set, etc.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>

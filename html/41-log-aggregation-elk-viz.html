@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Log Aggregation (ELK)</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: #0f172a; color: #e2e8f0; }
+    header { background: #1e293b; padding: 20px; border-bottom: 1px solid #334155; display: flex; justify-content: space-between; align-items: center; }
+    h1 { font-size: 24px; }
+    .back-link { color: #60a5fa; text-decoration: none; font-size: 14px; padding: 8px 12px; border: 1px solid #334155; border-radius: 4px; }
+    .container { display: flex; height: calc(100vh - 60px); }
+    #canvas { flex: 1; background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); overflow: auto; padding: 20px; }
+    .controls { width: 300px; background: #1e293b; border-left: 1px solid #334155; padding: 20px; overflow-y: auto; }
+    .control-group { margin-bottom: 20px; }
+    .control-group label { display: block; font-size: 13px; text-transform: uppercase; color: #94a3b8; margin-bottom: 8px; font-weight: 600; }
+    button { background: #3b82f6; color: white; border: none; padding: 10px 16px; border-radius: 6px; cursor: pointer; font-size: 14px; width: 100%; margin-bottom: 8px; }
+    .logs { background: #334155; padding: 15px; border-radius: 8px; margin: 20px 0; max-height: 300px; overflow-y: auto; }
+    .log-line { padding: 8px; background: #1e293b; margin: 5px 0; border-radius: 4px; border-left: 3px solid #60a5fa; font-size: 11px; font-family: monospace; }
+    .log-line.error { border-left-color: #ef4444; }
+    .log-line.warn { border-left-color: #fbbf24; }
+    .status { background: #334155; padding: 12px; border-radius: 6px; font-size: 12px; font-family: monospace; margin: 10px 0; }
+    .info-text { font-size: 12px; color: #cbd5e1; line-height: 1.6; margin: 10px 0; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>🎨 Log Aggregation (ELK)</h1>
+    <a href="../data/14-sre-observability/monitoring/03-opentelemetry-tracing-observability-debugging.md" class="back-link">← Back to Notes</a>
+  </header>
+  <div class="container">
+    <div id="canvas">
+      <h2 style="margin-bottom: 20px;">Log Stream</h2>
+      <div class="logs" id="logs"></div>
+    </div>
+    <div class="controls">
+      <div class="control-group">
+        <label>Filter</label>
+        <button onclick="app.setLevel('all')">All Logs</button>
+        <button onclick="app.setLevel('error')">Errors Only</button>
+        <button onclick="app.setLevel('warn')">Warnings</button>
+      </div>
+      <div class="status">
+        <div>Total: <strong id="total">0</strong></div>
+        <div>Errors: <strong id="errors">0</strong></div>
+      </div>
+      <div class="info-text">
+        <strong>Elasticsearch:</strong> Search & store logs
+      </div>
+      <div class="info-text">
+        <strong>Logstash:</strong> Parse & transform
+      </div>
+      <div class="info-text">
+        <strong>Kibana:</strong> Visualization & query
+      </div>
+    </div>
+  </div>
+  <script>
+    const app = {
+      state: { level: 'all', total: 0, errors: 0 },
+      allLogs: [
+        {level: 'info', msg: 'Request started'},
+        {level: 'info', msg: 'Cache hit'},
+        {level: 'error', msg: 'Connection timeout'},
+        {level: 'warn', msg: 'Slow query 2.5s'},
+        {level: 'info', msg: 'Request completed'}
+      ],
+      init() { this.render(); },
+      setLevel(l) { this.state.level = l; this.render(); },
+      render() {
+        const logsDiv = document.getElementById('logs');
+        const filtered = this.state.level === 'all' ? this.allLogs : this.allLogs.filter(l => l.level === this.state.level);
+        this.state.total = this.allLogs.length;
+        this.state.errors = this.allLogs.filter(l => l.level === 'error').length;
+        logsDiv.innerHTML = filtered.map(l => `
+          <div class="log-line ${l.level}">
+            [${l.level.toUpperCase()}] ${l.msg}
+          </div>
+        `).join('');
+        document.getElementById('total').textContent = this.state.total;
+        document.getElementById('errors').textContent = this.state.errors;
+      }
+    };
+    window.addEventListener('load', () => app.init());
+  </script>
+</body>
+</html>

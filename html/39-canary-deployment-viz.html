@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Canary Deployment</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: #0f172a; color: #e2e8f0; }
+    header { background: #1e293b; padding: 20px; border-bottom: 1px solid #334155; display: flex; justify-content: space-between; align-items: center; }
+    h1 { font-size: 24px; }
+    .back-link { color: #60a5fa; text-decoration: none; font-size: 14px; padding: 8px 12px; border: 1px solid #334155; border-radius: 4px; }
+    .container { display: flex; height: calc(100vh - 60px); }
+    #canvas { flex: 1; background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); overflow: auto; padding: 20px; }
+    .controls { width: 300px; background: #1e293b; border-left: 1px solid #334155; padding: 20px; overflow-y: auto; }
+    .control-group { margin-bottom: 20px; }
+    .control-group label { display: block; font-size: 13px; text-transform: uppercase; color: #94a3b8; margin-bottom: 8px; font-weight: 600; }
+    button { background: #3b82f6; color: white; border: none; padding: 10px 16px; border-radius: 6px; cursor: pointer; font-size: 14px; width: 100%; margin-bottom: 8px; }
+    .deployment { background: #334155; padding: 15px; border-radius: 8px; margin: 20px 0; }
+    .stage { padding: 10px; background: #1e293b; margin: 8px 0; border-radius: 4px; border-left: 3px solid #60a5fa; font-size: 12px; display: flex; justify-content: space-between; }
+    .stage.active { border-left-color: #fbbf24; background: rgba(251, 191, 36, 0.1); }
+    .stage.done { border-left-color: #10b981; background: rgba(16, 185, 129, 0.1); }
+    .status { background: #334155; padding: 12px; border-radius: 6px; font-size: 12px; font-family: monospace; margin: 10px 0; }
+    .info-text { font-size: 12px; color: #cbd5e1; line-height: 1.6; margin: 10px 0; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>🎨 Canary Deployment</h1>
+    <a href="../data/14-sre-observability/monitoring/02-grafana-slos-alerting-incident-response.md" class="back-link">← Back to Notes</a>
+  </header>
+  <div class="container">
+    <div id="canvas">
+      <h2 style="margin-bottom: 20px;">Canary Rollout</h2>
+      <div class="deployment" id="deployment"></div>
+    </div>
+    <div class="controls">
+      <div class="control-group">
+        <label>Deployment</label>
+        <button onclick="app.nextStage()">Next Stage</button>
+        <button onclick="app.rollback()">Rollback</button>
+        <button onclick="app.reset()">Reset</button>
+      </div>
+      <div class="status">
+        <div>Stage: <strong id="stage">Idle</strong></div>
+        <div>Stable: <strong id="stable">-</strong></div>
+      </div>
+      <div class="info-text">
+        <strong>Canary:</strong> Gradual rollout to detect issues
+      </div>
+      <div class="info-text">
+        <strong>Stages:</strong> 5% → 25% → 50% → 100%
+      </div>
+      <div class="info-text">
+        <strong>Rollback:</strong> Revert if metrics bad
+      </div>
+    </div>
+  </div>
+  <script>
+    const app = {
+      state: { stage: 0, stages: ['5% Canary', '25% Canary', '50% Canary', '100% Complete'] },
+      init() { this.render(); },
+      nextStage() { if(this.state.stage < 4) this.state.stage++; this.render(); },
+      rollback() { this.state.stage = 0; this.render(); },
+      reset() { this.state.stage = 0; this.render(); },
+      render() {
+        const deployDiv = document.getElementById('deployment');
+        deployDiv.innerHTML = this.state.stages.map((s, i) => `
+          <div class="stage ${i < this.state.stage ? 'done' : i === this.state.stage ? 'active' : ''}">
+            <span>${s}</span>
+            <span>${i < this.state.stage ? '✓' : i === this.state.stage ? '▶' : ''}</span>
+          </div>
+        `).join('');
+        document.getElementById('stage').textContent = this.state.stage === 0 ? 'Idle' : this.state.stages[this.state.stage - 1];
+        document.getElementById('stable').textContent = this.state.stage < 4 ? 'Monitoring...' : '✓ Stable';
+      }
+    };
+    window.addEventListener('load', () => app.init());
+  </script>
+</body>
+</html>

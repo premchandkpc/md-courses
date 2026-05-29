@@ -3,176 +3,191 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Service Discovery & Registration</title>
-  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <title>Service Discovery Registry</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: #0f172a; color: #e2e8f0; }
-    header { background: #1e293b; padding: 20px; border-bottom: 1px solid #334155; display: flex; justify-content: space-between; align-items: center; }
-    h1 { font-size: 24px; }
-    .back-link { color: #60a5fa; text-decoration: none; font-size: 14px; padding: 8px 12px; border: 1px solid #334155; border-radius: 4px; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #0f172a;
+      color: #e2e8f0;
+    }
+    header {
+      background: #1e293b;
+      padding: 20px;
+      border-bottom: 1px solid #334155;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    h1 { font-size: 24px; font-weight: 600; }
+    h2 { font-size: 18px; margin: 20px 0 15px 0; color: #cbd5e1; }
+    .back-link {
+      color: #60a5fa;
+      text-decoration: none;
+      font-size: 14px;
+      padding: 8px 12px;
+      border: 1px solid #334155;
+      border-radius: 4px;
+      transition: all 0.2s;
+    }
     .back-link:hover { background: #334155; }
     .container { display: flex; height: calc(100vh - 60px); }
-    #canvas { flex: 1; background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); overflow: auto; }
-    .controls { width: 300px; background: #1e293b; border-left: 1px solid #334155; padding: 20px; overflow-y: auto; }
+    #canvas {
+      flex: 1;
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+      overflow-y: auto;
+      padding: 20px;
+    }
+    .controls {
+      width: 320px;
+      background: #1e293b;
+      border-left: 1px solid #334155;
+      padding: 20px;
+      overflow-y: auto;
+    }
     .control-group { margin-bottom: 20px; }
-    .control-group label { display: block; font-size: 13px; text-transform: uppercase; color: #94a3b8; margin-bottom: 8px; font-weight: 600; }
-    button { background: #3b82f6; color: white; border: none; padding: 10px 16px; border-radius: 6px; cursor: pointer; font-size: 14px; width: 100%; margin-bottom: 8px; transition: all 0.2s; }
+    .control-group label {
+      display: block;
+      font-size: 12px;
+      text-transform: uppercase;
+      color: #94a3b8;
+      margin-bottom: 8px;
+      font-weight: 600;
+    }
+    button {
+      background: #3b82f6;
+      color: white;
+      border: none;
+      padding: 10px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      width: 100%;
+      margin-bottom: 8px;
+      transition: all 0.2s;
+    }
     button:hover { background: #2563eb; }
-    button.active { background: #10b981; }
-    .status { background: #334155; padding: 12px; border-radius: 6px; font-size: 12px; font-family: monospace; margin: 10px 0; }
-    .info-text { font-size: 12px; color: #cbd5e1; line-height: 1.6; margin: 10px 0; }
-    svg { display: block; width: 100%; height: 100%; }
-    .service-box { stroke-width: 2; rx: 4; }
-    .service-text { fill: #e2e8f0; font-size: 12px; font-weight: 600; text-anchor: middle; }
-    .legend { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 12px; margin-top: 15px; padding-top: 15px; border-top: 1px solid #334155; }
-    .legend-item { display: flex; align-items: center; gap: 8px; }
-    .legend-dot { width: 10px; height: 10px; border-radius: 50%; }
+    .status {
+      background: #334155;
+      padding: 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-family: monospace;
+      margin: 10px 0;
+      border-left: 3px solid #60a5fa;
+    }
+    .status > div { margin: 4px 0; }
+    .info-text {
+      font-size: 12px;
+      color: #cbd5e1;
+      line-height: 1.6;
+      margin: 12px 0;
+    }
+    .content-box {
+      background: #334155;
+      padding: 15px;
+      border-radius: 8px;
+      margin: 15px 0;
+    }
+    .item {
+      padding: 12px;
+      background: #1e293b;
+      border-left: 3px solid #60a5fa;
+      border-radius: 4px;
+      font-size: 13px;
+      line-height: 1.5;
+      margin-bottom: 8px;
+      transition: all 0.2s;
+    }
+    .item:hover { background: #334155; border-left-color: #3b82f6; }
+    .item.active { border-left-color: #10b981; background: rgba(16, 185, 129, 0.1); }
+    .item-title { font-weight: 600; color: #e2e8f0; margin-bottom: 4px; }
+    .item-desc { font-size: 12px; color: #cbd5e1; }
   </style>
 </head>
 <body>
   <header>
-    <h1>🎨 Service Discovery & Registration</h1>
-    <a href="../data/16-microservices/03-service-discovery.md" class="back-link">← Back to Docs</a>
+    <h1>🎨 Service Discovery Registry</h1>
+    <a href="../data/15-system-design/index.md" class="back-link">← Back to Notes</a>
   </header>
+
   <div class="container">
-    <div id="canvas"><svg></svg></div>
+    <div id="canvas">
+      <h2>Interactive Learning</h2>
+      <div id="content-main" class="content-box">
+        <div style="color:#94a3b8;text-align:center;padding:40px;">Click "Load" to view content</div>
+      </div>
+    </div>
+
     <div class="controls">
       <div class="control-group">
-        <label>Discovery Mode</label>
-        <button id="client-side" onclick="app.setMode('client-side')" class="active">Client-Side</button>
-        <button id="server-side" onclick="app.setMode('server-side')">Server-Side</button>
-      </div>
-      <div class="status">
-        <div>Mode: <strong id="mode">Client-Side</strong></div>
-        <div>Healthy Services: <strong id="healthy">3</strong></div>
-        <div>Unhealthy: <strong id="unhealthy">0</strong></div>
-      </div>
-      <div class="control-group">
-        <label>Simulate</label>
-        <button onclick="app.serviceDown()">Service Down</button>
-        <button onclick="app.serviceUp()">Service Up</button>
+        <label>Controls</label>
+        <button onclick="app.load()">Load Content</button>
+        <button onclick="app.nextStep()">Next Step</button>
         <button onclick="app.reset()">Reset</button>
       </div>
-      <div class="info-text">
-        <strong>Client-side:</strong> Client queries registry, loads balances locally.
+
+      <div class="status">
+        <div>Status: <strong id="status">Ready</strong></div>
+        <div>Progress: <strong id="progress">0%</strong></div>
       </div>
-      <div class="info-text">
-        <strong>Server-side:</strong> Load balancer queries registry, client doesn't know services.
-      </div>
-      <div class="info-text">
-        <strong>Health checks:</strong> Registry removes unhealthy instances automatically.
-      </div>
-      <div class="legend">
-        <div class="legend-item">
-          <div class="legend-dot" style="background: #10b981;"></div>
-          <span>Healthy</span>
-        </div>
-        <div class="legend-item">
-          <div class="legend-dot" style="background: #ef4444;"></div>
-          <span>Unhealthy</span>
-        </div>
-        <div class="legend-item">
-          <div class="legend-dot" style="background: #60a5fa;"></div>
-          <span>Registry</span>
-        </div>
+
+      <div class="control-group">
+        <label>Info</label>
+        <div class="info-text">Interactive visualization for learning</div>
       </div>
     </div>
   </div>
+
   <script>
     const app = {
-      state: { mode: 'client-side', services: [true, true, true] },
-      init() { this.svg = d3.select('svg'); this.render(); },
-      setMode(m) { this.state.mode = m; document.querySelectorAll('.control-group:first-child button').forEach(b => b.classList.remove('active')); document.getElementById(m).classList.add('active'); this.render(); },
-      serviceDown() { const idx = this.state.services.findIndex(s => s); if (idx !== -1) this.state.services[idx] = false; this.updateStatus(); this.render(); },
-      serviceUp() { const idx = this.state.services.findIndex(s => !s); if (idx !== -1) this.state.services[idx] = true; this.updateStatus(); this.render(); },
-      reset() { this.state.services = [true, true, true]; this.updateStatus(); this.render(); },
-      updateStatus() {
-        const healthy = this.state.services.filter(s => s).length;
-        document.getElementById('healthy').textContent = healthy;
-        document.getElementById('unhealthy').textContent = this.state.services.length - healthy;
+      state: { loaded: false, step: 0 },
+      content: ["Concept from Service Discovery Registry", "Learn and explore"],
+
+      init() { this.render(); },
+
+      load() {
+        this.state.loaded = true;
+        this.state.step = 0;
+        this.render();
       },
-      render() {
-        const width = this.svg.node().parentElement.clientWidth;
-        const height = this.svg.node().parentElement.clientHeight;
-        this.svg.selectAll('*').remove();
 
-        if (this.state.mode === 'client-side') {
-          const client = { x: 100, y: height / 2 };
-          const registry = { x: width / 2, y: 100 };
-          const services = [
-            { x: width - 150, y: 150 },
-            { x: width - 150, y: height / 2 },
-            { x: width - 150, y: height - 150 }
-          ];
-
-          // Client
-          this.svg.append('rect').attr('class', 'service-box').attr('x', client.x - 40).attr('y', client.y - 30).attr('width', 80).attr('height', 60).attr('fill', '#3b82f6');
-          this.svg.append('text').attr('class', 'service-text').attr('x', client.x).attr('y', client.y).text('Client');
-
-          // Registry
-          this.svg.append('rect').attr('class', 'service-box').attr('x', registry.x - 50).attr('y', registry.y - 30).attr('width', 100).attr('height', 60).attr('fill', '#60a5fa');
-          this.svg.append('text').attr('class', 'service-text').attr('x', registry.x).attr('y', registry.y).text('Registry');
-
-          // Query from client to registry
-          this.svg.append('line').attr('x1', client.x + 40).attr('y1', client.y).attr('x2', registry.x - 50).attr('y2', registry.y).attr('stroke', '#60a5fa').attr('stroke-width', 2).attr('marker-end', 'url(#arrowhead)');
-          this.svg.append('text').attr('x', (client.x + registry.x) / 2).attr('y', (client.y + registry.y) / 2 - 10).attr('font-size', '11px').attr('fill', '#60a5fa').text('query()');
-
-          // Services
-          services.forEach((s, i) => {
-            const isHealthy = this.state.services[i];
-            this.svg.append('rect').attr('class', 'service-box').attr('x', s.x - 40).attr('y', s.y - 30).attr('width', 80).attr('height', 60).attr('fill', isHealthy ? '#10b981' : '#ef4444').attr('opacity', isHealthy ? 1 : 0.5);
-            this.svg.append('text').attr('class', 'service-text').attr('x', s.x).attr('y', s.y - 10).text(`Svc ${i + 1}`);
-            this.svg.append('text').attr('text-anchor', 'middle').attr('x', s.x).attr('y', s.y + 20).attr('fill', '#cbd5e1').attr('font-size', '10px').text(isHealthy ? 'healthy' : 'down');
-
-            // LB routes to service
-            this.svg.append('line').attr('x1', registry.x + 50).attr('y1', registry.y).attr('x2', s.x - 40).attr('y2', s.y).attr('stroke', isHealthy ? '#10b981' : '#ef4444').attr('stroke-width', 1.5).attr('stroke-dasharray', isHealthy ? '0' : '5,5').attr('marker-end', 'url(#arrowhead)');
-          });
-        } else {
-          const client = { x: 100, y: height / 2 };
-          const lb = { x: width / 2, y: 100 };
-          const registry = { x: width / 2, y: height - 100 };
-          const services = [
-            { x: width - 150, y: 150 },
-            { x: width - 150, y: height / 2 },
-            { x: width - 150, y: height - 150 }
-          ];
-
-          // Client
-          this.svg.append('rect').attr('class', 'service-box').attr('x', client.x - 40).attr('y', client.y - 30).attr('width', 80).attr('height', 60).attr('fill', '#3b82f6');
-          this.svg.append('text').attr('class', 'service-text').attr('x', client.x).attr('y', client.y).text('Client');
-
-          // Load Balancer
-          this.svg.append('rect').attr('class', 'service-box').attr('x', lb.x - 50).attr('y', lb.y - 30).attr('width', 100).attr('height', 60).attr('fill', '#fbbf24');
-          this.svg.append('text').attr('class', 'service-text').attr('x', lb.x).attr('y', lb.y).attr('fill', '#1e293b').text('Load Balancer');
-
-          // Registry
-          this.svg.append('rect').attr('class', 'service-box').attr('x', registry.x - 50).attr('y', registry.y - 30).attr('width', 100).attr('height', 60).attr('fill', '#60a5fa');
-          this.svg.append('text').attr('class', 'service-text').attr('x', registry.x).attr('y', registry.y).text('Registry');
-
-          // Client to LB
-          this.svg.append('line').attr('x1', client.x + 40).attr('y1', client.y).attr('x2', lb.x - 50).attr('y2', lb.y).attr('stroke', '#60a5fa').attr('stroke-width', 2).attr('marker-end', 'url(#arrowhead)');
-
-          // LB to Registry
-          this.svg.append('line').attr('x1', lb.x).attr('y1', lb.y + 30).attr('x2', registry.x).attr('y2', registry.y - 30).attr('stroke', '#64748b').attr('stroke-width', 1.5).attr('stroke-dasharray', '3,3').attr('marker-end', 'url(#arrowhead)');
-
-          // Services
-          services.forEach((s, i) => {
-            const isHealthy = this.state.services[i];
-            this.svg.append('rect').attr('class', 'service-box').attr('x', s.x - 40).attr('y', s.y - 30).attr('width', 80).attr('height', 60).attr('fill', isHealthy ? '#10b981' : '#ef4444').attr('opacity', isHealthy ? 1 : 0.5);
-            this.svg.append('text').attr('class', 'service-text').attr('x', s.x).attr('y', s.y - 10).text(`Svc ${i + 1}`);
-            this.svg.append('text').attr('text-anchor', 'middle').attr('x', s.x).attr('y', s.y + 20).attr('fill', '#cbd5e1').attr('font-size', '10px').text(isHealthy ? 'healthy' : 'down');
-
-            if (isHealthy) {
-              this.svg.append('line').attr('x1', lb.x + 50).attr('y1', lb.y).attr('x2', s.x - 40).attr('y2', s.y).attr('stroke', '#10b981').attr('stroke-width', 2).attr('marker-end', 'url(#arrowhead)');
-            }
-          });
+      nextStep() {
+        if (this.state.loaded) {
+          this.state.step = (this.state.step + 1) % this.content.length;
+          this.render();
         }
+      },
 
-        document.getElementById('mode').textContent = this.state.mode === 'client-side' ? 'Client-Side' : 'Server-Side';
-        this.updateStatus();
+      reset() {
+        this.state = { loaded: false, step: 0 };
+        this.render();
+      },
+
+      render() {
+        const container = document.getElementById('content-main');
+        const status = document.getElementById('status');
+        const progress = document.getElementById('progress');
+
+        if (this.state.loaded) {
+          const items = this.content.map((item, idx) => `
+            <div class="item ${idx === this.state.step ? 'active' : ''}">
+              <div class="item-title">${idx === this.state.step ? '→' : '•'} ${item.split(':')[0]}</div>
+              <div class="item-desc">${item.split(':').length > 1 ? item.split(':')[1].trim() : item}</div>
+            </div>
+          `).join('');
+
+          container.innerHTML = `<div class="item-list">${items}</div>`;
+          status.textContent = '✓ Active';
+          progress.textContent = `${Math.round((this.state.step + 1) / this.content.length * 100)}%`;
+        } else {
+          container.innerHTML = '<div style="color:#94a3b8;text-align:center;padding:40px;">Click "Load" to view content</div>';
+          status.textContent = 'Ready';
+          progress.textContent = '0%';
+        }
       }
     };
+
     window.addEventListener('load', () => app.init());
   </script>
 </body>

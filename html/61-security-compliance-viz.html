@@ -6,84 +6,188 @@
   <title>Security Compliance</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: #0f172a; color: #e2e8f0; }
-    header { background: #1e293b; padding: 20px; border-bottom: 1px solid #334155; display: flex; justify-content: space-between; align-items: center; }
-    h1 { font-size: 24px; }
-    .back-link { color: #60a5fa; text-decoration: none; font-size: 14px; padding: 8px 12px; border: 1px solid #334155; border-radius: 4px; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #0f172a;
+      color: #e2e8f0;
+    }
+    header {
+      background: #1e293b;
+      padding: 20px;
+      border-bottom: 1px solid #334155;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    h1 { font-size: 24px; font-weight: 600; }
+    h2 { font-size: 18px; margin: 20px 0 15px 0; color: #cbd5e1; }
+    .back-link {
+      color: #60a5fa;
+      text-decoration: none;
+      font-size: 14px;
+      padding: 8px 12px;
+      border: 1px solid #334155;
+      border-radius: 4px;
+      transition: all 0.2s;
+    }
+    .back-link:hover { background: #334155; }
     .container { display: flex; height: calc(100vh - 60px); }
-    #canvas { flex: 1; background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); overflow: auto; padding: 20px; }
-    .controls { width: 300px; background: #1e293b; border-left: 1px solid #334155; padding: 20px; overflow-y: auto; }
+    #canvas {
+      flex: 1;
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+      overflow-y: auto;
+      padding: 20px;
+    }
+    .controls {
+      width: 320px;
+      background: #1e293b;
+      border-left: 1px solid #334155;
+      padding: 20px;
+      overflow-y: auto;
+    }
     .control-group { margin-bottom: 20px; }
-    .control-group label { display: block; font-size: 13px; text-transform: uppercase; color: #94a3b8; margin-bottom: 8px; font-weight: 600; }
-    button { background: #3b82f6; color: white; border: none; padding: 10px 16px; border-radius: 6px; cursor: pointer; font-size: 14px; width: 100%; margin-bottom: 8px; }
-    .checklist { background: #334155; padding: 15px; border-radius: 8px; margin: 20px 0; }
-    .item { padding: 10px; background: #1e293b; margin: 8px 0; border-radius: 4px; border-left: 3px solid #60a5fa; font-size: 11px; }
-    .item.checked { border-left-color: #10b981; background: rgba(16, 185, 129, 0.1); }
-    .status { background: #334155; padding: 12px; border-radius: 6px; font-size: 12px; font-family: monospace; margin: 10px 0; }
-    .info-text { font-size: 12px; color: #cbd5e1; line-height: 1.6; margin: 10px 0; }
+    .control-group label {
+      display: block;
+      font-size: 12px;
+      text-transform: uppercase;
+      color: #94a3b8;
+      margin-bottom: 8px;
+      font-weight: 600;
+    }
+    button {
+      background: #3b82f6;
+      color: white;
+      border: none;
+      padding: 10px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      width: 100%;
+      margin-bottom: 8px;
+      transition: all 0.2s;
+    }
+    button:hover { background: #2563eb; }
+    .status {
+      background: #334155;
+      padding: 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-family: monospace;
+      margin: 10px 0;
+      border-left: 3px solid #60a5fa;
+    }
+    .status > div { margin: 4px 0; }
+    .info-text {
+      font-size: 12px;
+      color: #cbd5e1;
+      line-height: 1.6;
+      margin: 12px 0;
+    }
+    .content-box {
+      background: #334155;
+      padding: 15px;
+      border-radius: 8px;
+      margin: 15px 0;
+    }
+    .item {
+      padding: 12px;
+      background: #1e293b;
+      border-left: 3px solid #60a5fa;
+      border-radius: 4px;
+      font-size: 13px;
+      line-height: 1.5;
+      margin-bottom: 8px;
+      transition: all 0.2s;
+    }
+    .item:hover { background: #334155; border-left-color: #3b82f6; }
+    .item.active { border-left-color: #10b981; background: rgba(16, 185, 129, 0.1); }
+    .item-title { font-weight: 600; color: #e2e8f0; margin-bottom: 4px; }
+    .item-desc { font-size: 12px; color: #cbd5e1; }
   </style>
 </head>
 <body>
   <header>
     <h1>🎨 Security Compliance</h1>
-    <a href="../data/13-security/03-zero-trust-penetration-testing-security-culture.md" class="back-link">← Back to Notes</a>
+    <a href="../data/13-security/index.md" class="back-link">← Back to Notes</a>
   </header>
+
   <div class="container">
     <div id="canvas">
-      <h2 style="margin-bottom: 20px;">Compliance Checklist</h2>
-      <div class="checklist" id="checklist"></div>
+      <h2>Interactive Learning</h2>
+      <div id="content-main" class="content-box">
+        <div style="color:#94a3b8;text-align:center;padding:40px;">Click "Load" to view content</div>
+      </div>
     </div>
+
     <div class="controls">
       <div class="control-group">
-        <label>Standard</label>
-        <button onclick="app.loadSOC2()">SOC 2</button>
-        <button onclick="app.loadISO27001()">ISO 27001</button>
-        <button onclick="app.loadHIPAA()">HIPAA</button>
+        <label>Controls</label>
+        <button onclick="app.load()">Load Content</button>
+        <button onclick="app.nextStep()">Next Step</button>
+        <button onclick="app.reset()">Reset</button>
       </div>
+
       <div class="status">
-        <div>Compliance: <strong id="standard">-</strong></div>
-        <div>Status: <strong id="status">0%</strong></div>
+        <div>Status: <strong id="status">Ready</strong></div>
+        <div>Progress: <strong id="progress">0%</strong></div>
       </div>
-      <div class="info-text">
-        <strong>SOC 2:</strong> Service audit standards
-      </div>
-      <div class="info-text">
-        <strong>ISO 27001:</strong> Information security
-      </div>
-      <div class="info-text">
-        <strong>HIPAA:</strong> Health data protection
+
+      <div class="control-group">
+        <label>Info</label>
+        <div class="info-text">Interactive visualization for learning</div>
       </div>
     </div>
   </div>
+
   <script>
     const app = {
-      state: { standard: '', items: [] },
-      standards: {
-        'SOC 2': ['CC6.1 Logical access', 'CC7.2 System monitoring', 'A1.2 Risk assessment'],
-        'ISO 27001': ['A.5.1 Policies', 'A.6.1 Organization', 'A.8.1 Access control'],
-        'HIPAA': ['Admin safeguards', 'Physical safeguards', 'Technical safeguards']
-      },
+      state: { loaded: false, step: 0 },
+      content: ["Concept from Security Compliance", "Learn and explore"],
+
       init() { this.render(); },
-      loadSOC2() { this.state.standard = 'SOC 2'; this.state.items = this.standards['SOC 2']; this.render(); },
-      loadISO27001() { this.state.standard = 'ISO 27001'; this.state.items = this.standards['ISO 27001']; this.render(); },
-      loadHIPAA() { this.state.standard = 'HIPAA'; this.state.items = this.standards['HIPAA']; this.render(); },
+
+      load() {
+        this.state.loaded = true;
+        this.state.step = 0;
+        this.render();
+      },
+
+      nextStep() {
+        if (this.state.loaded) {
+          this.state.step = (this.state.step + 1) % this.content.length;
+          this.render();
+        }
+      },
+
+      reset() {
+        this.state = { loaded: false, step: 0 };
+        this.render();
+      },
+
       render() {
-        const checklistDiv = document.getElementById('checklist');
-        if(this.state.items.length) {
-          const completed = Math.floor(this.state.items.length * 0.66);
-          checklistDiv.innerHTML = this.state.items.map((item, i) => `
-            <div class="item ${i < completed ? 'checked' : ''}">
-              ${i < completed ? '✓' : '○'} ${item}
+        const container = document.getElementById('content-main');
+        const status = document.getElementById('status');
+        const progress = document.getElementById('progress');
+
+        if (this.state.loaded) {
+          const items = this.content.map((item, idx) => `
+            <div class="item ${idx === this.state.step ? 'active' : ''}">
+              <div class="item-title">${idx === this.state.step ? '→' : '•'} ${item.split(':')[0]}</div>
+              <div class="item-desc">${item.split(':').length > 1 ? item.split(':')[1].trim() : item}</div>
             </div>
           `).join('');
-          document.getElementById('standard').textContent = this.state.standard;
-          document.getElementById('status').textContent = `${Math.floor(completed / this.state.items.length * 100)}%`;
+
+          container.innerHTML = `<div class="item-list">${items}</div>`;
+          status.textContent = '✓ Active';
+          progress.textContent = `${Math.round((this.state.step + 1) / this.content.length * 100)}%`;
         } else {
-          checklistDiv.innerHTML = '<div style="color:#94a3b8;text-align:center;padding:20px;">Select standard</div>';
-          document.getElementById('standard').textContent = '-';
+          container.innerHTML = '<div style="color:#94a3b8;text-align:center;padding:40px;">Click "Load" to view content</div>';
+          status.textContent = 'Ready';
+          progress.textContent = '0%';
         }
       }
     };
+
     window.addEventListener('load', () => app.init());
   </script>
 </body>

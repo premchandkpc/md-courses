@@ -130,3 +130,9 @@ Network latency:
 - **Books**: Designing Data-Intensive Applications (Kleppmann), System Design Interview (Alex Xu)
 - **Practice**: System Design Primer (GitHub), Daily Coding Problem
 - **Roadmaps**: This repo's `15-system-design/` (86 files), `21-roadmaps/`
+
+## Visualizations
+
+- [Consistent Hashing Ring](sharding-viz.html) — add/remove nodes and watch keys rebalance on the hash ring
+- [CAP Theorem Triangle](cap-viz.html) — click vertices and real systems to explore trade-offs between Consistency, Availability, and Partition Tolerance
+- [QPS & Storage Estimator](estimation-viz.html) — interactive DAU → QPS → storage calculator with presets

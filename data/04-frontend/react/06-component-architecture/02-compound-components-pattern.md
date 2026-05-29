@@ -627,6 +627,14 @@ export default Tabs;
 
 ## See Also
 
+### Phase 7.1 Related Topics
+
+- [WCAG Accessibility](../../16-accessibility/02-wcag-patterns-and-compliance.md) — Accessible compound components
+- [Redux/Zustand Patterns](../../05-state-management/02-redux-zustand-patterns.md) — State in compound components
+- [React Fiber](../../02-react-internals/02-fiber-reconciliation-engine.md) — Understanding re-renders
+
+### Additional Resources
+
 - Headless UI: Compound component implementation (React/Vue/etc)
 - Radix UI: Advanced compound components with a11y
 - Recharts: Charts built with compound component pattern

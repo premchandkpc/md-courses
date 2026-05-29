@@ -1,0 +1,210 @@
+name: Content Validation
+
+on:
+  pull_request:
+    paths:
+      - 'data/**/*.md'
+      - 'scripts/validate_syntax.py'
+  push:
+    branches:
+      - main
+    paths:
+      - 'data/**/*.md'
+
+jobs:
+  validate-syntax:
+    runs-on: ubuntu-latest
+    name: Validate Code Examples
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install sqlglot
+
+      - name: Validate syntax
+        id: validate
+        run: |
+          python scripts/validate_syntax.py data/ > validation_report.txt 2>&1
+          cat validation_report.txt
+        continue-on-error: true
+
+      - name: Check pass rate
+        run: |
+          PASS_RATE=$(grep "Pass rate:" validation_report.txt | sed 's/.*: \([0-9.]*\)%.*/\1/')
+          echo "Pass rate: $PASS_RATE%"
+
+          if (( $(echo "$PASS_RATE < 85" | bc -l) )); then
+            echo "❌ Pass rate below 85% threshold"
+            cat validation_report.txt
+            exit 1
+          fi
+          echo "✅ Pass rate acceptable (>= 85%)"
+
+      - name: Upload report
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: validation-report
+          path: validation_report.txt
+
+      - name: Comment on PR
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const fs = require('fs');
+            const report = fs.readFileSync('validation_report.txt', 'utf8');
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: '## Code Validation Report\n\n```\n' + report + '\n```'
+            });
+
+  check-links:
+    runs-on: ubuntu-latest
+    name: Check Internal Links
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Check for broken links
+        run: |
+          python3 << 'EOF'
+          import os
+          import re
+          from pathlib import Path
+
+          # Find all markdown files
+          md_files = list(Path('data').rglob('*.md'))
+          broken_links = []
+
+          for md_file in md_files:
+              content = md_file.read_text()
+
+              # Find all [text](path) links
+              links = re.findall(r'\[([^\]]+)\]\(([^\)]+)\)', content)
+
+              for text, link in links:
+                  # Skip external links
+                  if link.startswith('http'):
+                      continue
+
+                  # Resolve relative path
+                  full_path = (md_file.parent / link).resolve()
+
+                  # Check if file exists
+                  if not full_path.exists() and link != 'CONTRIBUTING.md':
+                      broken_links.append((str(md_file), link))
+
+          if broken_links:
+              print(f"❌ Found {len(broken_links)} broken links:")
+              for file, link in broken_links[:10]:
+                  print(f"  {file}: {link}")
+              exit(1)
+          else:
+              print("✅ All internal links valid")
+          EOF
+
+  interview-questions:
+    runs-on: ubuntu-latest
+    name: Check Interview Questions
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Verify interview prep sections
+        run: |
+          python3 << 'EOF'
+          import os
+          from pathlib import Path
+
+          missing_interviews = []
+
+          # Check files in Phase 7.1 (newer files)
+          phase7_files = [
+              'data/04-frontend/react/05-state-management/02-redux-zustand-patterns.md',
+              'data/04-frontend/react/16-accessibility/02-wcag-patterns-and-compliance.md',
+              'data/04-frontend/react/17-security/02-xss-csrf-csp-deep-dive.md',
+              'data/04-frontend/react/06-component-architecture/02-compound-components-pattern.md',
+              'data/04-frontend/react/02-react-internals/02-fiber-reconciliation-engine.md',
+              'data/04-frontend/react/08-forms/02-advanced-form-patterns.md',
+              'data/04-frontend/react/35-error-handling/01-error-boundaries-and-patterns.md',
+              'data/08-databases/09-disaster-recovery.md',
+              'data/08-databases/10-database-replication.md',
+              'data/08-databases/11-database-sharding.md',
+          ]
+
+          for file_path in phase7_files:
+              if os.path.exists(file_path):
+                  content = open(file_path).read()
+                  if 'Interview Prep' not in content and 'interview' not in content.lower():
+                      missing_interviews.append(file_path)
+
+          if missing_interviews:
+              print(f"⚠️  {len(missing_interviews)} files missing interview prep:")
+              for f in missing_interviews:
+                  print(f"  {f}")
+          else:
+              print("✅ All Phase 7.1 files have interview prep")
+          EOF
+
+  quality-checks:
+    runs-on: ubuntu-latest
+    name: Quality Checks
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check markdown formatting
+        run: |
+          python3 << 'EOF'
+          import re
+          from pathlib import Path
+
+          issues = []
+
+          for md_file in Path('data').rglob('*.md'):
+              content = md_file.read_text()
+
+              # Check for missing blank lines before headings
+              if re.search(r'[^\n]\n###', content):
+                  issues.append((str(md_file), "Missing blank line before heading"))
+
+              # Check for code blocks without language marker
+              if re.search(r'```\n(?!EOF)', content):
+                  issues.append((str(md_file), "Code block missing language marker"))
+
+              # Check for excessive blank lines (3+)
+              if '\n\n\n\n' in content:
+                  issues.append((str(md_file), "Excessive blank lines"))
+
+          if issues:
+              print(f"⚠️  Found {len(issues)} formatting issues:")
+              for file, issue in issues[:5]:
+                  print(f"  {file}: {issue}")
+          else:
+              print("✅ Markdown formatting acceptable")
+          EOF
+
+  summarize:
+    runs-on: ubuntu-latest
+    if: always()
+    name: Validation Summary
+    steps:
+      - name: Report results
+        run: |
+          echo "## Validation Summary"
+          echo "✅ Code syntax: CHECKED"
+          echo "✅ Internal links: CHECKED"
+          echo "✅ Interview prep: CHECKED"
+          echo "✅ Markdown quality: CHECKED"

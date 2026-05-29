@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Monte Carlo — Law of Large Numbers Visualizer</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: #1a1a2e; color: #e0e0e0; min-height: 100vh;
+  display: flex; justify-content: center; align-items: center; padding: 20px;
+}
+.back-link { position: fixed; top: 16px; left: 20px; z-index: 100; }
+.back-link a { color: #8e9ef0; text-decoration: none; font-size: 14px; }
+.back-link a:hover { text-decoration: underline; }
+.container { display: flex; flex-direction: column; align-items: center; gap: 12px; width: 100%; max-width: 760px; }
+h1 { font-size: 22px; font-weight: 600; text-align: center; }
+h1 small { display: block; font-size: 12px; font-weight: 400; color: #888; margin-top: 2px; }
+.canvas-wrap { width: 100%; background: #16213e; border-radius: 10px; padding: 6px; }
+canvas { display: block; width: 100%; height: auto; background: #16213e; border-radius: 8px; }
+.controls { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
+.btn {
+  background: #2a2a4a; color: #e0e0e0; border: 1px solid #444; padding: 7px 16px;
+  border-radius: 6px; cursor: pointer; font-size: 13px; transition: all 0.2s;
+}
+.btn:hover { background: #3a3a5a; }
+.btn.go { background: #27ae60; border-color: #2ecc71; }
+.btn.go:hover { background: #2ecc71; }
+.btn.go:disabled { opacity: 0.4; }
+.btn.danger { background: #c0392b; border-color: #e74c3c; }
+.btn.danger:hover { background: #e74c3c; }
+.ctrl-group { display: flex; align-items: center; gap: 8px; background: #16213e; padding: 5px 12px; border-radius: 8px; }
+.ctrl-group label { font-size: 11px; color: #888; }
+input[type=range] { width: 100px; accent-color: #4a6fa5; }
+select { background: #2a2a4a; color: #e0e0e0; border: 1px solid #444; padding: 6px 10px; border-radius: 6px; font-size: 12px; }
+.stats-row { display: flex; gap: 14px; flex-wrap: wrap; justify-content: center; }
+.stat-card { background: #16213e; padding: 5px 14px; border-radius: 8px; text-align: center; min-width: 80px; }
+.stat-card .label { font-size: 10px; color: #888; text-transform: uppercase; letter-spacing: 0.5px; }
+.stat-card .value { font-size: 16px; font-weight: 600; }
+.stat-card .value.hl { color: #f1c40f; }
+.dice-area { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; min-height: 50px; }
+.die {
+  width: 48px; height: 48px; background: #fff; border-radius: 8px;
+  display: grid; grid-template-columns: 1fr 1fr 1fr; grid-template-rows: 1fr 1fr 1fr;
+  padding: 6px; box-shadow: 0 3px 10px rgba(0,0,0,0.3);
+}
+.die .dot { width: 8px; height: 8px; border-radius: 50%; background: #1a1a2e; justify-self: center; align-self: center; }
+.die .dot.hidden { visibility: hidden; }
+</style>
+</head>
+<body>
+<div class="back-link">← <a href="01-discrete-mathematics.md">Back to Discrete Mathematics</a></div>
+<div class="container">
+  <h1>🎲 Monte Carlo — Law of Large Numbers <small>Watch sample mean converge to expected value</small></h1>
+  <div class="canvas-wrap">
+    <canvas id="canvas" width="700" height="320"></canvas>
+  </div>
+  <div class="dice-area" id="diceArea"></div>
+  <div class="controls">
+    <button class="btn go" id="rollBtn">🎲 Roll 1</button>
+    <button class="btn go" id="roll10Btn">🎲 Roll 10</button>
+    <button class="btn go" id="roll100Btn">🎲 Roll 100</button>
+    <button class="btn danger" id="resetBtn">⟳ Reset</button>
+    <div class="ctrl-group">
+      <label>Max Rolls</label>
+      <select id="maxSelect">
+        <option value="100">100</option>
+        <option value="500" selected>500</option>
+        <option value="2000">2,000</option>
+        <option value="10000">10,000</option>
+      </select>
+    </div>
+    <div class="ctrl-group">
+      <label>Animate</label>
+      <input type="range" id="animRange" min="0" max="10" value="5">
+    </div>
+  </div>
+  <div class="stats-row">
+    <div class="stat-card"><div class="label">Rolls</div><div class="value" id="rollCount">0</div></div>
+    <div class="stat-card"><div class="label">Sample Mean</div><div class="value hl" id="sampleMean">0.00</div></div>
+    <div class="stat-card"><div class="label">Expected</div><div class="value" id="expectedVal">3.50</div></div>
+    <div class="stat-card"><div class="label">Error</div><div class="value" id="errorVal">0.00</div></div>
+  </div>
+</div>
+<script>
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+const W = 700, H = 320;
+canvas.width = W; canvas.height = H;
+const PAD = { left: 50, right: 20, top: 20, bottom: 35 };
+
+let rolls = [];
+let currentN = 0;
+let isAnimating = false;
+
+function rollDie() { return Math.floor(Math.random() * 6) + 1; }
+
+function rollOnce() {
+  const maxRolls = parseInt(document.getElementById('maxSelect').value);
+  if (rolls.length >= maxRolls) return;
+  rolls.push(rollDie());
+  currentN = rolls.length;
+  drawDice();
+  drawChart();
+  updateStats();
+}
+
+function rollN(n) {
+  const maxRolls = parseInt(document.getElementById('maxSelect').value);
+  const speed = parseInt(document.getElementById('animRange').value);
+  if (speed === 0) {
+    // Instant
+    const remaining = Math.min(n, maxRolls - rolls.length);
+    for (let i = 0; i < remaining; i++) rolls.push(rollDie());
+    currentN = rolls.length;
+    drawDice(); drawChart(); updateStats();
+    return;
+  }
+  if (isAnimating) return;
+  isAnimating = true;
+  let count = 0;
+  const remaining = Math.min(n, maxRolls - rolls.length);
+  function step() {
+    if (count >= remaining) { isAnimating = false; return; }
+    rolls.push(rollDie());
+    currentN = rolls.length;
+    count++;
+    drawDice(); drawChart(); updateStats();
+    const delay = Math.max(1, 150 - speed * 13);
+    setTimeout(step, delay);
+  }
+  step();
+}
+
+function drawDice() {
+  const el = document.getElementById('diceArea');
+  el.innerHTML = '';
+  const last = rolls.slice(-6).reverse();
+  for (const val of last) {
+    const die = document.createElement('div'); die.className = 'die';
+    const dots = [
+      [false, false, false, false, true, false, false, false, false], // 1
+      [false, false, true, false, false, false, true, false, false], // 2
+      [true, false, false, false, true, false, false, false, true], // 3
+      [true, false, true, false, false, false, true, false, true], // 4
+      [true, false, true, false, true, false, true, false, true], // 5
+      [true, false, true, true, false, true, true, false, true], // 6
+    ];
+    const pattern = dots[val - 1];
+    for (let i = 0; i < 9; i++) {
+      const dot = document.createElement('div'); dot.className = 'dot' + (pattern[i] ? '' : ' hidden');
+      die.appendChild(dot);
+    }
+    el.appendChild(die);
+  }
+}
+
+function drawChart() {
+  ctx.clearRect(0, 0, W, H);
+  ctx.fillStyle = '#16213e'; ctx.fillRect(0, 0, W, H);
+
+  const maxRolls = parseInt(document.getElementById('maxSelect').value);
+  const plotW = W - PAD.left - PAD.right;
+  const plotH = H - PAD.top - PAD.bottom;
+
+  // Expected value line
+  const expY = PAD.top + plotH * (1 - (3.5 - 1) / 5);
+
+  // Grid
+  ctx.strokeStyle = '#2a2a4a'; ctx.lineWidth = 0.5;
+  for (let i = 0; i <= 5; i++) {
+    const y = PAD.top + plotH * i / 5;
+    ctx.beginPath(); ctx.moveTo(PAD.left, y); ctx.lineTo(W - PAD.right, y); ctx.stroke();
+    ctx.fillStyle = '#555'; ctx.font = '10px -apple-system, sans-serif'; ctx.textAlign = 'right';
+    ctx.fillText((6 - i).toFixed(0), PAD.left - 6, y + 3);
+  }
+
+  // Expected line
+  ctx.beginPath(); ctx.moveTo(PAD.left, expY); ctx.lineTo(W - PAD.right, expY);
+  ctx.strokeStyle = '#f1c40f44'; ctx.lineWidth = 1; ctx.setLineDash([4,4]); ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.fillStyle = '#f1c40f88'; ctx.font = '10px -apple-system, sans-serif'; ctx.textAlign = 'left';
+  ctx.fillText('Expected (3.5)', W - PAD.right - 100, expY - 4);
+
+  // Sample mean line
+  if (rolls.length > 0) {
+    const means = [];
+    let sum = 0;
+    for (let i = 0; i < rolls.length; i++) { sum += rolls[i]; means.push(sum / (i + 1)); }
+
+    ctx.beginPath();
+    for (let i = 0; i < means.length; i++) {
+      const x = PAD.left + plotW * (i / Math.max(rolls.length - 1, 1));
+      const y = PAD.top + plotH * (1 - (means[i] - 1) / 5);
+      if (i === 0) ctx.moveTo(x, y);
+      else ctx.lineTo(x, y);
+    }
+    ctx.strokeStyle = '#3498db'; ctx.lineWidth = 2; ctx.stroke();
+
+    // Confidence band (1/sqrt(n))
+    ctx.beginPath();
+    for (let i = 0; i < means.length; i++) {
+      const x = PAD.left + plotW * (i / Math.max(means.length - 1, 1));
+      const bound = 1.96 / Math.sqrt(i + 1);
+      const y1 = PAD.top + plotH * (1 - (means[i] + bound - 1) / 5);
+      const y2 = PAD.top + plotH * (1 - (means[i] - bound - 1) / 5);
+      if (i === 0) { ctx.moveTo(x, y1); ctx.lineTo(x, y2); }
+      else { ctx.lineTo(x, y1); ctx.lineTo(x, y2); }
+    }
+    ctx.strokeStyle = '#3498db22'; ctx.lineWidth = 1; ctx.stroke();
+
+    // Latest mean point
+    const lastMean = means[means.length - 1];
+    const lx = PAD.left + plotW;
+    const ly = PAD.top + plotH * (1 - (lastMean - 1) / 5);
+    ctx.beginPath(); ctx.arc(lx, ly, 4, 0, Math.PI * 2);
+    ctx.fillStyle = '#3498db'; ctx.fill();
+  }
+
+  // X axis
+  ctx.fillStyle = '#555'; ctx.font = '10px -apple-system, sans-serif'; ctx.textAlign = 'center';
+  ctx.fillText('0', PAD.left, H - 6);
+  ctx.fillText(rolls.length.toString(), W - PAD.right, H - 6);
+  ctx.fillText('Number of rolls (n)', W/2, H - 6);
+}
+
+function updateStats() {
+  document.getElementById('rollCount').textContent = rolls.length;
+  if (rolls.length === 0) {
+    document.getElementById('sampleMean').textContent = '0.00';
+    document.getElementById('errorVal').textContent = '0.00';
+    return;
+  }
+  const mean = rolls.reduce((a, b) => a + b, 0) / rolls.length;
+  document.getElementById('sampleMean').textContent = mean.toFixed(4);
+  document.getElementById('errorVal').textContent = Math.abs(mean - 3.5).toFixed(4);
+}
+
+function resetSim() {
+  rolls = []; currentN = 0; isAnimating = false;
+  drawDice(); drawChart(); updateStats();
+  document.getElementById('diceArea').innerHTML = '<span style="color:#666;font-size:13px">Roll some dice!</span>';
+}
+
+document.getElementById('rollBtn').addEventListener('click', rollOnce);
+document.getElementById('roll10Btn').addEventListener('click', () => rollN(10));
+document.getElementById('roll100Btn').addEventListener('click', () => rollN(100));
+document.getElementById('resetBtn').addEventListener('click', resetSim);
+document.getElementById('maxSelect').addEventListener('change', () => { drawChart(); });
+
+// Init
+resetSim();
+</script>
+</body>
+</html>

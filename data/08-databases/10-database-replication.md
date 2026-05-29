@@ -549,6 +549,14 @@ Fix (depends on DB):
 
 ## See Also
 
+### Phase 7.1 Related Topics
+
+- [Disaster Recovery](./09-disaster-recovery.md) — Replication strategy choice
+- [Database Sharding](./11-database-sharding.md) — Multi-shard replication topology
+- [Connection Pooling](./08-connection-pooling.md) — Read replicas scaling
+
+### Additional Resources
+
 - PostgreSQL Streaming Replication: Official docs
 - MySQL Replication: Binlog format, semi-sync
 - MongoDB Replica Sets: Consensus-based

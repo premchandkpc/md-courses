@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Consistent Hashing Ring — System Design Visual</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: #1a1a2e; color: #e0e0e0; min-height: 100vh;
+  display: flex; justify-content: center; align-items: center; padding: 20px;
+}
+.back-link { position: fixed; top: 16px; left: 20px; z-index: 100; }
+.back-link a { color: #8e9ef0; text-decoration: none; font-size: 14px; }
+.back-link a:hover { text-decoration: underline; }
+.container { display: flex; flex-direction: column; align-items: center; gap: 14px; width: 100%; max-width: 720px; }
+h1 { font-size: 22px; font-weight: 600; text-align: center; }
+h1 small { display: block; font-size: 12px; font-weight: 400; color: #888; margin-top: 2px; }
+.canvas-wrap {
+  width: 100%; max-width: 500px; aspect-ratio: 1; background: #16213e;
+  border-radius: 50%; position: relative; margin: 0 auto;
+}
+canvas { display: block; width: 100%; height: 100%; }
+.controls { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
+.btn {
+  background: #2a2a4a; color: #e0e0e0; border: 1px solid #444; padding: 7px 16px;
+  border-radius: 6px; cursor: pointer; font-size: 13px; transition: all 0.2s;
+}
+.btn:hover { background: #3a3a5a; }
+.btn.go { background: #4a6fa5; border-color: #5a7fb5; }
+.btn.go:hover { background: #5a7fb5; }
+.btn.danger { background: #c0392b; border-color: #e74c3c; }
+.btn.danger:hover { background: #e74c3c; }
+.btn.small { padding: 4px 10px; font-size: 12px; }
+.node-list { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; width: 100%; }
+.node-tag {
+  background: #2a3a5a; border: 1px solid #4a4a6a; border-radius: 6px; padding: 4px 10px;
+  font-size: 12px; display: flex; align-items: center; gap: 6px;
+}
+.node-tag .name { color: #f1c40f; }
+.node-tag .remove { cursor: pointer; color: #e74c3c; font-weight: bold; }
+.node-tag .remove:hover { color: #ff6b6b; }
+.stats-row { display: flex; gap: 16px; flex-wrap: wrap; justify-content: center; }
+.stat-card { background: #16213e; padding: 6px 14px; border-radius: 8px; text-align: center; min-width: 90px; }
+.stat-card .label { font-size: 10px; color: #888; text-transform: uppercase; letter-spacing: 0.5px; }
+.stat-card .value { font-size: 16px; font-weight: 600; margin-top: 1px; }
+.stat-card .value.green { color: #2ecc71; }
+.stat-card .value.red { color: #e74c3c; }
+.legend { display: flex; gap: 16px; font-size: 12px; color: #888; flex-wrap: wrap; justify-content: center; }
+.legend span { display: flex; align-items: center; gap: 4px; }
+.legend .dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+</style>
+</head>
+<body>
+<div class="back-link">← <a href="03-system-design-interview.md">Back to System Design Interview</a></div>
+<div class="container">
+  <h1>🎯 Consistent Hashing Ring <small>Add/remove nodes — watch keys migrate</small></h1>
+  <div class="canvas-wrap"><canvas id="canvas" width="500" height="500"></canvas></div>
+  <div class="controls">
+    <button class="btn go" id="addNodeBtn">+ Add Node</button>
+    <button class="btn go" id="addKeyBtn">🔑 Add Keys (10)</button>
+    <button class="btn danger" id="resetBtn">⟳ Reset</button>
+  </div>
+  <div class="node-list" id="nodeList"></div>
+  <div class="stats-row">
+    <div class="stat-card"><div class="label">Nodes</div><div class="value green" id="nodeCount">3</div></div>
+    <div class="stat-card"><div class="label">Keys</div><div class="value" id="keyCount">0</div></div>
+    <div class="stat-card"><div class="label">StdDev</div><div class="value" id="stdDev">0.00</div></div>
+  </div>
+  <div class="legend">
+    <span><span class="dot" style="background:#4a6fa5"></span> Node</span>
+    <span><span class="dot" style="background:#2ecc71"></span> Key</span>
+    <span><span class="dot" style="background:#e74c3c"></span> Migrated</span>
+  </div>
+</div>
+<script>
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+const W = 500, H = 500;
+canvas.width = W; canvas.height = H;
+const CX = W/2, CY = H/2, R = 210;
+
+const HASH_RING = 360 * 100; // 36000 positions
+let nodes = [
+  { name: 'n1', color: '#4a6fa5', pos: ringPos('n1') },
+  { name: 'n2', color: '#8e44ad', pos: ringPos('n2') },
+  { name: 'n3', color: '#e67e22', pos: ringPos('n3') },
+];
+let keys = [];
+let migratedKeys = new Set();
+
+function ringPos(str) {
+  let h = 0;
+  for (let i = 0; i < str.length; i++) h = (h * 31 + str.charCodeAt(i)) & 0x7fffffff;
+  return h % HASH_RING;
+}
+
+function nodeName() {
+  let i = nodes.length + 1;
+  while (nodes.some(n => n.name === 'n' + i)) i++;
+  return 'n' + i;
+}
+
+function randColor() {
+  const colors = ['#2ecc71','#f1c40f','#e74c3c','#3498db','#1abc9c','#9b59b6','#34495e','#16a085','#c0392b','#2980b9'];
+  return colors[Math.floor(Math.random() * colors.length)];
+}
+
+function findNode(pos) {
+  const sorted = [...nodes].sort((a, b) => a.pos - b.pos);
+  for (const n of sorted) if (pos <= n.pos) return n;
+  return sorted[0]; // wrap around
+}
+
+function addNode() {
+  const name = nodeName();
+  const pos = ringPos(name + Date.now());
+  const color = randColor();
+  // Avoid collision
+  let attempts = 0;
+  while (nodes.some(n => Math.abs(n.pos - pos) < 500) && attempts < 100) {
+    pos = (pos + 997) % HASH_RING; attempts++;
+  }
+  nodes.push({ name, color, pos });
+  render();
+  updateUI();
+}
+
+function addKeys(count) {
+  for (let i = 0; i < count; i++) {
+    const k = 'k' + (keys.length + 1);
+    const pos = ringPos(k);
+    keys.push({ name: k, pos, node: findNode(pos).name });
+  }
+  render(); updateUI();
+}
+
+function removeNode(name) {
+  const idx = nodes.findIndex(n => n.name === name);
+  if (idx < 0 || nodes.length <= 1) return;
+  const removed = nodes[idx];
+  nodes.splice(idx, 1);
+  // Remap keys
+  migratedKeys.clear();
+  for (const k of keys) {
+    if (k.node === removed.name) {
+      k.node = findNode(k.pos).name;
+      migratedKeys.add(k.name);
+    }
+  }
+  render(); updateUI();
+}
+
+function render() {
+  ctx.clearRect(0, 0, W, H);
+  ctx.fillStyle = '#16213e'; ctx.fillRect(0, 0, W, H);
+
+  // Ring
+  ctx.beginPath(); ctx.arc(CX, CY, R, 0, Math.PI * 2);
+  ctx.strokeStyle = '#2a3a5a'; ctx.lineWidth = 2; ctx.stroke();
+
+  // Inner ring
+  ctx.beginPath(); ctx.arc(CX, CY, R - 30, 0, Math.PI * 2);
+  ctx.strokeStyle = '#1e2a4a'; ctx.lineWidth = 1; ctx.setLineDash([3,6]); ctx.stroke();
+  ctx.setLineDash([]);
+
+  function posToXY(pos) {
+    const angle = (pos / HASH_RING) * 2 * Math.PI - Math.PI / 2;
+    return { x: CX + R * Math.cos(angle), y: CY + R * Math.sin(angle) };
+  }
+
+  // Draw hash ring segments (between nodes)
+  const sorted = [...nodes].sort((a, b) => a.pos - b.pos);
+  for (let i = 0; i < sorted.length; i++) {
+    const n1 = sorted[i];
+    const n2 = sorted[(i + 1) % sorted.length];
+    const start = n1.pos;
+    const end = n2.pos;
+    // Draw arc from n1 to n2
+    const startAngle = (start / HASH_RING) * 2 * Math.PI - Math.PI / 2;
+    const endAngle = (end / HASH_RING) * 2 * Math.PI - Math.PI / 2;
+    ctx.beginPath();
+    if (i < sorted.length - 1) ctx.arc(CX, CY, R, startAngle, endAngle);
+    else ctx.arc(CX, CY, R, startAngle, endAngle + 2 * Math.PI);
+    ctx.strokeStyle = n1.color + '44'; ctx.lineWidth = 8; ctx.stroke();
+    ctx.strokeStyle = n1.color; ctx.lineWidth = 1;
+    if (i < sorted.length - 1) ctx.arc(CX, CY, R, startAngle, endAngle);
+    else ctx.arc(CX, CY, R, startAngle, endAngle + 2 * Math.PI);
+    ctx.stroke();
+  }
+
+  // Draw keys
+  for (const k of keys) {
+    const p = posToXY(k.pos);
+    const isMigrated = migratedKeys.has(k.name);
+    ctx.beginPath(); ctx.arc(p.x, p.y, 4, 0, Math.PI * 2);
+    ctx.fillStyle = isMigrated ? '#e74c3c' : '#2ecc71';
+    ctx.fill();
+    if (isMigrated) {
+      ctx.strokeStyle = '#e74c3c'; ctx.lineWidth = 1.5; ctx.stroke();
+    }
+    ctx.font = '8px -apple-system, sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'bottom';
+    ctx.fillStyle = isMigrated ? '#e74c3c88' : '#2ecc7188';
+    ctx.fillText(k.name, p.x, p.y - 6);
+  }
+
+  // Draw nodes
+  for (const n of nodes) {
+    const p = posToXY(n.pos);
+    const r = 18;
+    // Glow
+    ctx.shadowColor = n.color + '44'; ctx.shadowBlur = 12;
+    ctx.beginPath(); ctx.arc(p.x, p.y, r, 0, Math.PI * 2);
+    ctx.fillStyle = n.color; ctx.fill();
+    ctx.shadowBlur = 0;
+    ctx.strokeStyle = 'rgba(255,255,255,0.2)'; ctx.lineWidth = 2; ctx.stroke();
+    ctx.fillStyle = '#fff'; ctx.font = 'bold 9px -apple-system, sans-serif';
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText(n.name, p.x, p.y);
+    // Label outside
+    const labelAngle = (n.pos / HASH_RING) * 2 * Math.PI - Math.PI / 2;
+    const lx = CX + (R + 24) * Math.cos(labelAngle);
+    const ly = CY + (R + 24) * Math.sin(labelAngle);
+    ctx.fillStyle = '#aaa'; ctx.font = '11px -apple-system, sans-serif';
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText(n.name + ' (' + n.pos + ')', lx, ly);
+  }
+
+  // Center label
+  ctx.fillStyle = '#4a4a6a'; ctx.font = '12px -apple-system, sans-serif';
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  const dist = keys.length > 0 ? calcDistribution() : { stddev: 0 };
+  ctx.fillText(keys.length + ' keys · ' + nodes.length + ' nodes', CX, CY);
+
+  // Animate recently migrated keys
+  migratedKeys.clear();
+}
+
+function calcDistribution() {
+  const counts = {};
+  for (const n of nodes) counts[n.name] = 0;
+  for (const k of keys) counts[k.node] = (counts[k.node] || 0) + 1;
+  const vals = Object.values(counts);
+  if (vals.length === 0) return { stddev: 0 };
+  const mean = vals.reduce((a, b) => a + b, 0) / vals.length;
+  const variance = vals.reduce((a, b) => a + (b - mean) ** 2, 0) / vals.length;
+  return { stddev: Math.sqrt(variance) };
+}
+
+function updateUI() {
+  const nodeList = document.getElementById('nodeList');
+  nodeList.innerHTML = '';
+  for (const n of nodes) {
+    const tag = document.createElement('div'); tag.className = 'node-tag';
+    const name = document.createElement('span'); name.className = 'name'; name.textContent = n.name;
+    const remove = document.createElement('span'); remove.className = 'remove'; remove.textContent = '✕';
+    remove.title = 'Remove node';
+    remove.addEventListener('click', () => removeNode(n.name));
+    tag.appendChild(name); tag.appendChild(remove);
+    nodeList.appendChild(tag);
+  }
+  document.getElementById('nodeCount').textContent = nodes.length;
+  document.getElementById('keyCount').textContent = keys.length;
+  const dist = calcDistribution();
+  document.getElementById('stdDev').textContent = dist.stddev.toFixed(2);
+}
+
+document.getElementById('addNodeBtn').addEventListener('click', addNode);
+document.getElementById('addKeyBtn').addEventListener('click', () => addKeys(10));
+document.getElementById('resetBtn').addEventListener('click', () => {
+  nodes = [
+    { name: 'n1', color: '#4a6fa5', pos: ringPos('n1') },
+    { name: 'n2', color: '#8e44ad', pos: ringPos('n2') },
+    { name: 'n3', color: '#e67e22', pos: ringPos('n3') },
+  ];
+  keys = []; migratedKeys.clear();
+  render(); updateUI();
+});
+
+// Init
+render(); updateUI();
+</script>
+</body>
+</html>

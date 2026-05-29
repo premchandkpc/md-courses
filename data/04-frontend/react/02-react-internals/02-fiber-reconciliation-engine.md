@@ -531,6 +531,15 @@ useEffect(() => {
 
 ## See Also
 
+### Phase 7.1 Related Topics
+
+- [Redux/Zustand Patterns](../../05-state-management/02-redux-zustand-patterns.md) — State updates triggering fiber work
+- [Compound Components](../../06-component-architecture/02-compound-components-pattern.md) — Context subscription behavior
+- [Error Boundaries](../../35-error-handling/01-error-boundaries-and-patterns.md) — Error boundaries in fiber tree
+- [Vitest + RTL](../../15-testing/03-unit-testing-vitest-rtl.md) — Testing fiber behavior
+
+### Additional Resources
+
 - React Fiber Documentation (react.dev)
 - "A Deep Dive into React Fiber" by Lin Clark (animated video)
 - React Source Code (github.com/facebook/react)

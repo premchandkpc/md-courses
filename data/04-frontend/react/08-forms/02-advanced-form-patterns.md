@@ -737,6 +737,15 @@ app.post('/api/register', (req, res) => {
 
 ## See Also
 
+### Phase 7.1 Related Topics
+
+- [Redux/Zustand Patterns](../../05-state-management/02-redux-zustand-patterns.md) — Form state management options
+- [WCAG Accessibility](../../16-accessibility/02-wcag-patterns-and-compliance.md) — Form accessibility
+- [XSS/CSRF/CSP](../../17-security/02-xss-csrf-csp-deep-dive.md) — CSRF token handling
+- [Error Boundaries](../../35-error-handling/01-error-boundaries-and-patterns.md) — Form submission error handling
+
+### Additional Resources
+
 - React Hook Form: Official docs + examples
 - Zod: Schema validation library
 - TanStack Form: Alternative form library

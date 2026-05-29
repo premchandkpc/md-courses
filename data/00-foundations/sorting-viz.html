@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sorting Algorithm Visualizer</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: #1a1a2e; color: #e0e0e0; min-height: 100vh;
+  display: flex; justify-content: center; align-items: center; padding: 20px;
+}
+.back-link { position: fixed; top: 16px; left: 20px; z-index: 100; }
+.back-link a { color: #8e9ef0; text-decoration: none; font-size: 14px; }
+.back-link a:hover { text-decoration: underline; }
+.container { display: flex; flex-direction: column; align-items: center; gap: 16px; width: 100%; max-width: 800px; }
+h1 { font-size: 22px; font-weight: 600; text-align: center; }
+h1 small { display: block; font-size: 12px; font-weight: 400; color: #888; margin-top: 2px; }
+.chart-wrap { width: 100%; height: 320px; background: #16213e; border-radius: 10px; padding: 12px; position: relative; }
+.chart { display: flex; align-items: flex-end; gap: 2px; height: 100%; justify-content: center; }
+.bar {
+  flex: 1; min-width: 2px; border-radius: 2px 2px 0 0; transition: height 0.08s, background 0.08s;
+  background: #4a6fa5; position: relative;
+}
+.bar.comp { background: #f1c40f; }
+.bar.swap { background: #e67e22; }
+.bar.pivot { background: #e74c3c; }
+.bar.sorted { background: #2ecc71; }
+.bar.val { background: #8e9ef0; }
+.controls { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; width: 100%; }
+.ctrl-group { display: flex; align-items: center; gap: 8px; background: #16213e; padding: 6px 14px; border-radius: 8px; }
+.ctrl-group label { font-size: 12px; color: #888; }
+.btn {
+  background: #2a2a4a; color: #e0e0e0; border: 1px solid #444; padding: 7px 16px;
+  border-radius: 6px; cursor: pointer; font-size: 13px; transition: background 0.2s; white-space: nowrap;
+}
+.btn:hover { background: #3a3a5a; }
+.btn.active { background: #4a6fa5; border-color: #5a7fb5; }
+.btn.active:hover { background: #5a7fb5; }
+.btn.go { background: #27ae60; border-color: #2ecc71; }
+.btn.go:hover { background: #2ecc71; }
+.btn.stop { background: #c0392b; border-color: #e74c3c; }
+.btn.stop:hover { background: #e74c3c; }
+select { background: #2a2a4a; color: #e0e0e0; border: 1px solid #444; padding: 7px 10px; border-radius: 6px; font-size: 13px; cursor: pointer; }
+input[type=range] { width: 80px; accent-color: #4a6fa5; }
+.stats { display: flex; gap: 20px; font-size: 13px; color: #aaa; width: 100%; justify-content: center; flex-wrap: wrap; }
+.stats span { background: #16213e; padding: 4px 14px; border-radius: 6px; }
+.stats .num { color: #f1c40f; font-weight: 600; }
+.table-box { width: 100%; max-width: 800px; margin-top: 4px; }
+.table-box table { width: 100%; border-collapse: collapse; font-size: 12px; }
+.table-box th, .table-box td { padding: 6px 10px; text-align: center; border-bottom: 1px solid #2a2a4a; }
+.table-box th { color: #888; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px; font-size: 11px; }
+.table-box td { color: #ccc; }
+@media (max-width: 600px) {
+  .chart-wrap { height: 220px; }
+  .controls { gap: 6px; }
+  .ctrl-group { padding: 4px 10px; }
+  .btn { padding: 5px 10px; font-size: 12px; }
+}
+</style>
+</head>
+<body>
+<div class="back-link">← <a href="02-data-structures-algorithms.md">Back to DS&A</a></div>
+<div class="container">
+  <h1>📊 Sort Race <small>Compare sorting algorithms side by side</small></h1>
+  <div class="chart-wrap"><div class="chart" id="chart"></div></div>
+  <div class="controls">
+    <div class="ctrl-group">
+      <label>Algo</label>
+      <select id="algoSelect">
+        <option value="quick">Quick Sort</option>
+        <option value="merge">Merge Sort</option>
+        <option value="heap">Heap Sort</option>
+        <option value="insertion">Insertion Sort</option>
+      </select>
+    </div>
+    <div class="ctrl-group">
+      <label>Size</label>
+      <select id="sizeSelect">
+        <option value="20">20</option>
+        <option value="50" selected>50</option>
+        <option value="100">100</option>
+        <option value="150">150</option>
+      </select>
+    </div>
+    <div class="ctrl-group">
+      <label>Speed</label>
+      <input type="range" id="speedRange" min="1" max="10" value="5">
+    </div>
+    <button class="btn go" id="sortBtn">▶ Sort</button>
+    <button class="btn" id="shuffleBtn">🎲 Shuffle</button>
+  </div>
+  <div class="stats">
+    <span>Comparisons: <span class="num" id="compCount">0</span></span>
+    <span>Swaps: <span class="num" id="swapCount">0</span></span>
+    <span>Array Accesses: <span class="num" id="accessCount">0</span></span>
+  </div>
+  <div class="table-box">
+    <table>
+      <tr><th>Algorithm</th><th>Best</th><th>Average</th><th>Worst</th><th>Space</th><th>Stable</th></tr>
+      <tr><td>Quick Sort</td><td>O(n log n)</td><td>O(n log n)</td><td style="color:#e74c3c">O(n²)</td><td>O(log n)</td><td style="color:#e74c3c">No</td></tr>
+      <tr><td>Merge Sort</td><td>O(n log n)</td><td>O(n log n)</td><td>O(n log n)</td><td style="color:#e74c3c">O(n)</td><td style="color:#2ecc71">Yes</td></tr>
+      <tr><td>Heap Sort</td><td>O(n log n)</td><td>O(n log n)</td><td>O(n log n)</td><td>O(1)</td><td style="color:#e74c3c">No</td></tr>
+      <tr><td>Insertion Sort</td><td style="color:#2ecc71">O(n)</td><td style="color:#e74c3c">O(n²)</td><td style="color:#e74c3c">O(n²)</td><td>O(1)</td><td style="color:#2ecc71">Yes</td></tr>
+    </table>
+  </div>
+</div>
+<script>
+let arr = [], frames = [], frameIdx = 0, isPlaying = false, timer = null, sorting = false;
+let comps = 0, swaps = 0, accesses = 0;
+
+const chart = document.getElementById('chart');
+const algoSelect = document.getElementById('algoSelect');
+const sizeSelect = document.getElementById('sizeSelect');
+const speedRange = document.getElementById('speedRange');
+const sortBtn = document.getElementById('sortBtn');
+const shuffleBtn = document.getElementById('shuffleBtn');
+const compCount = document.getElementById('compCount');
+const swapCount = document.getElementById('swapCount');
+const accessCount = document.getElementById('accessCount');
+
+function randArr(n) { return Array.from({length:n}, () => Math.floor(Math.random() * 280) + 20); }
+
+function resetStats() { comps=0; swaps=0; accesses=0; updateStats(); }
+
+function updateStats() {
+  compCount.textContent = comps; swapCount.textContent = swaps; accessCount.textContent = accesses;
+}
+
+function shuffle() {
+  stopAnim(); sorting = false; resetStats();
+  const n = parseInt(sizeSelect.value);
+  arr = randArr(n);
+  frames = [arr.slice()];
+  frameIdx = 0;
+  render();
+  sortBtn.textContent = '▶ Sort'; sortBtn.className = 'btn go';
+}
+
+function render() {
+  chart.innerHTML = '';
+  const data = frames[frameIdx] || arr;
+  const maxVal = Math.max(...data, 1);
+  data.forEach((v, i) => {
+    const bar = document.createElement('div');
+    bar.className = 'bar';
+    bar.style.height = (v / maxVal * 100) + '%';
+    chart.appendChild(bar);
+  });
+}
+
+function colorBars(colors) {
+  const bars = chart.children;
+  for (let i = 0; i < bars.length; i++) {
+    bars[i].className = 'bar' + (colors[i] ? ' ' + colors[i] : '');
+  }
+}
+
+// --- Sort implementations that record frames ---
+function recordSort(name, genFrames) {
+  stopAnim(); resetStats();
+  const n = parseInt(sizeSelect.value);
+  arr = randArr(n);
+  frames = [arr.slice()];
+  sorting = true; sortBtn.textContent = '⏹ Stop'; sortBtn.className = 'btn stop';
+  const data = arr.slice();
+  const rec = [];
+  genFrames(data, rec);
+  frames = rec;
+  frameIdx = 0;
+  if (frames.length === 0) frames = [arr.slice()];
+  render();
+  playFrames();
+}
+
+function playFrames() {
+  isPlaying = true;
+  function step() {
+    if (!isPlaying || frameIdx >= frames.length - 1) {
+      isPlaying = false; sorting = false;
+      sortBtn.textContent = '▶ Sort'; sortBtn.className = 'btn go';
+      if (frameIdx >= frames.length - 1) colorBars({});
+      return;
+    }
+    frameIdx++;
+    const f = frames[frameIdx];
+    render();
+    if (f.meta) {
+      comps += f.meta.comp || 0; swaps += f.meta.swap || 0; accesses += f.meta.access || 0;
+      updateStats();
+    }
+    if (f.colors) colorBars(f.colors);
+    const speed = parseInt(speedRange.value);
+    const delay = Math.max(1, 60 - speed * 5);
+    timer = setTimeout(step, delay);
+  }
+  step();
+}
+
+function stopAnim() {
+  isPlaying = false; sorting = false;
+  if (timer) { clearTimeout(timer); timer = null; }
+}
+
+// --- Frame generators ---
+function pushFrame(data, colors, extra) {
+  frames.push({ arr: data.slice(), colors: {...colors}, meta: {...extra} });
+}
+
+// Quick Sort
+function genQuickSort(a, rec) {
+  function partition(lo, hi) {
+    const pivot = a[hi];
+    let i = lo - 1;
+    for (let j = lo; j < hi; j++) {
+      const colors = {}; for (let k = lo; k <= hi; k++) colors[k] = k === hi ? 'pivot' : '';
+      colors[hi] = 'pivot'; if (j <= hi) colors[j] = 'comp';
+      rec.push({ arr: a.slice(), colors, meta: { comp: 1, access: 2 } });
+      if (a[j] < pivot) {
+        i++; [a[i], a[j]] = [a[j], a[i]];
+        const c2 = {}; for (let k = lo; k <= hi; k++) c2[k] = k === hi ? 'pivot' : '';
+        c2[i] = 'swap'; c2[j] = 'swap';
+        rec.push({ arr: a.slice(), colors: c2, meta: { swap: 1, access: 4 } });
+      }
+    }
+    [a[i+1], a[hi]] = [a[hi], a[i+1]];
+    const c3 = {}; for (let k = lo; k <= hi; k++) c3[k] = '';
+    c3[i+1] = 'swap'; c3[hi] = 'swap';
+    rec.push({ arr: a.slice(), colors: c3, meta: { swap: 1, access: 4 } });
+    return i+1;
+  }
+  function qs(lo, hi) {
+    if (lo >= hi) return;
+    const pi = partition(lo, hi);
+    qs(lo, pi-1);
+    qs(pi+1, hi);
+    for (let k = lo; k <= hi; k++) {
+      const c = {}; for (let i = 0; i < a.length; i++) c[i] = i >= lo && i <= hi ? '' : 'sorted';
+      rec.push({ arr: a.slice(), colors: c, meta: {} });
+    }
+  }
+  qs(0, a.length-1);
+  const final = {}; for (let i = 0; i < a.length; i++) final[i] = 'sorted';
+  rec.push({ arr: a.slice(), colors: final, meta: {} });
+}
+
+// Merge Sort
+function genMergeSort(a, rec) {
+  function merge(lo, mid, hi) {
+    const L = a.slice(lo, mid+1), R = a.slice(mid+1, hi+1);
+    let i = 0, j = 0, k = lo;
+    while (i < L.length && j < R.length) {
+      const colors = {}; for (let x = lo; x <= hi; x++) colors[x] = 'comp';
+      rec.push({ arr: a.slice(), colors, meta: { comp: 1, access: 2 } });
+      if (L[i] <= R[j]) { a[k] = L[i]; i++; }
+      else { a[k] = R[j]; j++; }
+      const c2 = {}; for (let x = lo; x <= hi; x++) c2[x] = x === k ? 'swap' : '';
+      rec.push({ arr: a.slice(), colors: c2, meta: { access: 1 } });
+      k++;
+    }
+    while (i < L.length) { a[k] = L[i]; i++; k++;
+      const c = {}; for (let x = lo; x <= hi; x++) c[x] = x === k-1 ? 'swap' : '';
+      rec.push({ arr: a.slice(), colors: c, meta: { access: 1 } });
+    }
+    while (j < R.length) { a[k] = R[j]; j++; k++;
+      const c = {}; for (let x = lo; x <= hi; x++) c[x] = x === k-1 ? 'swap' : '';
+      rec.push({ arr: a.slice(), colors: c, meta: { access: 1 } });
+    }
+    for (let x = lo; x <= hi; x++) {
+      const c = {}; for (let i2 = 0; i2 < a.length; i2++) c[i2] = i2 >= lo && i2 <= hi ? '' : 'sorted';
+      rec.push({ arr: a.slice(), colors: c, meta: {} });
+    }
+  }
+  function ms(lo, hi) {
+    if (lo >= hi) return;
+    const mid = lo + Math.floor((hi - lo) / 2);
+    ms(lo, mid); ms(mid+1, hi);
+    merge(lo, mid, hi);
+  }
+  ms(0, a.length-1);
+  const final = {}; for (let i = 0; i < a.length; i++) final[i] = 'sorted';
+  rec.push({ arr: a.slice(), colors: final, meta: {} });
+}
+
+// Heap Sort
+function genHeapSort(a, rec) {
+  function heapify(n, i) {
+    let largest = i;
+    const l = 2*i + 1, r = 2*i + 2;
+    if (l < n) {
+      const c1 = {}; c1[l] = 'comp'; c1[largest] = 'comp';
+      rec.push({ arr: a.slice(), colors: c1, meta: { comp: 1, access: 2 } });
+      if (a[l] > a[largest]) largest = l;
+    }
+    if (r < n) {
+      const c2 = {}; c2[r] = 'comp'; c2[largest] = 'comp';
+      rec.push({ arr: a.slice(), colors: c2, meta: { comp: 1, access: 2 } });
+      if (a[r] > a[largest]) largest = r;
+    }
+    if (largest !== i) {
+      [a[i], a[largest]] = [a[largest], a[i]];
+      const c3 = {}; c3[i] = 'swap'; c3[largest] = 'swap';
+      rec.push({ arr: a.slice(), colors: c3, meta: { swap: 1, access: 4 } });
+      heapify(n, largest);
+    }
+  }
+  for (let i = Math.floor(a.length/2) - 1; i >= 0; i--) heapify(a.length, i);
+  for (let i = a.length-1; i > 0; i--) {
+    [a[0], a[i]] = [a[i], a[0]];
+    const c = {}; c[0] = 'swap'; c[i] = 'swap';
+    for (let j = i+1; j < a.length; j++) c[j] = 'sorted';
+    rec.push({ arr: a.slice(), colors: c, meta: { swap: 1, access: 4 } });
+    heapify(i, 0);
+  }
+  const final = {}; for (let i = 0; i < a.length; i++) final[i] = 'sorted';
+  rec.push({ arr: a.slice(), colors: final, meta: {} });
+}
+
+// Insertion Sort
+function genInsertionSort(a, rec) {
+  for (let i = 1; i < a.length; i++) {
+    let j = i;
+    while (j > 0) {
+      const c1 = {}; c1[j] = 'comp'; c1[j-1] = 'comp';
+      rec.push({ arr: a.slice(), colors: c1, meta: { comp: 1, access: 2 } });
+      if (a[j] >= a[j-1]) break;
+      [a[j], a[j-1]] = [a[j-1], a[j]];
+      const c2 = {}; c2[j] = 'swap'; c2[j-1] = 'swap';
+      rec.push({ arr: a.slice(), colors: c2, meta: { swap: 1, access: 4 } });
+      j--;
+    }
+    for (let k = 0; k <= i; k++) {
+      const c = {}; for (let x = 0; x < a.length; x++) c[x] = x <= i ? '' : 'sorted';
+      rec.push({ arr: a.slice(), colors: c, meta: {} });
+    }
+  }
+  const final = {}; for (let i = 0; i < a.length; i++) final[i] = 'sorted';
+  rec.push({ arr: a.slice(), colors: final, meta: {} });
+}
+
+// Event handlers
+sortBtn.addEventListener('click', () => {
+  if (sorting) { stopAnim(); sorting = false; sortBtn.textContent = '▶ Sort'; sortBtn.className = 'btn go'; return; }
+  const algo = algoSelect.value;
+  const gens = { quick: genQuickSort, merge: genMergeSort, heap: genHeapSort, insertion: genInsertionSort };
+  recordSort(algo, gens[algo]);
+});
+
+shuffleBtn.addEventListener('click', shuffle);
+
+sizeSelect.addEventListener('change', shuffle);
+
+// Init
+shuffle();
+</script>
+</body>
+</html>

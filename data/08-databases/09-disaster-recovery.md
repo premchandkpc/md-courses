@@ -579,6 +579,14 @@ Or: Continuous replication (RPO: seconds)
 
 ## See Also
 
+### Phase 7.1 Related Topics
+
+- [Database Replication](./10-database-replication.md) — Replication as core DR strategy
+- [Database Sharding](./11-database-sharding.md) — Backup considerations with shards
+- [Connection Pooling](./08-connection-pooling.md) — Pool behavior during failover
+
+### Additional Resources
+
 - Patroni: Automatic PostgreSQL failover
 - Percona XtraBackup: MySQL/MariaDB backups
 - MongoDB Community Backup: Ops Manager

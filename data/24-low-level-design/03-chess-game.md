@@ -151,4 +151,8 @@ class Constants {
 5. Add undo/redo, game history
 6. Add AI opponent (minimax with alpha-beta pruning)
 
+## Visualizations
+
+- [Interactive Chess Board](chess-board-viz.html) — playable chess with valid move highlighting, piece hierarchy diagram, and move log
+
 **Next**: [Splitwise Design](04-splitwise.md) · [File System Design](05-file-system.md)

@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Venn Diagram Builder — Set Theory Visual</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: #1a1a2e; color: #e0e0e0; min-height: 100vh;
+  display: flex; justify-content: center; align-items: center; padding: 20px;
+}
+.back-link { position: fixed; top: 16px; left: 20px; z-index: 100; }
+.back-link a { color: #8e9ef0; text-decoration: none; font-size: 14px; }
+.back-link a:hover { text-decoration: underline; }
+.container { display: flex; flex-direction: column; align-items: center; gap: 16px; width: 100%; max-width: 760px; }
+h1 { font-size: 22px; font-weight: 600; text-align: center; }
+h1 small { display: block; font-size: 12px; font-weight: 400; color: #888; margin-top: 2px; }
+.canvas-wrap {
+  width: 100%; max-width: 480px; aspect-ratio: 1; background: #16213e;
+  border-radius: 12px; position: relative; overflow: hidden;
+}
+canvas { display: block; width: 100%; height: 100%; cursor: pointer; }
+.controls { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
+.btn {
+  background: #2a2a4a; color: #e0e0e0; border: 1px solid #444; padding: 7px 16px;
+  border-radius: 6px; cursor: pointer; font-size: 13px; transition: all 0.2s;
+}
+.btn:hover { background: #3a3a5a; }
+.btn.active { background: #4a6fa5; border-color: #5a7fb5; box-shadow: 0 0 8px #4a6fa566; }
+.btn.op-union.active { background: #e74c3c88; border-color: #e74c3c; }
+.btn.op-intersect.active { background: #2ecc7188; border-color: #2ecc71; }
+.btn.op-diff.active { background: #f1c40f88; border-color: #f1c40f; }
+.btn.op-symdiff.active { background: #8e9ef088; border-color: #8e9ef0; }
+.btn.op-complement.active { background: #e67e2288; border-color: #e67e22; }
+.formula-box {
+  background: #16213e; border-radius: 8px; padding: 10px 18px; width: 100%; min-height: 40px;
+  text-align: center; font-size: 15px; font-family: 'SF Mono', 'Fira Code', monospace;
+  display: flex; align-items: center; justify-content: center; gap: 10px; flex-wrap: wrap;
+  line-height: 1.6;
+}
+.formula-box .hl { color: #f1c40f; }
+.formula-box .op { color: #8e9ef0; }
+.legend { display: flex; gap: 20px; font-size: 13px; flex-wrap: wrap; justify-content: center; }
+.legend-item { display: flex; align-items: center; gap: 6px; cursor: pointer; padding: 4px 10px; border-radius: 6px; transition: background 0.2s; }
+.legend-item:hover { background: #2a2a4a; }
+.legend-item .swatch { width: 16px; height: 16px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.2); }
+.legend-item input[type=checkbox] { accent-color: #4a6fa5; width: 16px; height: 16px; cursor: pointer; }
+</style>
+</head>
+<body>
+<div class="back-link">← <a href="01-discrete-mathematics.md">Back to Discrete Mathematics</a></div>
+<div class="container">
+  <h1>🔵 Venn Diagram Builder <small>Interactive set operations — click to toggle elements</small></h1>
+  <div class="canvas-wrap"><canvas id="canvas" width="600" height="600"></canvas></div>
+  <div class="controls">
+    <button class="btn op-union active" data-op="union">A ∪ B</button>
+    <button class="btn op-intersect" data-op="intersect">A ∩ B</button>
+    <button class="btn op-diff" data-op="diff">A \ B</button>
+    <button class="btn op-symdiff" data-op="symdiff">A Δ B</button>
+    <button class="btn op-complement" data-op="complement">Aᶜ</button>
+  </div>
+  <div class="formula-box" id="formula">|A ∪ B| = <span class="hl" id="cardA">3</span> + <span class="hl" id="cardB">3</span> - <span class="hl" id="cardAB">1</span> = <span class="op" id="cardResult">5</span></div>
+  <div class="legend" id="legend"></div>
+</div>
+<script>
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+const W = 600, H = 600;
+canvas.width = W; canvas.height = H;
+
+const cx = W/2, cy = H/2;
+const rx = 160, ry = 160;
+const aOff = { x: -70, y: 0 };
+const bOff = { x: 70, y: 0 };
+
+let elements = [
+  { label: '1', inA: true, inB: false }, { label: '2', inA: true, inB: false }, { label: '3', inA: true, inB: true },
+  { label: '4', inA: false, inB: true }, { label: '5', inB: true, inA: false },
+];
+let currentOp = 'union';
+let dragEl = null;
+
+function isInA(x, y) {
+  const ex = (x - (cx + aOff.x)) / rx, ey = (y - cy) / ry;
+  return ex*ex + ey*ey <= 1;
+}
+function isInB(x, y) {
+  const ex = (x - (cx + bOff.x)) / rx, ey = (y - cy) / ry;
+  return ex*ex + ey*ey <= 1;
+}
+
+function getRegion(x, y) {
+  const a = isInA(x, y), b = isInB(x, y);
+  if (a && b) return 'ab';
+  if (a && !b) return 'a';
+  if (!a && b) return 'b';
+  return 'none';
+}
+
+function getHighlightRegions() {
+  const map = { none: false, a: false, b: false, ab: false };
+  for (const el of elements) {
+    if (el.inA && el.inB) map.ab = true;
+    else if (el.inA) map.a = true;
+    else if (el.inB) map.b = true;
+    else map.none = true;
+  }
+  return map;
+}
+
+function getOpRegions(op) {
+  const res = { a: false, b: false, ab: false, none: false };
+  for (const el of elements) {
+    const inA = el.inA, inB = el.inB;
+    let show = false;
+    if (op === 'union') show = inA || inB;
+    else if (op === 'intersect') show = inA && inB;
+    else if (op === 'diff') show = inA && !inB;
+    else if (op === 'symdiff') show = (inA || inB) && !(inA && inB);
+    else if (op === 'complement') show = !inA;
+    if (show) {
+      if (inA && inB) res.ab = true;
+      else if (inA) res.a = true;
+      else if (inB) res.b = true;
+      else res.none = true;
+    }
+  }
+  return res;
+}
+
+function draw() {
+  ctx.clearRect(0, 0, W, H);
+  const hl = getOpRegions(currentOp);
+
+  // Background
+  ctx.fillStyle = '#0d1b2a'; ctx.fillRect(0, 0, W, H);
+
+  // Draw faint outline oval for universe
+  ctx.beginPath(); ctx.ellipse(cx, cy, 260, 220, 0, 0, Math.PI * 2);
+  ctx.strokeStyle = '#2a3a5a'; ctx.lineWidth = 1; ctx.setLineDash([4,4]); ctx.stroke();
+  ctx.setLineDash([]);
+
+  // Helper: fill a region if highlighted
+  function fillRegion(testFn, color) {
+    ctx.save();
+    ctx.beginPath();
+    ctx.ellipse(cx + aOff.x, cy, rx, ry, 0, 0, Math.PI * 2);
+    if (testFn === 'a' || testFn === 'ab') ctx.clip();
+    ctx.beginPath();
+    ctx.ellipse(cx + bOff.x, cy, rx, ry, 0, 0, Math.PI * 2);
+    if (testFn === 'b' || testFn === 'ab') ctx.clip();
+    ctx.fillStyle = color;
+    ctx.fillRect(0, 0, W, H);
+    ctx.restore();
+  }
+
+  if (hl.ab) { ctx.save(); ctx.beginPath();
+    ctx.ellipse(cx+aOff.x, cy, rx, ry, 0, 0, Math.PI*2); ctx.clip();
+    ctx.beginPath(); ctx.ellipse(cx+bOff.x, cy, rx, ry, 0, 0, Math.PI*2); ctx.clip();
+    ctx.fillStyle = 'rgba(46, 204, 113, 0.35)'; ctx.fillRect(0, 0, W, H);
+    ctx.restore();
+  }
+  if (hl.a && !hl.ab) {
+    ctx.save(); ctx.beginPath(); ctx.ellipse(cx+aOff.x, cy, rx, ry, 0, 0, Math.PI*2); ctx.clip();
+    ctx.beginPath(); ctx.ellipse(cx+bOff.x, cy, rx, ry, 0, 0, Math.PI*2);
+    ctx.fillStyle = 'rgba(231, 76, 60, 0.3)'; ctx.fill('evenodd');
+    ctx.restore();
+  }
+  if (hl.b && !hl.ab) {
+    ctx.save(); ctx.beginPath(); ctx.ellipse(cx+bOff.x, cy, rx, ry, 0, 0, Math.PI*2); ctx.clip();
+    ctx.beginPath(); ctx.ellipse(cx+aOff.x, cy, rx, ry, 0, 0, Math.PI*2);
+    ctx.fillStyle = 'rgba(52, 152, 219, 0.3)'; ctx.fill('evenodd');
+    ctx.restore();
+  }
+
+  // Circle outlines
+  ctx.lineWidth = 2.5;
+  ctx.strokeStyle = '#e74c3c'; ctx.beginPath(); ctx.ellipse(cx+aOff.x, cy, rx, ry, 0, 0, Math.PI*2); ctx.stroke();
+  ctx.strokeStyle = '#3498db'; ctx.beginPath(); ctx.ellipse(cx+bOff.x, cy, rx, ry, 0, 0, Math.PI*2); ctx.stroke();
+
+  // Labels
+  ctx.fillStyle = '#e74c3c'; ctx.font = 'bold 22px -apple-system, sans-serif';
+  ctx.textAlign = 'center'; ctx.fillText('A', cx + aOff.x - 100, cy - 130);
+  ctx.fillStyle = '#3498db'; ctx.fillText('B', cx + bOff.x + 100, cy - 130);
+
+  // Elements
+  const positions = [];
+  const pad = 20;
+  const placed = [];
+
+  function findPos(region) {
+    for (let attempt = 0; attempt < 200; attempt++) {
+      let x, y;
+      if (region === 'a') { x = cx + aOff.x + (Math.random() - 0.5) * rx * 1.4; y = cy + (Math.random() - 0.5) * ry * 1.4; }
+      else if (region === 'b') { x = cx + bOff.x + (Math.random() - 0.5) * rx * 1.4; y = cy + (Math.random() - 0.5) * ry * 1.4; }
+      else if (region === 'ab') { x = cx + (Math.random() - 0.5) * 90; y = cy + (Math.random() - 0.5) * ry * 0.8; }
+      else { x = cx + (Math.random() - 0.5) * 400; y = cy + (Math.random() - 0.5) * 340; }
+      if (getRegion(x, y) !== region) continue;
+      let ok = true;
+      for (const p of placed) { if (Math.hypot(x-p.x, y-p.y) < pad) { ok = false; break; } }
+      if (ok) { placed.push({x,y}); return {x,y}; }
+    }
+    return {x: cx + (Math.random() - 0.5) * 200, y: cy + (Math.random() - 0.5) * 200};
+  }
+
+  placed.length = 0;
+  for (const el of elements) {
+    const region = el.inA && el.inB ? 'ab' : el.inA ? 'a' : el.inB ? 'b' : 'none';
+    const pos = findPos(region);
+    pos.el = el;
+    positions.push(pos);
+  }
+
+  for (const pos of positions) {
+    const el = pos.el;
+    const region = el.inA && el.inB ? 'ab' : el.inA ? 'a' : el.inB ? 'b' : 'none';
+    const show = getOpRegions(currentOp);
+    const isHl = (region === 'ab' && show.ab) || (region === 'a' && show.a) || (region === 'b' && show.b);
+    const r = 16;
+    ctx.beginPath(); ctx.arc(pos.x, pos.y, r, 0, Math.PI*2);
+    ctx.fillStyle = isHl ? '#f1c40f' : '#3a3a5a';
+    ctx.fill();
+    ctx.strokeStyle = isHl ? '#f39c12' : '#555';
+    ctx.lineWidth = 1.5; ctx.stroke();
+    ctx.fillStyle = isHl ? '#1a1a2e' : '#888';
+    ctx.font = 'bold 13px -apple-system, sans-serif';
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText(el.label, pos.x, pos.y);
+  }
+
+  // Op name
+  const opNames = { union: 'A ∪ B', intersect: 'A ∩ B', diff: 'A \\ B', symdiff: 'A Δ B', complement: 'A\u1d9c' };
+  ctx.fillStyle = 'rgba(255,255,255,0.12)'; ctx.font = 'bold 36px -apple-system, sans-serif';
+  ctx.textAlign = 'center'; ctx.fillText(opNames[currentOp] || '', cx, H - 30);
+
+  updateFormula();
+}
+
+function updateFormula() {
+  const a = elements.filter(e => e.inA).length;
+  const b = elements.filter(e => e.inB).length;
+  const ab = elements.filter(e => e.inA && e.inB).length;
+  document.getElementById('cardA').textContent = a;
+  document.getElementById('cardB').textContent = b;
+  document.getElementById('cardAB').textContent = ab;
+  let result;
+  if (currentOp === 'union') result = elements.filter(e => e.inA || e.inB).length;
+  else if (currentOp === 'intersect') result = ab;
+  else if (currentOp === 'diff') result = elements.filter(e => e.inA && !e.inB).length;
+  else if (currentOp === 'symdiff') result = elements.filter(e => (e.inA || e.inB) && !(e.inA && e.inB)).length;
+  else if (currentOp === 'complement') result = elements.filter(e => !e.inA).length;
+  document.getElementById('cardResult').textContent = result;
+}
+
+function toggleEl(label) {
+  const el = elements.find(e => e.label === label);
+  if (!el) return;
+  el.inA = !el.inA; el.inB = !el.inB;
+  draw();
+}
+
+// Operation buttons
+document.querySelectorAll('[data-op]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('[data-op]').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    currentOp = btn.dataset.op;
+    draw();
+  });
+});
+
+// Click on canvas to toggle element membership
+canvas.addEventListener('click', e => {
+  const rect = canvas.getBoundingClientRect();
+  const scaleX = canvas.width / rect.width, scaleY = canvas.height / rect.height;
+  const x = (e.clientX - rect.left) * scaleX, y = (e.clientY - rect.top) * scaleY;
+  let found = null, minDist = 20;
+  const placed = [];
+  for (const el of elements) {
+    const region = el.inA && el.inB ? 'ab' : el.inA ? 'a' : el.inB ? 'b' : 'none';
+    let px, py;
+    for (let attempt = 0; attempt < 100; attempt++) {
+      let tx, ty;
+      if (region === 'a') { tx = cx + aOff.x + (Math.random()-0.5)*rx*1.4; ty = cy + (Math.random()-0.5)*ry*1.4; }
+      else if (region === 'b') { tx = cx + bOff.x + (Math.random()-0.5)*rx*1.4; ty = cy + (Math.random()-0.5)*ry*1.4; }
+      else if (region === 'ab') { tx = cx + (Math.random()-0.5)*90; ty = cy + (Math.random()-0.5)*ry*0.8; }
+      else { tx = cx + (Math.random()-0.5)*400; ty = cy + (Math.random()-0.5)*340; }
+      if (getRegion(tx, ty) === region) { px=tx; py=ty; break; }
+    }
+    const dist = Math.hypot(x-px, y-py);
+    if (dist < minDist) { minDist = dist; found = el; }
+  }
+  if (found) toggleEl(found.label);
+});
+
+// Drag elements
+let dragTarget = null, dragOffX = 0, dragOffY = 0;
+
+canvas.addEventListener('mousedown', e => {
+  const rect = canvas.getBoundingClientRect();
+  const scaleX = canvas.width / rect.width, scaleY = canvas.height / rect.height;
+  const x = (e.clientX - rect.left) * scaleX, y = (e.clientY - rect.top) * scaleY;
+  // Find closest element
+  let best = null, bestD = 25;
+  for (const el of elements) {
+    const region = el.inA && el.inB ? 'ab' : el.inA ? 'a' : el.inB ? 'b' : 'none';
+    let px, py;
+    for (let attempt = 0; attempt < 100; attempt++) {
+      let tx, ty;
+      if (region === 'a') { tx = cx + aOff.x + (Math.random()-0.5)*rx*1.4; ty = cy + (Math.random()-0.5)*ry*1.4; }
+      else if (region === 'b') { tx = cx + bOff.x + (Math.random()-0.5)*rx*1.4; ty = cy + (Math.random()-0.5)*ry*1.4; }
+      else if (region === 'ab') { tx = cx + (Math.random()-0.5)*90; ty = cy + (Math.random()-0.5)*ry*0.8; }
+      else { tx = cx + (Math.random()-0.5)*400; ty = cy + (Math.random()-0.5)*340; }
+      if (getRegion(tx, ty) === region) { px=tx; py=ty; break; }
+    }
+    const d = Math.hypot(x-px, y-py);
+    if (d < bestD) { bestD = d; best = el; }
+  }
+  if (best) { dragTarget = best; dragOffX = x; dragOffY = y; }
+});
+
+canvas.addEventListener('mousemove', e => {
+  if (!dragTarget) return;
+  const rect = canvas.getBoundingClientRect();
+  const scaleX = canvas.width / rect.width, scaleY = canvas.height / rect.height;
+  const x = (e.clientX - rect.left) * scaleX, y = (e.clientY - rect.top) * scaleY;
+  const region = getRegion(x, y);
+  if (region === 'none') { dragTarget.inA = false; dragTarget.inB = false; }
+  else if (region === 'a') { dragTarget.inA = true; dragTarget.inB = false; }
+  else if (region === 'b') { dragTarget.inA = false; dragTarget.inB = true; }
+  else if (region === 'ab') { dragTarget.inA = true; dragTarget.inB = true; }
+  draw();
+});
+
+canvas.addEventListener('mouseup', () => { dragTarget = null; });
+canvas.addEventListener('mouseleave', () => { dragTarget = null; });
+
+// Init
+draw();
+</script>
+</body>
+</html>

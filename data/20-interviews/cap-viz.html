@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CAP Theorem — Interactive Triangle</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: #1a1a2e; color: #e0e0e0; min-height: 100vh;
+  display: flex; justify-content: center; align-items: center; padding: 20px;
+}
+.back-link { position: fixed; top: 16px; left: 20px; z-index: 100; }
+.back-link a { color: #8e9ef0; text-decoration: none; font-size: 14px; }
+.back-link a:hover { text-decoration: underline; }
+.container { display: flex; flex-direction: column; align-items: center; gap: 14px; width: 100%; max-width: 700px; }
+h1 { font-size: 22px; font-weight: 600; text-align: center; }
+h1 small { display: block; font-size: 12px; font-weight: 400; color: #888; margin-top: 2px; }
+.canvas-wrap { width: 100%; max-width: 480px; aspect-ratio: 1; margin: 0 auto; }
+canvas { display: block; width: 100%; height: 100%; border-radius: 12px; }
+.system-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 8px; width: 100%; }
+.system-card {
+  background: #16213e; border: 2px solid #2a3a5a; border-radius: 8px; padding: 10px 12px;
+  cursor: pointer; transition: all 0.2s; text-align: center;
+}
+.system-card:hover { border-color: #4a6fa5; transform: translateY(-1px); }
+.system-card.active { border-color: #f1c40f; background: #1a2a3e; }
+.system-card .name { font-size: 13px; font-weight: 600; }
+.system-card .type { font-size: 11px; color: #888; margin-top: 2px; }
+.system-card .badge { display: inline-block; font-size: 10px; padding: 1px 6px; border-radius: 4px; margin: 2px; }
+.badge.cp { background: #e74c3c33; color: #e74c3c; border: 1px solid #e74c3c44; }
+.badge.ap { background: #2ecc7133; color: #2ecc71; border: 1px solid #2ecc7144; }
+.badge.ca { background: #3498db33; color: #3498db; border: 1px solid #3498db44; }
+.detail-box { width: 100%; background: #16213e; border-radius: 8px; padding: 12px 16px; min-height: 50px; font-size: 13px; line-height: 1.7; }
+.detail-box .hl { color: #f1c40f; font-weight: 600; }
+.detail-box .red { color: #e74c3c; }
+.detail-box .green { color: #2ecc71; }
+.detail-box .blue { color: #3498db; }
+</style>
+</head>
+<body>
+<div class="back-link">← <a href="03-system-design-interview.md">Back to System Design Interview</a></div>
+<div class="container">
+  <h1>🔺 CAP Theorem <small>Click a vertex or system to explore trade-offs</small></h1>
+  <div class="canvas-wrap"><canvas id="canvas" width="480" height="480"></canvas></div>
+  <div class="system-list" id="systemList"></div>
+  <div class="detail-box" id="detailBox">Click a vertex (C, A, P) or a system below to see how it makes CAP trade-offs.</div>
+</div>
+<script>
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+const W = 480, H = 480;
+canvas.width = W; canvas.height = H;
+const CX = W/2, CY = H/2, R = 180;
+
+const vertices = {
+  C: { x: CX, y: CY - R * 0.9, label: 'Consistency', color: '#e74c3c', desc: 'Every read receives the most recent write or an error. All nodes see the same data at the same time.' },
+  A: { x: CX - R * 0.78, y: CY + R * 0.55, label: 'Availability', color: '#2ecc71', desc: 'Every request receives a (non-error) response, without the guarantee that it contains the most recent write.' },
+  P: { x: CX + R * 0.78, y: CY + R * 0.55, label: 'Partition Tolerance', color: '#3498db', desc: 'The system continues to operate despite an arbitrary number of messages being dropped or delayed by the network.' },
+};
+
+const systems = [
+  { name: 'PostgreSQL (single)', type: 'CA', badge: 'ca', desc: 'Single-node ACID database. Consistency + Availability. Cannot survive a network partition (no P).', x: 0.0, y: -0.45 },
+  { name: 'Spanner', type: 'CP', badge: 'cp', desc: 'Globally distributed SQL with TrueTime. Consistency + Partition Tolerance. Sacrifices availability during network splits using Paxos.', x: -0.55, y: 0.1 },
+  { name: 'HBase', type: 'CP', badge: 'cp', desc: 'Hadoop-based NoSQL. Strong consistency via HDFS. During partition, some regions become unavailable to maintain consistency.', x: -0.3, y: 0.2 },
+  { name: 'ZooKeeper', type: 'CP', badge: 'cp', desc: 'Distributed coordination service. Linearizable writes via Zab consensus. Sacrifices availability during leader election.', x: -0.7, y: 0.3 },
+  { name: 'Cassandra', type: 'AP', badge: 'ap', desc: 'Dynamo-style wide-column store. Eventual consistency by default. Always accepts writes but may return stale reads.', x: 0.55, y: 0.1 },
+  { name: 'DynamoDB', type: 'AP', badge: 'ap', desc: 'AWS managed KV/document DB. Eventually consistent reads (configurable). Prioritizes availability during partitions.', x: 0.3, y: 0.2 },
+  { name: 'Couchbase', type: 'AP', badge: 'ap', desc: 'Memcached-compatible document store. AP in default configuration with conflict resolution via CRDTs.', x: 0.7, y: 0.3 },
+  { name: 'MongoDB', type: 'CP', badge: 'cp', desc: 'Document DB with replica sets. Primary handles writes; secondaries apply oplog. During partitions, secondaries can\'t accept writes.', x: 0.0, y: 0.5 },
+];
+
+let selectedVertex = null;
+let selectedSystem = null;
+let hoverVertex = null;
+
+function draw() {
+  ctx.clearRect(0, 0, W, H);
+  ctx.fillStyle = '#16213e'; ctx.fillRect(0, 0, W, H);
+
+  // Triangle
+  ctx.beginPath();
+  ctx.moveTo(vertices.C.x, vertices.C.y);
+  ctx.lineTo(vertices.A.x, vertices.A.y);
+  ctx.lineTo(vertices.P.x, vertices.P.y);
+  ctx.closePath();
+  ctx.strokeStyle = '#2a3a5a'; ctx.lineWidth = 2; ctx.stroke();
+
+  // Vertex labels
+  for (const [key, v] of Object.entries(vertices)) {
+    const isHover = hoverVertex === key;
+    const isSel = selectedVertex === key;
+    const r = isHover || isSel ? 32 : 28;
+
+    // Glow
+    if (isHover || isSel) {
+      ctx.shadowColor = v.color + '66'; ctx.shadowBlur = 20;
+    }
+    ctx.beginPath(); ctx.arc(v.x, v.y, r, 0, Math.PI * 2);
+    ctx.fillStyle = v.color; ctx.fill();
+    ctx.shadowBlur = 0;
+    ctx.strokeStyle = 'rgba(255,255,255,0.3)'; ctx.lineWidth = 2; ctx.stroke();
+
+    ctx.fillStyle = '#fff'; ctx.font = 'bold 18px -apple-system, sans-serif';
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText(key, v.x, v.y - 3);
+    ctx.fillStyle = 'rgba(255,255,255,0.6)'; ctx.font = '10px -apple-system, sans-serif';
+    ctx.fillText(v.label, v.x, v.y + 16);
+
+    // Description
+    if (isHover || isSel) {
+      const lines = v.desc.substring(0, 80);
+      ctx.fillStyle = 'rgba(255,255,255,0.7)'; ctx.font = '11px -apple-system, sans-serif';
+      ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+      ctx.fillText(lines, v.x, v.y + r + 8);
+    }
+  }
+
+  // System dots on triangle
+  for (const sys of systems) {
+    const sx = CX + sys.x * R;
+    const sy = CY + sys.y * R;
+    const active = selectedSystem === sys;
+
+    ctx.beginPath(); ctx.arc(sx, sy, active ? 7 : 5, 0, Math.PI * 2);
+    ctx.fillStyle = active ? '#f1c40f' : '#888';
+    ctx.fill();
+    if (active) {
+      ctx.strokeStyle = '#f1c40f'; ctx.lineWidth = 2; ctx.stroke();
+    }
+
+    // Label
+    ctx.fillStyle = active ? '#f1c40f' : '#666';
+    ctx.font = (active ? 'bold ' : '') + '10px -apple-system, sans-serif';
+    ctx.textAlign = 'center'; ctx.textBaseline = 'bottom';
+    ctx.fillText(sys.name, sx, sy - (active ? 10 : 8));
+  }
+
+  // Center label
+  ctx.fillStyle = '#4a4a6a'; ctx.font = '11px -apple-system, sans-serif';
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  ctx.fillText('CAP Theorem', CX, CY);
+
+  // Highlight selected system's region
+  if (selectedSystem) {
+    const colors = { cp: '#e74c3c33', ap: '#2ecc7133', ca: '#3498db33' };
+    ctx.fillStyle = colors[selectedSystem.badge] || 'transparent';
+    ctx.beginPath(); ctx.arc(CX, CY, R * 0.5, 0, Math.PI * 2); ctx.fill();
+  }
+}
+
+function renderSystemList() {
+  const el = document.getElementById('systemList');
+  el.innerHTML = '';
+  for (const sys of systems) {
+    const card = document.createElement('div'); card.className = 'system-card' + (selectedSystem === sys ? ' active' : '');
+    card.innerHTML = `<div class="name">${sys.name}</div><div class="type"><span class="badge ${sys.badge}">${sys.type}</span></div>`;
+    card.addEventListener('click', () => {
+      selectedSystem = sys; selectedVertex = null;
+      document.getElementById('detailBox').innerHTML = `<span class="${sys.badge === 'cp' ? 'red' : sys.badge === 'ap' ? 'green' : 'blue'}">${sys.name}</span> — ${sys.desc}`;
+      render(); renderSystemList();
+    });
+    el.appendChild(card);
+  }
+}
+
+canvas.addEventListener('click', e => {
+  const rect = canvas.getBoundingClientRect();
+  const x = (e.clientX - rect.left) * (W / rect.width);
+  const y = (e.clientY - rect.top) * (H / rect.height);
+
+  // Check vertices
+  for (const [key, v] of Object.entries(vertices)) {
+    if (Math.hypot(x - v.x, y - v.y) < 32) {
+      selectedVertex = key; selectedSystem = null;
+      document.getElementById('detailBox').innerHTML = `<span style="color:${v.color}">${key} (${v.label})</span> — ${v.desc}`;
+      render(); renderSystemList();
+      return;
+    }
+  }
+
+  // Check systems
+  for (const sys of systems) {
+    const sx = CX + sys.x * R, sy = CY + sys.y * R;
+    if (Math.hypot(x - sx, y - sy) < 12) {
+      selectedSystem = sys; selectedVertex = null;
+      document.getElementById('detailBox').innerHTML = `<span class="${sys.badge === 'cp' ? 'red' : sys.badge === 'ap' ? 'green' : 'blue'}">${sys.name}</span> — ${sys.desc}`;
+      render(); renderSystemList();
+      return;
+    }
+  }
+
+  selectedVertex = null; selectedSystem = null;
+  document.getElementById('detailBox').innerHTML = 'Click a vertex (C, A, P) or a system below.';
+  render(); renderSystemList();
+});
+
+canvas.addEventListener('mousemove', e => {
+  const rect = canvas.getBoundingClientRect();
+  const x = (e.clientX - rect.left) * (W / rect.width);
+  const y = (e.clientY - rect.top) * (H / rect.height);
+  let found = null;
+  for (const [key, v] of Object.entries(vertices)) {
+    if (Math.hypot(x - v.x, y - v.y) < 32) { found = key; break; }
+  }
+  hoverVertex = found;
+  canvas.style.cursor = found ? 'pointer' : 'default';
+  draw();
+});
+
+// Init
+render(); renderSystemList();
+</script>
+</body>
+</html>

@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Big O Growth Curves — Complexity Visualizer</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: #1a1a2e; color: #e0e0e0; min-height: 100vh;
+  display: flex; justify-content: center; align-items: center; padding: 20px;
+}
+.back-link { position: fixed; top: 16px; left: 20px; z-index: 100; }
+.back-link a { color: #8e9ef0; text-decoration: none; font-size: 14px; }
+.back-link a:hover { text-decoration: underline; }
+.container { display: flex; flex-direction: column; align-items: center; gap: 14px; width: 100%; max-width: 780px; }
+h1 { font-size: 22px; font-weight: 600; text-align: center; }
+h1 small { display: block; font-size: 12px; font-weight: 400; color: #888; margin-top: 2px; }
+.canvas-wrap { width: 100%; background: #16213e; border-radius: 12px; padding: 8px; }
+canvas { display: block; width: 100%; height: auto; background: #16213e; border-radius: 8px; }
+.controls { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; align-items: center; }
+.ctrl-group { display: flex; align-items: center; gap: 8px; background: #16213e; padding: 6px 14px; border-radius: 8px; }
+.ctrl-group label { font-size: 12px; color: #888; }
+input[type=range] { width: 140px; accent-color: #4a6fa5; }
+.btn {
+  background: #2a2a4a; color: #e0e0e0; border: 1px solid #444; padding: 7px 16px;
+  border-radius: 6px; cursor: pointer; font-size: 13px; transition: all 0.2s;
+}
+.btn:hover { background: #3a3a5a; }
+.btn.active { background: #4a6fa5; border-color: #5a7fb5; }
+.btn.go { background: #27ae60; border-color: #2ecc71; }
+.btn.go:hover { background: #2ecc71; }
+.legend { display: flex; gap: 14px; flex-wrap: wrap; justify-content: center; font-size: 12px; }
+.legend-item { display: flex; align-items: center; gap: 5px; cursor: pointer; padding: 3px 8px; border-radius: 4px; transition: background 0.2s; }
+.legend-item:hover { background: #2a2a4a; }
+.legend-item .swatch { width: 20px; height: 3px; border-radius: 2px; }
+.legend-item .lbl { color: #aaa; }
+.table-box { width: 100%; }
+.table-box table { width: 100%; border-collapse: collapse; font-size: 12px; }
+.table-box th, .table-box td { padding: 5px 8px; text-align: center; border-bottom: 1px solid #2a2a4a; }
+.table-box th { color: #888; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px; font-size: 11px; }
+.table-box td { color: #ccc; }
+@media (max-width: 500px) {
+  .ctrl-group { padding: 4px 8px; }
+  input[type=range] { width: 100px; }
+}
+</style>
+</head>
+<body>
+<div class="back-link">← <a href="02-data-structures-algorithms.md">Back to DS&A</a></div>
+<div class="container">
+  <h1>📈 Big O Growth Curves <small>How algorithms scale with input size</small></h1>
+  <div class="controls">
+    <div class="ctrl-group">
+      <label>n max</label>
+      <input type="range" id="nRange" min="10" max="200" value="100">
+      <span id="nDisplay" style="font-size:13px;color:#f1c40f;min-width:30px">100</span>
+    </div>
+    <button class="btn go" id="animateBtn">▶ Animate</button>
+    <button class="btn" id="resetBtn">⟳ Reset</button>
+  </div>
+  <div class="canvas-wrap">
+    <canvas id="canvas" width="750" height="380"></canvas>
+  </div>
+  <div class="legend" id="legend"></div>
+  <div class="table-box">
+    <table>
+      <tr><th>Notation</th><th>Name</th><th>n=10</th><th>n=50</th><th>n=100</th><th>n=1,000</th></tr>
+      <tr><td style="color:#2ecc71">O(1)</td><td>Constant</td><td>1</td><td>1</td><td>1</td><td>1</td></tr>
+      <tr><td style="color:#3498db">O(log n)</td><td>Logarithmic</td><td>~3</td><td>~6</td><td>~7</td><td>~10</td></tr>
+      <tr><td style="color:#f1c40f">O(n)</td><td>Linear</td><td>10</td><td>50</td><td>100</td><td>1,000</td></tr>
+      <tr><td style="color:#e67e22">O(n log n)</td><td>Linearithmic</td><td>~33</td><td>~282</td><td>~664</td><td>~9,966</td></tr>
+      <tr><td style="color:#e74c3c">O(n²)</td><td>Quadratic</td><td>100</td><td>2,500</td><td>10,000</td><td>1,000,000</td></tr>
+      <tr><td style="color:#9b59b6">O(2ⁿ)</td><td>Exponential</td><td>1,024</td><td>~1.1×10¹⁵</td><td>—</td><td>—</td></tr>
+    </table>
+  </div>
+</div>
+<script>
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+const W = 750, H = 380;
+canvas.width = W; canvas.height = H;
+
+const PAD = { top: 20, right: 30, bottom: 40, left: 50 };
+const plotW = W - PAD.left - PAD.right;
+const plotH = H - PAD.top - PAD.bottom;
+
+const funcs = [
+  { id: 'o1', label: 'O(1)', color: '#2ecc71', fn: n => 1 },
+  { id: 'olog', label: 'O(log n)', color: '#3498db', fn: n => Math.log2(n + 1) },
+  { id: 'on', label: 'O(n)', color: '#f1c40f', fn: n => n },
+  { id: 'onlogn', label: 'O(n log n)', color: '#e67e22', fn: n => n * Math.log2(n + 1) },
+  { id: 'on2', label: 'O(n²)', color: '#e74c3c', fn: n => n * n },
+  { id: 'o2n', label: 'O(2ⁿ)', color: '#9b59b6', fn: n => Math.pow(2, n) },
+];
+
+const legendEl = document.getElementById('legend');
+funcs.forEach(f => {
+  const item = document.createElement('div'); item.className = 'legend-item'; item.dataset.id = f.id;
+  const swatch = document.createElement('span'); swatch.className = 'swatch'; swatch.style.background = f.color;
+  const lbl = document.createElement('span'); lbl.className = 'lbl'; lbl.textContent = f.label;
+  item.appendChild(swatch); item.appendChild(lbl);
+  item.addEventListener('click', () => { f.hidden = !f.hidden; item.style.opacity = f.hidden ? '0.3' : '1'; draw(animN); });
+  legendEl.appendChild(item);
+});
+
+let maxN = 100;
+let animN = 0;
+let isAnimating = false;
+let animTimer = null;
+
+const nRange = document.getElementById('nRange');
+const nDisplay = document.getElementById('nDisplay');
+
+nRange.addEventListener('input', () => {
+  maxN = parseInt(nRange.value);
+  nDisplay.textContent = maxN;
+  if (!isAnimating) draw(maxN);
+});
+
+function draw(n) {
+  ctx.clearRect(0, 0, W, H);
+  ctx.fillStyle = '#16213e'; ctx.fillRect(0, 0, W, H);
+
+  // Grid
+  ctx.strokeStyle = '#2a2a4a'; ctx.lineWidth = 0.5;
+  for (let i = 0; i <= 5; i++) {
+    const y = PAD.top + plotH * i / 5;
+    ctx.beginPath(); ctx.moveTo(PAD.left, y); ctx.lineTo(W - PAD.right, y); ctx.stroke();
+  }
+  for (let i = 0; i <= 5; i++) {
+    const x = PAD.left + plotW * i / 5;
+    ctx.beginPath(); ctx.moveTo(x, PAD.top); ctx.lineTo(x, PAD.top + plotH); ctx.stroke();
+  }
+
+  // Axis labels
+  ctx.fillStyle = '#666'; ctx.font = '11px -apple-system, sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+  for (let i = 0; i <= 5; i++) {
+    const x = PAD.left + plotW * i / 5;
+    ctx.fillText(Math.round(maxN * i / 5), x, H - PAD.bottom + 6);
+  }
+  ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
+  ctx.fillStyle = '#888'; ctx.font = '12px -apple-system, sans-serif';
+  ctx.fillText('ops', PAD.left - 8, PAD.top + 10);
+  ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+  ctx.fillText('n', W / 2, H - 16);
+
+  // Compute max value at current n
+  let maxVal = 1;
+  for (const f of funcs) {
+    if (f.hidden) continue;
+    const v = f.fn(n);
+    if (v > maxVal && isFinite(v)) maxVal = v;
+  }
+  // Use log scale for y if exponential is visible
+  const hasExp = funcs.some(f => f.id === 'o2n' && !f.hidden);
+  const useLog = false;
+
+  function yPos(val) {
+    if (hasExp) {
+      // Linear scale clamped
+      return PAD.top + plotH * (1 - Math.min(val / Math.min(maxVal, 50000), 1));
+    }
+    return PAD.top + plotH * (1 - val / maxVal);
+  }
+
+  // Draw curves
+  for (const func of funcs) {
+    if (func.hidden) continue;
+    ctx.beginPath();
+    const steps = maxN; // one per integer
+    for (let i = 0; i <= steps; i++) {
+      const x = PAD.left + plotW * i / steps;
+      let v = 0;
+      v = func.fn(i);
+      if (!isFinite(v)) v = maxVal;
+      const y = yPos(v);
+      if (i === 0) ctx.moveTo(x, y);
+      else ctx.lineTo(x, y);
+    }
+    ctx.strokeStyle = func.color;
+    ctx.lineWidth = 2.5;
+    ctx.stroke();
+  }
+
+  // Draw vertical line for current n
+  if (n > 0 && isAnimating) {
+    const x = PAD.left + plotW * n / maxN;
+    ctx.beginPath(); ctx.moveTo(x, PAD.top); ctx.lineTo(x, PAD.top + plotH);
+    ctx.strokeStyle = 'rgba(255,255,255,0.15)'; ctx.lineWidth = 1; ctx.setLineDash([4,4]); ctx.stroke();
+    ctx.setLineDash([]);
+
+    // Show values at current n
+    let yOff = 0;
+    for (const func of funcs) {
+      if (func.hidden) continue;
+      let v = func.fn(n);
+      if (!isFinite(v)) v = Infinity;
+      ctx.fillStyle = func.color; ctx.font = '11px -apple-system, sans-serif'; ctx.textAlign = 'left';
+      let label = func.label + ' = ';
+      if (v === Infinity || v > 1e12) label += '∞';
+      else if (v >= 10000) label += v.toExponential(1);
+      else if (v >= 1000) label += Math.round(v).toLocaleString();
+      else label += Math.round(v * 10) / 10;
+      ctx.fillText(label, x + 8, PAD.top + 12 + yOff);
+      yOff += 17;
+    }
+  }
+}
+
+document.getElementById('animateBtn').addEventListener('click', () => {
+  if (isAnimating) {
+    isAnimating = false; clearTimeout(animTimer);
+    document.getElementById('animateBtn').textContent = '▶ Animate';
+    return;
+  }
+  isAnimating = true; animN = 0;
+  document.getElementById('animateBtn').textContent = '⏸ Pause';
+  function step() {
+    if (!isAnimating) return;
+    animN += 2;
+    if (animN > maxN) { animN = maxN; isAnimating = false; document.getElementById('animateBtn').textContent = '▶ Animate'; }
+    draw(animN);
+    if (isAnimating) animTimer = setTimeout(step, 30);
+  }
+  step();
+});
+
+document.getElementById('resetBtn').addEventListener('click', () => {
+  isAnimating = false; clearTimeout(animTimer); animN = 0;
+  document.getElementById('animateBtn').textContent = '▶ Animate';
+  draw(0);
+});
+
+// Init
+draw(50);
+</script>
+</body>
+</html>

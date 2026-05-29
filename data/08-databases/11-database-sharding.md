@@ -552,6 +552,14 @@ When adding shard:
 
 ## See Also
 
+### Phase 7.1 Related Topics
+
+- [Database Replication](./10-database-replication.md) — Replication topology with shards
+- [Disaster Recovery](./09-disaster-recovery.md) — Backup strategy per shard
+- [Connection Pooling](./08-connection-pooling.md) — Pool size calculation with shards
+
+### Additional Resources
+
 - Vitess: MySQL sharding proxy (open source)
 - Amazon DynamoDB: Sharded NoSQL
 - Google Spanner: Geo-distributed sharding

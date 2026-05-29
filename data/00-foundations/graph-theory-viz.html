@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Graph Explorer — Interactive Graph Theory Visual</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: #1a1a2e; color: #e0e0e0; min-height: 100vh;
+  display: flex; justify-content: center; align-items: center; padding: 20px;
+}
+.back-link { position: fixed; top: 16px; left: 20px; z-index: 100; }
+.back-link a { color: #8e9ef0; text-decoration: none; font-size: 14px; }
+.back-link a:hover { text-decoration: underline; }
+.container { display: flex; flex-direction: column; align-items: center; gap: 12px; width: 100%; max-width: 760px; }
+h1 { font-size: 22px; font-weight: 600; text-align: center; }
+h1 small { display: block; font-size: 12px; font-weight: 400; color: #888; margin-top: 2px; }
+.canvas-wrap { width: 100%; aspect-ratio: 4/3; background: #16213e; border-radius: 12px; overflow: hidden; position: relative; }
+canvas { display: block; width: 100%; height: 100%; cursor: crosshair; }
+.controls { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
+.btn {
+  background: #2a2a4a; color: #e0e0e0; border: 1px solid #444; padding: 6px 14px;
+  border-radius: 6px; cursor: pointer; font-size: 12px; transition: all 0.2s;
+}
+.btn:hover { background: #3a3a5a; }
+.btn.active { background: #4a6fa5; border-color: #5a7fb5; }
+.btn.go { background: #27ae60; border-color: #2ecc71; }
+.btn.go:hover { background: #2ecc71; }
+.btn.danger { background: #c0392b; border-color: #e74c3c; }
+.btn.danger:hover { background: #e74c3c; }
+.stats-row { display: flex; gap: 14px; flex-wrap: wrap; justify-content: center; width: 100%; }
+.stat-card { background: #16213e; padding: 5px 14px; border-radius: 8px; text-align: center; }
+.stat-card .label { font-size: 10px; color: #888; text-transform: uppercase; letter-spacing: 0.5px; }
+.stat-card .value { font-size: 15px; font-weight: 600; }
+.status-box {
+  width: 100%; background: #16213e; border-radius: 8px; padding: 8px 14px;
+  font-size: 12px; color: #aaa; text-align: center; min-height: 32px; line-height: 1.6;
+}
+.status-box .hl { color: #f1c40f; }
+.status-box .green { color: #2ecc71; }
+.status-box .red { color: #e74c3c; }
+</style>
+</head>
+<body>
+<div class="back-link">← <a href="01-discrete-mathematics.md">Back to Discrete Mathematics</a></div>
+<div class="container">
+  <h1>🔗 Graph Explorer <small>Build graphs, find Eulerian/Hamiltonian paths, see coloring</small></h1>
+  <div class="canvas-wrap"><canvas id="canvas" width="800" height="600"></canvas></div>
+  <div class="controls">
+    <button class="btn active" id="modeNode">➕ Add Node</button>
+    <button class="btn" id="modeEdge">🔗 Add Edge</button>
+    <button class="btn" id="modeDrag">✋ Drag</button>
+    <button class="btn" id="modeRemove">✕ Remove</button>
+    <button class="btn go" id="eulerBtn">🔄 Eulerian Path</button>
+    <button class="btn go" id="colorBtn">🎨 Greedy Color</button>
+    <button class="btn" id="clearBtn">🗑 Clear</button>
+    <button class="btn" id="presetBtn">📋 Load Example</button>
+  </div>
+  <div class="stats-row">
+    <div class="stat-card"><div class="label">Vertices</div><div class="value" id="vCount">0</div></div>
+    <div class="stat-card"><div class="label">Edges</div><div class="value" id="eCount">0</div></div>
+    <div class="stat-card"><div class="label">Components</div><div class="value green" id="compCount">0</div></div>
+    <div class="stat-card"><div class="label">Chromatic #</div><div class="value" id="chromatic">—</div></div>
+  </div>
+  <div class="status-box" id="status">Click on the canvas to add nodes. Switch to <strong>Add Edge</strong> to connect them.</div>
+</div>
+<script>
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+const W = 800, H = 600;
+canvas.width = W; canvas.height = H;
+
+let nodes = [];
+let edges = [];
+let mode = 'node'; // node, edge, drag, remove
+let dragNode = null;
+let nextId = 1;
+let tempEdge = null; // {from: node, x, y} for drawing during edge mode
+let eulerPath = [];
+let colors = {};
+let hoverNode = null;
+let chromaticNum = '—';
+
+const nodeRadius = 18;
+const colors9 = ['#e74c3c','#3498db','#2ecc71','#f1c40f','#9b59b6','#e67e22','#1abc9c','#e84393','#00cec9'];
+
+function randPos() { return { x: 80 + Math.random() * (W - 160), y: 60 + Math.random() * (H - 120) }; }
+
+function addNode(x, y) {
+  const pos = (x != null && y != null) ? {x, y} : randPos();
+  nodes.push({ id: nextId++, x: pos.x, y: pos.y });
+  updateUI(); draw();
+}
+
+function findNode(x, y) {
+  let best = null, bestD = nodeRadius + 5;
+  for (const n of nodes) {
+    const d = Math.hypot(x - n.x, y - n.y);
+    if (d < bestD) { bestD = d; best = n; }
+  }
+  return best;
+}
+
+function toggleEdge(n1, n2) {
+  if (n1 === n2) return;
+  const idx = edges.findIndex(e => (e.from === n1 && e.to === n2) || (e.from === n2 && e.to === n1));
+  if (idx >= 0) edges.splice(idx, 1);
+  else edges.push({ from: n1, to: n2 });
+  eulerPath = []; colors = {}; chromaticNum = '—';
+  updateUI(); draw();
+}
+
+function removeNode(n) {
+  edges = edges.filter(e => e.from !== n && e.to !== n);
+  nodes = nodes.filter(node => node !== n);
+  eulerPath = []; colors = {}; chromaticNum = '—';
+  updateUI(); draw();
+}
+
+function getNeighbors(n) {
+  return edges.filter(e => e.from === n || e.to === n).map(e => e.from === n ? e.to : e.from);
+}
+
+function connectedComponents() {
+  const visited = new Set();
+  let comps = 0;
+  for (const n of nodes) {
+    if (visited.has(n)) continue;
+    comps++;
+    const stack = [n];
+    while (stack.length) {
+      const c = stack.pop();
+      if (visited.has(c)) continue;
+      visited.add(c);
+      for (const nb of getNeighbors(c)) if (!visited.has(nb)) stack.push(nb);
+    }
+  }
+  return comps;
+}
+
+function findEulerian() {
+  if (nodes.length === 0) return [];
+  // Check connectivity (ignoring isolated nodes)
+  const deg = {};
+  for (const n of nodes) deg[n.id] = 0;
+  for (const e of edges) { deg[e.from.id]++; deg[e.to.id]++; }
+  const withEdges = nodes.filter(n => deg[n.id] > 0);
+  if (withEdges.length === 0) return [];
+
+  const visited = new Set();
+  const stack = [withEdges[0]];
+  while (stack.length) {
+    const c = stack.pop();
+    if (visited.has(c)) continue;
+    visited.add(c);
+    for (const nb of getNeighbors(c)) if (!visited.has(nb) && deg[nb.id] > 0) stack.push(nb);
+  }
+  if (visited.size !== withEdges.length) return [];
+
+  // Count odd-degree vertices
+  const odd = nodes.filter(n => deg[n.id] % 2 === 1);
+  if (odd.length !== 0 && odd.length !== 2) return [];
+
+  // Hierholzer's algorithm
+  const adj = {};
+  for (const n of nodes) adj[n.id] = [];
+  for (const e of edges) { adj[e.from.id].push(e.to.id); adj[e.to.id].push(e.from.id); }
+  // Copy for mutating
+  const stack2 = [odd.length === 2 ? odd[0].id : withEdges[0].id];
+  const circuit = [];
+  const tempAdj = {};
+  for (const n of nodes) tempAdj[n.id] = [...adj[n.id]];
+
+  while (stack2.length) {
+    const v = stack2[stack2.length-1];
+    if (tempAdj[v] && tempAdj[v].length > 0) {
+      const u = tempAdj[v].pop();
+      tempAdj[u] = tempAdj[u].filter(x => x !== v);
+      stack2.push(u);
+    } else {
+      circuit.push(stack2.pop());
+    }
+  }
+  return circuit.reverse().map(id => nodes.find(n => n.id === id)).filter(Boolean);
+}
+
+function greedyColoring() {
+  const result = {};
+  const used = new Array(nodes.length).fill(false);
+  for (const n of nodes) {
+    for (const nb of getNeighbors(n)) if (result[nb.id] !== undefined) used[result[nb.id]] = true;
+    let c;
+    for (c = 0; c < nodes.length; c++) if (!used[c]) break;
+    result[n.id] = c;
+    for (const nb of getNeighbors(n)) if (result[nb.id] !== undefined) used[result[nb.id]] = false;
+  }
+  colors = result;
+  chromaticNum = Math.max(...Object.values(result)) + 1;
+  eulerPath = [];
+  draw();
+  updateUI();
+}
+
+// Preset: K5 graph
+function loadPreset() {
+  nodes = []; edges = []; eulerPath = []; colors = {}; chromaticNum = '—'; nextId = 1;
+  const cx = W/2, cy = H/2;
+  for (let i = 0; i < 5; i++) {
+    const angle = (i / 5) * 2 * Math.PI - Math.PI/2;
+    nodes.push({ id: nextId++, x: cx + 150 * Math.cos(angle), y: cy + 120 * Math.sin(angle) });
+  }
+  for (let i = 0; i < 5; i++) for (let j = i+1; j < 5; j++) edges.push({ from: nodes[i], to: nodes[j] });
+  draw(); updateUI();
+  document.getElementById('status').innerHTML = 'Loaded <span class="hl">K₅</span> (complete graph, 5 vertices, 10 edges). Chromatic number: <span class="hl">5</span>.';
+}
+
+function updateUI() {
+  document.getElementById('vCount').textContent = nodes.length;
+  document.getElementById('eCount').textContent = edges.length;
+  document.getElementById('compCount').textContent = connectedComponents();
+  document.getElementById('chromatic').textContent = chromaticNum;
+}
+
+function draw() {
+  ctx.clearRect(0, 0, W, H);
+  ctx.fillStyle = '#16213e'; ctx.fillRect(0, 0, W, H);
+
+  // Edges
+  for (const e of edges) {
+    const isEuler = eulerPath.length > 1;
+    let inPath = false;
+    if (isEuler) {
+      for (let i = 0; i < eulerPath.length - 1; i++) {
+        if ((eulerPath[i] === e.from && eulerPath[i+1] === e.to) || (eulerPath[i] === e.to && eulerPath[i+1] === e.from))
+          { inPath = true; break; }
+      }
+    }
+    ctx.beginPath(); ctx.moveTo(e.from.x, e.from.y); ctx.lineTo(e.to.x, e.to.y);
+    ctx.strokeStyle = inPath ? '#f1c40f' : '#3a3a5a';
+    ctx.lineWidth = inPath ? 3.5 : 1.5;
+    ctx.stroke();
+  }
+
+  // Temp edge
+  if (tempEdge) {
+    ctx.beginPath(); ctx.moveTo(tempEdge.from.x, tempEdge.from.y); ctx.lineTo(tempEdge.x, tempEdge.y);
+    ctx.strokeStyle = 'rgba(255,255,255,0.3)'; ctx.lineWidth = 1.5; ctx.setLineDash([4,4]); ctx.stroke();
+    ctx.setLineDash([]);
+  }
+
+  // Nodes
+  for (const n of nodes) {
+    const r = (hoverNode === n && mode === 'remove') ? nodeRadius + 4 : nodeRadius;
+    const col = colors[n.id] !== undefined ? colors9[colors[n.id] % colors9.length] : '#2a3a5a';
+    ctx.shadowColor = 'rgba(0,0,0,0.3)'; ctx.shadowBlur = 6;
+    ctx.beginPath(); ctx.arc(n.x, n.y, r, 0, Math.PI * 2);
+    ctx.fillStyle = col;
+    ctx.fill();
+    ctx.shadowBlur = 0;
+
+    if (eulerPath.length > 1) {
+      const idx = eulerPath.indexOf(n);
+      if (idx >= 0) {
+        ctx.strokeStyle = '#f1c40f'; ctx.lineWidth = 3; ctx.stroke();
+        ctx.fillStyle = '#fff'; ctx.font = 'bold 10px -apple-system, sans-serif';
+        ctx.textAlign = 'center'; ctx.textBaseline = 'bottom';
+        ctx.fillText('#' + (idx+1), n.x, n.y - r - 4);
+      }
+    }
+
+    ctx.fillStyle = '#fff'; ctx.font = 'bold 12px -apple-system, sans-serif';
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText(n.id, n.x, n.y);
+  }
+
+  // Hover outline for removal
+  if (hoverNode && mode === 'remove') {
+    ctx.beginPath(); ctx.arc(hoverNode.x, hoverNode.y, nodeRadius + 4, 0, Math.PI * 2);
+    ctx.strokeStyle = '#e74c3c'; ctx.lineWidth = 2; ctx.setLineDash([3,3]); ctx.stroke();
+    ctx.setLineDash([]);
+  }
+}
+
+// Event handlers
+canvas.addEventListener('mousedown', e => {
+  const rect = canvas.getBoundingClientRect();
+  const x = (e.clientX - rect.left) * (W / rect.width);
+  const y = (e.clientY - rect.top) * (H / rect.height);
+
+  if (mode === 'node') {
+    if (!findNode(x, y)) { addNode(x, y); draw(); }
+  } else if (mode === 'edge') {
+    const n = findNode(x, y);
+    if (n && tempEdge) {
+      toggleEdge(tempEdge.from, n);
+      tempEdge = null; draw(); updateUI();
+    } else if (n) {
+      tempEdge = { from: n, x, y };
+      draw();
+    }
+  } else if (mode === 'drag') {
+    dragNode = findNode(x, y);
+  } else if (mode === 'remove') {
+    const n = findNode(x, y);
+    if (n) { removeNode(n); }
+  }
+});
+
+canvas.addEventListener('mousemove', e => {
+  const rect = canvas.getBoundingClientRect();
+  const x = (e.clientX - rect.left) * (W / rect.width);
+  const y = (e.clientY - rect.top) * (H / rect.height);
+
+  hoverNode = findNode(x, y);
+
+  if (mode === 'edge' && tempEdge) {
+    tempEdge.x = x; tempEdge.y = y;
+    draw();
+  }
+  if (mode === 'drag' && dragNode) {
+    dragNode.x = x; dragNode.y = y;
+    eulerPath = []; draw();
+  }
+  if (mode !== 'edge' && tempEdge) { tempEdge = null; draw(); }
+
+  canvas.style.cursor = (mode !== 'drag' && hoverNode) ? 'pointer' : 'crosshair';
+  if (mode === 'remove' && hoverNode) canvas.style.cursor = 'not-allowed';
+});
+
+canvas.addEventListener('mouseup', () => { dragNode = null; });
+canvas.addEventListener('mouseleave', () => { dragNode = null; tempEdge = null; draw(); });
+
+// Mode buttons
+document.getElementById('modeNode').addEventListener('click', () => {
+  mode = 'node'; tempEdge = null;
+  document.querySelectorAll('.controls .btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('modeNode').classList.add('active');
+  document.getElementById('status').textContent = 'Click to add a node.';
+});
+document.getElementById('modeEdge').addEventListener('click', () => {
+  mode = 'edge'; tempEdge = null;
+  document.querySelectorAll('.controls .btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('modeEdge').classList.add('active');
+  document.getElementById('status').textContent = 'Click a node to start an edge, then click another node to connect. Click same node again to remove edge.';
+});
+document.getElementById('modeDrag').addEventListener('click', () => {
+  mode = 'drag'; tempEdge = null;
+  document.querySelectorAll('.controls .btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('modeDrag').classList.add('active');
+  document.getElementById('status').textContent = 'Drag nodes to rearrange the graph layout.';
+});
+document.getElementById('modeRemove').addEventListener('click', () => {
+  mode = 'remove'; tempEdge = null;
+  document.querySelectorAll('.controls .btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('modeRemove').classList.add('active');
+  document.getElementById('status').textContent = 'Click a node to remove it and all its edges.';
+});
+
+document.getElementById('eulerBtn').addEventListener('click', () => {
+  eulerPath = findEulerian();
+  colors = {}; chromaticNum = '—';
+  if (eulerPath.length === 0) document.getElementById('status').innerHTML = '<span class="red">No Eulerian path exists.</span> Check that all vertices with edges are connected and 0 or 2 have odd degree.';
+  else if (eulerPath[0] === eulerPath[eulerPath.length-1]) document.getElementById('status').innerHTML = '<span class="green">Eulerian circuit found!</span> Path: ' + eulerPath.map(n => n.id).join(' → ') + ' → ' + eulerPath[0].id;
+  else document.getElementById('status').innerHTML = '<span class="green">Eulerian path found!</span> Path: ' + eulerPath.map(n => n.id).join(' → ');
+  draw(); updateUI();
+});
+
+document.getElementById('colorBtn').addEventListener('click', () => {
+  greedyColoring();
+  document.getElementById('status').innerHTML = 'Greedy coloring used <span class="hl">' + chromaticNum + '</span> colors. Chromatic number χ(G) ≤ ' + chromaticNum + '.';
+});
+
+document.getElementById('clearBtn').addEventListener('click', () => {
+  nodes = []; edges = []; eulerPath = []; colors = {}; chromaticNum = '—'; nextId = 1;
+  draw(); updateUI();
+  document.getElementById('status').innerHTML = 'Graph cleared. Start adding nodes!';
+});
+
+document.getElementById('presetBtn').addEventListener('click', loadPreset);
+
+// Init - show example graph
+loadPreset();
+document.getElementById('modeNode').classList.add('active');
+</script>
+</body>
+</html>

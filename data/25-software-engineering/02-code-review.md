@@ -121,4 +121,8 @@ Most teams do lightweight async review (GitHub PRs). Save formal inspections for
 
 > "Leave the code better than you found it." — Boy Scout Rule
 
+## Visualization
+
+- [PR Pipeline Animation](pr-flow-viz.html) — step through the code review lifecycle from submit to merge
+
 **Related**: [Testing Guide](/19-testing/README.md) · [Software Architecture](/17-software-architecture/README.md) · [Git Internals](/25-software-engineering/01-git-internals.md)

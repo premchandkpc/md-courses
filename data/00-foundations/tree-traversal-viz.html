@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BST Traversal — Interactive Tree Visualizer</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: #1a1a2e; color: #e0e0e0; min-height: 100vh;
+  display: flex; justify-content: center; align-items: center; padding: 20px;
+}
+.back-link { position: fixed; top: 16px; left: 20px; z-index: 100; }
+.back-link a { color: #8e9ef0; text-decoration: none; font-size: 14px; }
+.back-link a:hover { text-decoration: underline; }
+.container { display: flex; flex-direction: column; align-items: center; gap: 14px; width: 100%; max-width: 800px; }
+h1 { font-size: 22px; font-weight: 600; text-align: center; }
+h1 small { display: block; font-size: 12px; font-weight: 400; color: #888; margin-top: 2px; }
+.canvas-wrap {
+  width: 100%; background: #16213e; border-radius: 12px; padding: 8px; overflow: hidden;
+}
+canvas { display: block; width: 100%; height: auto; }
+.controls { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
+.btn {
+  background: #2a2a4a; color: #e0e0e0; border: 1px solid #444; padding: 7px 16px;
+  border-radius: 6px; cursor: pointer; font-size: 13px; transition: all 0.2s;
+}
+.btn:hover { background: #3a3a5a; }
+.btn.active { background: #4a6fa5; border-color: #5a7fb5; }
+.btn.go { background: #27ae60; border-color: #2ecc71; }
+.btn.go:hover { background: #2ecc71; }
+.btn.go:disabled { opacity: 0.4; cursor: default; }
+.speed-group { display: flex; align-items: center; gap: 8px; background: #16213e; padding: 6px 14px; border-radius: 8px; }
+.speed-group label { font-size: 12px; color: #888; }
+input[type=range] { width: 80px; accent-color: #4a6fa5; }
+.traversal-input { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; justify-content: center; }
+.traversal-input input {
+  background: #2a2a4a; color: #e0e0e0; border: 1px solid #444; padding: 7px 12px;
+  border-radius: 6px; font-size: 13px; width: 200px; font-family: 'SF Mono', monospace;
+}
+.traversal-input input:focus { outline: none; border-color: #4a6fa5; }
+.order-display {
+  width: 100%; background: #16213e; border-radius: 8px; padding: 10px 16px;
+  font-family: 'SF Mono', 'Fira Code', monospace; font-size: 18px; text-align: center;
+  min-height: 42px; display: flex; align-items: center; justify-content: center; gap: 6px; flex-wrap: wrap;
+}
+.order-display .visited { color: #2ecc71; }
+.order-display .current { color: #f1c40f; font-weight: 600; animation: blink 0.6s ease infinite; }
+.order-display .pending { color: #555; }
+@keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
+.steps-box {
+  width: 100%; background: #16213e; border-radius: 8px; padding: 8px 16px;
+  font-size: 12px; color: #888; text-align: center; min-height: 30px;
+}
+@media (max-width: 500px) {
+  .order-display { font-size: 14px; }
+}
+</style>
+</head>
+<body>
+<div class="back-link">← <a href="02-data-structures-algorithms.md">Back to DS&A</a></div>
+<div class="container">
+  <h1>🌳 BST Traversal <small>Preorder · Inorder · Postorder · Level-order</small></h1>
+  <div class="traversal-input">
+    <input type="text" id="treeInput" placeholder="e.g. 50,30,70,20,40,60,80" value="50,30,70,20,40,60,80">
+    <button class="btn" id="buildBtn">🌲 Build Tree</button>
+  </div>
+  <div class="controls">
+    <button class="btn" data-order="preorder">Preorder</button>
+    <button class="btn" data-order="inorder">Inorder</button>
+    <button class="btn" data-order="postorder">Postorder</button>
+    <button class="btn" data-order="levelorder">Level-order</button>
+    <div class="speed-group">
+      <label>Speed</label>
+      <input type="range" id="speedRange" min="1" max="10" value="5">
+    </div>
+    <button class="btn go" id="playBtn">▶ Play</button>
+    <button class="btn" id="resetBtn">⟳ Reset</button>
+  </div>
+  <div class="canvas-wrap">
+    <canvas id="canvas" width="750" height="360"></canvas>
+  </div>
+  <div class="order-display" id="orderDisplay">
+    <span class="pending">Click a traversal to begin</span>
+  </div>
+  <div class="steps-box" id="stepsBox"></div>
+</div>
+<script>
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+const W = 750, H = 360;
+
+let tree = null;
+let traversalSteps = [];
+let currentStep = -1;
+let isPlaying = false;
+let timer = null;
+let activeOrder = null;
+
+class Node {
+  constructor(val) { this.val = val; this.left = null; this.right = null; }
+}
+
+function buildBST(arr) {
+  const root = new Node(arr[0]);
+  for (let i = 1; i < arr.length; i++) {
+    let cur = root;
+    while (true) {
+      if (arr[i] < cur.val) {
+        if (!cur.left) { cur.left = new Node(arr[i]); break; }
+        cur = cur.left;
+      } else {
+        if (!cur.right) { cur.right = new Node(arr[i]); break; }
+        cur = cur.right;
+      }
+    }
+  }
+  return root;
+}
+
+function layout(node, x1, x2, y, positions) {
+  if (!node) return;
+  const x = (x1 + x2) / 2;
+  positions.set(node, { x, y });
+  const gap = (x2 - x1) / 2;
+  layout(node.left, x1, x, y + 50, positions);
+  layout(node.right, x, x2, y + 50, positions);
+}
+
+function getPositions(root) {
+  const pos = new Map();
+  layout(root, 30, W - 30, 40, pos);
+  return pos;
+}
+
+function traverse(node, order, result) {
+  if (!node) return;
+  if (order === 'preorder') { result.push(node); traverse(node.left, order, result); traverse(node.right, order, result); }
+  else if (order === 'inorder') { traverse(node.left, order, result); result.push(node); traverse(node.right, order, result); }
+  else if (order === 'postorder') { traverse(node.left, order, result); traverse(node.right, order, result); result.push(node); }
+  else if (order === 'levelorder') {
+    const q = [node];
+    while (q.length) {
+      const n = q.shift();
+      result.push(n);
+      if (n.left) q.push(n.left);
+      if (n.right) q.push(n.right);
+    }
+  }
+}
+
+function buildFromInput() {
+  const input = document.getElementById('treeInput').value.trim();
+  const vals = input.split(',').map(s => parseInt(s.trim())).filter(n => !isNaN(n));
+  if (vals.length === 0) { alert('Enter at least one number'); return; }
+  tree = buildBST(vals);
+  activeOrder = null;
+  currentStep = -1;
+  isPlaying = false; if (timer) { clearTimeout(timer); timer = null; }
+  document.getElementById('playBtn').textContent = '▶ Play';
+  document.querySelectorAll('[data-order]').forEach(b => b.classList.remove('active'));
+  draw();
+  document.getElementById('orderDisplay').innerHTML = '<span class="pending">Tree built. Click a traversal to begin.</span>';
+  document.getElementById('stepsBox').textContent = '';
+}
+
+function generateSteps(order) {
+  if (!tree) return;
+  activeOrder = order;
+  currentStep = -1;
+  isPlaying = false; if (timer) { clearTimeout(timer); timer = null; }
+  document.getElementById('playBtn').textContent = '▶ Play';
+  document.querySelectorAll('[data-order]').forEach(b => b.classList.remove('active'));
+  document.querySelector(`[data-order="${order}"]`).classList.add('active');
+
+  const result = [];
+  traverse(tree, order, result);
+  traversalSteps = result;
+  draw();
+  updateOrderDisplay(-1);
+  const names = { preorder: 'Preorder', inorder: 'Inorder', postorder: 'Postorder', 'levelorder': 'Level-order' };
+  document.getElementById('stepsBox').textContent = `${names[order]}: ${result.length} nodes in sequence. Press ▶ to animate.`;
+}
+
+function playSteps() {
+  if (!tree || !activeOrder || traversalSteps.length === 0) return;
+  if (isPlaying) {
+    isPlaying = false; clearTimeout(timer);
+    document.getElementById('playBtn').textContent = '▶ Play';
+    return;
+  }
+  if (currentStep >= traversalSteps.length - 1) {
+    currentStep = -1;
+    draw();
+    updateOrderDisplay(-1);
+  }
+  isPlaying = true;
+  document.getElementById('playBtn').textContent = '⏸ Pause';
+
+  function step() {
+    if (!isPlaying) return;
+    if (currentStep >= traversalSteps.length - 1) {
+      isPlaying = false;
+      document.getElementById('playBtn').textContent = '▶ Play';
+      return;
+    }
+    currentStep++;
+    draw();
+    updateOrderDisplay(currentStep);
+    const speed = parseInt(document.getElementById('speedRange').value);
+    const delay = Math.max(80, 600 - speed * 50);
+    timer = setTimeout(step, delay);
+  }
+  step();
+}
+
+function draw() {
+  ctx.clearRect(0, 0, W, H);
+  ctx.fillStyle = '#16213e'; ctx.fillRect(0, 0, W, H);
+  if (!tree) return;
+  const pos = getPositions(tree);
+  const visitedSet = new Set(traversalSteps.slice(0, currentStep + 1));
+  const currentNode = currentStep >= 0 && currentStep < traversalSteps.length ? traversalSteps[currentStep] : null;
+
+  // Draw edges first
+  function drawEdges(node) {
+    if (!node) return;
+    if (node.left) {
+      const p = pos.get(node), c = pos.get(node.left);
+      ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(c.x, c.y);
+      ctx.strokeStyle = visitedSet.has(node.left) ? '#2ecc7188' : '#3a3a5a';
+      ctx.lineWidth = 2; ctx.stroke();
+      drawEdges(node.left);
+    }
+    if (node.right) {
+      const p = pos.get(node), c = pos.get(node.right);
+      ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(c.x, c.y);
+      ctx.strokeStyle = visitedSet.has(node.right) ? '#2ecc7188' : '#3a3a5a';
+      ctx.lineWidth = 2; ctx.stroke();
+      drawEdges(node.right);
+    }
+  }
+  drawEdges(tree);
+
+  // Draw nodes
+  function drawNode(node) {
+    if (!node) return;
+    const p = pos.get(node);
+    const isVisited = visitedSet.has(node);
+    const isCurrent = node === currentNode;
+    const r = 22;
+
+    ctx.beginPath(); ctx.arc(p.x, p.y, r, 0, Math.PI * 2);
+    if (isCurrent) { ctx.fillStyle = '#f1c40f'; ctx.shadowColor = '#f1c40f44'; ctx.shadowBlur = 12; }
+    else if (isVisited) { ctx.fillStyle = '#2ecc71'; }
+    else { ctx.fillStyle = '#2a3a5a'; }
+    ctx.fill();
+    ctx.shadowBlur = 0;
+    ctx.strokeStyle = isCurrent ? '#f39c12' : isVisited ? '#27ae60' : '#4a4a6a';
+    ctx.lineWidth = 2; ctx.stroke();
+
+    ctx.fillStyle = isCurrent ? '#1a1a2e' : isVisited ? '#1a1a2e' : '#e0e0e0';
+    ctx.font = 'bold 14px -apple-system, sans-serif';
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText(node.val, p.x, p.y);
+
+    drawNode(node.left);
+    drawNode(node.right);
+  }
+  drawNode(tree);
+
+  // Legend
+  ctx.font = '11px -apple-system, sans-serif'; ctx.textAlign = 'left'; ctx.textBaseline = 'bottom';
+  ctx.fillStyle = '#2ecc71'; ctx.fillText('● Visited', 12, H - 6);
+  ctx.fillStyle = '#f1c40f'; ctx.fillText('● Current', 100, H - 6);
+  ctx.fillStyle = '#2a3a5a'; ctx.fillText('● Unvisited', 200, H - 6);
+}
+
+function updateOrderDisplay(idx) {
+  const el = document.getElementById('orderDisplay');
+  if (!activeOrder || traversalSteps.length === 0) {
+    el.innerHTML = '<span class="pending">Click a traversal to begin</span>';
+    return;
+  }
+  const names = { preorder: 'Preorder', inorder: 'Inorder', postorder: 'Postorder', 'levelorder': 'Level-order' };
+  let html = `<span style="color:#888">${names[activeOrder]}: </span>`;
+  for (let i = 0; i < traversalSteps.length; i++) {
+    const v = traversalSteps[i].val;
+    if (i < idx) html += `<span class="visited">${v}</span> `;
+    else if (i === idx) html += `<span class="current">${v}</span> `;
+    else html += `<span class="pending">${v}</span> `;
+  }
+  el.innerHTML = html;
+}
+
+// Event handlers
+document.getElementById('buildBtn').addEventListener('click', buildFromInput);
+document.getElementById('treeInput').addEventListener('keydown', e => { if (e.key === 'Enter') buildFromInput(); });
+
+document.querySelectorAll('[data-order]').forEach(btn => {
+  btn.addEventListener('click', () => generateSteps(btn.dataset.order));
+});
+
+document.getElementById('playBtn').addEventListener('click', playSteps);
+
+document.getElementById('resetBtn').addEventListener('click', () => {
+  currentStep = -1; isPlaying = false; if (timer) { clearTimeout(timer); timer = null; }
+  document.getElementById('playBtn').textContent = '▶ Play';
+  draw();
+  updateOrderDisplay(-1);
+});
+
+// Init
+buildFromInput();
+</script>
+</body>
+</html>

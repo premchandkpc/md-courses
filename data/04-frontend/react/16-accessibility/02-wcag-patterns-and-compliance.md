@@ -538,6 +538,14 @@ function ProductCard({ product, onSelect }) {
 
 ## See Also
 
+### Phase 7.1 Related Topics
+
+- [Compound Components](../../06-component-architecture/02-compound-components-pattern.md) — Accessible component APIs
+- [Advanced Form Patterns](../../08-forms/02-advanced-form-patterns.md) — Form accessibility (labels, error messages)
+- [Error Boundaries](../../35-error-handling/01-error-boundaries-and-patterns.md) — Accessible error UI
+
+### Additional Resources
+
 - WCAG 2.1 Specification (w3.org/WAI/WCAG21/quickref/)
 - Web Accessibility Initiative (w3.org/WAI/)
 - A11y Project Checklist (a11yproject.com)

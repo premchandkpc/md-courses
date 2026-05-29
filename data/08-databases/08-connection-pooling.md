@@ -559,6 +559,14 @@ const client = new MongoClient(uri, {
 
 ## See Also
 
+### Phase 7.1 Related Topics
+
+- [Database Replication](./10-database-replication.md) — Pooling replicates across servers
+- [Database Sharding](./11-database-sharding.md) — Pool size considerations with shards
+- [Disaster Recovery](./09-disaster-recovery.md) — Pool reconnection after failover
+
+### Additional Resources
+
 - **Topic 09:** Disaster Recovery & Backups
 - **Topic 10:** Multi-Region Architecture
 - **Per-engine guides:**

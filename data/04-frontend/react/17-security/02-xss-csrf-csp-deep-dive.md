@@ -490,6 +490,14 @@ function SecureComments({ postId }) {
 
 ## See Also
 
+### Phase 7.1 Related Topics
+
+- [Advanced Form Patterns](../../08-forms/02-advanced-form-patterns.md) — CSRF token handling in forms
+- [Error Boundaries](../../35-error-handling/01-error-boundaries-and-patterns.md) — Sanitizing error messages
+- [React Fiber](../../02-react-internals/02-fiber-reconciliation-engine.md) — Understanding render-phase XSS risks
+
+### Additional Resources
+
 - OWASP Top 10: Web Security Risks
 - MDN: Content Security Policy
 - DOMPurify: XSS sanitizer library

@@ -71,4 +71,11 @@ The mathematical language of computer science. Discrete math underpins algorithm
 4. Boolean algebra and logic
 5. Recurrence relations and generating functions
 
+## Visualizations
+
+- [Venn Diagram Builder](set-theory-viz.html) — interactive set operations (union, intersection, difference, complement) with draggable elements
+- [Graph Explorer](graph-theory-viz.html) — build graphs, find Eulerian/Hamiltonian paths, greedy coloring
+- [Monte Carlo — Law of Large Numbers](probability-viz.html) — watch the sample mean converge to 3.5 as you roll dice
+- [Boolean Logic — Truth Table & K-Map](boolean-logic-viz.html) — interactive truth table and Karnaugh Map for all Boolean operations
+
 **References**: CLRS (Appendix), Concrete Mathematics (Knuth), Introduction to Probability (Bertsekas), Discrete Mathematics and Its Applications (Rosen)

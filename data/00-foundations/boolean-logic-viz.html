@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Boolean Logic — Truth Table & Karnaugh Map</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: #1a1a2e; color: #e0e0e0; min-height: 100vh;
+  display: flex; justify-content: center; align-items: center; padding: 20px;
+}
+.back-link { position: fixed; top: 16px; left: 20px; z-index: 100; }
+.back-link a { color: #8e9ef0; text-decoration: none; font-size: 14px; }
+.back-link a:hover { text-decoration: underline; }
+.container { display: flex; flex-direction: column; align-items: center; gap: 14px; width: 100%; max-width: 780px; }
+h1 { font-size: 22px; font-weight: 600; text-align: center; }
+h1 small { display: block; font-size: 12px; font-weight: 400; color: #888; margin-top: 2px; }
+.top-bar { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; align-items: center; }
+.btn {
+  background: #2a2a4a; color: #e0e0e0; border: 1px solid #444; padding: 7px 16px;
+  border-radius: 6px; cursor: pointer; font-size: 13px; transition: all 0.2s;
+}
+.btn:hover { background: #3a3a5a; }
+.btn.active { background: #4a6fa5; border-color: #5a7fb5; }
+.controls { display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; }
+.controls .btn { font-size: 12px; padding: 5px 12px; }
+.main-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; width: 100%; }
+@media (max-width: 640px) { .main-grid { grid-template-columns: 1fr; } }
+.panel { background: #16213e; border-radius: 10px; padding: 14px; }
+.panel h3 { font-size: 13px; color: #888; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
+.truth-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.truth-table th { padding: 5px 8px; border-bottom: 2px solid #2a3a5a; color: #888; font-weight: 500; }
+.truth-table td { padding: 5px 8px; text-align: center; border-bottom: 1px solid #1e2a4a; cursor: pointer; transition: background 0.15s; }
+.truth-table td:hover { background: #2a3a5a; }
+.truth-table td.val0 { color: '#666' }
+.truth-table td.val1 { color: #2ecc71; font-weight: 600; }
+.truth-table td.result1 { background: #1a3a2e; color: #2ecc71; font-weight: 600; }
+.truth-table td.result0 { color: #666; }
+.truth-table .hl { background: #2a3a2a; }
+.kmap { display: grid; gap: 3px; width: fit-content; margin: 0 auto; }
+.kmap-cell { width: 48px; height: 48px; display: flex; align-items: center; justify-content: center;
+  font-family: 'SF Mono', monospace; font-size: 16px; font-weight: 600; border-radius: 4px;
+  cursor: pointer; transition: all 0.15s; position: relative;
+}
+.kmap-cell.val0 { background: #2a2a4a; color: #555; }
+.kmap-cell.val1 { background: #1a3a2e; color: #2ecc71; }
+.kmap-cell:hover { transform: scale(1.05); }
+.kmap-cell.grouped { box-shadow: 0 0 0 2px #f1c40f; }
+.kmap-label { color: #888; font-size: 11px; text-align: center; }
+.expression-box {
+  width: 100%; background: #16213e; border-radius: 8px; padding: 10px 16px;
+  font-family: 'SF Mono', monospace; font-size: 16px; text-align: center; min-height: 40px;
+  display: flex; align-items: center; justify-content: center; gap: 4px; flex-wrap: wrap;
+}
+.expression-box .hl { color: #f1c40f; }
+.bool-op-box { display: flex; gap: 20px; flex-wrap: wrap; justify-content: center; font-size: 13px; color: #888; }
+.bool-op-box span { display: flex; align-items: center; gap: 4px; }
+</style>
+</head>
+<body>
+<div class="back-link">← <a href="01-discrete-mathematics.md">Back to Discrete Mathematics</a></div>
+<div class="container">
+  <h1>🧮 Boolean Logic <small>Truth table + Karnaugh Map — click cells to toggle</small></h1>
+  <div class="top-bar">
+    <div class="controls" id="opControls">
+      <button class="btn active" data-op="and">AND ∧</button>
+      <button class="btn" data-op="or">OR ∨</button>
+      <button class="btn" data-op="nand">NAND</button>
+      <button class="btn" data-op="nor">NOR</button>
+      <button class="btn" data-op="xor">XOR ⊕</button>
+      <button class="btn" data-op="implies">→</button>
+    </div>
+    <button class="btn" id="randomBtn">🎲 Random</button>
+    <button class="btn" id="clearBtn">Clear</button>
+  </div>
+  <div class="expression-box" id="exprBox">
+    Click cells or choose an operation
+  </div>
+  <div class="main-grid">
+    <div class="panel">
+      <h3>A B | Result</h3>
+      <table class="truth-table" id="truthTable"></table>
+    </div>
+    <div class="panel">
+      <h3>Karnaugh Map (AB / CD)</h3>
+      <div id="kmapContainer" style="display:flex;justify-content:center"></div>
+    </div>
+  </div>
+  <div class="bool-op-box">
+    <span>∧ AND</span><span>∨ OR</span><span>⊕ XOR</span><span>⊼ NAND</span><span>⊽ NOR</span><span>→ Implies</span>
+  </div>
+</div>
+<script>
+let values = [0, 0, 0, 0]; // A, B, C, D
+let currentOp = 'and';
+let customValues = null; // 16-element array for all 4-input combos, or null
+
+function boolOp(a, b, op) {
+  if (op === 'and') return a && b ? 1 : 0;
+  if (op === 'or') return a || b ? 1 : 0;
+  if (op === 'nand') return a && b ? 0 : 1;
+  if (op === 'nor') return a || b ? 0 : 1;
+  if (op === 'xor') return a !== b ? 1 : 0;
+  if (op === 'implies') return (!a || b) ? 1 : 0;
+  return 0;
+}
+
+function render() {
+  renderTruthTable();
+  renderKMap();
+  updateExpr();
+}
+
+function renderTruthTable() {
+  const table = document.getElementById('truthTable');
+  table.innerHTML = '';
+  const rows = [];
+  if (customValues) {
+    // Show 4-variable truth table
+    const header = document.createElement('tr');
+    ['A','B','C','D','F'].forEach(h => { const th = document.createElement('th'); th.textContent = h; header.appendChild(th); });
+    table.appendChild(header);
+    for (let i = 0; i < 16; i++) {
+      const a = (i >> 3) & 1, b = (i >> 2) & 1, c = (i >> 1) & 1, d = i & 1;
+      const tr = document.createElement('tr');
+      [a,b,c,d].forEach(v => { const td = document.createElement('td'); td.className = 'val' + v; td.textContent = v; tr.appendChild(td); });
+      const td = document.createElement('td'); td.className = 'result' + customValues[i];
+      td.textContent = customValues[i]; td.dataset.idx = i;
+      td.addEventListener('click', () => { customValues[i] = customValues[i] ? 0 : 1; render(); });
+      tr.appendChild(td);
+      table.appendChild(tr);
+    }
+  } else {
+    // 2-variable truth table
+    const header = document.createElement('tr');
+    ['A','B','F'].forEach(h => { const th = document.createElement('th'); th.textContent = h; header.appendChild(th); });
+    table.appendChild(header);
+    for (let i = 0; i < 4; i++) {
+      const a = (i >> 1) & 1, b = i & 1;
+      const tr = document.createElement('tr');
+      [a,b].forEach(v => { const td = document.createElement('td'); td.className = 'val' + v; td.textContent = v; tr.appendChild(td); });
+      const result = boolOp(a, b, currentOp);
+      const td = document.createElement('td'); td.className = 'result' + result;
+      td.textContent = result;
+      tr.appendChild(td);
+      table.appendChild(tr);
+    }
+  }
+}
+
+function renderKMap() {
+  const container = document.getElementById('kmapContainer');
+  container.innerHTML = '';
+
+  if (customValues) {
+    // 4-variable K-map: AB rows, CD columns (Gray code)
+    const grid = document.createElement('div');
+    grid.className = 'kmap';
+    grid.style.gridTemplateColumns = 'repeat(5, 48px)';
+    grid.style.gridTemplateRows = 'repeat(5, 24px 48px)';
+
+    // Header
+    const empty = document.createElement('div'); grid.appendChild(empty);
+    const cdLabels = ['00','01','11','10'];
+    for (const lbl of cdLabels) {
+      const l = document.createElement('div'); l.className = 'kmap-label'; l.textContent = lbl;
+      grid.appendChild(l);
+    }
+    const abLabels = ['00','01','11','10'];
+    for (let r = 0; r < 4; r++) {
+      const l = document.createElement('div'); l.className = 'kmap-label'; l.textContent = abLabels[r];
+      grid.appendChild(l);
+      for (let c = 0; c < 4; c++) {
+        const abGray = [0, 1, 3, 2];
+        const cdGray = [0, 1, 3, 2];
+        const idx = (abGray[r] << 2) | cdGray[c];
+        const cell = document.createElement('div');
+        cell.className = 'kmap-cell val' + customValues[idx];
+        cell.textContent = customValues[idx];
+        cell.dataset.idx = idx;
+        cell.addEventListener('click', () => {
+          customValues[idx] = customValues[idx] ? 0 : 1;
+          render();
+        });
+        grid.appendChild(cell);
+      }
+    }
+    container.appendChild(grid);
+  } else {
+    // 2-variable K-map
+    const grid = document.createElement('div');
+    grid.className = 'kmap';
+    grid.style.gridTemplateColumns = 'repeat(3, 54px)';
+    grid.style.gridTemplateRows = 'repeat(3, 24px 54px)';
+
+    const empty1 = document.createElement('div'); grid.appendChild(empty1);
+    ['0','1'].forEach(v => { const l = document.createElement('div'); l.className = 'kmap-label'; l.textContent = 'B='+v; grid.appendChild(l); });
+    ['0','1'].forEach((v, ri) => {
+      const l = document.createElement('div'); l.className = 'kmap-label'; l.textContent = 'A='+v;
+      grid.appendChild(l);
+      for (let ci = 0; ci < 2; ci++) {
+        const a = ri, b = ci;
+        const result = boolOp(a, b, currentOp);
+        const cell = document.createElement('div');
+        cell.className = 'kmap-cell val' + result;
+        cell.textContent = result;
+        grid.appendChild(cell);
+      }
+    });
+    container.appendChild(grid);
+  }
+}
+
+function updateExpr() {
+  const el = document.getElementById('exprBox');
+  if (customValues) {
+    const ones = customValues.filter(v => v === 1).length;
+    el.innerHTML = 'Custom function with <span class="hl">' + ones + '</span> minterms. Click cells to toggle.';
+    return;
+  }
+  const opSymbols = { and: 'A ∧ B', or: 'A ∨ B', nand: 'A ⊼ B', nor: 'A ⊽ B', xor: 'A ⊕ B', implies: 'A → B' };
+  const opNames = { and: 'AND', or: 'OR', nand: 'NAND', nor: 'NOR', xor: 'XOR', implies: 'IMPLIES' };
+  el.innerHTML = '<span class="hl">' + opSymbols[currentOp] + '</span> &nbsp;(' + opNames[currentOp] + ')';
+
+  // Show truth table values
+  const results = [];
+  for (let i = 0; i < 4; i++) {
+    const a = (i >> 1) & 1, b = i & 1;
+    results.push(boolOp(a, b, currentOp));
+  }
+  el.innerHTML += ' &nbsp;→&nbsp; <span style="color:#888">[' + results.join(' ') + ']</span>';
+}
+
+// Operation buttons
+document.querySelectorAll('[data-op]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('[data-op]').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    currentOp = btn.dataset.op;
+    customValues = null;
+    render();
+  });
+});
+
+document.getElementById('randomBtn').addEventListener('click', () => {
+  customValues = Array.from({length: 16}, () => Math.random() < 0.5 ? 1 : 0);
+  currentOp = 'custom';
+  document.querySelectorAll('[data-op]').forEach(b => b.classList.remove('active'));
+  render();
+});
+
+document.getElementById('clearBtn').addEventListener('click', () => {
+  customValues = null;
+  document.querySelectorAll('[data-op]')[0].click();
+});
+
+// Init
+render();
+</script>
+</body>
+</html>

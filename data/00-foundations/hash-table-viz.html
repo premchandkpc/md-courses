@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hash Table - Collision Visualizer</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: #1a1a2e; color: #e0e0e0; min-height: 100vh;
+  display: flex; justify-content: center; align-items: center; padding: 20px;
+}
+.back-link { position: fixed; top: 16px; left: 20px; z-index: 100; }
+.back-link a { color: #8e9ef0; text-decoration: none; font-size: 14px; }
+.back-link a:hover { text-decoration: underline; }
+.container { display: flex; flex-direction: column; align-items: center; gap: 18px; width: 100%; max-width: 780px; }
+h1 { font-size: 22px; font-weight: 600; text-align: center; }
+h1 small { display: block; font-size: 12px; font-weight: 400; color: #888; margin-top: 2px; }
+.top-bar { display: flex; gap: 10px; width: 100%; flex-wrap: wrap; justify-content: center; }
+.top-bar input, .top-bar select {
+  background: #2a2a4a; color: #e0e0e0; border: 1px solid #444; padding: 8px 14px;
+  border-radius: 6px; font-size: 14px; font-family: 'SF Mono', 'Fira Code', monospace;
+}
+.top-bar input:focus { outline: none; border-color: #4a6fa5; }
+.top-bar input { width: 120px; }
+.btn {
+  background: #2a2a4a; color: #e0e0e0; border: 1px solid #444; padding: 8px 18px;
+  border-radius: 6px; cursor: pointer; font-size: 13px; transition: background 0.2s;
+}
+.btn:hover { background: #3a3a5a; }
+.btn.go { background: #4a6fa5; border-color: #5a7fb5; }
+.btn.go:hover { background: #5a7fb5; }
+.btn.danger { background: #c0392b; border-color: #e74c3c; }
+.btn.danger:hover { background: #e74c3c; }
+.table-wrap { width: 100%; background: #16213e; border-radius: 10px; padding: 12px; min-height: 320px; }
+.buckets { display: flex; flex-direction: column; gap: 4px; }
+.bucket-row { display: flex; align-items: center; gap: 8px; }
+.bucket-idx {
+  width: 40px; text-align: right; font-family: 'SF Mono', monospace;
+  font-size: 12px; color: #666; flex-shrink: 0;
+}
+.bucket-chain {
+  display: flex; align-items: center; gap: 4px; flex: 1; min-height: 38px;
+  background: #1e2a4a; border-radius: 6px; padding: 4px 8px; flex-wrap: wrap;
+}
+.bucket-node {
+  display: flex; align-items: center; gap: 6px;
+  background: #2a3a5a; border-radius: 6px; padding: 4px 10px;
+  font-family: 'SF Mono', monospace; font-size: 14px; transition: all 0.3s;
+  border: 1px solid transparent;
+}
+.bucket-node .key { color: #f1c40f; font-weight: 600; }
+.bucket-node .val { color: #8e9ef0; }
+.bucket-node .arrow { color: #555; font-size: 14px; }
+.bucket-node.inserting { border-color: #f1c40f; animation: node-pop 0.4s ease; }
+@keyframes node-pop { 0% { transform: scale(0.5); opacity: 0; } 60% { transform: scale(1.1); } 100% { transform: scale(1); opacity: 1; } }
+.bucket-node.collision { border-color: #e74c3c; animation: shake 0.3s ease; }
+@keyframes shake { 0%,100% { transform: translateX(0); } 25% { transform: translateX(-4px); } 75% { transform: translateX(4px); } }
+.bucket-empty { color: #444; font-size: 13px; font-style: italic; }
+.hash-fn-box {
+  background: #16213e; border-radius: 8px; padding: 10px 16px; width: 100%;
+  font-family: 'SF Mono', monospace; font-size: 13px; text-align: center;
+  min-height: 40px; display: flex; align-items: center; justify-content: center; gap: 8px;
+  flex-wrap: wrap;
+}
+.hash-fn-box .fn { color: #888; }
+.hash-fn-box .highlight { color: #f1c40f; font-weight: 600; }
+.stats-row { display: flex; gap: 16px; width: 100%; justify-content: center; flex-wrap: wrap; }
+.stat-card {
+  background: #16213e; padding: 8px 18px; border-radius: 8px; text-align: center; min-width: 100px;
+}
+.stat-card .label { font-size: 11px; color: #888; text-transform: uppercase; letter-spacing: 0.5px; }
+.stat-card .value { font-size: 20px; font-weight: 600; margin-top: 2px; }
+.stat-card .value.green { color: #2ecc71; }
+.stat-card .value.yellow { color: #f1c40f; }
+.stat-card .value.red { color: #e74c3c; }
+.preset-row { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
+.preset-row .btn.preset { font-size: 12px; padding: 5px 12px; }
+.legend { display: flex; gap: 16px; font-size: 12px; color: #888; flex-wrap: wrap; justify-content: center; }
+.legend span { display: flex; align-items: center; gap: 4px; }
+.legend .dot { width: 10px; height: 10px; border-radius: 3px; display: inline-block; }
+@media (max-width: 500px) {
+  .bucket-idx { width: 28px; font-size: 10px; }
+  .bucket-node { font-size: 12px; padding: 3px 7px; }
+}
+</style>
+</head>
+<body>
+<div class="back-link">← <a href="02-data-structures-algorithms.md">Back to DS&A</a></div>
+<div class="container">
+  <h1>🗄️ Hash Table <small>Separate chaining — watch collisions resolve</small></h1>
+  <div class="top-bar">
+    <input type="text" id="keyInput" placeholder="key" maxlength="10">
+    <input type="text" id="valInput" placeholder="value" maxlength="10" value="●">
+    <select id="bucketSelect">
+      <option value="5">5 buckets</option>
+      <option value="7" selected>7 buckets</option>
+      <option value="11">11 buckets</option>
+      <option value="13">13 buckets</option>
+    </select>
+    <button class="btn go" id="insertBtn">+ Insert</button>
+    <button class="btn" id="searchBtn">🔍 Search</button>
+    <button class="btn" id="deleteBtn">✕ Delete</button>
+    <button class="btn danger" id="clearBtn">Clear</button>
+  </div>
+  <div class="preset-row">
+    <button class="btn preset" data-keys="alice,bob,charlie,dave,eve,frank,grace">Load Preset 1</button>
+    <button class="btn preset" data-keys="cat,dog,fish,bird,hamster,rabbit,horse">Load Preset 2</button>
+    <button class="btn preset" data-keys="apple,banana,grape,lemon,mango,peach,plum">Load Preset 3</button>
+  </div>
+  <div class="hash-fn-box" id="hashDisplay">Enter a key and click <strong>Insert</strong> to see the hash function in action</div>
+  <div class="table-wrap"><div class="buckets" id="buckets"></div></div>
+  <div class="stats-row">
+    <div class="stat-card"><div class="label">Entries</div><div class="value" id="entryCount">0</div></div>
+    <div class="stat-card"><div class="label">Buckets</div><div class="value" id="bucketCount">7</div></div>
+    <div class="stat-card"><div class="label">Load Factor</div><div class="value" id="loadFactor">0.00</div></div>
+    <div class="stat-card"><div class="label">Collisions</div><div class="value" id="collisionCount">0</div></div>
+    <div class="stat-card"><div class="label">Max Chain</div><div class="value" id="maxChain">0</div></div>
+  </div>
+  <div class="legend">
+    <span><span class="dot" style="background:#2a3a5a"></span> Normal</span>
+    <span><span class="dot" style="background:#f1c40f"></span> Inserting</span>
+    <span><span class="dot" style="background:#e74c3c"></span> Collision</span>
+  </div>
+</div>
+<script>
+let table = {}; // key -> value
+let buckets = {}; // bucketIdx -> [keys]
+let numBuckets = 7;
+let collisions = 0;
+let insertingKey = null;
+
+const keyInput = document.getElementById('keyInput');
+const valInput = document.getElementById('valInput');
+const bucketSelect = document.getElementById('bucketSelect');
+const bucketsEl = document.getElementById('buckets');
+const hashDisplay = document.getElementById('hashDisplay');
+const entryCount = document.getElementById('entryCount');
+const bucketCount = document.getElementById('bucketCount');
+const loadFactor = document.getElementById('loadFactor');
+const collisionCount = document.getElementById('collisionCount');
+const maxChain = document.getElementById('maxChain');
+
+function hash(key) {
+  let h = 0;
+  for (let i = 0; i < key.length; i++) h = (h * 31 + key.charCodeAt(i)) & 0x7fffffff;
+  return h % numBuckets;
+}
+
+function render(highlightBucket, highlightKey, animClass) {
+  bucketsEl.innerHTML = '';
+  let maxLen = 0;
+  for (let i = 0; i < numBuckets; i++) {
+    const row = document.createElement('div'); row.className = 'bucket-row';
+    const idx = document.createElement('div'); idx.className = 'bucket-idx'; idx.textContent = i;
+    row.appendChild(idx);
+    const chain = document.createElement('div'); chain.className = 'bucket-chain';
+    const keys = buckets[i] || [];
+    maxLen = Math.max(maxLen, keys.length);
+    if (keys.length === 0) {
+      const empty = document.createElement('span'); empty.className = 'bucket-empty'; empty.textContent = '∅';
+      chain.appendChild(empty);
+    } else {
+      keys.forEach((k, j) => {
+        const node = document.createElement('div'); node.className = 'bucket-node';
+        if (highlightKey === k && highlightBucket === i) {
+          if (animClass) node.classList.add(animClass);
+        }
+        const keySpan = document.createElement('span'); keySpan.className = 'key'; keySpan.textContent = k;
+        node.appendChild(keySpan);
+        const valSpan = document.createElement('span'); valSpan.className = 'val'; valSpan.textContent = ':' + table[k];
+        node.appendChild(valSpan);
+        if (j < keys.length - 1) {
+          const arr = document.createElement('span'); arr.className = 'arrow'; arr.textContent = '→';
+          node.appendChild(arr);
+        }
+        chain.appendChild(node);
+      });
+    }
+    row.appendChild(chain);
+    bucketsEl.appendChild(row);
+  }
+  entryCount.textContent = Object.keys(table).length;
+  bucketCount.textContent = numBuckets;
+  const lf = Object.keys(table).length / numBuckets;
+  loadFactor.textContent = lf.toFixed(2);
+  loadFactor.className = 'value' + (lf > 1 ? ' red' : lf > 0.7 ? ' yellow' : ' green');
+  collisionCount.textContent = collisions;
+  maxChain.textContent = maxLen;
+}
+
+function insert(key, value) {
+  if (!key) return false;
+  if (table[key] !== undefined) { alert('Key "'+key+'" already exists'); return false; }
+  const bi = hash(key);
+  if (!buckets[bi]) buckets[bi] = [];
+  const hadCollision = buckets[bi].length > 0;
+  buckets[bi].push(key);
+  table[key] = value;
+  if (hadCollision) collisions++;
+  render(bi, key, 'inserting');
+  const hc = hadCollision ? ' <span style="color:#e74c3c">⚠ Collision with</span> <span style="color:#f1c40f">' + buckets[bi].filter(k => k !== key).join(', ') + '</span>' : '';
+  hashDisplay.innerHTML = 'hash(<span class="highlight">' + key + '</span>) = <span class="highlight">' + bi + '</span> → bucket[' + bi + ']'
+    + (hadCollision ? ' <span style="color:#e74c3c">(collision!)</span>' : ' <span style="color:#2ecc71">(empty slot)</span>')
+    + hc;
+  return true;
+}
+
+function search(key) {
+  if (!key) return false;
+  const bi = hash(key);
+  const keys = buckets[bi] || [];
+  const found = keys.includes(key);
+  hashDisplay.innerHTML = 'hash(<span class="highlight">' + key + '</span>) = <span class="highlight">' + bi + '</span> → '
+    + (found ? '<span style="color:#2ecc71">Found:</span> <span class="highlight">' + key + ':' + table[key] + '</span>' : '<span style="color:#e74c3c">Not found</span>');
+  render(bi, key, found ? '' : 'collision');
+  return found;
+}
+
+function del(key) {
+  if (!key || table[key] === undefined) { alert('Key not found: '+key); return false; }
+  const bi = hash(key);
+  buckets[bi] = (buckets[bi] || []).filter(k => k !== key);
+  delete table[key];
+  render(bi, key, '');
+  hashDisplay.innerHTML = 'Deleted <span class="highlight">' + key + '</span> from bucket[' + bi + ']';
+  return true;
+}
+
+function clearTable() {
+  table = {}; buckets = {}; collisions = 0;
+  hashDisplay.innerHTML = 'Table cleared. Enter a key and click <strong>Insert</strong>.';
+  render(-1, null, '');
+}
+
+function setBuckets(n) {
+  numBuckets = n;
+  clearTable();
+}
+
+// Load preset
+function loadPreset(keysStr) {
+  clearTable();
+  const keys = keysStr.split(',');
+  keys.forEach(k => insert(k, '●'));
+}
+
+// Event listeners
+document.getElementById('insertBtn').addEventListener('click', () => {
+  const k = keyInput.value.trim();
+  const v = valInput.value.trim() || '●';
+  if (k) { insert(k, v); keyInput.value = ''; keyInput.focus(); }
+});
+
+document.getElementById('searchBtn').addEventListener('click', () => {
+  const k = keyInput.value.trim();
+  if (k) search(k);
+});
+
+document.getElementById('deleteBtn').addEventListener('click', () => {
+  const k = keyInput.value.trim();
+  if (k) del(k);
+});
+
+document.getElementById('clearBtn').addEventListener('click', clearTable);
+
+bucketSelect.addEventListener('change', () => setBuckets(parseInt(bucketSelect.value)));
+
+document.querySelectorAll('.preset').forEach(btn => {
+  btn.addEventListener('click', () => loadPreset(btn.dataset.keys));
+});
+
+keyInput.addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('insertBtn').click(); });
+
+// Init
+clearTable();
+loadPreset('alice,bob,charlie');
+</script>
+</body>
+</html>

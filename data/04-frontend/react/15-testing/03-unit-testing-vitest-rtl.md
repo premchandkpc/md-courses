@@ -505,6 +505,14 @@ A: No. State is implementation detail. Test behavior (what user sees after click
 
 ## See Also
 
+### Phase 7.1 Related Topics
+
+- [Redux/Zustand Patterns](../../05-state-management/02-redux-zustand-patterns.md) — Testing state management
+- [Advanced Form Patterns](../../08-forms/02-advanced-form-patterns.md) — Testing form submission
+- [Compound Components](../../06-component-architecture/02-compound-components-pattern.md) — Testing component composition
+
+### Additional Resources
+
 - **E2E testing:** Playwright, Cypress (full workflows)
 - **Integration testing:** Testing multiple components together
 - **Snapshot testing:** `toMatchSnapshot()` (use sparingly)

@@ -569,6 +569,15 @@ const UserProfile = ({ userId }) => {
 
 ## See Also
 
+### Phase 7.1 Related Topics
+
+- [Compound Components](../../06-component-architecture/02-compound-components-pattern.md) — State composition patterns
+- [Error Boundaries](../../35-error-handling/01-error-boundaries-and-patterns.md) — Error state management
+- [Advanced Form Patterns](../../08-forms/02-advanced-form-patterns.md) — Form state alternatives
+- [Vitest + RTL](../../15-testing/03-unit-testing-vitest-rtl.md) — Testing Redux/Zustand
+
+### Additional Resources
+
 - Redux Toolkit: Simplified Redux API with Immer
 - TanStack Query: Server state management
 - Recoil: Atom-based state (alternative to Redux/Zustand)

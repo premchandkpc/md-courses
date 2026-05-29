@@ -115,4 +115,11 @@ Data structures organize data; algorithms operate on them. Mastery of both is th
 5. Dynamic programming and greedy algorithms
 6. Advanced: segment trees, tries, flow algorithms, string algorithms
 
+## Visualizations
+
+- [Sorting Algorithm Visualizer](sorting-viz.html) — watch Quick, Merge, Heap, and Insertion Sort race with live bar animations
+- [Hash Table Collision Visualizer](hash-table-viz.html) — see separate chaining resolve collisions with live load factor tracking
+- [BST Traversal Visualizer](tree-traversal-viz.html) — step through Preorder, Inorder, Postorder, and Level-order traversals
+- [Big O Growth Curves](complexity-viz.html) — animated comparison of O(1) through O(2ⁿ) scaling
+
 **Practice**: LeetCode (150+ problems), HackerRank, Codility, competitive programming platforms.

@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QPS & Storage Estimator — System Design Calculator</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: #1a1a2e; color: #e0e0e0; min-height: 100vh;
+  display: flex; justify-content: center; align-items: center; padding: 20px;
+}
+.back-link { position: fixed; top: 16px; left: 20px; z-index: 100; }
+.back-link a { color: #8e9ef0; text-decoration: none; font-size: 14px; }
+.back-link a:hover { text-decoration: underline; }
+.container { display: flex; flex-direction: column; align-items: center; gap: 14px; width: 100%; max-width: 700px; }
+h1 { font-size: 22px; font-weight: 600; text-align: center; }
+h1 small { display: block; font-size: 12px; font-weight: 400; color: #888; margin-top: 2px; }
+.calc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; width: 100%; }
+@media (max-width: 550px) { .calc-grid { grid-template-columns: 1fr; } }
+.card { background: #16213e; border-radius: 10px; padding: 14px 18px; }
+.card h3 { font-size: 12px; color: #888; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px; }
+.param-row { display: flex; justify-content: space-between; align-items: center; padding: 5px 0; border-bottom: 1px solid #1e2a4a; }
+.param-row:last-child { border-bottom: none; }
+.param-row label { font-size: 13px; color: #ccc; }
+.param-row .value { font-weight: 600; font-size: 14px; }
+.param-row input[type=range] { width: 100px; accent-color: #4a6fa5; }
+.param-row .input-val { color: #f1c40f; min-width: 30px; text-align: right; font-weight: 600; }
+.result-card { background: #1a2a3e; border: 2px solid #4a6fa5; border-radius: 10px; padding: 16px 20px; text-align: center; }
+.result-card .label { font-size: 11px; color: #888; text-transform: uppercase; letter-spacing: 0.5px; }
+.result-card .value { font-size: 28px; font-weight: 700; color: #f1c40f; margin: 4px 0; }
+.result-card .note { font-size: 12px; color: #666; }
+.result-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; }
+.preset-row { display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; }
+.preset-row .btn {
+  background: #2a2a4a; color: #e0e0e0; border: 1px solid #444; padding: 5px 12px;
+  border-radius: 6px; cursor: pointer; font-size: 11px; transition: all 0.2s;
+}
+.preset-row .btn:hover { background: #3a3a5a; }
+.conversion-box {
+  width: 100%; background: #16213e; border-radius: 8px; padding: 10px 16px;
+  font-size: 12px; color: #888; text-align: center;
+}
+.conversion-box span { margin: 0 8px; }
+</style>
+</head>
+<body>
+<div class="back-link">← <a href="03-system-design-interview.md">Back to System Design Interview</a></div>
+<div class="container">
+  <h1>📊 Estimation Calculator <small>DAU → QPS → Storage → Bandwidth</small></h1>
+  <div class="preset-row">
+    <button class="btn" data-preset='{"dau":100,"actions":10,"itemSize":1,"replication":3,"years":3}'>100M DAU</button>
+    <button class="btn" data-preset='{"dau":1000,"actions":20,"itemSize":10,"replication":3,"years":5}'>1B DAU (Twitter)</button>
+    <button class="btn" data-preset='{"dau":10,"actions":5,"itemSize":500,"replication":3,"years":5}'>10M DAU (YouTube)</button>
+    <button class="btn" data-preset='{"dau":500,"actions":2,"itemSize":2,"replication":3,"years":3}'>500M DAU (URL Shortener)</button>
+  </div>
+  <div class="calc-grid">
+    <div class="card">
+      <h3>Traffic</h3>
+      <div class="param-row"><label>DAU (millions)</label><input type="range" id="dau" min="1" max="2000" value="100"><span class="input-val" id="dauVal">100</span></div>
+      <div class="param-row"><label>Actions/user/day</label><input type="range" id="actions" min="1" max="100" value="10"><span class="input-val" id="actionsVal">10</span></div>
+      <div class="param-row"><label>Peak multiplier</label><input type="range" id="peak" min="1" max="10" value="2" step="0.5"><span class="input-val" id="peakVal">2.0</span></div>
+    </div>
+    <div class="card">
+      <h3>Storage</h3>
+      <div class="param-row"><label>Item size (KB)</label><input type="range" id="itemSize" min="0.1" max="10000" value="1" step="0.1"><span class="input-val" id="itemSizeVal">1</span></div>
+      <div class="param-row"><label>Replication factor</label><input type="range" id="replication" min="1" max="10" value="3"><span class="input-val" id="replicationVal">3</span></div>
+      <div class="param-row"><label>Growth (years)</label><input type="range" id="years" min="1" max="10" value="3"><span class="input-val" id="yearsVal">3</span></div>
+    </div>
+  </div>
+  <div class="result-grid">
+    <div class="result-card"><div class="label">Daily Actions</div><div class="value" id="dailyActions">0</div><div class="note">per day</div></div>
+    <div class="result-card"><div class="label">Avg QPS</div><div class="value" id="avgQps">0</div><div class="note">queries/second</div></div>
+    <div class="result-card"><div class="label">Peak QPS</div><div class="value" id="peakQps">0</div><div class="note">× peak multiplier</div></div>
+    <div class="result-card"><div class="label">Storage</div><div class="value" id="totalStorage">0</div><div class="note">with replication</div></div>
+  </div>
+  <div class="conversion-box">
+    <span>1 KB = 10³ bytes</span><span>1 MB = 10⁶</span><span>1 GB = 10⁹</span><span>1 TB = 10¹²</span><span>1 PB = 10¹⁵</span>
+  </div>
+</div>
+<script>
+function fmt(n) {
+  if (n >= 1e15) return (n / 1e15).toFixed(1) + ' PB';
+  if (n >= 1e12) return (n / 1e12).toFixed(1) + ' TB';
+  if (n >= 1e9) return (n / 1e9).toFixed(1) + ' GB';
+  if (n >= 1e6) return (n / 1e6).toFixed(1) + ' MB';
+  if (n >= 1e3) return (n / 1e3).toFixed(1) + ' KB';
+  return n.toFixed(0) + ' B';
+}
+
+function fmtQps(n) {
+  if (n >= 1e6) return (n / 1e6).toFixed(1) + 'M';
+  if (n >= 1e3) return (n / 1e3).toFixed(1) + 'K';
+  return Math.round(n).toLocaleString();
+}
+
+function fmtDaily(n) {
+  if (n >= 1e9) return (n / 1e9).toFixed(1) + 'B';
+  if (n >= 1e6) return (n / 1e6).toFixed(1) + 'M';
+  if (n >= 1e3) return (n / 1e3).toFixed(1) + 'K';
+  return n.toLocaleString();
+}
+
+function compute() {
+  const dau = parseFloat(document.getElementById('dau').value) * 1e6;
+  const actions = parseInt(document.getElementById('actions').value);
+  const peak = parseFloat(document.getElementById('peak').value);
+  const itemSizeKB = parseFloat(document.getElementById('itemSize').value);
+  const replication = parseInt(document.getElementById('replication').value);
+  const years = parseInt(document.getElementById('years').value);
+
+  document.getElementById('dauVal').textContent = document.getElementById('dau').value;
+  document.getElementById('actionsVal').textContent = actions;
+  document.getElementById('peakVal').textContent = peak.toFixed(1);
+  document.getElementById('itemSizeVal').textContent = itemSizeKB;
+  document.getElementById('replicationVal').textContent = replication;
+  document.getElementById('yearsVal').textContent = years;
+
+  const dailyActions = dau * actions;
+  const avgQps = dailyActions / 86400;
+  const peakQps = avgQps * peak;
+  const itemSizeBytes = itemSizeKB * 1000;
+  const storagePerDay = dailyActions * itemSizeBytes;
+  const storageTotal = storagePerDay * 365 * years * replication;
+
+  document.getElementById('dailyActions').textContent = fmtDaily(dailyActions);
+  document.getElementById('avgQps').textContent = fmtQps(avgQps);
+  document.getElementById('peakQps').textContent = fmtQps(peakQps);
+  document.getElementById('totalStorage').textContent = fmt(storageTotal);
+}
+
+// Slider events
+document.querySelectorAll('input[type=range]').forEach(el => {
+  el.addEventListener('input', compute);
+});
+
+// Presets
+document.querySelectorAll('[data-preset]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const p = JSON.parse(btn.dataset.preset);
+    document.getElementById('dau').value = p.dau;
+    document.getElementById('actions').value = p.actions;
+    document.getElementById('itemSize').value = p.itemSize;
+    document.getElementById('replication').value = p.replication;
+    document.getElementById('years').value = p.years;
+    compute();
+  });
+});
+
+// Init
+compute();
+</script>
+</body>
+</html>

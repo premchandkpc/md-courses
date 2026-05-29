@@ -1,0 +1,407 @@
+# Code Syntax Validation Configuration
+# Configuration for validate_syntax.py script
+
+# ============================================================================
+# VALIDATORS CONFIGURATION
+# ============================================================================
+
+validators:
+  python:
+    enabled: true
+    tool: "ast.parse()"
+    method: "built-in"
+    timeout: 5
+    priority: 3
+    description: "Python syntax validation via AST"
+
+  javascript:
+    enabled: true
+    tool: "node --check"
+    method: "subprocess"
+    timeout: 10
+    priority: 3
+    description: "JavaScript syntax validation"
+    install: "node (standard)"
+
+  typescript:
+    enabled: true
+    tool: "tsc --noEmit"
+    method: "subprocess"
+    timeout: 15
+    priority: 2
+    description: "TypeScript type checking"
+    install: "npm install -g typescript"
+
+  sql:
+    enabled: true
+    tool: "sqlglot"
+    method: "library"
+    timeout: 5
+    priority: 1  # Highest
+    description: "SQL multi-dialect validation"
+    install: "pip install sqlglot"
+    config:
+      default_dialect: "postgres"
+      supported_dialects:
+        - postgres
+        - mysql
+        - oracle
+        - sqlite
+        - tsql
+        - snowflake
+        - bigquery
+
+  bash:
+    enabled: true
+    tool: "shellcheck"
+    fallback: "sh -n"
+    method: "subprocess"
+    timeout: 10
+    priority: 1  # Highest
+    description: "Bash/Shell script validation"
+    install: "apt-get install shellcheck OR brew install shellcheck"
+    config:
+      prefer_shellcheck: true
+      severity_levels:
+        - error
+        - warning
+
+  go:
+    enabled: true
+    tool: "go build"
+    method: "subprocess"
+    timeout: 15
+    priority: 2
+    description: "Go syntax validation"
+    install: "go (standard)"
+    config:
+      target: "linux"  # Can be overridden per block
+
+  java:
+    enabled: true
+    tool: "javac"
+    method: "subprocess"
+    timeout: 15
+    priority: 2
+    description: "Java syntax validation"
+    install: "javac (standard)"
+    config:
+      source_version: "17"    # Target Java 17 (LTS)
+      target_version: "17"
+
+  html:
+    enabled: false  # Enable if needed
+    tool: "html5lib"
+    method: "library"
+    timeout: 5
+    priority: 4
+    description: "HTML5 validation"
+    install: "pip install html5lib"
+
+  json:
+    enabled: false  # Enable if needed
+    tool: "json.tool"
+    method: "built-in"
+    timeout: 2
+    priority: 4
+    description: "JSON validation"
+
+  yaml:
+    enabled: false  # Enable if needed
+    tool: "yamllint"
+    method: "subprocess"
+    timeout: 5
+    priority: 2
+    description: "YAML validation"
+    install: "pip install yamllint"
+
+  dockerfile:
+    enabled: false  # Enable if needed
+    tool: "hadolint"
+    method: "subprocess"
+    timeout: 10
+    priority: 2
+    description: "Dockerfile validation"
+    install: "brew install hadolint"
+
+# ============================================================================
+# CODE BLOCK EXTRACTION PATTERNS
+# ============================================================================
+
+extraction:
+  markdown_extension: ".md"
+
+  patterns:
+    python:
+      - "```python"
+      - "```py"
+
+    javascript:
+      - "```javascript"
+      - "```js"
+
+    typescript:
+      - "```typescript"
+      - "```ts"
+
+    sql:
+      - "```sql"
+      - "```postgresql"
+      - "```postgres"
+      - "```mysql"
+      - "```oracle"
+      - "```sqlite"
+
+    bash:
+      - "```bash"
+      - "```sh"
+      - "```shell"
+
+    go:
+      - "```go"
+      - "```golang"
+
+    java:
+      - "```java"
+
+    html:
+      - "```html"
+      - "```xml"
+
+    json:
+      - "```json"
+
+    yaml:
+      - "```yaml"
+      - "```yml"
+
+    dockerfile:
+      - "```dockerfile"
+      - "```docker"
+
+# ============================================================================
+# DOMAIN-SPECIFIC VALIDATION RULES
+# ============================================================================
+
+domains:
+  03-backend:
+    python:
+      min_python_version: "3.8"
+      check_async_await: true
+      check_type_hints: false  # Optional
+
+    java:
+      source_version: "17"
+      check_generics: true
+      check_lambdas: true
+
+    go:
+      check_package_structure: true
+      wrap_in_main: true
+
+    typescript:
+      check_types: true
+      strict_null_checks: false
+
+  08-databases:
+    sql:
+      default_dialect: "postgres"  # Override for this domain
+      check_indexes: true
+      check_table_names: false  # Requires schema
+
+  06-devops:
+    bash:
+      severity: "error"  # Only fail on errors, not warnings
+      check_portability: true
+
+  04-frontend:
+    javascript:
+      es_version: "es2020"
+
+    typescript:
+      strict_null_checks: true
+
+# ============================================================================
+# REPORTING CONFIGURATION
+# ============================================================================
+
+reporting:
+  formats:
+    - json      # Machine-readable
+    - console   # Human-readable
+    # - html    # Interactive dashboard (future)
+    # - csv     # Spreadsheet-compatible (future)
+
+  json_output:
+    file: "validation_report.json"
+    include_snippets: true
+    include_tool_info: true
+
+  console_output:
+    verbosity: "standard"  # minimal, standard, verbose
+    show_warnings: true
+    show_tool_info: true
+    limit_failures: 10  # Show first N failures
+
+  statistics:
+    group_by:
+      - language
+      - domain
+      - filepath
+
+    show_percentages: true
+    show_timing: true
+
+# ============================================================================
+# IGNORE / SKIP PATTERNS
+# ============================================================================
+
+ignore:
+  # Patterns to skip validation (regex)
+  patterns:
+    - ".*example.*"      # Skip files with "example" in name
+    - ".*template.*"     # Skip files with "template" in name
+    - ".*placeholder.*"  # Skip files with "placeholder"
+
+  # Specific files to skip
+  files:
+    - "README.md"
+    - "CHANGELOG.md"
+
+  # Directories to skip
+  directories:
+    - "node_modules"
+    - "dist"
+    - "build"
+    - ".next"
+
+  # Languages to skip entirely
+  languages: []  # Empty = validate all
+
+# ============================================================================
+# PERFORMANCE CONFIGURATION
+# ============================================================================
+
+performance:
+  # Parallel processing
+  parallel: true
+  max_workers: 4  # Number of concurrent validators
+
+  # Batch processing
+  batch_size: 100  # Blocks per batch
+
+  # Timeouts
+  validation_timeout: 10      # seconds per block
+  extraction_timeout: 30      # seconds per file
+  total_timeout: 300          # seconds for entire run
+
+  # Caching (future feature)
+  cache_results: false
+  cache_ttl: 86400  # 24 hours
+
+# ============================================================================
+# ERROR CATEGORIZATION
+# ============================================================================
+
+error_categories:
+  syntax_error:
+    description: "Code violates language syntax rules"
+    severity: "critical"
+    recovery: "Fix the code"
+
+  missing_tool:
+    description: "Validation tool not installed"
+    severity: "warning"
+    recovery: "Install tool or skip validation"
+
+  timeout:
+    description: "Validation took too long"
+    severity: "warning"
+    recovery: "Simplify code or increase timeout"
+
+  type_error:
+    description: "Type checking failed (optional)"
+    severity: "info"
+    recovery: "Add type hints or ignore"
+
+  environment_error:
+    description: "Code requires specific environment"
+    severity: "warning"
+    recovery: "Document environment requirements"
+
+# ============================================================================
+# INTEGRATION CONFIGURATION
+# ============================================================================
+
+integration:
+  # CI/CD hooks
+  pre_commit:
+    enabled: false  # Enable for pre-commit hook integration
+    run_on_changed_files_only: true
+
+  github_actions:
+    enabled: false  # Enable for GitHub Actions
+    report_as_check: true
+    fail_on_errors: true
+
+  # Slack notifications (future)
+  slack:
+    enabled: false
+    webhook_url: "${SLACK_WEBHOOK_URL}"
+    notify_on_failure: true
+
+# ============================================================================
+# DATABASE SCHEMA (for SQL validation)
+# ============================================================================
+
+schema:
+  postgres:
+    tables: {}  # Can be populated from introspection
+    # Example:
+    # users:
+    #   columns:
+    #     - { name: "id", type: "bigint" }
+    #     - { name: "email", type: "varchar(255)" }
+
+# ============================================================================
+# HIGH-RISK DOMAINS (Custom Rules)
+# ============================================================================
+
+high_risk_domains:
+  sql:
+    risk_level: "high"
+    reason: "Multi-dialect differences"
+    validation_strictness: "strict"
+    false_positive_rate: "medium"  # Some valid SQL might not parse
+    recommended_review: true
+
+  bash:
+    risk_level: "high"
+    reason: "Environment-dependent, portability issues"
+    validation_strictness: "medium"
+    false_positive_rate: "low"
+    recommended_review: true
+
+  java:
+    risk_level: "medium"
+    reason: "Complex type system, version-specific"
+    validation_strictness: "strict"
+    false_positive_rate: "low"
+    recommended_review: false
+
+  go:
+    risk_level: "medium"
+    reason: "Package structure, implicit interfaces"
+    validation_strictness: "medium"
+    false_positive_rate: "medium"
+    recommended_review: false
+
+# ============================================================================
+# LOGGING CONFIGURATION
+# ============================================================================
+
+logging:
+  level: "INFO"  # DEBUG, INFO, WARNING, ERROR
+  file: "validation.log"
+  console: true
+  format: "[%(asctime)s] %(levelname)s: %(message)s"

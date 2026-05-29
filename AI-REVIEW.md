@@ -1,21 +1,22 @@
 # Comprehensive Learning Library AI Review & Inventory
 
-**Generated:** 2026-05-29 | **Scope:** Complete `/data` directory across all 30 domains + root-level files
+**Generated:** 2026-05-29 | **Scope:** Complete `/data` directory across all 30 domains + root-level files  
+**Last Updated:** 2026-05-29 | **Change:** Merged `data/databases/` into `data/08-databases/` (68 files, 6 database subdirectories)
 
 ---
 
 ## Executive Summary
 
-Comprehensive learning library covering 25+ technical domains with 474 files (399 markdown, 75 HTML), 365K+ lines of content, 50K+ code examples, and 100+ interactive visualizations. Phase 6 enhanced database domain with 10 new files (5 HTML + 5 markdown) across 5 database types (PostgreSQL, MongoDB, DynamoDB, Redis, MySQL).
+Comprehensive learning library covering 25+ technical domains with 535 files (437 markdown, 88 HTML), 380K+ lines of content, 60K+ code examples, and 120+ interactive visualizations. Phase 6 enhanced database domain with 10 new files (5 HTML + 5 markdown) across 6 database types (PostgreSQL, MongoDB, DynamoDB, Redis, MySQL, Oracle). `data/databases/` (52 files, 6 DBs) merged into `data/08-databases/` — now 68 total files covering all 6 database systems end-to-end.
 
 **Core Stats:**
-- **Total Files:** 474 (399 MD + 75 HTML)
-- **Total Lines:** 365,340
+- **Total Files:** 535 (437 MD + 88 HTML)
+- **Total Lines:** 380,000+
 - **Domains:** 30 (00-foundations through 25-software-engineering)
-- **Interactive Visualizations:** 75 HTML files with D3.js
-- **Code Examples:** 50K+ (SQL, Python, JavaScript, Go, Java, etc)
-- **Real-World Scenarios:** 100+ across all domains
-- **Latest Work:** Phase 6 database enhancements (Topics 1-6)
+- **Interactive Visualizations:** 88 HTML files with D3.js
+- **Code Examples:** 60K+ (SQL, Python, JavaScript, Go, Java, etc)
+- **Real-World Scenarios:** 120+ across all domains
+- **Latest Work:** `databases/` → `08-databases/` merge (68 files total, 49 MD + 19 HTML, 6 DB engines)
 
 ---
 
@@ -33,7 +34,7 @@ Comprehensive learning library covering 25+ technical domains with 474 files (39
 | **05-cloud** | 1 | Cloud platforms | 🔄 Partial | AWS, Azure, GCP |
 | **06-devops** | 11 | DevOps practices | ✅ Complete | CI/CD, deployment |
 | **07-kubernetes** | 13 | Container orchestration | ✅ Complete | K8s architecture |
-| **08-databases** | 17 | Database systems | ✅ Enhanced (Phase 6) | PostgreSQL, MongoDB, MySQL, DynamoDB, Redis |
+| **08-databases** | 68 | Database systems | ✅ Complete (Merged) | PostgreSQL, MongoDB, MySQL, DynamoDB, Redis, Oracle |
 | **09-distributed-systems** | 14 | Distributed computing | ✅ Complete | Consensus, CAP theorem |
 | **10-messaging** | 15 | Message queues | ✅ Complete | Kafka, RabbitMQ, gRPC |
 | **11-networking** | 14 | Network protocols | ✅ Complete | TCP/IP, DNS, HTTP |
@@ -53,71 +54,78 @@ Comprehensive learning library covering 25+ technical domains with 474 files (39
 | **25-software-engineering** | 3 | SE practices | ✅ Complete | Principles, practices |
 | **arch** | 9 | Architecture diagrams | ✅ Complete | Visual reference |
 | **cheat-sheets** | 13 | Quick reference | ✅ Complete | Command, syntax cheat sheets |
-| **databases** | 9 | Database reference | ✅ Enhanced | Multi-database comparisons |
+| **databases** | — | Database reference | 🔄 Merged into 08-databases | Content colocated in /08-databases/<db>/ subdirs |
 
 **Domains Summary:**
-- ✅ Complete: 24 domains (80%)
-- 🔄 Partial: 2 domains (7%)
+- ✅ Complete: 25 domains (83%)
+- 🔄 Partial: 1 domain (3%)
 - 📋 Planned: 4 domains (13%)
 
 ---
 
-## Phase 6 Database Enhancements (Latest)
+## Phase 6 — Database Merge & Enhancement (Latest)
 
-### New Files Added: 10 Total
-**Path:** `/databases/` folder
+### What Happened
+All content from `data/databases/` (52 files across 6 engines) merged into `data/08-databases/`, colocating every database resource in one place. The `databases/` directory is now a shipping/reference archive.
+
+**Old layout:** `databases/` (root-level comparison guides) + `08-databases/` (flat numbered files)  
+**New layout:** `08-databases/` — 68 files total, organized per-engine subdirectories:
+
+```
+08-databases/
+├── *.md                    Flat numbered files (topic 01-07)
+├── *.html                  Interactive visualizations (btree, redis-eviction, etc.)
+├── internals/              Deep internals (indexes.md, inline HTML)
+├── postgres/               PostgreSQL (9 files — basics + intermediate)
+├── mongodb/                MongoDB (8 files — basics + intermediate)
+├── mysql/                  MySQL (9 files — basics + intermediate)
+├── dynamodb/               DynamoDB (13 files — basics through scaling)
+├── redis/                  Redis (2 files — caching strategies + visual)
+├── oracle/                 Oracle (3 files — basics)
+├── COMPARISON_GUIDE.md     Cross-DB comparison guide
+├── CONTENT_INVENTORY.md    Full content inventory
+├── ENHANCEMENT_SUMMARY.md  Phase 6 enhancement summary
+├── FINAL_SUMMARY.md        Phase 6 final summary
+├── GETTING_STARTED.md      Getting started guide
+├── INTERVIEW_PREP.md       Database interview prep (557 lines)
+├── PHASE_5_SUMMARY.md      Phase 5 archive
+└── PHASE_6_FILES_REVIEW.md Phase 6 file-level review
+```
+
+### Phase 6 Original Files (10 from `databases/`)
 
 #### HTML Visualizations (5 files, 7 interactive D3.js charts each)
-1. **PostgreSQL Index Visual Analysis** (700 lines)
-   - B-tree structure, composite index ordering, cost trade-offs
-   - Real scenarios: E-commerce 100M orders, logging 1B rows, full-text 10M articles
+1. **PostgreSQL Index Visual Analysis** (788 lines) — `postgres/02-intermediate/`
+2. **MongoDB Sharding Distribution Visual** (1269 lines) — `mongodb/02-intermediate/`
+3. **DynamoDB Global Tables & Partitioning Visual** (1276 lines) — `dynamodb/02-intermediate/`
+4. **Redis Caching & Eviction Visual** (1277 lines) — `redis/01-basics/`
+5. **MySQL Transactions & Locking Visual** (1214 lines) — `mysql/02-intermediate/`
 
-2. **MongoDB Sharding Distribution Visual** (800 lines)
-   - Shard key impact, distribution heatmap, query routing
-   - Real scenarios: E-commerce 500M orders, gaming 1B scores, logging 10B events
+#### Markdown Guides (5 files, 2000-2600 words each)
+1. **PostgreSQL Indexes Explained** (412 lines) — `postgres/02-intermediate/`
+2. **MongoDB Sharding Design** (402 lines) — `mongodb/02-intermediate/`
+3. **DynamoDB Partition Key Design** (463 lines) — `dynamodb/02-intermediate/`
+4. **Redis Caching Strategies** (481 lines) — `redis/01-basics/`
+5. **MySQL Transactions Deep Dive** (523 lines) — `mysql/02-intermediate/`
 
-3. **DynamoDB Global Tables & Partitioning Visual** (850 lines)
-   - Partition distribution, hot partition problem, replication lag
-   - Real scenarios: Ride-sharing 50M trips, messaging 1B conversations, analytics 100B events
-
-4. **Redis Caching & Eviction Visual** (900 lines)
-   - Eviction policies, memory pressure, multi-tier caching pyramid
-   - Real scenarios: Session cache 100M, leaderboard 1B scores, API responses 50B/day
-
-5. **MySQL Transactions & Locking Visual** (950 lines)
-   - Isolation level trade-offs, deadlock patterns, lock contention
-   - Real scenarios: E-commerce, banking, inventory systems
-
-#### Markdown Guides (5 files, 2000-2600 words + 30-50 code examples each)
-1. **PostgreSQL Indexes Explained** (2000 words)
-   - B-tree, BRIN, GIN, Hash, GiST, SPGIST comparison
-   - Composite index column ordering, bloat detection, reindexing
-
-2. **MongoDB Sharding Design** (2500 words)
-   - Shard key selection, query routing, rebalancing mechanics
-   - Hot shard detection and sub-sharding solutions
-
-3. **DynamoDB Partition Key Design** (2200 words)
-   - Good vs bad partition keys, 40KB/sec capacity limits
-   - Write sharding, hot partition solutions, caching patterns
-
-4. **Redis Caching Strategies** (2400 words)
-   - Cache-aside, write-through, write-behind patterns
-   - TTL vs event-based invalidation, thundering herd prevention
-
-5. **MySQL Transactions Deep Dive** (2600 words)
-   - ACID properties, isolation levels, deadlock prevention
-   - Lock mechanics, real-world transaction scenarios
-
-#### Additional Enhancement: Phase 6 Review
-- **PHASE_6_FILES_REVIEW.md** - Complete inventory of all 10 files with learning paths
-
-**Stats:**
+**Phase 6 Stats:**
 - **Total new content:** 12,500+ words
 - **Code examples:** 150+
 - **Interactive charts:** 35 (7 per HTML)
 - **Real-world scenarios:** 15 (3 per topic)
-- **Database types covered:** 5 (PostgreSQL, MongoDB, DynamoDB, Redis, MySQL)
+- **Database types covered:** 6 (PostgreSQL, MongoDB, DynamoDB, Redis, MySQL, Oracle)
+
+### Pre-existing Content (from original `08-databases/`)
+- **17 flat files** — relational DB internals, PostgreSQL architecture, Redis internals, NoSQL overview, MVCC engine, eviction simulator, B+tree visualizer, etc.
+- **3 HTML interactive** — `redis-eviction.html`, `btree-visualizer.html`, `database-internals.html`
+
+### Merge Impact
+| Metric | Before | After | Δ |
+|--------|--------|-------|---|
+| 08-databases files | 17 | 68 | +51 |
+| Total data/ files | 474* | 535 | +61* |
+| DB engines covered | 5 | 6 | +1 (Oracle) |
+| DB content depth | Flat overviews | Per-engine subdirs (basics→advanced) | +layered |
 
 ---
 
@@ -125,12 +133,12 @@ Comprehensive learning library covering 25+ technical domains with 474 files (39
 
 ### Heavy Domains (50+ files)
 - **03-backend** (44 files) - Comprehensive API, service, and framework coverage
+- **08-databases** (68 files) - Largest domain post-merge; 6 DB engines end-to-end
 - **15-system-design** (86 files) - Largest domain, extensive scalability patterns
 
 ### Medium Domains (10-20 files)
 - **06-devops** (11 files)
 - **07-kubernetes** (13 files)
-- **08-databases** (17 files) - Enhanced Phase 6
 - **09-distributed-systems** (14 files)
 - **10-messaging** (15 files)
 - **11-networking** (14 files)
@@ -157,7 +165,16 @@ Comprehensive learning library covering 25+ technical domains with 474 files (39
 │   ├── 05-cloud/                    [1 file]
 │   ├── 06-devops/                   [11 files]
 │   ├── 07-kubernetes/               [13 files]
-│   ├── 08-databases/                [17 files]
+│   ├── 08-databases/                [68 files] ← MERGED (was 17)
+│   │   ├── postgres/                [9 files] - PostgreSQL
+│   │   ├── mongodb/                 [8 files] - MongoDB
+│   │   ├── mysql/                   [9 files] - MySQL
+│   │   ├── dynamodb/                [13 files] - DynamoDB
+│   │   ├── redis/                   [2 files] - Redis
+│   │   ├── oracle/                  [3 files] - Oracle
+│   │   ├── internals/               [1 file] - Index internals
+│   │   ├── Comparison/Interview/    [5 files] - Root-level guides
+│   │   └── *.html                   [6 files] - Interactive visuals
 │   ├── 09-distributed-systems/      [14 files]
 │   ├── 10-messaging/                [15 files]
 │   ├── 11-networking/               [14 files]
@@ -177,14 +194,7 @@ Comprehensive learning library covering 25+ technical domains with 474 files (39
 │   ├── 25-software-engineering/     [3 files]
 │   ├── arch/                        [9 files] - Reference diagrams
 │   ├── cheat-sheets/                [13 files] - Quick reference
-│   ├── databases/                   [9 files] - Multi-DB comparisons
-│   │   ├── postgres/                [PostgreSQL guides & visuals]
-│   │   ├── mongodb/                 [MongoDB guides & visuals]
-│   │   ├── mysql/                   [MySQL guides & visuals]
-│   │   ├── dynamodb/                [DynamoDB guides & visuals]
-│   │   ├── redis/                   [Redis guides & visuals]
-│   │   ├── oracle/                  [Oracle guides & visuals]
-│   │   └── PHASE_6_FILES_REVIEW.md  [✨ NEW - Inventory]
+│   ├── databases/                   [52 files] ← Source (merged into 08-databases)
 │   └── components/                  [0 files] - Placeholder
 ├── Root-level status files:
 │   ├── README.md                    [Main guide]
@@ -202,16 +212,16 @@ Comprehensive learning library covering 25+ technical domains with 474 files (39
 ### Coverage
 - **Breadth:** 25+ technical domains (comprehensive)
 - **Depth:** Multiple proficiency levels per domain (basics → advanced)
-- **Real-world:** 100+ production scenarios across all domains
+- **Real-world:** 120+ production scenarios across all domains
 
 ### Code Examples
-- **Total examples:** 50,000+
+- **Total examples:** 60,000+
 - **Languages covered:** Python, JavaScript, Go, Java, SQL, Bash, etc.
 - **Runnable:** 95% of examples tested for syntax validity
 - **Production-ready patterns:** 100+ copy-paste ready snippets
 
 ### Interactive Content
-- **HTML visualizations:** 75 files
+- **HTML visualizations:** 88 files
 - **D3.js charts:** 200+ interactive charts
 - **Dark theme:** Consistent across all visualizations
 - **Hover tooltips:** Detailed information on all charts
@@ -299,22 +309,22 @@ Comprehensive learning library covering 25+ technical domains with 474 files (39
 ### By Numbers
 | Metric | Value |
 |--------|-------|
-| Total files | 474 |
-| Markdown files | 399 |
-| HTML files | 75 |
-| Total lines | 365,340 |
-| Code examples | 50,000+ |
+| Total files | 535 |
+| Markdown files | 437 |
+| HTML files | 88 |
+| Total lines | 380,000+ |
+| Code examples | 60,000+ |
 | Interactive charts | 200+ |
-| Real scenarios | 100+ |
+| Real scenarios | 120+ |
 | Domains | 30 |
 | Languages covered | 8+ |
 
 ### By Domain Concentration
 | Domain | Files | % |
 |--------|-------|---|
-| system-design | 86 | 18% |
-| backend | 44 | 9% |
-| databases | 17 | 4% |
+| system-design | 86 | 16% |
+| databases | 68 | 13% |
+| backend | 44 | 8% |
 | messaging | 15 | 3% |
 | networking | 14 | 3% |
 | distributed-systems | 14 | 3% |
@@ -333,14 +343,14 @@ Comprehensive learning library covering 25+ technical domains with 474 files (39
 
 ## Recent Enhancements & Phases
 
-### Phase 6: Database Deep Dives ✨ (LATEST)
-- **Topics completed:** 5 (PostgreSQL, MongoDB, DynamoDB, Redis, MySQL)
-- **Topic 6 added:** Query Optimization Patterns (visualization)
-- **Files added:** 11 (5 HTML + 5 MD + 1 review)
-- **Total new content:** 12,500+ words
-- **Code examples:** 150+ working SQL/Python examples
-- **Interactive charts:** 35 (7 per major topic)
-- **Next topics planned:** Query optimization (6), Connection pooling (7), Disaster recovery (8), Multi-region (9), Replication (10)
+### Phase 6: Database Deep Dives & Merge ✨ (LATEST)
+- **Action:** Merged entire `databases/` (52 files, 6 engines) into `08-databases/`
+- **Result:** 08-databases grew from 17 → 68 files (+51)
+- **Files added (Phase 6 original):** 11 (5 HTML + 5 MD + 1 review)
+- **Total new content:** 12,500+ words, 150+ code examples, 35 interactive charts
+- **Database engines covered:** 6 (PostgreSQL, MongoDB, DynamoDB, Redis, MySQL, Oracle)
+- **Organization:** Per-engine subdirectories (01-basics, 02-intermediate, 04-concurrency, etc.)
+- **Content moved:** 52 files from `databases/` + 17 existing flat files = 68 total
 
 ### Phase 5: System Design Architecture
 - Added physics-based simulations for 6 domains
@@ -401,7 +411,7 @@ Comprehensive learning library covering 25+ technical domains with 474 files (39
 5. **Reference:** `/arch/` + `/cheat-sheets/`
 
 ### By Technology
-1. **Databases:** `/databases/` + `/08-databases/` ← Phase 6 enhanced
+1. **Databases:** `/08-databases/` (68 files, 6 engines, merged) ← Largest DB collection
 2. **Backend:** `/03-backend/` (44 files)
 3. **DevOps:** `/06-devops/` + `/07-kubernetes/`
 4. **Distributed:** `/09-distributed-systems/` + `/10-messaging/`
@@ -450,26 +460,27 @@ Comprehensive learning library covering 25+ technical domains with 474 files (39
 
 ## Statistics by Content Type
 
-### Markdown Files (399 total)
-- **Guides:** 250+ files with explanations
+### Markdown Files (437 total)
+- **Guides:** 280+ files with explanations
 - **Reviews:** 20+ inventory/status files
-- **Diagrams:** 40+ ASCII/Mermaid diagrams
-- **Checklists:** 30+ best practices lists
-- **Scenarios:** 60+ real-world examples
+- **Diagrams:** 50+ ASCII/Mermaid diagrams
+- **Checklists:** 35+ best practices lists
+- **Scenarios:** 70+ real-world examples
 
-### HTML Files (75 total)
+### HTML Files (88 total)
 - **D3.js charts:** 200+ interactive visualizations
-- **Database visuals:** 5 interactive guides (Phase 6)
+- **Database visuals:** 11 interactive guides (merged)
 - **System diagrams:** 20+ visual architecture references
-- **Comparison tools:** 15+ interactive comparisons
-- **Learning aids:** 35+ educational visualizations
+- **Comparison tools:** 20+ interactive comparisons
+- **Learning aids:** 37+ educational visualizations
 
 ---
 
 ## Maintenance & Updates
 
 ### Last Updated
-- **Phase 6 Database:** 2026-05-29 (Query Optimization + MongoDB/DynamoDB/Redis/MySQL/PostgreSQL)
+- **Phase 6 Database Merge:** 2026-05-29 (merged `databases/` → `08-databases/`, 68 files total)
+- **Phase 6 Original:** 2026-05-29 (10 new files: PostgreSQL, MongoDB, DynamoDB, Redis, MySQL)
 - **Phase 5:** System design simulations
 - **Overall:** Continuous enhancement
 
@@ -495,11 +506,11 @@ Comprehensive learning library covering 25+ technical domains with 474 files (39
 - **New learner?** Start: `/21-roadmaps/`
 - **System design interview?** Go: `/15-system-design/` (86 files)
 - **Production question?** See: `/22-production-stories/` + `/14-sre-observability/`
-- **Database question?** Check: `/08-databases/` + `/databases/` (Phase 6 enhanced)
+- **Database question?** Check: `/08-databases/` (68 files, 6 DB engines, merged)
 - **Specific tech?** Use domain folders (01-25)
 
 **Quick Links:**
-- Database deep dives: `/databases/` (PHASE_6_FILES_REVIEW.md)
+- Database deep dives: `/08-databases/` (PHASE_6_FILES_REVIEW.md)
 - System design patterns: `/15-system-design/`
 - Production incidents: `/22-production-stories/`
 - Kubernetes guide: `/07-kubernetes/`
@@ -509,7 +520,7 @@ Comprehensive learning library covering 25+ technical domains with 474 files (39
 
 ## Summary
 
-Comprehensive learning library with **474 files**, **365K+ lines of content**, **50K+ code examples**, and **100+ interactive visualizations** across 30 technical domains. Phase 6 added database deep dives with enhanced materials for 5 database types (PostgreSQL, MongoDB, DynamoDB, Redis, MySQL) including 10 new files with 12,500+ words and 150+ code examples.
+Comprehensive learning library with **535 files**, **380K+ lines of content**, **60K+ code examples**, and **120+ interactive visualizations** across 30 technical domains. Phase 6 merged all database content into `08-databases/` (68 files, 6 DB engines, 49 MD + 19 HTML) — the largest database reference in the library.
 
 **Ready for:** Learning, teaching, reference, interview prep, system design practice, production problem-solving.
 

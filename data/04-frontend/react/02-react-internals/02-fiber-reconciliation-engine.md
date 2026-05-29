@@ -257,7 +257,7 @@ Commit (sync):         47ms → 50ms (cannot pause)
 
 ## 5. Batching & State Updates
 
-React batches multiple state updates into a single render. This is especially important for state management libraries like Redux and Zustand (see [Redux/Zustand Patterns](../../05-state-management/02-redux-zustand-patterns.md) for how dispatch queues fiber work).
+React batches multiple state updates into a single render. This is especially important for state management libraries like Redux and Zustand (see [Redux/Zustand Patterns](../05-state-management/02-redux-zustand-patterns.md) for how dispatch queues fiber work).
 
 ### Automatic Batching (React 18+)
 
@@ -533,10 +533,10 @@ useEffect(() => {
 
 ### Phase 7.1 Related Topics
 
-- [Redux/Zustand Patterns](../../05-state-management/02-redux-zustand-patterns.md) — State updates triggering fiber work
-- [Compound Components](../../06-component-architecture/02-compound-components-pattern.md) — Context subscription behavior
-- [Error Boundaries](../../35-error-handling/01-error-boundaries-and-patterns.md) — Error boundaries in fiber tree
-- [Vitest + RTL](../../15-testing/03-unit-testing-vitest-rtl.md) — Testing fiber behavior
+- [Redux/Zustand Patterns](../05-state-management/02-redux-zustand-patterns.md) — State updates triggering fiber work
+- [Compound Components](../06-component-architecture/02-compound-components-pattern.md) — Context subscription behavior
+- [Error Boundaries](../35-error-handling/01-error-boundaries-and-patterns.md) — Error boundaries in fiber tree
+- [Vitest + RTL](../15-testing/03-unit-testing-vitest-rtl.md) — Testing fiber behavior
 
 ### Additional Resources
 

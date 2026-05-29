@@ -227,8 +227,8 @@ function TransferForm() {
 // Set-Cookie: sessionId=xyz; SameSite=None; Secure;
 // Attacker's site can trigger requests WITH cookie
 
-// See [Advanced Form Patterns](../../08-forms/02-advanced-form-patterns.md) for implementing CSRF tokens in form submission.
-// For error handling on CSRF failures, see [Error Boundaries](../../35-error-handling/01-error-boundaries-and-patterns.md).
+// See [Advanced Form Patterns](../08-forms/02-advanced-form-patterns.md) for implementing CSRF tokens in form submission.
+// For error handling on CSRF failures, see [Error Boundaries](../35-error-handling/01-error-boundaries-and-patterns.md).
 ```
 
 ---
@@ -495,9 +495,9 @@ function SecureComments({ postId }) {
 
 ### Phase 7.1 Related Topics
 
-- [Advanced Form Patterns](../../08-forms/02-advanced-form-patterns.md) — CSRF token handling in forms
-- [Error Boundaries](../../35-error-handling/01-error-boundaries-and-patterns.md) — Sanitizing error messages
-- [React Fiber](../../02-react-internals/02-fiber-reconciliation-engine.md) — Understanding render-phase XSS risks
+- [Advanced Form Patterns](../08-forms/02-advanced-form-patterns.md) — CSRF token handling in forms
+- [Error Boundaries](../35-error-handling/01-error-boundaries-and-patterns.md) — Sanitizing error messages
+- [React Fiber](../02-react-internals/02-fiber-reconciliation-engine.md) — Understanding render-phase XSS risks
 
 ### Additional Resources
 

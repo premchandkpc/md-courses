@@ -709,11 +709,11 @@ app.post('/api/register', (req, res) => {
 - [ ] Disable submit during submission
 - [ ] Clear errors on field change
 - [ ] Show loading state (spinner or disabled button)
-- [ ] Handle network errors gracefully (see [Error Boundaries](../../35-error-handling/01-error-boundaries-and-patterns.md) for error recovery)
-- [ ] Validate server-side (always, see [XSS/CSRF/CSP](../../17-security/02-xss-csrf-csp-deep-dive.md) for CSRF tokens in submission)
+- [ ] Handle network errors gracefully (see [Error Boundaries](../35-error-handling/01-error-boundaries-and-patterns.md) for error recovery)
+- [ ] Validate server-side (always, see [XSS/CSRF/CSP](../17-security/02-xss-csrf-csp-deep-dive.md) for CSRF tokens in submission)
 - [ ] Use Zod/Joi for schema validation
-- [ ] Test form submission with React Testing Library (see [Vitest + RTL](../../15-testing/03-unit-testing-vitest-rtl.md) for patterns)
-- [ ] Keep form state local (see [Redux/Zustand](../../05-state-management/02-redux-zustand-patterns.md) for when to use global state)
+- [ ] Test form submission with React Testing Library (see [Vitest + RTL](../15-testing/03-unit-testing-vitest-rtl.md) for patterns)
+- [ ] Keep form state local (see [Redux/Zustand](../05-state-management/02-redux-zustand-patterns.md) for when to use global state)
 
 ---
 
@@ -740,10 +740,10 @@ app.post('/api/register', (req, res) => {
 
 ### Phase 7.1 Related Topics
 
-- [Redux/Zustand Patterns](../../05-state-management/02-redux-zustand-patterns.md) — Form state management options
-- [WCAG Accessibility](../../16-accessibility/02-wcag-patterns-and-compliance.md) — Form accessibility
-- [XSS/CSRF/CSP](../../17-security/02-xss-csrf-csp-deep-dive.md) — CSRF token handling
-- [Error Boundaries](../../35-error-handling/01-error-boundaries-and-patterns.md) — Form submission error handling
+- [Redux/Zustand Patterns](../05-state-management/02-redux-zustand-patterns.md) — Form state management options
+- [WCAG Accessibility](../16-accessibility/02-wcag-patterns-and-compliance.md) — Form accessibility
+- [XSS/CSRF/CSP](../17-security/02-xss-csrf-csp-deep-dive.md) — CSRF token handling
+- [Error Boundaries](../35-error-handling/01-error-boundaries-and-patterns.md) — Form submission error handling
 
 ### Additional Resources
 

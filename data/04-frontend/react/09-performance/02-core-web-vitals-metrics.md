@@ -582,8 +582,8 @@ A: Google uses them in Page Experience signal. Not a hard cutoff (no 0.1 CLS = d
 
 ### Phase 7.1 Related Topics
 
-- [Advanced Form Patterns](../../08-forms/02-advanced-form-patterns.md) — Form responsiveness impacts INP
-- [Error Boundaries](../../35-error-handling/01-error-boundaries-and-patterns.md) — Error UI rendering impacts CLS
+- [Advanced Form Patterns](../08-forms/02-advanced-form-patterns.md) — Form responsiveness impacts INP
+- [Error Boundaries](../35-error-handling/01-error-boundaries-and-patterns.md) — Error UI rendering impacts CLS
 
 ### Additional Resources
 

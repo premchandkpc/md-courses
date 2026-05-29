@@ -167,7 +167,7 @@ function DataFetcher() {
 
 ## 3. Advanced Error Boundary: Scoped & Granular
 
-Wrap Error Boundaries around risky sections (not entire app). This pattern is critical for forms and submission errors (see [Advanced Form Patterns](../../08-forms/02-advanced-form-patterns.md) for handling async submission failures).
+Wrap Error Boundaries around risky sections (not entire app). This pattern is critical for forms and submission errors (see [Advanced Form Patterns](../08-forms/02-advanced-form-patterns.md) for handling async submission failures).
 
 ```javascript
 function Dashboard() {
@@ -563,10 +563,10 @@ const handleClick = () => {
 
 ### Phase 7.1 Related Topics
 
-- [XSS/CSRF/CSP](../../17-security/02-xss-csrf-csp-deep-dive.md) — Sanitizing error messages
-- [Advanced Form Patterns](../../08-forms/02-advanced-form-patterns.md) — Async form submission errors
-- [React Fiber](../../02-react-internals/02-fiber-reconciliation-engine.md) — Where errors occur during render
-- [WCAG Accessibility](../../16-accessibility/02-wcag-patterns-and-compliance.md) — Accessible error UI
+- [XSS/CSRF/CSP](../17-security/02-xss-csrf-csp-deep-dive.md) — Sanitizing error messages
+- [Advanced Form Patterns](../08-forms/02-advanced-form-patterns.md) — Async form submission errors
+- [React Fiber](../02-react-internals/02-fiber-reconciliation-engine.md) — Where errors occur during render
+- [WCAG Accessibility](../16-accessibility/02-wcag-patterns-and-compliance.md) — Accessible error UI
 
 ### Additional Resources
 

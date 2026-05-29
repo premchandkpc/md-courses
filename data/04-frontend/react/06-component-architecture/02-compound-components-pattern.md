@@ -186,8 +186,8 @@ Tabs.List = TabsList;
 Tabs.Trigger = TabsTrigger;
 Tabs.Content = TabsContent;
 
-// Note: This pattern uses Context for state sharing (see [Redux/Zustand Patterns](../../05-state-management/02-redux-zustand-patterns.md)
-// for comparison when compound components need global state or [React Fiber](../../02-react-internals/02-fiber-reconciliation-engine.md) for
+// Note: This pattern uses Context for state sharing (see [Redux/Zustand Patterns](../05-state-management/02-redux-zustand-patterns.md)
+// for comparison when compound components need global state or [React Fiber](../02-react-internals/02-fiber-reconciliation-engine.md) for
 // understanding how context changes trigger re-renders).
 ```
 
@@ -633,9 +633,9 @@ export default Tabs;
 
 ### Phase 7.1 Related Topics
 
-- [WCAG Accessibility](../../16-accessibility/02-wcag-patterns-and-compliance.md) — Accessible compound components
-- [Redux/Zustand Patterns](../../05-state-management/02-redux-zustand-patterns.md) — State in compound components
-- [React Fiber](../../02-react-internals/02-fiber-reconciliation-engine.md) — Understanding re-renders
+- [WCAG Accessibility](../16-accessibility/02-wcag-patterns-and-compliance.md) — Accessible compound components
+- [Redux/Zustand Patterns](../05-state-management/02-redux-zustand-patterns.md) — State in compound components
+- [React Fiber](../02-react-internals/02-fiber-reconciliation-engine.md) — Understanding re-renders
 
 ### Additional Resources
 

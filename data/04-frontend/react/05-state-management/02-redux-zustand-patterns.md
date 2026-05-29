@@ -543,9 +543,9 @@ const UserProfile = ({ userId }) => {
 - [ ] Separate server state (TanStack Query) from client state (Redux/Zustand)
 - [ ] Slice store by domain (user, cart, UI, etc.) — avoid monolithic reducer
 - [ ] Use React.memo + Redux to prevent unnecessary child re-renders
-- [ ] Profile with React DevTools Profiler before optimizing (see [React Fiber](../../02-react-internals/02-fiber-reconciliation-engine.md) for render phases)
+- [ ] Profile with React DevTools Profiler before optimizing (see [React Fiber](../02-react-internals/02-fiber-reconciliation-engine.md) for render phases)
 - [ ] For Zustand, use `subscribe` for non-React consumers (services, workers)
-- [ ] Avoid store state for frequently-changing values (see [Advanced Form Patterns](../../08-forms/02-advanced-form-patterns.md) for form state management)
+- [ ] Avoid store state for frequently-changing values (see [Advanced Form Patterns](../08-forms/02-advanced-form-patterns.md) for form state management)
 
 ---
 
@@ -572,10 +572,10 @@ const UserProfile = ({ userId }) => {
 
 ### Phase 7.1 Related Topics
 
-- [Compound Components](../../06-component-architecture/02-compound-components-pattern.md) — State composition patterns
-- [Error Boundaries](../../35-error-handling/01-error-boundaries-and-patterns.md) — Error state management
-- [Advanced Form Patterns](../../08-forms/02-advanced-form-patterns.md) — Form state alternatives
-- [Vitest + RTL](../../15-testing/03-unit-testing-vitest-rtl.md) — Testing Redux/Zustand
+- [Compound Components](../06-component-architecture/02-compound-components-pattern.md) — State composition patterns
+- [Error Boundaries](../35-error-handling/01-error-boundaries-and-patterns.md) — Error state management
+- [Advanced Form Patterns](../08-forms/02-advanced-form-patterns.md) — Form state alternatives
+- [Vitest + RTL](../15-testing/03-unit-testing-vitest-rtl.md) — Testing Redux/Zustand
 
 ### Additional Resources
 

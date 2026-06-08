@@ -7,8 +7,9 @@ from pathlib import Path
 from http.server import HTTPServer, BaseHTTPRequestHandler
 from urllib.parse import urlparse, parse_qs, unquote
 
-DATA_DIR = Path(__file__).parent / "data"
-HTML_FILE = Path(__file__).parent / "data" / "read.html"
+ROOT = Path(__file__).resolve().parent.parent.parent
+DATA_DIR = ROOT / "content"
+HTML_FILE = ROOT / "packages" / "legacy-viewer" / "read.html"
 
 def build_tree(directory, prefix=""):
     """Build directory tree structure"""

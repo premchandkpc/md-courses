@@ -3,13 +3,13 @@ name: Content Validation
 on:
   pull_request:
     paths:
-      - 'data/**/*.md'
+      - 'content/**/*.md'
       - 'scripts/validate_syntax.py'
   push:
     branches:
       - main
     paths:
-      - 'data/**/*.md'
+      - 'content/**/*.md'
 
 jobs:
   validate-syntax:
@@ -31,7 +31,7 @@ jobs:
       - name: Validate syntax
         id: validate
         run: |
-          python scripts/validate_syntax.py data/ > validation_report.txt 2>&1
+          python scripts/validate_syntax.py content/ > validation_report.txt 2>&1
           cat validation_report.txt
         continue-on-error: true
 
@@ -87,7 +87,7 @@ jobs:
           from pathlib import Path
 
           # Find all markdown files
-          md_files = list(Path('data').rglob('*.md'))
+          md_files = list(Path('content').rglob('*.md'))
           broken_links = []
 
           for md_file in md_files:
@@ -133,16 +133,16 @@ jobs:
 
           # Check files in Phase 7.1 (newer files)
           phase7_files = [
-              'data/04-frontend/react/05-state-management/02-redux-zustand-patterns.md',
-              'data/04-frontend/react/16-accessibility/02-wcag-patterns-and-compliance.md',
-              'data/04-frontend/react/17-security/02-xss-csrf-csp-deep-dive.md',
-              'data/04-frontend/react/06-component-architecture/02-compound-components-pattern.md',
-              'data/04-frontend/react/02-react-internals/02-fiber-reconciliation-engine.md',
-              'data/04-frontend/react/08-forms/02-advanced-form-patterns.md',
-              'data/04-frontend/react/35-error-handling/01-error-boundaries-and-patterns.md',
-              'data/08-databases/09-disaster-recovery.md',
-              'data/08-databases/10-database-replication.md',
-              'data/08-databases/11-database-sharding.md',
+              'content/04-frontend/react/05-state-management/02-redux-zustand-patterns.md',
+              'content/04-frontend/react/16-accessibility/02-wcag-patterns-and-compliance.md',
+              'content/04-frontend/react/17-security/02-xss-csrf-csp-deep-dive.md',
+              'content/04-frontend/react/06-component-architecture/02-compound-components-pattern.md',
+              'content/04-frontend/react/02-react-internals/02-fiber-reconciliation-engine.md',
+              'content/04-frontend/react/08-forms/02-advanced-form-patterns.md',
+              'content/04-frontend/react/35-error-handling/01-error-boundaries-and-patterns.md',
+              'content/08-databases/09-disaster-recovery.md',
+              'content/08-databases/10-database-replication.md',
+              'content/08-databases/11-database-sharding.md',
           ]
 
           for file_path in phase7_files:
@@ -173,7 +173,7 @@ jobs:
 
           issues = []
 
-          for md_file in Path('data').rglob('*.md'):
+          for md_file in Path('content').rglob('*.md'):
               content = md_file.read_text()
 
               # Check for missing blank lines before headings

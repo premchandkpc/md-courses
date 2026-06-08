@@ -27,7 +27,7 @@ All stale phase tracking, initiative planning, and enhancement docs have been mo
 | `SECURITY.md` | Security policy |
 | `STRUCTURE.md` | Directory layout guide |
 | `package.json` | Node.js metadata |
-| `server.py` | Alternative Python server |
+| `packages/python-server/server.py` | Alternative Python server |
 
 ## Archived Contents
 
@@ -35,6 +35,6 @@ Refer to `docs/archive/` for the full list of archived phase and initiative docu
 
 ## Quick Links
 
-- **Active docs:** `README.md`, `STRUCTURE.md`, `data/API.md`, `AI-REVIEW.md`
+- **Active docs:** `README.md`, `STRUCTURE.md`, `content/API.md`, `AI-REVIEW.md`
 - **Agent instructions:** `AGENTS.md`
 - **Archive:** `docs/archive/`

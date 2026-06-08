@@ -3,7 +3,7 @@
  * Engineering Knowledge Universe — Local HTTP Server
  *
  * Usage:
- *   node server.js              # serves data/ on http://localhost:3000
+ *   node server.js              # serves content/ on http://localhost:3000
  *   node server.js 8080         # custom port
  *   node server.js --help       # help
  *
@@ -15,8 +15,9 @@ const fs = require('fs');
 const path = require('path');
 
 const PORT = parseInt(process.argv[2], 10) || 3000;
-const DATA_DIR = path.resolve(__dirname);
-const HTML_FILE = path.join(DATA_DIR, 'read.html');
+const ROOT = path.resolve(__dirname, '../..');
+const DATA_DIR = path.join(ROOT, 'content');
+const HTML_FILE = path.join(ROOT, 'packages/legacy-viewer/read.html');
 
 const MIME_TYPES = {
   '.html': 'text/html; charset=utf-8',
@@ -307,11 +308,11 @@ const server = http.createServer((req, res) => {
     return serveFile(res, HTML_FILE, 'text/html; charset=utf-8');
   }
 
-  // Serve static files
-  const filePath = path.resolve(DATA_DIR, pathname.startsWith('/') ? '.' + pathname : pathname);
+  // Serve static files (resolved from project root)
+  const filePath = path.resolve(ROOT, pathname.startsWith('/') ? '.' + pathname : pathname);
 
-  // Security check
-  if (!filePath.startsWith(DATA_DIR)) {
+  // Security check: must stay within project root and not access dotfiles
+  if (!filePath.startsWith(ROOT) || pathname.split('/').some(p => p.startsWith('.'))) {
     res.writeHead(403);
     return res.end('Forbidden');
   }

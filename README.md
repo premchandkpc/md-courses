@@ -10,18 +10,18 @@ Complete software, AI, data & distributed systems engineering knowledge base —
 npm start          # API + viewer on http://localhost:3000
 make frontend      # React frontend on http://localhost:5173
 make viz           # Both together
-python3 server.py  # Python server (alternative)
+python3 packages/python-server/server.py  # Python server (alternative)
 ```
 
 ## Architecture
 
 | Layer | Tech | Description |
 |-------|------|-------------|
-| **Content** | Markdown + HTML | 474 files across 25 numbered domains in `data/` |
-| **API Server** | Node.js (zero deps) | `data/server.js` — serves tree, file, search, stats at `/api/*` |
-| **Alt Server** | Python (stdlib) | `server.py` — same API, no dependencies |
-| **Legacy Viewer** | Vanilla JS SPA | `data/read.html` — ~2000 lines, no build step |
-| **React Frontend** | React 19, Vite, TS, Tailwind v4, XState, Zustand | `frontend/` — proxies `/api` → `localhost:3000` |
+| **Content** | Markdown + HTML | 535 files across 30 domains in `content/` |
+| **API Server** | Node.js (zero deps) | `packages/api-server/server.js` — serves tree, file, search, stats at `/api/*` |
+| **Alt Server** | Python (stdlib) | `packages/python-server/server.py` — same API, no dependencies |
+| **Legacy Viewer** | Vanilla JS SPA | `packages/legacy-viewer/read.html` — ~2000 lines, no build step |
+| **React Frontend** | React 19, Vite, TS, Tailwind v4, XState, Zustand | `packages/react-frontend/` — proxies `/api` → `localhost:3000` |
 
 ## Domain Overview
 
@@ -63,7 +63,7 @@ python3 server.py  # Python server (alternative)
 |------|---------|
 | `STRUCTURE.md` | Directory layout & project organization |
 | `AGENTS.md` | AI agent instructions for this repo |
-| `data/API.md` | HTTP API reference (tree, file, search, stats) |
+| `content/API.md` | HTTP API reference (tree, file, search, stats) |
 | `ARCHIVE.md` | Archive index (stale docs moved to `docs/archive/`) |
 
 ## Key Commands
@@ -74,29 +74,30 @@ make frontend           # Vite dev server on :5173
 make frontend-build     # Production build (tsc -b && vite build)
 make frontend-typecheck # tsc --noEmit
 make viz                # Node :3000 + Vite :5173 concurrently
-make clean              # rm -rf frontend/node_modules frontend/dist
-npm run lint --prefix frontend  # ESLint (React frontend only)
-python3 server.py       # Python server on :3000
+make clean              # rm -rf packages/react-frontend/node_modules packages/react-frontend/dist
+npm run lint -w packages/react-frontend  # ESLint (React frontend only)
+python3 packages/python-server/server.py       # Python server on :3000
 ```
 
 ## Project Layout
 
 ```
-├── data/              # Content + web server (the main thing)
-│   ├── server.js      # Node.js API server (zero deps)
-│   ├── read.html      # Legacy SPA viewer
-│   ├── read.css       # Viewer styles
-│   ├── API.md         # API docs
-│   ├── 00-25/         # Numbered domain folders
-│   ├── arch/          # Architecture reference
-│   └── cheat-sheets/  # Quick reference
-├── frontend/          # React 19 + Vite + TS app
-├── scripts/           # Python utility scripts (batch enhancements)
-├── docs/archive/      # Stale phase/initiative docs
-├── AGENTS.md          # AI agent instructions
-├── AI-REVIEW.md       # Comprehensive content inventory
-├── Makefile           # Build/run commands
-└── server.py          # Alternative Python server
+├── content/                         # All content (domains, viz, API docs)
+│   ├── 00-25/                       # Numbered domain folders
+│   ├── arch/ / cheat-sheets/ / components/
+│   ├── html-visualizations/         # 220 standalone D3.js viz files
+│   └── API.md                       # HTTP API reference
+├── packages/                        # Monorepo packages (npm workspaces)
+│   ├── api-server/                  # Node.js API server (zero deps)
+│   ├── legacy-viewer/               # Vanilla JS SPA viewer
+│   ├── python-server/               # Python alt server (stdlib only)
+│   └── react-frontend/              # React 19 + Vite + TS app
+├── scripts/                         # Python utility scripts
+├── docs/archive/                    # Stale phase/initiative docs
+├── AGENTS.md                        # AI agent instructions
+├── AI-REVIEW.md                     # Content inventory
+├── Makefile                         # Build/run commands
+└── package.json                     # Root workspace config
 ```
 
 ## Quick Stats
@@ -129,7 +130,7 @@ python3 server.py       # Python server on :3000
 - **System design?** Go: `15-system-design/` (86 files)
 - **Database deep dives?** Check: `08-databases/` (72 files, 6 engines)
 - **Production incidents?** See: `22-production-stories/`
-- **API reference?** See: `data/API.md`
+- **API reference?** See: `content/API.md`
 - **Inventory?** See: `AI-REVIEW.md`
 
 ## License

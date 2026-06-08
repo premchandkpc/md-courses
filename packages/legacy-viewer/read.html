@@ -914,7 +914,7 @@ async function loadFile(path) {
     return;
   }
 
-  // Strip leading / for API (server resolves relative to data/ root)
+  // Strip leading / for API (server resolves relative to content/ root)
   const apiPath = path.replace(/^\//, '');
   try {
     const r = await fetchWithRetry(CONFIG.api + '/file?path=' + encodeURIComponent(apiPath));

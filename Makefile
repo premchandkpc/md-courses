@@ -13,23 +13,23 @@ help:
 	@echo "  make help               Show this help"
 
 serve:
-	@cd data && node server.js
+	@node packages/api-server/server.js
 
 frontend:
-	@npm run dev --prefix frontend
+	@npm run dev -w packages/react-frontend
 
 frontend-build:
-	@npm run build --prefix frontend
+	@npm run build -w packages/react-frontend
 
 frontend-typecheck:
-	@cd frontend && npx tsc --noEmit
+	@npm run typecheck -w packages/react-frontend
 
 viz:
 	@echo "Starting API server on :3000 and frontend on :5173..."
-	@cd data && node server.js 3000 & sleep 1 && npm run dev --prefix frontend
+	@node packages/api-server/server.js 3000 & sleep 1 && npm run dev -w packages/react-frontend
 
 clean:
-	@rm -rf frontend/node_modules frontend/dist
-	@echo "Cleaned frontend/ dependencies and build output"
+	@rm -rf packages/react-frontend/node_modules packages/react-frontend/dist
+	@echo "Cleaned react-frontend dependencies and build output"
 
 .DEFAULT_GOAL := help

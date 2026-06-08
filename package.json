@@ -1,17 +1,23 @@
 {
   "name": "md-courses",
   "version": "1.0.0",
+  "private": true,
   "description": "Engineering Knowledge Universe — Interactive learning platform for distributed systems, cloud, AI/ML, and more",
-  "main": "data/server.js",
   "type": "commonjs",
+  "workspaces": [
+    "packages/api-server",
+    "packages/legacy-viewer",
+    "packages/python-server",
+    "packages/react-frontend"
+  ],
   "scripts": {
-    "start": "node data/server.js",
-    "serve": "node data/server.js 3000",
-    "dev": "node data/server.js 8080",
-    "frontend": "npm run dev --prefix frontend",
-    "frontend:build": "npm run build --prefix frontend",
-    "frontend:typecheck": "npx tsc --noEmit --prefix frontend",
-    "viz": "echo 'Starting API server + frontend...' && node data/server.js 3000 & npm run dev --prefix frontend"
+    "start": "node packages/api-server/server.js",
+    "serve": "node packages/api-server/server.js 3000",
+    "dev": "node packages/api-server/server.js 8080",
+    "frontend": "npm run dev -w packages/react-frontend",
+    "frontend:build": "npm run build -w packages/react-frontend",
+    "frontend:typecheck": "npm run typecheck -w packages/react-frontend",
+    "viz": "echo 'Starting API server + frontend...' && node packages/api-server/server.js 3000 & npm run dev -w packages/react-frontend"
   },
   "keywords": [
     "engineering",

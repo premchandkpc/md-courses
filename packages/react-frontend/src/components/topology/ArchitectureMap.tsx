@@ -5,10 +5,10 @@ import {
   Controls,
   MiniMap,
   Handle,
+  Position,
   type Node,
   type Edge,
   type NodeTypes,
-  type Position,
   useNodesState,
   useEdgesState,
 } from '@xyflow/react'

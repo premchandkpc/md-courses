@@ -11,6 +11,52 @@ const stateColors: Record<string, number> = {
   dead: 0x5a6e91,
 }
 
+function drawScene(app: Application, entities: Record<string, any>) {
+  const stage = app.stage
+  stage.removeChildren()
+
+  const g = new Graphics()
+  stage.addChild(g)
+
+  const textStyle = new TextStyle({
+    fontFamily: 'JetBrains Mono',
+    fontSize: 10,
+    fill: 0x8a9bb8,
+  })
+
+  const entityList = Object.values(entities)
+  const w = app.renderer ? app.renderer.width : 600
+  const h = app.renderer ? app.renderer.height : 400
+  const centerX = w / 2
+  const centerY = h / 2
+
+  entityList.forEach((entity: any, i: number) => {
+    const x = centerX + Math.cos(i / entityList.length * Math.PI * 2) * 120
+    const y = centerY + Math.sin(i / entityList.length * Math.PI * 2) * 120
+    const radius = Math.max(10, 20 - entity.pressure * 0.1)
+    const color = stateColors[entity.state] || 0x00d4ff
+
+    g.circle(x, y, radius)
+    g.fill({ color, alpha: entity.health / 100 })
+
+    g.circle(x, y, radius + 3)
+    g.stroke({ color: 0x00d4ff, width: 1, alpha: 0.3 })
+
+    if (entity.pressure > 0) {
+      g.circle(x, y, radius + entity.pressure * 0.3)
+      g.stroke({ color: 0xf85149, width: 1, alpha: entity.pressure / 200 })
+    }
+
+    const text = new Text({
+      text: entity.id.substring(0, 12),
+      style: textStyle,
+    })
+    text.anchor.set(0.5, 0)
+    text.position.set(x, y + radius + 8)
+    stage.addChild(text)
+  })
+}
+
 export function InfrastructureCanvas() {
   const canvasRef = useRef<HTMLDivElement>(null)
   const appRef = useRef<Application | null>(null)
@@ -24,74 +70,38 @@ export function InfrastructureCanvas() {
     const app = new Application()
     appRef.current = app
 
-    const init = async () => {
-      await app.init({
-        resizeTo: canvasRef.current!,
-        background: 0x0b0e14,
-        antialias: true,
-        resolution: window.devicePixelRatio || 1,
-        autoDensity: true,
-      })
-      canvasRef.current!.appendChild(app.canvas as HTMLCanvasElement)
-    }
+    let destroyed = false
 
-    init()
+    ;(async () => {
+      try {
+        await app.init({
+          resizeTo: canvasRef.current!,
+          background: 0x0b0e14,
+          antialias: true,
+          resolution: window.devicePixelRatio || 1,
+          autoDensity: true,
+        })
+        if (destroyed) return
+        canvasRef.current?.appendChild(app.canvas as HTMLCanvasElement)
+        drawScene(app, entities)
+      } catch {
+        // init failed
+      }
+    })()
 
     return () => {
-      app.destroy(true)
+      destroyed = true
+      if (app.renderer) {
+        app.destroy(true)
+      }
       appRef.current = null
     }
   }, [])
 
   useEffect(() => {
     const app = appRef.current
-    if (!app) return
-
-    const stage = app.stage
-    const g = new Graphics()
-    stage.addChild(g)
-
-    const textStyle = new TextStyle({
-      fontFamily: 'JetBrains Mono',
-      fontSize: 10,
-      fill: 0x8a9bb8,
-    })
-
-    g.clear()
-
-    const entityList = Object.values(entities)
-    const centerX = app.screen.width / 2
-    const centerY = app.screen.height / 2
-
-    entityList.forEach((entity, i) => {
-      const x = centerX + Math.cos(i / entityList.length * Math.PI * 2) * 120
-      const y = centerY + Math.sin(i / entityList.length * Math.PI * 2) * 120
-      const radius = Math.max(10, 20 - entity.pressure * 0.1)
-      const color = stateColors[entity.state] || 0x00d4ff
-
-      g.circle(x, y, radius)
-      g.fill({ color, alpha: entity.health / 100 })
-
-      g.circle(x, y, radius + 3)
-      g.stroke({ color: 0x00d4ff, width: 1, alpha: 0.3 })
-
-      if (entity.pressure > 0) {
-        g.circle(x, y, radius + entity.pressure * 0.3)
-        g.stroke({ color: 0xf85149, width: 1, alpha: entity.pressure / 200 })
-      }
-
-      const text = new Text({
-        text: entity.id.substring(0, 12),
-        style: textStyle,
-      })
-      text.anchor.set(0.5, 0)
-      text.position.set(x, y + radius + 8)
-      stage.addChild(text)
-    })
-
-    return () => {
-      stage.removeChild(g)
-      stage.children.filter((c) => c instanceof Text).forEach((c) => stage.removeChild(c))
+    if (app?.renderer) {
+      drawScene(app, entities)
     }
   }, [entities, time])
 

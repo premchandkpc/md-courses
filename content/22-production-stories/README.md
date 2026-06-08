@@ -1,3 +1,13 @@
+---
+title: Production Stories — Complete Incident Catalog
+topic: 22-production-stories
+difficulty: advanced
+time: 30m
+paths:
+  - staff
+  - sre
+---
+
 # Production Stories — Complete Incident Catalog 🔥
 
 Production stories are **real-world incidents** that teach us how systems fail and how they recover. Each story documents symptoms, root cause, investigation process, mitigation, and permanent fix.

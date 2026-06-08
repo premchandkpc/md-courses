@@ -1,3 +1,13 @@
+---
+title: HTTP/HTTPS Deep Dive - L5 Networking
+topic: 15-system-design
+difficulty: advanced
+time: 30m
+paths:
+  - system-design
+  - staff
+---
+
 # HTTP/HTTPS Deep Dive - L5 Networking
 
 > **[🎨 View Interactive Diagram](http-architecture.html)** | [🎨 Caching Headers Simulator](../../../html/02-http-caching-headers-viz.html) | [← Back to Index](../../systems-index.html)

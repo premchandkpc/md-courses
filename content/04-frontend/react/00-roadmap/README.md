@@ -1,3 +1,12 @@
+---
+title: React Engineering Knowledge System
+topic: 04-frontend
+difficulty: intermediate
+time: 30m
+paths:
+  - frontend
+---
+
 # React Engineering Knowledge System 🚀
 
 ```mermaid

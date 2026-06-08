@@ -1,0 +1,11 @@
+{
+  "name": "@md-courses/api-server",
+  "version": "1.0.0",
+  "private": true,
+  "type": "commonjs",
+  "description": "Node.js API server (zero dependencies)",
+  "main": "server.js",
+  "engines": {
+    "node": ">=14.0.0"
+  }
+}

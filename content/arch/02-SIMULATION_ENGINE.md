@@ -1,3 +1,10 @@
+---
+title: Distributed Systems Simulation Engine — Architecture Blueprint
+topic: 02-SIMULATION_ENGINE.md
+difficulty: intermediate
+time: 30m
+---
+
 # ⚡ Distributed Systems Simulation Engine — Architecture Blueprint
 
 

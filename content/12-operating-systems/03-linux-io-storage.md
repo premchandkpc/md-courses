@@ -1,3 +1,13 @@
+---
+title: Linux I/O & Storage
+topic: 12-operating-systems
+difficulty: intermediate
+time: 30m
+paths:
+  - backend-junior
+  - sre
+---
+
 # 💾 Linux I/O & Storage — Complete Deep Dive
 
 

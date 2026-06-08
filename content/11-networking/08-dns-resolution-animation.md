@@ -1,3 +1,13 @@
+---
+title: DNS Resolution Flow — Interactive Animation
+topic: 11-networking
+difficulty: intermediate
+time: 30m
+paths:
+  - backend-junior
+  - sre
+---
+
 # DNS Resolution Flow — Interactive Animation
 
 ## Overview

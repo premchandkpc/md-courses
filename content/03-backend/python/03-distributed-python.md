@@ -1,3 +1,13 @@
+---
+title: Distributed Python Deep Dive
+topic: 03-backend
+difficulty: intermediate
+time: 30m
+paths:
+  - backend-junior
+  - backend-senior
+---
+
 # Distributed Python Deep Dive
 
 

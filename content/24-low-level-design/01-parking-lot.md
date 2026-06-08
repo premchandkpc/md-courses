@@ -1,3 +1,12 @@
+---
+title: Parking Lot — Low Level Design
+topic: 24-low-level-design
+difficulty: intermediate
+time: 30m
+paths:
+  - backend-junior
+---
+
 # Parking Lot — Low Level Design
 
 

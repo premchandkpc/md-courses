@@ -1,3 +1,13 @@
+---
+title: Infrastructure as Code — Senior/Principal Engineer Deep Dive
+topic: 06-devops
+difficulty: intermediate
+time: 30m
+paths:
+  - sre
+  - backend-junior
+---
+
 # Infrastructure as Code — Senior/Principal Engineer Deep Dive
 
 **Related**: [Configuration Management](/06-devops/02-configuration-management.md) · [DevOps & SRE Practices](/06-devops/03-devops-sre-practices.md) · [Kubernetes](/07-kubernetes/01-kubernetes-basics.md)

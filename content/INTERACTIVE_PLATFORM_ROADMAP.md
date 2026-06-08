@@ -1,3 +1,8 @@
+---
+title: Interactive Engineering Platform — Implementation Roadmap
+time: 30m
+---
+
 # Interactive Engineering Platform — Implementation Roadmap
 
 **Status:** Phase 1 ✅ Complete | Phase 2-4 📋 Planned

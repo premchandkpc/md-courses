@@ -1,3 +1,14 @@
+---
+title: PostgreSQL Overview & Advanced SQL
+topic: 08-databases
+difficulty: intermediate
+time: 30m
+paths:
+  - backend-junior
+  - data
+  - backend-senior
+---
+
 # PostgreSQL Overview & Advanced SQL
 
 ## What is PostgreSQL?

@@ -1,3 +1,13 @@
+---
+title: Memory Management & Virtual Memory Deep Dive - L5 Operating Systems
+topic: 15-system-design
+difficulty: advanced
+time: 30m
+paths:
+  - system-design
+  - staff
+---
+
 # Memory Management & Virtual Memory Deep Dive - L5 Operating Systems
 
 > **[🎨 View Interactive Diagram](memory-architecture.html)** | [← Back to Index](../../systems-index.html)

@@ -1,3 +1,13 @@
+---
+title: API Gateway
+topic: 16-microservices
+difficulty: advanced
+time: 30m
+paths:
+  - backend-senior
+  - staff
+---
+
 # 🚪 API Gateway — Complete Deep Dive
 
 [🎨 Interactive Visualization](../../../html/04-api-gateway-routing-viz.html)

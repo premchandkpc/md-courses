@@ -1,3 +1,13 @@
+---
+title: Google L5 AI/ML System Design Masterclass
+topic: 15-system-design
+difficulty: advanced
+time: 30m
+paths:
+  - system-design
+  - staff
+---
+
 # 🔥 Google L5 AI/ML System Design Masterclass
 
 Complete interview preparation for Google, Meta, Amazon, and other FAANG companies.

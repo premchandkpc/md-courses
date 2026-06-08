@@ -1,3 +1,13 @@
+---
+title: 01 Prometheus: Metrics, Scraping, and Storage
+topic: 14-sre-observability
+difficulty: advanced
+time: 30m
+paths:
+  - sre
+  - backend-senior
+---
+
 # 01 Prometheus: Metrics, Scraping, and Storage
 
 

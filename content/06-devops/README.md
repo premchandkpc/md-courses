@@ -1,3 +1,13 @@
+---
+title: 06 — DevOps & CI/CD
+topic: 06-devops
+difficulty: intermediate
+time: 30m
+paths:
+  - sre
+  - backend-junior
+---
+
 # 06 — DevOps & CI/CD
 
 The intersection of development and operations—automating the build, test, deploy, and operate lifecycle. Covers infrastructure as code, CI/CD pipelines, configuration management, containerization, SRE practices, security integration (DevSecOps), and the cultural practices that enable rapid, reliable software delivery.

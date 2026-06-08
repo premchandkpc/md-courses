@@ -1,3 +1,13 @@
+---
+title: Go Goroutines, Channels, and Concurrency: The Complete Deep Dive
+topic: 03-backend
+difficulty: intermediate
+time: 30m
+paths:
+  - backend-junior
+  - backend-senior
+---
+
 # Go Goroutines, Channels, and Concurrency: The Complete Deep Dive
 
 

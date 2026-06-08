@@ -1,3 +1,13 @@
+---
+title: OWASP Top 10, Authentication & Authorization: Deep Dive
+topic: 13-security
+difficulty: intermediate
+time: 30m
+paths:
+  - sre
+  - backend-senior
+---
+
 # OWASP Top 10, Authentication & Authorization: Deep Dive
 
 

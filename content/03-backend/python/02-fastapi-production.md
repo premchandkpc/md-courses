@@ -1,3 +1,13 @@
+---
+title: FastAPI Production Deep Dive
+topic: 03-backend
+difficulty: intermediate
+time: 30m
+paths:
+  - backend-junior
+  - backend-senior
+---
+
 # FastAPI Production Deep Dive
 
 

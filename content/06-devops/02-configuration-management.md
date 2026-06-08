@@ -1,3 +1,13 @@
+---
+title: Configuration Management — Senior/Principal Engineer Deep Dive
+topic: 06-devops
+difficulty: intermediate
+time: 30m
+paths:
+  - sre
+  - backend-junior
+---
+
 # Configuration Management — Senior/Principal Engineer Deep Dive
 
 **Related**: [Infrastructure as Code](/06-devops/01-infrastructure-as-code.md) · [DevOps & SRE Practices](/06-devops/03-devops-sre-practices.md) · [Kubernetes Config Management](/07-kubernetes/05-kubernetes-storage.md)

@@ -1,3 +1,13 @@
+---
+title: ️ DNS, CDN & Load Balancing
+topic: 11-networking
+difficulty: intermediate
+time: 30m
+paths:
+  - backend-junior
+  - sre
+---
+
 # ⚖️ DNS, CDN & Load Balancing — Complete Deep Dive
 
 

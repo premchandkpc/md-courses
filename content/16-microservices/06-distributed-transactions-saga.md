@@ -1,3 +1,13 @@
+---
+title: Distributed Transactions & Saga Pattern
+topic: 16-microservices
+difficulty: advanced
+time: 30m
+paths:
+  - backend-senior
+  - staff
+---
+
 # 🔄 Distributed Transactions & Saga Pattern — Complete Deep Dive
 
 [🎨 Interactive Visualization](../../../html/06-saga-pattern-transactions-viz.html)

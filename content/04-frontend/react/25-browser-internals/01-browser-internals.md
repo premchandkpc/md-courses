@@ -1,3 +1,12 @@
+---
+title: Browser Internals
+topic: 04-frontend
+difficulty: intermediate
+time: 30m
+paths:
+  - frontend
+---
+
 # Browser Internals
 
 [🎨 Interactive Visualization](../../../../html/25-prototype-chain-viz.html)

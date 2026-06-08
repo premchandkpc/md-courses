@@ -1,3 +1,12 @@
+---
+title: 01: Components & JSX — Deep Reference
+topic: 04-frontend
+difficulty: intermediate
+time: 30m
+paths:
+  - frontend
+---
+
 # 01: Components & JSX — Deep Reference
 
 > **Scope**: JSX transpilation, component lifecycle (functional + class), props vs state, children patterns, composition vs inheritance, refs, portals, fragments, error boundaries, higher-order components, render props, controlled vs uncontrolled, keys reconciliation, synthetic events, dangerouslySetInnerHTML, server components, concurrent mode, suspense boundaries, streaming SSR, hydration failures, large component trees (perf), infinite re-render loops, prop drilling solutions, context vs props, default props patterns, component composition patterns (layout, container/presentational), compound components, slot patterns.

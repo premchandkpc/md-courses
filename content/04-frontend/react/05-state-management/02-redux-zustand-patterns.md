@@ -1,6 +1,15 @@
+---
+title: Redux & Zustand: Patterns, Optimization & When to Use
+topic: 04-frontend
+difficulty: intermediate
+time: 50
+paths:
+  - frontend
+---
+
 # Redux & Zustand: Patterns, Optimization & When to Use
 
-**Level:** Intermediate-Advanced | **Time:** 50 mins | **Interview:** 🔥 Critical
+mins | **Interview:** 🔥 Critical
 
 ---
 

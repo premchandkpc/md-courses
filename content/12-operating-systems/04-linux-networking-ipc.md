@@ -1,3 +1,13 @@
+---
+title: Linux Networking & IPC
+topic: 12-operating-systems
+difficulty: intermediate
+time: 30m
+paths:
+  - backend-junior
+  - sre
+---
+
 # 🌐 Linux Networking & IPC — Complete Deep Dive
 
 

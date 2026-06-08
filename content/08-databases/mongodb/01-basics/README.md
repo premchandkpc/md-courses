@@ -1,3 +1,14 @@
+---
+title: MongoDB Basics
+topic: 08-databases
+difficulty: intermediate
+time: 30m
+paths:
+  - backend-junior
+  - data
+  - backend-senior
+---
+
 # MongoDB Basics
 
 MongoDB is a popular document-oriented NoSQL database that stores data in flexible JSON-like documents.

@@ -1,3 +1,12 @@
+---
+title: ️ System Design Interview Prep
+topic: 21-roadmaps
+difficulty: beginner
+time: 30m
+paths:
+  - backend-junior
+---
+
 # 🏗️ System Design Interview Prep — Complete Deep Dive
 
 > **Scope:** A comprehensive, battle-tested preparation guide for system design interviews at FAANG/top-tier companies. Covers the interview format, assessment criteria, the standard framework, common design patterns, database selection guide, consistency-availability tradeoff matrix, and the top 30 questions with difficulty ratings, key patterns, and black belt tradeoffs.

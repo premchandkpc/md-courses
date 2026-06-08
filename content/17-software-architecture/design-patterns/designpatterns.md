@@ -1,3 +1,12 @@
+---
+title: ️ Complete Design Patterns + Architectures + Real-Time Examples
+topic: 17-software-architecture
+difficulty: advanced
+time: 30m
+paths:
+  - staff
+---
+
 # 🏗️ Complete Design Patterns + Architectures + Real-Time Examples
 
 **Related**: [Microservices Architecture](/16-microservices/README.md#2-microservice-architecture--deep-dive) · [Load Balancers](/11-networking/load-balancing/loadbalancer.md) · [Kubernetes](/07-kubernetes/README.md)

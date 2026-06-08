@@ -1,3 +1,14 @@
+---
+title: MySQL Replication & High Availability
+topic: 08-databases
+difficulty: intermediate
+time: 30m
+paths:
+  - backend-junior
+  - data
+  - backend-senior
+---
+
 # MySQL Replication & High Availability
 
 ## Master-Slave Replication

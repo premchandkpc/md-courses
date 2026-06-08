@@ -1,3 +1,13 @@
+---
+title: Redis Caching & Distributed Patterns — Production Engineering
+topic: 03-backend
+difficulty: intermediate
+time: 30m
+paths:
+  - backend-junior
+  - backend-senior
+---
+
 # 🔴 Redis Caching & Distributed Patterns — Production Engineering
 
 

@@ -1,3 +1,13 @@
+---
+title: Google Maps Ranking - L5 Deep Dive
+topic: 15-system-design
+difficulty: advanced
+time: 30m
+paths:
+  - system-design
+  - staff
+---
+
 # Google Maps Ranking - L5 Deep Dive
 
 > **[🎨 View Interactive Diagram](maps-architecture.html)** | [← Back to Index](systems-index.html)

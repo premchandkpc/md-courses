@@ -1,3 +1,14 @@
+---
+title: MySQL Basics
+topic: 08-databases
+difficulty: intermediate
+time: 30m
+paths:
+  - backend-junior
+  - data
+  - backend-senior
+---
+
 # MySQL Basics
 
 MySQL is the world's most popular open-source relational database management system (RDBMS).

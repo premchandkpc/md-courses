@@ -1,3 +1,10 @@
+---
+title: System Design Numbers Cheat Sheet
+topic: cheat-sheets
+difficulty: intermediate
+time: 30m
+---
+
 # System Design Numbers Cheat Sheet
 
 

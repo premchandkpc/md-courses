@@ -1,3 +1,13 @@
+---
+title: Kubernetes Security
+topic: 07-kubernetes
+difficulty: advanced
+time: 30m
+paths:
+  - sre
+  - backend-senior
+---
+
 # 🔐 Kubernetes Security — Complete Deep Dive
 
 

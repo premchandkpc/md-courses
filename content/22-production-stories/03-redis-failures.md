@@ -1,3 +1,13 @@
+---
+title: Redis Production Failures — Production Incident Deep Dive
+topic: 22-production-stories
+difficulty: advanced
+time: 30m
+paths:
+  - staff
+  - sre
+---
+
 # 🔴 Redis Production Failures — Production Incident Deep Dive
 
 > **Scope:** Real-world Redis failure patterns covering cache stampedes, OOM with noeviction, fork+save memory doubling, hot key hotspots, and network partition splits. Each scenario follows symptom → detection → investigation → root cause → mitigation → permanent fix → lessons learned.

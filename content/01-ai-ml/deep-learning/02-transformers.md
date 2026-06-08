@@ -1,3 +1,12 @@
+---
+title: Transformers: Architecture and Theory
+topic: 01-ai-ml
+difficulty: intermediate
+time: 30m
+paths:
+  - ai-ml
+---
+
 # Transformers: Architecture and Theory
 
 

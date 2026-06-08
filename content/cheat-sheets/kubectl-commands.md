@@ -1,3 +1,10 @@
+---
+title: Kubectl Commands Cheat Sheet
+topic: cheat-sheets
+difficulty: intermediate
+time: 30m
+---
+
 # Kubectl Commands Cheat Sheet
 
 Essential kubectl commands for Kubernetes cluster operations.

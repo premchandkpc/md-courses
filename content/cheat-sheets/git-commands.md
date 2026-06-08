@@ -1,3 +1,10 @@
+---
+title: Git Commands Cheat Sheet
+topic: cheat-sheets
+difficulty: intermediate
+time: 30m
+---
+
 # Git Commands Cheat Sheet
 
 Essential Git commands for daily development.

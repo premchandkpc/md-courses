@@ -1,3 +1,13 @@
+---
+title: I/O Models & Kernel I/O
+topic: 12-operating-systems
+difficulty: intermediate
+time: 30m
+paths:
+  - backend-junior
+  - sre
+---
+
 # 📂 I/O Models & Kernel I/O — Complete Deep Dive
 
 > **Scope**: I/O models from blocking through io_uring: blocking/non-blocking I/O, select/poll/epoll multiplexing, AIO/libaio, io_uring (SQ/CQ rings, fixed buffers, registered files, polled I/O), sendfile/splice/zero-copy, kernel bypass (DPDK/XDP/AF_XDP), disk I/O schedulers (mq-deadline/BFQ/Kyber), blk-mq multi-queue block layer, VFS cache hierarchy, and async runtime patterns (reactor vs proactor, libuv, Boost.Asio).

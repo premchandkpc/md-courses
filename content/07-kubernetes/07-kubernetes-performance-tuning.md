@@ -1,3 +1,13 @@
+---
+title: Kubernetes Performance Tuning
+topic: 07-kubernetes
+difficulty: advanced
+time: 30m
+paths:
+  - sre
+  - backend-senior
+---
+
 # ⚡ Kubernetes Performance Tuning — Complete Deep Dive
 
 

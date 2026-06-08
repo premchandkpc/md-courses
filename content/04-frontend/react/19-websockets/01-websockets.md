@@ -1,3 +1,12 @@
+---
+title: WebSockets in React
+topic: 04-frontend
+difficulty: intermediate
+time: 30m
+paths:
+  - frontend
+---
+
 # WebSockets in React
 
 ## WHAT

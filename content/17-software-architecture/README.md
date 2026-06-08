@@ -1,3 +1,12 @@
+---
+title: Software Architecture — Complete Deep Dive ️
+topic: 17-software-architecture
+difficulty: advanced
+time: 30m
+paths:
+  - staff
+---
+
 # Software Architecture — Complete Deep Dive 🏛️
 
 Software architecture is the **high-level structure** of a system — the set of design decisions that shape how it's built, deployed, and evolved. Good architecture makes change easy; bad architecture makes every feature a nightmare.

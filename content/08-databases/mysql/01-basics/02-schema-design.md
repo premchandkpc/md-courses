@@ -1,3 +1,14 @@
+---
+title: MySQL Schema Design & Normalization
+topic: 08-databases
+difficulty: intermediate
+time: 30m
+paths:
+  - backend-junior
+  - data
+  - backend-senior
+---
+
 # MySQL Schema Design & Normalization
 
 ## Database Normalization

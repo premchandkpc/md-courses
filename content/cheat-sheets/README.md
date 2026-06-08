@@ -1,3 +1,10 @@
+---
+title: Quick Reference Cheat Sheets
+topic: cheat-sheets
+difficulty: intermediate
+time: 30m
+---
+
 # Quick Reference Cheat Sheets
 
 Fast lookup guides for essential tools, commands, and numbers. Each sheet is self-contained — copy-paste ready.

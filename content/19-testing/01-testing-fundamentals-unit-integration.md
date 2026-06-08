@@ -1,3 +1,13 @@
+---
+title: Testing Fundamentals: Unit & Integration Testing
+topic: 19-testing
+difficulty: intermediate
+time: 30m
+paths:
+  - backend-junior
+  - frontend
+---
+
 # Testing Fundamentals: Unit & Integration Testing
 
 

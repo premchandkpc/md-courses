@@ -1,3 +1,12 @@
+---
+title: Production Failure: Hydration Mismatch
+topic: 04-frontend
+difficulty: intermediate
+time: 30m
+paths:
+  - frontend
+---
+
 # Production Failure: Hydration Mismatch
 
 ## WHAT

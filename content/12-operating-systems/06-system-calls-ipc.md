@@ -1,3 +1,13 @@
+---
+title: System Calls & IPC
+topic: 12-operating-systems
+difficulty: intermediate
+time: 30m
+paths:
+  - backend-junior
+  - sre
+---
+
 # 🔧 System Calls & IPC — Complete Deep Dive
 
 > **Scope**: Syscall mechanism (syscall instruction, table, arguments, vDSO), all IPC mechanisms (pipe, socket, shared memory, message queues, signals, eventfd, futex, seccomp, landlock), error handling patterns, strace vs bpftrace tracing, complete coverage of Linux inter-process communication.

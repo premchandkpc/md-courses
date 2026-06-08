@@ -1,3 +1,14 @@
+---
+title: Stream Processing
+topic: 09-distributed-systems
+difficulty: advanced
+time: 30m
+paths:
+  - backend-senior
+  - system-design
+  - staff
+---
+
 # 📊 Stream Processing — Complete Deep Dive
 
 > **Scope**: Stream vs batch, processing models (one-at-a-time, micro-batch, continuous), time semantics (event time, processing time, watermarks, lateness), state management (keyed state, operator state, state backends, checkpointing), windowing (tumbling, sliding, session), stream joins, fault tolerance (exactly-once, at-least-once, backpressure), Apache Kafka Streams, Apache Flink, Apache Pulsar, stream processing patterns (CEP, anomaly detection), production CDC pipeline.

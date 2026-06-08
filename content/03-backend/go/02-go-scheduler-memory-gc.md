@@ -1,3 +1,13 @@
+---
+title: Go Scheduler, Memory Management, and Garbage Collection: Deep Internals
+topic: 03-backend
+difficulty: intermediate
+time: 30m
+paths:
+  - backend-junior
+  - backend-senior
+---
+
 # Go Scheduler, Memory Management, and Garbage Collection: Deep Internals
 
 ---

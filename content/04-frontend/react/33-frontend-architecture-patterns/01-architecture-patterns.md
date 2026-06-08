@@ -1,3 +1,12 @@
+---
+title: Frontend Architecture Patterns
+topic: 04-frontend
+difficulty: intermediate
+time: 30m
+paths:
+  - frontend
+---
+
 # Frontend Architecture Patterns
 
 Scaling frontend codebases requires deliberate architectural choices. This covers monorepo tooling, module federation, design system integration, and cross-app communication.

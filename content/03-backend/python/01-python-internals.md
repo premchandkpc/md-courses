@@ -1,3 +1,13 @@
+---
+title: Python Internals Deep Dive
+topic: 03-backend
+difficulty: intermediate
+time: 30m
+paths:
+  - backend-junior
+  - backend-senior
+---
+
 # Python Internals Deep Dive
 
 

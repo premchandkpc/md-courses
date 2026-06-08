@@ -1,8 +1,17 @@
+---
+title: React Fiber & Reconciliation: How React Actually Works
+topic: 04-frontend
+difficulty: advanced
+time: 60
+paths:
+  - frontend
+---
+
 # React Fiber & Reconciliation: How React Actually Works
 
 [🎨 Interactive Visualization](../../../../html/02-fiber-reconciliation-engine-viz.html)
 
-**Level:** Advanced | **Time:** 60 mins | **Interview:** 🔥🔥🔥 Critical
+mins | **Interview:** 🔥🔥🔥 Critical
 
 ---
 

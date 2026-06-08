@@ -1,3 +1,12 @@
+---
+title: Low-Level Design
+topic: 24-low-level-design
+difficulty: intermediate
+time: 30m
+paths:
+  - backend-junior
+---
+
 # Low-Level Design — Complete Deep Dive 🔬
 
 Low-level design (LLD) is the **detailed blueprint** of a software component — the classes, interfaces, relationships, state machines, and algorithms that translate high-level architecture into working code.

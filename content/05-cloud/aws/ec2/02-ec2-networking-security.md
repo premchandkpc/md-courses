@@ -1,3 +1,13 @@
+---
+title: ️ EC2 Networking & Security
+topic: 05-cloud
+difficulty: intermediate
+time: 30m
+paths:
+  - sre
+  - backend-senior
+---
+
 # 🖥️ EC2 Networking & Security — Complete Deep Dive
 
 

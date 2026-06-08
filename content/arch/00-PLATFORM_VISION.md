@@ -1,3 +1,10 @@
+---
+title: Platform Vision & Architecture — Blueprint
+topic: 00-PLATFORM_VISION.md
+difficulty: intermediate
+time: 30m
+---
+
 # 🎯 Platform Vision & Architecture — Blueprint
 
 > **Status:** v0.1 — Foundational  

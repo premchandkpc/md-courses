@@ -22,7 +22,7 @@ Thanks for your interest! This is a comprehensive engineering knowledge base. We
 
 ### Structure
 
-- **Location:** Content lives in `data/` organized by numbered domains (00-25)
+- **Location:** Content lives in `content/` organized by numbered domains (00-25)
 - **Format:** Markdown (`.md`) with inline code blocks and diagrams
 - **Naming:** `[topic-slug].md` (lowercase, hyphens, descriptive)
 

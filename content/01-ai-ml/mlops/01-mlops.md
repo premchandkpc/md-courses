@@ -1,3 +1,12 @@
+---
+title: MLOps: Machine Learning Operations
+topic: 01-ai-ml
+difficulty: intermediate
+time: 30m
+paths:
+  - ai-ml
+---
+
 # MLOps: Machine Learning Operations
 
 

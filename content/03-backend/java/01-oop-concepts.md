@@ -1,3 +1,13 @@
+---
+title: Java OOP Concepts
+topic: 03-backend
+difficulty: intermediate
+time: 30m
+paths:
+  - backend-junior
+  - backend-senior
+---
+
 # 🧱 Java OOP Concepts — Complete Deep Dive
 
 **Related**: [Collections Framework](/03-backend/java/02-collections-framework.md) · [Exception Handling](/03-backend/java/03-exception-handling.md) · [Design Patterns in Java](/03-backend/java/14-design-patterns-in-java.md)

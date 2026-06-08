@@ -1,3 +1,12 @@
+---
+title: Agentic UI
+topic: 04-frontend
+difficulty: intermediate
+time: 30m
+paths:
+  - frontend
+---
+
 # Agentic UI
 
 ## What is Agent-Driven UI?

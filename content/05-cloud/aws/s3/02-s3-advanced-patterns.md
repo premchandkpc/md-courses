@@ -1,3 +1,13 @@
+---
+title: 🪣 S3 Advanced Patterns
+topic: 05-cloud
+difficulty: intermediate
+time: 30m
+paths:
+  - sre
+  - backend-senior
+---
+
 # 🪣 S3 Advanced Patterns — Complete Deep Dive
 
 **Related**: [S3 Basics](/05-cloud/aws/s3/01-s3-deep-dive.md) · [IAM](/05-cloud/aws/iam/01-iam-deep-dive.md) · [CloudWatch](/05-cloud/aws/cloudwatch/02-cloudwatch-observability.md) · [Lambda](/05-cloud/aws/lambda/01-lambda-deep-dive.md)

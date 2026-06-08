@@ -1,3 +1,13 @@
+---
+title: Design GitHub
+topic: 15-system-design
+difficulty: advanced
+time: 30m
+paths:
+  - system-design
+  - staff
+---
+
 # 🐙 Design GitHub — Complete System Design Deep Dive
 
 > **Scope**: Requirements (100M+ repositories, 50M+ developers), Git storage (pack files, delta compression, object storage), repository model (forks, PRs, branches, tags), collaboration (issues, PRs, code review, discussions, projects), CI/CD (GitHub Actions, self-hosted runners, workflow orchestration), storage (Git LFS, large file policies), search (code, issues, users), database (MySQL, Redis, Elasticsearch), availability (multi-region, read replicas for git clone), failure analysis.

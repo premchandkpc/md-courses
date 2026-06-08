@@ -1,3 +1,13 @@
+---
+title: Columnar Storage Formats — Deep Engineering Guide
+topic: 02-data-engineering
+difficulty: intermediate
+time: 30m
+paths:
+  - data
+  - ai-ml
+---
+
 # Columnar Storage Formats — Deep Engineering Guide
 
 

@@ -1,3 +1,14 @@
+---
+title: Distributed Caching
+topic: 09-distributed-systems
+difficulty: advanced
+time: 30m
+paths:
+  - backend-senior
+  - system-design
+  - staff
+---
+
 # ⚡ Distributed Caching — Complete Deep Dive
 
 > **[🎨 Cache Strategies Simulator](../../../html/12-caching-strategies-viz.html)** — Explore LRU/TTL/Write-Through strategies interactively.

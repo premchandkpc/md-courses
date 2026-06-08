@@ -1,3 +1,13 @@
+---
+title: ️ Load Balancer Production Failures — Production Incident Deep Dive
+topic: 22-production-stories
+difficulty: advanced
+time: 30m
+paths:
+  - staff
+  - sre
+---
+
 # ⚖️ Load Balancer Production Failures — Production Incident Deep Dive
 
 > **Scope:** Real-world load balancer failure patterns covering connection exhaustion, sticky session drift, circuit breaker cascade, DNS resolution failures, and cross-region failover delays. Each scenario follows symptom → detection → investigation → root cause → mitigation → permanent fix → lessons learned.

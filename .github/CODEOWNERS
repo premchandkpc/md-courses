@@ -1,0 +1,27 @@
+# Engineering Knowledge Universe — Code Owners
+
+# Default reviewer for all changes
+* @premchand
+
+# Content layer
+/content/ @premchand
+/content/08-databases/ @premchand
+/content/html-visualizations/ @premchand
+
+# API server (Node.js)
+/packages/api-server/ @premchand
+
+# React frontend
+/packages/react-frontend/ @premchand
+
+# Legacy viewer
+/packages/legacy-viewer/ @premchand
+
+# Python server
+/packages/python-server/ @premchand
+
+# CI/CD
+/.github/ @premchand
+
+# Scripts
+/scripts/ @premchand

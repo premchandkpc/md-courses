@@ -1,3 +1,14 @@
+---
+title: MongoDB Replication, Sharding & Scaling
+topic: 08-databases
+difficulty: intermediate
+time: 30m
+paths:
+  - backend-junior
+  - data
+  - backend-senior
+---
+
 # MongoDB Replication, Sharding & Scaling
 
 ## Replica Sets (High Availability)

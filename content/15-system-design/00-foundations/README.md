@@ -1,3 +1,13 @@
+---
+title: System Design Foundations
+topic: 15-system-design
+difficulty: advanced
+time: 30m
+paths:
+  - system-design
+  - staff
+---
+
 # System Design Foundations
 
 Master the fundamental concepts that underpin ALL distributed systems.

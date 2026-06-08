@@ -1,3 +1,14 @@
+---
+title: PostgreSQL Basics
+topic: 08-databases
+difficulty: intermediate
+time: 30m
+paths:
+  - backend-junior
+  - data
+  - backend-senior
+---
+
 # PostgreSQL Basics
 
 PostgreSQL is a powerful, open-source object-relational database system known for advanced features and SQL compliance.

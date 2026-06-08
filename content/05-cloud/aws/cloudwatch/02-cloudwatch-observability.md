@@ -1,3 +1,13 @@
+---
+title: CloudWatch Observability
+topic: 05-cloud
+difficulty: intermediate
+time: 30m
+paths:
+  - sre
+  - backend-senior
+---
+
 # 📊 CloudWatch Observability — Complete Deep Dive
 
 

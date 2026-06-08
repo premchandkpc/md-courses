@@ -1,3 +1,10 @@
+---
+title: Docker Commands Cheat Sheet
+topic: cheat-sheets
+difficulty: intermediate
+time: 30m
+---
+
 # Docker Commands Cheat Sheet
 
 Docker commands for building images, running containers, multi-stage builds, and production operations.

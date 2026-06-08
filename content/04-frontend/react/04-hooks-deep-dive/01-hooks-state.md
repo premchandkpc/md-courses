@@ -1,3 +1,12 @@
+---
+title: 02: Hooks & State Management — Deep Reference
+topic: 04-frontend
+difficulty: intermediate
+time: 30m
+paths:
+  - frontend
+---
+
 # 02: Hooks & State Management — Deep Reference
 
 [🎨 Interactive Visualization](../../../../html/04-hooks-dependency-graph-viz.html)

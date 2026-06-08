@@ -1,3 +1,13 @@
+---
+title: Java Collections: Complete Guide with Real Scenarios
+topic: 03-backend
+difficulty: intermediate
+time: 30m
+paths:
+  - backend-junior
+  - backend-senior
+---
+
 # Java Collections: Complete Guide with Real Scenarios
 
 

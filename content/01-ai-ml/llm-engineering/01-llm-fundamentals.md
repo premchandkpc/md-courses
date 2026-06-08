@@ -1,3 +1,12 @@
+---
+title: LLM Engineering Fundamentals
+topic: 01-ai-ml
+difficulty: intermediate
+time: 30m
+paths:
+  - ai-ml
+---
+
 # LLM Engineering Fundamentals
 
 ---

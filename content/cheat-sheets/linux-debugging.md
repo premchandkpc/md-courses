@@ -1,3 +1,10 @@
+---
+title: Linux Debugging Cheat Sheet
+topic: cheat-sheets
+difficulty: intermediate
+time: 30m
+---
+
 # Linux Debugging Cheat Sheet
 
 

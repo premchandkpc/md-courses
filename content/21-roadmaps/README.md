@@ -1,3 +1,12 @@
+---
+title: Career Roadmaps — Complete Navigation Guide ️
+topic: 21-roadmaps
+difficulty: beginner
+time: 30m
+paths:
+  - backend-junior
+---
+
 # Career Roadmaps — Complete Navigation Guide 🗺️
 
 Roadmaps are **structured learning paths** for engineering career progression. They cover everything from junior backend engineer through staff+ architect, with specialized tracks for distributed systems, system design, and cloud-native engineering.

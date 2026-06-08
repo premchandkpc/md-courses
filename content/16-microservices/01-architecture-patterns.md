@@ -1,3 +1,13 @@
+---
+title: ️ Microservices Architecture Patterns
+topic: 16-microservices
+difficulty: advanced
+time: 30m
+paths:
+  - backend-senior
+  - staff
+---
+
 # 🏛️ Microservices Architecture Patterns — Complete Deep Dive
 
 **Related**: [Service Decomposition](/16-microservices/02-service-decomposition.md) · [API Gateway](/16-microservices/04-api-gateway.md) · [Circuit Breaker](/16-microservices/05-circuit-breaker-resilience.md)

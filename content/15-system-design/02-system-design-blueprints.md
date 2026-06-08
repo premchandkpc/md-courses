@@ -1,3 +1,13 @@
+---
+title: ️ System Design Blueprints
+topic: 15-system-design
+difficulty: advanced
+time: 30m
+paths:
+  - system-design
+  - staff
+---
+
 # 🏗️ System Design Blueprints — Complete Deep Dive
 
 

@@ -1,3 +1,13 @@
+---
+title: System Design Interview
+topic: 20-interviews
+difficulty: advanced
+time: 30m
+paths:
+  - system-design
+  - backend-senior
+---
+
 # System Design Interview — Complete Preparation Guide
 
 System design interviews evaluate your ability to architect large-scale distributed systems. These are the most important interviews at senior+ levels (FAANG, top tech companies).

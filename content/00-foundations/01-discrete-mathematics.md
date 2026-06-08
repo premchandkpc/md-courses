@@ -1,3 +1,12 @@
+---
+title: Discrete Mathematics — Foundations of Computing
+topic: 00-foundations
+difficulty: beginner
+time: 30m
+paths:
+  - backend-junior
+---
+
 # Discrete Mathematics — Foundations of Computing
 
 The mathematical language of computer science. Discrete math underpins algorithms, data structures, cryptography, and all of computing theory.

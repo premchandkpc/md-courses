@@ -1,3 +1,12 @@
+---
+title: Scaling React Applications
+topic: 04-frontend
+difficulty: intermediate
+time: 30m
+paths:
+  - frontend
+---
+
 # Scaling React Applications
 
 ## Team Scaling

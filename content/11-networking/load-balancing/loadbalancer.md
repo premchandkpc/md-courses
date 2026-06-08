@@ -1,3 +1,13 @@
+---
+title: Load Balancers
+topic: 11-networking
+difficulty: intermediate
+time: 30m
+paths:
+  - backend-junior
+  - sre
+---
+
 # Load Balancers — Complete Deep Dive 🚀
 
 A load balancer is basically:

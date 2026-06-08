@@ -1,3 +1,13 @@
+---
+title: ️ Kubernetes Node Failure — Production Incident Deep Dive
+topic: 22-production-stories
+difficulty: advanced
+time: 30m
+paths:
+  - staff
+  - sre
+---
+
 # ☸️ Kubernetes Node Failure — Production Incident Deep Dive
 
 > **Scope:** Real-world Kubernetes cluster failure patterns covering node death, node pressure, DNS failures, CNI misconfiguration, and API server overload. Each scenario follows symptom → detection → investigation → root cause → mitigation → permanent fix → lessons learned.

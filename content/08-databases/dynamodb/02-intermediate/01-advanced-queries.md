@@ -1,3 +1,14 @@
+---
+title: Advanced Queries & Filtering
+topic: 08-databases
+difficulty: intermediate
+time: 30m
+paths:
+  - backend-junior
+  - data
+  - backend-senior
+---
+
 # Advanced Queries & Filtering
 
 ## Query Optimization Strategies

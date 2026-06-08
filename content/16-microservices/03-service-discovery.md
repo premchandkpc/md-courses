@@ -1,3 +1,13 @@
+---
+title: Service Discovery
+topic: 16-microservices
+difficulty: advanced
+time: 30m
+paths:
+  - backend-senior
+  - staff
+---
+
 # 🔍 Service Discovery — Complete Deep Dive
 
 [🎨 Interactive Visualization](../../../html/03-service-discovery-registry-viz.html)

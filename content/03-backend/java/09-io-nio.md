@@ -1,3 +1,13 @@
+---
+title: Java I/O & NIO
+topic: 03-backend
+difficulty: intermediate
+time: 30m
+paths:
+  - backend-junior
+  - backend-senior
+---
+
 # 📂 Java I/O & NIO — Complete Deep Dive
 
 **Related**: [Exception Handling](/03-backend/java/03-exception-handling.md) · [Streams & Lambda](/03-backend/java/07-streams-lambda.md) · [Java 8+ Features](/03-backend/java/11-java-8-features.md)

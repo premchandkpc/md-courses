@@ -1,3 +1,13 @@
+---
+title: Distributed Transaction Deadlock — Production Incident Deep Dive
+topic: 22-production-stories
+difficulty: advanced
+time: 30m
+paths:
+  - staff
+  - sre
+---
+
 # 🔒 Distributed Transaction Deadlock — Production Incident Deep Dive
 
 > **Scope:** Real-world distributed deadlock patterns across a financial services platform covering two-phase commit (2PC) deadlocks, saga compensation conflicts, optimistic lock escalation, wait-for graph analysis, and multi-service transaction orchestration failures. Each scenario follows symptom → detection → investigation → root cause → mitigation → permanent fix → lessons learned.

@@ -1,3 +1,14 @@
+---
+title: MySQL Overview & Fundamentals
+topic: 08-databases
+difficulty: intermediate
+time: 30m
+paths:
+  - backend-junior
+  - data
+  - backend-senior
+---
+
 # MySQL Overview & Fundamentals
 
 ## What is MySQL?

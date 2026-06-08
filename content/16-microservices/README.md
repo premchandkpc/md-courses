@@ -1,3 +1,13 @@
+---
+title: Microservices
+topic: 16-microservices
+difficulty: advanced
+time: 30m
+paths:
+  - backend-senior
+  - staff
+---
+
 # Microservices — Complete Deep Dive 🧩
 
 

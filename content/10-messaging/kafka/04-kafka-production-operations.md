@@ -1,3 +1,14 @@
+---
+title: ️ Kafka Production Operations
+topic: 10-messaging
+difficulty: advanced
+time: 30m
+paths:
+  - backend-senior
+  - data
+  - staff
+---
+
 # ⚙️ Kafka Production Operations — Complete Deep Dive
 
 

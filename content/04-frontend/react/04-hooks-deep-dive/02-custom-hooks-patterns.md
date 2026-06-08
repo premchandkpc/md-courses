@@ -1,3 +1,12 @@
+---
+title: 08: Custom Hooks & Patterns — Deep Reference
+topic: 04-frontend
+difficulty: intermediate
+time: 30m
+paths:
+  - frontend
+---
+
 # 08: Custom Hooks & Patterns — Deep Reference
 
 > **Scope**: Custom hooks, hook composition, testing hooks, HOCs vs render props, compound components, polymorphic components, controlled/uncontrolled, forwardRef, generic components

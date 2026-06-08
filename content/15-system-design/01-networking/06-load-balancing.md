@@ -1,3 +1,13 @@
+---
+title: Load Balancing Deep Dive - L5 Networking
+topic: 15-system-design
+difficulty: advanced
+time: 30m
+paths:
+  - system-design
+  - staff
+---
+
 # Load Balancing Deep Dive - L5 Networking
 
 > **[🎨 View Interactive Diagram](load-balancing-architecture.html)** | [🎨 Algorithms Simulator](../../../html/11-load-balancing-algorithms-viz.html) | [← Back to Index](../../systems-index.html)

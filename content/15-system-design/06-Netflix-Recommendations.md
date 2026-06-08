@@ -1,3 +1,13 @@
+---
+title: Netflix Recommendations - L5 Deep Dive
+topic: 15-system-design
+difficulty: advanced
+time: 30m
+paths:
+  - system-design
+  - staff
+---
+
 # Netflix Recommendations - L5 Deep Dive
 
 > **[🎨 View Interactive Diagram](netflix-architecture.html)** | [← Back to Index](systems-index.html)

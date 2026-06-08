@@ -1,3 +1,13 @@
+---
+title: Kubernetes GitOps & Operator Patterns
+topic: 07-kubernetes
+difficulty: advanced
+time: 30m
+paths:
+  - sre
+  - backend-senior
+---
+
 # 🔄 Kubernetes GitOps & Operator Patterns — Complete Deep Dive
 
 

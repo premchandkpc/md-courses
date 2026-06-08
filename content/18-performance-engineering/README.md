@@ -1,3 +1,13 @@
+---
+title: Performance Engineering
+topic: 18-performance-engineering
+difficulty: advanced
+time: 30m
+paths:
+  - backend-senior
+  - sre
+---
+
 # Performance Engineering — Complete Deep Dive ⚡
 
 Performance engineering is the systematic practice of **measuring, analyzing, and optimizing** system performance. It's about understanding where time goes and systematically reducing it.

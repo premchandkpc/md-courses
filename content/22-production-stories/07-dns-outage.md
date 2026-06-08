@@ -1,3 +1,13 @@
+---
+title: DNS Cascading Failure — Production Incident Deep Dive
+topic: 22-production-stories
+difficulty: advanced
+time: 30m
+paths:
+  - staff
+  - sre
+---
+
 # 🌐 DNS Cascading Failure — Production Incident Deep Dive
 
 > **Scope:** Real-world DNS failure patterns covering cache poisoning amplification from TTL misconfiguration, upstream resolver cascade, negative caching storms, DNSSEC validation failures, and multi-provider failover edge cases. Each scenario covers the full incident lifecycle from detection through root cause analysis, mitigation, and permanent resolution.

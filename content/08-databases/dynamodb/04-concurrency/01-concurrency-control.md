@@ -1,3 +1,14 @@
+---
+title: DynamoDB Concurrency & Conflict Resolution
+topic: 08-databases
+difficulty: intermediate
+time: 30m
+paths:
+  - backend-junior
+  - data
+  - backend-senior
+---
+
 # DynamoDB Concurrency & Conflict Resolution
 
 ## Optimistic Locking (Version Numbers)

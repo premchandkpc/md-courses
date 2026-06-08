@@ -1,6 +1,15 @@
+---
+title: XSS, CSRF & CSP: Frontend Security Deep Dive
+topic: 04-frontend
+difficulty: intermediate
+time: 50
+paths:
+  - frontend
+---
+
 # XSS, CSRF & CSP: Frontend Security Deep Dive
 
-**Level:** Intermediate-Advanced | **Time:** 50 mins | **Interview:** 🔥 Critical
+mins | **Interview:** 🔥 Critical
 
 ---
 

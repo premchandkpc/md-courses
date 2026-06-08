@@ -1,3 +1,13 @@
+---
+title: ️ Circuit Breaker & Resilience Patterns
+topic: 16-microservices
+difficulty: advanced
+time: 30m
+paths:
+  - backend-senior
+  - staff
+---
+
 # 🛡️ Circuit Breaker & Resilience Patterns — Complete Deep Dive
 
 [🎨 Interactive Visualization](../../../html/05-circuit-breaker-resilience-viz.html)

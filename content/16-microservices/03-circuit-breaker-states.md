@@ -1,3 +1,13 @@
+---
+title: Circuit Breaker Pattern — Interactive State Machine
+topic: 16-microservices
+difficulty: advanced
+time: 30m
+paths:
+  - backend-senior
+  - staff
+---
+
 # Circuit Breaker Pattern — Interactive State Machine
 
 > **Run the live simulators**:

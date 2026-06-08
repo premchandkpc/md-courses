@@ -1,3 +1,13 @@
+---
+title: Java Performance Tuning
+topic: 03-backend
+difficulty: intermediate
+time: 30m
+paths:
+  - backend-junior
+  - backend-senior
+---
+
 # ⚡ Java Performance Tuning — Complete Deep Dive
 
 

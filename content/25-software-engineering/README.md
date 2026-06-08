@@ -1,3 +1,12 @@
+---
+title: Software Engineering — Complete Guide ️
+topic: 25-software-engineering
+difficulty: intermediate
+time: 30m
+paths:
+  - backend-junior
+---
+
 # Software Engineering — Complete Guide 🛠️
 
 

@@ -1,3 +1,14 @@
+---
+title: PostgreSQL Internals
+topic: 08-databases
+difficulty: intermediate
+time: 30m
+paths:
+  - backend-junior
+  - data
+  - backend-senior
+---
+
 # 🐘 PostgreSQL Internals — Complete Deep Dive
 
 > **Scope**: PostgreSQL process architecture, shared memory, connection lifecycle, shared buffers and buffer manager, MVCC, WAL, query processing (parser/planner/executor), vacuum/autovacuum, indexing (B-tree/GiST/GIN/BRIN/Bloom), replication (streaming/logical), backup/PITR — complete internal architecture of the world's most advanced open-source database.

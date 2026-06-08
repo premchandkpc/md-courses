@@ -1,3 +1,13 @@
+---
+title: Java Reactive Programming
+topic: 03-backend
+difficulty: intermediate
+time: 30m
+paths:
+  - backend-junior
+  - backend-senior
+---
+
 # ⚡ Java Reactive Programming — Complete Deep Dive
 
 

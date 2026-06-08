@@ -1,3 +1,13 @@
+---
+title: Java Collections: Elite-Level Masterclass
+topic: 03-backend
+difficulty: intermediate
+time: 30m
+paths:
+  - backend-junior
+  - backend-senior
+---
+
 # Java Collections: Elite-Level Masterclass
 ## JVM Internals | Production Engineering | Interview Mastery
 

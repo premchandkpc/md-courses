@@ -1,3 +1,13 @@
+---
+title: Chaos & Performance Testing for Production Systems
+topic: 19-testing
+difficulty: intermediate
+time: 30m
+paths:
+  - backend-junior
+  - frontend
+---
+
 # Chaos & Performance Testing for Production Systems
 
 

@@ -1,3 +1,13 @@
+---
+title: Java Multithreading & Concurrency
+topic: 03-backend
+difficulty: intermediate
+time: 30m
+paths:
+  - backend-junior
+  - backend-senior
+---
+
 # 🧵 Java Multithreading & Concurrency — Complete Deep Dive
 
 **Related**: [Java Memory Model & GC](/03-backend/java/06-java-memory-gc.md) · [OOP Concepts](/03-backend/java/01-oop-concepts.md) · [Collections Framework](/03-backend/java/02-collections-framework.md)

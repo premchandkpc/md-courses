@@ -1,3 +1,14 @@
+---
+title: DynamoDB Partition Key Design: Avoiding Hot Partitions
+topic: 08-databases
+difficulty: intermediate
+time: 30m
+paths:
+  - backend-junior
+  - data
+  - backend-senior
+---
+
 # DynamoDB Partition Key Design: Avoiding Hot Partitions
 
 ## Partition Key Fundamentals

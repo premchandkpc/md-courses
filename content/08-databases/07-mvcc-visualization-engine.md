@@ -1,3 +1,14 @@
+---
+title: MVCC (Multi-Version Concurrency Control) — Interactive Visualization
+topic: 08-databases
+difficulty: intermediate
+time: 30m
+paths:
+  - backend-junior
+  - data
+  - backend-senior
+---
+
 # MVCC (Multi-Version Concurrency Control) — Interactive Visualization
 
 ## Overview

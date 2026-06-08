@@ -1,4 +1,4 @@
-.PHONY: help serve frontend frontend-build frontend-typecheck viz clean
+.PHONY: help serve frontend frontend-build frontend-typecheck viz python clean
 
 help:
 	@echo "Engineering Knowledge Universe — Interactive Platform"
@@ -8,6 +8,7 @@ help:
 	@echo "  make frontend           Start Vite dev server on :5173"
 	@echo "  make frontend-build     Build frontend for production"
 	@echo "  make frontend-typecheck TypeScript type check"
+	@echo "  make python             Start Python server on :3000"
 	@echo "  make viz                Run API server + frontend concurrently"
 	@echo "  make clean              Remove frontend node_modules + dist"
 	@echo "  make help               Show this help"
@@ -23,6 +24,9 @@ frontend-build:
 
 frontend-typecheck:
 	@npm run typecheck -w packages/react-frontend
+
+python:
+	@/opt/homebrew/bin/python3 packages/python-server/server.py
 
 viz:
 	@echo "Starting API server on :3000 and frontend on :5173..."

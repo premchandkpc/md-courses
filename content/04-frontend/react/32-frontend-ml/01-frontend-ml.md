@@ -1,3 +1,12 @@
+---
+title: Frontend ML: Client-Side Machine Learning
+topic: 04-frontend
+difficulty: intermediate
+time: 30m
+paths:
+  - frontend
+---
+
 # Frontend ML: Client-Side Machine Learning
 
 Running ML models directly in the browser enables low-latency, privacy-preserving, offline-capable experiences without round-tripping to a server.

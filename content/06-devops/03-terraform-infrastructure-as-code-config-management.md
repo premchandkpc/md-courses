@@ -1,3 +1,13 @@
+---
+title: Terraform & Infrastructure as Code: From Local to Distributed
+topic: 06-devops
+difficulty: intermediate
+time: 30m
+paths:
+  - sre
+  - backend-junior
+---
+
 # Terraform & Infrastructure as Code: From Local to Distributed
 
 

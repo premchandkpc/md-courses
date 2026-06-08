@@ -1,3 +1,13 @@
+---
+title: Spring Boot
+topic: 03-backend
+difficulty: intermediate
+time: 30m
+paths:
+  - backend-junior
+  - backend-senior
+---
+
 # 🍃 Spring Boot — Complete Deep Dive
 
 **Related**: [Annotations & Reflection](/03-backend/java/10-annotations-reflection.md) · [Java 8+ Features](/03-backend/java/11-java-8-features.md) · [Multithreading](/03-backend/java/04-multithreading.md) · [Hibernate/JPA](/03-backend/java/13-hibernate-jpa.md)

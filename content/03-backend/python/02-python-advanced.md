@@ -1,3 +1,13 @@
+---
+title: Advanced Python
+topic: 03-backend
+difficulty: intermediate
+time: 30m
+paths:
+  - backend-junior
+  - backend-senior
+---
+
 # 🐍 Advanced Python — Complete Deep Dive
 
 **Related**: [Python Basics](/03-backend/python/01-python-basics.md) · [Python Docs](https://docs.python.org/3/) · [CPython Source](https://github.com/python/cpython)

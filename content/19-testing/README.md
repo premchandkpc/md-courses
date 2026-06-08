@@ -1,3 +1,13 @@
+---
+title: Testing
+topic: 19-testing
+difficulty: intermediate
+time: 30m
+paths:
+  - backend-junior
+  - frontend
+---
+
 # Testing — Complete Deep Dive 🧪
 
 Testing is the systematic verification that software behaves as expected. It's not a phase — it's a **continuous practice** embedded in development, from unit tests through production chaos experiments.

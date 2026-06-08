@@ -1,3 +1,10 @@
+---
+title: Big O Complexity
+topic: cheat-sheets
+difficulty: intermediate
+time: 30m
+---
+
 # Big O Complexity — Complete Mastery Guide
 
 Understanding time and space complexity is the **single most important skill** for writing efficient algorithms and making architecture decisions at scale.

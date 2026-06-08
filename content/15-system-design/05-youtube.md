@@ -1,3 +1,13 @@
+---
+title: ▶️ Design YouTube
+topic: 15-system-design
+difficulty: advanced
+time: 30m
+paths:
+  - system-design
+  - staff
+---
+
 # ▶️ Design YouTube — Complete System Design Deep Dive
 
 > **Scope**: Requirements (1B+ hours watched/day, 500 hours/min upload, multi-CDN, adaptive bitrate streaming, search, recommendations, video processing), upload flow, video processing pipeline (transcoding, per-title encoding), content delivery (DASH/HLS, CDN steering), recommendation system (two-stage: candidate generation + ranking), search, failure analysis.

@@ -1,3 +1,12 @@
+---
+title: Frontend Architecture Case Studies
+topic: 04-frontend
+difficulty: intermediate
+time: 30m
+paths:
+  - frontend
+---
+
 # Frontend Architecture Case Studies
 
 How Meta, Netflix, Vercel, and Google build and scale their React frontends.

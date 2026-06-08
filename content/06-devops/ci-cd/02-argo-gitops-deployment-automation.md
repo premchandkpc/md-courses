@@ -1,3 +1,13 @@
+---
+title: Argo CD & GitOps: Deployment Automation at Scale
+topic: 06-devops
+difficulty: intermediate
+time: 30m
+paths:
+  - sre
+  - backend-junior
+---
+
 # Argo CD & GitOps: Deployment Automation at Scale
 
 ---

@@ -1,3 +1,13 @@
+---
+title: Memory Management
+topic: 12-operating-systems
+difficulty: intermediate
+time: 30m
+paths:
+  - backend-junior
+  - sre
+---
+
 # 🧠 Memory Management — Complete Deep Dive
 
 

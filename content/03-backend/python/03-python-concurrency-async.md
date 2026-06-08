@@ -1,3 +1,13 @@
+---
+title: Python Concurrency & Async
+topic: 03-backend
+difficulty: intermediate
+time: 30m
+paths:
+  - backend-junior
+  - backend-senior
+---
+
 # ⚡ Python Concurrency & Async — Complete Deep Dive
 
 > **Scope**: GIL internals, threading, multiprocessing, asyncio, Trio, Curio, uvloop, concurrent.futures, subprocess, shared memory, signal handling

@@ -1,3 +1,10 @@
+---
+title: Content & Data Pipeline — Architecture Blueprint
+topic: 05-DATA_PIPELINE.md
+difficulty: intermediate
+time: 30m
+---
+
 # 🔄 Content & Data Pipeline — Architecture Blueprint
 
 > **Status:** v0.1 — Foundational  

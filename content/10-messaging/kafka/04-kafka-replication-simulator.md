@@ -1,3 +1,14 @@
+---
+title: Kafka Partition Replication — Interactive Simulator
+topic: 10-messaging
+difficulty: advanced
+time: 30m
+paths:
+  - backend-senior
+  - data
+  - staff
+---
+
 # Kafka Partition Replication — Interactive Simulator
 
 > **Run the live simulator**: [kafka-replication.html](/10-messaging/kafka/kafka-replication.html) — produce messages, kill leaders, watch ISR management in real-time.

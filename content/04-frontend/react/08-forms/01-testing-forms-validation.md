@@ -1,3 +1,12 @@
+---
+title: 06: Testing, Forms & Validation — Deep Reference
+topic: 04-frontend
+difficulty: intermediate
+time: 30m
+paths:
+  - frontend
+---
+
 # 06: Testing, Forms & Validation — Deep Reference
 
 > **Scope**: React Testing Library, Jest, snapshot testing, MSW, integration tests, unit tests, E2E with Playwright/Cypress, component test patterns, form libraries (React Hook Form, Formik, Final Form), controlled/uncontrolled inputs, validation schemas (Zod, Yup, Joi), custom validators, async validation, debounced validation, form state, nested forms, dynamic fields, file uploads, multi-step forms, form security, accessibility testing, coverage thresholds.

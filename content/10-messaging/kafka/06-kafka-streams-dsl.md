@@ -1,3 +1,14 @@
+---
+title: Kafka Streams DSL — Deep Reference
+topic: 10-messaging
+difficulty: advanced
+time: 30m
+paths:
+  - backend-senior
+  - data
+  - staff
+---
+
 # Kafka Streams DSL — Deep Reference
 
 > **Domain**: Stream Processing · **API Level**: DSL + Processor API  

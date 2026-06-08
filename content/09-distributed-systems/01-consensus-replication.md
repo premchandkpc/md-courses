@@ -1,3 +1,14 @@
+---
+title: Distributed Consensus & Replication
+topic: 09-distributed-systems
+difficulty: advanced
+time: 30m
+paths:
+  - backend-senior
+  - system-design
+  - staff
+---
+
 # 🔄 Distributed Consensus & Replication — Complete Deep Dive
 
 

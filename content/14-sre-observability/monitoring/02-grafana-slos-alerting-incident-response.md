@@ -1,3 +1,13 @@
+---
+title: 02 Grafana, SLOs, Alerting, and Incident Response
+topic: 14-sre-observability
+difficulty: advanced
+time: 30m
+paths:
+  - sre
+  - backend-senior
+---
+
 # 02 Grafana, SLOs, Alerting, and Incident Response
 
 **Audience:** FAANG interview candidates, platform engineers, SREs  

@@ -1,3 +1,13 @@
+---
+title: Network Security Deep Dive - L5 Networking
+topic: 15-system-design
+difficulty: advanced
+time: 30m
+paths:
+  - system-design
+  - staff
+---
+
 # Network Security Deep Dive - L5 Networking
 
 > **[🎨 View Interactive Diagram](network-security-architecture.html)** | [← Back to Index](../../systems-index.html)

@@ -1,3 +1,13 @@
+---
+title: JVM Performance Deep Dive
+topic: 18-performance-engineering
+difficulty: advanced
+time: 30m
+paths:
+  - backend-senior
+  - sre
+---
+
 # JVM Performance Deep Dive
 
 

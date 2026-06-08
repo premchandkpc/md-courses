@@ -1,3 +1,10 @@
+---
+title: STUDY PROJECT — COMPLETE REPO AUDIT REPORT
+topic: 08-REPO_AUDIT.md
+difficulty: intermediate
+time: 30m
+---
+
 # 📋 STUDY PROJECT — COMPLETE REPO AUDIT REPORT
 
 **Generated**: 2026-05-27

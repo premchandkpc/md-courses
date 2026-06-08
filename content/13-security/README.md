@@ -1,3 +1,13 @@
+---
+title: Application Security Course Materials
+topic: 13-security
+difficulty: intermediate
+time: 30m
+paths:
+  - sre
+  - backend-senior
+---
+
 # Application Security Course Materials
 
 

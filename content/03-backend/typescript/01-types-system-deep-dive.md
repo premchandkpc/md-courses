@@ -1,3 +1,13 @@
+---
+title: TypeScript Type System: Deep Dive
+topic: 03-backend
+difficulty: intermediate
+time: 30m
+paths:
+  - backend-junior
+  - backend-senior
+---
+
 # TypeScript Type System: Deep Dive
 
 ---

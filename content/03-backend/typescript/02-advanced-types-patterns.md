@@ -1,3 +1,13 @@
+---
+title: Advanced TypeScript Types and Patterns
+topic: 03-backend
+difficulty: intermediate
+time: 30m
+paths:
+  - backend-junior
+  - backend-senior
+---
+
 # Advanced TypeScript Types and Patterns
 
 

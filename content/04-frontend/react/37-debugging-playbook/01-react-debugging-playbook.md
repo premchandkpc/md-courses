@@ -1,3 +1,12 @@
+---
+title: React Debugging Playbook
+topic: 04-frontend
+difficulty: intermediate
+time: 30m
+paths:
+  - frontend
+---
+
 # React Debugging Playbook
 
 ## WHAT

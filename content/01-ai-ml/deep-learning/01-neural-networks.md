@@ -1,3 +1,12 @@
+---
+title: Neural Networks and Deep Learning
+topic: 01-ai-ml
+difficulty: intermediate
+time: 30m
+paths:
+  - ai-ml
+---
+
 # Neural Networks and Deep Learning
 
 

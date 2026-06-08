@@ -1,3 +1,10 @@
+---
+title: Observability & Monitoring — Architecture Blueprint
+topic: 06-OBSERVABILITY.md
+difficulty: intermediate
+time: 30m
+---
+
 # Observability & Monitoring — Architecture Blueprint
 
 > **Status:** v0.1 — Foundational

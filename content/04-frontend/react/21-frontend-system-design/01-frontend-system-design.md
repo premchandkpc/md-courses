@@ -1,3 +1,12 @@
+---
+title: Frontend System Design
+topic: 04-frontend
+difficulty: intermediate
+time: 30m
+paths:
+  - frontend
+---
+
 # Frontend System Design
 
 ## What Is Frontend System Design

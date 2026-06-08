@@ -1,3 +1,14 @@
+---
+title: Kafka Internals
+topic: 10-messaging
+difficulty: advanced
+time: 30m
+paths:
+  - backend-senior
+  - data
+  - staff
+---
+
 # 🔧 Kafka Internals — Complete Deep Dive
 
 **Related**: [Kafka Basics](./01-kafka-basics.md) · [Kafka Patterns](./02-kafka-patterns.md) · [Production Operations](./04-kafka-production-operations.md) · [KRaft Migration](./04-kafka-production-operations.md)

@@ -1,3 +1,14 @@
+---
+title: MongoDB Overview & Document Model
+topic: 08-databases
+difficulty: intermediate
+time: 30m
+paths:
+  - backend-junior
+  - data
+  - backend-senior
+---
+
 # MongoDB Overview & Document Model
 
 ## What is MongoDB?

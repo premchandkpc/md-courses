@@ -1,3 +1,8 @@
+---
+title: Interactive Component Test
+time: 30m
+---
+
 # Interactive Component Test
 
 This file tests the html-live block support.

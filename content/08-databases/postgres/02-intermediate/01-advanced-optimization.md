@@ -1,3 +1,14 @@
+---
+title: PostgreSQL Advanced Optimization & Performance Tuning
+topic: 08-databases
+difficulty: intermediate
+time: 30m
+paths:
+  - backend-junior
+  - data
+  - backend-senior
+---
+
 # PostgreSQL Advanced Optimization & Performance Tuning
 
 ## Query Execution Plans

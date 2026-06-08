@@ -1,3 +1,12 @@
+---
+title: Component Architecture Patterns
+topic: 04-frontend
+difficulty: intermediate
+time: 30m
+paths:
+  - frontend
+---
+
 # Component Architecture Patterns
 
 ## WHAT

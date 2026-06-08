@@ -1,3 +1,13 @@
+---
+title: Java Testing Advanced
+topic: 03-backend
+difficulty: intermediate
+time: 30m
+paths:
+  - backend-junior
+  - backend-senior
+---
+
 # 🧪 Java Testing Advanced — Complete Deep Dive
 
 

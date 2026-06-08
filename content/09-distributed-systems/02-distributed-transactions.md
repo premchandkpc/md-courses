@@ -1,3 +1,14 @@
+---
+title: Distributed Transactions
+topic: 09-distributed-systems
+difficulty: advanced
+time: 30m
+paths:
+  - backend-senior
+  - system-design
+  - staff
+---
+
 # 💰 Distributed Transactions — Complete Deep Dive
 
 > **Scope**: Two-Phase Commit (2PC) protocol and failure modes, Three-Phase Commit (3PC) non-blocking properties, Saga patterns (choreography vs orchestration), XA specification and Java transactions (JTA, JDBC XADataSource), TCC (Try-Confirm-Cancel), Outbox pattern with CDC (Debezium, Kafka Connect), practical pattern selection guide.

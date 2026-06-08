@@ -1,3 +1,13 @@
+---
+title: ️ RDS Advanced Patterns
+topic: 05-cloud
+difficulty: intermediate
+time: 30m
+paths:
+  - sre
+  - backend-senior
+---
+
 # 🗄️ RDS Advanced Patterns — Complete Deep Dive
 
 

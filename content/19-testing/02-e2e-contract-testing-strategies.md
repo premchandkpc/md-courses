@@ -1,3 +1,13 @@
+---
+title: E2E & Contract Testing Strategies
+topic: 19-testing
+difficulty: intermediate
+time: 30m
+paths:
+  - backend-junior
+  - frontend
+---
+
 # E2E & Contract Testing Strategies
 
 

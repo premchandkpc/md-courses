@@ -1,3 +1,13 @@
+---
+title: Kubernetes Storage
+topic: 07-kubernetes
+difficulty: advanced
+time: 30m
+paths:
+  - sre
+  - backend-senior
+---
+
 # 💾 Kubernetes Storage — Complete Deep Dive
 
 

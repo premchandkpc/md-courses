@@ -1,3 +1,12 @@
+---
+title: Bundlers
+topic: 04-frontend
+difficulty: intermediate
+time: 30m
+paths:
+  - frontend
+---
+
 # Bundlers
 
 [🎨 Interactive Visualization](../../../../html/24-bundlers-code-splitting-viz.html)

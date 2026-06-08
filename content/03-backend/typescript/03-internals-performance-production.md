@@ -1,3 +1,13 @@
+---
+title: TypeScript Internals, Performance, and Production Patterns
+topic: 03-backend
+difficulty: intermediate
+time: 30m
+paths:
+  - backend-junior
+  - backend-senior
+---
+
 # TypeScript Internals, Performance, and Production Patterns
 
 

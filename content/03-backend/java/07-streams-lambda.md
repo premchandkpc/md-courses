@@ -1,3 +1,13 @@
+---
+title: ️ Java Streams & Lambda
+topic: 03-backend
+difficulty: intermediate
+time: 30m
+paths:
+  - backend-junior
+  - backend-senior
+---
+
 # ➡️ Java Streams & Lambda — Complete Deep Dive
 
 **Related**: [Collections Framework](/03-backend/java/02-collections-framework.md) · [Generics](/03-backend/java/08-generics.md) · [Exception Handling](/03-backend/java/03-exception-handling.md)

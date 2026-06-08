@@ -1,3 +1,13 @@
+---
+title: Service Decomposition & Domain-Driven Design
+topic: 16-microservices
+difficulty: advanced
+time: 30m
+paths:
+  - backend-senior
+  - staff
+---
+
 # 🧩 Service Decomposition & Domain-Driven Design
 
 **Related**: [Architecture Patterns](/16-microservices/01-architecture-patterns.md) · [API Gateway](/16-microservices/04-api-gateway.md) · [Distributed Transactions](/16-microservices/06-distributed-transactions-saga.md)

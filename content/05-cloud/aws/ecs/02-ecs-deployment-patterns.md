@@ -1,3 +1,13 @@
+---
+title: ECS Deployment & Operations
+topic: 05-cloud
+difficulty: intermediate
+time: 30m
+paths:
+  - sre
+  - backend-senior
+---
+
 # 🐳 ECS Deployment & Operations — Complete Deep Dive
 
 

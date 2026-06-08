@@ -1,3 +1,12 @@
+---
+title: Progressive Web Apps (PWA)
+topic: 04-frontend
+difficulty: intermediate
+time: 30m
+paths:
+  - frontend
+---
+
 # Progressive Web Apps (PWA)
 
 ## Service Worker Lifecycle

@@ -1,3 +1,10 @@
+---
+title: Infrastructure & Deployment — Architecture Blueprint
+topic: 07-INFRASTRUCTURE.md
+difficulty: intermediate
+time: 30m
+---
+
 # Infrastructure & Deployment — Architecture Blueprint
 
 > **Status:** v0.1 — Foundational

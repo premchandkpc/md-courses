@@ -1,3 +1,12 @@
+---
+title: AI-Powered UI: Streaming LLM Responses in React
+topic: 04-frontend
+difficulty: intermediate
+time: 30m
+paths:
+  - frontend
+---
+
 # AI-Powered UI: Streaming LLM Responses in React
 
 ## WHAT

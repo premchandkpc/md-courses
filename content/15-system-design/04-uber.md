@@ -1,3 +1,13 @@
+---
+title: Design Uber
+topic: 15-system-design
+difficulty: advanced
+time: 30m
+paths:
+  - system-design
+  - staff
+---
+
 # 🚗 Design Uber — Complete System Design Deep Dive
 
 > **Scope**: Requirements (10M rides/day, real-time dispatch, location tracking, pricing engine, ETA computation, driver matching, surge pricing), geospatial indexing (Google S2, Uber H3, Geohash), ride dispatch (nearest driver with two-phase accept), supply/demand forecasting, surge pricing, ETA computation, multi-region deployment, failure analysis.

@@ -1,3 +1,13 @@
+---
+title: Design Stripe
+topic: 15-system-design
+difficulty: advanced
+time: 30m
+paths:
+  - system-design
+  - staff
+---
+
 # 💳 Design Stripe — Complete System Design Deep Dive
 
 > **Scope**: Requirements (100M+ API requests/day, 99.99%+ uptime, PCI-DSS compliance, global payments), payment flow, idempotency, fraud detection (Stripe Radar), PCI-DSS compliance, API design, payment state machine, failure analysis, edge cases (race conditions, double charges, idempotency key collisions).

@@ -1,3 +1,13 @@
+---
+title: Microservices Security
+topic: 16-microservices
+difficulty: advanced
+time: 30m
+paths:
+  - backend-senior
+  - staff
+---
+
 # 🔐 Microservices Security — Complete Deep Dive
 
 

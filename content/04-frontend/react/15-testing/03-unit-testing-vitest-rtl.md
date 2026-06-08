@@ -1,6 +1,15 @@
+---
+title: Unit Testing React with Vitest & React Testing Library
+topic: 04-frontend
+difficulty: intermediate
+time: 40
+paths:
+  - frontend
+---
+
 # Unit Testing React with Vitest & React Testing Library
 
-**Level:** Intermediate | **Time:** 40 mins | **Interview:** 🔥 Critical
+mins | **Interview:** 🔥 Critical
 
 ---
 

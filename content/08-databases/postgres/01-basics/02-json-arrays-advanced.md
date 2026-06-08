@@ -1,3 +1,14 @@
+---
+title: PostgreSQL JSON, Arrays & Advanced Features
+topic: 08-databases
+difficulty: intermediate
+time: 30m
+paths:
+  - backend-junior
+  - data
+  - backend-senior
+---
+
 # PostgreSQL JSON, Arrays & Advanced Features
 
 ## JSON vs JSONB

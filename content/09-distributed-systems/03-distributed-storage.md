@@ -1,3 +1,14 @@
+---
+title: Distributed Storage Systems
+topic: 09-distributed-systems
+difficulty: advanced
+time: 30m
+paths:
+  - backend-senior
+  - system-design
+  - staff
+---
+
 # 💾 Distributed Storage Systems — Complete Deep Dive
 
 > **Scope**: GFS/HDFS (architecture, leases, NameNode HA, federation, erasure coding), Ceph (RADOS, CRUSH algorithm, RBD, CephFS), S3 (architecture, consistency, storage classes), DynamoDB (partitioning, GSI/LSI, adaptive capacity, Merkle trees), FoundationDB (SSI, multi-key transactions, layers), TiKV (Raft-based, PD, RocksDB), CockroachDB (range, leaseholder, geo-partitioning), InfluxDB (TSM engine), TimescaleDB (hypertable, compression).

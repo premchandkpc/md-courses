@@ -1,3 +1,13 @@
+---
+title: ️ Amazon EC2
+topic: 05-cloud
+difficulty: intermediate
+time: 30m
+paths:
+  - sre
+  - backend-senior
+---
+
 # 🖥️ Amazon EC2 — Complete Deep Dive
 
 **Related**: [S3](/05-cloud/aws/s3/01-s3-deep-dive.md) · [EBS](#ebs-volumes) · [Auto Scaling](#auto-scaling-groups) · [IAM](/05-cloud/aws/iam/01-iam-deep-dive.md)

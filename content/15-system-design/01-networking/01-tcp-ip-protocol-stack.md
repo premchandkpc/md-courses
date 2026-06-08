@@ -1,3 +1,13 @@
+---
+title: TCP/IP Protocol Stack Deep Dive - L5 Networking
+topic: 15-system-design
+difficulty: advanced
+time: 30m
+paths:
+  - system-design
+  - staff
+---
+
 # TCP/IP Protocol Stack Deep Dive - L5 Networking
 
 > **[🎨 View Interactive Diagram](tcp-ip-architecture.html)** | [🎨 TCP Lifecycle Simulator](../../../html/09-tcp-connection-lifecycle-viz.html) | [← Back to Index](../../systems-index.html)

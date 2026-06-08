@@ -1,3 +1,13 @@
+---
+title: Kubernetes Observability
+topic: 07-kubernetes
+difficulty: advanced
+time: 30m
+paths:
+  - sre
+  - backend-senior
+---
+
 # 📊 Kubernetes Observability — Complete Deep Dive
 
 

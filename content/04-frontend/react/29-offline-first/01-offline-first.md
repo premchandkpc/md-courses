@@ -1,3 +1,12 @@
+---
+title: Offline-First Architecture
+topic: 04-frontend
+difficulty: intermediate
+time: 30m
+paths:
+  - frontend
+---
+
 # Offline-First Architecture
 
 ## IndexedDB

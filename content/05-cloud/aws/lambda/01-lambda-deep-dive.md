@@ -1,3 +1,13 @@
+---
+title: AWS Lambda
+topic: 05-cloud
+difficulty: intermediate
+time: 30m
+paths:
+  - sre
+  - backend-senior
+---
+
 # ⚡ AWS Lambda — Complete Deep Dive
 
 **Related**: [API Gateway](/05-cloud/README.md) · [S3](/05-cloud/aws/s3/01-s3-deep-dive.md) · [CloudWatch](/05-cloud/aws/cloudwatch/01-cloudwatch-deep-dive.md) · [DynamoDB](/08-databases/README.md)

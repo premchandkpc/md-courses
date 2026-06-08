@@ -1,3 +1,13 @@
+---
+title: Java 21-23 Features: The Complete Deep Dive
+topic: 03-backend
+difficulty: intermediate
+time: 30m
+paths:
+  - backend-junior
+  - backend-senior
+---
+
 # Java 21-23 Features: The Complete Deep Dive
 
 > **Java 21 (LTS — Sept 2023)**, **Java 22 (March 2024)**, **Java 23 (Sept 2024)**

@@ -1,3 +1,13 @@
+---
+title: Backpressure Deep Dive - L5 Fundamentals
+topic: 15-system-design
+difficulty: advanced
+time: 30m
+paths:
+  - system-design
+  - staff
+---
+
 # Backpressure Deep Dive - L5 Fundamentals
 
 > **[🎨 View Interactive Diagram](backpressure-architecture.html)** | [← Back to Index](../../systems-index.html)

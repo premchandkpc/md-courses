@@ -1,3 +1,12 @@
+---
+title: React Animation Systems — Production Architecture
+topic: 04-frontend
+difficulty: intermediate
+time: 30m
+paths:
+  - frontend
+---
+
 # React Animation Systems — Production Architecture
 
 ## WHAT

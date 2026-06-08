@@ -1,3 +1,13 @@
+---
+title: Deadlock Prevention & Detection Deep Dive - L5 Operating Systems
+topic: 15-system-design
+difficulty: advanced
+time: 30m
+paths:
+  - system-design
+  - staff
+---
+
 # Deadlock Prevention & Detection Deep Dive - L5 Operating Systems
 
 > **[🎨 View Interactive Diagram](deadlock-architecture.html)** | [← Back to Index](../../systems-index.html)

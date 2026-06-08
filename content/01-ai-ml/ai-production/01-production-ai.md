@@ -1,3 +1,12 @@
+---
+title: Production AI: Engineering for Scale
+topic: 01-ai-ml
+difficulty: intermediate
+time: 30m
+paths:
+  - ai-ml
+---
+
 # Production AI: Engineering for Scale
 
 ## 1. LLM Serving Architecture

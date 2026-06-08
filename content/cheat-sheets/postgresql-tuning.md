@@ -1,3 +1,10 @@
+---
+title: PostgreSQL Tuning Cheat Sheet
+topic: cheat-sheets
+difficulty: intermediate
+time: 30m
+---
+
 # PostgreSQL Tuning Cheat Sheet
 
 

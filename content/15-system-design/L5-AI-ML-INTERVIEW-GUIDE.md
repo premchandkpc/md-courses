@@ -1,3 +1,13 @@
+---
+title: Google L5 AI/ML System Design Interview Masterclass
+topic: 15-system-design
+difficulty: advanced
+time: 30m
+paths:
+  - system-design
+  - staff
+---
+
 # 🔥 Google L5 AI/ML System Design Interview Masterclass
 
 **Real Google L5/L6 level. Deep. Uncompromising.**

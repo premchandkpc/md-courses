@@ -1,3 +1,13 @@
+---
+title: Design WhatsApp
+topic: 15-system-design
+difficulty: advanced
+time: 30m
+paths:
+  - system-design
+  - staff
+---
+
 # 📱 Design WhatsApp — Complete System Design Deep Dive
 
 > **Scope**: Requirements (2B users, 100B messages/day, multi-device, E2EE), architecture (connection management, message flow, group chat, multi-device sync, E2EE with Signal Protocol, media sharing, presence, push notifications, database, scaling strategy), failure analysis (connection storms, hot databases, group explosion).

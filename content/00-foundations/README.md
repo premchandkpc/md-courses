@@ -1,3 +1,12 @@
+---
+title: 00 — Foundations
+topic: 00-foundations
+difficulty: beginner
+time: 30m
+paths:
+  - backend-junior
+---
+
 # 00 — Foundations
 
 

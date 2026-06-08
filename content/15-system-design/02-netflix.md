@@ -1,3 +1,13 @@
+---
+title: Design Netflix
+topic: 15-system-design
+difficulty: advanced
+time: 30m
+paths:
+  - system-design
+  - staff
+---
+
 # 🎬 Design Netflix — Complete System Design Deep Dive
 
 > **Scope**: Requirements (200M subscribers, 100PB+ content, 1000+ device types, adaptive streaming), content pipeline (transcoding, packaging, DRM), CDN (Open Connect, peering), personalization (recommendation pipeline, two-tower DNN, candidate generation/ranking/blending), adaptive streaming algorithms (BBA, MPC, Pensieve), chaos engineering (Chaos Monkey, Simian Army, CAP, FIT), failure analysis.

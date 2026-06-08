@@ -1,3 +1,13 @@
+---
+title: Apache Flink
+topic: 02-data-engineering
+difficulty: intermediate
+time: 30m
+paths:
+  - data
+  - ai-ml
+---
+
 # Apache Flink
 
 

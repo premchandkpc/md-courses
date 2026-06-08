@@ -1,3 +1,12 @@
+---
+title: 04 — Frontend Engineering
+topic: 04-frontend
+difficulty: intermediate
+time: 30m
+paths:
+  - frontend
+---
+
 # 04 — Frontend Engineering
 
 Building user interfaces and client-side applications. The frontend domain spans the React ecosystem, frameworks (Next.js, Remix, SvelteKit), state management, rendering strategies, performance optimization, testing, and production patterns for web applications.

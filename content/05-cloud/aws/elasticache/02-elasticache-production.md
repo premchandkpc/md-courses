@@ -1,3 +1,13 @@
+---
+title: ElastiCache Production Patterns
+topic: 05-cloud
+difficulty: intermediate
+time: 30m
+paths:
+  - sre
+  - backend-senior
+---
+
 # 🚀 ElastiCache Production Patterns — Complete Deep Dive
 
 

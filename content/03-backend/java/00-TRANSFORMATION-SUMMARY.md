@@ -1,3 +1,13 @@
+---
+title: Java Engineering Knowledge Base — Transformation Summary
+topic: 03-backend
+difficulty: intermediate
+time: 30m
+paths:
+  - backend-junior
+  - backend-senior
+---
+
 # Java Engineering Knowledge Base — Transformation Summary
 
 

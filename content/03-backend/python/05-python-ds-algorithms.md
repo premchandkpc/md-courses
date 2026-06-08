@@ -1,3 +1,13 @@
+---
+title: Python Data Structures & Algorithms
+topic: 03-backend
+difficulty: intermediate
+time: 30m
+paths:
+  - backend-junior
+  - backend-senior
+---
+
 # 🧮 Python Data Structures & Algorithms — Complete Deep Dive
 
 

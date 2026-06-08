@@ -1,3 +1,13 @@
+---
+title: Amazon CloudWatch
+topic: 05-cloud
+difficulty: intermediate
+time: 30m
+paths:
+  - sre
+  - backend-senior
+---
+
 # 📊 Amazon CloudWatch — Complete Deep Dive
 
 **Related**: [Lambda](/05-cloud/aws/lambda/01-lambda-deep-dive.md) · [EC2](/05-cloud/aws/ec2/01-ec2-deep-dive.md) · [RDS](/05-cloud/aws/rds/01-rds-deep-dive.md) · [ECS](/05-cloud/aws/ecs/01-ecs-deep-dive.md)

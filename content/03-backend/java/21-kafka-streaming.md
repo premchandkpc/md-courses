@@ -1,3 +1,13 @@
+---
+title: Kafka & Distributed Streaming in Java — Production Engineering
+topic: 03-backend
+difficulty: intermediate
+time: 30m
+paths:
+  - backend-junior
+  - backend-senior
+---
+
 # 🚀 Kafka & Distributed Streaming in Java — Production Engineering
 
 

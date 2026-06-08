@@ -1,3 +1,12 @@
+---
+title: 10: SSR & Next.js — Deep Reference
+topic: 04-frontend
+difficulty: intermediate
+time: 30m
+paths:
+  - frontend
+---
+
 # 10: SSR & Next.js — Deep Reference
 
 > **Scope**: SSR, SSG, ISR, RSC, edge runtime, streaming SSR, PPR, server actions, middleware, routing, data fetching, caching

@@ -1,3 +1,13 @@
+---
+title: ️ JVM Architecture & Class Loading
+topic: 03-backend
+difficulty: intermediate
+time: 30m
+paths:
+  - backend-junior
+  - backend-senior
+---
+
 # ⚙️ JVM Architecture & Class Loading — Complete Deep Dive
 
 

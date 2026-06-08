@@ -1,3 +1,14 @@
+---
+title: Oracle Database Basics
+topic: 08-databases
+difficulty: intermediate
+time: 30m
+paths:
+  - backend-junior
+  - data
+  - backend-senior
+---
+
 # Oracle Database Basics
 
 Oracle Database is an enterprise-grade relational database management system known for scalability, security, and advanced features.

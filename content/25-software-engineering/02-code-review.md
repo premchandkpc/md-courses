@@ -1,3 +1,12 @@
+---
+title: Code Review — Best Practices Guide
+topic: 25-software-engineering
+difficulty: intermediate
+time: 30m
+paths:
+  - backend-junior
+---
+
 # Code Review — Best Practices Guide
 
 Code review is the most effective quality practice in software engineering. A good review catches bugs, improves design, shares knowledge, and builds team consistency.

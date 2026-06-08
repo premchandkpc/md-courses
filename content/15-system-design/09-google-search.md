@@ -1,3 +1,13 @@
+---
+title: Design Google Search
+topic: 15-system-design
+difficulty: advanced
+time: 30m
+paths:
+  - system-design
+  - staff
+---
+
 # 🔍 Design Google Search — Complete System Design Deep Dive
 
 > **Scope**: Requirements (trillions of pages, billions of queries/day, sub-100ms latency), crawling (Caffeine, politeness, freshness), indexing (inverted index, MapReduce pipeline), query processing (parsing, spell correction, intent detection), ranking (PageRank, RankBrain, BERT/MUM, real-time signals), serving (sharding, replication, load balancing), infrastructure (GFS, Bigtable, Spanner, Borg), failure analysis.

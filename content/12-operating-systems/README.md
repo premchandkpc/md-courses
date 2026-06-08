@@ -1,3 +1,13 @@
+---
+title: Operating Systems — Complete Deep Dive ️
+topic: 12-operating-systems
+difficulty: intermediate
+time: 30m
+paths:
+  - backend-junior
+  - sre
+---
+
 # Operating Systems — Complete Deep Dive 🖥️
 
 

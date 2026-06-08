@@ -1,3 +1,13 @@
+---
+title: 02 — Data Engineering
+topic: 02-data-engineering
+difficulty: intermediate
+time: 30m
+paths:
+  - data
+  - ai-ml
+---
+
 # 02 — Data Engineering
 
 Data engineering is the practice of designing, building, and maintaining systems that collect, store, process, and analyze data at scale. It is the foundation upon which analytics, machine learning, and business intelligence are built—without reliable data pipelines, every downstream system fails.

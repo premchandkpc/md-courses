@@ -1,3 +1,14 @@
+---
+title: Oracle Database Overview
+topic: 08-databases
+difficulty: intermediate
+time: 30m
+paths:
+  - backend-junior
+  - data
+  - backend-senior
+---
+
 # Oracle Database Overview
 
 ## What is Oracle Database?

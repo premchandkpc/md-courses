@@ -1,3 +1,14 @@
+---
+title: Redis Internals
+topic: 08-databases
+difficulty: intermediate
+time: 30m
+paths:
+  - backend-junior
+  - data
+  - backend-senior
+---
+
 # 🔴 Redis Internals — Complete Deep Dive
 
 

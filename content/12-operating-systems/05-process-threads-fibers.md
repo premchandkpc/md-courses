@@ -1,3 +1,13 @@
+---
+title: Processes, Threads & Fibers
+topic: 12-operating-systems
+difficulty: intermediate
+time: 30m
+paths:
+  - backend-junior
+  - sre
+---
+
 # 🧵 Processes, Threads & Fibers — Complete Deep Dive
 
 > **Scope**: Process lifecycle (fork/exec/exit/zombie/orphan/init reaping/wait), COW fork internals, clone syscall flags, pthreads/NPTL 1:1 threading, thread-local storage (TLS), goroutine G/M/P scheduler model, fiber/coroutine comparison (stackful vs stackless), NPTL 1:1 vs M:N threading, thread pool patterns, context switch cost comparison across all concurrency primitives.

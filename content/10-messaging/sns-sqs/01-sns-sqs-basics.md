@@ -1,3 +1,14 @@
+---
+title: ️ SNS & SQS
+topic: 10-messaging
+difficulty: advanced
+time: 30m
+paths:
+  - backend-senior
+  - data
+  - staff
+---
+
 # ☁️ SNS & SQS — Complete Deep Dive
 
 > Comprehensive reference for Amazon SQS and SNS — every major concept, feature, and integration pattern.

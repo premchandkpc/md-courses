@@ -1,0 +1,6 @@
+{
+  "name": "@md-courses/legacy-viewer",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Vanilla JS SPA viewer"
+}

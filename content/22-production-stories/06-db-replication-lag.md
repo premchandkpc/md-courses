@@ -1,3 +1,13 @@
+---
+title: Database Replication Lag Incidents — Production Incident Deep Dive
+topic: 22-production-stories
+difficulty: advanced
+time: 30m
+paths:
+  - staff
+  - sre
+---
+
 # 📊 Database Replication Lag Incidents — Production Incident Deep Dive
 
 > **Scope:** Real-world database replication failure patterns covering read-after-write inconsistencies, replication delay during spikes, replication slot accumulation leading to disk full, network partition gap, and GTID inconsistency on failover. Each scenario covers MySQL and PostgreSQL replication with detection, investigation, root cause, mitigation, and permanent fixes.

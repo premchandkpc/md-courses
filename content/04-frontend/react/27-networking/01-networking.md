@@ -1,3 +1,12 @@
+---
+title: Networking
+topic: 04-frontend
+difficulty: intermediate
+time: 30m
+paths:
+  - frontend
+---
+
 # Networking
 
 ## Overview

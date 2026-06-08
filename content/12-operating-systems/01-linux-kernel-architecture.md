@@ -1,3 +1,13 @@
+---
+title: Linux Kernel Architecture
+topic: 12-operating-systems
+difficulty: intermediate
+time: 30m
+paths:
+  - backend-junior
+  - sre
+---
+
 # 🐧 Linux Kernel Architecture — Complete Deep Dive
 
 

@@ -1,3 +1,14 @@
+---
+title: Redis
+topic: 08-databases
+difficulty: intermediate
+time: 30m
+paths:
+  - backend-junior
+  - data
+  - backend-senior
+---
+
 # 🚀 Redis — Complete Deep Dive
 
 

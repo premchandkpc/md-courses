@@ -1,3 +1,13 @@
+---
+title: Spring Boot Advanced
+topic: 03-backend
+difficulty: intermediate
+time: 30m
+paths:
+  - backend-junior
+  - backend-senior
+---
+
 # 🌱 Spring Boot Advanced — Complete Deep Dive
 
 

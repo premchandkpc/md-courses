@@ -1,3 +1,13 @@
+---
+title: Java Collections Framework
+topic: 03-backend
+difficulty: intermediate
+time: 30m
+paths:
+  - backend-junior
+  - backend-senior
+---
+
 # 📚 Java Collections Framework — Complete Deep Dive
 
 **Related**: [OOP Concepts](/03-backend/java/01-oop-concepts.md) · [Generics](/03-backend/java/08-generics.md) · [Streams & Lambda](/03-backend/java/07-streams-lambda.md) · [Exception Handling](/03-backend/java/03-exception-handling.md)

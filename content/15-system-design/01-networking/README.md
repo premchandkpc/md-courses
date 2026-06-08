@@ -1,3 +1,13 @@
+---
+title: Networking Deep Dive
+topic: 15-system-design
+difficulty: advanced
+time: 30m
+paths:
+  - system-design
+  - staff
+---
+
 # Networking Deep Dive
 
 Network fundamentals: how data moves between systems at scale.

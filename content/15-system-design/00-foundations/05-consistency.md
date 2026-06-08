@@ -1,3 +1,13 @@
+---
+title: Consistency Models Deep Dive - L5 Fundamentals
+topic: 15-system-design
+difficulty: advanced
+time: 30m
+paths:
+  - system-design
+  - staff
+---
+
 # Consistency Models Deep Dive - L5 Fundamentals
 
 > **[🎨 View Interactive Diagram](consistency-architecture.html)** | [← Back to Index](../../systems-index.html)

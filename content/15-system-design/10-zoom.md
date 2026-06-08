@@ -1,3 +1,13 @@
+---
+title: Design Zoom
+topic: 15-system-design
+difficulty: advanced
+time: 30m
+paths:
+  - system-design
+  - staff
+---
+
 # 📹 Design Zoom — Complete System Design Deep Dive
 
 > **Scope**: Requirements (300M+ daily meeting participants, global real-time media), architecture (SFU vs MCU comparison), meeting lifecycle (create, join, leave, record), media pipeline (WebRTC, codec selection H.264/VP9/AV1, adaptive bitrate), signaling (join requests, room state, participant events), scaling (global media server network, cascading SFUs), reliability (PSTN fallback, graceful degradation), security (E2EE, encryption key management), failure analysis.

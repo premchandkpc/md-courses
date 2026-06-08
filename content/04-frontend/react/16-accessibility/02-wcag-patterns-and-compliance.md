@@ -1,6 +1,15 @@
+---
+title: WCAG 2.1: Compliance Patterns & Real-World Implementation
+topic: 04-frontend
+difficulty: intermediate
+time: 45
+paths:
+  - frontend
+---
+
 # WCAG 2.1: Compliance Patterns & Real-World Implementation
 
-**Level:** Intermediate-Advanced | **Time:** 45 mins | **Interview:** 🔥 Critical
+mins | **Interview:** 🔥 Critical
 
 ---
 

@@ -1,3 +1,12 @@
+---
+title: ️ Backend Engineer Learning Roadmap
+topic: 21-roadmaps
+difficulty: beginner
+time: 30m
+paths:
+  - backend-junior
+---
+
 # 🛣️ Backend Engineer Learning Roadmap — Complete Deep Dive
 
 > **Scope:** A tiered, self-paced curriculum spanning 5 phases from absolute beginner to Staff/Principal Engineer. Each phase covers programming fundamentals, systems knowledge, operations, architecture, and soft skills. Estimated time per phase, key topics, recommended books, projects, and success metrics are included.

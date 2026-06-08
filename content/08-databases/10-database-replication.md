@@ -1,8 +1,19 @@
+---
+title: Topic 10: Database Replication & Multi-Master Architectures
+topic: 08-databases
+difficulty: intermediate
+time: 60
+paths:
+  - backend-junior
+  - data
+  - backend-senior
+---
+
 # Topic 10: Database Replication & Multi-Master Architectures
 
 [🎨 Interactive Visualization](../../html/10-database-replication-sync-viz.html)
 
-**Level:** Intermediate-Advanced | **Time:** 60 mins | **Production Critical:** ⭐⭐⭐⭐
+mins | **Production Critical:** ⭐⭐⭐⭐
 
 ---
 

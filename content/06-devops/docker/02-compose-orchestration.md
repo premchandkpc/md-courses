@@ -1,3 +1,13 @@
+---
+title: Docker Compose & Orchestration
+topic: 06-devops
+difficulty: intermediate
+time: 30m
+paths:
+  - sre
+  - backend-junior
+---
+
 # 🐳 Docker Compose & Orchestration — Complete Deep Dive
 
 **Related**: [Container Basics](/06-devops/docker/01-container-basics.md) · [Kubernetes Basics](/07-kubernetes/01-kubernetes-basics.md) · [Compose Spec](https://compose-spec.io)

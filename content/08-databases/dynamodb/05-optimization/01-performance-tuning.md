@@ -1,3 +1,14 @@
+---
+title: DynamoDB Performance Tuning & Optimization
+topic: 08-databases
+difficulty: intermediate
+time: 30m
+paths:
+  - backend-junior
+  - data
+  - backend-senior
+---
+
 # DynamoDB Performance Tuning & Optimization
 
 ## Identifying Performance Issues

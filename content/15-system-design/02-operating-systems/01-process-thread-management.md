@@ -1,3 +1,13 @@
+---
+title: Process & Thread Management Deep Dive - L5 Operating Systems
+topic: 15-system-design
+difficulty: advanced
+time: 30m
+paths:
+  - system-design
+  - staff
+---
+
 # Process & Thread Management Deep Dive - L5 Operating Systems
 
 > **[🎨 View Interactive Diagram](process-thread-architecture.html)** | [← Back to Index](../../systems-index.html)

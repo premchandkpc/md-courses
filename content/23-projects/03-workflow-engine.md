@@ -1,3 +1,12 @@
+---
+title: Workflow Engine — Production-Grade Design
+topic: 23-projects
+difficulty: advanced
+time: 30m
+paths:
+  - staff
+---
+
 # Workflow Engine — Production-Grade Design
 
 

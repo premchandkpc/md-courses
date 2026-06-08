@@ -1,3 +1,13 @@
+---
+title: Linux Observability & Debugging
+topic: 12-operating-systems
+difficulty: intermediate
+time: 30m
+paths:
+  - backend-junior
+  - sre
+---
+
 # 🔍 Linux Observability & Debugging — Complete Deep Dive
 
 

@@ -1,3 +1,13 @@
+---
+title: ️ Advanced Kubernetes Patterns
+topic: 07-kubernetes
+difficulty: advanced
+time: 30m
+paths:
+  - sre
+  - backend-senior
+---
+
 # ☸️ Advanced Kubernetes Patterns — Complete Deep Dive
 
 **Related**: [Kubernetes Basics](/07-kubernetes/01-kubernetes-basics.md) · [Docker Compose](/06-devops/docker/02-compose-orchestration.md) · [K8s Gateway API](https://gateway-api.sigs.k8s.io)

@@ -1,3 +1,13 @@
+---
+title: Kubernetes Scheduling Algorithm — Interactive Simulator
+topic: 07-kubernetes
+difficulty: advanced
+time: 30m
+paths:
+  - sre
+  - backend-senior
+---
+
 # Kubernetes Scheduling Algorithm — Interactive Simulator
 
 > **Run the live simulator**: [kubernetes-scheduling.html](/07-kubernetes/kubernetes-scheduling.html) — add pods, watch the scheduler score and bind them to nodes interactively.

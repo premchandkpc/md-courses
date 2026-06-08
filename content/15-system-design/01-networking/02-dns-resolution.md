@@ -1,3 +1,13 @@
+---
+title: DNS Resolution Deep Dive - L5 Networking
+topic: 15-system-design
+difficulty: advanced
+time: 30m
+paths:
+  - system-design
+  - staff
+---
+
 # DNS Resolution Deep Dive - L5 Networking
 
 > **[🎨 View Interactive Diagram](dns-architecture.html)** | [🎨 DNS Caching Simulator](../../../html/08-dns-resolution-caching-viz.html) | [← Back to Index](../../systems-index.html)

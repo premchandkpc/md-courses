@@ -1,3 +1,13 @@
+---
+title: AWS IAM
+topic: 05-cloud
+difficulty: intermediate
+time: 30m
+paths:
+  - sre
+  - backend-senior
+---
+
 # 🔑 AWS IAM — Complete Deep Dive
 
 **Related**: [S3](/05-cloud/aws/s3/01-s3-deep-dive.md) · [EC2](/05-cloud/aws/ec2/01-ec2-deep-dive.md) · [Lambda](/05-cloud/aws/lambda/01-lambda-deep-dive.md) · [CloudWatch](/05-cloud/aws/cloudwatch/01-cloudwatch-deep-dive.md)

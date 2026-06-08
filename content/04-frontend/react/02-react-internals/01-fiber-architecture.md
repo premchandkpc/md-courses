@@ -1,3 +1,12 @@
+---
+title: React Fiber Architecture
+topic: 04-frontend
+difficulty: intermediate
+time: 30m
+paths:
+  - frontend
+---
+
 # React Fiber Architecture — Complete Deep Dive
 
 ## WHAT

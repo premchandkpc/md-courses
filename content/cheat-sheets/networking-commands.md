@@ -1,3 +1,10 @@
+---
+title: Networking Commands Cheat Sheet
+topic: cheat-sheets
+difficulty: intermediate
+time: 30m
+---
+
 # Networking Commands Cheat Sheet
 
 

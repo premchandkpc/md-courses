@@ -1,3 +1,13 @@
+---
+title: Interview Preparation
+topic: 20-interviews
+difficulty: advanced
+time: 30m
+paths:
+  - system-design
+  - backend-senior
+---
+
 # Interview Preparation — Complete Guide 🎯
 
 Technical interview preparation is a structured skill — combining deep system design knowledge, algorithmic proficiency, behavioral storytelling, and domain-specific expertise (Java, distributed systems).

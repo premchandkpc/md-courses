@@ -1,3 +1,12 @@
+---
+title: 07: Production Issues — Deep Reference
+topic: 04-frontend
+difficulty: intermediate
+time: 30m
+paths:
+  - frontend
+---
+
 # 07: Production Issues — Deep Reference
 
 > **Scope**: Error boundaries, error reporting (Sentry), performance monitoring (Web Vitals), bundle analysis, tree shaking, code splitting, CDN caching, service workers, PWA offline, hydration errors, memory leaks, infinite render loops, runtime error tracking, unhandled promise rejections, render-blocking resources, third-party script impact, loading states, progressive enhancement, graceful degradation, A/B testing, feature flags, canary releases, monitoring dashboards, alerting.

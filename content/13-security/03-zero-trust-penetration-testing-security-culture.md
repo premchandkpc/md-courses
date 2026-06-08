@@ -1,3 +1,13 @@
+---
+title: Zero Trust, Penetration Testing & Security Culture: Deep Dive
+topic: 13-security
+difficulty: intermediate
+time: 30m
+paths:
+  - sre
+  - backend-senior
+---
+
 # Zero Trust, Penetration Testing & Security Culture: Deep Dive
 
 

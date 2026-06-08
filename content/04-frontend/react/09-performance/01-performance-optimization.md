@@ -1,3 +1,12 @@
+---
+title: 09: Performance Optimization — Deep Reference
+topic: 04-frontend
+difficulty: intermediate
+time: 30m
+paths:
+  - frontend
+---
+
 # 09: Performance Optimization — Deep Reference
 
 [🎨 Interactive Visualization](../../../../html/09-performance-optimization-viz.html)

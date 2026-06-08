@@ -1,3 +1,14 @@
+---
+title: Redis Memory Eviction Policies — Interactive Simulator
+topic: 08-databases
+difficulty: intermediate
+time: 30m
+paths:
+  - backend-junior
+  - data
+  - backend-senior
+---
+
 # Redis Memory Eviction Policies — Interactive Simulator
 
 > **Run the live simulator**: [redis-eviction.html](/08-databases/redis-eviction.html) — add keys with different TTLs, fill memory, and watch eviction policies in action.

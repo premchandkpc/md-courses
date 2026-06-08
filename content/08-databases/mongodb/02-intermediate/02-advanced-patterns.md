@@ -1,3 +1,14 @@
+---
+title: MongoDB Advanced Patterns & Optimization
+topic: 08-databases
+difficulty: intermediate
+time: 30m
+paths:
+  - backend-junior
+  - data
+  - backend-senior
+---
+
 # MongoDB Advanced Patterns & Optimization
 
 ## Bulk Operations for Performance

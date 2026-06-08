@@ -1,3 +1,13 @@
+---
+title: ️ PostgreSQL Production Crash — Production Incident Deep Dive
+topic: 22-production-stories
+difficulty: advanced
+time: 30m
+paths:
+  - staff
+  - sre
+---
+
 # 🗄️ PostgreSQL Production Crash — Production Incident Deep Dive
 
 > **Scope:** Real-world PostgreSQL failure patterns covering transaction ID wraparound, table/index bloat, replication lag disasters, OOM killer scenarios, and cascading failures from misconfigured autovacuum. Each scenario covers detection, investigation, root cause, mitigation, and permanent fixes.

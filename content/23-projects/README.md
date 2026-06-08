@@ -1,3 +1,12 @@
+---
+title: Project Architectures — Complete Blueprint Catalog
+topic: 23-projects
+difficulty: advanced
+time: 30m
+paths:
+  - staff
+---
+
 # Project Architectures — Complete Blueprint Catalog 📐
 
 

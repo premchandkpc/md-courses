@@ -1,3 +1,12 @@
+---
+title: Statistics and Probability for AI/ML
+topic: 01-ai-ml
+difficulty: intermediate
+time: 30m
+paths:
+  - ai-ml
+---
+
 # Statistics and Probability for AI/ML
 
 

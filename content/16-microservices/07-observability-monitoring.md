@@ -1,3 +1,13 @@
+---
+title: Microservices Observability
+topic: 16-microservices
+difficulty: advanced
+time: 30m
+paths:
+  - backend-senior
+  - staff
+---
+
 # 📊 Microservices Observability — Complete Deep Dive
 
 **Simplest Mental Model**: Observability = ask any question about system state without deploying new code. Metrics tell you *what* is slow, traces tell you *where*, logs tell you *why*.

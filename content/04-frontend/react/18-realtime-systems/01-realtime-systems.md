@@ -1,3 +1,12 @@
+---
+title: Real-Time Systems in React
+topic: 04-frontend
+difficulty: intermediate
+time: 30m
+paths:
+  - frontend
+---
+
 # Real-Time Systems in React
 
 ## WHAT

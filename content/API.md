@@ -1,3 +1,8 @@
+---
+title: API Documentation — Knowledge Universe Server
+time: 30m
+---
+
 # API Documentation — Knowledge Universe Server
 
 **Base URL:** `http://localhost:3000/api`

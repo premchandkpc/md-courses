@@ -1,8 +1,19 @@
+---
+title: Topic 08: Connection Pooling & Resource Management
+topic: 08-databases
+difficulty: intermediate
+time: 45
+paths:
+  - backend-junior
+  - data
+  - backend-senior
+---
+
 # Topic 08: Connection Pooling & Resource Management
 
 [🎨 Interactive Visualization](../../html/08-connection-pooling-viz.html)
 
-**Level:** Intermediate-Advanced | **Time:** 45 mins | **Production Critical:** ⭐⭐⭐
+mins | **Production Critical:** ⭐⭐⭐
 
 ---
 

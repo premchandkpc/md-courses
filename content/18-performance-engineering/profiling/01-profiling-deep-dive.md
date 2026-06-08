@@ -1,3 +1,13 @@
+---
+title: Profiling Deep Dive
+topic: 18-performance-engineering
+difficulty: advanced
+time: 30m
+paths:
+  - backend-senior
+  - sre
+---
+
 # Profiling Deep Dive
 
 

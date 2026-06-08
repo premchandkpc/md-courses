@@ -1,3 +1,12 @@
+---
+title: React Security Guide
+topic: 04-frontend
+difficulty: intermediate
+time: 30m
+paths:
+  - frontend
+---
+
 # React Security Guide
 
 ## WHAT

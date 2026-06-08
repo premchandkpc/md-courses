@@ -1,3 +1,14 @@
+---
+title: ️ SNS & SQS Production Patterns
+topic: 10-messaging
+difficulty: advanced
+time: 30m
+paths:
+  - backend-senior
+  - data
+  - staff
+---
+
 # ☁️ SNS & SQS Production Patterns — Complete Deep Dive
 
 > Battle-tested patterns for reliable, scalable, cost-effective messaging with SNS and SQS in production.

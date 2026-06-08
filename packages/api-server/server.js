@@ -19,6 +19,24 @@ const ROOT = path.resolve(__dirname, '../..');
 const DATA_DIR = path.join(ROOT, 'content');
 const HTML_FILE = path.join(ROOT, 'packages/legacy-viewer/read.html');
 
+// ── File cache — built once at startup, invalidated every 5 minutes ──
+let fileCache = null;
+let fileCacheTime = 0;
+const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+
+function getCachedFileMap() {
+  const now = Date.now();
+  if (fileCache && (now - fileCacheTime) < CACHE_TTL) return fileCache;
+  fileCache = getFileMap(DATA_DIR);
+  fileCacheTime = now;
+  return fileCache;
+}
+
+function invalidateCache() {
+  fileCache = null;
+  fileCacheTime = 0;
+}
+
 const MIME_TYPES = {
   '.html': 'text/html; charset=utf-8',
   '.css':  'text/css; charset=utf-8',
@@ -156,9 +174,19 @@ function serveApi(res, url, method) {
     return serveJson(res, { tree });
   }
 
+  // GET /api/health — health check
+  if (pathname === '/api/health' && method === 'GET') {
+    return serveJson(res, {
+      status: 'ok',
+      uptime: process.uptime(),
+      cacheAge: fileCache ? Math.floor((Date.now() - fileCacheTime) / 1000) + 's' : 'cold',
+      port: PORT,
+    });
+  }
+
   // GET /api/files — flat list of all files with metadata
   if (pathname === '/api/files' && method === 'GET') {
-    const map = getFileMap(DATA_DIR);
+    const map = getCachedFileMap();
     const list = Object.entries(map).map(([path, data]) => ({
       path,
       name: path.split('/').pop().replace(/\.md$/, ''),
@@ -199,7 +227,7 @@ function serveApi(res, url, method) {
     const query = parsed.searchParams.get('q')?.toLowerCase() || '';
     if (!query) return serveJson(res, { results: [] });
 
-    const map = getFileMap(DATA_DIR);
+    const map = getCachedFileMap();
     const results = [];
 
     for (const [filePath, data] of Object.entries(map)) {
@@ -227,9 +255,71 @@ function serveApi(res, url, method) {
     return serveJson(res, { results, query, count: results.length });
   }
 
+  // GET /api/graph — knowledge graph (nodes + edges)
+  if (pathname === '/api/graph' && method === 'GET') {
+    const map = getCachedFileMap();
+    const nodes = [];
+    const edges = [];
+    const nodeSet = new Set();
+    const dirSet = new Set();
+
+    for (const [filePath] of Object.entries(map)) {
+      const parts = filePath.split('/');
+      const name = parts.pop().replace(/\.(md|html)$/, '');
+      const dir = parts.join('/');
+      const id = filePath.replace(/\.(md|html)$/, '');
+
+      if (!nodeSet.has(id)) {
+        nodeSet.add(id);
+        nodes.push({
+          id,
+          name,
+          path: filePath,
+          dir,
+          type: parts.length > 0 ? 'file' : 'root',
+          group: dir.split('/')[0] || 'root',
+        });
+      }
+
+      // Edge: parent directory → file
+      if (dir && !dirSet.has(dir)) {
+        dirSet.add(dir);
+        nodes.push({
+          id: dir,
+          name: dir.split('/').pop(),
+          path: dir,
+          type: 'dir',
+          group: dir.split('/')[0] || 'root',
+        });
+      }
+      if (dir && nodeSet.has(dir)) {
+        edges.push({ source: dir, target: id, label: 'contains' });
+      }
+    }
+
+    // Cross-reference edges from CONNECTION_MAP.md
+    const cmapPath = 'CONNECTION_MAP.md';
+    const cmap = map[cmapPath];
+    if (cmap) {
+      const linkRe = /\[([^\]]+)\]\(([^)]+)\)/g;
+      let m;
+      while ((m = linkRe.exec(cmap.content)) !== null) {
+        const target = m[2].replace(/\.(md|html)$/, '').replace(/^\//, '');
+        for (const node of nodes) {
+          if (node.id === target || node.id.endsWith('/' + target)) {
+            edges.push({ source: cmapPath.replace(/\.md$/, ''), target: node.id, label: 'cross-ref' });
+            break;
+          }
+        }
+      }
+    }
+
+    return serveJson(res, { nodes, edges, nodeCount: nodes.length, edgeCount: edges.length });
+  }
+
   // GET /api/stats — aggregate stats
   if (pathname === '/api/stats' && method === 'GET') {
-    const map = getFileMap(DATA_DIR);
+    const map = getCachedFileMap();
     let totalLines = 0;
     let totalBytes = 0;
     let mdCount = 0;
@@ -357,7 +447,9 @@ server.listen(PORT, '0.0.0.0', () => {
 ║  ├─ /api/files   — flat file list          ║
 ║  ├─ /api/file    — file content            ║
 ║  ├─ /api/search  — full-text search        ║
-║  └─ /api/stats   — aggregate statistics    ║
+║  ├─ /api/graph   — knowledge graph         ║
+║  ├─ /api/stats   — aggregate statistics    ║
+║  └─ /api/health  — health check            ║
 ╚══════════════════════════════════════════════╝
 `);
 });

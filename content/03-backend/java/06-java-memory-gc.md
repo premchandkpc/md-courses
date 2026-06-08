@@ -1,3 +1,13 @@
+---
+title: ️ Java Memory Model & Garbage Collection
+topic: 03-backend
+difficulty: intermediate
+time: 30m
+paths:
+  - backend-junior
+  - backend-senior
+---
+
 # 🗑️ Java Memory Model & Garbage Collection — Complete Deep Dive
 
 

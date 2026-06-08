@@ -1,3 +1,14 @@
+---
+title: ️ PostgreSQL Tuning & Troubleshooting
+topic: 08-databases
+difficulty: intermediate
+time: 30m
+paths:
+  - backend-junior
+  - data
+  - backend-senior
+---
+
 # 🛠️ PostgreSQL Tuning & Troubleshooting — Complete Deep Dive
 
 

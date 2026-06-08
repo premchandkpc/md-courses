@@ -1,3 +1,13 @@
+---
+title: IAM Advanced Patterns
+topic: 05-cloud
+difficulty: intermediate
+time: 30m
+paths:
+  - sre
+  - backend-senior
+---
+
 # 🔐 IAM Advanced Patterns — Complete Deep Dive
 
 

@@ -1,3 +1,13 @@
+---
+title: 03 OpenTelemetry, Tracing, and Observability
+topic: 14-sre-observability
+difficulty: advanced
+time: 30m
+paths:
+  - sre
+  - backend-senior
+---
+
 # 03 OpenTelemetry, Tracing, and Observability
 
 **Audience:** FAANG interview candidates, platform engineers, SREs  

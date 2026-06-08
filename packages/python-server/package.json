@@ -1,0 +1,6 @@
+{
+  "name": "@md-courses/python-server",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Python API server (stdlib only)"
+}

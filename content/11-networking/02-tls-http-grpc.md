@@ -1,3 +1,13 @@
+---
+title: TLS, HTTP & gRPC
+topic: 11-networking
+difficulty: intermediate
+time: 30m
+paths:
+  - backend-junior
+  - sre
+---
+
 # 🔒 TLS, HTTP & gRPC — Complete Deep Dive
 
 > **Scope**: TLS 1.3 handshake (1-RTT, 0-RTT, PSK, HRR), key schedule, cipher suites, certificate chain, ALPN/SNI, session resumption, HTTP/1.1 keep-alive/pipelining, HTTP/2 binary framing/multiplexing/HPACK/flow control/HOL blocking, HTTP/3 QUIC, gRPC protobuf/streaming/flow control/retry/hedging — complete coverage of the modern application security and transport layer.

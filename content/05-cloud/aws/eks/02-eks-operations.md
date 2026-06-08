@@ -1,3 +1,13 @@
+---
+title: ️ EKS Operations
+topic: 05-cloud
+difficulty: intermediate
+time: 30m
+paths:
+  - sre
+  - backend-senior
+---
+
 # ☸️ EKS Operations — Complete Deep Dive
 
 

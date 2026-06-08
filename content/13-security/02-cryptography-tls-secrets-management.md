@@ -1,3 +1,13 @@
+---
+title: Cryptography, TLS, and Secrets Management: Deep Dive
+topic: 13-security
+difficulty: intermediate
+time: 30m
+paths:
+  - sre
+  - backend-senior
+---
+
 # Cryptography, TLS, and Secrets Management: Deep Dive
 
 

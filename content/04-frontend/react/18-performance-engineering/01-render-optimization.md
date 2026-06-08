@@ -1,3 +1,12 @@
+---
+title: React Render Optimization — Profiling & Debugging
+topic: 04-frontend
+difficulty: intermediate
+time: 30m
+paths:
+  - frontend
+---
+
 # React Render Optimization — Profiling & Debugging
 
 > 🎮 **Interactive**: [Re-render Tree Visualizer](/04-frontend/react/39-visual-simulations/rerender-tree.html) — see which components re-render on state change, toggle `React.memo` live

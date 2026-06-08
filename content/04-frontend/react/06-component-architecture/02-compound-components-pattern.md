@@ -1,8 +1,17 @@
+---
+title: Compound Components Pattern: Building Flexible Component APIs
+topic: 04-frontend
+difficulty: intermediate
+time: 45
+paths:
+  - frontend
+---
+
 # Compound Components Pattern: Building Flexible Component APIs
 
 [🎨 Interactive Visualization](../../../../html/06-compound-components-pattern-viz.html)
 
-**Level:** Intermediate-Advanced | **Time:** 45 mins | **Interview:** 🔥 Critical
+mins | **Interview:** 🔥 Critical
 
 ---
 

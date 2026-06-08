@@ -1,3 +1,13 @@
+---
+title: ️ Amazon EKS
+topic: 05-cloud
+difficulty: intermediate
+time: 30m
+paths:
+  - sre
+  - backend-senior
+---
+
 # ☸️ Amazon EKS — Complete Deep Dive
 
 **Related**: [ECS](/05-cloud/aws/ecs/01-ecs-deep-dive.md) · [EC2](/05-cloud/aws/ec2/01-ec2-deep-dive.md) · [IAM](/05-cloud/aws/iam/01-iam-deep-dive.md) · [ElastiCache](/05-cloud/aws/elasticache/01-elasticache-deep-dive.md)

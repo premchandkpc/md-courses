@@ -1,3 +1,13 @@
+---
+title: 03 — Backend Engineering
+topic: 03-backend
+difficulty: intermediate
+time: 30m
+paths:
+  - backend-junior
+  - backend-senior
+---
+
 # 03 — Backend Engineering
 
 The art and science of building server-side systems that power applications—APIs, services, data processing, authentication, and integration. Backend engineering covers language-specific mastery, API design, architecture patterns, performance optimization, and production operations.

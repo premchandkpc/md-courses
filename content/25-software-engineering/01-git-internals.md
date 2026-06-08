@@ -1,3 +1,12 @@
+---
+title: Git Internals
+topic: 25-software-engineering
+difficulty: intermediate
+time: 30m
+paths:
+  - backend-junior
+---
+
 # Git Internals — Deep Dive
 
 

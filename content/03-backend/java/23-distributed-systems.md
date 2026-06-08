@@ -1,3 +1,13 @@
+---
+title: Distributed Systems Engineering — Java Production Patterns
+topic: 03-backend
+difficulty: intermediate
+time: 30m
+paths:
+  - backend-junior
+  - backend-senior
+---
+
 # 🌐 Distributed Systems Engineering — Java Production Patterns
 
 

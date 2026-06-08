@@ -1,3 +1,14 @@
+---
+title: CAP Theorem & Consistency Models
+topic: 09-distributed-systems
+difficulty: advanced
+time: 30m
+paths:
+  - backend-senior
+  - system-design
+  - staff
+---
+
 # 🌍 CAP Theorem & Consistency Models — Complete Deep Dive
 
 > **Scope**: Formal proof of CAP (Brewer's conjecture, Gilbert-Lynch proof), tradeoffs (CP vs AP, PACELC extension), consistency model hierarchy from linearizability to eventual consistency, CRDT theory and practice, real-world consistency in Dynamo, Spanner, Cassandra, ZooKeeper, etcd, Cosmos DB, CockroachDB, MongoDB, Kafka, S3.

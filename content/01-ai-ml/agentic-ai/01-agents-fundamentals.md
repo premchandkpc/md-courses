@@ -1,3 +1,12 @@
+---
+title: AI Agents: Fundamentals and Engineering
+topic: 01-ai-ml
+difficulty: intermediate
+time: 30m
+paths:
+  - ai-ml
+---
+
 # AI Agents: Fundamentals and Engineering
 
 ## 1. AI Agent Architecture

@@ -1,3 +1,14 @@
+---
+title: RabbitMQ Patterns
+topic: 10-messaging
+difficulty: advanced
+time: 30m
+paths:
+  - backend-senior
+  - data
+  - staff
+---
+
 # 🐇 RabbitMQ Patterns — Complete Deep Dive
 
 **Related**: [RabbitMQ Basics](/10-messaging/rabbitmq/01-rabbitmq-basics.md) · [Enterprise Integration Patterns](https://www.enterpriseintegrationpatterns.com/) · [SNS & SQS Patterns](/10-messaging/sns-sqs/02-sns-sqs-patterns.md)

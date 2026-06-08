@@ -1,3 +1,10 @@
+---
+title: Interactive Visualization Engine — Architecture Blueprint
+topic: 03-VISUALIZATION_ENGINE.md
+difficulty: intermediate
+time: 30m
+---
+
 # 🎨 Interactive Visualization Engine — Architecture Blueprint
 
 > **Status:** v0.1 — Foundational  

@@ -1,3 +1,13 @@
+---
+title: SRE & Observability
+topic: 14-sre-observability
+difficulty: advanced
+time: 30m
+paths:
+  - sre
+  - backend-senior
+---
+
 # SRE & Observability — Complete Deep Dive 📊
 
 Site Reliability Engineering applies **software engineering to operations**. Observability is the ability to understand system internals from external outputs — answering **why** something is happening, not just **what**.

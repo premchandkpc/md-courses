@@ -1,3 +1,12 @@
+---
+title: Chess Game — Low Level Design
+topic: 24-low-level-design
+difficulty: intermediate
+time: 30m
+paths:
+  - backend-junior
+---
+
 # Chess Game — Low Level Design
 
 Design a two-player chess game with complete move validation, game state management, and check/checkmate detection.

@@ -1,3 +1,13 @@
+---
+title: 05 — Cloud Platforms
+topic: 05-cloud
+difficulty: intermediate
+time: 30m
+paths:
+  - sre
+  - backend-senior
+---
+
 # 05 — Cloud Platforms
 
 The knowledge base for designing, deploying, and operating infrastructure on public cloud providers. Covers AWS (deep), GCP, Azure, multi-cloud strategies, cloud-native design patterns, cost optimization, and migration approaches.

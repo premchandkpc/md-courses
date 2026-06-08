@@ -1,3 +1,10 @@
+---
+title: ️ Knowledge Graph Engine — Architecture Blueprint
+topic: 01-KNOWLEDGE_GRAPH.md
+difficulty: intermediate
+time: 30m
+---
+
 # 🕸️ Knowledge Graph Engine — Architecture Blueprint
 
 > **Status:** v0.1 — Foundational  

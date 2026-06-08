@@ -1,3 +1,12 @@
+---
+title: 04: State Management — Deep Reference
+topic: 04-frontend
+difficulty: intermediate
+time: 30m
+paths:
+  - frontend
+---
+
 # 04: State Management — Deep Reference
 
 [🎨 Interactive Visualization](../../../../html/05-state-management-patterns-viz.html)

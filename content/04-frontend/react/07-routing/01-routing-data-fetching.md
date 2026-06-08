@@ -1,3 +1,12 @@
+---
+title: 05: Routing & Data Fetching — Deep Reference
+topic: 04-frontend
+difficulty: intermediate
+time: 30m
+paths:
+  - frontend
+---
+
 # 05: Routing & Data Fetching — Deep Reference
 
 > **Scope**: React Router, BrowserRouter, Routes, Route, Link, NavLink, nested/index routes, URL params, search params, useParams, useSearchParams, useNavigate, useLocation, protected routes, lazy loading, layout routes, error boundaries per route, route-based code splitting, data fetching with useEffect, race conditions, AbortController, TanStack Query, useQuery, useMutation, query keys, caching, stale-while-revalidate, optimistic updates, infinite queries, server state vs client state, Suspense, use() hook, streaming SSR, parallel/sequential fetching, waterfalls, preloading, HTTP caching, service workers, prefetching, retry, timeout, cancellation, production patterns, deduplication, optimistic UI, pagination, infinite scroll, SSE, WebSocket.

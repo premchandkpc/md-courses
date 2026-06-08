@@ -1,3 +1,13 @@
+---
+title: Performance Tuning & Profiling Deep Dive - L5 Operating Systems
+topic: 15-system-design
+difficulty: advanced
+time: 30m
+paths:
+  - system-design
+  - staff
+---
+
 # Performance Tuning & Profiling Deep Dive - L5 Operating Systems
 
 > **[← Back to Index](../../systems-index.html)**

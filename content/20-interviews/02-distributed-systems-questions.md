@@ -1,3 +1,13 @@
+---
+title: Distributed Systems Interview Questions
+topic: 20-interviews
+difficulty: advanced
+time: 30m
+paths:
+  - system-design
+  - backend-senior
+---
+
 # 🌍 Distributed Systems Interview Questions — Complete Deep Dive
 
 > **Scope:** 100+ distributed systems interview questions at FAANG/senior level, organized by category (Consistency & CAP, Consensus, Distributed Storage, Distributed Caching, System Design Problem Solving). Each question includes approach breakdown, common mistakes, expected answer for senior level, edge cases, and follow-up questions. ASCII diagrams are included for key concepts.

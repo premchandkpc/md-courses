@@ -1,3 +1,10 @@
+---
+title: SQL Queries Cheat Sheet — Complete Reference
+topic: cheat-sheets
+difficulty: intermediate
+time: 30m
+---
+
 # SQL Queries Cheat Sheet — Complete Reference
 
 Essential SQL commands for database operations and querying.

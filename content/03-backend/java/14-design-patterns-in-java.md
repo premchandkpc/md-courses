@@ -1,3 +1,13 @@
+---
+title: ️ Design Patterns in Java
+topic: 03-backend
+difficulty: intermediate
+time: 30m
+paths:
+  - backend-junior
+  - backend-senior
+---
+
 # 🏗️ Design Patterns in Java — Complete Deep Dive
 
 **Related**: [OOP Concepts](/03-backend/java/01-oop-concepts.md) · [Collections Framework](/03-backend/java/02-collections-framework.md) · [Spring Boot](/03-backend/java/12-spring-boot.md) · [Hibernate/JPA](/03-backend/java/13-hibernate-jpa.md)

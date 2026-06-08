@@ -1,3 +1,14 @@
+---
+title: 09 — Distributed Systems
+topic: 09-distributed-systems
+difficulty: advanced
+time: 30m
+paths:
+  - backend-senior
+  - system-design
+  - staff
+---
+
 # 09 — Distributed Systems
 
 

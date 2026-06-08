@@ -1,3 +1,10 @@
+---
+title: JVM Tuning Cheat Sheet
+topic: cheat-sheets
+difficulty: intermediate
+time: 30m
+---
+
 # JVM Tuning Cheat Sheet
 
 

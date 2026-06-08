@@ -1,3 +1,13 @@
+---
+title: TCP/IP Protocol Stack
+topic: 11-networking
+difficulty: intermediate
+time: 30m
+paths:
+  - backend-junior
+  - sre
+---
+
 # 🌐 TCP/IP Protocol Stack — Complete Deep Dive
 
 

@@ -1,3 +1,13 @@
+---
+title: @ Java Annotations & Reflection
+topic: 03-backend
+difficulty: intermediate
+time: 30m
+paths:
+  - backend-junior
+  - backend-senior
+---
+
 # @ Java Annotations & Reflection — Complete Deep Dive
 
 **Related**: [JVM Architecture](/03-backend/java/05-jvm-architecture.md) · [Generics](/03-backend/java/08-generics.md) · [Java 8+ Features](/03-backend/java/11-java-8-features.md) · [Spring Boot](/03-backend/java/12-spring-boot.md)

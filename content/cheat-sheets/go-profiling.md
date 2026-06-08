@@ -1,3 +1,10 @@
+---
+title: Go Profiling Cheat Sheet
+topic: cheat-sheets
+difficulty: intermediate
+time: 30m
+---
+
 # Go Profiling Cheat Sheet
 
 

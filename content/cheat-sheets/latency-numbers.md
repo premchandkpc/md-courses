@@ -1,3 +1,10 @@
+---
+title: Latency Numbers Every Engineer Should Know
+topic: cheat-sheets
+difficulty: intermediate
+time: 30m
+---
+
 # Latency Numbers Every Engineer Should Know
 
 Reference latencies for system design and performance optimization.

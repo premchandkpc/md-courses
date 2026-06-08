@@ -1,3 +1,13 @@
+---
+title: Java Generics
+topic: 03-backend
+difficulty: intermediate
+time: 30m
+paths:
+  - backend-junior
+  - backend-senior
+---
+
 # 📦 Java Generics — Complete Deep Dive
 
 **Related**: [Collections Framework](/03-backend/java/02-collections-framework.md) · [Streams & Lambda](/03-backend/java/07-streams-lambda.md) · [OOP Concepts](/03-backend/java/01-oop-concepts.md)

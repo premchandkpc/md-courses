@@ -1,3 +1,13 @@
+---
+title: ️ Amazon RDS
+topic: 05-cloud
+difficulty: intermediate
+time: 30m
+paths:
+  - sre
+  - backend-senior
+---
+
 # 🗄️ Amazon RDS — Complete Deep Dive
 
 **Related**: [EC2](/05-cloud/aws/ec2/01-ec2-deep-dive.md) · [Lambda](/05-cloud/aws/lambda/01-lambda-deep-dive.md) · [IAM](/05-cloud/aws/iam/01-iam-deep-dive.md) · [CloudWatch](/05-cloud/aws/cloudwatch/01-cloudwatch-deep-dive.md)

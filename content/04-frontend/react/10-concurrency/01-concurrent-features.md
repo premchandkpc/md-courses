@@ -1,3 +1,12 @@
+---
+title: React Concurrency — Transitions, Suspense & Concurrent Features
+topic: 04-frontend
+difficulty: intermediate
+time: 30m
+paths:
+  - frontend
+---
+
 # React Concurrency — Transitions, Suspense & Concurrent Features
 
 ## WHAT

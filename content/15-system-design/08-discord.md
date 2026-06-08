@@ -1,3 +1,13 @@
+---
+title: Design Discord
+topic: 15-system-design
+difficulty: advanced
+time: 30m
+paths:
+  - system-design
+  - staff
+---
+
 # 🎧 Design Discord — Complete System Design Deep Dive
 
 > **Scope**: Requirements (150M+ MAU, 19M+ active servers, 4B+ daily messages), WebSocket gateway for real-time, REST API for CRUD, guild/server model (channels, roles, permissions), voice/video (WebRTC SFU, adaptive bitrate, noise suppression), message storage (Cassandra), file upload (CDN, attachment scanning), real-time presence, rate limiting, failure analysis.

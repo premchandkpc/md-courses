@@ -1,6 +1,17 @@
+---
+title: Topic 09: Disaster Recovery & Business Continuity
+topic: 08-databases
+difficulty: intermediate
+time: 60
+paths:
+  - backend-junior
+  - data
+  - backend-senior
+---
+
 # Topic 09: Disaster Recovery & Business Continuity
 
-**Level:** Intermediate-Advanced | **Time:** 60 mins | **Production Critical:** ⭐⭐⭐⭐⭐
+mins | **Production Critical:** ⭐⭐⭐⭐⭐
 
 ---
 

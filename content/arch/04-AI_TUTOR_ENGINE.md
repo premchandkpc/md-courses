@@ -1,3 +1,10 @@
+---
+title: AI Engineering Tutor — Architecture Blueprint
+topic: 04-AI_TUTOR_ENGINE.md
+difficulty: intermediate
+time: 30m
+---
+
 # 🤖 AI Engineering Tutor — Architecture Blueprint
 
 > **Status:** v0.1 — Foundational  

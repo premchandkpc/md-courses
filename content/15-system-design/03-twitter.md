@@ -1,3 +1,13 @@
+---
+title: Design Twitter/X
+topic: 15-system-design
+difficulty: advanced
+time: 30m
+paths:
+  - system-design
+  - staff
+---
+
 # 🐦 Design Twitter/X — Complete System Design Deep Dive
 
 > **Scope**: Requirements (500M MAU, 500M tweets/day, 100K QPS read, 5K QPS write), tweet flow (post -> write -> fan-out -> timeline), timeline generation (fan-out on write (push) for small accounts, fan-out on read (pull) for celebrities), newsfeed ranking, search (Earlybird), trending topics, direct messages, graph service, failure analysis.

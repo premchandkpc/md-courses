@@ -1,3 +1,12 @@
+---
+title: Next.js App Router
+topic: 04-frontend
+difficulty: intermediate
+time: 30m
+paths:
+  - frontend
+---
+
 # Next.js App Router — Deep Dive
 
 ## WHAT

@@ -1,3 +1,14 @@
+---
+title: 10 — Messaging & Streaming
+topic: 10-messaging
+difficulty: advanced
+time: 30m
+paths:
+  - backend-senior
+  - data
+  - staff
+---
+
 # 10 — Messaging & Streaming
 
 The backbone of event-driven architecture. Covers message brokers, streaming platforms, event-driven patterns, message delivery semantics, idempotency, ordering guarantees, and their practical applications in building decoupled, scalable, and reliable distributed systems.

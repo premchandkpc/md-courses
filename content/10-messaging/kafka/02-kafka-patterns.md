@@ -1,3 +1,14 @@
+---
+title: Kafka Production Patterns
+topic: 10-messaging
+difficulty: advanced
+time: 30m
+paths:
+  - backend-senior
+  - data
+  - staff
+---
+
 # 📨 Kafka Production Patterns — Complete Deep Dive
 
 

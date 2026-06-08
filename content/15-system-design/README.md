@@ -1,3 +1,13 @@
+---
+title: System Design — Complete Deep Dive ️
+topic: 15-system-design
+difficulty: advanced
+time: 30m
+paths:
+  - system-design
+  - staff
+---
+
 # System Design — Complete Deep Dive 🏗️
 
 System design is the art of **architecting scalable, reliable, and maintainable systems**. It bridges engineering tradeoffs — consistency vs availability, latency vs throughput, cost vs performance — into coherent blueprints.

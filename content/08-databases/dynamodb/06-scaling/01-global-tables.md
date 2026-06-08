@@ -1,3 +1,14 @@
+---
+title: DynamoDB Global Tables & Multi-Region Scaling
+topic: 08-databases
+difficulty: intermediate
+time: 30m
+paths:
+  - backend-junior
+  - data
+  - backend-senior
+---
+
 # DynamoDB Global Tables & Multi-Region Scaling
 
 ## Global Tables Overview

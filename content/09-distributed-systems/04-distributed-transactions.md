@@ -1,3 +1,14 @@
+---
+title: Distributed Transactions
+topic: 09-distributed-systems
+difficulty: advanced
+time: 30m
+paths:
+  - backend-senior
+  - system-design
+  - staff
+---
+
 # 🔗 Distributed Transactions — Complete Deep Dive
 
 > **Scope**: ACID in distributed systems, 2PC (prepare/commit phases, failure scenarios, coordinator crash, XA protocol), 3PC (non-blocking variant), Saga pattern (choreography vs orchestration, compensating transactions), TCC (Try-Confirm/Cancel), Seata AT, distributed transaction patterns (outbox, CDC, idempotency key), transactional messaging (Kafka transactions, exactly-once), optimistic concurrency, distributed deadlock detection, real-world implementations (Spanner, CockroachDB, PostgreSQL).

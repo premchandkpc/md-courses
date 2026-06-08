@@ -1,3 +1,12 @@
+---
+title: 03: Rendering & Performance — Deep Reference
+topic: 04-frontend
+difficulty: intermediate
+time: 30m
+paths:
+  - frontend
+---
+
 # 03: Rendering & Performance — Deep Reference
 
 [🎨 Async/Await Visualization](../../../../html/03-async-await-execution-viz.html)

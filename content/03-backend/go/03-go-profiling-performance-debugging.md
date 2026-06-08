@@ -1,3 +1,13 @@
+---
+title: Go Profiling, Performance Debugging, and Optimization: Production-Grade Deep Dive
+topic: 03-backend
+difficulty: intermediate
+time: 30m
+paths:
+  - backend-junior
+  - backend-senior
+---
+
 # Go Profiling, Performance Debugging, and Optimization: Production-Grade Deep Dive
 
 

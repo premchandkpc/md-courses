@@ -1,3 +1,13 @@
+---
+title: Design Amazon
+topic: 15-system-design
+difficulty: advanced
+time: 30m
+paths:
+  - system-design
+  - staff
+---
+
 # 🛒 Design Amazon — Complete System Design Deep Dive
 
 > **Scope**: Requirements (300M+ active customers, 1.5M+ sellers, millions of products), product catalog (browse, search, faceted navigation), shopping cart (multi-device sync, persistence), order management (lifecycle, fulfillment integration), payment system (idempotency, fraud detection), recommendation engine (collaborative filtering, real-time personalization), seller marketplace (merchant onboarding, inventory, fulfillment by Amazon), DynamoDB/ElastiCache/CDN architecture, failure analysis.

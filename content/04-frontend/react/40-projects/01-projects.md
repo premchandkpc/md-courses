@@ -1,3 +1,12 @@
+---
+title: React Capstone Projects
+topic: 04-frontend
+difficulty: intermediate
+time: 30m
+paths:
+  - frontend
+---
+
 # React Capstone Projects
 
 ## 1. ChatGPT Clone

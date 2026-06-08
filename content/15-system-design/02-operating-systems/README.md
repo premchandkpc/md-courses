@@ -1,3 +1,13 @@
+---
+title: Operating Systems Deep Dive
+topic: 15-system-design
+difficulty: advanced
+time: 30m
+paths:
+  - system-design
+  - staff
+---
+
 # Operating Systems Deep Dive
 
 System fundamentals: how OS manages hardware resources, processes, memory, concurrency.

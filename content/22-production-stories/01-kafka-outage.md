@@ -1,3 +1,13 @@
+---
+title: Kafka Outage — Production Incident Deep Dive
+topic: 22-production-stories
+difficulty: advanced
+time: 30m
+paths:
+  - staff
+  - sre
+---
+
 # 📉 Kafka Outage — Production Incident Deep Dive
 
 > **Scope:** Real-world Kafka cluster failure patterns covering leader election storms, ISR shrink events, controller crashes, data loss with `acks=1`, consumer lag explosions, rebalance storms, and uneven partition load. Each scenario follows symptom → detection → investigation → root cause → mitigation → permanent fix → lessons learned.

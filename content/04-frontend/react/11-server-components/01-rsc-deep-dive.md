@@ -1,3 +1,12 @@
+---
+title: React Server Components
+topic: 04-frontend
+difficulty: intermediate
+time: 30m
+paths:
+  - frontend
+---
+
 # React Server Components — Complete Deep Dive
 
 ## WHAT

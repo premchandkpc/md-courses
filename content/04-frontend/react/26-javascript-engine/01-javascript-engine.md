@@ -1,3 +1,12 @@
+---
+title: JavaScript Engine (V8)
+topic: 04-frontend
+difficulty: intermediate
+time: 30m
+paths:
+  - frontend
+---
+
 # JavaScript Engine (V8)
 
 [🎨 Closures Visualization](../../../../html/26-closures-scope-viz.html) | [🎨 Modules Visualization](../../../../html/26-module-systems-resolution-viz.html)

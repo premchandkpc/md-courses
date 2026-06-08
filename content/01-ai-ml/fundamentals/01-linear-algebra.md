@@ -1,3 +1,12 @@
+---
+title: Linear Algebra for AI/ML
+topic: 01-ai-ml
+difficulty: intermediate
+time: 30m
+paths:
+  - ai-ml
+---
+
 # Linear Algebra for AI/ML
 
 

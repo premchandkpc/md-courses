@@ -1,3 +1,14 @@
+---
+title: Kafka Monitoring & Alerting
+topic: 10-messaging
+difficulty: advanced
+time: 30m
+paths:
+  - backend-senior
+  - data
+  - staff
+---
+
 # 📊 Kafka Monitoring & Alerting — Complete Deep Dive
 
 

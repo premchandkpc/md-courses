@@ -1,3 +1,13 @@
+---
+title: TCP Congestion Control — Interactive Simulator
+topic: 11-networking
+difficulty: intermediate
+time: 30m
+paths:
+  - backend-junior
+  - sre
+---
+
 # TCP Congestion Control — Interactive Simulator
 
 ## Overview

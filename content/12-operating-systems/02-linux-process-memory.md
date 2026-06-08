@@ -1,3 +1,13 @@
+---
+title: ️ Linux Process & Memory Management
+topic: 12-operating-systems
+difficulty: intermediate
+time: 30m
+paths:
+  - backend-junior
+  - sre
+---
+
 # 🖥️ Linux Process & Memory Management — Complete Deep Dive
 
 

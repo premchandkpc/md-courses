@@ -1,8 +1,19 @@
+---
+title: Topic 11: Sharding & Distributed Databases
+topic: 08-databases
+difficulty: advanced
+time: 60
+paths:
+  - backend-junior
+  - data
+  - backend-senior
+---
+
 # Topic 11: Sharding & Distributed Databases
 
 [🎨 Interactive Visualization](../../html/11-database-sharding-viz.html)
 
-**Level:** Advanced | **Time:** 60 mins | **Production Critical:** ⭐⭐⭐⭐
+mins | **Production Critical:** ⭐⭐⭐⭐
 
 ---
 

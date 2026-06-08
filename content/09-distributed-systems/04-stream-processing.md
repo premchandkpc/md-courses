@@ -1,3 +1,14 @@
+---
+title: Stream Processing
+topic: 09-distributed-systems
+difficulty: advanced
+time: 30m
+paths:
+  - backend-senior
+  - system-design
+  - staff
+---
+
 # 🌊 Stream Processing — Complete Deep Dive
 
 > **Scope**: Processing semantics (at-most-once, at-least-once, exactly-once), Kafka Streams (topology, KStream/KTable, state stores, exactly-once, DSL operators, Processor API), Apache Flink (DataStream API, event time, watermarks, windowing, state management, checkpointing, fault tolerance), stream-batch unification.

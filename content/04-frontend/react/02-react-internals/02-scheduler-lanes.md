@@ -1,3 +1,12 @@
+---
+title: React Scheduler & Lane System
+topic: 04-frontend
+difficulty: intermediate
+time: 30m
+paths:
+  - frontend
+---
+
 # React Scheduler & Lane System
 
 > 🎮 **Interactive**: [State Batching Visualizer](/04-frontend/react/39-visual-simulations/state-batching.html) — compare React 18 auto-batching vs legacy mode

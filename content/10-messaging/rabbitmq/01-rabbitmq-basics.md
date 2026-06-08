@@ -1,3 +1,14 @@
+---
+title: RabbitMQ
+topic: 10-messaging
+difficulty: advanced
+time: 30m
+paths:
+  - backend-senior
+  - data
+  - staff
+---
+
 # 🐇 RabbitMQ — Complete Deep Dive
 
 **Related**: [RabbitMQ Patterns](/10-messaging/rabbitmq/02-rabbitmq-patterns.md) · [RabbitMQ Docs](https://www.rabbitmq.com/documentation.html) · [AMQP 0-9-1](https://www.rabbitmq.com/amqp-0-9-1-reference.html)

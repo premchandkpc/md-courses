@@ -1,3 +1,14 @@
+---
+title: PostgreSQL Replication, Scaling & High Availability
+topic: 08-databases
+difficulty: intermediate
+time: 30m
+paths:
+  - backend-junior
+  - data
+  - backend-senior
+---
+
 # PostgreSQL Replication, Scaling & High Availability
 
 ## Streaming Replication (Read Replicas)

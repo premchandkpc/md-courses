@@ -1,3 +1,13 @@
+---
+title: 11 — Networking
+topic: 11-networking
+difficulty: intermediate
+time: 30m
+paths:
+  - backend-junior
+  - sre
+---
+
 # 11 — Networking
 
 

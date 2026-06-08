@@ -1,6 +1,15 @@
+---
+title: Advanced Form Patterns: State Management, Validation & Submission
+topic: 04-frontend
+difficulty: intermediate
+time: 50
+paths:
+  - frontend
+---
+
 # Advanced Form Patterns: State Management, Validation & Submission
 
-**Level:** Intermediate-Advanced | **Time:** 50 mins | **Interview:** 🔥 Critical
+mins | **Interview:** 🔥 Critical
 
 ---
 

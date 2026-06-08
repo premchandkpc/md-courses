@@ -1,3 +1,13 @@
+---
+title: Scalability: The Art of Handling More
+topic: 15-system-design
+difficulty: advanced
+time: 30m
+paths:
+  - system-design
+  - staff
+---
+
 # Scalability: The Art of Handling More
 
 > "A system that doesn't scale is destined to fail under its own success."

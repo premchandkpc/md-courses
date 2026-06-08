@@ -1,3 +1,13 @@
+---
+title: GitHub Actions & GitLab CI Pipeline Design
+topic: 06-devops
+difficulty: intermediate
+time: 30m
+paths:
+  - sre
+  - backend-junior
+---
+
 # GitHub Actions & GitLab CI Pipeline Design
 
 

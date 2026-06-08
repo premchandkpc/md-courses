@@ -1,3 +1,13 @@
+---
+title: ️ Java Exception Handling
+topic: 03-backend
+difficulty: intermediate
+time: 30m
+paths:
+  - backend-junior
+  - backend-senior
+---
+
 # ⚠️ Java Exception Handling — Complete Deep Dive
 
 **Related**: [OOP Concepts](/03-backend/java/01-oop-concepts.md) · [Multithreading](/03-backend/java/04-multithreading.md) · [Streams & Lambda](/03-backend/java/07-streams-lambda.md)

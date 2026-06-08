@@ -1,3 +1,13 @@
+---
+title: Python Testing & Packaging
+topic: 03-backend
+difficulty: intermediate
+time: 30m
+paths:
+  - backend-junior
+  - backend-senior
+---
+
 # 🧪 Python Testing & Packaging — Complete Deep Dive
 
 > **Scope**: Testing pyramid, pytest ecosystem, unittest, hypothesis, integration testing, packaging tools, versioning, environment isolation, linting/formatting, CI/CD patterns, coverage, mocking best practices

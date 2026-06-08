@@ -1,3 +1,14 @@
+---
+title: ️ Raft Consensus Algorithm
+topic: 09-distributed-systems
+difficulty: advanced
+time: 30m
+paths:
+  - backend-senior
+  - system-design
+  - staff
+---
+
 # ⛓️ Raft Consensus Algorithm — Complete Deep Dive
 
 

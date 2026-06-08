@@ -1,3 +1,8 @@
+---
+title: Knowledge Connection Map
+time: 30m
+---
+
 # Knowledge Connection Map 🌐
 
 How the 254 files in this repository connect to each other.

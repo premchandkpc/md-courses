@@ -1,3 +1,13 @@
+---
+title: Circuit Breaker Cascading Failure — Production Incident Deep Dive
+topic: 22-production-stories
+difficulty: advanced
+time: 30m
+paths:
+  - staff
+  - sre
+---
+
 # 🔌 Circuit Breaker Cascading Failure — Production Incident Deep Dive
 
 > **Scope:** Real-world circuit breaker cascading failure patterns in a microservices e-commerce platform. Covers how a single database read replica failure triggered a multi-service meltdown through misconfigured circuit breakers, thread pool starvation, and cache stampede effects. Includes detection, root cause analysis, mitigation, and permanent fixes with code and configuration examples.

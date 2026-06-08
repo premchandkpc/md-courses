@@ -1,3 +1,14 @@
+---
+title: MongoDB Aggregation Pipeline & Advanced Queries
+topic: 08-databases
+difficulty: intermediate
+time: 30m
+paths:
+  - backend-junior
+  - data
+  - backend-senior
+---
+
 # MongoDB Aggregation Pipeline & Advanced Queries
 
 ## Aggregation Pipeline Stages

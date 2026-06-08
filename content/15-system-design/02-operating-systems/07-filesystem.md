@@ -1,3 +1,13 @@
+---
+title: File System Internals Deep Dive - L5 Operating Systems
+topic: 15-system-design
+difficulty: advanced
+time: 30m
+paths:
+  - system-design
+  - staff
+---
+
 # File System Internals Deep Dive - L5 Operating Systems
 
 > **[🎨 View Interactive Diagram](filesystem-architecture.html)** | [← Back to Index](../../systems-index.html)

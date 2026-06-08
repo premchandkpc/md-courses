@@ -1,3 +1,13 @@
+---
+title: Java Concurrency Deep Dive
+topic: 03-backend
+difficulty: intermediate
+time: 30m
+paths:
+  - backend-junior
+  - backend-senior
+---
+
 # 🧵 Java Concurrency Deep Dive — Complete Deep Dive
 
 

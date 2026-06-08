@@ -1,3 +1,13 @@
+---
+title: ️ Hibernate & JPA
+topic: 03-backend
+difficulty: intermediate
+time: 30m
+paths:
+  - backend-junior
+  - backend-senior
+---
+
 # 🗄️ Hibernate & JPA — Complete Deep Dive
 
 **Related**: [Spring Boot](/03-backend/java/12-spring-boot.md) · [Annotations & Reflection](/03-backend/java/10-annotations-reflection.md) · [JDBC](/03-backend/java/09-io-nio.md) · [Collections Framework](/03-backend/java/02-collections-framework.md)

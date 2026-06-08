@@ -1,3 +1,12 @@
+---
+title: Data Structures & Algorithms — Core Reference
+topic: 00-foundations
+difficulty: beginner
+time: 30m
+paths:
+  - backend-junior
+---
+
 # Data Structures & Algorithms — Core Reference
 
 Data structures organize data; algorithms operate on them. Mastery of both is the single highest-leverage skill for technical interviews and writing efficient software.

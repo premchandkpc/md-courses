@@ -1,3 +1,14 @@
+---
+title: MongoDB Sharding: Design, Pitfalls & Production Scaling
+topic: 08-databases
+difficulty: intermediate
+time: 30m
+paths:
+  - backend-junior
+  - data
+  - backend-senior
+---
+
 # MongoDB Sharding: Design, Pitfalls & Production Scaling
 
 ## Shard Key Selection: The Most Important Decision

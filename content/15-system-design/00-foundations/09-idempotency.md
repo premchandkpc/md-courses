@@ -1,3 +1,13 @@
+---
+title: Idempotency Deep Dive - L5 Fundamentals
+topic: 15-system-design
+difficulty: advanced
+time: 30m
+paths:
+  - system-design
+  - staff
+---
+
 # Idempotency Deep Dive - L5 Fundamentals
 
 > **[🎨 View Interactive Diagram](idempotency-architecture.html)** | [← Back to Index](../../systems-index.html)

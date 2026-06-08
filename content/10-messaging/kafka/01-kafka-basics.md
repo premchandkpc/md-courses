@@ -1,3 +1,14 @@
+---
+title: Apache Kafka
+topic: 10-messaging
+difficulty: advanced
+time: 30m
+paths:
+  - backend-senior
+  - data
+  - staff
+---
+
 # 📨 Apache Kafka — Complete Deep Dive
 
 

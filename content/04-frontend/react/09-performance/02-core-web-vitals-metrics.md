@@ -1,6 +1,15 @@
+---
+title: Core Web Vitals: Metrics, Monitoring & Optimization
+topic: 04-frontend
+difficulty: intermediate
+time: 40
+paths:
+  - frontend
+---
+
 # Core Web Vitals: Metrics, Monitoring & Optimization
 
-**Level:** Intermediate-Advanced | **Time:** 40 mins | **Interview:** 🔥 Critical
+mins | **Interview:** 🔥 Critical
 
 ---
 

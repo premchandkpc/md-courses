@@ -1,3 +1,13 @@
+---
+title: Java 8+ Features — What Changed in Each Version
+topic: 03-backend
+difficulty: intermediate
+time: 30m
+paths:
+  - backend-junior
+  - backend-senior
+---
+
 # 🔄 Java 8+ Features — What Changed in Each Version
 
 **Related**: [Streams & Lambda](/03-backend/java/07-streams-lambda.md) · [Collections Framework](/03-backend/java/02-collections-framework.md) · [Generics](/03-backend/java/08-generics.md) · [Spring Boot](/03-backend/java/12-spring-boot.md)

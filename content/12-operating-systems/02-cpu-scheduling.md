@@ -1,3 +1,13 @@
+---
+title: ⏰ CPU Scheduling
+topic: 12-operating-systems
+difficulty: intermediate
+time: 30m
+paths:
+  - backend-junior
+  - sre
+---
+
 # ⏰ CPU Scheduling — Complete Deep Dive
 
 > **Scope**: Complete coverage of Linux CPU scheduling — CFS/EEVDF internals, O(1) scheduler design, EDF/SCHED_DEADLINE, real-time scheduling (FIFO/RR/priority inversion/protocols), multi-core load balancing, context switch costs, CPU affinity, scheduling latency and PREEMPT_RT, cgroup cpu controller, and scheduler debugging.

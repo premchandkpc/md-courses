@@ -1,3 +1,12 @@
+---
+title: Distributed Message Queue — Production-Grade Design
+topic: 23-projects
+difficulty: advanced
+time: 30m
+paths:
+  - staff
+---
+
 # Distributed Message Queue — Production-Grade Design
 
 

@@ -1,3 +1,13 @@
+---
+title: Amazon ElastiCache
+topic: 05-cloud
+difficulty: intermediate
+time: 30m
+paths:
+  - sre
+  - backend-senior
+---
+
 # ⚡💾 Amazon ElastiCache — Complete Deep Dive
 
 **Related**: [RDS](/05-cloud/aws/rds/01-rds-deep-dive.md) · [EC2](/05-cloud/aws/ec2/01-ec2-deep-dive.md) · [CloudWatch](/05-cloud/aws/cloudwatch/01-cloudwatch-deep-dive.md) · [IAM](/05-cloud/aws/iam/01-iam-deep-dive.md)

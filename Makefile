@@ -1,4 +1,4 @@
-.PHONY: help serve frontend frontend-build frontend-typecheck viz python clean
+.PHONY: help serve frontend frontend-build frontend-typecheck viz python clean frontmatter
 
 help:
 	@echo "Engineering Knowledge Universe — Interactive Platform"
@@ -10,6 +10,7 @@ help:
 	@echo "  make frontend-typecheck TypeScript type check"
 	@echo "  make python             Start Python server on :3000"
 	@echo "  make viz                Run API server + frontend concurrently"
+	@echo "  make frontmatter        Add/regen YAML frontmatter on all .md files"
 	@echo "  make clean              Remove frontend node_modules + dist"
 	@echo "  make help               Show this help"
 
@@ -31,6 +32,10 @@ python:
 viz:
 	@echo "Starting API server on :3000 and frontend on :5173..."
 	@node packages/api-server/server.js 3000 & sleep 1 && npm run dev -w packages/react-frontend
+
+frontmatter:
+	@python3 scripts/add-frontmatter.py --apply
+	@echo "YAML frontmatter added/updated on all .md files"
 
 clean:
 	@rm -rf packages/react-frontend/node_modules packages/react-frontend/dist

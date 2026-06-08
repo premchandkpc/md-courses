@@ -66,7 +66,7 @@ Flat list of all markdown/HTML files with metadata.
 Retrieve single file content.
 
 **Query Params:**
-- `path` (required): File path relative to data/ (e.g., `01-ai-ml/fundamentals/01-neural-networks.md`)
+- `path` (required): File path relative to content/ (e.g., `01-ai-ml/fundamentals/01-neural-networks.md`)
 
 **Response:**
 ```json
@@ -145,6 +145,64 @@ Aggregate statistics about the knowledge base.
     { "name": "15-system-design", "fileCount": 38 },
     ...
   ]
+}
+```
+
+---
+
+## Knowledge Graph
+
+**GET** `/api/graph`
+
+Returns all content as a graph of nodes and edges. Useful for knowledge graph visualization, prerequisite tracking, and navigation.
+
+**Response:**
+```json
+{
+  "nodes": [
+    {
+      "id": "08-databases",
+      "name": "08-databases",
+      "path": "08-databases",
+      "type": "dir",
+      "group": "08-databases"
+    },
+    {
+      "id": "08-databases/01-postgresql-internals",
+      "name": "01-postgresql-internals",
+      "path": "08-databases/01-postgresql-internals.md",
+      "dir": "08-databases",
+      "type": "file",
+      "group": "08-databases"
+    }
+  ],
+  "edges": [
+    {
+      "source": "08-databases",
+      "target": "08-databases/01-postgresql-internals",
+      "label": "contains"
+    }
+  ],
+  "nodeCount": 846,
+  "edgeCount": 723
+}
+```
+
+---
+
+## Health Check
+
+**GET** `/api/health`
+
+Server health and cache status.
+
+**Response:**
+```json
+{
+  "status": "ok",
+  "uptime": 120.5,
+  "cacheAge": "45s",
+  "port": 3000
 }
 ```
 

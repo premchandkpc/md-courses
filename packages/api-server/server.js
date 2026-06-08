@@ -193,7 +193,7 @@ function serveApi(res, url, method) {
     return serveJson(res, { files: list, total: list.length });
   }
 
-  // GET /api/file?path=... — file content
+  // GET /api/file?path=... — file content (JSON wrapper, for frontend)
   if (pathname === '/api/file' && method === 'GET') {
     const filePath = parsed.searchParams.get('path');
     if (!filePath) return serveJson(res, { error: 'Missing path parameter' }, 400);
@@ -213,6 +213,25 @@ function serveApi(res, url, method) {
         size: stat.size,
         lastModified: stat.mtimeMs,
       });
+    } catch {
+      return serveJson(res, { error: 'File not found' }, 404);
+    }
+  }
+
+  // GET /view?path=... — serve HTML files directly with correct Content-Type
+  if (pathname === '/view' && method === 'GET') {
+    const filePath = parsed.searchParams.get('path');
+    if (!filePath) return serveJson(res, { error: 'Missing path parameter' }, 400);
+
+    const fullPath = path.resolve(DATA_DIR, filePath);
+    if (!fullPath.startsWith(DATA_DIR)) {
+      return serveJson(res, { error: 'Invalid path' }, 403);
+    }
+
+    try {
+      const ext = path.extname(fullPath).toLowerCase();
+      const contentType = MIME_TYPES[ext] || 'application/octet-stream';
+      return serveFile(res, fullPath, contentType);
     } catch {
       return serveJson(res, { error: 'File not found' }, 404);
     }

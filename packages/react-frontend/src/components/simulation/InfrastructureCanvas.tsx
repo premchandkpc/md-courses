@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react'
 import { Application, Graphics, Text, TextStyle } from 'pixi.js'
 import { useSimulationStore } from '../../stores/simulation-store'
+import type { SimEntity } from '../../types'
 
 const stateColors: Record<string, number> = {
   healthy: 0x3fb950,
@@ -11,7 +12,7 @@ const stateColors: Record<string, number> = {
   dead: 0x5a6e91,
 }
 
-function drawScene(app: Application, entities: Record<string, any>) {
+function drawScene(app: Application, entities: Record<string, SimEntity>) {
   const stage = app.stage
   stage.removeChildren()
 
@@ -30,7 +31,7 @@ function drawScene(app: Application, entities: Record<string, any>) {
   const centerX = w / 2
   const centerY = h / 2
 
-  entityList.forEach((entity: any, i: number) => {
+  entityList.forEach((entity: SimEntity, i: number) => {
     const x = centerX + Math.cos(i / entityList.length * Math.PI * 2) * 120
     const y = centerY + Math.sin(i / entityList.length * Math.PI * 2) * 120
     const radius = Math.max(10, 20 - entity.pressure * 0.1)
@@ -71,6 +72,10 @@ export function InfrastructureCanvas() {
     appRef.current = app
 
     let destroyed = false
+    const unsubscribe = useSimulationStore.subscribe(
+      (state) => state.entities,
+      () => {} // noop — we just need latest on init
+    )
 
     ;(async () => {
       try {
@@ -83,7 +88,8 @@ export function InfrastructureCanvas() {
         })
         if (destroyed) return
         canvasRef.current?.appendChild(app.canvas as HTMLCanvasElement)
-        drawScene(app, entities)
+        const state = useSimulationStore.getState()
+        drawScene(app, state.entities)
       } catch {
         // init failed
       }
@@ -91,6 +97,7 @@ export function InfrastructureCanvas() {
 
     return () => {
       destroyed = true
+      unsubscribe()
       if (app.renderer) {
         app.destroy(true)
       }

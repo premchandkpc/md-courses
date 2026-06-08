@@ -174,7 +174,7 @@ function App() {
                   </div>
                   <div className="border-t border-infra-700 pt-3">
                     <ErrorBoundary>
-                      <FileContentViewer filePath={selectedFile} />
+                      <FileContentViewer filePath={selectedFile} onSelect={setSelectedFile} />
                       <VisualizationGallery filePath={selectedFile} />
                     </ErrorBoundary>
                   </div>

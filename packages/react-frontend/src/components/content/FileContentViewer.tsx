@@ -13,6 +13,7 @@ interface Frontmatter {
 
 interface Props {
   filePath: string | null
+  onSelect?: (path: string) => void
 }
 
 function parseFrontmatter(raw: string): { frontmatter: Frontmatter; body: string } {
@@ -154,11 +155,18 @@ function DifficultyBadge({ difficulty }: { difficulty?: string }) {
   )
 }
 
-function WhatToReadNext({ frontmatter, currentPath: _currentPath }: { frontmatter: Frontmatter; currentPath: string }) {
+function WhatToReadNext({ frontmatter, currentPath: _currentPath, onSelect }: { frontmatter: Frontmatter; currentPath: string; onSelect?: (path: string) => void }) {
   const hasLinks = (frontmatter.prerequisites && frontmatter.prerequisites.length > 0) ||
     (frontmatter.related && frontmatter.related.length > 0)
 
   if (!hasLinks) return null
+
+  const handleClick = (e: React.MouseEvent, targetPath: string) => {
+    e.preventDefault()
+    if (onSelect) {
+      onSelect(targetPath)
+    }
+  }
 
   return (
     <div className="mt-8 border-t border-infra-700 pt-5">
@@ -172,7 +180,8 @@ function WhatToReadNext({ frontmatter, currentPath: _currentPath }: { frontmatte
             {frontmatter.prerequisites.map(p => (
               <a
                 key={p}
-                href={`/api/file?path=${encodeURIComponent(p.endsWith('.md') ? p : p + '.md')}`}
+                href="#"
+                onClick={(e) => handleClick(e, p.endsWith('.md') ? p : p + '.md')}
                 className="block text-[12px] text-infra-300 hover:text-accent-cyan transition-colors mb-1 truncate"
               >
                 ← {p.split('/').pop()}
@@ -186,7 +195,8 @@ function WhatToReadNext({ frontmatter, currentPath: _currentPath }: { frontmatte
             {frontmatter.related.map(r => (
               <a
                 key={r}
-                href={`/api/file?path=${encodeURIComponent(r.endsWith('.md') ? r : r + '.md')}`}
+                href="#"
+                onClick={(e) => handleClick(e, r.endsWith('.md') ? r : r + '.md')}
                 className="block text-[12px] text-infra-300 hover:text-accent-cyan transition-colors mb-1 truncate"
               >
                 {r.split('/').pop()} →
@@ -200,7 +210,8 @@ function WhatToReadNext({ frontmatter, currentPath: _currentPath }: { frontmatte
             {frontmatter.paths.map(p => (
               <a
                 key={p}
-                href={`/api/file?path=${encodeURIComponent('paths/' + p + '.md')}`}
+                href="#"
+                onClick={(e) => handleClick(e, 'paths/' + p + '.md')}
                 className="block text-[12px] text-infra-300 hover:text-accent-cyan transition-colors mb-1 truncate"
               >
                 {p.replace(/-/g, ' ')} →
@@ -213,7 +224,7 @@ function WhatToReadNext({ frontmatter, currentPath: _currentPath }: { frontmatte
   )
 }
 
-export function FileContentViewer({ filePath }: Props) {
+export function FileContentViewer({ filePath, onSelect }: Props) {
   const [state, setState] = useState<'loading' | 'loaded' | 'error'>('loading')
   const [content, setContent] = useState('')
   const [frontmatter, setFrontmatter] = useState<Frontmatter>({})
@@ -304,7 +315,7 @@ export function FileContentViewer({ filePath }: Props) {
       />
 
       {/* Next steps */}
-      <WhatToReadNext frontmatter={frontmatter} currentPath={filePath} />
+      <WhatToReadNext frontmatter={frontmatter} currentPath={filePath} onSelect={onSelect} />
     </div>
   )
 }

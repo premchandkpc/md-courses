@@ -21,6 +21,12 @@ export const kafkaBrokerMachine = setup({
       | { type: 'REBALANCE' }
       | { type: 'RECOVER' }
       | { type: 'FAIL' }
+    input: { brokerId?: number }
+  },
+  actions: {
+    resetMetrics: () => {},
+    updateIsr: () => {},
+    startRebalance: () => {},
   },
 }).createMachine({
   id: 'kafka-broker',

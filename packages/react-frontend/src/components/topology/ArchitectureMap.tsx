@@ -1,4 +1,4 @@
-import { useMemo, useCallback } from 'react'
+import { useMemo } from 'react'
 import {
   ReactFlow,
   Background,
@@ -18,16 +18,6 @@ interface Props {
   nodes: TopologyNode[]
   edges: Array<{ source: string; target: string; label?: string }>
   title?: string
-}
-
-const nodeColorMap: Record<string, string> = {
-  client: '#00d4ff',
-  gateway: '#f0883e',
-  service: '#3fb950',
-  cache: '#a78bfa',
-  queue: '#fbbf24',
-  database: '#f85149',
-  loadbalancer: '#f0883e',
 }
 
 function TopologyNodeComponent({ data }: { data: { label: string; status?: string; metrics?: Record<string, number | undefined> } }) {

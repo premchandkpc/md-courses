@@ -1,5 +1,5 @@
 ---
-title: ️ System Design Principles
+title: System Design Principles
 topic: 15-system-design
 difficulty: advanced
 time: 30m

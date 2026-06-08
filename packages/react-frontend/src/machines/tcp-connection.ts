@@ -25,6 +25,11 @@ export const tcpConnectionMachine = setup({
       | { type: 'SLOW_START' }
       | { type: 'CONGESTION_AVOID' }
       | { type: 'FAST_RECOVERY' }
+    input: { srcPort?: number; dstPort?: number }
+  },
+  actions: {
+    handleLoss: () => {},
+    incrementSeq: () => {},
   },
 }).createMachine({
   id: 'tcp-connection',

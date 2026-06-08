@@ -29,12 +29,8 @@ function getCachedFileMap() {
   if (fileCache && (now - fileCacheTime) < CACHE_TTL) return fileCache;
   fileCache = getFileMap(DATA_DIR);
   fileCacheTime = now;
+  console.log(`  [cache] Filemap refreshed — ${Object.keys(fileCache).length} files indexed`);
   return fileCache;
-}
-
-function invalidateCache() {
-  fileCache = null;
-  fileCacheTime = 0;
 }
 
 const MIME_TYPES = {

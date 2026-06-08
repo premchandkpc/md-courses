@@ -1,4 +1,4 @@
-import { useEffect, useRef, useCallback } from 'react'
+import { useEffect, useRef } from 'react'
 import { Application, Graphics, Text, TextStyle } from 'pixi.js'
 import { useSimulationStore } from '../../stores/simulation-store'
 

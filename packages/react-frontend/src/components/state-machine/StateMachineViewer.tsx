@@ -1,10 +1,9 @@
 import { useMachine } from '@xstate/react'
 import { motion } from 'framer-motion'
-import type { StateMachine } from 'xstate'
-import { useCallback } from 'react'
+import type { AnyStateMachine } from 'xstate'
 
 interface Props {
-  machine: StateMachine<any, any, any>
+  machine: AnyStateMachine
   title: string
   events: Array<{ label: string; event: Record<string, unknown> }>
 }
@@ -67,20 +66,7 @@ export function StateMachineViewer({ machine, title, events }: Props) {
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             onClick={() => send(evt.event)}
-            className="px-3 py-1.5 rounded text-xs font-mono border transition-colors"
-            style={{
-              background: '#1a2332',
-              borderColor: '#253045',
-              color: '#bcc8db',
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.borderColor = '#00d4ff'
-              e.currentTarget.style.color = '#00d4ff'
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.borderColor = '#253045'
-              e.currentTarget.style.color = '#bcc8db'
-            }}
+            className="px-3 py-1.5 rounded text-xs font-mono border transition-colors bg-infra-800 border-infra-600 text-infra-200 hover:border-accent-cyan hover:text-accent-cyan"
           >
             {evt.label}
           </motion.button>

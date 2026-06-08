@@ -22,6 +22,12 @@ export const kubernetesPodMachine = setup({
       | { type: 'EVICT' }
       | { type: 'DELETE' }
       | { type: 'UPDATE' }
+    input: { podName?: string; namespace?: string }
+  },
+  actions: {
+    assignNode: () => {},
+    markReady: () => {},
+    incrementRestarts: () => {},
   },
 }).createMachine({
   id: 'kubernetes-pod',

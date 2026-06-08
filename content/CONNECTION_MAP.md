@@ -5,7 +5,7 @@ time: 30m
 
 # Knowledge Connection Map 🌐
 
-How the 254 files in this repository connect to each other.
+How the 736 files in this repository connect to each other — 417 markdown documents, 311 HTML visualizations, 8 other files.
 
 ## Learning Paths
 

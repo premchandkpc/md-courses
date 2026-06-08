@@ -22,7 +22,7 @@ Run both together: `make viz` (starts Node on :3000 + Vite on :5173).
 ## Content Layout
 
 - All content lives in `content/` as Markdown (`.md`) + HTML (`.html`) files.
-- 474 files (397 MD + 77 HTML), ~365K lines across 25 numbered domain folders + `arch/`, `cheat-sheets/`, `components/`.
+- 736 files (417 MD + 311 HTML + 8 other), ~380K lines across 25 numbered domain folders + `arch/`, `cheat-sheets/`, `components/`, `paths/`, `html-visualizations/`.
 - Served via JSON API at `/api/tree`, `/api/file?path=...`, `/api/search?q=...`, `/api/stats`.
 
 ## Largest Domains

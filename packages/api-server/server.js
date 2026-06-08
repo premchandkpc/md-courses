@@ -284,6 +284,7 @@ function serveApi(res, url, method) {
       // Edge: parent directory → file
       if (dir && !dirSet.has(dir)) {
         dirSet.add(dir);
+        nodeSet.add(dir);
         nodes.push({
           id: dir,
           name: dir.split('/').pop(),

@@ -4,9 +4,11 @@ import {
   Background,
   Controls,
   MiniMap,
+  Handle,
   type Node,
   type Edge,
   type NodeTypes,
+  type Position,
   useNodesState,
   useEdgesState,
 } from '@xyflow/react'
@@ -37,12 +39,14 @@ function TopologyNodeComponent({ data }: { data: { label: string; status?: strin
         borderWidth: 2,
       }}
     >
+      <Handle type="target" position={Position.Top} style={{ background: '#3a4a66' }} />
       <div className="text-xs font-mono" style={{ color: statusColor }}>{data.label}</div>
       {data.metrics?.latency && (
         <div className="text-[10px] mt-1 text-infra-400">
           {data.metrics.latency}ms
         </div>
       )}
+      <Handle type="source" position={Position.Bottom} style={{ background: '#3a4a66' }} />
     </motion.div>
   )
 }

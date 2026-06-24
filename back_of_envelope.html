@@ -96,15 +96,53 @@
   .ref-key { color: var(--text2); }
   .ref-val { font-family: var(--mono); font-weight: 600; color: var(--text); white-space: nowrap; }
   .scenario-desc { font-size: 13px; color: var(--text2); margin-bottom: 14px; padding: 10px 14px; background: var(--bg3); border-radius: var(--radius-sm); border-left: 3px solid var(--teal); }
-  .bar-row { display: flex; align-items: center; gap: 8px; margin: 3px 0; }
-  .bar-label { font-size: 11px; color: var(--text3); width: 50px; text-align: right; flex-shrink: 0; }
-  .bar-track { flex: 1; height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; }
-  .bar-fill { height: 100%; border-radius: 3px; transition: width 0.3s ease; }
+  .peak-row { margin-bottom: 14px; }
+  .peak-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.07em; color: var(--text3); margin-bottom: 5px; }
+  .compare-bar { display: flex; gap: 8px; align-items: center; margin-bottom: 14px; }
+  .compare-btn { display: flex; align-items: center; gap: 6px; padding: 7px 14px; border: 1px solid var(--border2); border-radius: var(--radius-sm); background: var(--bg2); cursor: pointer; font-size: 13px; font-family: inherit; color: var(--text2); transition: all 0.12s; }
+  .compare-btn:hover { background: var(--text); color: var(--bg); border-color: var(--text); }
+  .compare-btn.active { background: var(--teal); color: #fff; border-color: var(--teal); }
+  .compare-panel { display: none; gap: 14px; margin-bottom: 14px; }
+  .compare-panel.open { display: grid; grid-template-columns: 1fr 1fr; }
+  .compare-col { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px; }
+  .compare-col select { width: 100%; padding: 6px 10px; border: 1px solid var(--border2); border-radius: var(--radius-sm); background: var(--bg3); color: var(--text); font-size: 13px; font-family: inherit; margin-bottom: 12px; cursor: pointer; }
+  .compare-col .ticker-bar { grid-template-columns: repeat(2, 1fr); margin-bottom: 10px; }
+  .compare-col .out-grid { grid-template-columns: 1fr 1fr; }
+  .compare-col .o-card { padding: 8px 10px; }
+  .compare-col .o-val { font-size: 12px; }
+  .cmp-empty { text-align: center; color: var(--text3); padding: 30px 0; font-size: 13px; }
+  .cmp-storage { font-size: 11px; color: var(--text2); margin-top: 8px; padding: 8px; background: var(--bg3); border-radius: var(--radius-sm); }
+  .cmp-storage span { font-weight: 600; font-family: var(--mono); }
+  .export-btn { display: flex; align-items: center; gap: 6px; padding: 8px 16px; border: none; border-radius: var(--radius-sm); background: var(--text); color: var(--bg); cursor: pointer; font-size: 13px; font-family: inherit; font-weight: 500; margin-top: 10px; align-self: start; transition: opacity 0.12s; }
+  .export-btn:hover { opacity: 0.8; }
+  .export-btn i { font-size: 16px; }
+  .compare-col .t-card { padding: 10px 12px; }
+  .compare-col .t-val { font-size: 17px; }
+  .compare-col .cmp-title { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
+  .compare-col .cmp-title span { font-size: 10px; text-transform: uppercase; letter-spacing: 0.09em; color: var(--text3); font-weight: 600; }
+  .bot-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 14px; }
+  .lang-row { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
+  .lang-row:last-child { border-bottom: none; }
+  .lang-name { color: var(--text2); }
+  .lang-instances { font-family: var(--mono); font-weight: 600; }
+  .lang-cost { font-family: var(--mono); font-weight: 600; color: var(--amber); }
+  .cost-bar-wrap { margin-top: 8px; }
+  .cost-bar-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.07em; color: var(--text3); margin-bottom: 4px; }
+  .cost-bar { display: flex; height: 8px; border-radius: 4px; overflow: hidden; }
+  .cost-bar-seg { height: 100%; transition: width 0.3s; }
+  .cost-bar-seg.compute { background: var(--blue); }
+  .cost-bar-seg.storage { background: var(--amber); }
+  .cost-bar-seg.bandwidth { background: var(--coral); }
+  .cost-bar-seg.cache { background: var(--green); }
+  .cost-legend { display: flex; gap: 14px; margin-top: 6px; font-size: 10px; color: var(--text3); }
+  .cost-legend-item { display: flex; align-items: center; gap: 4px; }
+  .cost-legend-dot { width: 6px; height: 6px; border-radius: 50%; }
   @media (max-width: 640px) {
     .ticker-bar { grid-template-columns: repeat(2, 1fr); }
     .content-grid { grid-template-columns: 1fr; }
     .insights-row { grid-template-columns: 1fr; }
     .ref-grid { grid-template-columns: 1fr 1fr; }
+    .bot-grid { grid-template-columns: 1fr; }
   }
 </style>
 </head>
@@ -115,16 +153,36 @@
     <div class="app-sub">System Design Estimator</div>
   </div>
   <div class="scenario-nav" id="scenario-nav"></div>
-  <div class="ticker-bar" id="ticker-bar">
-    <div class="t-card teal"><div class="t-label">Avg Read QPS</div><div class="t-val" id="t-rqps">—</div><div class="t-sub" id="t-rqps-sub">peak: —</div></div>
-    <div class="t-card amber"><div class="t-label">Avg Write QPS</div><div class="t-val" id="t-wqps">—</div><div class="t-sub" id="t-wqps-sub">peak: —</div></div>
-    <div class="t-card blue"><div class="t-label">Storage / Day</div><div class="t-val" id="t-stor">—</div><div class="t-sub" id="t-stor-sub">5-year: —</div></div>
-    <div class="t-card purple"><div class="t-label">Servers Needed</div><div class="t-val" id="t-srv">—</div><div class="t-sub" id="t-srv-sub">at peak QPS</div></div>
+  <div class="compare-bar">
+    <button class="compare-btn" id="compare-toggle"><i class="ti ti-columns"></i> Compare Scenarios</button>
+    <button class="export-btn" id="export-btn" style="display:none;"><i class="ti ti-file-text"></i> Export as Text</button>
   </div>
+  <div class="compare-panel" id="compare-panel">
+    <div class="compare-col" id="cmp-a">
+      <div class="cmp-title"><span>Scenario A</span></div>
+      <select id="cmp-select-a" aria-label="Select scenario A"></select>
+      <div id="cmp-a-content"><div class="cmp-empty">Select a scenario</div></div>
+    </div>
+    <div class="compare-col" id="cmp-b">
+      <div class="cmp-title"><span>Scenario B</span></div>
+      <select id="cmp-select-b" aria-label="Select scenario B"></select>
+      <div id="cmp-b-content"><div class="cmp-empty">Select a scenario</div></div>
+    </div>
+  </div>
+  <div class="ticker-bar" id="ticker-bar">
+      <div class="t-card teal"><div class="t-label">Avg Read QPS</div><div class="t-val" id="t-rqps">—</div><div class="t-sub" id="t-rqps-sub">peak: —</div></div>
+      <div class="t-card amber"><div class="t-label">Avg Write QPS</div><div class="t-val" id="t-wqps">—</div><div class="t-sub" id="t-wqps-sub">peak: —</div></div>
+      <div class="t-card blue"><div class="t-label">Storage / Day</div><div class="t-val" id="t-stor">—</div><div class="t-sub" id="t-stor-sub">5-year: —</div></div>
+      <div class="t-card purple"><div class="t-label">Est. Monthly Cost</div><div class="t-val" id="t-cost">—</div><div class="t-sub" id="t-cost-sub">servers + infra</div></div>
+    </div>
   <div id="scenario-desc" class="scenario-desc"></div>
   <div class="content-grid">
     <div class="panel">
       <div class="panel-title">Parameters</div>
+      <div class="peak-row">
+        <div class="peak-label">Peak Factor <span id="peak-val" style="font-family:var(--mono)">5×</span></div>
+        <input type="range" id="peak-slider" min="2" max="10" step="0.5" value="5" aria-label="Peak traffic multiplier">
+      </div>
       <div id="params-container"></div>
     </div>
     <div class="panel">
@@ -135,6 +193,17 @@
         <thead><tr><th>Period</th><th>Write Volume</th><th>Cumulative</th></tr></thead>
         <tbody id="storage-tbody"></tbody>
       </table>
+    </div>
+  </div>
+  <div class="section-divider">Cost Breakdown <span id="cost-badge"></span></div>
+  <div class="bot-grid" id="cost-grid">
+    <div class="panel" id="lang-panel">
+      <div class="panel-title">Language Cost Comparison</div>
+      <div id="lang-compare"></div>
+    </div>
+    <div class="panel" id="cost-panel">
+      <div class="panel-title">Monthly Cost Breakdown</div>
+      <div id="cost-breakdown"></div>
     </div>
   </div>
   <div class="section-divider">Key Insights <span id="scenario-name-badge"></span></div>
@@ -163,7 +232,7 @@
           <div class="ref-row"><span class="ref-key">HDD IOPS (rand)</span><span class="ref-val">~200/s</span></div>
           <div class="ref-row"><span class="ref-key">1 Gbps NIC</span><span class="ref-val">125 MB/s</span></div>
           <div class="ref-row"><span class="ref-key">10 Gbps NIC</span><span class="ref-val">1.25 GB/s</span></div>
-          <div class="ref-row"><span class="ref-key">1 server (simple)</span><span class="ref-val">~1-10K RPS</span></div>
+          <div class="ref-row"><span class="ref-key">Postgres writes</span><span class="ref-val">~5K/s</span></div>
           <div class="ref-row"><span class="ref-key">Redis ops/sec</span><span class="ref-val">~100K/s</span></div>
           <div class="ref-row"><span class="ref-key">Kafka msg/sec</span><span class="ref-val">~1M/s</span></div>
         </div>
@@ -201,8 +270,28 @@
   </div>
 </div>
 <script>
-const PEAK_MULT = 5;
 const DAY = 86400;
+const MONTH = DAY * 30;
+
+// Cost constants (AWS-like, monthly)
+const COST = {
+  server_per_vcpu: 35,      // $35/month per vCPU (m5.large equivalent)
+  server_per_gb_ram: 4.5,   // $4.5/GB RAM
+  redis_per_gb: 15,         // $15/GB/month for managed Redis (cache.r5)
+  rds_per_gb: 8,            // $8/GB/month for RDS
+  s3_per_gb: 0.023,         // $0.023/GB/month S3 standard
+  egress_per_gb: 0.09,      // $0.09/GB out to internet
+  kafka_per_broker: 300,    // $300/month per Kafka broker (m5.large × 2 + storage)
+};
+
+// Language throughput estimates (QPS per instance)
+const LANG_QPS = {
+  go:     { label: 'Go',         qps: 30000, cpu: 4, mem: 8, color: '#5DCAA5' },
+  java:   { label: 'Java',       qps: 25000, cpu: 4, mem: 8, color: '#378ADD' },
+  node:   { label: 'Node.js',    qps: 15000, cpu: 4, mem: 8, color: '#7F77DD' },
+  python_async: { label: 'Python asyncio', qps: 5000, cpu: 4, mem: 8, color: '#D85A30' },
+  python_sync: { label: 'Python sync',    qps: 1000, cpu: 4, mem: 8, color: '#EF9F27' },
+};
 
 function fmtBytes(b) {
   if (b === 0) return '0 B';
@@ -234,6 +323,20 @@ function fmtBW(bps) {
   return Math.round(bps) + ' B/s';
 }
 
+function fmtMoney(n) {
+  if (n >= 1e6) return '$' + (n/1e6).toFixed(1) + 'M';
+  if (n >= 1e3) return '$' + (n/1e3).toFixed(1) + 'K';
+  return '$' + Math.round(n).toString();
+}
+
+function fmtTokens(n) {
+  if (n >= 1e12) return (n/1e12).toFixed(2) + 'T';
+  if (n >= 1e9) return (n/1e9).toFixed(2) + 'B';
+  if (n >= 1e6) return (n/1e6).toFixed(1) + 'M';
+  if (n >= 1e3) return (n/1e3).toFixed(1) + 'K';
+  return Math.round(n).toString();
+}
+
 const SCENARIOS = [
   {
     id: 'url',
@@ -245,32 +348,43 @@ const SCENARIOS = [
       { id: 'shortens_per_user', label: 'Shortens / User / Day', val: 1, min: 1, max: 20, step: 1, unit: '', mult: 1 },
       { id: 'rw_ratio', label: 'Read : Write Ratio', val: 100, min: 10, max: 500, step: 10, unit: ':1', mult: 1 },
       { id: 'url_size', label: 'Original URL Size', val: 500, min: 100, max: 2000, step: 100, unit: 'bytes', mult: 1 },
-      { id: 'retention', label: 'Retention', val: 5, min: 1, max: 10, step: 1, unit: 'years', mult: 1 },
+      { id: 'shortcode_len', label: 'Short Code Length', val: 7, min: 5, max: 10, step: 1, unit: 'chars', mult: 1 },
+      { id: 'cache_ttl_hrs', label: 'Cache TTL', val: 24, min: 1, max: 168, step: 1, unit: 'hours', mult: 1 },
     ],
     calc(p) {
-      const dau = p.mau * p.mau_mult * 0.3;
+      const dau = p.mau * 0.3;
       const wqps = (dau * p.shortens_per_user) / DAY;
       const rqps = wqps * p.rw_ratio;
-      const storPerDay = wqps * DAY * (p.url_size + 50); // url + metadata
-      const bwOut = rqps * 50; // redirect = tiny response
-      const servers = Math.ceil((rqps * PEAK_MULT) / 5000); // reads are simple redirects = 5K QPS/server
-      const cacheGB = (storPerDay * 30 * 0.2) / 1e9;
-      return { wqps, rqps, storPerDay, bwOut, servers, cacheGB,
+      const recordBytes = p.url_size + 50 + p.shortcode_len;
+      const storPerDay = wqps * DAY * recordBytes;
+      const stor5yr = storPerDay * 365 * 5 * 3; // 3x replication
+      const bwOut = rqps * 50 * 8;
+      const servers = Math.ceil(rqps / 5000);
+      const cacheHitRatio = 0.95;
+      const cacheBytes = rqps * recordBytes * p.cache_ttl_hrs * 3600 * 0.2;
+      const cacheGB = cacheBytes / 1e9;
+      const keyspace = Math.pow(62, p.shortcode_len);
+      const keyspaceLabel = keyspace >= 1e12 ? (keyspace/1e12).toFixed(1) + ' Trillion' : fmtNum(keyspace);
+      const cost = estimateCost(servers, 4, 8, storPerDay, bwOut, cacheGB);
+      return { wqps, rqps, storPerDay, bwOut, servers, cacheGB, cost,
         extras: [
-          { label: 'Base62 keyspace (7 chars)', val: '3.5 Trillion', color: 'teal' },
-          { label: 'Cache hot 20% URLs (Redis)', val: fmtBytes(storPerDay * 30 * 0.2), color: 'green' },
-          { label: 'DB writes/day', val: fmtNum(wqps * DAY), color: 'amber' },
-          { label: 'Redirect latency target', val: '< 10ms', color: 'blue' },
+          { label: 'Base62 keyspace (' + p.shortcode_len + ' chars)', val: keyspaceLabel, color: 'teal' },
+          { label: 'Cache (20% @ ' + p.cache_ttl_hrs + 'h TTL)', val: fmtBytes(cacheBytes), color: 'green' },
+          { label: 'DB writes / day', val: fmtNum(wqps * DAY), color: 'amber' },
+          { label: '5-year storage (3× repl)', val: fmtBytes(stor5yr), color: 'coral' },
+          { label: 'Cache hit ratio target', val: '≥ 95%', color: 'blue' },
+          { label: 'Redirect latency target', val: '< 10ms', color: 'purple' },
         ]
       };
     },
     insights: [
-      'Use base62 (a-z, A-Z, 0-9) for shortcode: 7 chars = 62^7 = 3.5 Trillion unique URLs',
-      'KGS (Key Generation Service) pre-generates keys and stores in Redis to avoid collision under write spikes',
-      'Cache top 20% URLs in Redis (handles 80% of read traffic) — 80/20 Pareto rule',
-      'Write goes to SQL (simple schema), reads hit Redis first, then DB',
-      'Use consistent hashing across DB shards; partition by first 2 chars of shortcode',
-      'Async cleanup worker for expired URLs; soft-delete first, hard-delete in batches',
+      'Base62 keyspace (a-z, A-Z, 0-9): 7 chars = 3.5T, 8 chars = 218T, 9 chars = 13.8Q. 7 is the sweet spot for URLs',
+      'KGS (Key Generation Service): pre-generates key batches in Redis pools. Each DB shard has its own pool to avoid contention',
+      'Cache top 20% URLs (80% traffic). LRU eviction + TTL jitter (±10%) prevents thundering herd on expiry',
+      'Write path: insert SQL row (id, shortcode, long_url, created_at, expires_at). Read path: Redis → miss → DB → populate cache + redirect',
+      'Shard DB by shortcode first-char (62 shards). Consistent hashing with virtual nodes for even distribution',
+      'Async cleanup: scan expired URLs in batches of 1000, soft-delete cursor, hard-delete during weekly maintenance window',
+      'Rate limit URL creation per user (100/hr) via Redis sliding window log. Redirects rate-limited at edge (10K/s per IP)',
     ]
   },
   {
@@ -282,36 +396,44 @@ const SCENARIOS = [
       { id: 'dau', label: 'Daily Active Users', val: 200, min: 10, max: 1000, step: 10, unit: 'M', mult: 1e6 },
       { id: 'tweets_per_user', label: 'Tweets / User / Day', val: 2, min: 1, max: 20, step: 1, unit: '', mult: 1 },
       { id: 'followers_avg', label: 'Avg Followers / User', val: 200, min: 50, max: 5000, step: 50, unit: '', mult: 1 },
-      { id: 'tweet_size', label: 'Tweet Size', val: 300, min: 100, max: 1000, step: 50, unit: 'bytes', mult: 1 },
+      { id: 'following_avg', label: 'Avg Following / User', val: 400, min: 50, max: 5000, step: 50, unit: '', mult: 1 },
+      { id: 'celebrity_threshold', label: 'Celebrity Follower Threshold', val: 1000000, min: 100000, max: 10000000, step: 100000, unit: '', mult: 1 },
       { id: 'media_pct', label: 'Media Attachment %', val: 20, min: 0, max: 80, step: 5, unit: '%', mult: 1 },
     ],
     calc(p) {
-      const dau = p.dau * 1e6;
+      const dau = p.dau;
       const wqps = (dau * p.tweets_per_user) / DAY;
-      const rqps = wqps * 100; // timeline reads dominate
-      const fanout = wqps * p.followers_avg; // writes to follower feeds
-      const tweetStorPerDay = wqps * DAY * p.tweet_size;
-      const mediaPerDay = wqps * DAY * (p.media_pct/100) * 200e3; // avg 200KB photo
-      const storPerDay = tweetStorPerDay + mediaPerDay;
-      const bwOut = rqps * p.tweet_size;
-      const servers = Math.ceil((rqps * PEAK_MULT) / 2000);
-      const cacheGB = (dau * 20 * p.tweet_size) / 1e9; // cache 20 tweets per user's home timeline
-      return { wqps, rqps, storPerDay, bwOut, servers, cacheGB,
+      const rqps = wqps * 100;
+      const celebs = Math.ceil(p.dau * 0.001);
+      const normalFollowers = (dau - celebs) * p.followers_avg;
+      const fanoutPush = wqps * normalFollowers;
+      const fanoutPull = wqps * celebs * p.following_avg;
+      const tweetStor = wqps * DAY * p.tweet_size;
+      const mediaStor = wqps * DAY * (p.media_pct/100) * 200e3;
+      const storPerDay = tweetStor + mediaStor;
+      const bwOut = rqps * p.tweet_size * 8;
+      const servers = Math.ceil(rqps / 2000);
+      const cacheGB = (dau * 20 * p.tweet_size) / 1e9;
+      const cost = estimateCost(servers, 4, 16, storPerDay, bwOut, cacheGB);
+      return { wqps, rqps, storPerDay, bwOut, servers, cacheGB, cost,
         extras: [
-          { label: 'Fanout writes / sec', val: fmtNum(fanout), color: 'coral' },
+          { label: 'Fanout push writes / sec', val: fmtNum(fanoutPush), color: 'coral' },
+          { label: 'Fanout pull reads / sec', val: fmtNum(fanoutPull), color: 'purple' },
           { label: 'Timeline cache size', val: fmtBytes(cacheGB * 1e9), color: 'teal' },
-          { label: 'Media storage / day', val: fmtBytes(mediaPerDay), color: 'amber' },
-          { label: 'CDN needed', val: 'Yes (media)', color: 'blue' },
+          { label: 'Media storage / day', val: fmtBytes(mediaStor), color: 'amber' },
+          { label: 'Celebrity accounts (>1M)', val: fmtNum(celebs), color: 'blue' },
+          { label: 'CDN needed', val: 'Yes (media + images)', color: 'green' },
         ]
       };
     },
     insights: [
-      'Fan-out on write: pre-compute timelines → O(1) read, O(n followers) write. Best for normal users',
-      'Fan-out on read: pull at timeline load → O(1) write, O(n following) read. Best for celebrities (>1M followers)',
-      'Hybrid: push for users with < 10K followers, pull for power users. Twitter uses this',
-      'Tweet IDs use Snowflake: 41-bit timestamp + 10-bit machine ID + 12-bit sequence = sortable + unique',
-      'Separate read/write paths: Kafka absorbs write spikes → async fanout workers → Redis sorted sets for timelines',
-      'Cache: Redis ZSET per user for timeline, member=tweetId, score=timestamp. ZRANGE for pagination',
+      'Fan-out on write: pre-compute timeline on tweet → O(1) timeline read, O(followers) write. Best for normal users with <10K followers',
+      'Fan-out on read: pull tweets from followed users at timeline load → O(1) write, O(following) read. Best for celebrities with >1M followers',
+      'Twitter hybrid: push for users with <10K followers, pull for celebs. Reduces fanout amplification by 40% at scale',
+      'Tweet IDs use Snowflake: 41-bit timestamp + 10-bit machine ID + 12-bit sequence = 1M IDs/sec/machine, time-sortable without a central sequence',
+      'Timeline storage: Redis ZSET per user (member=tweetId, score=timestamp). ZREVRANGE 0 19 for pagination. 800GB total at 200M DAU',
+      'Media pipeline: upload → S3 → async transcode to 3 sizes → CDN (Akamai) → signed URLs with 1hr TTL in Redis cache',
+      'Kafka absorbs tweet write spikes (up to 50K/sec during events). Fanout workers read from Kafka and populate timeline ZSETs asynchronously',
     ]
   },
   {
@@ -325,35 +447,45 @@ const SCENARIOS = [
       { id: 'msg_size', label: 'Avg Message Size', val: 100, min: 50, max: 500, step: 25, unit: 'bytes', mult: 1 },
       { id: 'media_pct', label: 'Media Messages %', val: 30, min: 5, max: 70, step: 5, unit: '%', mult: 1 },
       { id: 'media_size', label: 'Avg Media Size', val: 200, min: 50, max: 1000, step: 50, unit: 'KB', mult: 1024 },
+      { id: 'e2ee_overhead', label: 'E2EE Overhead %', val: 15, min: 5, max: 30, step: 5, unit: '%', mult: 1 },
+      { id: 'presence_interval', label: 'Presence Heartbeat', val: 5, min: 1, max: 30, step: 1, unit: 'sec', mult: 1 },
     ],
     calc(p) {
-      const dau = p.dau * 1e6;
+      const dau = p.dau;
       const totalMsgs = dau * p.msgs_per_user;
       const wqps = totalMsgs / DAY;
-      const rqps = wqps * 2; // sender + receiver
-      const textStorPerDay = totalMsgs * (1 - p.media_pct/100) * p.msg_size;
-      const mediaStorPerDay = totalMsgs * (p.media_pct/100) * p.media_size * 1024;
-      const storPerDay = textStorPerDay + mediaStorPerDay;
-      const bwOut = rqps * p.msg_size + (wqps * p.media_pct/100) * p.media_size * 1024;
-      const wsConnections = dau; // 1 persistent connection per DAU
-      const servers = Math.ceil(wsConnections / 65000); // ~65K connections per server (Linux default)
-      const cacheGB = (dau * 50 * p.msg_size) / 1e9; // recent 50 msgs per user
-      return { wqps, rqps, storPerDay, bwOut, servers, cacheGB,
+      const rqps = wqps * 2;
+      const overhead = 1 + p.e2ee_overhead / 100;
+      const textStor = totalMsgs * (1 - p.media_pct/100) * p.msg_size * overhead;
+      const mediaStor = totalMsgs * (p.media_pct/100) * p.media_size * 1024;
+      const storPerDay = textStor + mediaStor;
+      const stor7yrRegulatory = storPerDay * 365 * 7 * 2;
+      const bwOut = (rqps * p.msg_size * overhead + wqps * (p.media_pct/100) * p.media_size * 1024) * 8;
+      const wsConnections = dau;
+      const servers = Math.ceil(wsConnections / 65000);
+      const presenceWrites = dau / p.presence_interval;
+      const cacheGB = (dau * 50 * p.msg_size * overhead) / 1e9;
+      const cost = estimateCost(servers, 4, 16, storPerDay, bwOut, cacheGB);
+      return { wqps, rqps, storPerDay, bwOut, servers, cacheGB, cost,
         extras: [
           { label: 'WebSocket connections', val: fmtNum(wsConnections), color: 'teal' },
-          { label: 'Media storage / day', val: fmtBytes(mediaStorPerDay), color: 'amber' },
+          { label: 'Media storage / day', val: fmtBytes(mediaStor), color: 'amber' },
           { label: 'Msg throughput / sec', val: fmtNum(wqps) + ' msgs', color: 'blue' },
-          { label: 'Connection servers needed', val: Math.ceil(wsConnections/65000).toLocaleString(), color: 'purple' },
+          { label: 'Connection servers', val: servers.toLocaleString(), color: 'purple' },
+          { label: 'Presence writes / sec', val: fmtNum(presenceWrites), color: 'green' },
+          { label: '7-year regulatory storage', val: fmtBytes(stor7yrRegulatory), color: 'coral' },
         ]
       };
     },
     insights: [
-      'Each user needs 1 persistent WebSocket connection. With 500M DAU, that\'s 500M open sockets',
-      'Connection servers: Linux default 65K sockets/server → ~7700 servers just for connections',
-      'Message queue: Kafka per-user partition. Consumer group per device for multi-device support',
-      'Cassandra for message storage: write-heavy, time-series access, easy to partition by user_id + timestamp',
-      'Presence service: heartbeat every 5s → Redis TTL. If TTL expires, user is offline',
-      'Offline messages stored in DB (Cassandra) with TTL of 30 days; push notification triggers fetch',
+      'Each user = 1 persistent WebSocket connection. 500M DAU = 500M open sockets across the fleet',
+      'Connection servers: Linux fd limit ~65K/process → ~7700 servers just for connections. Erlang handles this better (WhatsApp uses Erlang)',
+      'E2EE (Signal Protocol): each message encrypted individually. ~15% overhead per message. No server-side content inspection possible',
+      'Message storage: Cassandra partition by (user_id + bucket_week). Writes are 99% of ops. Reads only for history scroll-back',
+      'Presence: heartbeat every 5s → Redis SETEX with TTL 15s. If expired, mark offline. Use WebSocket close event for instant logout',
+      'Offline messages held in Cassandra with 30-day TTL. Push notification via FCM/APNs when user reconnects. Server deletes after delivery',
+      'Multi-device: each device is a separate consumer in the same consumer group. Kafka partitions by user_id_hash. At-least-once delivery',
+      'Media: uploaded to S3, CDN-delivered with expiring signed URLs (1hr TTL). Clients cache aggressively. Thumbnails pre-generated',
     ]
   },
   {
@@ -364,37 +496,46 @@ const SCENARIOS = [
     params: [
       { id: 'dau', label: 'Daily Active Users', val: 100, min: 10, max: 500, step: 10, unit: 'M', mult: 1e6 },
       { id: 'videos_watched', label: 'Videos Watched / User / Day', val: 5, min: 1, max: 20, step: 1, unit: '', mult: 1 },
-      { id: 'uploads_per_min', label: 'Video Uploads / Minute', val: 500, min: 100, max: 2000, step: 100, unit: 'hours', mult: 1 },
+      { id: 'uploads_per_min', label: 'Uploads / Minute', val: 500, min: 100, max: 2000, step: 100, unit: 'hours', mult: 1 },
       { id: 'avg_video_len', label: 'Avg Video Length', val: 7, min: 1, max: 30, step: 1, unit: 'min', mult: 1 },
-      { id: 'video_size_per_min', label: 'Raw Video Size', val: 300, min: 100, max: 1000, step: 50, unit: 'MB/min', mult: 1 },
+      { id: 'bitrate_sd', label: 'Stream Bitrate (SD)', val: 3, min: 1, max: 10, step: 0.5, unit: 'Mbps', mult: 1e6 },
+      { id: 'transcode_cost', label: 'Transcode CPU (real-time factor)', val: 10, min: 2, max: 30, step: 1, unit: '×', mult: 1 },
     ],
     calc(p) {
-      const dau = p.dau * 1e6;
+      const dau = p.dau;
       const rqps = (dau * p.videos_watched) / DAY;
-      const wqps = (p.uploads_per_min * 60 * 60) / DAY; // upload QPS (convert hours of content/min to uploads/sec)
-      const uploadMinsPerSec = p.uploads_per_min * 60; // minutes of content per second
-      const rawIngestBW = uploadMinsPerSec * p.video_size_per_min * 1e6; // bytes/sec ingest
-      const storPerDay = uploadMinsPerSec * DAY * p.video_size_per_min * 1e6 * 0.2; // 5x compression after transcode
-      const cdnBW = rqps * (p.avg_video_len * 3 * 1e6); // avg 3 MB/min for 360p streaming
-      const servers = Math.ceil((rqps * PEAK_MULT) / 1000);
-      const transcodeServers = Math.ceil(uploadMinsPerSec * 10); // 10 CPU-sec to transcode 1 min video
-      const cacheGB = (dau * 1e6 * 0.001); // cache 1MB worth of popular video chunks per active user
-      return { wqps, rqps, storPerDay, bwOut: cdnBW, servers, cacheGB,
+      const uploadMinsPerSec = p.uploads_per_min;
+      const wqps = (p.uploads_per_min * 60) / DAY;
+      const rawIngestBW = uploadMinsPerSec * 300 * 1e6;
+      const storPerDay = uploadMinsPerSec * DAY * 300 * 1e6 * 0.2;
+      const stor5yr = storPerDay * 365 * 5 * 0.5;
+      const cdnBW = rqps * (p.avg_video_len * p.bitrate_sd / 8) * 8;
+      const cdnEgressGBmo = cdnBW * 86400 * 30 / 8 / 1e9;
+      const cdnCost = cdnEgressGBmo * 0.085;
+      const servers = Math.ceil(rqps / 1000);
+      const transcodeServers = Math.ceil(uploadMinsPerSec * p.transcode_cost);
+      const cacheGB = dau * 0.001;
+      const allServers = servers + transcodeServers + 20;
+      const cost = estimateCost(allServers, 8, 32, storPerDay, cdnBW, cacheGB);
+      return { wqps, rqps, storPerDay, bwOut: cdnBW, servers: allServers, cacheGB, cost,
         extras: [
           { label: 'Raw ingest bandwidth', val: fmtBW(rawIngestBW), color: 'coral' },
           { label: 'CDN bandwidth out', val: fmtBW(cdnBW), color: 'teal' },
-          { label: 'Transcode servers', val: transcodeServers.toLocaleString(), color: 'amber' },
-          { label: 'Video formats generated', val: '4–6 (360p–4K)', color: 'blue' },
+          { label: 'Transcode workers', val: transcodeServers.toLocaleString(), color: 'amber' },
+          { label: 'CDN egress cost / month', val: fmtMoney(cdnCost), color: 'purple' },
+          { label: '5-year cold storage (Glacier)', val: fmtBytes(stor5yr), color: 'green' },
+          { label: 'Formats generated', val: '4–6 (360p/480p/720p/1080p/4K)', color: 'blue' },
         ]
       };
     },
     insights: [
-      'Transcoding pipeline: upload → S3 raw → Kafka event → worker pool (FFmpeg) → 4-6 resolutions → CDN',
-      'Adaptive bitrate (ABR) streaming: client switches quality based on bandwidth. HLS or MPEG-DASH',
-      'Separate hot (CDN edge) and cold (S3 Glacier) storage. 90% views on <5% of videos',
-      'Video chunks in 2-10s segments. CDN caches segments — only popular videos stay hot',
-      'Metadata DB: PostgreSQL for video metadata. Elasticsearch for search. Redis for view counts',
-      'View count is eventually consistent — use Redis incr + batch flush to DB every minute',
+      'Transcoding pipeline: upload → S3 raw → Kafka event → worker pool (FFmpeg) → 4-6 resolutions → CDN. GPU encoding (NVENC) is 5× faster than CPU',
+      'ABR (Adaptive Bitrate): client requests segments at resolution matching current bandwidth. HLS (Apple) or MPEG-DASH (Google)',
+      'Hot/cold tier: 90% of views on <5% of videos. Hot goes to CDN edge, cold served from origin. Glacier for archival after 30 days',
+      'Video segmented into 2-10s chunks. CDN caches by URL pattern /video/{id}/{resolution}/{segment}. Popular segments fill edge quickly',
+      'Metadata: PostgreSQL (videos, channels). Elasticsearch (search). Redis (view count, likes). View count = Redis INCR → Kafka → Flink → DB every 60s',
+      'CDN cost is the #1 expense: ~$0.085/GB egress. At 10B views/day × 3Mbps × 7min avg = $XM/day. Google uses their own CDN (not CloudFront)',
+      'Recommendations: offline Spark ML (collaborative filtering + content-based) → pre-computed per-user list in Cassandra. Refreshed daily',
     ]
   },
   {
@@ -407,37 +548,213 @@ const SCENARIOS = [
       { id: 'active_riders', label: 'Active Riders (peak)', val: 10, min: 1, max: 100, step: 1, unit: 'M', mult: 1e6 },
       { id: 'location_interval', label: 'Driver Location Update', val: 4, min: 1, max: 15, step: 1, unit: 'sec', mult: 1 },
       { id: 'trips_per_day', label: 'Trips / Day', val: 5, min: 1, max: 50, step: 1, unit: 'M', mult: 1e6 },
-      { id: 'search_radius_km', label: 'Search Radius', val: 5, min: 1, max: 20, step: 1, unit: 'km', mult: 1 },
+      { id: 'match_radius', label: 'Match Search Radius', val: 5, min: 1, max: 20, step: 1, unit: 'km', mult: 1 },
+      { id: 'surge_interval', label: 'Surge Recalc Interval', val: 60, min: 15, max: 300, step: 15, unit: 'sec', mult: 1 },
     ],
     calc(p) {
-      const drivers = p.active_drivers * 1e6;
-      const riders = p.active_riders * 1e6;
-      const trips = p.trips_per_day * 1e6;
-      const locWriteQPS = drivers / p.location_interval; // location updates/sec
-      const matchQPS = (trips / DAY) * 3; // ~3 queries per trip match
-      const rqps = matchQPS + (riders / 10); // rider location queries
+      const drivers = p.active_drivers;
+      const riders = p.active_riders;
+      const trips = p.trips_per_day;
+      const locWriteQPS = drivers / p.location_interval;
+      const matchQPS = (trips / DAY) * 3;
+      const etaQPS = matchQPS * 2;
+      const riderLocReads = riders / 5;
+      const rqps = matchQPS + etaQPS + riderLocReads;
       const wqps = locWriteQPS;
-      const locSize = 35; // lat, lng, timestamp, driver_id = 35 bytes
-      const storPerDay = locWriteQPS * DAY * locSize;
-      const bwOut = rqps * 200; // 200 bytes per nearby driver response
-      const servers = Math.ceil((Math.max(rqps, wqps) * PEAK_MULT) / 2000);
-      const cacheGB = (drivers * 100) / 1e9; // current driver locations in memory
-      return { wqps, rqps, storPerDay, bwOut, servers, cacheGB,
+      const surgeQPS = drivers / p.surge_interval;
+      const locStor = locWriteQPS * DAY * 40;
+      const tripStor = trips * 2000;
+      const storPerDay = locStor + tripStor;
+      const stor5yr = storPerDay * 365 * 5;
+      const bwOut = (rqps * 300 + locWriteQPS * 40) * 8;
+      const servers = Math.ceil(Math.max(rqps, wqps) / 2000) + Math.ceil(surgeQPS / 100);
+      const cacheGB = (drivers * 100 + riders * 50) / 1e9;
+      const cost = estimateCost(servers, 4, 16, storPerDay, bwOut, cacheGB);
+      return { wqps, rqps, storPerDay, bwOut, servers, cacheGB, cost,
         extras: [
           { label: 'Location writes / sec', val: fmtNum(locWriteQPS), color: 'teal' },
+          { label: 'Match + ETA QPS', val: fmtNum(matchQPS + etaQPS), color: 'coral' },
           { label: 'Driver location cache', val: fmtBytes(drivers * 100), color: 'green' },
-          { label: 'Trips / sec', val: (trips/DAY).toFixed(0), color: 'amber' },
-          { label: 'Geospatial index', val: 'QuadTree/H3', color: 'purple' },
+          { label: 'Surge compute QPS', val: fmtNum(surgeQPS), color: 'purple' },
+          { label: '5-year trip history', val: fmtBytes(stor5yr), color: 'amber' },
+          { label: 'Geospatial index', val: 'H3 hex grid (Uber)', color: 'blue' },
         ]
       };
     },
     insights: [
-      'Location stream: 1M drivers × 1 update/4s = 250K writes/sec — use Kafka + Redis GEOADD',
-      'Geospatial index: QuadTree or Google S2 / Uber H3 hex grid for O(1) nearby driver lookup',
-      'Redis GEORADIUS to find drivers within X km. Update driver coords in Redis every 4 sec',
-      'Trip matching: WebSocket connection for real-time driver location push to rider app',
-      'Surge pricing: compute supply/demand ratio per hex cell every 60 seconds',
-      'Separate read (rider sees nearby drivers) vs write (driver updates location) services',
+      'Location stream: 250K writes/sec — Kafka ingestion → Flink stream processor → Redis GEOADD for each driver. Redis GEOADD is O(log N) per point',
+      'Geospatial: Uber uses H3 hex grid (not QuadTree). O(1) lookup: driver_in_cell[hex_id] → Redis SET. Match: check rider cell + 7 surrounding cells',
+      'ETA: ML model computes travel time from driver location to pickup. Features: traffic (MapR), driver speed history, time of day. ~50ms inference',
+      'Trip matching: WebSocket push of nearby drivers to rider. Geo-fence: rider sees drivers within 2km. Updates every 2s via Redis PUB/SUB',
+      'Surge pricing: supply/demand ratio per H3 cell recalculated periodically. Multiplier = max(1, demand/supply × elasticity_factor). Flink tumbling window',
+      'Read/write split: location write service (Kafka + Redis) is separate from match/read service (Redis GET + WebSocket push)',
+      'History: trip details in Cassandra (partition by week, ordered by created_at). Used for earnings, receipts, and ML training data',
+    ]
+  },
+  {
+    id: 'payment',
+    name: 'Payment System',
+    icon: 'ti-currency-dollar',
+    desc: 'Payment processing at JPMC/Stripe scale. Correctness and auditability matter more than raw throughput. Idempotency is everything.',
+    params: [
+      { id: 'txns_per_day', label: 'Transactions / Day', val: 5, min: 0.5, max: 50, step: 0.5, unit: 'M', mult: 1e6 },
+      { id: 'txn_size', label: 'Transaction Record Size', val: 2, min: 0.5, max: 10, step: 0.5, unit: 'KB', mult: 1024 },
+      { id: 'retention_years', label: 'Compliance Retention', val: 7, min: 3, max: 10, step: 1, unit: 'years', mult: 1 },
+      { id: 'reconciliation_pct', label: 'Reconciliation Records %', val: 10, min: 1, max: 50, step: 1, unit: '%', mult: 1 },
+      { id: 'gateways', label: 'Payment Gateways', val: 3, min: 1, max: 10, step: 1, unit: '', mult: 1 },
+      { id: 'auth_pct', label: 'Auth Requests / Txn', val: 2, min: 1, max: 5, step: 1, unit: '×', mult: 1 },
+    ],
+    calc(p) {
+      const txns = p.txns_per_day;
+      const authReqs = txns * p.auth_pct;
+      const wqps = txns / DAY;
+      const rqps = (txns * 2 + authReqs) / DAY;
+      const recStor = txns * (p.reconciliation_pct/100) * 500;
+      const auditStor = txns * 4 * 300;
+      const storPerDay = txns * p.txn_size * 1024 + recStor + auditStor;
+      const stor10yr = storPerDay * 365 * p.retention_years;
+      const bwOut = (rqps + wqps) * 500 * 8;
+      const servers = Math.ceil(rqps / 3000) + Math.ceil(p.gateways * 2);
+      const cacheGB = 0;
+      const cost = estimateCost(servers, 4, 16, storPerDay, bwOut, cacheGB, true);
+      return { wqps, rqps, storPerDay, bwOut, servers, cacheGB, cost,
+        extras: [
+          { label: 'Auth requests / day', val: fmtNum(authReqs), color: 'coral' },
+          { label: '10-year compliance storage', val: fmtBytes(stor10yr * 3), color: 'orange' },
+          { label: 'Idempotency keys / day', val: fmtNum(txns * 1.5), color: 'teal' },
+          { label: 'Audit log entries / day', val: fmtNum(txns * 4), color: 'amber' },
+          { label: 'Gateway failover count', val: p.gateways.toString(), color: 'purple' },
+          { label: 'Consistency model', val: 'Strong + Eventual', color: 'blue' },
+        ]
+      };
+    },
+    insights: [
+      'Idempotency key on every payment request. Same key + same request = same result. Key in DB with unique constraint — essential for retry safety',
+      'Two-phase commit too slow for distributed payments. Use Saga pattern with compensating transactions for rollback across services',
+      'Immutable audit log: only INSERT, no UPDATE/DELETE. Snapshot tables for current state, rebuildable from full log at any point in time',
+      'Dual-write problem: "I wrote to DB but Kafka failed." Use Transactional Outbox: write event + txn atomically to DB, then Kafka relay reads from outbox',
+      'Reconciliation: end-of-day batch job matches our records vs bank/network records. Mismatches → manual review within 24h SLA',
+      'Reads go to read replicas (eventually consistent). Balance checks read from leader (strong consistency). CQRS pattern recommended',
+      'Multi-gateway: route traffic across multiple gateways with circuit breaker pattern. Fallback to secondary if latency > 2s or error rate > 1%',
+      'PCI-DSS: card data never touches app servers. Tokenization at client-side. DB stores only tokens, PAN stored in PCI-compliant vault',
+    ]
+  },
+  {
+    id: 'notifications',
+    name: 'Notification System',
+    icon: 'ti-bell',
+    desc: 'Multi-channel notification delivery (push, email, SMS). Fan-out and rate-limiting to external providers are the bottlenecks.',
+    params: [
+      { id: 'dau', label: 'Daily Active Users', val: 100, min: 10, max: 500, step: 10, unit: 'M', mult: 1e6 },
+      { id: 'notifs_per_user', label: 'Notifications / User / Day', val: 10, min: 1, max: 50, step: 1, unit: '', mult: 1 },
+      { id: 'push_pct', label: 'Push Notification %', val: 70, min: 10, max: 90, step: 5, unit: '%', mult: 1 },
+      { id: 'email_pct', label: 'Email %', val: 20, min: 5, max: 50, step: 5, unit: '%', mult: 1 },
+      { id: 'avg_notif_size', label: 'Avg Notification Size', val: 2, min: 0.5, max: 10, step: 0.5, unit: 'KB', mult: 1024 },
+      { id: 'channels_per_user', label: 'Avg Channels / User', val: 2, min: 1, max: 5, step: 1, unit: '', mult: 1 },
+      { id: 'dedup_window', label: 'Dedup Window', val: 5, min: 1, max: 30, step: 1, unit: 'min', mult: 1 },
+    ],
+    calc(p) {
+      const dau = p.dau;
+      const total = dau * p.notifs_per_user * p.channels_per_user;
+      const wqps = total / DAY;
+      const pushQPS = wqps * (p.push_pct/100);
+      const emailQPS = wqps * (p.email_pct/100);
+      const smsQPS = wqps * (1 - (p.push_pct + p.email_pct)/100);
+      const dedupCheckQPS = wqps;
+      const templateQPS = wqps;
+      const rqps = dedupCheckQPS + templateQPS;
+      const storPerDay = total * p.avg_notif_size * 1024;
+      const stor90d = storPerDay * 90;
+      const bwOut = (pushQPS * 5 + emailQPS * 20000 + smsQPS * 1000) * 8;
+      const servers = Math.ceil(rqps / 10000);
+      const cacheGB = (dau * 20 * p.avg_notif_size * 1024) / 1e9;
+      const cost = estimateCost(servers, 4, 8, storPerDay, bwOut, cacheGB);
+      return { wqps, rqps, storPerDay, bwOut, servers, cacheGB, cost,
+        extras: [
+          { label: 'Push notifications / sec', val: fmtNum(pushQPS), color: 'teal' },
+          { label: 'Emails / sec', val: fmtNum(emailQPS), color: 'amber' },
+          { label: 'SMS / sec', val: fmtNum(smsQPS), color: 'coral' },
+          { label: 'Dedup checks / sec', val: fmtNum(dedupCheckQPS), color: 'purple' },
+          { label: '90-day notification history', val: fmtBytes(stor90d), color: 'green' },
+          { label: 'Template renders / sec', val: fmtNum(templateQPS), color: 'blue' },
+        ]
+      };
+    },
+    insights: [
+      'Notification queue: one Kafka topic per channel (push, email, SMS). Consumer groups per provider backend. Ensures channel isolation',
+      'Rate limit to external providers: each has a max QPS (FCM ~100K/s, AWS SES ~50K/s, Twilio ~500/s). Queue + token bucket throttle',
+      'Template service: render notification content from templates (Handlebars/Mustache). Avoid per-user DB query on render path',
+      'User preferences: which channels, quiet hours, opt-out. Cache aggressively (mostly static, rarely changes). Redis hash per user',
+      'Dedup: same notification type to same user within dedup window → collapse into one. Use Redis SET with TTL. Avoid sending duplicate pushes',
+      'Retry with exponential backoff: start 1s, double to max 1hr. DLQ after 10 retries for manual inspection. Dead letter handled by SRE rotation',
+      'Batch email: aggregate 50-100 emails into one SES API call. Reduces API calls and improves send rate. Max 50 recipients per SES batch',
+      'Analytics pipeline: all notification events → Kafka → Flink → Druid. Track delivery rate, open rate, click-through per channel per campaign',
+    ]
+  },
+  {
+    id: 'rag',
+    name: 'RAG / LLM Chat',
+    icon: 'ti-brain',
+    desc: 'Retrieval-Augmented Generation system. Vector DB retrieval + LLM inference. The bottleneck is GPU cost and latency.',
+    params: [
+      { id: 'dau', label: 'Daily Active Users', val: 10, min: 1, max: 100, step: 1, unit: 'M', mult: 1e6 },
+      { id: 'queries_per_user', label: 'Queries / User / Day', val: 5, min: 1, max: 20, step: 1, unit: '', mult: 1 },
+      { id: 'input_tokens', label: 'Input Tokens / Query', val: 500, min: 100, max: 2000, step: 100, unit: '', mult: 1 },
+      { id: 'output_tokens', label: 'Output Tokens / Query', val: 200, min: 50, max: 1000, step: 50, unit: '', mult: 1 },
+      { id: 'vector_count', label: 'Vector DB Size', val: 100, min: 10, max: 500, step: 10, unit: 'M', mult: 1e6 },
+      { id: 'embed_dim', label: 'Embedding Dimension', val: 768, min: 128, max: 4096, step: 128, unit: '', mult: 1 },
+      { id: 'ctx_chunks', label: 'Context Chunks Retrieved', val: 5, min: 1, max: 20, step: 1, unit: '', mult: 1 },
+      { id: 'cache_hit_pct', label: 'Cache Hit Rate %', val: 30, min: 0, max: 70, step: 5, unit: '%', mult: 1 },
+    ],
+    calc(p) {
+      const dau = p.dau;
+      const rawQps = (dau * p.queries_per_user) / DAY;
+      const qps = rawQps * (1 - p.cache_hit_pct/100);
+      const tokensPerSec = qps * (p.input_tokens + p.output_tokens);
+      const gpuTokensPerSec = 2000;
+      const gpuCount = Math.ceil(tokensPerSec / gpuTokensPerSec);
+      const gpuNodes = Math.ceil(gpuCount / 8);
+      const kvCacheMem = gpuCount * p.input_tokens * 2 * 2 * 80 / 1e9;
+      const vectorMem = p.vector_count * p.embed_dim * 4 * 1.2;
+      const vectorCacheGB = vectorMem / 1e9;
+      const embedQPS = rawQps;
+      const embedServers = Math.ceil(embedQPS / 500);
+      const vectorSearchQPS = qps;
+      const storPerDay = tokensPerSec * DAY * 2;
+      const bwOut = qps * (p.output_tokens * 2) * 8;
+      const servers = gpuNodes + embedServers + Math.ceil(qps / 5000) + 3;
+      const computeGpu = gpuNodes * 8 * 300;
+      const computeCpu = embedServers * 4 * 100;
+      const cost = {
+        compute: computeGpu + computeCpu,
+        storage: (storPerDay * 365) / 1e9 * COST.s3_per_gb,
+        bandwidth: (bwOut * DAY * 30) / (8 * 1e9) * COST.egress_per_gb,
+        cache: 0,
+        total: 0
+      };
+      cost.total = cost.compute + cost.storage + cost.bandwidth;
+      return { wqps: qps, rqps: qps, storPerDay, bwOut, servers, cacheGB: vectorCacheGB, cost,
+        extras: [
+          { label: 'Raw queries / sec', val: fmtNum(rawQps), color: 'teal' },
+          { label: 'Tokens / sec', val: fmtNum(tokensPerSec), color: 'coral' },
+          { label: 'A100 GPUs needed', val: gpuCount.toLocaleString(), color: 'red' },
+          { label: 'GPU nodes (8× A100)', val: gpuNodes.toLocaleString(), color: 'amber' },
+          { label: 'KV cache memory / node', val: fmtBytes(kvCacheMem * 1e9), color: 'purple' },
+          { label: 'Embedding servers', val: embedServers.toLocaleString(), color: 'blue' },
+          { label: 'Vector index memory', val: fmtBytes(vectorMem), color: 'green' },
+          { label: 'GPU monthly cost', val: fmtMoney(computeGpu * 730), color: 'coral' },
+        ]
+      };
+    },
+    insights: [
+      'LLM inference is GPU-bound: Llama 70B does ~2000 tok/s per A100 (FP16). Quantize to INT8 for 2× throughput, INT4 for 4× (with quality loss)',
+      'Vector DB (HNSW index) must fit in RAM for <10ms search. 100M vectors × 768d × FP32 ≈ 307GB. Use IVF_PQ for 10× compression but lower recall',
+      'Cache common queries in Redis: ~30% cache hit rate typical for chat apps. TTL ~5 min for freshness. Key = embedding hash, value = generated response',
+      'Separate retrieval (CPU) from generation (GPU). Embedding model (e.g., E5-mistral) is CPU-friendly. Retrieval runs on cheap CPU instances',
+      'RAG pipeline: query → embed → vector search → context assembly (top-K chunks) → LLM → guardrails (PII, toxicity) → response',
+      'KV cache is the hidden GPU memory hog: for 4K context with Llama 70B, KV cache takes ~2GB per request. Batch inference shares KV cache across requests',
+      'GPU cost dominates: 8× A100 (H100) node = $30K/mo on-demand, $15K reserved. At scale, self-host with Spot (interruptible) for 60% savings',
+      'Model serving: vLLM or TensorRT-LLM for production. Continuous batching increases GPU utilization from 30% → 80%+ compared to naive batching',
     ]
   },
   {
@@ -451,34 +768,42 @@ const SCENARIOS = [
       { id: 'limit_per_user', label: 'Rate Limit / User / Min', val: 100, min: 10, max: 1000, step: 10, unit: 'req/min', mult: 1 },
       { id: 'dau', label: 'Daily Active Users', val: 10, min: 1, max: 100, step: 1, unit: 'M', mult: 1e6 },
       { id: 'window_sec', label: 'Window Size', val: 60, min: 1, max: 3600, step: 10, unit: 'sec', mult: 1 },
+      { id: 'algo_type', label: 'Algorithm (0=Token, 1=Sliding, 2=Hybrid)', val: 2, min: 0, max: 2, step: 1, unit: '', mult: 1 },
     ],
     calc(p) {
       const totalRPS = p.services * p.rps_per_service;
-      const wqps = totalRPS; // every request = 1 Redis read+write
+      const wqps = totalRPS;
       const rqps = totalRPS;
-      const activeUsers = p.dau * 1e6 * 0.1; // 10% active at peak
-      const redisMemPerUser = 50 + (p.window_sec * 8); // sliding window log: timestamps array
-      const storPerDay = 0; // rate limiter is ephemeral, TTL-based
-      const totalRedisBytes = activeUsers * redisMemPerUser;
-      const bwOut = totalRPS * 20; // small response header
-      const servers = Math.ceil(totalRPS / 100000); // Redis handles ~100K ops/sec
-      const cacheGB = totalRedisBytes / 1e9;
-      return { wqps, rqps, storPerDay: totalRedisBytes, bwOut, servers, cacheGB,
+      const activeUsers = p.dau * 0.1;
+      const memPerUser = p.algo_type === 0 ? 50 : p.algo_type === 1 ? 200 : 80;
+      const totalRedisBytes = activeUsers * (memPerUser + p.window_sec * 4);
+      const totalRedisGB = totalRedisBytes / 1e9;
+      const redisNodes = Math.max(1, Math.ceil(totalRPS / 100000));
+      const redisShardGB = totalRedisGB / redisNodes;
+      const storPerDay = 0;
+      const bwOut = totalRPS * 20 * 8;
+      const servers = Math.ceil(totalRPS / 100000);
+      const cacheGB = totalRedisGB;
+      const cost = estimateCost(servers, 4, 8, storPerDay, bwOut, cacheGB);
+      return { wqps, rqps, storPerDay, bwOut, servers, cacheGB, cost,
         extras: [
           { label: 'Total RPS to check', val: fmtNum(totalRPS), color: 'teal' },
           { label: 'Redis memory needed', val: fmtBytes(totalRedisBytes), color: 'amber' },
-          { label: 'Redis nodes (100K ops)', val: Math.max(1, Math.ceil(totalRPS/100000)).toString(), color: 'blue' },
-          { label: 'Algorithm', val: 'Sliding Window', color: 'purple' },
+          { label: 'Redis nodes (shards)', val: redisNodes.toString(), color: 'blue' },
+          { label: 'Memory per shard', val: fmtBytes(redisShardGB * 1e9), color: 'green' },
+          { label: 'Memory per user', val: memPerUser + ' bytes', color: 'purple' },
+          { label: 'Algorithm', val: p.algo_type === 0 ? 'Token Bucket' : p.algo_type === 1 ? 'Sliding Window Log' : 'Sliding Window Counter', color: 'teal' },
         ]
       };
     },
     insights: [
-      'Token Bucket: simple, allows bursts. INCR + EXPIRE in Redis. Best for sustained rate limits',
-      'Sliding Window Log: accurate but memory-heavy (stores timestamps). Redis sorted set (ZADD/ZCOUNT)',
-      'Sliding Window Counter: hybrid — split window into buckets. Best balance of accuracy and memory',
-      'Redis atomic ops: MULTI/EXEC or Lua script ensures no race conditions. INCRBY + TTL is atomic',
-      'For distributed: use Redis cluster with consistent hashing. Each gateway node hits same shard for user key',
-      'Fallback: if Redis is down, fail open (allow traffic) not closed — rate limiter is optional safety, not auth',
+      'Token Bucket: simple, allows bursts. INCR + EXPIRE in Redis per key. O(1) per check. Best for sustained rate limits with burst tolerance',
+      'Sliding Window Log: accurate but memory-heavy. Redis sorted set (ZADD/ZCOUNT) — O(log N) per check. Keeps exact request timestamps',
+      'Sliding Window Counter: hybrid — split window into 10s buckets. Best balance of accuracy (~99%) and memory (40% of full log)',
+      'Redis atomic ops: Lua script ensures no race conditions. EVAL "local c=redis.call(INCR,KEYS[1]) if c>limit then return 1 else return 0 end"',
+      'For distributed edge: Redis Cluster with consistent hashing. Each gateway hits same shard for same user key via hash slot',
+      'Fallback: if Redis is down, fail open (allow traffic) not closed — rate limiter is optional safety. Circuit breaker pattern for Redis client',
+      'Hierarchical: per-IP rate limit at edge (Nginx), per-user at app layer, per-service at API gateway. Each layer has different limit and window',
     ]
   },
   {
@@ -488,44 +813,52 @@ const SCENARIOS = [
     desc: 'Web-scale search engine. Crawling, indexing, and sub-100ms query serving across 30B+ pages.',
     params: [
       { id: 'pages_indexed', label: 'Pages Indexed', val: 30, min: 1, max: 100, step: 1, unit: 'B', mult: 1e9 },
-      { id: 'page_size', label: 'Avg Page Size (raw)', val: 100, min: 20, max: 500, step: 10, unit: 'KB', mult: 1024 },
+      { id: 'page_size', label: 'Avg Page (raw)', val: 100, min: 20, max: 500, step: 10, unit: 'KB', mult: 1024 },
       { id: 'queries_per_day', label: 'Search Queries / Day', val: 5, min: 1, max: 20, step: 0.5, unit: 'B', mult: 1e9 },
       { id: 'crawl_days', label: 'Re-crawl Frequency', val: 30, min: 7, max: 180, step: 7, unit: 'days', mult: 1 },
       { id: 'index_compression', label: 'Index / Raw Ratio', val: 20, min: 5, max: 50, step: 5, unit: '%', mult: 1 },
+      { id: 'result_snippet_len', label: 'Snippet Length', val: 300, min: 100, max: 1000, step: 50, unit: 'bytes', mult: 1 },
+      { id: 'hot_cache_pct', label: 'Hot Query Cache %', val: 50, min: 10, max: 80, step: 5, unit: '%', mult: 1 },
     ],
     calc(p) {
-      const pages = p.pages_indexed * 1e9;
-      const queries = p.queries_per_day * 1e9;
+      const pages = p.pages_indexed;
+      const queries = p.queries_per_day;
       const rqps = queries / DAY;
-      const crawlQPS = pages / (p.crawl_days * DAY); // pages crawled per second
+      const crawlQPS = pages / (p.crawl_days * DAY);
       const wqps = crawlQPS;
       const rawStorageTotal = pages * p.page_size * 1024;
       const indexSize = rawStorageTotal * (p.index_compression / 100);
+      const indexShards = Math.ceil(indexSize / 1e12);
       const storPerDay = crawlQPS * DAY * p.page_size * 1024 * (p.index_compression / 100);
-      const bwOut = rqps * 5000; // ~5KB per SERP
-      const servers = Math.ceil((rqps * PEAK_MULT) / 500); // complex query = 500 QPS/server
-      const cacheGB = (indexSize * 0.1) / 1e9; // cache hot 10% of index in memory
-      return { wqps: crawlQPS, rqps, storPerDay, bwOut, servers, cacheGB,
+      const hotCacheBytes = queries * p.result_snippet_len * (p.hot_cache_pct / 100);
+      const bwOut = rqps * p.result_snippet_len * 8;
+      const servers = Math.ceil(rqps / 500);
+      const cacheGB = (indexSize * 0.1 + hotCacheBytes) / 1e9;
+      const cost = estimateCost(servers, 8, 64, storPerDay, bwOut, cacheGB);
+      return { wqps: crawlQPS, rqps, storPerDay, bwOut, servers, cacheGB, cost,
         extras: [
-          { label: 'Raw web corpus size', val: fmtBytes(rawStorageTotal), color: 'coral' },
+          { label: 'Raw web corpus', val: fmtBytes(rawStorageTotal), color: 'coral' },
           { label: 'Inverted index size', val: fmtBytes(indexSize), color: 'amber' },
-          { label: 'Crawl rate needed', val: fmtNum(crawlQPS) + ' pages/s', color: 'teal' },
-          { label: 'Query latency target', val: '< 100ms', color: 'blue' },
+          { label: 'Index shards (1TB each)', val: indexShards.toLocaleString(), color: 'purple' },
+          { label: 'Crawl rate', val: fmtNum(crawlQPS) + ' pages/s', color: 'teal' },
+          { label: 'Hot query cache', val: fmtBytes(hotCacheBytes), color: 'green' },
+          { label: 'Serving tier servers', val: servers.toLocaleString(), color: 'blue' },
         ]
       };
     },
     insights: [
-      'Inverted index: maps word → list of (doc_id, position, TF-IDF score). Stored in column-oriented format',
-      'Index partitioned by doc_id range (horizontal) or by term (vertical). Google uses horizontal sharding',
-      'PageRank computed offline via MapReduce/Spark. Re-computed periodically, not per query',
-      'Query serving: posting list merge (AND/OR), BM25 scoring, final ranking with ML (BERT re-ranker)',
-      'Crawler: politeness delays, robots.txt, distributed frontier queue, duplicate detection (SimHash)',
-      'Hot query cache: top 1% of queries (same every hour) → memcached layer → 50% cache hit rate',
+      'Inverted index: maps word → list of (doc_id, position, TF-IDF). Column-oriented storage (Google uses Bigtable internally) for compression',
+      'Index partitioned by doc_id range (horizontal) — supports range scans. Google: shard by doc_id, each shard ~1TB stored in Colossus/GFS',
+      'PageRank computed offline via MapReduce/Spark. Re-computed every 2-4 weeks. Freshness signals (recency of content) added on top',
+      'Query serving: posting list merge (AND/OR for multi-word queries), BM25 scoring, top-1000 re-ranked by ML model (BERT/monoT5)',
+      'Crawler: politeness delays (1-5s between same domain requests), robots.txt, distributed frontier queue (URL frontier), duplicate detection via SimHash',
+      'Hot query cache: top ~1% of queries (same every hour) → memcached layer → ~50% cache hit rate. LRU across 10K most frequent queries',
+      'Serving architecture: query → load balancer → document shard servers → top K → re-ranker → snippet generator → response',
     ]
   },
   {
     id: 'amazon',
-    name: 'Amazon E-commerce',
+    name: 'E-commerce',
     icon: 'ti-shopping-cart',
     desc: 'E-commerce at Amazon scale. Product catalog, inventory, order processing, and recommendation engine.',
     params: [
@@ -534,46 +867,533 @@ const SCENARIOS = [
       { id: 'orders_per_day', label: 'Orders / Day', val: 5, min: 0.1, max: 50, step: 0.1, unit: 'M', mult: 1e6 },
       { id: 'product_size', label: 'Product Metadata Size', val: 10, min: 1, max: 100, step: 1, unit: 'KB', mult: 1024 },
       { id: 'searches_per_user', label: 'Searches / User / Day', val: 8, min: 1, max: 30, step: 1, unit: '', mult: 1 },
+      { id: 'review_size', label: 'Avg Review w/ Images', val: 50, min: 5, max: 200, step: 5, unit: 'KB', mult: 1024 },
+      { id: 'inventory_ttl_sec', label: 'Inventory Cache TTL', val: 30, min: 5, max: 300, step: 5, unit: 'sec', mult: 1 },
     ],
     calc(p) {
-      const dau = p.dau * 1e6;
-      const orders = p.orders_per_day * 1e6;
-      const rqps = (dau * (p.searches_per_user + 5)) / DAY; // searches + page views
+      const dau = p.dau;
+      const orders = p.orders_per_day;
+      const pageViewRPS = (dau * 20) / DAY;
+      const searchRPS = (dau * p.searches_per_user) / DAY;
+      const rqps = pageViewRPS + searchRPS;
       const wqps = orders / DAY;
-      const productStorTotal = p.products * 1e6 * p.product_size * 1024;
-      const orderStorPerDay = orders * 2000; // ~2KB per order record
-      const storPerDay = orderStorPerDay + (p.products * 1e6 * 10); // daily catalog updates
-      const bwOut = rqps * 50000; // ~50KB per search results page
-      const servers = Math.ceil((rqps * PEAK_MULT) / 1000);
-      const cacheGB = (p.products * 1e6 * 0.01 * p.product_size * 1024) / 1e9; // top 1% products in cache
-      return { wqps, rqps, storPerDay, bwOut, servers, cacheGB,
+      const reviewStorPerDay = orders * p.review_size * 1024;
+      const productStor = p.products * p.product_size * 1024;
+      const orderStor = orders * 5000;
+      const storPerDay = reviewStorPerDay + orderStor / 365;
+      const stor5yrOrders = orderStor * 365 * 5;
+      const bwOut = (pageViewRPS * 20000 + searchRPS * 1000) * 8;
+      const servers = Math.ceil(rqps / 1000);
+      const cacheGB = (p.products * 0.01 * p.product_size * 1024) / 1e9;
+      const cost = estimateCost(servers, 4, 16, storPerDay, bwOut, cacheGB);
+      return { wqps, rqps, storPerDay, bwOut, servers, cacheGB, cost,
         extras: [
-          { label: 'Total catalog storage', val: fmtBytes(productStorTotal), color: 'amber' },
-          { label: 'Orders / sec (avg)', val: (orders/DAY).toFixed(0), color: 'teal' },
+          { label: 'Total catalog storage', val: fmtBytes(productStor), color: 'amber' },
+          { label: 'Search QPS', val: fmtNum(searchRPS), color: 'purple' },
+          { label: 'Orders / sec', val: fmtNum(orders/DAY), color: 'teal' },
+          { label: '5-year order history', val: fmtBytes(stor5yrOrders), color: 'coral' },
           { label: 'Cache hot 1% products', val: fmtBytes(cacheGB * 1e9), color: 'green' },
-          { label: 'Inventory updates / sec', val: fmtNum(orders/DAY * 2), color: 'coral' },
+          { label: 'Inventory cache TTL', val: p.inventory_ttl_sec + 's', color: 'blue' },
         ]
       };
     },
     insights: [
-      'Product catalog: DynamoDB for product reads (10ms P99). Inventory in separate service with Redis',
-      'Inventory service needs strong consistency: distributed lock (Redis SETNX) or Optimistic locking (CAS)',
-      'Order service: event-sourced. Order placed → Kafka → payment → inventory reserve → fulfillment saga',
-      'Search: Elasticsearch for product search. Separate indexing pipeline (Kafka → ES indexer)',
-      'Recommendation: offline ML (collaborative filtering, ALS) → precomputed results stored in DynamoDB',
-      'Flash sale: pre-warm cache, disable real-time inventory checks, use token bucket for checkout QPS',
+      'Product catalog: DynamoDB for product reads (10ms P99). Partition by product_id. S3 for product images behind CDN',
+      'Inventory: strong consistency needed for WRW. Redis SETNX distributed lock per SKU or DynamoDB conditional update (optimistic locking)',
+      'Order service: event-sourced. Order placed → Kafka → payment → inventory reserve → fulfillment saga. Compensating txn if any step fails',
+      'Search: Elasticsearch for full-text product search. Separate indexing pipeline (Kafka → ES indexer). Category + price range filters via ES post-filter',
+      'Recommendation: offline ML (collaborative filtering, ALS on Spark) → precomputed related products in DynamoDB/Redis. Refreshed nightly',
+      'Flash sale: pre-warm cache 1hr before, disable real-time inventory checks (accept over-sell), use token bucket per user for checkout QPS ceiling',
+      'Product page: cache at CDN edge for unauthenticated pages (90% of traffic). Personalized pages (recommendations) rendered server-side with Redis merge',
+    ]
+  },
+  {
+    id: 'netflix',
+    name: 'Netflix',
+    icon: 'ti-player-play',
+    desc: 'Video streaming at Netflix scale. CDN delivery with Open Connect appliances at ISP edges. Pre-positioned content.',
+    params: [
+      { id: 'subs', label: 'Subscribers', val: 250, min: 10, max: 500, step: 10, unit: 'M', mult: 1e6 },
+      { id: 'hours_per_sub', label: 'Hours Streamed / Month / Sub', val: 50, min: 10, max: 200, step: 10, unit: '', mult: 1 },
+      { id: 'concurrent_pct', label: 'Peak Concurrent %', val: 12, min: 5, max: 30, step: 1, unit: '%', mult: 1 },
+      { id: 'bitrate', label: 'Avg Streaming Bitrate', val: 6, min: 1, max: 25, step: 1, unit: 'Mbps', mult: 1e6 },
+      { id: 'catalog_pb', label: 'Content Catalog', val: 30, min: 5, max: 100, step: 5, unit: 'PB', mult: 1e15 },
+      { id: 'encode_hours', label: 'Encoding Hours/Day', val: 20000, min: 1000, max: 100000, step: 1000, unit: 'hrs', mult: 1 },
+    ],
+    calc(p) {
+      const subs = p.subs;
+      const peakConcurrent = subs * (p.concurrent_pct / 100);
+      const monthlyHrs = subs * p.hours_per_sub;
+      const cdnBW = peakConcurrent * p.bitrate;
+      const deltaDataPerSec = cdnBW / 8;
+      const storPerDay = deltaDataPerSec * DAY;
+      const monthlyDeliveryPB = (cdnBW * 86400 * 30) / 8 / 1e15;
+      const bwOut = cdnBW;
+      const rqps = peakConcurrent * 30;
+      const wqps = p.encode_hours / DAY;
+      const servers = 500;
+      const cacheGB = (p.catalog_pb * 0.2) / 1e9;
+      const encodeCostMo = p.encode_hours * 30 * 2;
+      const cost = estimateCost(servers * 5, 8, 32, storPerDay * 0.1, bwOut * 0.1, cacheGB);
+      cost.total = cost.total * 0.4 + encodeCostMo;
+      return { wqps, rqps, storPerDay: p.catalog_pb / 365, bwOut, servers, cacheGB, cost,
+        extras: [
+          { label: 'Peak concurrent streams', val: fmtNum(peakConcurrent), color: 'teal' },
+          { label: 'CDN bandwidth (peak)', val: fmtBW(cdnBW), color: 'purple' },
+          { label: 'Monthly data delivered', val: fmtBytes(monthlyDeliveryPB * 1e15), color: 'amber' },
+          { label: 'Encode hours / day', val: fmtNum(p.encode_hours) + ' hrs', color: 'coral' },
+          { label: 'Content edge cache (hot 20%)', val: fmtBytes(p.catalog_pb * 0.2), color: 'green' },
+          { label: 'Monthly encode cost', val: fmtMoney(encodeCostMo), color: 'blue' },
+        ]
+      };
+    },
+    insights: [
+      'Open Connect appliances at ISP peering: serves 95%+ traffic from edge, not cloud egress. Capital expense, not bandwidth cost',
+      'Content pre-positioned during off-peak hours via backbone backbone. Not real-time origin fetch. Predictable demand drives placement',
+      'Transcode to 4-6 bitrates (H.264/H.265/AV1). ABR switches segments based on bandwidth. AV1 saves 30% bandwidth vs H.265',
+      'CDN cost ~$0.01/GB with Open Connect vs $0.085/GB with CloudFront = 8.5× cheaper. 250M subs × 50hrs/mo × 6Mbps = massive savings',
+      'Hot 20% of catalog serves 80% of views. Cache only this at edge; cold from origin via backbone (slower but rare)',
+      'Netflix uses 3-region active-active for control plane (DynamoDB global tables). Content plane is fully distributed via Open Connect',
+      'Encoding farm: massive Spark/FFmpeg pipeline. Each title encoded to 50+ renditions (resolution × bitrate × codec). Priority queue for popular content',
+    ]
+  },
+  {
+    id: 'instagram',
+    name: 'Instagram',
+    icon: 'ti-camera',
+    desc: 'Photo sharing at Instagram scale. Write-heavy uploads, read-heavy feed, media storage dominates.',
+    params: [
+      { id: 'dau', label: 'Daily Active Users', val: 500, min: 50, max: 1000, step: 50, unit: 'M', mult: 1e6 },
+      { id: 'photos_per_day', label: 'Photos Uploaded / Day', val: 100, min: 10, max: 500, step: 10, unit: 'M', mult: 1e6 },
+      { id: 'freq_per_user', label: 'Feed Refreshes / User / Day', val: 8, min: 2, max: 30, step: 2, unit: '', mult: 1 },
+      { id: 'p_size', label: 'Avg Upload Photo Size', val: 2, min: 0.5, max: 10, step: 0.5, unit: 'MB', mult: 1e6 },
+      { id: 'stories_per_day', label: 'Stories Uploaded / Day', val: 500, min: 50, max: 2000, step: 50, unit: 'M', mult: 1e6 },
+      { id: 'story_ttl_hrs', label: 'Story TTL', val: 24, min: 12, max: 48, step: 6, unit: 'hrs', mult: 1 },
+      { id: 'reel_views_user', label: 'Reels Watched / User / Day', val: 6, min: 1, max: 20, step: 1, unit: '', mult: 1 },
+    ],
+    calc(p) {
+      const dau = p.dau;
+      const photos = p.photos_per_day;
+      const stories = p.stories_per_day;
+      const wqps = (photos + stories) / DAY;
+      const feedRPS = (dau * p.freq_per_user) / DAY;
+      const reelRPS = (dau * p.reel_views_user) / DAY;
+      const rqps = feedRPS + reelRPS;
+      const rawIngest = photos * p.p_size * 1e6;
+      const storyStorActive = stories * p.p_size * 1e6 * 2 * (p.story_ttl_hrs / 24);
+      const storPerDay = rawIngest * 0.3 + photos * 100 * 1024 * 3 + storyStorActive / 30;
+      const stor5yr = storPerDay * 365 * 5;
+      const bwOut = (feedRPS * 300 * 1024 * 3 + reelRPS * 2 * 1e6) * 8;
+      const servers = Math.ceil(rqps / 3000) + Math.ceil(wqps / 2000);
+      const cacheGB = (dau * 50 * 200 * 1024) / 1e9;
+      const cost = estimateCost(servers, 4, 16, storPerDay, bwOut, cacheGB);
+      return { wqps, rqps, storPerDay, bwOut, servers, cacheGB, cost,
+        extras: [
+          { label: 'Raw image ingest / day', val: fmtBytes(rawIngest), color: 'coral' },
+          { label: 'Stories active storage', val: fmtBytes(storyStorActive), color: 'purple' },
+          { label: 'Reels QPS', val: fmtNum(reelRPS), color: 'teal' },
+          { label: 'Feed refresh QPS', val: fmtNum(feedRPS), color: 'amber' },
+          { label: '5-year photo storage', val: fmtBytes(stor5yr), color: 'green' },
+          { label: 'S3 storage cost / month', val: fmtMoney(storPerDay * 30 / 1e9 * 0.023), color: 'blue' },
+        ]
+      };
+    },
+    insights: [
+      'Upload: S3 → async transcode to 3 sizes (thumbnail ~50KB, standard ~200KB, full ~1MB). CDN delivers all sizes',
+      'Feed: push model for follows < 10K. Pull + cache for celebrities. Hybrid at scale — each user gets a pre-computed feed ZSET in Redis',
+      'Stories: temp storage on S3 with 24h TTL. S3 lifecycle rule auto-deletes. Storage cost is 1/365 of permanent photos',
+      'Reels: video chunks pre-fetched by client. CDN edge cache with 30-min TTL. TikTok-style recommendation via cosine similarity on embeddings',
+      'CDN edge serves media — app servers never touch image blobs. API servers are metadata-only, running on cheap CPU instances',
+      'Metadata: Postgres sharded by user_id (1000+ shards). Comments/likes in Redis sorted sets (ZADD/ZRANGE). Like counts in Redis counter',
+      'Facebook uses TAO (graph DB) for social graph; IG adapted it for photo relationships. TAO is read-optimized, caching at every tier',
+    ]
+  },
+  {
+    id: 'dropbox',
+    name: 'Dropbox / Drive',
+    icon: 'ti-cloud-upload',
+    desc: 'Cloud file sync. Chunk-level dedup, delta sync, LAN sync, conflict resolution.',
+    params: [
+      { id: 'users', label: 'Total Users', val: 500, min: 50, max: 1000, step: 50, unit: 'M', mult: 1e6 },
+      { id: 'files_per_user', label: 'Files Stored / User', val: 500, min: 100, max: 2000, step: 100, unit: '', mult: 1 },
+      { id: 'avg_fsize', label: 'Avg File Size', val: 1, min: 0.1, max: 10, step: 0.1, unit: 'MB', mult: 1e6 },
+      { id: 'chg_pct', label: 'Files Changed / Day', val: 5, min: 1, max: 20, step: 1, unit: '%', mult: 1 },
+      { id: 'retention_days', label: 'Version Retention', val: 30, min: 7, max: 90, step: 1, unit: 'days', mult: 1 },
+      { id: 'block_size', label: 'Block Size', val: 4, min: 1, max: 16, step: 1, unit: 'MB', mult: 1e6 },
+      { id: 'sharing_factor', label: 'Shared Files Factor', val: 2, min: 1, max: 10, step: 1, unit: '×', mult: 1 },
+    ],
+    calc(p) {
+      const users = p.users;
+      const totalFiles = users * p.files_per_user;
+      const totalStorRaw = totalFiles * p.avg_fsize * 1e6;
+      const dedupSavings = 0.5;
+      const totalStorDeduped = totalStorRaw * dedupSavings;
+      const dailyChanges = totalFiles * (p.chg_pct / 100);
+      const wqps = dailyChanges / DAY;
+      const rqps = wqps * 5;
+      const blocksPerFile = Math.ceil(p.avg_fsize * 1e6 / p.block_size);
+      const deltaSize = p.avg_fsize * 1e6 * 0.3;
+      const blockWrites = dailyChanges * blocksPerFile;
+      const blockWQPS = blockWrites / DAY;
+      const storPerDay = dailyChanges * deltaSize * dedupSavings;
+      const versionStor = storPerDay * p.retention_days;
+      const stor5yr = totalStorDeduped + versionStor * 60;
+      const bwOut = (wqps * deltaSize + rqps * 2000) * 8 * p.sharing_factor;
+      const servers = Math.ceil(rqps / 2000) + Math.ceil(blockWQPS / 10000);
+      const cacheGB = (users * 1000 + blocksPerFile * 10000) / 1e9;
+      const cost = estimateCost(servers, 4, 16, storPerDay, bwOut, cacheGB);
+      return { wqps, rqps, storPerDay: storPerDay + versionStor / 30, bwOut, servers, cacheGB, cost,
+        extras: [
+          { label: 'Total raw storage (deduped)', val: fmtBytes(totalStorDeduped), color: 'amber' },
+          { label: 'Block index entries', val: fmtNum(blocksPerFile * totalFiles), color: 'purple' },
+          { label: 'Block writes / sec', val: fmtNum(blockWQPS), color: 'coral' },
+          { label: 'Daily changed files', val: fmtNum(dailyChanges), color: 'teal' },
+          { label: 'Version storage (30d)', val: fmtBytes(versionStor), color: 'green' },
+          { label: '5-year projected storage', val: fmtBytes(stor5yr), color: 'blue' },
+        ]
+      };
+    },
+    insights: [
+      'Delta sync: binary diff (rsync-like) → upload only changed blocks, not whole files. Saves ~70% bandwidth for typical file edits',
+      'Chunk-level dedup: files split into fixed-size blocks, content-addressed by SHA256 hash. Duplicate blocks stored once in S3',
+      'Block index: PostgreSQL mapping hash → (s3_key, ref_count, size). Ref count tracks how many files reference this block',
+      'LAN sync: clients on same subnet discover peers via mDNS → sync local, not through cloud. 10× faster for office LANs',
+      'Conflict resolution: last-writer-wins by default. CRDTs for collaborative editing (Paper/Quip). Version vector per file for causal ordering',
+      'Metadata: strong consistency (file listing, rename) → MySQL/Postgres with leader reads. Block store: eventual (S3 with versioning) ',
+      'Encryption: AES-256 at rest. Client-side encryption key option for enterprise compliance. Key server manages key rotation',
+      'S3 event notifications → SQS → block indexer. Ensures eventual consistency between S3 block storage and block metadata index',
+    ]
+  },
+  {
+    id: 'live',
+    name: 'Live Streaming',
+    icon: 'ti-broadcast',
+    desc: 'Live video at Twitch/Zoom scale. Low-latency ingest + fan-out delivery to millions of viewers.',
+    params: [
+      { id: 'concurrent', label: 'Peak Concurrent Streams', val: 5, min: 0.5, max: 20, step: 0.5, unit: 'M', mult: 1e6 },
+      { id: 'viewers_per_stream', label: 'Avg Viewers / Stream', val: 500, min: 50, max: 10000, step: 50, unit: '', mult: 1 },
+      { id: 'bitrate', label: 'Stream Bitrate', val: 3, min: 1, max: 10, step: 0.5, unit: 'Mbps', mult: 1e6 },
+      { id: 'ingest_bitrate', label: 'Ingest Bitrate (streamer)', val: 6, min: 1, max: 20, step: 1, unit: 'Mbps', mult: 1e6 },
+      { id: 'latency_target', label: 'Latency Target', val: 3, min: 1, max: 15, step: 1, unit: 'sec', mult: 1 },
+      { id: 'transcode_renditions', label: 'Transcode Renditions', val: 3, min: 1, max: 6, step: 1, unit: '', mult: 1 },
+      { id: 'vod_pct', label: 'Record to VOD %', val: 20, min: 0, max: 100, step: 5, unit: '%', mult: 1 },
+    ],
+    calc(p) {
+      const concurrent = p.concurrent;
+      const totalViewers = concurrent * p.viewers_per_stream;
+      const ingestBW = concurrent * p.ingest_bitrate;
+      const cdnBW = totalViewers * p.bitrate;
+      const transcodeBW = concurrent * p.ingest_bitrate * p.transcode_renditions;
+      const vodStorPerDay = concurrent * p.ingest_bitrate * DAY * 0.125 * (p.vod_pct/100);
+      const storPerDay = vodStorPerDay;
+      const bwOut = cdnBW;
+      const rqps = totalViewers * 5;
+      const wqps = concurrent;
+      const servers = Math.ceil(concurrent / 50000);
+      const transcodeServers = Math.ceil(concurrent * 2 * p.transcode_renditions / 10);
+      const allServers = servers + transcodeServers;
+      const cacheGB = (totalViewers * 10 * p.bitrate / 8) / 1e9;
+      const cost = estimateCost(allServers, 8, 32, storPerDay, bwOut, cacheGB);
+      return { wqps, rqps, storPerDay, bwOut, servers: allServers, cacheGB, cost,
+        extras: [
+          { label: 'Total viewer count', val: fmtNum(totalViewers), color: 'teal' },
+          { label: 'Ingest bandwidth', val: fmtBW(ingestBW), color: 'coral' },
+          { label: 'Transcode bandwidth', val: fmtBW(transcodeBW), color: 'amber' },
+          { label: 'CDN egress (peak)', val: fmtBW(cdnBW), color: 'purple' },
+          { label: 'Ingest + transcode servers', val: allServers.toLocaleString(), color: 'green' },
+          { label: 'Latency mode', val: p.latency_target <= 3 ? 'LL-HLS/WebRTC' : p.latency_target <= 8 ? 'HLS' : 'DASH', color: 'blue' },
+        ]
+      };
+    },
+    insights: [
+      'Ingest: RTMP/WHIP → transcoder (transmux to HLS/fMP4) → origin → CDN fan-out. Each stream goes to SRT for reliable ingest over lossy networks',
+      'Latency: HLS = ~6-10s segment-based. WebRTC = <1s (p2p). LL-HLS (low-latency HLS) = ~2-3s. Tradeoff: scale vs delay',
+      'Transcode once at ingest: produce multiple bitrates (360p-1080p). Viewers ABR based on bandwidth. GPU encoding (NVENC) is real-time',
+      'CDN fan-out: tree topology. Origin pushes to edge nodes, edge fans out to viewers. Avoids origin overload from millions of simultaneous requests',
+      'Chat: separate WebSocket channel for emotes/comments. Raft/CRDT for ordering of chat events. Moderation pipeline async via Kafka',
+      'Recording (VOD): parallel ingest path to S3. DVR: ring buffer on edge node (last 30-60s) for rewind. Redundant ingest across AZs for fault tolerance',
+      'Health monitoring: origin receives heartbeat from each edge node. If an edge node misses 2 heartbeats, failover to another edge node with same stream',
+    ]
+  },
+  {
+    id: 'zoom',
+    name: 'Zoom / Video',
+    icon: 'ti-video',
+    desc: 'Video conferencing at Zoom scale. WebRTC media routing, SFU/MCU architecture. Real-time is non-negotiable.',
+    params: [
+      { id: 'dau', label: 'Daily Active Users', val: 300, min: 10, max: 500, step: 10, unit: 'M', mult: 1e6 },
+      { id: 'meetings_per_user', label: 'Meetings / User / Day', val: 3, min: 1, max: 10, step: 1, unit: '', mult: 1 },
+      { id: 'avg_participants', label: 'Avg Participants / Meeting', val: 8, min: 2, max: 50, step: 1, unit: '', mult: 1 },
+      { id: 'video_bitrate', label: 'Avg Video Bitrate', val: 1.5, min: 0.5, max: 5, step: 0.5, unit: 'Mbps', mult: 1e6 },
+      { id: 'meeting_len', label: 'Avg Meeting Length', val: 40, min: 10, max: 120, step: 5, unit: 'min', mult: 1 },
+      { id: 'audio_bitrate', label: 'Audio Bitrate', val: 32, min: 16, max: 128, step: 16, unit: 'Kbps', mult: 1000 },
+      { id: 'screen_share_pct', label: 'Screen Share % of Meetings', val: 30, min: 10, max: 80, step: 5, unit: '%', mult: 1 },
+    ],
+    calc(p) {
+      const dau = p.dau;
+      const meetingsPerSec = (dau * p.meetings_per_user) / DAY;
+      const concurrentMeetings = meetingsPerSec * (p.meeting_len * 60);
+      const totalParticipants = concurrentMeetings * p.avg_participants;
+      const videoBW = totalParticipants * p.video_bitrate;
+      const audioBW = totalParticipants * p.audio_bitrate * 1000;
+      const screenBW = totalParticipants * p.video_bitrate * 2 * (p.screen_share_pct/100);
+      const mediaBW = videoBW + audioBW + screenBW;
+      const signalBW = meetingsPerSec * 500;
+      const bwOut = mediaBW + signalBW;
+      const storPerDay = 0;
+      const rqps = totalParticipants * 10;
+      const wqps = totalParticipants * 10;
+      const sfuCapacity = 5000;
+      const servers = Math.ceil(concurrentMeetings * p.avg_participants / sfuCapacity);
+      const cacheGB = 0;
+      const cost = estimateCost(servers, 8, 32, 0, bwOut, 0);
+      return { wqps, rqps, storPerDay, bwOut, servers, cacheGB, cost,
+        extras: [
+          { label: 'Peak concurrent meetings', val: fmtNum(concurrentMeetings), color: 'teal' },
+          { label: 'Total participants (peak)', val: fmtNum(totalParticipants), color: 'coral' },
+          { label: 'Video bandwidth (peak)', val: fmtBW(videoBW), color: 'amber' },
+          { label: 'Audio bandwidth', val: fmtBW(audioBW), color: 'green' },
+          { label: 'Screen share bandwidth', val: fmtBW(screenBW), color: 'purple' },
+          { label: 'SFU servers needed', val: servers.toLocaleString(), color: 'blue' },
+          { label: 'Server capacity (participants)', val: sfuCapacity.toLocaleString(), color: 'teal' },
+        ]
+      };
+    },
+    insights: [
+      'WebRTC media: SFU (Selective Forwarding Unit) — server receives once, forwards to each participant. Minimizes upload for constrained clients',
+      'MCU (Multipoint Control Unit) mixes all video into one stream — CPU-heavy, not used at scale. Zoom chose SFU for 300M+ users',
+      'Simulcast: publisher sends multiple resolution streams (1080p, 720p, 360p). Subscriber picks best for their bandwidth/device',
+      'Media servers: co-located in 20+ regions. DNS-based routing to nearest media region for <50ms RTT. BGP anycast for global routing',
+      'Signaling (meeting creation, join/leave, mute/unmute) separate from media. Signaling is low-bandwidth, uses WebSocket + protobuf',
+      'Recording: optional, written to S3. Async transcode to MP4 via separate pipeline. Live recording does not affect active meeting quality',
+      'Scalability: Zoom added 100M+ users overnight in March 2020. SFU architecture scaled by adding regions and servers horizontally',
+    ]
+  },
+  {
+    id: 'slack',
+    name: 'Slack / Team Chat',
+    icon: 'ti-message-2',
+    desc: 'Team messaging at Slack scale. Channels, threads, search, file sharing. Workspace isolation matters.',
+    params: [
+      { id: 'dau', label: 'Daily Active Users', val: 50, min: 5, max: 200, step: 5, unit: 'M', mult: 1e6 },
+      { id: 'msgs_per_user', label: 'Messages / User / Day', val: 200, min: 50, max: 1000, step: 50, unit: '', mult: 1 },
+      { id: 'channels_per_user', label: 'Channels / User', val: 20, min: 5, max: 100, step: 5, unit: '', mult: 1 },
+      { id: 'msg_size', label: 'Avg Message Size (text)', val: 150, min: 50, max: 1000, step: 50, unit: 'bytes', mult: 1 },
+      { id: 'file_pct', label: 'File Attachments %', val: 10, min: 5, max: 30, step: 5, unit: '%', mult: 1 },
+      { id: 'thread_pct', label: 'Thread Replies %', val: 30, min: 10, max: 60, step: 5, unit: '%', mult: 1 },
+      { id: 'integrations', label: 'Bot/Integration Messages %', val: 15, min: 5, max: 50, step: 5, unit: '%', mult: 1 },
+    ],
+    calc(p) {
+      const dau = p.dau;
+      const userMsgs = dau * p.msgs_per_user;
+      const integMsgs = userMsgs * (p.integrations / 100);
+      const totalMsgs = userMsgs + integMsgs;
+      const wqps = totalMsgs / DAY;
+      const rqps = wqps * 3;
+      const textStor = totalMsgs * p.msg_size;
+      const fileStor = totalMsgs * (p.file_pct / 100) * 50000;
+      const storPerDay = textStor + fileStor;
+      const stor5yr = storPerDay * 365 * 5;
+      const bwOut = (rqps * p.msg_size + totalMsgs * (p.file_pct / 100) * 50000 / DAY) * 8;
+      const servers = Math.ceil(rqps / 2000) + Math.ceil(wqps / 1000);
+      const cacheGB = (dau * 500 * p.msg_size) / 1e9;
+      const cost = estimateCost(servers, 4, 16, storPerDay, bwOut, cacheGB);
+      return { wqps, rqps, storPerDay, bwOut, servers, cacheGB, cost,
+        extras: [
+          { label: 'Total messages / day', val: fmtNum(totalMsgs), color: 'teal' },
+          { label: 'Integration msgs / day', val: fmtNum(integMsgs), color: 'purple' },
+          { label: 'Text + file storage / day', val: fmtBytes(storPerDay), color: 'amber' },
+          { label: '5-year message archive', val: fmtBytes(stor5yr), color: 'coral' },
+          { label: 'Message search QPS', val: fmtQPS(rqps * 0.1), color: 'blue' },
+          { label: 'WebSocket connections', val: fmtNum(dau), color: 'green' },
+        ]
+      };
+    },
+    insights: [
+      'Workspace isolation: each workspace (org) is a separate data partition. Natural shard key by workspace_id across all DBs',
+      'Channel membership stored in Redis sorted set for efficient fan-out: ZRANGE to get all members. Millions of channels per workspace',
+      'Full-text search: Elasticsearch cluster. Messages indexed async via Kafka → ES. Searchable within seconds. Per-workspace index for isolation',
+      'Threads: replies are separate messages with thread_ts pointer. Display grouped in UI. Thread participation tracked in Redis SET',
+      'File uploads: S3 with CDN for thumbnails. Virus scan (ClamAV) + content moderation pipeline. Presigned URLs with 1hr TTL',
+      'Rate limiting per workspace: token bucket in Redis. 100 requests/sec per workspace. Different limits for bots vs human users',
+      'Real-time: WebSocket connection per user. Message delivery via Redis PUB/SUB per channel. Scalability limit: Redis PUB/SUB on a single node',
+    ]
+  },
+  {
+    id: 'food',
+    name: 'Food Delivery',
+    icon: 'ti-truck-delivery',
+    desc: 'DoorDash / Swiggy / Zomato. Real-time order dispatch, tracking, and ETA prediction. Multi-sided marketplace.',
+    params: [
+      { id: 'dau', label: 'Daily Active Users', val: 50, min: 5, max: 200, step: 5, unit: 'M', mult: 1e6 },
+      { id: 'orders_per_user', label: 'Orders / User / Month', val: 4, min: 1, max: 20, step: 1, unit: '', mult: 1 },
+      { id: 'restaurants', label: 'Restaurants Onboarded', val: 500, min: 50, max: 2000, step: 50, unit: 'K', mult: 1e3 },
+      { id: 'delivery_partners', label: 'Active Delivery Partners', val: 500, min: 50, max: 2000, step: 50, unit: 'K', mult: 1e3 },
+      { id: 'avail_check_sec', label: 'Heartbeat Interval', val: 10, min: 5, max: 60, step: 5, unit: 'sec', mult: 1 },
+      { id: 'avg_order_value', label: 'Avg Order Items', val: 3, min: 1, max: 10, step: 1, unit: 'items', mult: 1 },
+      { id: 'eta_traffic_factor', label: 'Traffic Factor for ETA', val: 1.2, min: 1.0, max: 3.0, step: 0.1, unit: '×', mult: 1 },
+    ],
+    calc(p) {
+      const dau = p.dau;
+      const ordersPerDay = dau * (p.orders_per_user / 30);
+      const wqps = ordersPerDay / DAY;
+      const browseRPS = (dau * 8) / DAY;
+      const trackRPS = ordersPerDay / DAY * 5;
+      const rqps = browseRPS + trackRPS;
+      const locWrites = p.delivery_partners * 1e3 / p.avail_check_sec;
+      const etaQPS = ordersPerDay / DAY * 3;
+      const storPerDay = ordersPerDay * 5000 + locWrites * DAY * 50;
+      const stor5yr = storPerDay * 365 * 5;
+      const bwOut = (browseRPS * 30000 + trackRPS * 500 + locWrites * 50) * 8;
+      const servers = Math.ceil((rqps + locWrites) / 3000);
+      const cacheGB = (p.restaurants * 1e3 * 5000) / 1e9;
+      const cost = estimateCost(servers, 4, 16, storPerDay, bwOut, cacheGB);
+      return { wqps: wqps + locWrites, rqps, storPerDay, bwOut, servers, cacheGB, cost,
+        extras: [
+          { label: 'Orders / day', val: fmtNum(ordersPerDay), color: 'teal' },
+          { label: 'Browsing QPS', val: fmtQPS(browseRPS), color: 'purple' },
+          { label: 'Location updates / sec', val: fmtNum(locWrites), color: 'coral' },
+          { label: 'ETA compute QPS', val: fmtQPS(etaQPS), color: 'amber' },
+          { label: 'Restaurant menu cache', val: fmtBytes(p.restaurants * 1e3 * 5000), color: 'green' },
+          { label: '5-year order history', val: fmtBytes(stor5yr), color: 'blue' },
+        ]
+      };
+    },
+    insights: [
+      'Order dispatch: find nearby available delivery partner. Geospatial index (Redis GEO / H3 hex grid). Match within <1s',
+      'Multi-sided marketplace: restaurants, delivery partners, customers. Each has separate service boundary with its own DB',
+      'ETA: ML model predicts prep time + travel time. Features: restaurant prep history (per item), traffic (real-time), partner location, time of day',
+      'Surge pricing: compute supply/demand ratio per H3 hex cell. Adjust delivery fee dynamically. Flink tumbling window every 60s',
+      'Order lifecycle: placed → restaurant accepts → partner assigned → picked up → delivered. State machine + Kafka event log. Compensating txn on failure',
+      'Availability: delivery partner sends heartbeat every 10s. If no heartbeat for 3× interval, mark unavailable. Redis TTL-based',
+      'Assignment scoring: linear combination of proximity score + rating + current load + shift status. Re-rank top 10 candidates per order',
+      'Notification cascade: push to top-3 nearby partners sequentially (not broadcast). Avoids overwhelming all partners with every order',
+    ]
+  },
+  {
+    id: 'flash',
+    name: 'Flash Sale',
+    icon: 'ti-bolt',
+    desc: 'Limited-time product sale (Amazon Prime Day / Apple launch). Traffic spike handling, inventory accuracy.',
+    params: [
+      { id: 'dau', label: 'Normal DAU', val: 50, min: 10, max: 200, step: 10, unit: 'M', mult: 1e6 },
+      { id: 'sale_dau_mult', label: 'Sale Traffic Multiplier', val: 10, min: 3, max: 50, step: 1, unit: '×', mult: 1 },
+      { id: 'checkout_rate', label: 'Peak Checkout Attempts / Sec', val: 500, min: 100, max: 5000, step: 100, unit: 'K', mult: 1e3 },
+      { id: 'inventory_items', label: 'Distinct Inventory Items', val: 100, min: 10, max: 1000, step: 10, unit: 'K', mult: 1e3 },
+      { id: 'sale_window', label: 'Sale Window Duration', val: 6, min: 1, max: 24, step: 1, unit: 'hours', mult: 1 },
+      { id: 'reserve_window', label: 'Inventory Reserve TTL', val: 10, min: 1, max: 30, step: 1, unit: 'min', mult: 1 },
+      { id: 'banned_pct', label: 'Fraud/Bot Estimate %', val: 5, min: 1, max: 30, step: 1, unit: '%', mult: 1 },
+    ],
+    calc(p) {
+      const normalQPS = (p.dau * 8) / DAY;
+      const peakQPS = normalQPS * p.sale_dau_mult;
+      const checkoutRate = p.checkout_rate * 1e3;
+      const inventoryWrites = checkoutRate * 2;
+      const wqps = inventoryWrites;
+      const rqps = peakQPS;
+      const storPerDay = (checkoutRate * 24 * 3600) * 500;
+      const storPerSale = storPerDay * p.sale_window / 24;
+      const bwOut = rqps * 2000 * 8;
+      const appServers = Math.ceil(checkoutRate / 500);
+      const inventoryServers = Math.ceil(inventoryWrites / 10000);
+      const totalServers = (appServers + inventoryServers) * 2;
+      const cacheGB = (p.inventory_items * 1e3 * 200) / 1e9;
+      const cost = estimateCost(totalServers, 8, 32, storPerDay, bwOut, cacheGB * 3, true);
+      return { wqps, rqps: rqps + checkoutRate, storPerDay, bwOut, servers: totalServers, cacheGB: cacheGB * 3, cost,
+        extras: [
+          { label: 'Peak QPS during sale', val: fmtQPS(peakQPS + checkoutRate), color: 'coral' },
+          { label: 'Checkout attempts / sec', val: fmtNum(checkoutRate), color: 'teal' },
+          { label: 'Inventory write QPS', val: fmtNum(inventoryWrites), color: 'amber' },
+          { label: 'Data per sale event', val: fmtBytes(storPerSale), color: 'green' },
+          { label: 'App + inventory servers', val: totalServers.toLocaleString(), color: 'purple' },
+          { label: 'Fraud check QPS', val: fmtNum(checkoutRate * p.banned_pct / 100), color: 'blue' },
+        ]
+      };
+    },
+    insights: [
+      'Pre-warm: load product + inventory cache into Redis 1 hour before sale starts. Stream from DB at 50K items/sec',
+      'Queue-based checkout: put checkout requests into a queue (SQS/Kafka). Process at max sustainable rate. Client polls for result',
+      'Inventory reserve: Redis DECR atomic decrement. If negative → stock exhausted. Async batch write to DB every 30s for audit trail',
+      'Reserve TTL: inventory held for 10min after reservation. If payment not confirmed, auto-release back to pool via Redis TTL callback',
+      'Circuit break inventory service if latency > 50ms or error rate > 5%. Degrade to "check availability on submit" in-memory cache',
+      'Throttle: token bucket per user (1 request/sec). Burst allowed up to 5 on login. IP-level rate limiting at edge (Nginx)',
+      'Fraud detection: rate-limited IPs (bot traffic), same billing address → blocked. Rules engine on checkout event in Kafka Streams',
+      'Dashboard: real-time metrics (orders/sec, inventory remaining by SKU, latency p99). War room on p99 > 200ms or error rate > 2%',
+    ]
+  },
+  {
+    id: 'etl',
+    name: 'ETL / Data Pipeline',
+    icon: 'ti-database',
+    desc: 'Analytics data pipeline at scale. Kafka → Spark/Flink → Data Lake → Query Engine. Batch + streaming.',
+    params: [
+      { id: 'events_per_day', label: 'Events / Day', val: 10, min: 0.5, max: 100, step: 0.5, unit: 'B', mult: 1e9 },
+      { id: 'event_size', label: 'Avg Event Size', val: 500, min: 100, max: 2000, step: 100, unit: 'bytes', mult: 1 },
+      { id: 'stream_pct', label: 'Real-time Streams %', val: 20, min: 5, max: 100, step: 5, unit: '%', mult: 1 },
+      { id: 'retention_days', label: 'Raw Data Retention', val: 30, min: 7, max: 90, step: 7, unit: 'days', mult: 1 },
+      { id: 'query_users', label: 'Analyst Query Users', val: 5000, min: 500, max: 50000, step: 500, unit: '', mult: 1 },
+      { id: 'compression_ratio', label: 'Compression Ratio', val: 5, min: 2, max: 15, step: 1, unit: ':1', mult: 1 },
+      { id: 'producers', label: 'Event Producers', val: 100, min: 10, max: 1000, step: 10, unit: 'K', mult: 1e3 },
+    ],
+    calc(p) {
+      const events = p.events_per_day;
+      const wqps = events / DAY;
+      const streamWQPS = wqps * (p.stream_pct / 100);
+      const batchWQPS = wqps * (1 - p.stream_pct / 100) / 3600;
+      const rqps = p.query_users * 0.1;
+      const rawStor = events * p.event_size;
+      const compressedStor = rawStor / p.compression_ratio;
+      const storPerDay = compressedStor;
+      const storTotal = storPerDay * p.retention_days;
+      const bwOut = (wqps * p.event_size * 3) * 8;
+      const kafkaPartitions = Math.ceil(wqps / 10000);
+      const streamWorkers = Math.ceil(streamWQPS / 50000);
+      const batchWorkers = Math.ceil(batchWQPS / 50000);
+      const servers = streamWorkers + batchWorkers + 5;
+      const cacheGB = (p.query_users * 1000 + storTotal * 0.01) / 1e9;
+      const cost = estimateCost(servers, 8, 32, compressedStor * p.retention_days, bwOut, cacheGB);
+      return { wqps, rqps, storPerDay: rawStor, bwOut, servers, cacheGB, cost,
+        extras: [
+          { label: 'Events ingested / sec', val: fmtNum(wqps), color: 'teal' },
+          { label: 'Kafka partitions needed', val: kafkaPartitions.toLocaleString(), color: 'coral' },
+          { label: 'Stream workers (Flink)', val: streamWorkers.toLocaleString(), color: 'amber' },
+          { label: 'Batch workers (Spark)', val: batchWorkers.toLocaleString(), color: 'purple' },
+          { label: 'Raw data / day (uncompressed)', val: fmtBytes(rawStor), color: 'green' },
+          { label: 'Total storage (' + p.retention_days + 'd retention)', val: fmtBytes(storTotal), color: 'blue' },
+        ]
+      };
+    },
+    insights: [
+      'Kafka as ingestion backbone: partition by event_type (e.g., click, purchase, error). Each partition consumed independently. 10K events/sec per partition max',
+      'Stream processing (Flink/Spark Streaming): real-time aggregations, windowing (tumbling/sliding), enrichment for the stream_pct fraction',
+      'Batch processing (Spark/Trino): hourly/daily jobs on data lake (Parquet in S3). Medallion architecture: bronze (raw) → silver (cleaned) → gold (aggregated)',
+      'Schema registry (Avro/Protobuf): enforce schema evolution rules. Backward-compatible changes only (adding fields ok, removing = breaking)',
+      'Data lake: S3 with Hive/Glue catalog. Partitioned by event_type/year/month/day/hour for efficient query pruning',
+      'Query engine (Trino/Athena): federated queries across data lake + streaming results. Columnar pruning + predicate pushdown for fast queries',
+      'Cost optimization: compress with Zstd (Parquet) at 5:1 ratio. Transition older partitions to S3 Glacier (60% cheaper) after 30 days',
+      'Monitoring: Kafka lag (consumer group offset vs latest), Flink checkpoint duration, Spark shuffle spill. Alert on lag > 10min or checkpoint > 5min',
     ]
   },
 ];
 
+function estimateCost(servers, vcpuPerServer, ramPerServer, storPerDay, bwOut, cacheGB, hasDB) {
+  const compute = servers * (vcpuPerServer * COST.server_per_vcpu + ramPerServer * COST.server_per_gb_ram);
+  const storageMonthly = storPerDay * 30 * COST.s3_per_gb / 1e9;
+  const bwMonthly = (bwOut * DAY * 30) / (8 * 1e9) * COST.egress_per_gb;
+  const cache = (cacheGB || 0) * COST.redis_per_gb;
+  const db = hasDB ? servers * 100 : 0;
+  const total = compute + storageMonthly + bwMonthly + cache + db;
+  return { compute, storage: storageMonthly, bandwidth: bwMonthly, cache, db, total };
+}
+
 let currentScenarioId = SCENARIOS[0].id;
 let currentParams = {};
+let peakMult = 5;
 
 function initParams(scenario) {
   const p = {};
   scenario.params.forEach(param => {
     p[param.id] = param.val;
-    p[param.id + '_mult'] = param.mult || 1;
   });
   return p;
 }
@@ -581,31 +1401,27 @@ function initParams(scenario) {
 function getParamMultiplied(scenario, p) {
   const out = {};
   scenario.params.forEach(param => {
-    const mult = param.mult || 1;
-    out[param.id] = p[param.id] * mult;
-    out[param.id + '_mult'] = mult;
-    out[param.id + '_raw'] = p[param.id];
+    out[param.id] = p[param.id] * (param.mult || 1);
   });
   return out;
 }
 
 function formatParamDisplay(param, val) {
-  const raw = val;
-  if (param.unit === 'M') return raw.toFixed(raw % 1 === 0 ? 0 : 1) + 'M';
-  if (param.unit === 'B') return raw.toFixed(raw % 1 === 0 ? 0 : 1) + 'B';
-  if (param.unit === ':1') return raw + ':1';
-  if (param.unit === '%') return raw + '%';
-  if (param.unit === 'bytes') return raw + ' B';
-  if (param.unit === 'KB') return raw + ' KB';
-  if (param.unit === 'MB/min') return raw + ' MB/min';
-  if (param.unit === 'sec') return raw + 's';
-  if (param.unit === 'years') return raw + ' yr';
-  if (param.unit === 'days') return raw + ' days';
-  if (param.unit === 'RPS') return fmtNum(raw) + ' RPS';
-  if (param.unit === 'req/min') return raw + ' req/min';
-  if (param.unit === 'hours') return raw + ' hrs/min';
-  if (param.unit === 'min') return raw + ' min';
-  return raw.toString();
+  if (param.unit === 'M') return val.toFixed(val % 1 === 0 ? 0 : 1) + 'M';
+  if (param.unit === 'B') return val.toFixed(val % 1 === 0 ? 0 : 1) + 'B';
+  if (param.unit === ':1') return val + ':1';
+  if (param.unit === '%') return val + '%';
+  if (param.unit === 'bytes') return val + ' B';
+  if (param.unit === 'KB') return val + ' KB';
+  if (param.unit === 'MB/min') return val + ' MB/min';
+  if (param.unit === 'sec') return val + 's';
+  if (param.unit === 'years') return val + ' yr';
+  if (param.unit === 'days') return val + ' days';
+  if (param.unit === 'RPS') return fmtNum(val) + ' RPS';
+  if (param.unit === 'req/min') return val + ' req/min';
+  if (param.unit === 'hours') return val + ' hrs/min';
+  if (param.unit === 'min') return val + ' min';
+  return val.toString();
 }
 
 function renderScenarioNav() {
@@ -618,8 +1434,7 @@ function renderScenarioNav() {
   nav.querySelectorAll('.s-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       currentScenarioId = btn.dataset.id;
-      const scenario = SCENARIOS.find(s => s.id === currentScenarioId);
-      currentParams = initParams(scenario);
+      currentParams = initParams(SCENARIOS.find(s => s.id === currentScenarioId));
       renderAll();
     });
   });
@@ -653,16 +1468,32 @@ function recalcAndUpdate(scenario) {
   const result = scenario.calc(mp);
   updateTicker(result);
   updateOutputs(result);
+  updateCost(result);
+  updateLangCompare(result);
 }
 
 function updateTicker(r) {
   document.getElementById('t-rqps').textContent = fmtQPS(r.rqps);
-  document.getElementById('t-rqps-sub').textContent = 'peak: ' + fmtQPS(r.rqps * PEAK_MULT);
+  document.getElementById('t-rqps-sub').textContent = 'peak: ' + fmtQPS(r.rqps * peakMult);
   document.getElementById('t-wqps').textContent = fmtQPS(r.wqps);
-  document.getElementById('t-wqps-sub').textContent = 'peak: ' + fmtQPS(r.wqps * PEAK_MULT);
+  document.getElementById('t-wqps-sub').textContent = 'peak: ' + fmtQPS(r.wqps * peakMult);
   document.getElementById('t-stor').textContent = fmtBytes(r.storPerDay);
   document.getElementById('t-stor-sub').textContent = '5-yr: ' + fmtBytes(r.storPerDay * 365 * 5);
-  document.getElementById('t-srv').textContent = r.servers.toLocaleString();
+  const costTotal = (r.cost && r.cost.total) ? r.cost.total : (r.monthlyCost || 0);
+  document.getElementById('t-cost').textContent = costTotal ? fmtMoney(costTotal) : '—';
+  document.getElementById('t-cost-sub').textContent = r.servers ? r.servers + ' servers + infra' : 'adjust params';
+}
+
+function detectBottleneck(r) {
+  if (r.bwOut > 50e9) return { label: '⚠ Bottleneck: Network Bandwidth', val: fmtBW(r.bwOut) + ' egress — CDN or multi-region required', color: 'coral' };
+  if (r.wqps > 50000) return { label: '⚠ Bottleneck: Write Throughput', val: fmtQPS(r.wqps) + ' writes/sec — needs Kafka + distributed DB', color: 'coral' };
+  if (r.rqps > 100000) return { label: '⚠ Bottleneck: Read Throughput', val: fmtQPS(r.rqps) + ' reads/sec — aggressive caching + read replicas needed', color: 'blue' };
+  if (r.storPerDay > 5e12) return { label: '⚠ Bottleneck: Storage Growth', val: fmtBytes(r.storPerDay) + '/day — S3 + archival tier required', color: 'amber' };
+  if (r.servers > 100) return { label: '⚠ Bottleneck: Server Footprint', val: r.servers + ' servers — consider larger instances or async architecture', color: 'purple' };
+  if (r.cacheGB > 1000) return { label: '⚠ Bottleneck: Cache Size', val: fmtBytes(r.cacheGB * 1e9) + ' — distributed cache cluster needed', color: 'green' };
+  const costTotal = (r.cost && r.cost.total) ? r.cost.total : (r.monthlyCost || 0);
+  if (costTotal > 100000) return { label: '⚠ Bottleneck: Infrastructure Cost', val: fmtMoney(costTotal) + '/month — consider reserved instances or cheaper storage tier', color: 'green' };
+  return null;
 }
 
 function updateOutputs(r) {
@@ -670,28 +1501,90 @@ function updateOutputs(r) {
   const outGrid = document.getElementById('output-grid');
   const colors = ['teal','amber','blue','purple','coral','green'];
   const defaultExtras = [
-    { label: 'Bandwidth Out', val: fmtBW(r.bwOut), color: 'teal' },
-    { label: 'Cache Size (20%)', val: fmtBytes(r.cacheGB * 1e9), color: 'green' },
+    { label: 'Bandwidth', val: fmtBW(r.bwOut), color: 'teal' },
+    { label: 'Cache Size', val: fmtBytes(r.cacheGB * 1e9), color: 'green' },
+    { label: 'Servers Needed', val: r.servers.toLocaleString(), color: 'blue' },
   ];
-  const allExtras = [...(extras.length > 0 ? extras : defaultExtras)];
+  const bottleneck = detectBottleneck(r);
+  const allExtras = [
+    ...(bottleneck ? [bottleneck] : []),
+    ...(extras.length > 0 ? extras : defaultExtras)
+  ].slice(0, 5);
   outGrid.innerHTML = allExtras.map(e =>
-    `<div class="o-card ${e.color}"><div class="o-label">${e.label}</div><div class="o-val">${e.val}</div></div>`
+    `<div class="o-card ${e.color}"${e.full ? ' style="grid-column:1/-1"' : ''}><div class="o-label">${e.label}</div><div class="o-val">${e.val}</div></div>`
   ).join('');
 
   const tbody = document.getElementById('storage-tbody');
   const sd = r.storPerDay;
-  const rows = [
-    { period: 'Per second', write: fmtBytes(r.wqps * (sd / (r.wqps * DAY || 1))), cumul: fmtBytes(sd/DAY) },
-    { period: 'Per hour', write: fmtBytes(sd/24), cumul: fmtBytes(sd/24) },
-    { period: 'Per day', write: fmtBytes(sd), cumul: fmtBytes(sd) },
-    { period: 'Per month', write: fmtBytes(sd * 30), cumul: fmtBytes(sd * 30) },
-    { period: 'Per year', write: fmtBytes(sd * 365), cumul: fmtBytes(sd * 365) },
-    { period: '3 years', write: fmtBytes(sd * 365 * 3), cumul: fmtBytes(sd * 365 * 3) },
-    { period: '5 years', write: fmtBytes(sd * 365 * 5), cumul: fmtBytes(sd * 365 * 5) },
+  // Compute per-second write volume properly: need to derive from QPS and record size
+  if (r.storPerDay > 0) {
+    const rows = [
+      { period: 'Per second', write: fmtBytes(sd/DAY), cumul: fmtBytes(sd/DAY/100) },
+      { period: 'Per hour', write: fmtBytes(sd/24), cumul: fmtBytes(sd/24) },
+      { period: 'Per day', write: fmtBytes(sd), cumul: fmtBytes(sd) },
+      { period: 'Per month', write: fmtBytes(sd * 30), cumul: fmtBytes(sd * 30) },
+      { period: 'Per year', write: fmtBytes(sd * 365), cumul: fmtBytes(sd * 365) },
+      { period: '3 years', write: fmtBytes(sd * 365 * 3), cumul: fmtBytes(sd * 365 * 3) },
+      { period: '5 years', write: fmtBytes(sd * 365 * 5), cumul: fmtBytes(sd * 365 * 5) },
+    ];
+    tbody.innerHTML = rows.map(row =>
+      `<tr><td class="label">${row.period}</td><td class="mono">${row.write}</td><td class="mono" style="color:var(--amber)">${row.cumul}</td></tr>`
+    ).join('');
+  } else {
+    tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;color:var(--text3);padding:12px;">Ephemeral data (no persistent storage)</td></tr>';
+  }
+}
+
+function updateCost(r) {
+  if (!r.cost && !r.monthlyCost) return;
+  const c = r.cost || { total: r.monthlyCost, compute: r.monthlyCost * 0.5, storage: r.monthlyCost * 0.2, bandwidth: r.monthlyCost * 0.2, cache: r.monthlyCost * 0.1 };
+  const total = c.total || 1;
+  const grid = document.getElementById('cost-breakdown');
+  const items = [
+    { label: 'Compute', value: c.compute, color: 'blue', pct: c.compute/total*100 },
+    { label: 'Storage', value: c.storage, color: 'amber', pct: c.storage/total*100 },
+    { label: 'Bandwidth', value: c.bandwidth, color: 'coral', pct: c.bandwidth/total*100 },
+    { label: 'Cache', value: c.cache, color: 'green', pct: c.cache/total*100 },
   ];
-  tbody.innerHTML = rows.map(row =>
-    `<tr><td class="label">${row.period}</td><td class="mono">${row.write}</td><td class="mono" style="color:var(--amber)">${row.cumul}</td></tr>`
-  ).join('');
+  if (c.db) {
+    items.push({ label: 'Database', value: c.db, color: 'purple', pct: c.db/total*100 });
+  }
+  grid.innerHTML = `
+    <div class="cost-bar-wrap">
+      <div class="cost-bar">
+        ${items.map(i => `<div class="cost-bar-seg ${i.color === 'blue' ? 'compute' : i.color === 'amber' ? 'storage' : i.color === 'coral' ? 'bandwidth' : 'cache'}" style="width:${Math.max(i.pct, 1)}%"></div>`).join('')}
+      </div>
+      <div class="cost-legend">
+        ${items.map(i => `<span class="cost-legend-item"><span class="cost-legend-dot" style="background:var(--${i.color})"></span>${i.label}</span>`).join('')}
+      </div>
+    </div>
+    <div style="margin-top:10px;">
+      ${items.map(i => `<div class="lang-row"><span class="lang-name">${i.label}</span><span class="lang-cost">${fmtMoney(i.value)}</span><span style="font-size:11px;color:var(--text3)">(${i.pct.toFixed(0)}%)</span></div>`).join('')}
+      <div class="lang-row" style="border-top:2px solid var(--border);margin-top:4px;padding-top:8px;">
+        <span class="lang-name" style="font-weight:600;">Total Monthly</span>
+        <span class="lang-cost" style="color:var(--text);font-size:15px;">${fmtMoney(total)}</span>
+      </div>
+    </div>
+  `;
+}
+
+function updateLangCompare(r) {
+  const maxQPS = Math.max(r.rqps, r.wqps || 0, 1) * peakMult;
+  const container = document.getElementById('lang-compare');
+  const rows = Object.values(LANG_QPS).map(lang => {
+    const instances = Math.ceil(maxQPS / lang.qps);
+    const cost = instances * (lang.cpu * COST.server_per_vcpu + lang.mem * COST.server_per_gb_ram);
+    return `<div class="lang-row">
+      <span class="lang-name" style="display:flex;align-items:center;gap:6px;">
+        <span style="width:8px;height:8px;border-radius:50%;background:${lang.color};display:inline-block;"></span>
+        ${lang.label}
+      </span>
+      <span class="lang-instances">${instances} instances</span>
+      <span class="lang-cost">${fmtMoney(cost)}/mo</span>
+    </div>`;
+  }).join('');
+  container.innerHTML = rows;
+  document.getElementById('cost-badge').textContent = '— peak: ' + fmtQPS(maxQPS) + ' reads';
 }
 
 function renderInsights(scenario) {
@@ -699,7 +1592,7 @@ function renderInsights(scenario) {
   container.innerHTML = scenario.insights.map(insight =>
     `<div class="insight-item"><i class="ti ti-point-filled" aria-hidden="true"></i><span>${insight}</span></div>`
   ).join('');
-  document.getElementById('scenario-name-badge').textContent = scenario.name;
+  document.getElementById('scenario-name-badge').textContent = '— ' + scenario.name;
 }
 
 function renderAll() {
@@ -712,11 +1605,116 @@ function renderAll() {
   recalcAndUpdate(scenario);
 }
 
+// Peak factor slider
+document.getElementById('peak-slider').addEventListener('input', function() {
+  peakMult = parseFloat(this.value);
+  document.getElementById('peak-val').textContent = peakMult + '×';
+  const scenario = SCENARIOS.find(s => s.id === currentScenarioId);
+  if (scenario) recalcAndUpdate(scenario);
+});
+
 document.getElementById('ref-toggle').addEventListener('click', function() {
   this.classList.toggle('open');
   document.getElementById('ref-body').classList.toggle('open');
   const icon = this.querySelector('i');
   icon.className = this.classList.contains('open') ? 'ti ti-chevron-up' : 'ti ti-chevron-down';
+});
+
+let compareOpen = false;
+let cmpScenarioA = null, cmpScenarioB = null;
+
+function renderCompareSelects() {
+  const selA = document.getElementById('cmp-select-a');
+  const selB = document.getElementById('cmp-select-b');
+  const opts = SCENARIOS.map(s => `<option value="${s.id}">${s.name}</option>`).join('');
+  selA.innerHTML = '<option value="">— Select —</option>' + opts;
+  selB.innerHTML = '<option value="">— Select —</option>' + opts;
+  selA.addEventListener('change', () => { cmpScenarioA = selA.value ? SCENARIOS.find(s => s.id === selA.value) : null; renderCompare(); });
+  selB.addEventListener('change', () => { cmpScenarioB = selB.value ? SCENARIOS.find(s => s.id === selB.value) : null; renderCompare(); });
+}
+
+function renderCompare() {
+  const aContent = document.getElementById('cmp-a-content');
+  const bContent = document.getElementById('cmp-b-content');
+  const exportBtn = document.getElementById('export-btn');
+  aContent.innerHTML = cmpScenarioA ? renderCompareScenario(cmpScenarioA) : '<div class="cmp-empty">Select a scenario</div>';
+  bContent.innerHTML = cmpScenarioB ? renderCompareScenario(cmpScenarioB) : '<div class="cmp-empty">Select a scenario</div>';
+  exportBtn.style.display = (cmpScenarioA && cmpScenarioB) ? 'flex' : 'none';
+}
+
+function renderCompareScenario(scenario) {
+  const params = initParams(scenario);
+  const mp = getParamMultiplied(scenario, params);
+  const r = scenario.calc(mp);
+  if (!r) return '<div class="cmp-empty">Error computing scenario</div>';
+  const costTotal = r.cost ? r.cost.total : (r.monthlyCost || 0);
+  const storLine = r.storPerDay > 0 ? `<div class="cmp-storage">Daily: <span>${fmtBytes(r.storPerDay)}</span> · 5yr: <span>${fmtBytes(r.storPerDay * 365 * 5)}</span></div>` : '';
+  const extras = (r.extras || []).slice(0, 4).map(e =>
+    `<div class="o-card ${e.color}"><div class="o-label">${e.label}</div><div class="o-val">${e.val}</div></div>`
+  ).join('');
+  return `
+    <div class="ticker-bar">
+      <div class="t-card teal"><div class="t-label">Read QPS</div><div class="t-val">${fmtQPS(r.rqps)}</div><div class="t-sub">peak: ${fmtQPS(r.rqps * peakMult)}</div></div>
+      <div class="t-card amber"><div class="t-label">Write QPS</div><div class="t-val">${fmtQPS(r.wqps)}</div><div class="t-sub">peak: ${fmtQPS(r.wqps * peakMult)}</div></div>
+    </div>
+    <div class="out-grid">${extras}</div>
+    <div class="cmp-storage">Monthly cost: <span>${costTotal ? fmtMoney(costTotal) : '—'}</span></div>
+    ${storLine}
+  `;
+}
+
+function getCompareExportText() {
+  if (!cmpScenarioA || !cmpScenarioB) return '';
+  const paramsA = initParams(cmpScenarioA);
+  const mpA = getParamMultiplied(cmpScenarioA, paramsA);
+  const rA = cmpScenarioA.calc(mpA);
+  const paramsB = initParams(cmpScenarioB);
+  const mpB = getParamMultiplied(cmpScenarioB, paramsB);
+  const rB = cmpScenarioB.calc(mpB);
+  const line = s => `  ${s}\n`;
+  let txt = '═══════════════════════════════════════════════════════════\n';
+  txt += '  BACK OF ENVELOPE — SCENARIO COMPARISON\n';
+  txt += '  Generated ' + new Date().toISOString().slice(0, 10) + '\n';
+  txt += '═══════════════════════════════════════════════════════════\n\n';
+  [ [cmpScenarioA, rA], [cmpScenarioB, rB] ].forEach(([sc, r]) => {
+    txt += '─── ' + sc.name + ' ───\n';
+    txt += line('Desc: ' + sc.desc);
+    txt += line('Read QPS: ' + fmtQPS(r.rqps) + ' (peak: ' + fmtQPS(r.rqps * peakMult) + ')');
+    txt += line('Write QPS: ' + fmtQPS(r.wqps) + ' (peak: ' + fmtQPS(r.wqps * peakMult) + ')');
+    txt += line('Storage/day: ' + fmtBytes(r.storPerDay));
+    txt += line('5-year storage: ' + fmtBytes(r.storPerDay * 365 * 5));
+    txt += line('Bandwidth: ' + fmtBW(r.bwOut));
+    txt += line('Servers: ' + (r.servers || '—').toLocaleString());
+    if (r.extras) r.extras.forEach(e => txt += line(e.label + ': ' + e.val));
+    const costTotal = r.cost ? r.cost.total : (r.monthlyCost || 0);
+    txt += line('Monthly cost: ' + (costTotal ? fmtMoney(costTotal) : '—'));
+    txt += '\n';
+  });
+  txt += '═══════════════════════════════════════════════════════════\n';
+  return txt;
+}
+
+document.getElementById('compare-toggle').addEventListener('click', function() {
+  compareOpen = !compareOpen;
+  this.classList.toggle('active', compareOpen);
+  document.getElementById('compare-panel').classList.toggle('open', compareOpen);
+  if (compareOpen) renderCompareSelects();
+});
+
+document.getElementById('export-btn').addEventListener('click', function() {
+  const txt = getCompareExportText();
+  if (!txt) return;
+  navigator.clipboard.writeText(txt).then(() => {
+    const orig = this.innerHTML;
+    this.innerHTML = '<i class="ti ti-check"></i> Copied!';
+    setTimeout(() => this.innerHTML = orig, 2000);
+  }).catch(() => {
+    const blob = new Blob([txt], {type: 'text/plain'});
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'scenario-comparison.txt';
+    a.click();
+  });
 });
 
 const firstScenario = SCENARIOS[0];

@@ -1306,4 +1306,768 @@ Q: "Design X for Y users"
 If you drew a cache, you should have estimated the cache size.
 If you drew a queue, you should know the QPS and acceptable delay.
 
+---
+
+## 11. More Back-of-Envelope Patterns
+
+### Batch Job Duration Estimation
+
+ETL, nightly builds, backfills, data migrations — all batch work.
+
+```
+Data to process: 10TB
+Throughput per worker: 50 MB/s (read + transform + write)
+Workers: 20 parallel
+Time: 10TB / (50 MB/s × 20) = 10,000 sec ≈ 2.8 hours
+
+With contention (shared DB, network limits):
+  Effective throughput drops to 60% → 4.5 hours
+
+Staff+ move: "This batch window won't fit in the nightly 4-hour window.
+             We need either more workers (cost) or incremental processing (complexity)."
+```
+
+**Common batch scenarios:**
+
+```
+Log archival (10TB/day → S3):
+  10TB / (100 MB/s per stream × 5 streams) ≈ 20,000 sec ≈ 5.5 hours
+  ✓ Fits in daily batch window
+
+ML model training (1TB training data):
+  Data loading: 1TB / 500 MB/s (SSD) ≈ 30 min
+  Training (GPU): depends on model. Estimate by FLOPs.
+  GPT-3 175B on 1024 A100: 34 days (no, that's real number).
+  For back-of-envelope: "X hours on Y GPUs"
+  Llama 70B fine-tune on 10M tokens: ~8 hours on 8 A100
+
+DB migration (5TB, from Postgres to Cassandra):
+  Export: 5TB / 50 MB/s (pg_dump) ≈ 28 hours ← painful
+  Import: 5TB / 10 MB/s (Cassandra write) ≈ 140 hours ← very painful
+  This is a weekend project. Or use CDC instead of bulk migration.
+```
+
+### P50 / P95 / P99 Relationship
+
+Given one percentile, estimate others:
+
+```
+If p50 = X and no outlier distribution:
+  p95 ≈ 2-3× p50    (typical web app)
+  p99 ≈ 5-10× p50   (add GC pauses, network jitter)
+  p99.9 ≈ 20-50× p50 (rare, but happens)
+
+If p50 = 50ms (reasonable API):
+  p95 ≈ 100-150ms
+  p99 ≈ 250-500ms
+  p99.9 ≈ 1-2.5s
+
+If p50 = 5ms (cached, simple):
+  p95 ≈ 10-15ms
+  p99 ≈ 25-50ms
+  p99.9 ≈ 100-250ms
+
+Staff+ insight: "Our SLO is p99 < 200ms. Based on p50 = 30ms,
+                we have about 170ms of budget. 90ms is buffer."
+```
+
+### Multi-Region Replication Lag
+
+```
+Single-region write, async replication to second region:
+  Latency: same-region commit (~5ms) + cross-region copy (50-150ms)
+  Replication lag: typically 50-500ms for async
+  Can spike to seconds during network issues
+
+Synchronous replication (no data loss):
+  Latency: same-region commit (~5ms) + 2× cross-region (100-300ms)
+  Total: 100-300ms per write — adds 20-60× to write latency
+
+Consensus-based (Raft/Paxos cross-region):
+  Requires majority across regions
+  3 regions (us-east, us-west, eu-west):
+    Leader in us-east, commit requires us-east + us-west or us-east + eu-west
+    Latency: ~65ms (longest cross-region of the two confirmations)
+```
+
+### Rate Limiting Estimation
+
+```
+Token bucket: tokens = rate × time_window
+  rate = 100 req/sec, bucket size = 1000 tokens
+  Burst: up to 1000 in one second, then 100/sec sustained
+
+Sliding window: requests in last 60 seconds
+  Memory: user_id → [timestamp1, timestamp2, ...]
+  Bad: O(n) per request, O(m × n) memory
+  Better: counter per time bucket
+
+Redis-backed rate limiter:
+  Per user key in Redis: `rate_limit:{user_id}:{window}`
+  Memory per user per window: ~50 bytes
+  10M DAU, 1 limit per user: 10M × 50 bytes = 500MB → 1 Redis instance
+  QPS to Redis: same as API QPS (each request checks limit)
+  If 100K API QPS → 100K Redis QPS → 1 Redis instance (handles 100K)
+
+Rate limit key design:
+  Global rate limit: 1 key → no scalability issue
+  Per-user rate limit: N users 
+  Per-IP rate limit: N IPs (could be 100M → need sharded Redis)
+```
+
+### Data Serialization Size Estimation
+
+```
+Full JSON response (user profile):
+  { "id": 123, "name": "John", "email": "j@x.co", "age": 30,
+    "city": "NYC", "country": "US", "avatar": "https://..." }
+  ≈ 400 bytes JSON (no whitespace)
+
+Compressed JSON (gzip):
+  ≈ 120 bytes (3-4× compression for text)
+
+Protobuf (same data):
+  ~60 bytes (schema-defined, binary, no field names)
+
+Avro (with schema):
+  ~50 bytes (similar to protobuf, better for streaming)
+
+FlatBuffers / Cap'n Proto:
+  ~45 bytes (no serialization step — read from buffer directly)
+
+Thrift (binary):
+  ~55 bytes
+
+Per-request savings (10K QPS, JSON → Protobuf):
+  400 bytes → 60 bytes = 340 bytes saved per request
+  10K × 340 × 86400 = 294 GB/day bandwidth saved
+  Egress cost = 294 GB × $0.09 = $26/day ≈ $800/month
+  Plus: serialization CPU drops from ~200µs to ~10µs per request
+  Net: ~$1K/month + 2-5% CPU reduction
+```
+
+### Database Index Size Estimation
+
+```
+B-tree index (Postgres/MySQL default):
+  Index on 4-byte integer column
+  B-tree node: ~8KB page
+  Each entry: 4 bytes (key) + pointer (4-8 bytes) ≈ 12 bytes
+  Entries per page: 8KB / 12 ≈ 680
+  Index height for 1M rows: log_680(1M) ≈ 3 levels
+  Index height for 1B rows: log_680(1B) ≈ 4 levels
+  → Most indexes are 3-4 levels deep. No noticeable difference between 1M and 1B.
+
+B-tree index on VARCHAR(255):
+  Avg key: 20 bytes + pointer 6 bytes ≈ 26 bytes
+  Entries per page: 8KB / 26 ≈ 315
+  Index size for 1M rows: 1M × 26 = 26MB + overhead ≈ 40MB
+
+Composite index (city, status, created_at):
+  Key: 20 + 1 + 8 = 29 bytes + pointer 6 = 35 bytes
+  For 10M rows: 10M × 35 = 350MB
+  This fits in RAM on any reasonable server.
+
+Inverted index (Elasticsearch/Lucene):
+  Term dictionary: ~20% of source size
+  Postings list (doc IDs): ~30% of source size
+  Total inverted index: ~50-70% of source document size
+  For 100GB of text: ~60GB inverted index → need ~100GB RAM for fast queries
+
+Vector index (HNSW):
+  Memory: ~1.1-1.3× the raw vector size (index overhead)
+  100M vectors × 768 dim × 4 bytes (FP32) = 307GB
+  HNSW index: ~350GB
+  Must be in memory for fast ANN search (sub-10ms)
+```
+
+### Data Skew Estimation
+
+```
+User distribution (Pareto principle):
+  Top 1% of users → 50% of traffic
+  Top 10% of users → 90% of traffic
+  Bottom 50% of users → 1% of traffic
+
+Implication for caching:
+  1M total users → 10K "heavy" users drive 90% of traffic
+  Cache the top 10K users (their data fits in small Redis)
+  Rest of users hit DB — fine because their traffic is low
+
+Implication for sharding:
+  Range shard by user_id → heavy users all in one shard
+  Hash shard by user_id → heavy users spread evenly (✓)
+  But if one user generates 50% of traffic (celebrity on Twitter):
+    Hash shard helps a little, but one partition still overloaded
+    Solution: sub-shard the celebrity (their data split across 100 partitions)
+
+Implication for Kafka partitions:
+  Partition by user_id → one partition gets 50% of messages
+  Solution: partition by message_id (random) → even distribution
+  Or: key by user_id but have 1000+ partitions
+```
+
+### Hot Key Estimation
+
+```
+Hot key: one cache key gets disproportionate traffic
+
+Example: Super Bowl tweet goes viral
+  Normal load: 23K reads/sec across 1M keys → 0.023 reads/sec per key
+  Viral tweet: 100K reads/sec on ONE key
+  Single Redis node can handle 100K reads/sec → just barely fine
+  But if 10 viral items simultaneously → 1M reads/sec → Redis collapses
+
+Solutions:
+  Local cache on app server (caffeine/cachetools): absorbs 80% of reads
+  Replicate hot key across Redis cluster (all N nodes have it)
+  Client-side cache: browsers/CDN
+
+Detection: identify keys with QPS > 10× average
+  monitor per-key read rate in Redis
+  prometheus metrics per cache key prefix (not per individual key)
+```
+
+### Fan-Out Amplification Estimation
+
+```
+Fan-out pattern: one action triggers N downstream actions
+
+Read fan-out (search query hits multiple shards):
+  100K QPS incoming × 10 index shards = 1M internal QPS
+  Each shard returns top 10 results
+  Network: 100K × 10 × 1KB (doc snippet) = 1GB/s internal bandwidth
+  Combined: gigabit NIC is fine. But reranker receives 1M docs/sec.
+
+Write fan-out (push model for feed):
+  User posts, system pushes to 100K followers' timelines
+  100 writes/sec × 100K followers = 10M fan-out writes/sec
+  This is 10× what most databases can handle.
+  That's why Twitter uses pull model for celebrities (>100K followers).
+
+Notification fan-out:
+  Group message: 1 send × 500 members = 500 push notifications
+  50 group msgs/sec × 500 members = 25K notifications/sec
+  FCM/APNS can handle 10K-100K/sec
+  Need to throttle per provider to avoid rate limits
+
+Event fan-out (CDC):
+  1 DB write → 1 CDC event → N consumers (search cache, analytics, audit)
+  With 5 consumers: 1K writes/sec → 5K internal events/sec
+  Kafka handles this trivially. But if each consumer does fan-out...
+  Consumer1 sends notification: 5K events × 10 followers = 50K/sec
+  Consumer2 updates search: 5K × 3 replicas = 15K/sec  
+  Total from 1K DB writes: 70K downstream ops/sec
+```
+
+### Connection Pool Sizing for DB
+
+```
+Formula: pool_size = QPS × avg_query_time / cores (adjusted)
+
+Example: 10K QPS, avg query 10ms, 8 cores
+  pool_size = 10,000 × 0.01 / 8 = 12.5 → 13 connections
+  But each connection uses ~10MB memory (Postgres)
+  13 × 10MB = 130MB — trivial
+
+But wait:
+  Kafka-style slow queries (analytics, 500ms):
+  pool_size = 10,000 × 0.5 / 8 = 625 connections
+  625 × 10MB = 6.25GB — significant
+  Solution: separate pool for fast queries vs slow queries
+  Or: queue slow queries separately, limit concurrency
+
+PostgreSQL max_connections default: 100
+  Each connection over 100 is queued by pgbouncer (connection pooler)
+  Best practice: app → pgbouncer (50-200 connections) → Postgres (100)
+  pgbouncer pools short-lived connections into the few Postgres connections
+
+Quick rule:
+  pool_size = (2-5) × CPU cores for fast queries
+  pool_size = (10-50) × CPU cores for slow queries (but watch memory)
+```
+
+### Timeout / Retry Math
+
+```
+Expected additional latency from retries:
+
+Single attempt, no retry:
+  p99 latency = 200ms ← your base
+
+With 1 retry on failure (timeout = 500ms, failure rate = 5%):
+  P(need retry) = 5%
+  Extra latency when retry needed: 500ms (timeout) + 200ms (retry) = 700ms
+  Expected latency = 200ms + 5% × 700ms = 235ms
+  p99 with retries ≈ 200ms + 500ms = 700ms ← higher than base p99
+
+With exponential backoff (1s base, 2× factor, 3 retries):
+  Max additional latency (all 3 fail): 1 + 2 + 4 = 7 seconds
+  P(all 3 fail at 1% each): 0.01³ = 0.0001% → 1 in a million
+  But client may retry 3 times within 100ms → server gets 3× load
+
+Retry storm calculation:
+  10K QPS, each server timeout triggers retry
+  10% of requests timeout → 1K retries/sec → 11K total QPS
+  Server gets 10% more load → another 10% timeout → 1.1K more retries
+  This cascades. Formula: if retry causes > timeout_reduction, it's unstable.
+  Fix: jitter (randomize retry timing), circuit breaker at client
+```
+
+### Compression Math
+
+```
+Text/JSON (API responses):
+  gzip level 6: ~3-4× compression, ~100µs overhead per request
+  zstd level 3: ~3-5× compression, ~50µs overhead per request
+  Brotli level 4: ~4-5× compression, ~200µs overhead (better for static assets)
+
+CPU vs bandwidth tradeoff:
+  Without compression: 10K QPS × 4KB = 40MB/s egress → 320 Mbps
+  With gzip: 10K QPS × 1KB = 10MB/s egress → 80 Mbps (4× less)
+  CPU cost: 10K × 100µs = 1 CPU-second per second = 1 full core
+  Net win: reduces bandwidth by 75%, costs 5-10% of a server's CPU
+
+Binary vs text:
+  Protobuf: ~4× smaller than JSON, ~10× less CPU to parse
+  Avro: similar savings, better for streaming
+  MessagePack: ~2× smaller than JSON, ~5× less CPU
+  Tradeoff: debuggability. "I can curl and see JSON" vs "I need a tool for protobuf"
+```
+
+### GC / Memory Estimation
+
+```
+Java (G1GC, 16GB heap):
+  Young GC: ~50ms every 10-20 seconds (tunable)
+  Old GC: ~500ms every few hours (tunable)
+  Pause frequency: increases with heap size
+  Recommendation: don't exceed 32GB heap to avoid compressed OOPs penalty
+  At 32GB: 1-2% CPU overhead for GC at moderate allocation rate
+
+Java (ZGC, any heap):
+  Pause: <1ms (sub-millisecond typically)
+  CPU overhead: ~5-10% more than G1GC
+  Good for: latency-sensitive apps (p99 < 10ms)
+  Bad for: CPU-constrained apps (already at 90% CPU)
+
+Go GC (non-generational, concurrent):
+  Pause: <1ms typically (even with 100GB heap)
+  CPU overhead: ~10-25% at high allocation rate
+  Trigger: when heap grows 2× since last GC
+  Tune: GOGC=50 (more frequent GC, less memory) or GOGC=200 (less GC, more memory)
+  For high-throughput services: GOGC=100-200, expect 10-20% CPU on GC
+
+Python GC (reference counting + generational):
+  Reference counting: immediate, predictable cost (each decref is ~5ns)
+  Generational GC: ~50ms every few seconds in typical web app
+  Key issue: memory fragmentation for long-running processes
+  Best: restart workers every few hours (gunicorn --max-requests)
+
+Memory budget quick check:
+  Java 16GB heap: RSS ~20GB (JVM overhead, metaspace, threads, off-heap)
+  Go binary: RSS ~heap + 10-20% (GC metadata, small overhead)
+  Python: RSS ~heap × 1.5-2× (object overhead, interpreter)
+```
+
+### Service Mesh Overhead
+
+```
+Envoy sidecar proxy (typical Istio setup):
+  Per-request latency added: 1-5ms (depends on mesh depth)
+  CPU per proxy: 0.1-0.5 vCPU per 10K QPS
+  Memory per proxy: 50-100MB (mostly config + stats)
+  MTLS overhead: additional 1-2ms if not using connection reuse
+
+mTLS handshake:
+  Full handshake: ~5ms (certificate exchange, key generation)
+  After handshake (session reuse): ~0.1ms
+  For long-lived connections (gRPC, HTTP/2): one handshake per connection
+
+Back-of-envelope: "Adding Istio costs us ~5ms latency and ~0.3 vCPU per service.
+                  For 20 services at 10K QPS each: 10 vCPU overhead.
+                  Worth it for the observability and security, but not free."
+```
+
+### Encryption Overhead
+
+```
+TLS 1.3:
+  Handshake: 1-RTT (~1 network round trip, ~0.5-1ms same DC)
+  Per-request overhead: ~1-3% CPU (AES-NI hardware acceleration)
+  Memory: negligible (session cache)
+
+If no hardware acceleration (older CPUs):
+  TLS overhead: ~5-10% CPU
+  For 10K QPS on 4 cores: ~0.4-0.8 cores just for TLS
+
+Field-level encryption (PII data):
+  App encrypts before write, decrypts after read
+  AES-256-GCM: ~100MB/s per core
+  For 10M records/day with 100 bytes each: 1GB/day → trivial
+  But: encrypted fields can't be indexed for search
+  Solution: HMAC for exact match, blind indexes for range queries
+
+Disk encryption (at rest):
+  LUKS/AES-NI: <5% overhead (hardware-accelerated)
+  No capacity estimation issue
+
+End-to-end encryption (like WhatsApp):
+  Every message encrypted with recipient's public key
+  Server can't decrypt — affects search, analytics, spam detection
+  No additional CPU estimation issue (client does the work)
+  But: you can't run ML on encrypted data → affects feature requirements
+```
+
+### Eventual Consistency Convergence Time
+
+```
+Scenario: User updates profile picture in us-east
+  Write committed to leader in us-east
+  Async replication to us-west, eu-west, ap-southeast
+
+Network:
+  us-east → us-west: 60ms (one-way)
+  us-east → eu-west: 80ms
+  us-east → ap-southeast: 200ms
+
+Best case (no contention):
+  us-west updated: 60ms (replication lag)
+  eu-west updated: 80ms
+  ap-southeast updated: 200ms
+
+Worst case (replication queue backed up):
+  Each region has a replication queue
+  If queue depth = 10K writes at 5K writes/sec: 2 seconds lag
+  If network blip causes 30s outage: catch-up time = 30s + queue drain time
+
+DNS propagation (for cache invalidation):
+  Default TTL: 300 seconds
+  If you need faster: 60 seconds (minimum recommended)
+  If urgent: 5 seconds (with traffic increase on DNS servers)
+  You cannot invalidate DNS instantly — design for this
+```
+
+### WebSocket / Connection Estimation
+
+```
+WebSocket connections per server:
+  Each connection: ~10-20KB memory (kernel socket buffer + app state)
+  100K connections: ~1-2GB RAM
+  1M connections: ~10-20GB RAM
+
+CPU for 100K connections:
+  Polling (epoll/kqueue): O(1) per event → ~5% CPU for 100K idle
+  Active (messages/sec): ~10% CPU per 10K msgs/sec
+  For chat: each user sends 1 msg/10s, receives 1 msg/5s
+  100K users: 30K msg/sec → ~30% CPU + 2GB RAM → ~3 servers for 100K users
+
+Go vs Node vs Python for WebSocket:
+  Go: 1M conn on 4GB RAM, ~40% CPU (gnet or gorilla/websocket)
+  Node: 500K conn on 6GB RAM, ~50% CPU (heavier event loop per connection)
+  Python (asyncio): 100K conn on 2GB, ~60% CPU (GIL, websockets lib)
+  Java (Netty): 1M conn on 8GB, ~30% CPU (most optimized)
+
+Staff+ insight: "WebSocket servers are memory-bound before CPU-bound.
+                At 1M connections, we need ~16GB per server regardless of language.
+                We'd horizontally scale by connection count, not CPU utilization."
+```
+
+### Load Balancer / Proxy Math
+
+```
+NGINX as reverse proxy:
+  Memory: ~2.5MB per 10K idle connections
+  CPU: ~1 core per 50K requests/sec (simple routing)
+  Max connections: ~10K-50K per worker (depends on keepalive)
+  Max throughput: ~10-20 Gbps per instance (single-threaded per worker)
+
+HAProxy:
+  Memory: ~15KB per connection (asymmetric — 1KB frontend, 14KB backend)
+  CPU: ~1 core per 30K req/sec
+  Max connections: ~100K (recommended), 1M+ possible (memory heavy)
+
+Envoy:
+  Memory: ~30-50MB base + ~1KB per connection
+  CPU: ~1 core per 20K req/sec (with mTLS + observability)
+  Threading model: worker per core (Linux) or goroutine-style (thread per connection)
+  Config overhead: ~100ms to reload config (not per-request)
+
+L4 (TCP) vs L7 (HTTP) load balancing:
+  L4: less resource intensive (no header parsing)
+     Throughput: ~10× higher than L7
+     Use: database load balancing, memcached, any TCP protocol
+  L7: more features (routing, headers, cookies)
+     Use: HTTP APIs, gRPC, WebSocket
+
+Quick sizing:
+  100K QPS on L4 HAProxy: ~3-4 cores, ~2GB RAM → $140/month (2× m5.large)
+  100K QPS on L7 NGINX: ~4-6 cores, ~4GB RAM → $280/month (2× m5.xlarge)
+  100K QPS on Envoy with mTLS: ~8-12 cores, ~8GB RAM → $560/month
+```
+
+### DNS Resolution Overhead
+
+```
+DNS lookup time:
+  First lookup (cache miss): 20-50ms (recursive resolver)
+  Subsequent lookups (cache hit): <1ms (local cache)
+  TTL: 60-300 seconds typical
+
+For 10K QPS, if every request does DNS:
+  10K × 50ms = 500 seconds of DNS wait per second → 500 parallel lookups
+  But: DNS is cached. Real DNS QPS is much lower.
+  ~1 lookup per new connection × connection reuse rate
+
+Connection reuse (keep-alive):
+  HTTP/1.1: reuse for ~5-30 seconds (browser default)
+  HTTP/2: multiplexed, reuse for minutes
+  gRPC: long-lived, reuse for hours
+
+DNS resolution per actual request:
+  10K QPS, 10 requests per connection → 1K DNS lookups/sec
+  Cache hit rate: 95% → 50 real DNS queries/sec → trivial
+
+But: DNS-based load balancing (DNS returns different IPs per request):
+  Each DNS response rotates IPs → clients may not cache as aggressively
+  TTL = 60 seconds: clients re-resolve every 60s → 10K/60 ≈ 170 DNS/sec
+  For 500M users: 500M/60 ≈ 8M DNS queries/sec → expensive
+  Solution: use anycast (same IP, BGP routing) instead of DNS-based LB
+```
+
+### Distributed Lock / Consensus Overhead
+
+```
+ZooKeeper:
+  Write throughput: ~10K ops/sec per ensemble (limited by leader)
+  Read throughput: ~100K ops/sec (any node can serve reads)
+  Latency: 2-5ms per write (ZAB protocol, majority commit)
+  Session timeout: 10-30s typical
+  Node count: 3 or 5 (quorum: majority)
+
+etcd:
+  Write throughput: ~10K ops/sec per cluster
+  Read throughput: ~100K ops/sec (with quorum reads) or ~1M (serialized)
+  Latency: ~2ms writes (Raft, same DC), ~50-100ms multi-region
+  Node count: 3 or 5
+
+Redis RedLock:
+  Write throughput: ~50K locks/sec per Redis node (single-threaded)
+  5-node RedLock: ~10K-20K locks/sec (slowest node determines throughput)
+  Latency: ~1ms per lock acquisition (lightweight compared to ZK/etcd)
+  Controversial: not formally proven safe, but widely used in practice
+
+When you need a distributed lock:
+  Rate: 100 locks/sec → any solution works
+  Rate: 1K locks/sec → Redis RedLock (ZK too slow, 10K write limit)
+  Rate: 10K locks/sec → shard locks by key across Redis nodes
+  Rate: 100K locks/sec → don't use distributed locks, rethink design
+```
+
+### Data Archival / Tiering Estimation
+
+```
+Hot data (accessed daily):
+  Performance tier: SSD/NVMe + cache
+  Cost: ~$0.20/GB/month (provisioned IOPS)
+
+Warm data (accessed weekly/monthly):
+  Performance tier: HDD or lower-cost SSD
+  Cost: ~$0.05/GB/month
+
+Cold data (accessed yearly/compliance):
+  Storage tier: S3 Glacier / Azure Archive
+  Cost: ~$0.004/GB/month (Glacier Deep Archive)
+  Retrieval time: 12-48 hours (free tier) or minutes (premium)
+
+Example: Payment system with 7-year retention
+  Year 1-2 (hot): 10TB × $0.20 = $2,000/month
+  Year 3-5 (warm): 30TB × $0.05 = $1,500/month
+  Year 6-7 (cold): 20TB × $0.004 = $80/month
+  Total monthly: ~$3,580
+
+Without tiering (all hot): 70TB × $0.20 = $14,000/month
+Savings: ~75% → $125K/year for a modest system
+
+Staff+ move: "We save $125K/year with a data lifecycle policy.
+             Define hot/warm/cold at requirements time, not after deployment."
+```
+
+### Container / Pod Resource Estimation
+
+```
+Kubernetes pod density per node:
+  Node type: m5.xlarge (4 vCPU, 16GB RAM)
+  Average pod resource: 0.5 vCPU, 1GB RAM
+  Max pods: 4 vCPU / 0.5 = 8 pods (CPU bound) or 16GB/1GB = 16 pods (memory bound)
+  Realistic: ~8-10 pods per node (leaving room for OS, kubelet, daemonsets)
+
+Node sizing:
+  Many small pods (microservices): 4-8 vCPU nodes (easier bin packing)
+  Large pods (databases, ML): 16-64 vCPU nodes (less overhead per pod)
+
+CPU overcommit:
+  Kubernetes allows CPU overcommit (requests vs limits)
+  Typical ratio: 3:1 (request 0.5, limit 1.5)
+  Risk: CPU starvation if all pods peak simultaneously
+  For latency-sensitive: no overcommit (requests = limits)
+  For batch/background: 5:1 overcommit is fine
+
+Memory overcommit:
+  Dangerous — OOMKiller kills pods
+  Best practice: no memory overcommit for stateful services
+  For stateless: 1.2-1.5× overcommit with good monitoring
+
+Quick cluster sizing:
+  Microservice: 50 pods × 0.5 vCPU × 1GB = 25 vCPU + 50GB
+    → 4× m5.xlarge nodes: 16 vCPU, 64GB → done
+  With HA (3×): 12× m5.xlarge → ~$2,500/month (on-demand)
+```
+
+### CI/CD Pipeline Estimation
+
+```
+Build time estimation:
+  Java (Maven/Gradle): 
+    Clean build: 2-5 minutes (small), 10-20 minutes (large monorepo)
+    Incremental: 30-60 seconds
+    Docker image build: +1-3 minutes
+    Total: ~5-15 minutes per build
+
+  Go:
+    Clean build: 10-60 seconds
+    Docker image: +30-60 seconds
+    Total: ~1-2 minutes (fastest ecosystem for builds)
+
+  Python:
+    No compilation (interpreted) → no build time
+    But: dependency install + lint + tests
+    pip install: 1-3 minutes (cached: 10-30 seconds)
+    Tests: 1-10 minutes
+    Total: ~2-15 minutes
+
+  TypeScript (React frontend):
+    tsc + vite build: 30-120 seconds (depends on project size)
+    Docker image: +30-60 seconds
+    Total: ~1-3 minutes
+
+Compute for CI/CD:
+  200 engineers, 10 builds/day each = 2,000 builds/day
+  2,000 × 10 min avg × 4 vCPU = 20,000 vCPU-minutes/day
+  Using 32-vCPU runners: 625 runner-minutes/day → 10.4 runner-hours/day
+  Cost: ~$0.10/vCPU-hour → ~$65/day → ~$2K/month (CI/CD compute)
+
+Artifact storage:
+  Docker images per build: ~500MB compressed
+  2,000 images/day × 500MB = 1TB/day
+  Retention: 30 days → 30TB
+  Cost: 30TB × $0.023/GB = $690/month (S3)
+  Or: use Docker registry with cleanup (keep last 10 per branch)
+```
+
+### Data Lake / Warehouse Estimation
+
+```
+Data ingestion:
+  100 services × 100 events/sec = 10K events/sec
+  Each event: 1KB JSON → 10MB/sec → 860GB/day → 300TB/year
+
+Raw storage (S3):
+  300TB × $0.023 = $6,900/month (S3 standard)
+  After 90 days, move to S3 Infrequent Access: $3,750/month
+  After 365 days, archive: $1,200/month (Glacier Deep Archive)
+
+ETL compute:
+  Spark cluster: 10 nodes × 16 vCPU × 64GB
+  Processing 1TB/day with Spark: ~1-2 hours
+  Cost: 10 × $0.50/hr = $5/hr → $5-10/day → $150-300/month
+  (Spot instances: ~$1.50/hr → $45-90/month)
+
+Query compute (ad-hoc analytics):
+  Trino/Presto on 5 nodes: ~10TB scanned per hour
+  Most queries scan 100GB-1TB → complete in 1-10 minutes
+  Cost per analyst query: ~$0.01-0.10 (serverless pricing)
+
+Back-of-envelope:
+  "Data pipeline: 10K events/sec → 860GB/day → 300TB/year.
+   Storage cost: ~$7K/month raw → $4K/month tiered.
+   Compute: ~$300/month on Spark spot."
+```
+
+### Estimating for "Unusual" Systems
+
+```
+Voting / Polling system (Super Bowl, 100M votes in 3 hours):
+  Peak write QPS: 100M / (3 × 3600) ≈ 9,250 writes/sec
+  But: Super Bowl happens in bursts. 50% of votes in final 10 minutes.
+  Peak: 50M / 600 ≈ 83,000 writes/sec
+  This is high. Need: Kafka at ingress (buffers 83K/sec), 
+  then batch write to DB (throttled at 1K/sec).
+  Design: "accept fast, persist slow"
+
+Real-time leaderboard (100M players, top 100 shown):
+  Updates: 10M players × 1 score update/min = 166K updates/sec
+  Reads: 1M people view leaderboard/min = 16K reads/sec
+  Challenge: sorted leaderboard at 166K writes/sec is O(log N) per write
+  Solution: Redis sorted set with approximate ranking
+  Or: only accept top 1000 scores, recalculate every 30 seconds
+  Estimate: 166K writes/sec needs sharding. Shard by score range → 100 partitions × 1.6K writes/sec
+
+Collaborative editing (Google Docs, 100M users):
+  Per document: 2-100 users editing simultaneously
+  Ops per user: ~1 op/second (keystroke)
+  Concurrent ops for popular doc: 100 ops/sec → 100 ops/sec to one document
+  Solution: CRDT (no central ordering), OT (central ordering, latency sensitive)
+  Storage per doc: 1K ops × 50 bytes × session length ≈ 50KB per active session
+  This is why Google Docs uses OT with a central server: simpler than CRDT at scale
+```
+
+### The "Rules of Thumb" Consolidated Table
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                 BACK-OF-ENVELOPE RULES OF THUMB                  │
+├───────────┬─────────────────────────────────────────────────────┤
+│ Category  │ Rule                                                │
+├───────────┼─────────────────────────────────────────────────────┤
+│ Scale     │ DAU = 10-50% of MAU (25% if unknown)                │
+│           │ Peak = 2-5× average (3× if unknown)                 │
+│           │ 1B req/day ≈ 11K QPS avg                            │
+├───────────┼─────────────────────────────────────────────────────┤
+│ Storage   │ 1K records/sec × 1KB × 1 year ≈ 30TB                │
+│           │ 1 photo upload/sec × 2MB × 1 year ≈ 60TB            │
+│           │ S3 cost: $23/TB/month, EBS: $80/TB/month            │
+├───────────┼─────────────────────────────────────────────────────┤
+│ DB        │ Postgres < 5K write/sec, < 50K read/sec per node    │
+│           │ Cassandra < 50K write/sec per node (log-structured) │
+│           │ Redis < 100K ops/sec per node (single-threaded)     │
+│           │ Indexes add 20-50% storage overhead                 │
+├───────────┼─────────────────────────────────────────────────────┤
+│ Network   │ 1 Gbps ≈ 125 MB/s, 10 Gbps ≈ 1.25 GB/s             │
+│           │ Cross-region latency 50-200ms                       │
+│           │ DNS TTL: 60-300s, can't invalidate instantly        │
+├───────────┼─────────────────────────────────────────────────────┤
+│ Caching   │ Cache hit ratio: 80-95% for hot data                │
+│           │ TTL: 5-60 min for most content                      │
+│           │ Memory-mapped cache is 10× faster than network      │
+├───────────┼─────────────────────────────────────────────────────┤
+│ Languages │ Go/Java: 10-50K QPS per instance                    │
+│           │ Python sync: 1K QPS per instance (3× more costly)   │
+│           │ Node: 5-20K QPS per instance                        │
+├───────────┼─────────────────────────────────────────────────────┤
+│ Compute   │ 1 vCPU ≈ 100-200 API calls/sec (simple)             │
+│           │ 1 vCPU ≈ 10-20 ML inferences/sec (small model)      │
+│           │ Docker overhead: negligible (<1% CPU)               │
+├───────────┼─────────────────────────────────────────────────────┤
+│ Reliability│ 99.9% → 8.76 hr/yr, 99.99% → 52 min/yr            │
+│           │ RTO < 1hr needs hot standby, < 15min needs active   │
+│           │ MTTR for most incidents: 30 min-2 hr                │
+├───────────┼─────────────────────────────────────────────────────┤
+│ Cost      │ 1M API calls on Lambda: ~$2.50                      │
+│           │ 1 server on EC2: $50-150/month                      │
+│           │ Data egress: $0.09/GB (most expensive hidden cost)  │
+│           │ Egress cost often exceeds compute + storage combined │
+└───────────┴─────────────────────────────────────────────────────┘
+```
+
 This is Topic 1 of ~29. Continue with Topic 2 (Core Building Blocks: API Gateway, Load Balancer, Reverse Proxy) when ready.

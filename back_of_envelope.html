@@ -137,12 +137,23 @@
   .cost-legend { display: flex; gap: 14px; margin-top: 6px; font-size: 10px; color: var(--text3); }
   .cost-legend-item { display: flex; align-items: center; gap: 4px; }
   .cost-legend-dot { width: 6px; height: 6px; border-radius: 50%; }
+  .reqs-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+  .reqs-panel { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px; overflow-x: auto; }
+  .reqs-table { width: 100%; border-collapse: collapse; font-size: 12px; min-width: 400px; }
+  .reqs-table th { font-size: 10px; text-transform: uppercase; letter-spacing: 0.07em; color: var(--text3); font-weight: 600; padding: 6px 8px; text-align: left; border-bottom: 2px solid var(--border2); }
+  .reqs-table td { padding: 6px 8px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  .reqs-table tr:hover td { background: var(--bg3); }
+  .reqs-table .r-feat { color: var(--text); font-weight: 500; white-space: nowrap; }
+  .reqs-table .r-val { color: var(--text2); }
+  .reqs-table .r-why { font-size: 11px; color: var(--text3); line-height: 1.4; margin-top: 2px; }
+  .reqs-table i { font-size: 11px; color: var(--text3); }
   @media (max-width: 640px) {
     .ticker-bar { grid-template-columns: repeat(2, 1fr); }
     .content-grid { grid-template-columns: 1fr; }
     .insights-row { grid-template-columns: 1fr; }
     .ref-grid { grid-template-columns: 1fr 1fr; }
     .bot-grid { grid-template-columns: 1fr; }
+    .reqs-grid { grid-template-columns: 1fr; }
   }
 </style>
 </head>
@@ -208,6 +219,17 @@
   </div>
   <div class="section-divider">Key Insights <span id="scenario-name-badge"></span></div>
   <div class="insights-row" id="insights-row"></div>
+  <div class="section-divider">Functional &amp; Non-Functional Requirements <span id="reqs-badge" style="font-weight:400;text-transform:none;letter-spacing:0;font-size:12px;color:var(--text3)"></span></div>
+  <div class="reqs-grid" id="reqs-grid">
+    <div class="reqs-panel">
+      <div class="panel-title">Functional Requirements <span style="font-weight:400;color:var(--text3);text-transform:none;letter-spacing:0">— what the system must do</span></div>
+      <table class="reqs-table"><thead><tr><th>Requirement</th><th>Description</th><th>Why</th></tr></thead><tbody id="fn-reqs-body"></tbody></table>
+    </div>
+    <div class="reqs-panel">
+      <div class="panel-title">Non-Functional Requirements <span style="font-weight:400;color:var(--text3);text-transform:none;letter-spacing:0">— how the system must perform</span></div>
+      <table class="reqs-table"><thead><tr><th>Attribute</th><th>Target</th><th>Why</th></tr></thead><tbody id="nfn-reqs-body"></tbody></table>
+    </div>
+  </div>
   <div class="section-divider">Interview Reference</div>
   <div class="ref-wrap">
     <button class="ref-toggle open" id="ref-toggle">Rules of Thumb &amp; Constants <i class="ti ti-chevron-up"></i></button>
@@ -264,6 +286,72 @@
           <div class="ref-row"><span class="ref-key">TB</span><span class="ref-val" style="margin-left:8px;">10¹² B</span></div>
           <div class="ref-row"><span class="ref-key">PB</span><span class="ref-val" style="margin-left:8px;">10¹⁵ B</span></div>
           <div class="ref-row"><span class="ref-key">EB</span><span class="ref-val" style="margin-left:8px;">10¹⁸ B</span></div>
+        </div>
+      </div>
+    </div>
+    <button class="ref-toggle" id="ref-toggle-nfr">Functional &amp; Non-Functional Reqs <i class="ti ti-chevron-down"></i></button>
+    <div class="ref-body" id="ref-body-nfr">
+      <div style="margin-bottom:12px;font-size:12px;color:var(--text2);line-height:1.5;">Quick-reference template for structuring functional &amp; non-functional requirements in any design interview. Use the per-scenario tables above for system-specific details.</div>
+      <div class="ref-grid">
+        <div>
+          <div class="ref-group-title">Functional Requirements — What the System Does</div>
+          <div style="padding:8px 0;">
+            <div style="font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:6px;">Template</div>
+            <div style="background:var(--bg3);border-radius:6px;padding:10px;font-family:var(--mono);font-size:11px;line-height:1.6;color:var(--text2);">
+Core CRUD: Create | Read | Update | Delete<br>
+Async: Queue event, Process callback, Notify<br>
+Real-time: WebSocket, Presence, Push notification<br>
+Batch: Process file, Generate report, Send digest
+            </div>
+          </div>
+          <div style="font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.05em;margin:10px 0 6px;">By System Type</div>
+          <table style="width:100%;border-collapse:collapse;font-size:11px;">
+            <tr style="border-bottom:1px solid var(--border);"><td style="padding:5px 4px;font-weight:500;">URL Shortener</td><td style="padding:5px 4px;color:var(--text2);">Create URL, Redirect, Click analytics</td></tr>
+            <tr style="border-bottom:1px solid var(--border);"><td style="padding:5px 4px;font-weight:500;">Chat</td><td style="padding:5px 4px;color:var(--text2);">Send msg, Read history, Presence, Push</td></tr>
+            <tr style="border-bottom:1px solid var(--border);"><td style="padding:5px 4px;font-weight:500;">Payment</td><td style="padding:5px 4px;color:var(--text2);">Create payment, Webhook, Refund, Receipt</td></tr>
+            <tr style="border-bottom:1px solid var(--border);"><td style="padding:5px 4px;font-weight:500;">Feed</td><td style="padding:5px 4px;color:var(--text2);">Write post, Read timeline, Fan-out, Like</td></tr>
+            <tr style="border-bottom:1px solid var(--border);"><td style="padding:5px 4px;font-weight:500;">Video</td><td style="padding:5px 4px;color:var(--text2);">Upload, Transcode, Stream (HLS/DASH)</td></tr>
+            <tr style="border-bottom:1px solid var(--border);"><td style="padding:5px 4px;font-weight:500;">Rate Limiter</td><td style="padding:5px 4px;color:var(--text2);">Allow/Deny, Quota check, Burst handling</td></tr>
+            <tr><td style="padding:5px 4px;font-weight:500;">RAG Chat</td><td style="padding:5px 4px;color:var(--text2);">Retrieve docs, Generate answer, Cite sources</td></tr>
+          </table>
+        </div>
+        <div>
+          <div class="ref-group-title">Non-Functional Requirements — How It Performs</div>
+          <div style="padding:8px 0;">
+            <div style="font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:6px;">Template</div>
+            <div style="background:var(--bg3);border-radius:6px;padding:10px;font-family:var(--mono);font-size:11px;line-height:1.6;color:var(--text2);">
+Availability: 99.9% / 99.99% / five-nines<br>
+Latency: 200ms p95 / 500ms p99<br>
+Durability: Zero-loss / At-least-once<br>
+Consistency: Strong / Eventual / Read-your-writes<br>
+Scale: X DAU, Y QPS, Z TB/day
+            </div>
+          </div>
+          <div style="font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.05em;margin:10px 0 6px;">NFR Targets &amp; What They Drive</div>
+          <table style="width:100%;border-collapse:collapse;font-size:11px;">
+            <tr style="border-bottom:1px solid var(--border);"><td style="padding:4px 4px;font-weight:500;">Availability 99.9%</td><td style="padding:4px 4px;color:var(--text2);">2 replicas, basic failover</td></tr>
+            <tr style="border-bottom:1px solid var(--border);"><td style="padding:4px 4px;font-weight:500;">99.99%</td><td style="padding:4px 4px;color:var(--text2);">Multi-AZ, async replication</td></tr>
+            <tr style="border-bottom:1px solid var(--border);"><td style="padding:4px 4px;font-weight:500;">Latency &lt;100ms p99</td><td style="padding:4px 4px;color:var(--text2);">Cache + CDN + read replicas</td></tr>
+            <tr style="border-bottom:1px solid var(--border);"><td style="padding:4px 4px;font-weight:500;">Latency &lt;500ms p99</td><td style="padding:4px 4px;color:var(--text2);">Single-region, DB with index</td></tr>
+            <tr style="border-bottom:1px solid var(--border);"><td style="padding:4px 4px;font-weight:500;">Strong consistency</td><td style="padding:4px 4px;color:var(--text2);">Leader reads, quorum writes</td></tr>
+            <tr style="border-bottom:1px solid var(--border);"><td style="padding:4px 4px;font-weight:500;">Eventual consistency</td><td style="padding:4px 4px;color:var(--text2);">Read from any replica</td></tr>
+            <tr style="border-bottom:1px solid var(--border);"><td style="padding:4px 4px;font-weight:500;">Zero data loss</td><td style="padding:4px 4px;color:var(--text2);">WAL + sync replication + backups</td></tr>
+            <tr><td style="padding:4px 4px;font-weight:500;">Global audience</td><td style="padding:4px 4px;color:var(--text2);">Multi-region, CDN, geo-DNS</td></tr>
+          </table>
+        </div>
+      </div>
+      <div style="margin-top:16px;">
+        <div class="ref-group-title">Interview Script Template</div>
+        <div style="background:var(--bg3);border-radius:6px;padding:12px;font-family:var(--mono);font-size:11px;line-height:1.7;color:var(--text2);">
+1. "Let me clarify the scope. Who's the user? What's the primary action?"
+2. "MVP features: [list 3-5]. Out of scope: [list 2-3]."
+3. "NFRs I need to clarify: [scale / latency / availability / consistency / durability]."
+4. "Given X DAU and Y actions/user, we're looking at ~Z QPS with ~W TB/day storage."
+5. "The main constraint is [write throughput / bandwidth / storage / latency]."
+        </div>
+        <div style="display:flex;gap:16px;margin-top:10px;font-size:11px;color:var(--text2);">
+          <span>✅ Staff+ move: "I'd start monolithic. Here's where I'd split."</span>
+          <span>✅ Senior move: "If I had to drop one req, it'd be [X] because [Y]."</span>
         </div>
       </div>
     </div>
@@ -385,6 +473,20 @@ const SCENARIOS = [
       'Shard DB by shortcode first-char (62 shards). Consistent hashing with virtual nodes for even distribution',
       'Async cleanup: scan expired URLs in batches of 1000, soft-delete cursor, hard-delete during weekly maintenance window',
       'Rate limit URL creation per user (100/hr) via Redis sliding window log. Redirects rate-limited at edge (10K/s per IP)',
+    ],
+    fnReqs: [
+      { feat: 'Short code generation', req: 'Produce unique 7-char base62 codes at 10K+/sec with zero collisions', why: 'KGS pre-generates key batches in Redis pools. Each DB shard has its own pool to avoid write contention at insert time' },
+      { feat: 'URL redirect', req: '301/302 redirect from shortcode to long URL in <10ms P99', why: 'Cache-first: Redis → miss → DB read → populate cache. CDN at edge for hottest 20% of URLs' },
+      { feat: 'Analytics tracking', req: 'Track click count, referrer, user-agent, geo per short URL', why: 'Async event pipeline: redirect → Kafka → Flink → OLAP DB. Never block the redirect path for analytics' },
+      { feat: 'Custom aliases', req: 'Let users choose custom shortcodes with uniqueness enforcement', why: 'Check availability at write time via DB unique constraint + Redis bloom filter for fast rejection' },
+      { feat: 'Expiry & cleanup', req: 'Support per-URL TTL. Auto-delete expired URLs and reclaim shortcodes', why: 'TTL-based expiry via DB TTL index. Background cleanup: batch scan 1000 rows, soft-delete cursor, hard-delete weekly' },
+    ],
+    nfnReqs: [
+      { attr: 'Latency (P99)', val: '< 10ms redirect', why: 'Every ms of redirect latency costs user engagement. CDN edge + Redis cache + DB read-replicas. Cache hit rate > 95%' },
+      { attr: 'Availability', val: '99.99% (52 min/yr downtime)', why: 'Read path is stateless + cache-heavy → easy HA. Write path is DB-backed → needs multi-AZ deployment. Redirects are read-dominant (100:1)' },
+      { attr: 'Durability', val: '3× replication, WAL commits', why: 'Shortcode-to-URL mapping must survive AZ failure. PostgreSQL synchronous replication + S3 backups every 5 min' },
+      { attr: 'Scalability (writes)', val: '10K+ shortens/sec', why: 'Write throughput limited by DB primary. Shard by shortcode prefix (62 shards). Each shard handles its own key generation pool' },
+      { attr: 'Consistency', val: 'Eventual for reads, strong for writes', why: 'Redirects tolerate stale data (5min TTL lag is fine). Custom alias creation needs immediate uniqueness guarantee via DB primary' },
     ]
   },
   {
@@ -434,7 +536,21 @@ const SCENARIOS = [
       'Timeline storage: Redis ZSET per user (member=tweetId, score=timestamp). ZREVRANGE 0 19 for pagination. 800GB total at 200M DAU',
       'Media pipeline: upload → S3 → async transcode to 3 sizes → CDN (Akamai) → signed URLs with 1hr TTL in Redis cache',
       'Kafka absorbs tweet write spikes (up to 50K/sec during events). Fanout workers read from Kafka and populate timeline ZSETs asynchronously',
-    ]
+    ],
+    fnReqs: [
+      { feat: 'Post tweet', req: 'Create a 280-char tweet with optional media attachments', why: 'Core write operation. Must handle 50K+ tweets/sec during peak events. Store in distributed log (event-sourced). Fan-out on write for followers' },
+      { feat: 'Timeline display', req: 'Show latest 20 tweets from followed users in <200ms', why: 'Hybrid push/pull: push tweets to timeline ZSET for users with <10K followers. Pull for celebrities >1M followers. Cache timeline in Redis' },
+      { feat: 'Media upload', req: 'Upload images/videos, transcode to multiple sizes', why: 'S3 for storage, async transcode pipeline, CDN delivery. Presigned URLs with 1hr TTL. Three sizes: thumbnail, standard, full' },
+      { feat: 'Search tweets', req: 'Full-text search across all tweets in <500ms', why: 'Elasticsearch cluster. Inverted index on tweet text. Kafka → ES indexer for near-real-time indexing. Filter by date, user, media type' },
+      { feat: 'Like / Retweet', req: 'Count and display likes/retweets with fan-out notification', why: 'Redis counters for display (INCR). Async batched writes to DB for persistence. Notification event via Kafka to followers' },
+    ],
+    nfnReqs: [
+      { attr: 'Latency (P99)', val: '< 200ms timeline load', why: 'Timeline is the primary UX. Pre-computed ZSET in Redis for fast ZREVRANGE. Celebrity timeline: pull on read with local cache' },
+      { attr: 'Write throughput', val: '50K+ tweets/sec peak', why: 'Kafka absorbs spikes. Fan-out workers read from Kafka and populate timeline ZSETs asynchronously. Batch writes for DB persistence' },
+      { attr: 'Availability', val: '99.95% (4h/yr)', why: 'Read path (timeline) can serve stale data from cache if DB is down. Write path needs Kafka durability + DB multi-AZ' },
+      { attr: 'Durability', val: '3× replication, Kafka retention 7d', why: 'Tweets are immutable once created. Never lose a tweet. Kafka + DB write-ahead log. S3 backup for media' },
+      { attr: 'Consistency', val: 'Eventual for timeline, strong for tweet creation', why: 'Timeline can lag by seconds. Tweet creation must be immediately visible to author. Likes/retweets are eventually consistent counters' },
+    ],
   },
   {
     id: 'whatsapp',
@@ -486,7 +602,21 @@ const SCENARIOS = [
       'Offline messages held in Cassandra with 30-day TTL. Push notification via FCM/APNs when user reconnects. Server deletes after delivery',
       'Multi-device: each device is a separate consumer in the same consumer group. Kafka partitions by user_id_hash. At-least-once delivery',
       'Media: uploaded to S3, CDN-delivered with expiring signed URLs (1hr TTL). Clients cache aggressively. Thumbnails pre-generated',
-    ]
+    ],
+    fnReqs: [
+      { feat: 'One-to-one messaging', req: 'Send/receive text messages with delivery guarantee (at-least-once)', why: 'Core feature. Each message encrypted with Signal Protocol. Kafka per-user partition for ordered delivery. Server stores messages for 30 days' },
+      { feat: 'Group chat', req: 'Send message to group of up to 256 participants with fan-out', why: 'Fan-out on write: sender uploads once (S3), server sends metadata + encrypted key per participant. Group membership in Redis' },
+      { feat: 'Media sharing', req: 'Share images, video, documents with compression and CDN delivery', why: 'Media uploaded to S3, CDN-delivered with expiring URLs. Thumbnails pre-generated. End-to-end encrypted: media key exchanged separately' },
+      { feat: 'Voice/video calls', req: 'Real-time audio/video calling via WebRTC with STUN/TURN relay', why: 'P2P WebRTC with TURN relay for NAT traversal. STUN server for address discovery. Call signaling via WebSocket through persistent connection' },
+      { feat: 'Presence & status', req: 'Show online/offline status, typing indicators, read receipts', why: 'Heartbeat every 5s → Redis TTL. If TTL expires, mark offline. Typing indicator: ephemeral WebSocket message. Last-seen stored in DB' },
+    ],
+    nfnReqs: [
+      { attr: 'Connection scale', val: '500M+ persistent WebSocket connections', why: 'Erlang (WhatsApp uses it) handles 1M+ connections/node. Linux default 65K fds/process → need ~7700 servers for connections alone' },
+      { attr: 'Latency (P99)', val: '< 100ms message delivery', why: 'End-to-end encrypted messages add ~15% overhead per message. Kafka in-memory delivery is sub-ms. Network latency dominates: cross-region adds 100-300ms' },
+      { attr: 'Availability', val: '99.999% (5min/yr)', why: 'Message delivery cannot fail. Queue messages if recipient offline. Store-and-forward: Cassandra holds messages until delivery confirmed' },
+      { attr: 'Storage growth', val: '500 TB+/day', why: 'Media dominates (70% of storage for 30% of messages). S3 lifecycle: hot 30 days, Glacier archive. Photos/videos compressed client-side before upload' },
+      { attr: 'Security', val: 'End-to-end encrypted (Signal Protocol)', why: 'Server never sees plaintext. Each message encrypted with per-message key. Perfect forward secrecy via ephemeral key exchange. No content inspection possible' },
+    ],
   },
   {
     id: 'youtube',
@@ -536,7 +666,21 @@ const SCENARIOS = [
       'Metadata: PostgreSQL (videos, channels). Elasticsearch (search). Redis (view count, likes). View count = Redis INCR → Kafka → Flink → DB every 60s',
       'CDN cost is the #1 expense: ~$0.085/GB egress. At 10B views/day × 3Mbps × 7min avg = $XM/day. Google uses their own CDN (not CloudFront)',
       'Recommendations: offline Spark ML (collaborative filtering + content-based) → pre-computed per-user list in Cassandra. Refreshed daily',
-    ]
+    ],
+    fnReqs: [
+      { feat: 'Video upload', req: 'Accept uploads at 500 hrs/min raw video, transcode to 4-6 resolutions', why: 'Massive ingest pipeline. S3 raw storage → Kafka event → GPU worker pool (FFmpeg/NVENC). Output: 360p to 4K. ABR segments for adaptive streaming' },
+      { feat: 'Video playback', req: 'Serve 5B+ video views/day with <500ms start time', why: 'CDN edge: pre-position popular videos. ABR: client requests segments matching bandwidth. HLS/MPEG-DASH for adaptive bitrate streaming' },
+      { feat: 'Search', req: 'Full-text + tag search across billions of videos', why: 'Elasticsearch on video metadata (title, description, tags). Separate from content delivery. Autocomplete via prefix trie in Redis' },
+      { feat: 'Recommendations', req: 'Personalized video suggestions per user', why: 'Offline Spark ML (collaborative filtering + content-based) → pre-computed user lists in Cassandra. Refreshed daily. Real-time: co-watch patterns in Flink' },
+      { feat: 'Comments & engagement', req: 'Comments, likes, subscriptions with moderation', why: 'Comments in sharded PostgreSQL. Like counts in Redis counters (batch flush to DB). Moderation pipeline: ML filter → human review queue' },
+    ],
+    nfnReqs: [
+      { attr: 'CDN bandwidth', val: '100 Tbps+ peak egress', why: 'Single biggest cost. Google uses own CDN (not CloudFront). Hot videos cached at edge, cold served from origin. 90% views on <5% of videos' },
+      { attr: 'Latency (P99)', val: '< 200ms playback start', why: 'First-byte latency critical. Pre-fetch segments: client requests first segment early. CDN edge: popular videos always hot. Multi-CDN for failover' },
+      { attr: 'Transcode throughput', val: '500+ hrs/min processed', why: 'GPU encoding (NVENC) is 5× faster than CPU. Priority queue: popular uploads get faster transcode. Cold uploads queued for off-peak processing' },
+      { attr: 'Storage growth', val: '2+ PB/day raw ingest', why: 'Hot tier: S3 Standard (30 days). Cold tier: S3 Glacier. Raw video + transcoded renditions = 5× storage multiplier. Content-Type-aware retention' },
+      { attr: 'Availability', val: '99.99% uptime', why: 'CDN edge is distributed globally. Regional origin clusters. Multi-region failover for metadata/control plane. Playback degrades gracefully if metadata unavailable' },
+    ],
   },
   {
     id: 'uber',
@@ -589,7 +733,21 @@ const SCENARIOS = [
       'Surge pricing: supply/demand ratio per H3 cell recalculated periodically. Multiplier = max(1, demand/supply × elasticity_factor). Flink tumbling window',
       'Read/write split: location write service (Kafka + Redis) is separate from match/read service (Redis GET + WebSocket push)',
       'History: trip details in Cassandra (partition by week, ordered by created_at). Used for earnings, receipts, and ML training data',
-    ]
+    ],
+    fnReqs: [
+      { feat: 'Driver location tracking', req: 'Ingest 250K+ location updates/sec from 1M+ drivers in real-time', why: 'Each driver sends GPS coordinates every 4s. Kafka ingestion → Flink stream processor → Redis GEOADD. Geospatial index for fast nearby queries' },
+      { feat: 'Ride matching', req: 'Match rider to nearest available driver within 500ms', why: 'H3 hex grid: driver_in_cell[hex_id] → Redis SET. Find candidate drivers in rider cell + 7 surrounding cells. Score by distance + rating + ETD' },
+      { feat: 'ETA prediction', req: 'Compute travel time from driver to pickup in <100ms', why: 'ML model: features = traffic (MapR), distance, driver speed history, time of day, weather. Model inference ~50ms. Cache common routes' },
+      { feat: 'Trip management', req: 'Track trip lifecycle: request → accept → pickup → dropoff → payment', why: 'State machine per trip. Kafka event log for each state transition. Compensating transactions for cancellations. Payment async via separate service' },
+      { feat: 'Surge pricing', req: 'Adjust prices by supply/demand per region every 60s', why: 'Flink tumbling window: count available drivers vs active riders per H3 cell. Multiplier = max(1, demand/supply × elasticity). Push updated pricing to apps' },
+    ],
+    nfnReqs: [
+      { attr: 'Write throughput', val: '250K+ location writes/sec', why: 'Location stream dominates write volume. Kafka partitions by H3 hex cell. Redis GEOADD is O(log N) per point. Batch writes to DB for history' },
+      { attr: 'Read latency (P99)', val: '< 100ms for match results', why: 'Redis GEORADIUS is sub-ms for small radius. H3 hex lookup is O(1). WebSocket push of results to rider. Cache driver locations for 2 seconds' },
+      { attr: 'Availability', val: '99.99%', why: 'Ride matching must work during rush hours. Multi-region deployment. Kafka with 3× replication. Redis Cluster with automatic failover. Graceful degradation: fall back to larger radius if local cell fails' },
+      { attr: 'Geospatial accuracy', val: '~10m precision for GPS coords', why: 'H3 hex cell resolution 9 = ~5m² cells. GPS accuracy on mobile is ~5-10m. Higher resolution increases Redis memory linearly. Trade precision vs cost' },
+      { attr: 'Consistency', val: 'Eventual for location, strong for trip state', why: 'Driver location is ephemeral (seconds-old is fine). Trip state transitions (accepted, started, ended) need strong consistency for billing correctness' },
+    ],
   },
   {
     id: 'payment',
@@ -637,7 +795,21 @@ const SCENARIOS = [
       'Reads go to read replicas (eventually consistent). Balance checks read from leader (strong consistency). CQRS pattern recommended',
       'Multi-gateway: route traffic across multiple gateways with circuit breaker pattern. Fallback to secondary if latency > 2s or error rate > 1%',
       'PCI-DSS: card data never touches app servers. Tokenization at client-side. DB stores only tokens, PAN stored in PCI-compliant vault',
-    ]
+    ],
+    fnReqs: [
+      { feat: 'Transaction processing', req: 'Process 5M+ transactions/day with idempotency', why: 'Idempotency key on every payment request. Same key + same request = same result. DB unique constraint on (idempotency_key, merchant_id). Retry-safe' },
+      { feat: 'Authorization & capture', req: 'Auth request → hold funds → capture on fulfillment (or void)', why: 'Two-phase: authorize (verify funds, hold) then capture (settle). Hold expires after 7 days if not captured. Refunds go through separate flow' },
+      { feat: 'Reconciliation', req: 'Match internal transaction records with bank/network settlement files daily', why: 'Batch job compares our txns vs bank-provided settlement files. Mismatches flagged for manual review within 24h SLA. Automated match for 95%+ of txns' },
+      { feat: 'Audit logging', req: 'Immutable audit trail for every financial operation', why: 'Append-only log: INSERT only, no UPDATE/DELETE. Each event has (actor, action, timestamp, before/after state). Rebuildable snapshot from log at any point' },
+      { feat: 'Multi-gateway routing', req: 'Route payment to available gateway with circuit breaker', why: 'Gateway health monitoring. Circuit breaker trips if latency > 2s or error rate > 1%. Fallback chain: primary → secondary → tertiary. Idempotency per gateway' },
+    ],
+    nfnReqs: [
+      { attr: 'Consistency', val: 'Strong (linearizable) for balance', why: 'Payment must be ACID. Read from DB leader, not replicas. Distributed transactions via Saga pattern. Compensating transactions on failure' },
+      { attr: 'Latency (P99)', val: '< 500ms for auth, < 24h for settlement', why: 'Auth is synchronous (blocks user checkout). Settlement is batch/async. Idempotency checks add < 5ms. Gateway network hop = 100-300ms' },
+      { attr: 'Durability', val: '7+ year compliance retention', why: 'Regulatory requirement (PCI-DSS, SOX). Full transaction history must be recoverable. WAL + synchronous replication. Immutable audit log with checksum chain' },
+      { attr: 'Security', val: 'PCI-DSS Level 1 compliant', why: 'Card data never touches app servers. Client-side tokenization. DB stores only tokens, PAN stored in PCI-compliant vault. Encryption at rest and in transit' },
+      { attr: 'Availability', val: '99.995% (26 min/yr)', why: 'Payment downtime = revenue loss + regulatory risk. Multi-region active-active. Gateways are independent failure domains. Fallback to secondary gateway in < 100ms' },
+    ],
   },
   {
     id: 'notifications',
@@ -689,7 +861,21 @@ const SCENARIOS = [
       'Retry with exponential backoff: start 1s, double to max 1hr. DLQ after 10 retries for manual inspection. Dead letter handled by SRE rotation',
       'Batch email: aggregate 50-100 emails into one SES API call. Reduces API calls and improves send rate. Max 50 recipients per SES batch',
       'Analytics pipeline: all notification events → Kafka → Flink → Druid. Track delivery rate, open rate, click-through per channel per campaign',
-    ]
+    ],
+    fnReqs: [
+      { feat: 'Multi-channel delivery', req: 'Send notifications via push (FCM/APNs), email (SES), SMS (Twilio) based on user preferences', why: 'Each channel has different provider limits and cost structure. Queue per channel: Kafka topic per channel. Consumer groups throttle to provider rate limits' },
+      { feat: 'Template rendering', req: 'Render notification content from templates with user-specific data', why: 'Template service renders Handlebars/Mustache templates. Avoid per-user DB query on render path. Batch render for bulk sends. Cache rendered templates in Redis' },
+      { feat: 'User preferences', req: 'Respect per-user channel opt-in, quiet hours, and notification type preferences', why: 'Check preferences before sending. Cache in Redis (rarely changes). Quiet hours: suppress non-critical notifications during user-specified window' },
+      { feat: 'Deduplication', req: 'Collapse identical notifications to the same user within dedup window', why: 'Redis SET with TTL = dedup window. If notification_type + user_id exists, skip. Reduces provider API calls by 30-50% for chat apps' },
+      { feat: 'Delivery tracking', req: 'Track delivery, open, and click-through per notification', why: 'Analytics pipeline: all events → Kafka → Flink → Druid. Track per-channel delivery rate. Alert on delivery rate < 95% for push channel' },
+    ],
+    nfnReqs: [
+      { attr: 'Throughput', val: '100K+ notifications/sec peak', why: 'Batch email aggregates 50-100 emails into one SES API call. Push notifications sent in parallel batches. Rate-limited per provider: FCM 100K/s, SES 50K/s, Twilio 500/s' },
+      { attr: 'Latency (P99)', val: '< 1s for push, < 5min for email', why: 'Push is real-time (user expects instant). Email can batch with 5-min delay for cost efficiency. SMS is synchronous (2-5s for carrier delivery)' },
+      { attr: 'Availability', val: '99.9%', why: 'Notifications are not business-critical individually. Queue ensures no message loss even if provider is down. Retry with exponential backoff: 1s → max 1hr. DLQ after 10 retries' },
+      { attr: 'Durability', val: '90-day notification history', why: 'Audit trail for sent notifications. Stored in Cassandra with TTL=90 days. Analytics pipeline has separate retention (2 years for aggregate)' },
+      { attr: 'Cost efficiency', val: '$0.10 per 1000 push, $0.05 per 1000 email', why: 'Push is cheapest (FCM/APNs free up to limits). Email via SES ~$0.10/1000. SMS is expensive ($0.0075/message). Optimize channel selection per notification type' },
+    ],
   },
   {
     id: 'rag',
@@ -755,7 +941,21 @@ const SCENARIOS = [
       'KV cache is the hidden GPU memory hog: for 4K context with Llama 70B, KV cache takes ~2GB per request. Batch inference shares KV cache across requests',
       'GPU cost dominates: 8× A100 (H100) node = $30K/mo on-demand, $15K reserved. At scale, self-host with Spot (interruptible) for 60% savings',
       'Model serving: vLLM or TensorRT-LLM for production. Continuous batching increases GPU utilization from 30% → 80%+ compared to naive batching',
-    ]
+    ],
+    fnReqs: [
+      { feat: 'Query understanding', req: 'Process user query, classify intent, extract entities, generate embedding', why: 'Embedding model (E5-mistral, text-embedding-3) converts query to vector. Intent classification router: RAG vs direct LLM vs tool call. < 200ms for embedding' },
+      { feat: 'Vector search', req: 'Search top-K relevant chunks from vector DB in < 50ms', why: 'HNSW index in-memory for fast ANN search. 100M vectors × 768d × FP32 ≈ 307GB index. Must fit in RAM for < 10ms search. IVF_PQ for 10× compression' },
+      { feat: 'Context assembly', req: 'Retrieve top-5 chunks, assemble prompt with context window, send to LLM', why: 'RAG pipeline: query → embed → vector search → context assembly → LLM → guardrails → response. Context includes retrieved chunks + system prompt' },
+      { feat: 'LLM inference', req: 'Generate response with Llama 70B class model at 2000+ tok/s', why: 'GPU-bound: Llama 70B does ~2000 tok/s per A100 (FP16). vLLM or TensorRT-LLM for serving. Continuous batching increases GPU utilization to 80%+' },
+      { feat: 'Guardrails & safety', req: 'Filter PII, toxicity, off-topic responses before delivery', why: 'Two-stage: pre-LLM (input guard: regex, PII detection) and post-LLM (output guard: content moderation, factuality check). Cheap pre-filter, expensive post-filter' },
+    ],
+    nfnReqs: [
+      { attr: 'Inference latency', val: '< 2s P99 for response generation', why: 'Dominates total response time. GPU compute time = tokens × (2 × model_params) / FLOPs. KV cache shares across batch requests. Quantize to INT8 for 2× throughput' },
+      { attr: 'GPU cost', val: '$10K-30K/month per 8×A100 node', why: 'GPU cost dominates (70%+ of total). Self-host with Spot instances for 60% savings. On-demand: $30K/mo per 8×A100 node. Reserved: $15K/mo' },
+      { attr: 'Vector search accuracy', val: 'Recall@10 > 95%', why: 'HNSW ef_construction and M parameters control recall vs speed tradeoff. IVF_PQ reduces recall to 90% but needs 10× less memory. Monitor recall on eval set' },
+      { attr: 'Cache hit rate', val: '30-50% for common queries', why: 'Cache frequent queries in Redis. Key = embedding hash, value = generated response. TTL ~5 min for freshness. Higher traffic → higher cache hit rate' },
+      { attr: 'Availability', val: '99.9%', why: 'GPU nodes have higher failure rates than CPU. Preemptible/spot instances can be terminated. Graceful degradation: fall back to smaller model or cache-only responses during GPU shortage' },
+    ],
   },
   {
     id: 'ratelimiter',
@@ -804,7 +1004,21 @@ const SCENARIOS = [
       'For distributed edge: Redis Cluster with consistent hashing. Each gateway hits same shard for same user key via hash slot',
       'Fallback: if Redis is down, fail open (allow traffic) not closed — rate limiter is optional safety. Circuit breaker pattern for Redis client',
       'Hierarchical: per-IP rate limit at edge (Nginx), per-user at app layer, per-service at API gateway. Each layer has different limit and window',
-    ]
+    ],
+    fnReqs: [
+      { feat: 'Per-user rate limiting', req: 'Enforce N requests per user per time window across all API services', why: 'Token bucket (burst-tolerant), sliding window log (accurate), or sliding window counter (balanced). Redis keys: rate_limit:{service}:{user_id}:{window}' },
+      { feat: 'Multi-layer enforcement', req: 'Rate limit at edge, API gateway, and service level independently', why: 'Edge: per-IP (50 req/s) in Nginx. Gateway: per-user per-service (1000 req/hr). Service: per-user per-endpoint with different limits. Each layer has smaller window and stricter limit' },
+      { feat: 'Distributed consistency', req: 'Cross-region rate limit enforcement without race conditions', why: 'Redis Cluster with consistent hashing: same user_id → same Redis shard. Lua script for atomic INCR + EXPIRE. EVAL "local c = redis.call(INCR,KEYS[1]) ..." no race' },
+      { feat: 'Graceful degradation', req: 'Fail open (allow traffic) if rate limiter is unavailable', why: 'Rate limiter is safety, not correctness. If Redis is down, skip check and allow request. Circuit breaker for Redis client. Log miss for post-hoc analysis' },
+      { feat: 'Rate limit headers', req: 'Return X-RateLimit-Limit, Remaining, Reset headers on every response', why: 'Clients use headers for client-side throttling. Standard format per RFC 6585. Reset timestamp computed from window boundary. Remaining = limit - current_count' },
+    ],
+    nfnReqs: [
+      { attr: 'Check latency', val: '< 5ms P99 per rate limit check', why: 'Must not add meaningful latency to API calls. Redis INCR + EXPIRE is O(1) and ~1ms in-region. Lua scripts add ~0.1ms overhead. Network hop dominates' },
+      { attr: 'Throughput', val: '1M+ checks/sec', why: 'Redis single instance handles 100K ops/sec. Shard across Redis Cluster nodes. Each gateway hits local Redis replica for read checks (eventual), primary for write checks' },
+      { attr: 'Memory usage', val: '100MB per 1M active users', why: 'Each rate limit entry: ~50 bytes key + window data. Sliding window log uses more memory (timestamps per request). Sliding window counter: ~80 bytes/user (bucket + counter)' },
+      { attr: 'Accuracy', val: '99th percentile (+/- 1 request)', why: 'Token bucket: exact rate but allows bursts up to bucket size. Sliding window: exact but memory-heavy. Hybrid counter: ~99% accuracy with 60% memory savings' },
+      { attr: 'Availability', val: 'Fail-open: 100% uptime from client perspective', why: 'Rate limiter is non-critical. Redis failure → skip check. Async restoration when Redis recovers. Metrics track rate limiter availability separately' },
+    ],
   },
   {
     id: 'search',
@@ -854,7 +1068,21 @@ const SCENARIOS = [
       'Crawler: politeness delays (1-5s between same domain requests), robots.txt, distributed frontier queue (URL frontier), duplicate detection via SimHash',
       'Hot query cache: top ~1% of queries (same every hour) → memcached layer → ~50% cache hit rate. LRU across 10K most frequent queries',
       'Serving architecture: query → load balancer → document shard servers → top K → re-ranker → snippet generator → response',
-    ]
+    ],
+    fnReqs: [
+      { feat: 'Web crawling', req: 'Crawl and index 30B+ web pages with politeness and dedup', why: 'Distributed frontier queue. Politeness delay (1-5s per domain). robots.txt compliance. Dedup via SimHash near-duplicate detection. Re-crawl frequency: 30 days for most pages' },
+      { feat: 'Inverted index', req: 'Build inverted index mapping words → (doc_id, position, TF-IDF)', why: 'MapReduce/Spark for batch indexing. Google uses Bigtable internally. Index partitioned by doc_id range (horizontal shards ~1TB each). Column-oriented for compression' },
+      { feat: 'Query serving', req: 'Return top-10 relevant results in <100ms for any query', why: 'Posting list merge for multi-word queries. BM25 scoring for initial ranking. Top-1000 re-ranked by BERT/monoT5 model. Snippet generation from cached page content' },
+      { feat: 'PageRank', req: 'Compute page importance score offline, updated periodically', why: 'Spark ML/MapReduce batch job. PageRank re-computed every 2-4 weeks. Freshness signals (recency of content update) layered on top. Not per-query computation' },
+      { feat: 'Autocomplete/suggest', req: 'Show query suggestions as user types, updated in real-time', why: 'Prefix trie of query log. Top-10 completions per prefix. Rebuilt hourly from query log. Hot prefixes cached in Redis. Cold: fall back to ES prefix query' },
+    ],
+    nfnReqs: [
+      { attr: 'Query latency (P99)', val: '< 100ms', why: '10ms for inverted index lookup per shard. Top-10 shards queried in parallel. Re-ranking adds 30-50ms for BERT inference. Cache for hot queries (~50% hit rate)' },
+      { attr: 'Index size', val: '~60PB inverted index (20% of raw corpus)', why: '30B pages × 100KB avg = 3EB raw corpus. Inverted index at 20% = 600TB compressed. Sharded across 600+ index servers. Columnar compression ratio: 5:1' },
+      { attr: 'Crawl throughput', val: '10K+ pages/sec', why: '30B pages / 30 day re-crawl = 10K pages/sec. Distributed crawler fleet. Respects robots.txt and crawl-delay. Duplicate detection prevents same-content re-crawl' },
+      { attr: 'Freshness', val: 'High-priority pages indexed within minutes', why: 'Priority queue for news, trending, frequently updated pages. Re-crawl frequency varies: news sites = minutes, static pages = months. Push-based indexing via sitemaps' },
+      { attr: 'Availability', val: '99.99%', why: 'Index servers are partitioned for fault isolation. Hot query cache at edge. Degraded mode: fall back to cached results if index server unreachable. Multi-region index replicas' },
+    ],
   },
   {
     id: 'amazon',
@@ -905,7 +1133,21 @@ const SCENARIOS = [
       'Recommendation: offline ML (collaborative filtering, ALS on Spark) → precomputed related products in DynamoDB/Redis. Refreshed nightly',
       'Flash sale: pre-warm cache 1hr before, disable real-time inventory checks (accept over-sell), use token bucket per user for checkout QPS ceiling',
       'Product page: cache at CDN edge for unauthenticated pages (90% of traffic). Personalized pages (recommendations) rendered server-side with Redis merge',
-    ]
+    ],
+    fnReqs: [
+      { feat: 'Product catalog', req: 'Browse/search 500M+ products with faceted filters', why: 'DynamoDB for product reads (10ms P99). Elasticsearch for full-text search + filters (category, price, brand, rating). Cache hot products in Redis (20% of products = 80% views)' },
+      { feat: 'Cart & checkout', req: 'Add/remove items, apply promo codes, checkout with payment', why: 'Cart in Redis (user_id → items set). Promo validation service: check code validity, usage limits, expiry. Checkout: inventory reserve → payment → order confirmation saga' },
+      { feat: 'Inventory management', req: 'Real-time inventory tracking per SKU with oversell prevention', why: 'Redis atomic DECR for inventory reservation. If negative → stock exhausted. Compensation: release reservation on cart timeout (15min TTL). Async batch write to DB' },
+      { feat: 'Order fulfillment', req: 'Process order lifecycle: placed → packed → shipped → delivered', why: 'Event-sourced order service. Kafka for each state transition. Fulfillment saga: payment → inventory → shipping → notification. Compensating txn on failure at any step' },
+      { feat: 'Recommendations', req: 'Personalized product recommendations per user', why: 'Offline ML: collaborative filtering + ALS on Spark. Pre-computed related products in DynamoDB/Redis. Refreshed nightly. Real-time: co-viewed patterns in Flink' },
+    ],
+    nfnReqs: [
+      { attr: 'Read QPS', val: '1M+ page views/sec at peak', why: 'Product pages cacheable at CDN for unauthenticated traffic (90%). Personalized pages rendered server-side with Redis merge. Search hits Elasticsearch: 50ms P99' },
+      { attr: 'Write QPS', val: '50K+ order writes/sec peak', why: 'Kafka absorbs flash sale spikes. Inventory writes are Redis (atomic). Order writes batch to DB every 30s. Payment writes are synchronous for auth consistency' },
+      { attr: 'Consistency', val: 'Strong for inventory, eventual for search', why: 'Overselling is revenue loss + customer churn. Inventory read uses Redis + DB leader. Search results can lag 30s (acceptable for browsing). Cart uses Redis + async persistence' },
+      { attr: 'Availability', val: '99.99% (Prime Day: 99.995%)', why: 'E-commerce downtime = direct revenue loss. Multi-region active-active. CDN for static content. Cache pre-warmed before flash sales. Circuit breakers on downstream services' },
+      { attr: 'Scalability (flash sales)', val: '10× normal traffic', why: 'Pre-warm cache 1hr before sale. Disable real-time inventory checks for non-critical items. Queue checkout requests. Token bucket per user (1 req/s). Auto-scale ec2 instances' },
+    ],
   },
   {
     id: 'netflix',
@@ -955,7 +1197,21 @@ const SCENARIOS = [
       'Hot 20% of catalog serves 80% of views. Cache only this at edge; cold from origin via backbone (slower but rare)',
       'Netflix uses 3-region active-active for control plane (DynamoDB global tables). Content plane is fully distributed via Open Connect',
       'Encoding farm: massive Spark/FFmpeg pipeline. Each title encoded to 50+ renditions (resolution × bitrate × codec). Priority queue for popular content',
-    ]
+    ],
+    fnReqs: [
+      { feat: 'Content delivery', req: 'Stream video to 250M+ subscribers with < 200ms startup latency', why: 'Open Connect appliances at ISP peering. Pre-positioned content during off-peak. Not real-time origin fetch. 95%+ traffic from edge, not cloud egress' },
+      { feat: 'Adaptive bitrate streaming', req: 'Switch video quality in real-time based on client bandwidth', why: 'Content encoded in 4-6 bitrates (H.264/H.265/AV1). Client requests segments in 2-10s chunks. Switches to lower/higher bitrate mid-stream without interruption' },
+      { feat: 'Content encoding', req: 'Transcode every title to 50+ renditions (resolution × bitrate × codec)', why: 'GPU/CPU encoding farm. Spark/FFmpeg pipeline. AV1 saves 30% bandwidth vs H.265. Priority queue for popular new releases. Batch encode during off-peak' },
+      { feat: 'Personalization', req: 'Personalized home page, recommendations, and artwork', why: 'ML models: collaborative filtering, content-based, contextual bandits. Pre-computed per-user recommendations. A/B test ranking models. Artwork personalization: different thumbnails per user' },
+      { feat: 'Content management', req: 'Ingest, catalog, and manage 30PB+ content library with metadata', why: 'Ingest pipeline: receive master file → transcode → quality check → publish. Metadata DB: DynamoDB for titles, genres, cast. Content lifecycle: licensing → available → expiring' },
+    ],
+    nfnReqs: [
+      { attr: 'CDN bandwidth', val: '100+ Tbps peak (Open Connect)', why: 'Open Connect at ISP edge: $0.01/GB vs CloudFront $0.085/GB = 8.5× cheaper. Capital expense for appliances, not bandwidth. Pre-position content predictably' },
+      { attr: 'Playback startup', val: '< 200ms (2-3 segments)', why: 'Client requests first segment immediately. Pre-fetch next segments during playback. CDN edge for hot content. Cold start: fetch from origin → ~2s if cache miss' },
+      { attr: 'Encoding throughput', val: '20K+ hrs/day', why: 'GPU encoding (AV1): ~3× real-time. CPU encoding (H.264): ~0.5× real-time. Priority queue for trending content. Cold titles encoded with lower priority during off-peak' },
+      { attr: 'Catalog storage', val: '30PB+ with 20% cache at edge', why: 'Hot 20% = 80% of views. Edge cache stores hot content. Full catalog in S3/Glacier. Content added/removed based on licensing agreements. Replication across 3+ regions' },
+      { attr: 'Availability', val: '99.99% (control plane), 99.9% (content)', why: '3-region active-active control plane (DynamoDB Global Tables). Content plane is fully distributed via Open Connect. If one region fails, traffic reroutes. Playback continues if control plane is down (session cached)' },
+    ],
   },
   {
     id: 'instagram',
@@ -1006,7 +1262,21 @@ const SCENARIOS = [
       'CDN edge serves media — app servers never touch image blobs. API servers are metadata-only, running on cheap CPU instances',
       'Metadata: Postgres sharded by user_id (1000+ shards). Comments/likes in Redis sorted sets (ZADD/ZRANGE). Like counts in Redis counter',
       'Facebook uses TAO (graph DB) for social graph; IG adapted it for photo relationships. TAO is read-optimized, caching at every tier',
-    ]
+    ],
+    fnReqs: [
+      { feat: 'Photo upload', req: 'Upload and process 100M+ photos/day with filters and compression', why: 'S3 for raw storage → async transcode to 3 sizes: thumbnail (50KB), standard (200KB), full (1MB). CDN delivers all sizes. Exif stripping for privacy. High-quality compression (JPEG/MozJPEG)' },
+      { feat: 'Feed generation', req: 'Show recent photos from followed users in reverse chronological order', why: 'Push model for users with <10K followers: pre-compute feed ZSET in Redis. Pull for celebrities >1M followers. Hybrid: most users get push, celeb follows get pull' },
+      { feat: 'Stories', req: 'Ephemeral photo/video stories that auto-delete after 24h', why: 'Temp S3 storage with 24h TTL. S3 lifecycle rule auto-deletes. Storage cost is 1/365 of permanent photos. Ordered by creation time, displayed as slideshow' },
+      { feat: 'Reels / short video', req: 'Short-form video feed with ML-based personalized ranking', why: 'TikTok-style recommendation: embeddings → cosine similarity → ranking. Video chunks pre-fetched by client. CDN edge cache with 30-min TTL. Pre-compute for active users' },
+      { feat: 'Social graph', req: 'Follow/unfollow, like, comment, share with notifications', why: 'TAO graph DB (Facebook): read-optimized, caching at every tier. Follows in Redis (user_id → following ZSET). Comments in sharded Postgres. Notifications via Kafka → push' },
+    ],
+    nfnReqs: [
+      { attr: 'Ingest throughput', val: '100M+ photos/day = 1,200+ uploads/sec', why: 'Uploads are write-heavy but small per-file. S3 accepts unlimited concurrent uploads. Transcode pipeline: prioritize popular accounts. Cold storage for old content' },
+      { attr: 'Feed read QPS', val: '500M DAU × 8 refreshes/day = 46K+ feed reads/sec', why: 'Pre-computed feed in Redis ZSET: ZREVRANGE 0 19 is O(log N + M). Cache feed for 30s. Refresh triggered by: new post, scroll, app foreground. CDN for static stories' },
+      { attr: 'Storage growth', val: '200+ TB/day permanent + ephemeral', why: 'S3 lifecycle: photos permanent, stories 24h TTL, reels 30d. CDN cache for thumbs: 7d TTL. Archive after 1 year to Glacier. 80% of storage = rarely viewed content' },
+      { attr: 'Cache hit ratio', val: '95%+ for CDN, 90%+ for feed', why: 'Photos served from CDN edge (cache first miss). Feed cached in Redis per user. Story seen-once semantics: cache short TTL. Hot 10% of photos get 90% of views' },
+      { attr: 'Latency (P99)', val: '< 100ms feed load', why: 'Pre-computed feed avoids DB query at read time. CDN delivers photos from edge. API servers are metadata-only, running on cheap CPU instances. No image processing on read path' },
+    ],
   },
   {
     id: 'dropbox',
@@ -1062,7 +1332,21 @@ const SCENARIOS = [
       'Metadata: strong consistency (file listing, rename) → MySQL/Postgres with leader reads. Block store: eventual (S3 with versioning) ',
       'Encryption: AES-256 at rest. Client-side encryption key option for enterprise compliance. Key server manages key rotation',
       'S3 event notifications → SQS → block indexer. Ensures eventual consistency between S3 block storage and block metadata index',
-    ]
+    ],
+    fnReqs: [
+      { feat: 'File sync', req: 'Sync files across devices with delta sync and conflict resolution', why: 'Binary diff (rsync-like) uploads only changed blocks. Conflict resolution: last-writer-wins default. CRDTs for collaborative editing (Paper/Quip). Version vector per file for causal ordering' },
+      { feat: 'Chunk-level dedup', req: 'Detect and deduplicate identical file blocks across all users', why: 'Files split into 4MB blocks, content-addressed by SHA256 hash. Duplicate blocks stored once in S3. Block reference count tracks cross-file usage. Saves 40-60% storage' },
+      { feat: 'Version history', req: 'Keep file version history for N days (default 30)', why: 'Every sync saves a version. Version storage: block-level deltas, not full copies. S3 versioning for immutable history. Trash/deleted files retained for 30 days' },
+      { feat: 'LAN sync', req: 'Sync between devices on same LAN without going through cloud', why: 'mDNS discovery of peers on subnet. Transfer blocks via peer-to-peer, not through cloud server. 10× faster for office LANs. Falls back to cloud if no peer found' },
+      { feat: 'Sharing & permissions', req: 'Share files/folders with view/edit permissions per user or link', why: 'ACL per file: stored in metadata DB. Shared links with expiring access tokens. Team folders with inheritance. Sync permission changes in real-time via WebSocket' },
+    ],
+    nfnReqs: [
+      { attr: 'Dedup ratio', val: '40-60% storage savings', why: 'OS files, installers, libraries are identical across users. Dedup at block level catches byte-level matches. Reference counting in block index. More users → higher dedup rate' },
+      { attr: 'Sync latency', val: '< 30s to propagate change to all devices', why: 'Delta sync is fast (small payload). LAN sync for local peers. WebSocket notification of changes. Polling fallback every 60s if WebSocket disconnected' },
+      { attr: 'Metadata consistency', val: 'Strong for file ops, eventual for block storage', why: 'File listing, rename, permission changes must be strongly consistent. Block storage (S3) is eventually consistent. S3 event notifications → SQS → block indexer reconciles' },
+      { attr: 'Storage growth', val: 'Daily changes = 30% of avg file as delta', why: 'Delta sync means only changed blocks uploaded. Full re-sync on new device. Version history multiplies storage by ~2× (deltas, not full copies). Seasonal growth patterns' },
+      { attr: 'Availability', val: '99.99%', why: 'File access is critical for enterprise. Multi-region metadata DB. Block store uses S3 (11 9s durability). LAN sync works even if cloud is down. Offline mode queues changes locally' },
+    ],
   },
   {
     id: 'live',
@@ -1113,7 +1397,21 @@ const SCENARIOS = [
       'Chat: separate WebSocket channel for emotes/comments. Raft/CRDT for ordering of chat events. Moderation pipeline async via Kafka',
       'Recording (VOD): parallel ingest path to S3. DVR: ring buffer on edge node (last 30-60s) for rewind. Redundant ingest across AZs for fault tolerance',
       'Health monitoring: origin receives heartbeat from each edge node. If an edge node misses 2 heartbeats, failover to another edge node with same stream',
-    ]
+    ],
+    fnReqs: [
+      { feat: 'Low-latency ingest', req: 'Accept live video from streamers via RTMP/SRT with < 3s latency', why: 'RTMP for legacy, SRT for reliable ingest over lossy networks. Transmux to HLS/fMP4 at edge. LL-HLS reduces latency to 2-3s vs 6-10s for standard HLS' },
+      { feat: 'Transcoding', req: 'Transcode each stream to multiple bitrates in real-time', why: 'GPU encoding (NVENC) for real-time. Produce 360p, 720p, 1080p streams. ABR switching on viewer side. Transcode bandwidth = ingest × renditions: up to 18 Mbps per stream' },
+      { feat: 'CDN fan-out', req: 'Deliver stream to millions of concurrent viewers globally', why: 'Tree topology: origin pushes to edge nodes, edge fans out to viewers. Avoids origin overload. Multi-CDN for global reach. Pre-fetch strategy based on viewer geo-distribution' },
+      { feat: 'DVR / replay', req: 'Allow viewers to rewind live stream (last 30-60s) and save as VOD', why: 'Ring buffer on edge node for last 30-60s. Parallel ingest to S3 for VOD recording. Transmux to MP4 for on-demand playback. Resume playback from any point' },
+      { feat: 'Chat & interaction', req: 'Real-time chat with emotes, moderation, and streamer interaction', why: 'Separate WebSocket channel for chat. Raft/CRDT for ordering of chat events. Moderation pipeline: regex filters → ML toxicity check → human review queue' },
+    ],
+    nfnReqs: [
+      { attr: 'End-to-end latency', val: '< 3s (LL-HLS), < 1s (WebRTC)', why: 'Tradeoff: HLS segments (6s) vs LL-HLS segments (2s) vs WebRTC (sub-second). Shorter segments = more transcoding overhead + lower cache efficiency. WebRTC: limited to small audience (< 1000 viewers)' },
+      { attr: 'CDN bandwidth peak', val: '5M viewers × 3 Mbps = 15 Tbps', why: 'Dominant cost. CDN cost ~$0.085/GB. 15 Tbps for 1 hour = 15 Tbps * 3600s / 8 = 6.75 PB delivered = ~$575K/hr. Multi-CDN with cost routing optimizes' },
+      { attr: 'Ingest reliability', val: '99.99% uptime per streamer', why: 'Redundant ingest across AZs: streamer pushes to two AZs simultaneously. SRT has built-in FEC for packet loss recovery. Health monitor: edge receives heartbeat from streamer' },
+      { attr: 'Transcode capacity', val: '5M concurrent viewers, 1M+ streams', why: 'GPU encoding: each GPU handles ~10 streams. Transcode farm scales with concurrent streams, not viewer count. Spark/FFmpeg for batch VOD encoding' },
+      { attr: 'Availability', val: '99.9% for viewers', why: 'Edge nodes are disposable: if one fails, viewer reconnects to another. Origin nodes are N+2 redundant. Multi-region for disaster recovery. CDN health-based routing' },
+    ],
   },
   {
     id: 'zoom',
@@ -1167,7 +1465,21 @@ const SCENARIOS = [
       'Signaling (meeting creation, join/leave, mute/unmute) separate from media. Signaling is low-bandwidth, uses WebSocket + protobuf',
       'Recording: optional, written to S3. Async transcode to MP4 via separate pipeline. Live recording does not affect active meeting quality',
       'Scalability: Zoom added 100M+ users overnight in March 2020. SFU architecture scaled by adding regions and servers horizontally',
-    ]
+    ],
+    fnReqs: [
+      { feat: 'Video conferencing', req: 'Real-time multi-party video with SFU architecture', why: 'SFU (Selective Forwarding Unit): server receives once, forwards to each participant. Simulcast: publisher sends multiple resolutions (1080p, 720p, 360p). Subscriber picks best for bandwidth' },
+      { feat: 'Screen sharing', req: 'Share screen with real-time updates at 5-10fps', why: 'Dedicated screen share stream (separate from camera). Uses higher resolution but lower FPS. Viewers can switch between speaker video and screen share. Annotation layer on top' },
+      { feat: 'Audio processing', req: 'Noise suppression, echo cancellation, automatic gain control', why: 'WebRTC audio processing pipeline. AI-based noise suppression (RNNoise). Acoustic echo cancellation (AEC). Comfort noise generation during silence. Opus codec for bandwidth efficiency' },
+      { feat: 'Meeting management', req: 'Create/join/leave meetings, mute/unmute, waiting rooms, breakout rooms', why: 'Signaling service (separate from media). WebSocket + protobuf for low overhead. Meeting state in Redis with TTL. Breakout rooms: separate SFU instance per room' },
+      { feat: 'Recording & transcription', req: 'Record meeting to cloud (S3) with optional live transcription', why: 'Recording: server-side mix of all streams → MP4 output. Transcribe via Whisper or DSP. Separate pipeline from live media. Auto-delete after configurable retention' },
+    ],
+    nfnReqs: [
+      { attr: 'Media latency', val: '< 150ms end-to-end', why: 'WebRTC datachannels + UDP. SFU forwarding adds ~5ms. Network jitter buffer adds 30-50ms. Target: < 150ms for natural conversation. > 300ms = noticeable lag' },
+      { attr: 'Concurrent participants', val: '300M+ DAU peak', why: 'Zoom added 100M+ users overnight in March 2020. SFU architecture scaled by adding regions and servers. Each SFU handles ~5000 participants. Media servers in 20+ regions' },
+      { attr: 'Bandwidth per participant', val: '1.5 Mbps video + 32 Kbps audio', why: 'Simulcast saves upload bandwidth: publisher sends 3 streams, subscriber gets 1. Audio is negligible (< 1% of video). Screen share adds 0.5-2 Mbps when active' },
+      { attr: 'Availability', val: '99.99%', why: 'Media servers are stateless SFUs: failure = participant reconnects. Signaling in multi-region active-active. DNS-based routing to nearest region. BGP anycast for global routing' },
+      { attr: 'Scalability', val: 'Horizontal SFU scaling', why: 'SFU capacity = ~5000 participants per instance. CPU-bound: packet forwarding + encryption. Co-located in 20+ regions for < 50ms RTT. Auto-scale based on regional demand' },
+    ],
   },
   {
     id: 'slack',
@@ -1217,7 +1529,21 @@ const SCENARIOS = [
       'File uploads: S3 with CDN for thumbnails. Virus scan (ClamAV) + content moderation pipeline. Presigned URLs with 1hr TTL',
       'Rate limiting per workspace: token bucket in Redis. 100 requests/sec per workspace. Different limits for bots vs human users',
       'Real-time: WebSocket connection per user. Message delivery via Redis PUB/SUB per channel. Scalability limit: Redis PUB/SUB on a single node',
-    ]
+    ],
+    fnReqs: [
+      { feat: 'Channel messaging', req: 'Send/receive messages in channels with real-time delivery', why: 'WebSocket connection per user. Message delivery via Redis PUB/SUB per channel. Channel membership in Redis sorted set. Message history in sharded PostgreSQL. Full-text search via Elasticsearch' },
+      { feat: 'Threading', req: 'Reply to messages in threads to keep conversations organized', why: 'Thread replies are separate messages with thread_ts pointer. Thread participation tracked in Redis SET. Notifications only for thread participants. Grouped display in UI' },
+      { feat: 'Search & archive', req: 'Full-text search across all messages, files, and integrations', why: 'Elasticsearch cluster. Messages indexed async via Kafka → ES. Searchable within seconds. Per-workspace index for isolation and performance. Search history saved per user' },
+      { feat: 'File & media sharing', req: 'Upload, preview, and search files (images, PDFs, documents)', why: 'S3 with CDN for thumbnails and previews. Virus scan (ClamAV) + content moderation pipeline. OCR for images. Preview generation: images resized, PDFs rendered to PNG' },
+      { feat: 'Integrations & bots', req: 'Webhooks, slash commands, bot users, and API for third-party integrations', why: 'Slack API with rate limiting per integration. Outgoing webhooks with retry + dedup. Bot users: separate user type with its own token and permissions. Events API: subscribe to channel events' },
+    ],
+    nfnReqs: [
+      { attr: 'Real-time delivery', val: '< 100ms P99 message delivery', why: 'Redis PUB/SUB for instant delivery within a channel. WebSocket push. Delivery guarantees: at-most-once for speed, not critical (user can refresh). Messages queued if client offline' },
+      { attr: 'Message throughput', val: '50M+ messages/day', why: 'Per-workspace message volume varies. Channels are natural partitions: messages fanned out only to channel members. Search indexing is async (Kafka → ES). Write path: message → DB → Redis PUB/SUB' },
+      { attr: 'Storage growth', val: '500+ GB/day messages + files', why: 'Text messages are tiny (~150B each). Files dominate storage (50KB avg). S3 for files, PostgreSQL for text. Retention policies: Free tier (90 days), Pro (unlimited). Archive to Glacier' },
+      { attr: 'Workspace isolation', val: 'Multi-tenant with strong isolation', why: 'Each workspace is a data partition across all DBs. No cross-workspace queries. Redis per workspace for rate limiting. Resource limits per workspace (message count, storage, integrations)' },
+      { attr: 'Availability', val: '99.99%', why: 'Workspaces are isolated failure domains. Redis PUB/SUB is single-node bottleneck → need sharding at scale. WebSocket connections re-establish on disconnect with exponential backoff. Read replicas for search history' },
+    ],
   },
   {
     id: 'food',
@@ -1268,7 +1594,21 @@ const SCENARIOS = [
       'Availability: delivery partner sends heartbeat every 10s. If no heartbeat for 3× interval, mark unavailable. Redis TTL-based',
       'Assignment scoring: linear combination of proximity score + rating + current load + shift status. Re-rank top 10 candidates per order',
       'Notification cascade: push to top-3 nearby partners sequentially (not broadcast). Avoids overwhelming all partners with every order',
-    ]
+    ],
+    fnReqs: [
+      { feat: 'Restaurant browsing', req: 'Browse restaurants by cuisine, location, rating, price with menu viewing', why: 'Geospatial index for nearby restaurants. Menu cache in Redis per restaurant. Elasticsearch for cuisine/name search. Filters: rating, price range, delivery time, dietary preferences' },
+      { feat: 'Order placement', req: 'Place order with cart management, special instructions, and payment', why: 'Cart in Redis per user. Order creation: validate items → check availability → reserve inventory → process payment. Saga: payment → restaurant confirmation → dispatch. Compensating txn on timeout' },
+      { feat: 'Delivery dispatch', req: 'Assign nearest available delivery partner to order in < 10s', why: 'Geospatial match: find partners within 1km of restaurant. Score by proximity + rating + current load. Sequential push to top-3 candidates (not broadcast). Acceptance window: 30s then next partner' },
+      { feat: 'Real-time tracking', req: 'Track delivery partner location on map from pickup to dropoff', why: 'GPS updates every 5-10s from partner app. Redis GEOADD for current location. ETA recalculated every 30s. Push notification at key milestones: picked up, nearby, delivered' },
+      { feat: 'Ratings & reviews', req: 'Rate restaurant, delivery partner, and food items post-delivery', why: 'Review prompt sent after delivery. Ratings in sharded Postgres. Sentiment analysis on review text. Partner ratings affect dispatch score. Fraud detection: flag suspicious review patterns' },
+    ],
+    nfnReqs: [
+      { attr: 'Availability', val: '99.99% (meal times = peak)', why: 'Lunch and dinner rushes are peak hours. Multi-region deployment. Cache menus aggressively. Degrade: if dispatch service is slow, increase search radius for partners. Order queue persists in Kafka' },
+      { attr: 'Dispatch latency', val: '< 10s from order to partner assignment', why: 'Geo-index query: < 50ms per order. Push notification to partner: < 1s. Acceptance wait: 30s max. Cascade to next partner if timeout. 90% assigned within 10s. Retry logic for failed pushes' },
+      { attr: 'ETA accuracy', val: '± 2 min of actual arrival', why: 'ML model: prep time (per item history) + travel time (traffic, distance, time of day). Real-time traffic data (MapR/Google Maps). Weather factors. Confidence score displayed to user' },
+      { attr: 'Location throughput', val: '50K+ location writes/sec', why: '500K delivery partners × 1 update/10s = 50K writes/sec. Redis GEOADD handles easily. Kafka for async log. Location history used for ETA model training. Purge old data after 30 days' },
+      { attr: 'Scalability', val: 'Multi-sided marketplace capacity', why: '3 sides (restaurants, partners, customers) each scale independently. Restaurants added by onboarding team. Partners onboard via verification. Customers auto-scale. Each side has separate service boundary' },
+    ],
   },
   {
     id: 'flash',
@@ -1319,7 +1659,21 @@ const SCENARIOS = [
       'Throttle: token bucket per user (1 request/sec). Burst allowed up to 5 on login. IP-level rate limiting at edge (Nginx)',
       'Fraud detection: rate-limited IPs (bot traffic), same billing address → blocked. Rules engine on checkout event in Kafka Streams',
       'Dashboard: real-time metrics (orders/sec, inventory remaining by SKU, latency p99). War room on p99 > 200ms or error rate > 2%',
-    ]
+    ],
+    fnReqs: [
+      { feat: 'Traffic surge handling', req: 'Handle 10× normal traffic during sale start without degradation', why: 'Pre-warm cache 1hr before sale: stream product + inventory data from DB to Redis. Auto-scale EC2 instances. Queue-based checkout prevents backend overload. CDN caches product pages aggressively' },
+      { feat: 'Inventory reservation', req: 'Reserve inventory atomically on add-to-cart, release on timeout or cancel', why: 'Redis DECR for atomic inventory decrement. If negative → stock exhausted. TTL-based hold: 10min reservation, auto-release to pool via Redis EXPIRE callback. Async batch write to DB for audit' },
+      { feat: 'Fair checkout queue', req: 'Process checkout requests fairly, prevent bot/script abuse', why: 'Token bucket per user (1 req/s), burst up to 5. Queue-based processing: requests go to SQS/Kafka, processed at max sustainable rate. Client polls for result. First-come-first-served within queue' },
+      { feat: 'Real-time inventory visibility', req: 'Show live inventory count per SKU during sale', why: 'Redis counters updated in real-time via DECR. Push updates to product pages via WebSocket. Fall back to "In Stock / Out of Stock" (not exact count) if inventory service is slow' },
+      { feat: 'Order processing pipeline', req: 'Process confirmed orders through payment → fulfillment pipeline', why: 'Confirmation → fraud check → payment capture → warehouse dispatch. Kafka for async pipeline. Fraud detection rules engine on checkout events. Manual review queue for flagged orders' },
+    ],
+    nfnReqs: [
+      { attr: 'Peak QPS', val: '10× normal = 500K+ req/sec during flash', why: 'Pre-warmed cache handles 90% of reads (product pages). Inventory writes target Redis (100K+ ops/sec per shard). Checkout queue absorbs burst. Token bucket shapes traffic to backend capacity' },
+      { attr: 'Redis throughput', val: '500K+ ops/sec on inventory keys', why: 'Redis Cluster with 10+ shards. DECR is O(1) and sub-millisecond. Hot keys (popular SKUs) are single-shard bottleneck → hash tag for per-SKU sharding. Pipeline commands for batch ops' },
+      { attr: 'Checkout latency', val: '< 2s P99 from submit to confirmation', why: 'Queue-based: submit returns immediately (202 Accepted). Client polls for result. Processing time: inventory reserve (sub-ms) → payment auth (200-500ms) → order creation (10ms). Wall-clock: ~800ms' },
+      { attr: 'Fraud detection latency', val: '< 100ms per check', why: 'Rules engine on Kafka Streams: IP rate, same address, velocity checks. Real-time scoring model: < 50ms inference. Suspend suspicious orders for manual review. False positive rate < 2%' },
+      { attr: 'Availability', val: '99.995% during sale window', why: 'Sale windows are fixed duration → downtime = lost revenue. Pre-sale load testing. Canary deployment 1hr before. War room on p99 > 200ms or error rate > 2%. Automated rollback if latency spikes' },
+    ],
   },
   {
     id: 'etl',
@@ -1372,7 +1726,21 @@ const SCENARIOS = [
       'Query engine (Trino/Athena): federated queries across data lake + streaming results. Columnar pruning + predicate pushdown for fast queries',
       'Cost optimization: compress with Zstd (Parquet) at 5:1 ratio. Transition older partitions to S3 Glacier (60% cheaper) after 30 days',
       'Monitoring: Kafka lag (consumer group offset vs latest), Flink checkpoint duration, Spark shuffle spill. Alert on lag > 10min or checkpoint > 5min',
-    ]
+    ],
+    fnReqs: [
+      { feat: 'Event ingestion', req: 'Ingest 10B+ events/day from 100K+ producers with Kafka', why: 'Kafka partitions by event_type. 10K events/sec per partition max. Schema registry (Avro/Protobuf) enforces evolution. Producers write to partitioned topic. Retention: 7 days in Kafka' },
+      { feat: 'Stream processing', req: 'Real-time aggregations, windowing, and enrichment on streaming data', why: 'Flink/Spark Streaming for stream_pct of events. Tumbling/sliding windows for aggregates. Stateful processing with checkpointing. Exactly-once semantics via Kafka offset management' },
+      { feat: 'Batch processing', req: 'Hourly/daily ETL jobs on data lake', why: 'Medallion architecture: bronze (raw) → silver (cleaned, deduped) → gold (aggregated, business-ready). Spark jobs on schedule. Incremental processing with watermark tracking' },
+      { feat: 'Data lake storage', req: 'Store raw + processed data with partition pruning and compression', why: 'S3 with Hive/Glue catalog. Partition by event_type/year/month/day/hour. Columnar format (Parquet) with Zstd compression (5:1 ratio). S3 lifecycle: hot → Glacier after 30 days' },
+      { feat: 'Ad-hoc query', req: 'Allow analysts to query data with SQL via Trino/Athena', why: 'Trino/Athena federated query engine. Columnar pruning + predicate pushdown. Presto worker autoscaling. Query result caching. Concurrent query limit: 100 per user' },
+    ],
+    nfnReqs: [
+      { attr: 'Ingestion throughput', val: '10B events/day = 115K+ events/sec peak', why: 'Kafka cluster: 115 partitions at 10K events/sec each. 3× replication for durability. Producers batch events for efficiency. Compression (gzip/zstd) reduces storage by 50-80%' },
+      { attr: 'Processing latency', val: 'Stream: < 1min, Batch: < 1hr', why: 'Stream processing: Flink checkpoint interval ~30s. Batch processing: Spark job runs hourly, completes in < 30min for most pipelines. SLA: data available for query within 1hr of ingestion' },
+      { attr: 'Storage growth', val: '10B × 500B = 5TB/day raw → 1TB compressed', why: 'Parquet + Zstd: 5:1 compression ratio. 30-day retention: 30TB hot storage. Archive to Glacier: $0.004/GB/month (83% cheaper than S3). Partition pruning reduces query scan' },
+      { attr: 'Data quality', val: '99.9% completeness, < 0.1% duplication', why: 'Schema validation at ingestion. Dedup via event_id unique constraint. Data quality checks: null check, range check, referential integrity. Alert on quality metric drops. Dead letter queue for bad records' },
+      { attr: 'Query performance', val: '< 10s for daily aggregate queries', why: 'Columnar pruning: scan only columns needed. Partition pruning: scan only day/hour range. Trino worker autoscaling. Materialized views for common aggregations. Result caching: 5min TTL for repeated queries' },
+    ],
   },
 ];
 
@@ -1463,6 +1831,20 @@ function renderParams(scenario) {
   });
 }
 
+function updateReqs(scenario) {
+  const fnBody = document.getElementById('fn-reqs-body');
+  const nfnBody = document.getElementById('nfn-reqs-body');
+  if (!fnBody || !nfnBody) return;
+  const fn = scenario.fnReqs || [];
+  const nfn = scenario.nfnReqs || [];
+  fnBody.innerHTML = fn.map(r =>
+    `<tr><td class="r-feat">${r.feat}</td><td class="r-val">${r.req}</td><td class="r-why">${r.why}</td></tr>`
+  ).join('');
+  nfnBody.innerHTML = nfn.map(r =>
+    `<tr><td class="r-feat">${r.attr}</td><td class="r-val">${r.val}</td><td class="r-why">${r.why}</td></tr>`
+  ).join('');
+}
+
 function recalcAndUpdate(scenario) {
   const mp = getParamMultiplied(scenario, currentParams);
   const result = scenario.calc(mp);
@@ -1470,6 +1852,7 @@ function recalcAndUpdate(scenario) {
   updateOutputs(result);
   updateCost(result);
   updateLangCompare(result);
+  updateReqs(scenario);
 }
 
 function updateTicker(r) {
@@ -1613,12 +1996,19 @@ document.getElementById('peak-slider').addEventListener('input', function() {
   if (scenario) recalcAndUpdate(scenario);
 });
 
-document.getElementById('ref-toggle').addEventListener('click', function() {
-  this.classList.toggle('open');
-  document.getElementById('ref-body').classList.toggle('open');
-  const icon = this.querySelector('i');
-  icon.className = this.classList.contains('open') ? 'ti ti-chevron-up' : 'ti ti-chevron-down';
-});
+function setupToggle(btnId, bodyId) {
+  const btn = document.getElementById(btnId);
+  const body = document.getElementById(bodyId);
+  if (!btn || !body) return;
+  btn.addEventListener('click', function() {
+    this.classList.toggle('open');
+    body.classList.toggle('open');
+    const icon = this.querySelector('i');
+    icon.className = this.classList.contains('open') ? 'ti ti-chevron-up' : 'ti ti-chevron-down';
+  });
+}
+setupToggle('ref-toggle', 'ref-body');
+setupToggle('ref-toggle-nfr', 'ref-body-nfr');
 
 let compareOpen = false;
 let cmpScenarioA = null, cmpScenarioB = null;

@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WhatsApp — System Design Architecture</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/tabler-icons.min.css">
+<style>
+:root {
+  --bg: #f8f7f4; --bg2: #ffffff; --bg3: #f0efeb;
+  --text: #1a1a18; --text2: #5c5c58; --text3: #8a8a84;
+  --border: rgba(0,0,0,0.10); --border2: rgba(0,0,0,0.18);
+  --teal: #0F6E56; --teal-bg: #E1F5EE; --teal-light: #5DCAA5;
+  --amber: #854F0B; --amber-bg: #FAEEDA; --amber-light: #EF9F27;
+  --blue: #185FA5; --blue-bg: #E6F1FB; --blue-light: #378ADD;
+  --purple: #534AB7; --purple-bg: #EEEDFE; --purple-light: #7F77DD;
+  --coral: #993C1D; --coral-bg: #FAECE7; --coral-light: #D85A30;
+  --green: #3B6D11; --green-bg: #EAF3DE; --green-light: #639922;
+  --red: #A32D2D; --red-bg: #FCEBEB;
+  --radius: 10px; --radius-sm: 6px; --mono: 'Courier New', 'Consolas', monospace;
+}
+@media (prefers-color-scheme: dark) {
+:root {
+  --bg: #111110; --bg2: #1a1a18; --bg3: #222220;
+  --text: #f0ede8; --text2: #a8a8a0; --text3: #6a6a64;
+  --border: rgba(255,255,255,0.10); --border2: rgba(255,255,255,0.20);
+  --teal: #5DCAA5; --teal-bg: #04342C; --teal-light: #9FE1CB;
+  --amber: #EF9F27; --amber-bg: #412402; --amber-light: #FAC775;
+  --blue: #85B7EB; --blue-bg: #042C53; --blue-light: #B5D4F4;
+  --purple: #AFA9EC; --purple-bg: #26215C; --purple-light: #CECBF6;
+  --coral: #F0997B; --coral-bg: #4A1B0C; --coral-light: #F5C4B3;
+  --green: #97C459; --green-bg: #173404; --green-light: #C0DD97;
+  --red: #E24B4A; --red-bg: #501313;
+}
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14px;line-height:1.5;min-height:100vh}
+.app{max-width:1000px;margin:0 auto;padding:24px 16px 60px}
+.top-bar{display:flex;align-items:baseline;gap:12px;margin-bottom:4px}
+.app-title{font-size:22px;font-weight:600;letter-spacing:-0.01em}
+.app-sub{font-size:13px;color:var(--text2)}
+.desc{font-size:13px;color:var(--text2);margin-bottom:20px;padding:10px 14px;background:var(--bg3);border-radius:var(--radius-sm);border-left:3px solid var(--teal)}
+.stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:20px}
+.stat-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:14px;text-align:center}
+.stat-card .num{font-size:24px;font-weight:700;letter-spacing:-0.02em;display:block}
+.stat-card .lbl{font-size:10px;text-transform:uppercase;letter-spacing:0.07em;color:var(--text3);margin-top:2px}
+.db-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px}
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:16px}
+.card h3{font-size:15px;margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.card .tag{display:inline-block;font-size:10px;padding:2px 8px;border-radius:100px;font-weight:600;letter-spacing:0.03em;margin-bottom:8px}
+.tag-teal{background:var(--teal-bg);color:var(--teal)}
+.tag-amber{background:var(--amber-bg);color:var(--amber)}
+.tag-blue{background:var(--blue-bg);color:var(--blue)}
+.tag-purple{background:var(--purple-bg);color:var(--purple)}
+.tag-coral{background:var(--coral-bg);color:var(--coral)}
+.tag-green{background:var(--green-bg);color:var(--green)}
+.card p{font-size:12px;color:var(--text2);line-height:1.5;margin-bottom:8px}
+.card ul{list-style:none;font-size:12px}
+.card ul li{padding:3px 0;color:var(--text2);display:flex;gap:6px;align-items:flex-start}
+.card ul li i{color:var(--teal);font-size:14px;flex-shrink:0;margin-top:1px}
+.card ul li .neg{color:var(--coral)}
+.section{margin-bottom:20px}
+.section-title{font-size:11px;text-transform:uppercase;letter-spacing:0.09em;color:var(--text3);font-weight:600;margin-bottom:12px;display:flex;align-items:center;gap:10px}
+.section-title::after{content:'';flex:1;height:1px;background:var(--border)}
+.req-table{width:100%;border-collapse:collapse;font-size:13px}
+.req-table th{font-size:10px;text-transform:uppercase;letter-spacing:0.07em;color:var(--text3);font-weight:600;padding:8px 10px;text-align:left;border-bottom:2px solid var(--border2)}
+.req-table td{padding:8px 10px;border-bottom:1px solid var(--border);vertical-align:top}
+.req-table tr:hover td{background:var(--bg3)}
+.req-table .why{font-size:11px;color:var(--text3);margin-top:3px;line-height:1.4}
+.req-table td:first-child{font-weight:500;white-space:nowrap}
+.why-box{margin-top:16px;padding:12px;background:var(--bg3);border-radius:var(--radius-sm);border-left:3px solid var(--blue)}
+.why-box h4{font-size:12px;margin-bottom:4px;color:var(--text)}
+.why-box p{font-size:12px;color:var(--text2);line-height:1.5}
+.scenario-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.scenario-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:14px}
+.scenario-card h4{font-size:13px;margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.scenario-card .rec{font-size:11px;padding:2px 8px;border-radius:100px;display:inline-block;font-weight:600;margin:4px 0 6px}
+.scenario-card p{font-size:12px;color:var(--text2);line-height:1.5}
+.scenario-card ul{list-style:none;font-size:12px;margin-top:6px}
+.scenario-card ul li{padding:2px 0;color:var(--text2);display:flex;gap:6px}
+.scenario-card ul li i{font-size:14px;flex-shrink:0;color:var(--teal)}
+@media(max-width:640px){.stat-grid{grid-template-columns:repeat(2,1fr)}.db-grid{grid-template-columns:1fr}.scenario-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="top-bar">
+    <div class="app-title">WhatsApp</div>
+    <div class="app-sub">2B+ users · 100B msg/day · E2EE · Multi-device</div>
+  </div>
+  <div class="desc">WhatsApp is a post office that never reads your letters — persistent connections carry sealed armored envelopes (E2EE), the server only knows who is home and where to deliver. Designed for 1.2M msg/sec peak, 99.99% availability, and battery-efficient mobile-first operation.</div>
+
+  <div class="section">
+    <div class="section-title">System Stats</div>
+    <div class="stat-grid" id="stats-grid"></div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Architecture Components</div>
+    <div class="db-grid" id="comp-grid"></div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Message Delivery Flow</div>
+    <div class="why-box">
+      <h4><i class="ti ti-alert-triangle" style="color:var(--amber)"></i> End-to-End Path</h4>
+      <p>From sender tap to recipient screen: message is encrypted via Double Ratchet, sent over persistent WebSocket/TCP, routed through Connection Manager to recipient's CM (or queued + push notified if offline), stored in Cassandra wide-row, and acknowledged with delivery receipts at each stage.</p>
+    </div>
+    <table class="req-table">
+      <thead><tr><th style="width:30px">#</th><th>Step</th><th>Component</th><th>Detail</th></tr></thead>
+      <tbody id="flow-body"></tbody>
+    </table>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Tech Stack — Component & Rationale</div>
+    <table class="req-table">
+      <thead><tr><th style="width:140px">Component</th><th>Technology</th><th>Why</th></tr></thead>
+      <tbody id="tech-body"></tbody>
+    </table>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Failure Modes</div>
+    <table class="req-table">
+      <thead><tr><th style="width:140px">Failure</th><th>Impact</th><th>Mitigation</th></tr></thead>
+      <tbody id="failure-body"></tbody>
+    </table>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Key Scenarios</div>
+    <div class="scenario-grid" id="scenarios-grid"></div>
+  </div>
+</div>
+
+<script>
+const STATS = [
+  { num: '2B+', lbl: 'Monthly Active Users', icon: 'ti-users', color: 'var(--teal)' },
+  { num: '100B', lbl: 'Messages / Day', icon: 'ti-message', color: 'var(--blue)' },
+  { num: '1.2M', lbl: 'Peak Msg / Sec', icon: 'ti-wave', color: 'var(--purple)' },
+  { num: '10M+', lbl: 'Concurrent / Region', icon: 'ti-plug', color: 'var(--amber)' },
+  { num: '4.5B', lbl: 'Photos / Day', icon: 'ti-photo', color: 'var(--green)' },
+  { num: '1B', lbl: 'Videos / Day', icon: 'ti-video', color: 'var(--coral)' },
+  { num: '65B', lbl: 'Group Msgs / Day', icon: 'ti-messages', color: 'var(--purple)' },
+  { num: '99.99%', lbl: 'Availability Target', icon: 'ti-heartbeat', color: 'var(--teal)' },
+];
+
+const COMPONENTS = [
+  { name: 'Connection Manager', icon: 'ti-plug-connected', tag: 'teal',
+    desc: 'Frontend servers managing persistent WebSocket/TCP connections. 100K concurrent connections per box. Consistent hashing for session affinity.',
+    pros: ['100K conn/box — dense multiplexing', 'Adaptive heartbeat saves mobile battery'],
+    cons: ['Connection storm risk on mass reconnect', 'Session state must survive rebalance'] },
+  { name: 'Message Router', icon: 'ti-route', tag: 'blue',
+    desc: 'Routes messages to recipient\'s Connection Manager (online) or queues for push notification (offline). 50K msg/sec per box.',
+    pros: ['Fan-out to N recipients in parallel', 'Offline queuing — no message loss'],
+    cons: ['Backpressure on slow CMs can cascade', 'Hot conversation causes uneven load'] },
+  { name: 'Group Chat Server', icon: 'ti-users', tag: 'purple',
+    desc: 'Manages group state, membership, and fan-out logic. Small groups (<256) fan-out on write; large groups fan-out on read. Max 1024 members.',
+    pros: ['Write fan-out for <256 = instant delivery', 'Read fan-out for large groups saves writes'],
+    cons: ['Group of 1024 = 1024 × N fans per message', 'Membership cache must be strongly consistent'] },
+  { name: 'Multi-Device Sync', icon: 'ti-devices', tag: 'coral',
+    desc: 'Up to 4 devices per account, each with independent E2E sessions. Phone not required online. History sync via device-relayed encrypted messages.',
+    pros: ['Phone-agnostic — any device works solo', 'Independent sessions per device = stronger security'],
+    cons: ['4× encryption overhead per conversation', 'History sync is slow on first link'] },
+  { name: 'E2EE (Signal Protocol)', icon: 'ti-lock', tag: 'amber',
+    desc: 'X3DH key agreement establishes session key, Double Ratchet derives per-message keys. AES-256-GCM. Server has zero visibility into content.',
+    pros: ['Perfect forward secrecy via ratchet', 'Deniability — no cryptographic proof of conversation'],
+    cons: ['No server-side spam/content analysis', 'Pre-key exhaustion breaks new conversations'] },
+  { name: 'Media Service', icon: 'ti-file', tag: 'green',
+    desc: 'Encrypted media uploaded to blob store (S3), served via CDN. AES-256-CBC encrypted before upload. Thumbnails generated server-side for preview.',
+    pros: ['CDN edge caching for fast global delivery', 'Progressive loading — low-res first, full on tap'],
+    cons: ['Cannot transcode server-side (encrypted)', '30-day TTL — re-upload needed after expiry'] },
+  { name: 'Presence Service', icon: 'ti-eye', tag: 'purple',
+    desc: 'Redis pub-sub per user for online/last-seen/typing. Subscribers notified on state change. Throttled to prevent flood (1 typing/5s).',
+    pros: ['Real-time typing indicators (<200ms)', 'Privacy controls — Nobody/Contacts/Everybody'],
+    cons: ['Redis pub-sub at 2B scale is complex', 'Throttling causes false "not typing" state'] },
+  { name: 'Push Notifications', icon: 'ti-bell', tag: 'amber',
+    desc: 'FCM (Android) + APNs (iOS). Encrypted payload with msg_id + key. Notification grouping per conversation. Fallback with exponential backoff.',
+    pros: ['Battery-efficient — app sleeps until push', 'Notification grouping reduces noise'],
+    cons: ['iOS limits encrypted notification display', 'FCM/APNs delivery not guaranteed (Google/Apple)'] },
+  { name: 'Message Store (Cassandra)', icon: 'ti-database', tag: 'teal',
+    desc: 'Wide-row per conversation. Partition key = conversation_id, clustering key = message_id (timeuuid, DESC). TTL-based retention. Bloom filter for existence check.',
+    pros: ['Linear write scaling — add nodes = more throughput', 'No single point of failure (peer-to-peer)'],
+    cons: ['Query must match partition key design', 'Hot partition (celebrity) needs manual split'] },
+];
+
+const FLOW = [
+  { step: 1, comp: 'Client', detail: 'User taps send → message encrypted with Double Ratchet per-message key' },
+  { step: 2, comp: 'Conn Manager', detail: 'Message sent over persistent WebSocket/TCP to sender\'s CM' },
+  { step: 3, comp: 'Presence', detail: 'Sender\'s CM checks Presence Service: is recipient online?' },
+  { step: 4, comp: 'Message Router', detail: 'Online → route to recipient\'s CM. Offline → queue + push notification via FCM/APNs' },
+  { step: 5, comp: 'Message Store', detail: 'Message written to Cassandra wide-row: conversation_id partition + message_id cluster' },
+  { step: 6, comp: 'Recipient CM', detail: 'If online: push encrypted message over recipient\'s WebSocket/TCP' },
+  { step: 7, comp: 'Recipient', detail: 'Recipient decrypts with Double Ratchet. Delivery ACK sent back' },
+  { step: 8, comp: 'Sender', detail: 'Sender sees ✓ (delivered). Blue ✓✓ when recipient opens (read receipt)' },
+];
+
+const TECH = [
+  { component: 'Persistent Connections', tech: 'WebSocket / TCP', why: 'Battery-efficient, low-latency bidirectional. WebSocket for desktop/web, custom TCP for mobile (adaptive heartbeat 60-300s).' },
+  { component: 'Message Store', tech: 'Cassandra', why: 'Write-optimized LSM tree handles 100B msgs/day. Linear horizontal scaling. Peer-to-peer = no SPOF. Wide-row per conversation.' },
+  { component: 'Session / Presence', tech: 'Redis', why: 'In-memory for <1ms session lookup. Pub-sub for real-time presence/typing. Ephemeral — no durability needed.' },
+  { component: 'Group State Cache', tech: 'Redis / Server RAM', why: 'Membership list must be fast-read for fan-out. Cached with TTL, fallback to Cassandra.' },
+  { component: 'Pre-Key Store', tech: 'Redis', why: 'Ephemeral one-time keys need fast access. Pre-key bundle delivered on request during X3DH handshake.' },
+  { component: 'Media Blobs', tech: 'S3 + CDN', why: 'Durable blob storage (11 9s). CDN edge caches popular media. Encrypted before upload — server can\'t read.' },
+  { component: 'Push Gateway', tech: 'FCM / APNs', why: 'Platform-native push. FCM for Android, APNs for iOS. Encrypted payload with wake signal for app to fetch.' },
+  { component: 'User Existence', tech: 'Bloom Filter', why: '1MB for 10M users (vs 100MB hash set). 1% false positive — acceptable (re-check Cassandra on miss).' },
+];
+
+const FAILURES = [
+  { failure: 'Connection Storm', impact: 'After outage, 100M clients reconnect simultaneously → CM overwhelmed, Cassandra write path saturated', mitigation: 'Exponential backoff + jittered random delay. Pre-provisioned headroom. Rate-limit: 100K conn/s, queue rest.' },
+  { failure: 'Hot Database Partition (Celebrity)', impact: 'Single conversation ID gets millions of writes/min → Cassandra partition overloaded, other conversations on same node impacted', mitigation: 'Split hot convo into sub-partitions via hash(user_a+user_b) + sub_partition suffix. Detect hotspot and split dynamically.' },
+  { failure: 'Message Loss', impact: 'Message sent but never received. No ACK → sender shows pending forever or silently drops', mitigation: 'Sender-side local queue until delivery ACK. Recipient must ACK. Server-side persist before sender ACK. Idempotent msg IDs.' },
+  { failure: 'Group Fan-Out Explosion', impact: '1 message → 1024 pushes → CM and push gateway saturation. Cascade failure risk', mitigation: 'Fan-out on write only for online members. Offline get single push notification. Max group size 1024. Throttle N concurrent fans per group.' },
+  { failure: 'Pre-Key Exhaustion', impact: 'No one-time pre-keys left on server → X3DH handshake fails. New conversations cannot be established', mitigation: 'Client auto-uploads batch of one-time keys when < threshold. Server generates signed pre-keys periodically. Fallback to signed pre-key only.' },
+  { failure: 'Cross-Region Latency', impact: 'Message from India to Brazil routes through inter-region relay → >1s delivery latency', mitigation: 'Regional clusters + CDN for media. Cross-region relay optimized with dedicated Tier 2 paths. Async queue for non-real-time.' },
+];
+
+const SCENARIOS = [
+  { title: 'Global Outage Recovery', icon: 'ti-cloud-storm', rec: 'Client backoff + pre-provisioned headroom', tag: 'coral',
+    desc: 'A 5-minute DNS/network outage affects all users in a region. 50M clients reconnect within seconds of recovery.',
+    why: 'Without mitigations, this creates a self-inflicted DDoS. Connection Managers see SYN flood, Cassandra write path saturates from queued messages. Exponential backoff + jitter spreads reconnect over minutes. Pre-provisioned 30% headroom absorbs the initial wave. Priority queuing by last active ensures important users reconnect first.',
+    points: ['Client: random(0, 30s) delay before reconnect attempt', 'Server: rate-limit incoming to 100K conn/s', 'Backoff: 1s → 2s → 4s ... max 60s with ±50% jitter', 'Headroom: 30% extra CM capacity at all times'] },
+  { title: 'Celebrity Message Flood', icon: 'ti-star', rec: 'Dynamic sub-partitioning + rate limiting', tag: 'amber',
+    desc: 'A world-famous celebrity posts their WhatsApp number. Within minutes, 10M+ messages arrive at a single conversation ID.',
+    why: 'Cassandra\'s single partition cannot handle 10M writes/min — the partition becomes a hotspot, choking other conversations on the same node. The fix: split the conversation into sub-partitions (conversation_id + :N suffix). Incoming writes are distributed across N sub-partitions. Reads merge results. Rate limiting at Connection Manager level drops non-critical messages first.',
+    points: ['Hot partition detected by write latency > 500ms', 'Auto-split: create 16 sub-partitions, rehash writes', 'CM rate-limit: 100 msg/sec per sender to celebrity', 'Read path: merge sub-partitions sorted by message_id DESC'] },
+  { title: 'Group Message Fan-Out', icon: 'ti-messages', rec: 'Hybrid read/write fan-out + push grouping', tag: 'green',
+    desc: 'A 1024-member family group. User sends a photo. Message must reach all 1024 members across phone, desktop, web — potentially 4096 devices.',
+    why: 'Naive fan-out would generate 4096 pushes + 4096 Cassandra writes. WhatsApp optimizes: only online members get real-time fan-out (write), offline members get a single grouped push notification. On reconnect, offline members pull from Cassandra. Media is stored once in S3, referenced by ID. This reduces write amplification by ~60% for typical 30% online rate.',
+    points: ['Online (≈300): fan-out write — one Cassandra write, 300 CM pushes', 'Offline (≈724): single push notification with group ID', 'On reconnect: pull message from Cassandra by conversation_id', 'Media: uploaded once to S3, shared via reference in message'] },
+];
+
+function render() {
+  renderStats();
+  renderComponents();
+  renderFlow();
+  renderTech();
+  renderFailures();
+  renderScenarios();
+}
+
+function renderStats() {
+  const grid = document.getElementById('stats-grid');
+  grid.innerHTML = STATS.map(s => `
+    <div class="stat-card">
+      <span class="num" style="color:${s.color}"><i class="${s.icon}" style="font-size:20px;vertical-align:-2px"></i> ${s.num}</span>
+      <span class="lbl">${s.lbl}</span>
+    </div>
+  `).join('');
+}
+
+function renderComponents() {
+  const grid = document.getElementById('comp-grid');
+  grid.innerHTML = COMPONENTS.map(c => `
+    <div class="card">
+      <h3><i class="${c.icon}" style="color:var(--${c.tag})"></i> ${c.name}</h3>
+      <span class="tag tag-${c.tag}">key component</span>
+      <p>${c.desc}</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:6px">
+        <div style="padding:6px;background:var(--bg3);border-radius:4px;font-size:10px;color:var(--text3)">
+          <i class="ti ti-check" style="color:var(--teal)"></i> ${c.pros.join('<br><i class="ti ti-check" style="color:var(--teal)"></i> ')}
+        </div>
+        <div style="padding:6px;background:var(--bg3);border-radius:4px;font-size:10px;color:var(--text3)">
+          <i class="ti ti-x" style="color:var(--coral)"></i> ${c.cons.join('<br><i class="ti ti-x" style="color:var(--coral)"></i> ')}
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderFlow() {
+  const tbody = document.getElementById('flow-body');
+  tbody.innerHTML = FLOW.map(f => `
+    <tr><td style="font-weight:600;color:var(--text);width:30px">${f.step}</td><td style="font-weight:500;white-space:nowrap">${f.comp}</td><td style="font-size:12px;color:var(--text2);line-height:1.4">${f.detail}</td></tr>
+  `).join('');
+}
+
+function renderTech() {
+  const tbody = document.getElementById('tech-body');
+  tbody.innerHTML = TECH.map(t => `
+    <tr><td style="font-weight:600;color:var(--text)">${t.component}</td><td style="font-size:12px;color:var(--teal);font-weight:600">${t.tech}</td><td style="font-size:12px;color:var(--text2);line-height:1.4">${t.why}</td></tr>
+  `).join('');
+}
+
+function renderFailures() {
+  const tbody = document.getElementById('failure-body');
+  tbody.innerHTML = FAILURES.map(f => `
+    <tr><td style="font-weight:600;color:var(--text)">${f.failure}</td><td style="font-size:12px;color:var(--coral);line-height:1.4">${f.impact}</td><td style="font-size:12px;color:var(--text2);line-height:1.4">${f.mitigation}</td></tr>
+  `).join('');
+}
+
+function renderScenarios() {
+  const grid = document.getElementById('scenarios-grid');
+  grid.innerHTML = SCENARIOS.map(s => `
+    <div class="scenario-card">
+      <h4><i class="${s.icon}" style="color:var(--${s.tag})"></i> ${s.title}</h4>
+      <span class="rec tag-${s.tag}" style="font-size:11px;padding:2px 8px;border-radius:100px;display:inline-block;font-weight:600;margin:4px 0 8px;background:var(--${s.tag}-bg);color:var(--${s.tag})">${s.rec}</span>
+      <p>${s.desc}</p>
+      <div class="why-box" style="margin-top:8px;">
+        <h4><i class="ti ti-alert-circle" style="color:var(--${s.tag})"></i> Why</h4>
+        <p>${s.why}</p>
+      </div>
+      <ul>${s.points.map(p => `<li><i class="ti ti-check" style="color:var(--${s.tag})"></i> ${p}</li>`).join('')}</ul>
+    </div>
+  `).join('');
+}
+
+render();
+</script>
+</body>
+</html>

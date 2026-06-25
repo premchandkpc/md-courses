@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Uber — System Design</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/tabler-icons.min.css">
+<style>
+:root {
+  --bg: #f8f7f4; --bg2: #ffffff; --bg3: #f0efeb;
+  --text: #1a1a18; --text2: #5c5c58; --text3: #8a8a84;
+  --border: rgba(0,0,0,0.10); --border2: rgba(0,0,0,0.18);
+  --teal: #0F6E56; --teal-bg: #E1F5EE; --teal-light: #5DCAA5;
+  --amber: #854F0B; --amber-bg: #FAEEDA; --amber-light: #EF9F27;
+  --blue: #185FA5; --blue-bg: #E6F1FB; --blue-light: #378ADD;
+  --purple: #534AB7; --purple-bg: #EEEDFE; --purple-light: #7F77DD;
+  --coral: #993C1D; --coral-bg: #FAECE7; --coral-light: #D85A30;
+  --green: #3B6D11; --green-bg: #EAF3DE; --green-light: #639922;
+  --red: #A32D2D; --red-bg: #FCEBEB;
+  --radius: 10px; --radius-sm: 6px; --mono: 'Courier New', 'Consolas', monospace;
+}
+@media (prefers-color-scheme: dark) {
+:root {
+  --bg: #111110; --bg2: #1a1a18; --bg3: #222220;
+  --text: #f0ede8; --text2: #a8a8a0; --text3: #6a6a64;
+  --border: rgba(255,255,255,0.10); --border2: rgba(255,255,255,0.20);
+  --teal: #5DCAA5; --teal-bg: #04342C; --teal-light: #9FE1CB;
+  --amber: #EF9F27; --amber-bg: #412402; --amber-light: #FAC775;
+  --blue: #85B7EB; --blue-bg: #042C53; --blue-light: #B5D4F4;
+  --purple: #AFA9EC; --purple-bg: #26215C; --purple-light: #CECBF6;
+  --coral: #F0997B; --coral-bg: #4A1B0C; --coral-light: #F5C4B3;
+  --green: #97C459; --green-bg: #173404; --green-light: #C0DD97;
+  --red: #E24B4A; --red-bg: #501313;
+}
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14px;line-height:1.5;min-height:100vh}
+.app{max-width:1000px;margin:0 auto;padding:24px 16px 60px}
+.top-bar{display:flex;align-items:baseline;gap:12px;margin-bottom:4px}
+.app-title{font-size:22px;font-weight:600;letter-spacing:-0.01em}
+.app-sub{font-size:13px;color:var(--text2)}
+.desc{font-size:13px;color:var(--text2);margin-bottom:20px;padding:10px 14px;background:var(--bg3);border-radius:var(--radius-sm);border-left:3px solid var(--teal)}
+.db-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px}
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:16px}
+.card h3{font-size:15px;margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.card .tag{display:inline-block;font-size:10px;padding:2px 8px;border-radius:100px;font-weight:600;letter-spacing:0.03em;margin-bottom:8px}
+.tag-teal{background:var(--teal-bg);color:var(--teal)}
+.tag-amber{background:var(--amber-bg);color:var(--amber)}
+.tag-blue{background:var(--blue-bg);color:var(--blue)}
+.tag-purple{background:var(--purple-bg);color:var(--purple)}
+.tag-coral{background:var(--coral-bg);color:var(--coral)}
+.tag-green{background:var(--green-bg);color:var(--green)}
+.card p{font-size:12px;color:var(--text2);line-height:1.5;margin-bottom:8px}
+.card ul{list-style:none;font-size:12px}
+.card ul li{padding:3px 0;color:var(--text2);display:flex;gap:6px;align-items:flex-start}
+.card ul li i{color:var(--teal);font-size:14px;flex-shrink:0;margin-top:1px}
+.card ul li .neg{color:var(--coral)}
+.section{margin-bottom:20px}
+.section-title{font-size:11px;text-transform:uppercase;letter-spacing:0.09em;color:var(--text3);font-weight:600;margin-bottom:12px;display:flex;align-items:center;gap:10px}
+.section-title::after{content:'';flex:1;height:1px;background:var(--border)}
+.req-table{width:100%;border-collapse:collapse;font-size:13px}
+.req-table th{font-size:10px;text-transform:uppercase;letter-spacing:0.07em;color:var(--text3);font-weight:600;padding:8px 10px;text-align:left;border-bottom:2px solid var(--border2)}
+.req-table td{padding:8px 10px;border-bottom:1px solid var(--border);vertical-align:top}
+.req-table tr:hover td{background:var(--bg3)}
+.req-table .why{font-size:11px;color:var(--text3);margin-top:3px;line-height:1.4}
+.req-table td:first-child{font-weight:500;white-space:nowrap}
+.scenario-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.scenario-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:14px}
+.scenario-card h4{font-size:13px;margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.scenario-card .rec{font-size:11px;padding:2px 8px;border-radius:100px;display:inline-block;font-weight:600;margin:4px 0 6px}
+.scenario-card p{font-size:12px;color:var(--text2);line-height:1.5}
+.scenario-card ul{list-style:none;font-size:12px;margin-top:6px}
+.scenario-card ul li{padding:2px 0;color:var(--text2);display:flex;gap:6px}
+.scenario-card ul li i{font-size:14px;flex-shrink:0;color:var(--teal)}
+@media(max-width:640px){.db-grid{grid-template-columns:1fr}.scenario-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="top-bar">
+    <div class="app-title">Uber Architecture</div>
+    <div class="app-sub">Real-time Dispatch · Geospatial Indexing · Pricing Engine · 10M+ Rides/Day</div>
+  </div>
+  <div class="desc">Uber is a real-time taxi dispatcher that knows where every driver is, predicts where riders will appear, and adjusts prices like an airline booking system. The city is divided into hexagons (H3). When you request a ride, the dispatcher finds the nearest free driver in your hex and neighboring cells — the first to accept wins.</div>
+
+  <div class="section">
+    <div class="section-title">System Stats</div>
+    <div class="db-grid" style="grid-template-columns:repeat(4,1fr)" id="stats-grid"></div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Architecture Components</div>
+    <div class="db-grid" id="components-grid"></div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Geospatial Indexing Comparison</div>
+    <table class="req-table">
+      <thead><tr><th style="width:120px">Index</th><th>How It Works</th><th>Precision</th><th>Tradeoff</th></tr></thead>
+      <tbody id="geo-body"></tbody>
+    </table>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Tech Stack</div>
+    <table class="req-table">
+      <thead><tr><th style="width:150px">Component</th><th>Technology</th><th>Why</th></tr></thead>
+      <tbody id="tech-body"></tbody>
+    </table>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Failure Modes</div>
+    <table class="req-table">
+      <thead><tr><th style="width:170px">Scenario</th><th>Problem</th><th>Mitigation</th></tr></thead>
+      <tbody id="failure-body"></tbody>
+    </table>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Key Scenarios</div>
+    <div class="scenario-grid" id="scenarios-grid"></div>
+  </div>
+</div>
+
+<script>
+const STATS = [
+  { value: '10M+', label: 'Rides / Day', icon: 'ti-car' },
+  { value: '5M+', label: 'Active Drivers', icon: 'ti-users' },
+  { value: '10K+', label: 'Cities', icon: 'ti-building-skyscraper' },
+  { value: '333K/s', label: 'Location Writes', icon: 'ti-writing' },
+];
+
+const COMPONENTS = [
+  { name: 'Dispatch Service', icon: 'ti-route', tag: 'teal',
+    pros: ['Sub-50ms dispatch cycles', 'Two-phase accept prevents double-assign'],
+    cons: ['Hot cell contention at large events', 'Crash during offer window loses state'] },
+  { name: 'Geospatial Index', icon: 'ti-map-pin', tag: 'blue',
+    pros: ['S2/H3 cells enable fast neighbor queries', 'Redis GEO: O(log N + M) radius search'],
+    cons: ['Cell boundaries create edge cases', 'Redis shard hotspot under high concurrency'] },
+  { name: 'Pricing Engine', icon: 'ti-currency-dollar', tag: 'amber',
+    pros: ['Surge pricing balances supply/demand', 'Per-city config (base, per_km, per_min)'],
+    cons: ['Oscillation risk without PID damping', 'ML forecasting requires heavy feature pipeline'] },
+  { name: 'ETA Service', icon: 'ti-clock', tag: 'purple',
+    pros: ['Contraction hierarchies: 1000x faster than Dijkstra', 'ML model with real-time traffic overlay'],
+    cons: ['Accuracy degrades in unusual traffic spikes', 'Per-city models needed (different patterns)'] },
+  { name: 'Trip Service', icon: 'ti-file-description', tag: 'green',
+    pros: ['Cassandra handles 10M trips/day with RF=3', 'Denormalized tables for rider/driver queries'],
+    cons: ['No joins — must pre-join at write time', 'Heavy compaction under write load'] },
+  { name: 'Payment Service', icon: 'ti-credit-card', tag: 'coral',
+    pros: ['Pre-auth at request prevents failed rides', 'PostgreSQL ACID for wallet transactions'],
+    cons: ['Payment processor outages delay settlement', 'Cross-border payments add regulatory complexity'] },
+  { name: 'Driver Service', icon: 'ti-user-check', tag: 'teal',
+    pros: ['WebSocket keeps 5M drivers connected', 'Stale/offline detection after 15s no-update'],
+    cons: ['333K writes/s to Redis GEO is heavy', 'Reconnection storm on region failover'] },
+  { name: 'Notification', icon: 'ti-bell-ringing', tag: 'purple',
+    pros: ['Push notifications reach drivers in <1s', 'Offer countdown (15s) prevents indefinite wait'],
+    cons: ['APNS/FCM delivery not guaranteed', 'Driver app must be foregrounded for offer'] },
+];
+
+const GEO_INDEXES = [
+  { name: 'Google S2', icon: 'ti-box', how: 'Hilbert curve space-filling, 64-bit cell ID, 31 levels (0-30)', precision: 'Level 15: ~1 km². Uber uses L13-16 for city dispatch', tradeoff: 'Rectangular cells have corner/edge distance ambiguity; shape varies by latitude' },
+  { name: 'Uber H3', icon: 'ti-hexagon', how: 'Hexagonal hierarchical grid, 16 resolutions (0-15), aperture 7', precision: 'Res 9: ~0.5 km². Res 10: ~0.06 km² (neighborhood)', tradeoff: 'More cells than S2 for same area; hexagonal math is more compute-intensive' },
+  { name: 'Geohash', icon: 'ti-grid-dots', how: 'Z-order curve, Base32 string encoding, prefix = bounding box', precision: '5 chars: ~4.9 km × 4.9 km. 6 chars: ~1.2 km × 0.6 km', tradeoff: 'Irregular boundaries at edges; poor proximity ordering across regions' },
+];
+
+const TECH_STACK = [
+  { component: 'Dispatcher', tech: 'Go / Java', why: 'Sub-50ms dispatch cycles require low GC pause. Go chosen for latency-sensitive matching path.' },
+  { component: 'Geospatial Index', tech: 'Redis GEO + H3/S2 libs', why: 'Redis GEORADIUS is O(log N + M). H3 for hexagonal cell hierarchy, S2 for coverage queries.' },
+  { component: 'Pricing Engine', tech: 'Python + LightGBM', why: 'ML flexibility for surge forecasting. Gradient-boosted trees for supply/demand prediction per H3 cell.' },
+  { component: 'ETA Service', tech: 'C++ (OSRM / Valhalla)', why: 'Routing engine needs native perf. Contraction hierarchies precompute shortcuts for fast bidirectional Dijkstra.' },
+  { component: 'Trip Store', tech: 'Cassandra', why: 'Write-heavy workload (10M trips/day). Linear scale, no single point of failure, multi-DC replication.' },
+  { component: 'Transactional DB', tech: 'PostgreSQL', why: 'ACID for wallet/payment transactions. Optimistic locking with version column for balance updates.' },
+  { component: 'Cache / State', tech: 'Redis', why: 'Driver locations (GEO), ride locks (NX EX 15s), rate limit counters. All ephemeral, sub-ms access.' },
+  { component: 'Event Bus', tech: 'Kafka', why: 'Async trip events, cross-region replication. Buffers 333K location writes/s for downstream consumers.' },
+  { component: 'Map / Routing', tech: 'OpenStreetMap + OSRM', why: 'Open data for road network. OSRM provides fast route computation with traffic overlay.' },
+];
+
+const FAILURES = [
+  { scenario: 'Stadium Hot Cell', problem: '10K riders in one H3 cell — single Redis shard saturated', mitigation: 'Cell expansion to neighbors, jittered offers (rand 0-500ms), offer pooling, backpressure at 500 req/s per cell' },
+  { scenario: 'Dispatcher Crash', problem: 'Dispatcher dies mid-offer — rider sees "finding driver" forever', mitigation: 'Idempotency key per ride request. Redis locks prevent double-assign. New dispatcher picks up pending.' },
+  { scenario: 'Surge Oscillation', problem: 'Supply/demand ratio bounces 1.2x→2.5x every 5 min', mitigation: 'PID controller damping. Max ±0.5x change per cycle. Minimum holding period of 2 cycles.' },
+  { scenario: 'Race Condition', problem: 'Two dispatchers offer same driver simultaneously', mitigation: 'Redis SET NX EX 15 on driver lock key. Only first SET NX succeeds; second gets nil and picks next driver.' },
+  { scenario: 'Location Storm', problem: '1M drivers × 3s = 333K writes/s to Redis GEO', mitigation: 'Batch writes every 100ms (30 updates/batch). Shard by metro area (NYC: 100K, SF: 50K). Skip update if <50m movement.' },
+];
+
+const SCENARIOS = [
+  { title: 'Stadium Event Surge', icon: 'ti-building-stadium', tag: 'teal', rec: 'Cell expansion + PID control + predictive dispatch',
+    desc: '50K concert attendees request rides simultaneously in a 1 km² area after a show ends.',
+    why: 'Normal dispatch saturates the geospatial index cell. System expands to Level 13 (16 km²), batches driver offers, and applies PID damping to prevent surge oscillation.',
+    points: ['Cell expansion: search Level 13 (16 km²) instead of Level 15 (1 km²)', 'PID damping prevents surge oscillation (max ±0.5x per cycle)', 'Predictive dispatch pre-positions drivers 30 min before event ends', 'Offer pooling: batch notifications to drivers, not per-rider'] },
+  { title: 'Regional Failover', icon: 'ti-cloud-off', tag: 'blue', rec: 'Multi-region active-active + DNS failover',
+    desc: 'US-East region goes down during peak hours. Millions of riders need seamless continuity.',
+    why: 'DNS-based routing shifts traffic to US-West. Drivers reconnect and re-register location. Cassandra async replication (RF=3) provides trip continuity across regions.',
+    points: ['DNS failover: 30-60s propagation window', 'Ephemeral state (driver location) rebuilt on reconnect', 'Cassandra RF=3 ensures trip data survives region loss', 'In-flight trips: rider/driver app reconnects to new region'] },
+  { title: 'Payment Deadlock', icon: 'ti-credit-card-off', tag: 'coral', rec: 'Pre-auth + async retry + wallet fallback',
+    desc: 'Trip completes but payment processor is down. Driver needs to be paid, rider needs to be charged.',
+    why: 'Pre-authorization at ride request reserves $50. If final charge fails, async retry with exponential backoff + wallet balance fallback ensures driver gets paid.',
+    points: ['Pre-auth holds $50 at ride request (warning if declined)', 'Post-trip: 3 retries with exponential backoff', 'Wallet fallback: deduct from stored balance', 'Uber absorbs loss if all payment paths fail (driver always paid)'] },
+];
+
+function render() {
+  const statsGrid = document.getElementById('stats-grid');
+  statsGrid.innerHTML = STATS.map(s => `
+    <div class="card" style="text-align:center">
+      <div style="font-size:28px;font-weight:700;color:var(--teal);letter-spacing:-0.02em">${s.value}</div>
+      <div style="font-size:11px;color:var(--text2);margin-top:2px;display:flex;align-items:center;justify-content:center;gap:4px"><i class="${s.icon}"></i> ${s.label}</div>
+    </div>
+  `).join('');
+
+  const compGrid = document.getElementById('components-grid');
+  compGrid.innerHTML = COMPONENTS.map(c => `
+    <div class="card">
+      <h3><i class="${c.icon}" style="color:var(--${c.tag})"></i> ${c.name}</h3>
+      <span class="tag tag-${c.tag}">${c.tag}</span>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:6px">
+        <div style="padding:6px;background:var(--bg3);border-radius:4px;font-size:10px;color:var(--text3)">
+          <i class="ti ti-check" style="color:var(--teal)"></i> ${c.pros.join('<br><i class="ti ti-check" style="color:var(--teal)"></i> ')}
+        </div>
+        <div style="padding:6px;background:var(--bg3);border-radius:4px;font-size:10px;color:var(--text3)">
+          <i class="ti ti-x" style="color:var(--coral)"></i> ${c.cons.join('<br><i class="ti ti-x" style="color:var(--coral)"></i> ')}
+        </div>
+      </div>
+    </div>
+  `).join('');
+
+  const geoTbody = document.getElementById('geo-body');
+  geoTbody.innerHTML = GEO_INDEXES.map(g => `
+    <tr>
+      <td style="font-weight:600"><i class="${g.icon}" style="color:var(--teal)"></i> ${g.name}</td>
+      <td style="font-size:12px;color:var(--text2);line-height:1.4">${g.how}</td>
+      <td style="font-size:12px;color:var(--text2)">${g.precision}</td>
+      <td style="font-size:12px;color:var(--coral);line-height:1.4">${g.tradeoff}</td>
+    </tr>
+  `).join('');
+
+  const techTbody = document.getElementById('tech-body');
+  techTbody.innerHTML = TECH_STACK.map(t => `
+    <tr>
+      <td style="font-weight:600;color:var(--text)">${t.component}</td>
+      <td style="font-size:12px;color:var(--blue)">${t.tech}</td>
+      <td style="font-size:12px;color:var(--text2);line-height:1.4">${t.why}</td>
+    </tr>
+  `).join('');
+
+  const failTbody = document.getElementById('failure-body');
+  failTbody.innerHTML = FAILURES.map(f => `
+    <tr>
+      <td style="font-weight:600;color:var(--text)">${f.scenario}</td>
+      <td style="font-size:12px;color:var(--coral);line-height:1.4">${f.problem}</td>
+      <td style="font-size:12px;color:var(--text2);line-height:1.4">${f.mitigation}</td>
+    </tr>
+  `).join('');
+
+  const scenGrid = document.getElementById('scenarios-grid');
+  scenGrid.innerHTML = SCENARIOS.map(s => `
+    <div class="scenario-card">
+      <h4><i class="${s.icon}" style="color:var(--${s.tag})"></i> ${s.title}</h4>
+      <span class="rec tag-${s.tag}" style="font-size:11px;padding:2px 8px;border-radius:100px;display:inline-block;font-weight:600;margin:4px 0 8px">${s.rec}</span>
+      <p>${s.desc}</p>
+      <div style="margin-top:8px;padding:8px;background:var(--bg3);border-radius:var(--radius-sm);border-left:3px solid var(--${s.tag})">
+        <h4 style="font-size:12px;margin-bottom:4px"><i class="ti ti-alert-circle" style="color:var(--${s.tag})"></i> Why</h4>
+        <p style="font-size:11px;color:var(--text2);line-height:1.4">${s.why}</p>
+      </div>
+      <ul>${s.points.map(p => `<li><i class="ti ti-check" style="color:var(--${s.tag})"></i> ${p}</li>`).join('')}</ul>
+    </div>
+  `).join('');
+}
+
+render();
+</script>
+</body>
+</html>

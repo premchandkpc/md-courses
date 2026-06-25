@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kernel vs Userspace — OS Design</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/tabler-icons.min.css">
+<style>
+:root {
+  --bg: #f8f7f4; --bg2: #ffffff; --bg3: #f0efeb;
+  --text: #1a1a18; --text2: #5c5c58; --text3: #8a8a84;
+  --border: rgba(0,0,0,0.10); --border2: rgba(0,0,0,0.18);
+  --teal: #0F6E56; --teal-bg: #E1F5EE; --teal-light: #5DCAA5;
+  --amber: #854F0B; --amber-bg: #FAEEDA; --amber-light: #EF9F27;
+  --blue: #185FA5; --blue-bg: #E6F1FB; --blue-light: #378ADD;
+  --purple: #534AB7; --purple-bg: #EEEDFE; --purple-light: #7F77DD;
+  --coral: #993C1D; --coral-bg: #FAECE7; --coral-light: #D85A30;
+  --green: #3B6D11; --green-bg: #EAF3DE; --green-light: #639922;
+  --red: #A32D2D; --red-bg: #FCEBEB;
+  --radius:10px;--radius-sm:6px;--mono:'Courier New','Consolas',monospace}
+@media(prefers-color-scheme:dark){:root{--bg:#111110;--bg2:#1a1a18;--bg3:#222220;--text:#f0ede8;--text2:#a8a8a0;--text3:#6a6a64;--border:rgba(255,255,255,0.10);--border2:rgba(255,255,255,0.20);--teal:#5DCAA5;--teal-bg:#04342C;--teal-light:#9FE1CB;--amber:#EF9F27;--amber-bg:#412402;--amber-light:#FAC775;--blue:#85B7EB;--blue-bg:#042C53;--blue-light:#B5D4F4;--purple:#AFA9EC;--purple-bg:#26215C;--purple-light:#CECBF6;--coral:#F0997B;--coral-bg:#4A1B0C;--coral-light:#F5C4B3;--green:#97C459;--green-bg:#173404;--green-light:#C0DD97;--red:#E24B4A;--red-bg:#501313}}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14px;line-height:1.5}
+.app{max-width:1000px;margin:0 auto;padding:24px 16px 60px}
+.top-bar{display:flex;align-items:baseline;gap:12px;margin-bottom:4px}
+.app-title{font-size:22px;font-weight:600;letter-spacing:-0.01em}
+.app-sub{font-size:13px;color:var(--text2)}
+.desc{font-size:13px;color:var(--text2);margin-bottom:20px;padding:10px 14px;background:var(--bg3);border-radius:var(--radius-sm);border-left:3px solid var(--purple)}
+.db-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px}
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:16px}
+.card h3{font-size:15px;margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.card .tag{display:inline-block;font-size:10px;padding:2px 8px;border-radius:100px;font-weight:600;letter-spacing:0.03em;margin-bottom:8px}
+.tag-teal{background:var(--teal-bg);color:var(--teal)}
+.tag-amber{background:var(--amber-bg);color:var(--amber)}
+.tag-blue{background:var(--blue-bg);color:var(--blue)}
+.tag-purple{background:var(--purple-bg);color:var(--purple)}
+.tag-coral{background:var(--coral-bg);color:var(--coral)}
+.tag-green{background:var(--green-bg);color:var(--green)}
+.card p{font-size:12px;color:var(--text2);line-height:1.5;margin-bottom:8px}
+.section{margin-bottom:20px}
+.section-title{font-size:11px;text-transform:uppercase;letter-spacing:0.09em;color:var(--text3);font-weight:600;margin-bottom:12px;display:flex;align-items:center;gap:10px}
+.section-title::after{content:'';flex:1;height:1px;background:var(--border)}
+.req-table{width:100%;border-collapse:collapse;font-size:13px}
+.req-table th{font-size:10px;text-transform:uppercase;letter-spacing:0.07em;color:var(--text3);font-weight:600;padding:8px 10px;text-align:left;border-bottom:2px solid var(--border2)}
+.req-table td{padding:8px 10px;border-bottom:1px solid var(--border);vertical-align:top}
+.req-table tr:hover td{background:var(--bg3)}
+.req-table td:first-child{font-weight:500;white-space:nowrap}
+.why-box{margin-top:16px;padding:12px;background:var(--bg3);border-radius:var(--radius-sm);border-left:3px solid var(--blue)}
+.why-box h4{font-size:12px;margin-bottom:4px;color:var(--text)}
+.why-box p{font-size:12px;color:var(--text2);line-height:1.5}
+.scenario-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.scenario-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:14px}
+.scenario-card h4{font-size:13px;margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.scenario-card p{font-size:12px;color:var(--text2);line-height:1.5}
+.scenario-card ul{list-style:none;font-size:12px;margin-top:6px}
+.scenario-card ul li{padding:2px 0;color:var(--text2);display:flex;gap:6px}
+.scenario-card ul li i{font-size:14px;flex-shrink:0;color:var(--teal)}
+.shard-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px}
+.shard-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px}
+.shard-card h4{font-size:13px;margin-bottom:4px}
+.shard-card p{font-size:11px;color:var(--text2);line-height:1.4}
+@media(max-width:640px){.db-grid{grid-template-columns:1fr}.shard-grid{grid-template-columns:repeat(2,1fr)}.scenario-grid{grid-template-columns:1fr}}
+.arch-vis{text-align:center;margin-bottom:16px;padding:12px;background:var(--bg3);border-radius:var(--radius);font-family:var(--mono);font-size:12px;line-height:1.6}
+.arch-vis .ring0{color:var(--coral);font-weight:600}
+.arch-vis .ring3{color:var(--blue);font-weight:600}
+.arch-vis .arrow{color:var(--text3)}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="top-bar">
+    <div class="app-title">Kernel vs Userspace</div>
+    <div class="app-sub">Privilege rings · Syscalls · Isolation · Bypass</div>
+  </div>
+  <div class="desc"><strong>Why separate kernel and user modes?</strong> Hardware protection rings prevent buggy or malicious user code from corrupting the OS. The cost: 1–10µs per syscall for context switches + validation. This guide covers the components, tradeoffs, failure modes, and modern bypass techniques.</div>
+
+  <div class="arch-vis"><span class="ring3">[ Ring 3 — User Space ]</span><br>&nbsp;&nbsp;Application &nbsp; stdlib &nbsp; vDSO<br><span class="arrow">║ syscall (trap) ║</span><br><span class="ring0">[ Ring 0 — Kernel Space ]</span><br>&nbsp;&nbsp;VFS &nbsp; Scheduler &nbsp; Drivers &nbsp; MMU</div>
+
+  <div class="section">
+    <div class="section-title">Components</div>
+    <div class="db-grid" id="comp-grid"></div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">User vs Kernel — Decision Matrix</div>
+    <table class="req-table">
+      <thead><tr><th style="width:140px">Attribute</th><th>User Mode (Ring 3)</th><th>Kernel Mode (Ring 0)</th></tr></thead>
+      <tbody id="compare-body"></tbody>
+    </table>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Syscall Types</div>
+    <table class="req-table">
+      <thead><tr><th style="width:120px">Category</th><th>Syscalls</th><th>Description</th><th>Cost</th></tr></thead>
+      <tbody id="syscall-body"></tbody>
+    </table>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Kernel Bypass Techniques</div>
+    <div class="shard-grid" id="bypass-grid"></div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Failure Modes</div>
+    <table class="req-table">
+      <thead><tr><th style="width:130px">Failure</th><th>Trigger</th><th>Impact</th><th>Mitigation</th></tr></thead>
+      <tbody id="failure-body"></tbody>
+    </table>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Scenarios</div>
+    <div class="scenario-grid" id="scenarios-grid"></div>
+  </div>
+</div>
+
+<script>
+const COMPONENTS = [
+  { name: 'Syscall Handler', icon: 'ti-exchange', tag: 'coral',
+    desc: 'Entry point for ring 3 → ring 0 transitions. Validates arguments, dispatches to handler, returns result.',
+    pros: ['Enforces isolation boundary between user and kernel', 'Validates all pointer arguments before use'],
+    cons: ['1-10µs overhead per transition (context switch)', 'Speculative execution can leak kernel data (Spectre)'] },
+  { name: 'Signal Dispatch', icon: 'ti-bell', tag: 'amber',
+    desc: 'Delivers async events (SIGSEGV, SIGTERM) to user processes. Interrupts execution, runs handler on user stack.',
+    pros: ['Enables process lifecycle management (kill, stop, continue)', 'User-defined handlers for graceful recovery'],
+    cons: ['Signal delivery is racy (re-entrancy issues)', 'Time-of-check to time-of-use window in handlers'] },
+  { name: 'User Heap', icon: 'ti-stack', tag: 'green',
+    desc: 'Managed via brk/sbrk and mmap. Kernel tracks VMA regions, lazy-allocates physical pages on first touch.',
+    pros: ['Overcommit allows allocating more virtual than physical memory', 'Lazy page allocation — zero-cost until actually used'],
+    cons: ['OOM killer may terminate process on overcommit exhaustion', 'Page faults on first access add latency spikes'] },
+  { name: 'Kernel Stack', icon: 'ti-layers-intersect', tag: 'purple',
+    desc: 'Per-process private stack in kernel space. Stores register state during syscalls and exception handling.',
+    pros: ['Isolated from user stack — no corruption across boundary', 'Small fixed size (4-16KB) prevents runaway kernel recursion'],
+    cons: 'Fixed size limits call depth (stack overflow = kernel panic)',
+    cons2: 'Must be pre-allocated per process (memory overhead)' },
+  { name: 'vDSO', icon: 'ti-zap', tag: 'blue',
+    desc: 'Virtual Dynamic Shared Object — kernel maps a tiny shared lib into every user process for fast-path syscalls.',
+    pros: ['gettimeofday() without privilege switch (~10µs saved every call)', 'No context switch, no TLB flush for time queries'],
+    cons: ['Limited to read-only, side-effect-free operations', 'Kernel must maintain ABI compatibility across versions'] },
+  { name: 'seccomp', icon: 'ti-shield', tag: 'teal',
+    desc: 'BPF-based syscall filter. Restricts which syscalls a process can make. Used by Chrome, Docker, systemd.',
+    pros: ['Minimizes kernel attack surface per process (principle of least privilege)', 'Tiny overhead — BPF filter eval is microseconds'],
+    cons: 'Complex filter rules are hard to debug (SECCOMP_RET_KILL kills silently)',
+    cons2: 'Not namespace-aware — same filter for all threads' },
+];
+
+const COMPARE = [
+  { attr: 'Privilege level', user: 'Ring 3 — restricted instruction set. No access to MSRs, IDT, GDT, I/O ports.', kernel: 'Ring 0 — full control. All CPU instructions, hardware access, memory management.' },
+  { attr: 'Memory access', user: 'Virtual address space only. No access to kernel pages (copy-on-write protection).', kernel: 'Full physical + virtual memory. Can remap any page table entry.' },
+  { attr: 'Crash impact', user: 'Process terminated (SIGSEGV/SIGKILL). Kernel continues. Other processes unaffected.', kernel: 'Kernel panic — system hangs or reboots. All processes die.' },
+  { attr: 'Performance', user: 'Direct execution at CPU speed. No overhead for non-privileged operations.', kernel: 'Syscall overhead: 1-10µs (trap + context switch + return). KPTI adds 5-30%.' },
+  { attr: 'Failure handling', user: 'User-mode handler can catch SIGSEGV, SIGBUS, SIGFPE via signal(2).', kernel: 'Unhandled exception → panic → reboot. Bug check or watchdog timer.' },
+  { attr: 'Resource limits', user: 'ulimit: RLIMIT_NOFILE, RLIMIT_AS, RLIMIT_CPU enforced by kernel.', kernel: 'Unlimited (except kernel memory cgroups). Must manage slab caches.' },
+];
+
+const SYSCALLS = [
+  { name: 'Process', sys: 'fork, exec, exit, wait, clone', desc: 'Process lifecycle: create, run, terminate. clone() shares resources for threads.', cost: '~5-15µs (fork: COW setup)' },
+  { name: 'File', sys: 'read, write, open, close, lseek, mmap', desc: 'VFS operations on inodes. read/write go through page cache. O_DIRECT bypasses.', cost: '~2-10µs (no disk I/O)' },
+  { name: 'Network', sys: 'socket, connect, bind, listen, accept, send, recv', desc: 'Socket API. syscall per packet in traditional stack. sendmmsg/recvmmsg batch.', cost: '~5-20µs (kernel TCP stack)' },
+  { name: 'IPC', sys: 'pipe, shmget, shmat, semop, msgget, eventfd', desc: 'Inter-process communication. Shared memory fastest; pipes buffer in kernel.', cost: '~2-5µs (pipe), ~0.5µs (SHM)' },
+  { name: 'Signal', sys: 'kill, tkill, sigaction, sigprocmask, signalfd', desc: 'Async event delivery. signalfd() bridges signals into epoll event loop.', cost: '~3-8µs (delivery + handler)' },
+  { name: 'Memory', sys: 'brk, mmap, munmap, mprotect, madvise, mlock', desc: 'Virtual memory management. brk grows heap; mmap maps files/anonymous pages.', cost: '~2-15µs (page table ops)' },
+];
+
+const BYPASS = [
+  { name: 'DPDK', icon: 'ti-cpu', desc: 'User-space NIC driver. Polls rings directly, zero-copy to app. Bypasses kernel network stack entirely.', perf: '10-40x throughput gain', tradeoff: 'Dedicated CPU cores (busy polling). No kernel networking features (TCP offload).' },
+  { name: 'XDP', icon: 'ti-network', desc: 'eBPF program attached to NIC driver. Packets processed before SKB allocation. Drop/redirect at line rate.', perf: '10-20x packet rate (10M+ pps/core)', tradeoff: 'Complex BPF verifier constraints. Limited to early-stage processing.' },
+  { name: 'io_uring', icon: 'ti-database', desc: 'Shared SQ/CQ ring pair between user + kernel. Submit batch of I/O ops without syscall per op.', perf: '~90% syscall reduction for high IOPs', tradeoff: 'Setup complexity (mmap rings). Older kernels missing features (5.1+ required).' },
+  { name: 'eBPF', icon: 'ti-code', desc: 'Sandboxed bytecode in kernel. Attach to tracepoints, kprobes, cgroups. Observability + programmability.', perf: 'Sub-µs per event (JIT compiled)', tradeoff: 'Limited loops (verifier). No kernel memory writes (unless GPL).' },
+];
+
+const FAILURES = [
+  { name: 'Kernel Panic', icon: 'ti-alert-triangle', trigger: 'Unhandled exception in ring 0. NULL pointer deref in driver, BUG_ON/WARN_ON assertion, corrupted kernel stack.',
+    impact: 'System halts. All processes killed. Reboot required. Possible fsck on next boot.',
+    mit: 'KASLR + KASAN + lockdep + panic_timeout=10 for auto-reboot. Crash dump via kdump.' },
+  { name: 'Segfault (SIGSEGV)', icon: 'ti-file-alert', trigger: 'User dereferences invalid pointer (NULL, unmapped, read-only write). MMU generates page fault → kernel delivers SIGSEGV.',
+    impact: 'Only the faulting process dies. Core dump optional. Other processes unaffected.',
+    mit: 'Guard pages near stack/heap. ASLR. Pointer sanitization (__attribute__((nonnull))).' },
+  { name: 'Stack Overflow', icon: 'ti-stack-backward', trigger: 'Unbounded recursion in user space hits RLIMIT_STACK. Kernel sends SIGSEGV (or SIGBUS on alternate signal stack).',
+    impact: 'Process terminated. No memory corruption if guard page hit. Kernel stacks are fixed-size (panic risk).',
+    mit: 'RLIMIT_STACK + sigaltstack. Compiler stack canaries (-fstack-protector). Guard pages (vm.heap_stack_gap).' },
+  { name: 'seccomp Kill', icon: 'ti-shield-off', trigger: 'Process calls a syscall not in allowed filter. seccomp returns SECCOMP_RET_KILL → immediate SIGSYS.',
+    impact: 'Process killed instantly. No core dump. Very hard to debug without audit logging (SECCOMP_RET_LOG).',
+    mit: 'SECCOMP_RET_LOG during development. strace -f to discover syscall usage. Tighten iteratively.' },
+];
+
+const SCENARIOS = [
+  { title: 'Buffer Overflow Mitigated by Kernel', icon: 'ti-shield-check', rec: 'Kernel validation prevents privilege escalation', tag: 'teal',
+    desc: 'User process calls read(fd, buf, size) with size=1MB but only 100KB writable. Kernel checks VMA bounds before copying.',
+    why: 'The kernel validates every pointer argument: verifies buf lies within the process writable VMAs, checks size does not overflow, and only copies min(filesize, writable_size). This prevents user bugs from corrupting kernel memory.',
+    points: ['Kernel calls access_ok(addr, size) before copy_to_user', 'VMA lookup verifies the memory range is writable', 'Only 100KB copied, syscall returns -EFAULT', 'Process can retry with valid buffer or handle error'],
+    tech: 'access_ok() + copy_to_user() + VMA validation' },
+  { title: 'Spectre/Meltdown — KPTI Mitigation', icon: 'ti-virus', rec: 'Page table isolation at ~15% perf cost', tag: 'coral',
+    desc: 'Speculative execution leaks kernel memory through timing side channels. KPTI (KAISER) separates user/kernel page tables.',
+    why: 'Without KPTI, the kernel shared its page tables with user space. Spectre-v2 + Meltdown allowed user code to speculatively read kernel data via cache timing. KPTI keeps only minimal kernel entries in user page tables on x86.',
+    points: ['KPTI adds ~130 CR3 writes per context switch', 'User page tables contain only kernel entry/exit trampolines', 'Performance hit: 5-30% (worst on syscall-heavy workloads)', 'Hardware fix: Intel PTI in later CPUs avoids the overhead'],
+    tech: 'KPTI + retpoline + IBRS + SSBD' },
+  { title: 'Container Breakout via seccomp', icon: 'ti-container', rec: 'seccomp-bpf + user namespaces + read-only root', tag: 'blue',
+    desc: 'Docker/containerd applies seccomp filter to container processes. Blocks ~44% of syscalls to reduce kernel attack surface.',
+    why: 'Without seccomp, a compromised container could call clone(CLONE_NEWNS|CLONE_NEWNET) to escape namespaces, or keyctl to access kernel keyrings, or kexec_file_load to boot arbitrary code. Seccomp whitelists only ~200 of 450+ syscalls for containers.',
+    points: ['Default Docker seccomp profile whitelists ~200 syscalls', 'clone() call with namespace flags blocked by default', 'kexec_file_load, keyctl, pivot_root blocked', 'Can be bypassed if kernel has "seccomp escape" bugs (CVE-2020-14386)'],
+    tech: 'prctl(PR_SET_SECCOMP) + BPF filter + SECCOMP_RET_KILL' },
+];
+
+function render() {
+  renderComponents();
+  renderCompare();
+  renderSyscalls();
+  renderBypass();
+  renderFailures();
+  renderScenarios();
+}
+
+function renderComponents() {
+  const grid = document.getElementById('comp-grid');
+  grid.innerHTML = COMPONENTS.map(d => `
+    <div class="card">
+      <h3><i class="${d.icon}" style="color:var(--${d.tag})"></i> ${d.name}</h3>
+      <span class="tag tag-${d.tag}">component</span>
+      <p>${d.desc}</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:6px">
+        <div style="padding:6px;background:var(--bg3);border-radius:4px;font-size:10px;color:var(--text3)">
+          <i class="ti ti-check" style="color:var(--teal)"></i> ${d.pros[0]}<br><i class="ti ti-check" style="color:var(--teal)"></i> ${d.pros[1]}
+        </div>
+        <div style="padding:6px;background:var(--bg3);border-radius:4px;font-size:10px;color:var(--text3)">
+          <i class="ti ti-x" style="color:var(--coral)"></i> ${d.cons[0]}<br><i class="ti ti-x" style="color:var(--coral)"></i> ${d.cons[1] || (d.cons2 || '')}
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderCompare() {
+  const tbody = document.getElementById('compare-body');
+  tbody.innerHTML = COMPARE.map(c => `
+    <tr><td>${c.attr}</td><td style="font-size:12px;color:var(--blue);line-height:1.4">${c.user}</td><td style="font-size:12px;color:var(--coral);line-height:1.4">${c.kernel}</td></tr>
+  `).join('');
+}
+
+function renderSyscalls() {
+  const tbody = document.getElementById('syscall-body');
+  const colors = ['teal','amber','purple','coral','blue','green'];
+  tbody.innerHTML = SYSCALLS.map((s, i) => `
+    <tr>
+      <td><span class="tag tag-${colors[i]}">${s.name}</span></td>
+      <td style="font-size:11px;color:var(--text2);font-family:var(--mono)">${s.sys}</td>
+      <td style="font-size:12px;color:var(--text2);line-height:1.4">${s.desc}</td>
+      <td style="font-size:12px;color:var(--amber)">${s.cost}</td>
+    </tr>
+  `).join('');
+}
+
+function renderBypass() {
+  const grid = document.getElementById('bypass-grid');
+  grid.innerHTML = BYPASS.map(s => `
+    <div class="shard-card">
+      <h4><i class="${s.icon}" style="color:var(--teal)"></i> ${s.name}</h4>
+      <p>${s.desc}</p>
+      <div style="margin-top:6px;font-size:10px"><span class="tag-teal" style="padding:1px 6px;border-radius:100px">${s.perf}</span></div>
+      <div style="margin-top:4px;font-size:10px;color:var(--coral)">⚠ ${s.tradeoff}</div>
+    </div>
+  `).join('');
+}
+
+function renderFailures() {
+  const tbody = document.getElementById('failure-body');
+  const icons = { 'Kernel Panic': 'ti-alert-triangle', 'Segfault (SIGSEGV)': 'ti-file-alert', 'Stack Overflow': 'ti-stack-backward', 'seccomp Kill': 'ti-shield-off' };
+  tbody.innerHTML = FAILURES.map(f => `
+    <tr>
+      <td style="font-weight:600"><i class="${icons[f.name]}" style="color:var(--coral);font-size:14px"></i> ${f.name}</td>
+      <td style="font-size:12px;color:var(--text2);line-height:1.4">${f.trigger}</td>
+      <td style="font-size:12px;color:var(--coral);line-height:1.4">${f.impact}</td>
+      <td style="font-size:12px;color:var(--teal);line-height:1.4">${f.mit}</td>
+    </tr>
+  `).join('');
+}
+
+function renderScenarios() {
+  const grid = document.getElementById('scenarios-grid');
+  grid.innerHTML = SCENARIOS.map(s => `
+    <div class="scenario-card">
+      <h4><i class="${s.icon}" style="color:var(--${s.tag})"></i> ${s.title}</h4>
+      <span class="rec tag-${s.tag}" style="font-size:11px;padding:2px 8px;border-radius:100px;display:inline-block;font-weight:600;margin:4px 0 6px;background:var(--${s.tag}-bg);color:var(--${s.tag})">${s.rec}</span>
+      <p>${s.desc}</p>
+      <div class="why-box" style="margin-top:8px;">
+        <h4><i class="ti ti-alert-circle" style="color:var(--${s.tag})"></i> Why</h4>
+        <p>${s.why}</p>
+      </div>
+      <ul>${s.points.map(p => `<li><i class="ti ti-check" style="color:var(--${s.tag})"></i> ${p}</li>`).join('')}</ul>
+      <div style="margin-top:8px;font-size:10px;font-family:var(--mono);color:var(--text3);padding:6px 8px;background:var(--bg3);border-radius:4px">${s.tech}</div>
+    </div>
+  `).join('');
+}
+
+render();
+</script>
+</body>
+</html>

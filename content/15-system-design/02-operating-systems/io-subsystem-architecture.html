@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>I/O Subsystem Architecture — System Design</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/tabler-icons.min.css">
+<style>
+:root {
+  --bg: #f8f7f4; --bg2: #ffffff; --bg3: #f0efeb;
+  --text: #1a1a18; --text2: #5c5c58; --text3: #8a8a84;
+  --border: rgba(0,0,0,0.10); --border2: rgba(0,0,0,0.18);
+  --teal: #0F6E56; --teal-bg: #E1F5EE; --teal-light: #5DCAA5;
+  --amber: #854F0B; --amber-bg: #FAEEDA; --amber-light: #EF9F27;
+  --blue: #185FA5; --blue-bg: #E6F1FB; --blue-light: #378ADD;
+  --purple: #534AB7; --purple-bg: #EEEDFE; --purple-light: #7F77DD;
+  --coral: #993C1D; --coral-bg: #FAECE7; --coral-light: #D85A30;
+  --green: #3B6D11; --green-bg: #EAF3DE; --green-light: #639922;
+  --red: #A32D2D; --red-bg: #FCEBEB;
+  --radius: 10px; --radius-sm: 6px; --mono: 'Courier New', 'Consolas', monospace;
+}
+@media (prefers-color-scheme: dark) {
+:root {
+  --bg: #111110; --bg2: #1a1a18; --bg3: #222220;
+  --text: #f0ede8; --text2: #a8a8a0; --text3: #6a6a64;
+  --border: rgba(255,255,255,0.10); --border2: rgba(255,255,255,0.20);
+  --teal: #5DCAA5; --teal-bg: #04342C; --teal-light: #9FE1CB;
+  --amber: #EF9F27; --amber-bg: #412402; --amber-light: #FAC775;
+  --blue: #85B7EB; --blue-bg: #042C53; --blue-light: #B5D4F4;
+  --purple: #AFA9EC; --purple-bg: #26215C; --purple-light: #CECBF6;
+  --coral: #F0997B; --coral-bg: #4A1B0C; --coral-light: #F5C4B3;
+  --green: #97C459; --green-bg: #173404; --green-light: #C0DD97;
+  --red: #E24B4A; --red-bg: #501313;
+}
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14px;line-height:1.5;min-height:100vh}
+.app{max-width:1000px;margin:0 auto;padding:24px 16px 60px}
+.top-bar{display:flex;align-items:baseline;gap:12px;margin-bottom:4px}
+.app-title{font-size:22px;font-weight:600;letter-spacing:-0.01em}
+.app-sub{font-size:13px;color:var(--text2)}
+.desc{font-size:13px;color:var(--text2);margin-bottom:20px;padding:10px 14px;background:var(--bg3);border-radius:var(--radius-sm);border-left:3px solid var(--teal)}
+.db-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px}
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:16px}
+.card h3{font-size:15px;margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.card .tag{display:inline-block;font-size:10px;padding:2px 8px;border-radius:100px;font-weight:600;letter-spacing:0.03em;margin-bottom:8px}
+.tag-teal{background:var(--teal-bg);color:var(--teal)}
+.tag-amber{background:var(--amber-bg);color:var(--amber)}
+.tag-blue{background:var(--blue-bg);color:var(--blue)}
+.tag-purple{background:var(--purple-bg);color:var(--purple)}
+.tag-coral{background:var(--coral-bg);color:var(--coral)}
+.tag-green{background:var(--green-bg);color:var(--green)}
+.card p{font-size:12px;color:var(--text2);line-height:1.5;margin-bottom:8px}
+.card ul{list-style:none;font-size:12px}
+.card ul li{padding:3px 0;color:var(--text2);display:flex;gap:6px;align-items:flex-start}
+.card ul li i{color:var(--teal);font-size:14px;flex-shrink:0;margin-top:1px}
+.card ul li .neg{color:var(--coral)}
+.section{margin-bottom:20px}
+.section-title{font-size:11px;text-transform:uppercase;letter-spacing:0.09em;color:var(--text3);font-weight:600;margin-bottom:12px;display:flex;align-items:center;gap:10px}
+.section-title::after{content:'';flex:1;height:1px;background:var(--border)}
+.req-table{width:100%;border-collapse:collapse;font-size:13px}
+.req-table th{font-size:10px;text-transform:uppercase;letter-spacing:0.07em;color:var(--text3);font-weight:600;padding:8px 10px;text-align:left;border-bottom:2px solid var(--border2)}
+.req-table td{padding:8px 10px;border-bottom:1px solid var(--border);vertical-align:top}
+.req-table tr:hover td{background:var(--bg3)}
+.req-table .why{font-size:11px;color:var(--text3);margin-top:3px;line-height:1.4}
+.req-table td:first-child{font-weight:500;white-space:nowrap}
+.why-box{margin-top:16px;padding:12px;background:var(--bg3);border-radius:var(--radius-sm);border-left:3px solid var(--blue)}
+.why-box h4{font-size:12px;margin-bottom:4px;color:var(--text)}
+.why-box p{font-size:12px;color:var(--text2);line-height:1.5}
+.scenario-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.scenario-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:14px}
+.scenario-card h4{font-size:13px;margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.scenario-card .rec{font-size:11px;padding:2px 8px;border-radius:100px;display:inline-block;font-weight:600;margin:4px 0 6px}
+.scenario-card p{font-size:12px;color:var(--text2);line-height:1.5}
+.scenario-card ul{list-style:none;font-size:12px;margin-top:6px}
+.scenario-card ul li{padding:2px 0;color:var(--text2);display:flex;gap:6px}
+.scenario-card ul li i{font-size:14px;flex-shrink:0;color:var(--teal)}
+.failure-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:14px}
+.failure-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px}
+.failure-card h4{font-size:13px;margin-bottom:4px;display:flex;align-items:center;gap:6px}
+.failure-card p{font-size:11px;color:var(--text2);line-height:1.4}
+.failure-card .effect{font-size:10px;padding:2px 6px;border-radius:100px;display:inline-block;font-weight:600;margin-top:4px}
+.hierarchy-table td:nth-child(2){font-family:var(--mono);font-size:12px}
+.hierarchy-table td:nth-child(3){font-family:var(--mono);font-size:12px}
+@media(max-width:640px){.db-grid{grid-template-columns:1fr}.failure-grid{grid-template-columns:1fr}.scenario-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="top-bar">
+    <div class="app-title">I/O Subsystem Architecture</div>
+    <div class="app-sub">DMA · NVMe · io_uring · Page Cache · Interrupts</div>
+  </div>
+  <div class="desc">I/O is the bottleneck in most systems — disks are 10⁶× slower than CPU. This guide covers the kernel I/O stack: how hardware, drivers, schedulers, and async frameworks combine to keep the CPU fed while data moves.</div>
+
+  <div class="section">
+    <div class="section-title">Core Components</div>
+    <div class="db-grid" id="comp-grid"></div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">I/O Models — Comparison</div>
+    <table class="req-table">
+      <thead><tr><th style="width:120px">Model</th><th>Blocking</th><th>Threads per Op</th><th>Scalability</th><th>Use Case</th></tr></thead>
+      <tbody id="models-body"></tbody>
+    </table>
+  </div>
+
+  <div class="section">
+    <div class="section-title">I/O Schedulers — Comparison</div>
+    <table class="req-table">
+      <thead><tr><th style="width:120px">Scheduler</th><th>Fairness</th><th>Latency</th><th>Throughput</th><th>Use Case</th></tr></thead>
+      <tbody id="sched-body"></tbody>
+    </table>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Storage Hierarchy — Latency & Bandwidth</div>
+    <table class="req-table hierarchy-table">
+      <thead><tr><th style="width:120px">Level</th><th>Latency</th><th>Bandwidth</th><th>Characteristics</th></tr></thead>
+      <tbody id="hierarchy-body"></tbody>
+    </table>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Failure Modes</div>
+    <div class="failure-grid" id="failure-grid"></div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Real-World Scenarios</div>
+    <div class="scenario-grid" id="scenario-grid"></div>
+  </div>
+</div>
+
+<script>
+const COMPONENTS = [
+  { name: 'I/O Scheduler', icon: 'ti-adjustments', tag: 'teal', desc: 'Kernel component that reorders and merges I/O requests to maximize throughput and minimize latency.',
+    pros: ['Merges adjacent requests (coalescing)', 'Prioritizes latency-sensitive I/O'],
+    cons: ['Adds CPU overhead per request', 'Wrong policy hurts throughput'] },
+  { name: 'DMA Controller', icon: 'ti-transfer', tag: 'blue', desc: 'Direct Memory Access — transfers data between device and memory without CPU involvement.',
+    pros: ['CPU free during data transfer', 'Throughput near device limit'],
+    cons: ['Cache coherency overhead (cache invalidate)', 'Scatter-gather setup is complex'] },
+  { name: 'Interrupt Controller', icon: 'ti-bell', tag: 'amber', desc: 'APIC/MSI-X — routes device interrupts to CPU cores. Reduces latency vs polling.',
+    pros: ['No wasted CPU cycles polling', 'Handles rare events efficiently'],
+    cons: ['Context switch cost (5-10µs per interrupt)', 'IRQ storm can livelock a core'] },
+  { name: 'NVMe Driver', icon: 'ti-server', tag: 'purple', desc: 'Non-Volatile Memory Express — modern SSD protocol with 64K submission/completion queues.',
+    pros: ['64K hardware queues (lockless per-core)', '3-5µs IO latency, 1M+ IOPS'],
+    cons: ['PCIe lane limited (x4 = 4 lanes minimum)', 'Driver complexity (multiple queue pairs)'] },
+  { name: 'io_uring', icon: 'ti-loop', tag: 'green', desc: 'Linux async I/O framework. Shared ring buffer between kernel and userspace — zero syscall per I/O.',
+    pros: ['Zero syscall per I/O (shared ring)', 'Supports buffered + direct I/O, sockets, files'],
+    cons: ['Linux 5.1+ only (older kernels unsupported)', 'Setup overhead (mmap, ring init)'] },
+  { name: 'Page Cache', icon: 'ti-database', tag: 'coral', desc: 'Kernel buffer of recently accessed file data. Caches disk blocks in RAM to avoid slow disk reads.',
+    pros: ['Cache hits: <1µs vs 10ms disk', 'Write-back reduces disk writes'],
+    cons: ['Dirty page pressure (OOM risk under write load)', 'pgcache eviction storm can kill throughput'] },
+];
+
+const MODELS = [
+  { name: 'Blocking I/O', blocking: 'Yes (thread sleeps)', threads: '1:1 (thread per I/O)', scalability: 'Low (C10K problem)', use: 'Simple scripts, low-concurrency apps' },
+  { name: 'Non-Blocking I/O', blocking: 'No (returns EAGAIN)', threads: '1:1', scalability: 'Low (polling burns CPU)', use: 'Single-device polling, embedded' },
+  { name: 'Async I/O (AIO)', blocking: 'No (completion callback)', threads: 'Few (event loop)', scalability: 'High (100K+ concurrent)', use: 'High-performance servers (nginx, Node.js)' },
+  { name: 'io_uring (Linux)', blocking: 'No (shared ring, zero-copy)', threads: 'Minimal (completion polling)', scalability: 'Very high (1M+ IOPS/core)', use: 'Databases, storage engines, Redis' },
+  { name: 'kqueue / epoll', blocking: 'No (event-driven)', threads: 'Single event loop', scalability: 'Very high (FD sets scale)', use: 'Network servers, proxies (HAProxy, Redis)' },
+];
+
+const SCHEDULERS = [
+  { name: 'NOOP (FIFO)', fairness: 'None (FIFO)', latency: 'Good (no reorder)', throughput: 'Good (no overhead)', use: 'Simple, HW-backed (NVMe, virtio)' },
+  { name: 'Deadline', fairness: 'Per-request deadline', latency: 'Excellent (bounded wait)', throughput: 'Good (batching)', use: 'General-purpose, databases' },
+  { name: 'CFQ (Complete Fairness)', fairness: 'Best (per-process I/O time)', latency: 'Poor (fairness cost)', throughput: 'Moderate', use: 'Desktop, shared hosts' },
+  { name: 'mq-deadline', fairness: 'Per-queue deadline', latency: 'Good (bounded per queue)', throughput: 'Good (multi-queue)', use: 'NVMe, multi-queue SCSI' },
+  { name: 'Kyber', fairness: 'Adaptive (targeted latencies)', latency: 'Excellent (read > write priority)', throughput: 'Good (tuned for fast SSD)', use: 'Fast SSDs, latency-sensitive' },
+];
+
+const HIERARCHY = [
+  { level: 'CPU Register', latency: '0.3 ns', bw: '>1000 GB/s', char: '1 cycle latency. Compiler managed.' },
+  { level: 'L1 Cache', latency: '1 ns', bw: '~500 GB/s', char: '32KB per core. LRU eviction.' },
+  { level: 'L2/L3 Cache', latency: '5-15 ns', bw: '100-300 GB/s', char: '256KB-32MB shared. Inclusive/exclusive.' },
+  { level: 'Main Memory (RAM)', latency: '50-100 ns', bw: '20-50 GB/s', char: 'DRAM. DDR4/DDR5. NUMA domains.' },
+  { level: 'SSD (NVMe)', latency: '10-100 µs', bw: '0.5-5 GB/s', char: 'NAND flash. 1M IOPS. No seek.' },
+  { level: 'HDD (SATA/SAS)', latency: '5-15 ms', bw: '0.1-0.2 GB/s', char: 'Rotational. Seek ~10ms. 200 IOPS.' },
+  { level: 'Tape / Cold Storage', latency: '10-100 s', bw: '0.01-0.1 GB/s', char: 'Sequential only. Archive tier.' },
+];
+
+const FAILURES = [
+  { name: 'I/O Wait (%iowait)', icon: 'ti-hourglass', tag: 'coral', desc: 'CPU idle waiting for I/O completion. Shows storage is bottleneck.', effect: 'High CPU idle + low throughput = storage saturated', rec: 'Reduce random I/O, add more spindles, use NVMe' },
+  { name: 'fsync Storm', icon: 'ti-storm', tag: 'amber', desc: 'Many processes call fsync() simultaneously. Disk queue overflows.', effect: 'Latency spikes 10-100×. Throughput collapse to ~100 ops/s', rec: 'Batch writes, group commit (PostgreSQL: commit_delay)' },
+  { name: 'DMA Misconfiguration', icon: 'ti-bug', tag: 'red', desc: 'Wrong physical address / scatter-gather list corrupt. Device writes to wrong memory.', effect: 'Silent data corruption. Kernel panic on invalid page.', rec: 'IOMMU protection (VT-d/AMD-Vi). Validate sg-lists.' },
+  { name: 'NVMe Queue Full', icon: 'ti-alert-triangle', tag: 'purple', desc: 'Submission queue (SQ) at capacity. Driver must retry or block.', effect: 'Request queue backlog. Tail latency spikes >100ms.', rec: 'Increase queue depth (default 128 → 1024). Per-core queues.' },
+];
+
+const SCENARIOS = [
+  { title: 'PostgreSQL WAL Writing', icon: 'ti-database', tag: 'teal',
+    rec: 'O_DIRECT + io_uring + mq-deadline',
+    desc: 'Write-ahead log must be durable. Every transaction commits via WAL flush. 10K-50K txns/s per primary.',
+    why: 'O_DIRECT bypasses page cache (double-buffering waste). io_uring submits async writes without syscall overhead. mq-deadline bounds latency per queue.',
+    points: ['WAL on dedicated NVMe (no competing reads)', 'io_uring: 2-3µs per submission vs 1µs syscall + context switch', 'Group commit: batch 10+ txns per fsync', 'Monitor: WAL write latency P99 < 1ms'] },
+  { title: 'Nginx Static File Serving', icon: 'ti-cloud', tag: 'blue',
+    rec: 'sendfile + AIO + Page Cache',
+    desc: '10K concurrent connections. Each request reads file from disk or cache. Zero-copy delivery ideal.',
+    why: 'sendfile() copies file data kernel→socket without userspace buffer. AIO handles multiple in-flight reads. Page cache absorbs working set (<80% cache hit is bad).',
+    points: ['sendfile: zero-copy, 1 syscall vs 3 (read+write)', 'AIO: 64 concurrent reads in flight', 'Page cache: warm = 1µs, cold = 100µs (SSD)', 'Tune: vm.dirty_ratio=20, vm.dirty_background=10'] },
+  { title: 'Video Streaming Pipeline', icon: 'ti-player-play', tag: 'purple',
+    rec: 'DMA ring buffer + huge pages + interrupt coalescing',
+    desc: '4K video at 50 Mbps per stream. 10K concurrent streams. Buffer underrun = playback stall.',
+    why: 'DMA transfers video frames directly to pre-allocated huge-page buffers. Interrupt coalescing batches completion notifications (reduce IRQ rate). Double-buffering prevents tearing.',
+    points: ['DMA ring: 512KB per stream, 512 streams per NIC', 'Huge pages (2MB): reduces TLB misses on buffer walking', 'Interrupt coalescing: 10µs delay batches 10+ completions', 'Monitor: NIC drop counters, DMA re-try rate'] },
+];
+
+function render() {
+  renderComponents();
+  renderModels();
+  renderSchedulers();
+  renderHierarchy();
+  renderFailures();
+  renderScenarios();
+}
+
+function renderComponents() {
+  const grid = document.getElementById('comp-grid');
+  grid.innerHTML = COMPONENTS.map(d => `
+    <div class="card">
+      <h3><i class="ti ${d.icon}" style="color:var(--${d.tag})"></i> ${d.name}</h3>
+      <span class="tag tag-${d.tag}">${d.pros.length} pros</span>
+      <p>${d.desc}</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:6px">
+        <div style="padding:6px;background:var(--bg3);border-radius:4px;font-size:10px;color:var(--text3)">
+          <i class="ti ti-check" style="color:var(--teal)"></i> ${d.pros.slice(0,2).join('<br><i class="ti ti-check" style="color:var(--teal)"></i> ')}
+        </div>
+        <div style="padding:6px;background:var(--bg3);border-radius:4px;font-size:10px;color:var(--text3)">
+          <i class="ti ti-x" style="color:var(--coral)"></i> ${d.cons.slice(0,2).join('<br><i class="ti ti-x" style="color:var(--coral)"></i> ')}
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderModels() {
+  const tbody = document.getElementById('models-body');
+  tbody.innerHTML = MODELS.map(m => `
+    <tr><td style="font-weight:600;color:var(--text)">${m.name}</td><td style="font-size:12px;color:var(--text2)">${m.blocking}</td><td style="font-size:12px;color:var(--text2)">${m.threads}</td><td style="font-size:12px;color:var(--text2)">${m.scalability}</td><td style="font-size:12px;color:var(--text2);line-height:1.4">${m.use}</td></tr>
+  `).join('');
+}
+
+function renderSchedulers() {
+  const tbody = document.getElementById('sched-body');
+  tbody.innerHTML = SCHEDULERS.map(s => `
+    <tr><td style="font-weight:600;color:var(--text)">${s.name}</td><td style="font-size:12px;color:var(--text2)">${s.fairness}</td><td style="font-size:12px;color:var(--text2)">${s.latency}</td><td style="font-size:12px;color:var(--text2)">${s.throughput}</td><td style="font-size:12px;color:var(--text2);line-height:1.4">${s.use}</td></tr>
+  `).join('');
+}
+
+function renderHierarchy() {
+  const tbody = document.getElementById('hierarchy-body');
+  tbody.innerHTML = HIERARCHY.map(h => `
+    <tr><td style="font-weight:500;color:var(--text)">${h.level}</td><td style="font-size:12px;color:var(--amber);font-weight:600">${h.latency}</td><td style="font-size:12px;color:var(--blue);font-weight:600">${h.bw}</td><td style="font-size:12px;color:var(--text2);line-height:1.4">${h.char}</td></tr>
+  `).join('');
+}
+
+function renderFailures() {
+  const grid = document.getElementById('failure-grid');
+  grid.innerHTML = FAILURES.map(f => `
+    <div class="failure-card">
+      <h4><i class="ti ${f.icon}" style="color:var(--${f.tag})"></i> ${f.name}</h4>
+      <p>${f.desc}</p>
+      <div><span class="effect" style="background:var(--${f.tag}-bg);color:var(--${f.tag})">Effect: ${f.effect}</span></div>
+      <div style="margin-top:4px;font-size:10px;color:var(--${f.tag});display:flex;gap:4px"><i class="ti ti-check" style="font-size:11px"></i> ${f.rec}</div>
+    </div>
+  `).join('');
+}
+
+function renderScenarios() {
+  const grid = document.getElementById('scenario-grid');
+  grid.innerHTML = SCENARIOS.map(s => `
+    <div class="scenario-card">
+      <h4><i class="ti ${s.icon}" style="color:var(--${s.tag})"></i> ${s.title}</h4>
+      <span class="rec tag-${s.tag}" style="font-size:11px;padding:2px 8px;border-radius:100px;display:inline-block;font-weight:600;margin:4px 0 8px;background:var(--${s.tag}-bg);color:var(--${s.tag})">${s.rec}</span>
+      <p>${s.desc}</p>
+      <div class="why-box" style="margin-top:8px;">
+        <h4><i class="ti ti-alert-circle" style="color:var(--${s.tag})"></i> Why</h4>
+        <p>${s.why}</p>
+      </div>
+      <ul>${s.points.map(p => `<li><i class="ti ti-check" style="color:var(--${s.tag})"></i> ${p}</li>`).join('')}</ul>
+    </div>
+  `).join('');
+}
+
+render();
+</script>
+</body>
+</html>

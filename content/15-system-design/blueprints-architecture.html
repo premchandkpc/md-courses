@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>System Design Blueprints</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/tabler-icons.min.css">
+<style>
+:root{--bg:#f8f7f4;--bg2:#ffffff;--bg3:#f0efeb;--text:#1a1a18;--text2:#5c5c58;--text3:#8a8a84;--border:rgba(0,0,0,0.10);--border2:rgba(0,0,0,0.18);--teal:#0F6E56;--teal-bg:#E1F5EE;--teal-light:#5DCAA5;--amber:#854F0B;--amber-bg:#FAEEDA;--amber-light:#EF9F27;--blue:#185FA5;--blue-bg:#E6F1FB;--blue-light:#378ADD;--purple:#534AB7;--purple-bg:#EEEDFE;--purple-light:#7F77DD;--coral:#993C1D;--coral-bg:#FAECE7;--coral-light:#D85A30;--green:#3B6D11;--green-bg:#EAF3DE;--green-light:#639922;--red:#A32D2D;--red-bg:#FCEBEB;--radius:10px;--radius-sm:6px}
+@media(prefers-color-scheme:dark){:root{--bg:#111110;--bg2:#1a1a18;--bg3:#222220;--text:#f0ede8;--text2:#a8a8a0;--text3:#6a6a64;--border:rgba(255,255,255,0.10);--border2:rgba(255,255,255,0.20);--teal:#5DCAA5;--teal-bg:#04342C;--teal-light:#9FE1CB;--amber:#EF9F27;--amber-bg:#412402;--amber-light:#FAC775;--blue:#85B7EB;--blue-bg:#042C53;--blue-light:#B5D4F4;--purple:#AFA9EC;--purple-bg:#26215C;--purple-light:#CECBF6;--coral:#F0997B;--coral-bg:#4A1B0C;--coral-light:#F5C4B3;--green:#97C459;--green-bg:#173404;--green-light:#C0DD97;--red:#E24B4A;--red-bg:#501313}}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14px;line-height:1.5;min-height:100vh}
+.app{max-width:1000px;margin:0 auto;padding:24px 16px 60px}
+.top-bar{display:flex;align-items:baseline;gap:12px;margin-bottom:4px}
+.app-title{font-size:22px;font-weight:600;letter-spacing:-0.01em}
+.app-sub{font-size:13px;color:var(--text2)}
+.desc{font-size:13px;color:var(--text2);margin-bottom:20px;padding:10px 14px;background:var(--bg3);border-radius:var(--radius-sm);border-left:3px solid var(--teal)}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px}
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:16px}
+.card h3{font-size:15px;margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.card .tag{display:inline-block;font-size:10px;padding:2px 8px;border-radius:100px;font-weight:600;letter-spacing:0.03em;margin-bottom:8px}
+.tag-teal{background:var(--teal-bg);color:var(--teal)}
+.tag-blue{background:var(--blue-bg);color:var(--blue)}
+.tag-purple{background:var(--purple-bg);color:var(--purple)}
+.tag-amber{background:var(--amber-bg);color:var(--amber)}
+.tag-coral{background:var(--coral-bg);color:var(--coral)}
+.tag-green{background:var(--green-bg);color:var(--green)}
+.card p{font-size:12px;color:var(--text2);line-height:1.5;margin-bottom:8px}
+.section{margin-bottom:20px}
+.section-title{font-size:11px;text-transform:uppercase;letter-spacing:0.09em;color:var(--text3);font-weight:600;margin-bottom:12px;display:flex;align-items:center;gap:10px}
+.section-title::after{content:'';flex:1;height:1px;background:var(--border)}
+.req-table{width:100%;border-collapse:collapse;font-size:13px}
+.req-table th{font-size:10px;text-transform:uppercase;letter-spacing:0.07em;color:var(--text3);font-weight:600;padding:8px 10px;text-align:left;border-bottom:2px solid var(--border2)}
+.req-table td{padding:8px 10px;border-bottom:1px solid var(--border);vertical-align:top}
+.req-table tr:hover td{background:var(--bg3)}
+.req-table td:first-child{font-weight:500}
+.why-box{margin-top:16px;padding:12px;background:var(--bg3);border-radius:var(--radius-sm);border-left:3px solid var(--blue)}
+.why-box h4{font-size:12px;margin-bottom:4px;color:var(--text)}
+.why-box p{font-size:12px;color:var(--text2);line-height:1.5}
+.scenario-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.scenario-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:14px}
+.scenario-card h4{font-size:13px;margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.scenario-card p{font-size:12px;color:var(--text2);line-height:1.5}
+.scenario-card ul{list-style:none;font-size:12px;margin-top:6px}
+.scenario-card ul li{padding:2px 0;color:var(--text2);display:flex;gap:6px}
+.scenario-card ul li i{font-size:14px;flex-shrink:0;color:var(--teal)}
+@media(max-width:640px){.grid-3{grid-template-columns:1fr}.scenario-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="top-bar">
+    <div class="app-title">System Design Blueprints</div>
+    <div class="app-sub">URL Shortener · Chat · Video · Rate Limiter · E-Commerce · Payment</div>
+  </div>
+  <div class="desc">Production blueprints for the most common system design problems. Each covers core architecture, data model, key algorithms, and real-world tradeoffs drawn from companies like bit.ly, WhatsApp, Netflix, and Stripe.</div>
+
+  <div class="section">
+    <div class="section-title">Blueprint Cards</div>
+    <div class="grid-3" id="blueprint-grid"></div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Key Generation Strategies</div>
+    <table class="req-table"><thead><tr><th>Strategy</th><th>Uniqueness</th><th>Collision</th><th>Throughput</th><th>Tradeoff</th></tr></thead><tbody id="keygen-body"></tbody></table>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Rate Limiter Algorithms</div>
+    <table class="req-table"><thead><tr><th>Algorithm</th><th>Memory</th><th>Accuracy</th><th>Burst Support</th><th>Tradeoff</th></tr></thead><tbody id="ratelimit-body"></tbody></table>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Tech Stack Patterns</div>
+    <table class="req-table"><thead><tr><th>Blueprint</th><th>Protocol</th><th>Storage</th><th>Scalability Model</th></tr></thead><tbody id="techpattern-body"></tbody></table>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Key Scenarios</div>
+    <div class="scenario-grid" id="scenarios-grid"></div>
+  </div>
+</div>
+
+<script>
+const BLUEPRINTS = [
+  { name: 'URL Shortener', icon: 'ti-link', tag: 'blue', desc: 'Shorten long URLs to 6-7 char keys with 302/301 redirects. Read:write = 100:1 at 100M URLs/month.', components: ['Snowflake ID → Base62', 'Redis cache (50M LRU)', 'Bloom filter (fast reject)', 'Sharded SQL (hash key)'], pros: ['Sub-10ms redirects via CDN edge', 'Handles 100M+ URLs on modest infra'], cons: ['Cache inconsistency on write timing', 'Key collision resolution complexity'] },
+  { name: 'Chat System', icon: 'ti-message', tag: 'purple', desc: 'Real-time messaging for 500M DAU, 100B msg/day. <100ms delivery, presence, group chat.', components: ['WebSocket gateways (ELB)', 'Cassandra msg store', 'Redis presence + pub/sub', 'HLC causal ordering'], pros: ['Write fanout ≤256 = fast delivery', 'Horizontal conv. partition'], cons: ['Read fanout adds pull latency', 'Presence drift on flaky connections'] },
+  { name: 'Video Streaming', icon: 'ti-video', tag: 'coral', desc: 'Multi-bitrate streaming with ABR. Transcode 240p-1080p, HLS/DASH packaging, CDN delivery.', components: ['Transcode pipeline (x264)', 'HLS .m3u8 + .ts / DASH', 'CDN edge (95% offload)', 'ABR throughput + BOLA'], pros: ['ABR adapts to any connection', 'CDN offloads origin 95%+'], cons: ['Transcoding CPU/GPU expensive', 'Encoding adds minutes latency'] },
+  { name: 'Rate Limiter', icon: 'ti-gauge', tag: 'amber', desc: 'Protect APIs with configurable limits. Token bucket, sliding window, distributed coordination.', components: ['Token bucket (Redis + Lua)', 'Sliding window ~0.3% error', 'Fixed window (edge case)', 'X-RateLimit-* + 429'], pros: ['Token bucket handles bursts', 'Redis Lua atomic counting'], cons: ['Distributed drift 2x between sync', 'Fixed window 2x at boundary'] },
+  { name: 'E-Commerce', icon: 'ti-shopping-cart', tag: 'green', desc: 'Order processing with ACID inventory, flexible catalog, fast session/cart at 5M orders/day.', components: ['PostgreSQL ACID orders', 'DynamoDB product catalog', 'Redis cart/session 24h', 'Idempotency keys'], pros: ['Strong consistency no oversell', 'Flexible catalog schema'], cons: ['Inventory locking limits throughput', 'Cross-DB transaction coordination'] },
+  { name: 'Payment System', icon: 'ti-credit-card', tag: 'teal', desc: 'Reliable payment with idempotency, ledger, gateway abstraction, daily reconciliation.', components: ['Idempotency keys', 'Ledger service append-only', 'Gateway adapter (Stripe)', 'Async reconciliation daily'], pros: ['Idempotency prevents double charge', 'Reconciliation catches errors'], cons: ['2PC across systems is slow', 'Refund/cancel race conditions'] },
+];
+const KEYGEN = [
+  { strategy: 'Hash-based (MD5/Base62)', uniqueness: 'Probabilistic (truncated hash)', collision: '~1 in 2^64', throughput: 'Fast (local, no DB)', tradeoff: 'Cannot guarantee unique. Needs DB collision check.' },
+  { strategy: 'Pre-generated IDs', uniqueness: 'Deterministic (batch)', collision: 'Zero (reserved ranges)', throughput: 'Very high (local)', tradeoff: 'Wasted on restart. Replenishment latency.' },
+  { strategy: 'Snowflake (64-bit)', uniqueness: 'Deterministic (ts+node+seq)', collision: 'Zero (4096/s per node)', throughput: '4096/s per node', tradeoff: 'Clock skew breaks ordering. Node management.' },
+];
+const RATELIMIT = [
+  { algorithm: 'Token Bucket', memory: '2 ints + 1 float/key', accuracy: 'Exact', burst: 'Yes (up to capacity)', tradeoff: 'Old tokens accumulate. Periodic refill.' },
+  { algorithm: 'Leaky Bucket', memory: 'Queue per key', accuracy: 'Exact', burst: 'No (queue fills)', tradeoff: 'Ordering preserved. Memory grows with traffic.' },
+  { algorithm: 'Sliding Window', memory: '10-60 counters/key', accuracy: '~0.3% error', burst: 'Limited', tradeoff: 'Memory efficient. Weighted approximation.' },
+  { algorithm: 'Fixed Window', memory: '1 counter/key', accuracy: 'Boundary 2x', burst: 'Yes (at reset)', tradeoff: 'Allows 2x at boundary. Simplest.' },
+];
+const TECHPATTERNS = [
+  { blueprint: 'URL Shortener', protocol: 'HTTP/REST', storage: 'Redis + SQL (sharded)', scalability: 'Consistent hashing + CDN' },
+  { blueprint: 'Chat System', protocol: 'WebSocket', storage: 'Cassandra + Redis', scalability: 'Partition by conversation hash' },
+  { blueprint: 'Video Streaming', protocol: 'HLS/DASH (HTTP)', storage: 'Object store + CDN', scalability: 'CDN + regional edges' },
+  { blueprint: 'Rate Limiter', protocol: 'HTTP/REST', storage: 'Redis (Lua counters)', scalability: 'Consistent hashing + local sync' },
+];
+const SCENARIOS = [
+  { title: 'URL Shortener at 100M/month', icon: 'ti-link', tag: 'blue', desc: '100M URLs/month, 100:1 read/write ratio, sub-10ms P99 redirects, 100% availability.', points: ['Snowflake ID → Base62 (7 chars = 3.5T keys)', 'Redis LRU cache + bloom filter for fast reject', '302 redirect on first hit (track once), 301 for repeat visitors', 'Sharded SQL by key hash, nightly bloom filter rebuild'] },
+  { title: 'Real-time Chat at 500M Users', icon: 'ti-message', tag: 'purple', desc: '100B messages/day, <100ms delivery P99, groups up to 5K members, presence tracking.', points: ['WebSocket gateways by user hash. Cassandra per conversation partition', 'Write fanout ≤256 for small groups, read fanout (pull) for larger groups', 'Redis presence: heartbeat 30s, away at 90s, offline at 300s', 'HLC causal ordering. Gap detection via last_msg_id'] },
+  { title: 'Distributed Rate Limiter', icon: 'ti-gauge', tag: 'amber', desc: '50-node API gateway, 100K req/s per endpoint per user with multi-layer rate limiting.', points: ['Token bucket + Redis Lua atomic INCR/PEXPIRE', 'Sliding window counter (10 sub-windows, ~0.3% approximation error)', 'Local counters + periodic sync for low-latency path', 'Multi-layer: edge (IP) → application (user) → database (pool)'] },
+];
+
+function render() {
+  document.getElementById('blueprint-grid').innerHTML = BLUEPRINTS.map(d =>
+    `<div class="card"><h3><i class="${d.icon}" style="color:var(--${d.tag})"></i> ${d.name}</h3><span class="tag tag-${d.tag}">${d.components.length} components</span><p>${d.desc}</p><div style="font-size:11px;color:var(--text3);margin-bottom:6px;line-height:1.5"><i class="ti ti-box" style="font-size:12px"></i> ${d.components.join(' · ')}</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><div style="padding:6px;background:var(--bg3);border-radius:4px;font-size:10px;color:var(--text3)"><i class="ti ti-check" style="color:var(--teal)"></i> ${d.pros[0]}<br><i class="ti ti-check" style="color:var(--teal)"></i> ${d.pros[1]}</div><div style="padding:6px;background:var(--bg3);border-radius:4px;font-size:10px;color:var(--text3)"><i class="ti ti-x" style="color:var(--coral)"></i> ${d.cons[0]}<br><i class="ti ti-x" style="color:var(--coral)"></i> ${d.cons[1]}</div></div></div>`
+  ).join('');
+  document.getElementById('keygen-body').innerHTML = KEYGEN.map(r =>
+    `<tr><td style="font-weight:600">${r.strategy}</td><td style="font-size:12px;color:var(--text2)">${r.uniqueness}</td><td style="font-size:12px;color:var(--text2)">${r.collision}</td><td style="font-size:12px;color:var(--text2)">${r.throughput}</td><td style="font-size:12px;color:var(--coral)">${r.tradeoff}</td></tr>`
+  ).join('');
+  document.getElementById('ratelimit-body').innerHTML = RATELIMIT.map(r =>
+    `<tr><td style="font-weight:600">${r.algorithm}</td><td style="font-size:12px;color:var(--text2)">${r.memory}</td><td style="font-size:12px;color:var(--text2)">${r.accuracy}</td><td style="font-size:12px;color:var(--text2)">${r.burst}</td><td style="font-size:12px;color:var(--coral)">${r.tradeoff}</td></tr>`
+  ).join('');
+  document.getElementById('techpattern-body').innerHTML = TECHPATTERNS.map(r =>
+    `<tr><td style="font-weight:600">${r.blueprint}</td><td style="font-size:12px;color:var(--text2)">${r.protocol}</td><td style="font-size:12px;color:var(--text2)">${r.storage}</td><td style="font-size:12px;color:var(--text2)">${r.scalability}</td></tr>`
+  ).join('');
+  document.getElementById('scenarios-grid').innerHTML = SCENARIOS.map(s =>
+    `<div class="scenario-card"><h4><i class="${s.icon}" style="color:var(--${s.tag})"></i> ${s.title}</h4><p>${s.desc}</p><ul>${s.points.map(p => `<li><i class="ti ti-check" style="color:var(--${s.tag})"></i> ${p}</li>`).join('')}</ul></div>`
+  ).join('');
+}
+render();
+</script>
+</body>
+</html>

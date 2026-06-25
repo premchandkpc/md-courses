@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Discord — System Design</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/tabler-icons.min.css">
+<style>
+:root {
+  --bg: #f8f7f4; --bg2: #ffffff; --bg3: #f0efeb;
+  --text: #1a1a18; --text2: #5c5c58; --text3: #8a8a84;
+  --border: rgba(0,0,0,0.10); --border2: rgba(0,0,0,0.18);
+  --teal: #0F6E56; --teal-bg: #E1F5EE; --teal-light: #5DCAA5;
+  --amber: #854F0B; --amber-bg: #FAEEDA; --amber-light: #EF9F27;
+  --blue: #185FA5; --blue-bg: #E6F1FB; --blue-light: #378ADD;
+  --purple: #534AB7; --purple-bg: #EEEDFE; --purple-light: #7F77DD;
+  --coral: #993C1D; --coral-bg: #FAECE7; --coral-light: #D85A30;
+  --green: #3B6D11; --green-bg: #EAF3DE; --green-light: #639922;
+  --red: #A32D2D; --red-bg: #FCEBEB;
+  --radius: 10px; --radius-sm: 6px; --mono: 'Courier New', 'Consolas', monospace;
+}
+@media (prefers-color-scheme: dark) {
+:root {
+  --bg: #111110; --bg2: #1a1a18; --bg3: #222220;
+  --text: #f0ede8; --text2: #a8a8a0; --text3: #6a6a64;
+  --border: rgba(255,255,255,0.10); --border2: rgba(255,255,255,0.20);
+  --teal: #5DCAA5; --teal-bg: #04342C; --teal-light: #9FE1CB;
+  --amber: #EF9F27; --amber-bg: #412402; --amber-light: #FAC775;
+  --blue: #85B7EB; --blue-bg: #042C53; --blue-light: #B5D4F4;
+  --purple: #AFA9EC; --purple-bg: #26215C; --purple-light: #CECBF6;
+  --coral: #F0997B; --coral-bg: #4A1B0C; --coral-light: #F5C4B3;
+  --green: #97C459; --green-bg: #173404; --green-light: #C0DD97;
+  --red: #E24B4A; --red-bg: #501313;
+}
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14px;line-height:1.5;min-height:100vh}
+.app{max-width:1000px;margin:0 auto;padding:24px 16px 60px}
+.top-bar{display:flex;align-items:baseline;gap:12px;margin-bottom:4px}
+.app-title{font-size:22px;font-weight:600;letter-spacing:-0.01em}
+.app-sub{font-size:13px;color:var(--text2)}
+.desc{font-size:13px;color:var(--text2);margin-bottom:20px;padding:10px 14px;background:var(--bg3);border-radius:var(--radius-sm);border-left:3px solid var(--teal)}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px}
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:16px}
+.card h3{font-size:15px;margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.card .tag{display:inline-block;font-size:10px;padding:2px 8px;border-radius:100px;font-weight:600;letter-spacing:0.03em;margin-bottom:8px}
+.tag-teal{background:var(--teal-bg);color:var(--teal)}
+.tag-amber{background:var(--amber-bg);color:var(--amber)}
+.tag-blue{background:var(--blue-bg);color:var(--blue)}
+.tag-purple{background:var(--purple-bg);color:var(--purple)}
+.tag-coral{background:var(--coral-bg);color:var(--coral)}
+.tag-green{background:var(--green-bg);color:var(--green)}
+.card p{font-size:12px;color:var(--text2);line-height:1.5;margin-bottom:8px}
+.card ul{list-style:none;font-size:12px}
+.card ul li{padding:3px 0;color:var(--text2);display:flex;gap:6px;align-items:flex-start}
+.card ul li i{color:var(--teal);font-size:14px;flex-shrink:0;margin-top:1px}
+.card ul li .neg{color:var(--coral)}
+.section{margin-bottom:20px}
+.section-title{font-size:11px;text-transform:uppercase;letter-spacing:0.09em;color:var(--text3);font-weight:600;margin-bottom:12px;display:flex;align-items:center;gap:10px}
+.section-title::after{content:'';flex:1;height:1px;background:var(--border)}
+.req-table{width:100%;border-collapse:collapse;font-size:13px}
+.req-table th{font-size:10px;text-transform:uppercase;letter-spacing:0.07em;color:var(--text3);font-weight:600;padding:8px 10px;text-align:left;border-bottom:2px solid var(--border2)}
+.req-table td{padding:8px 10px;border-bottom:1px solid var(--border);vertical-align:top}
+.req-table tr:hover td{background:var(--bg3)}
+.req-table td:first-child{font-weight:500;white-space:nowrap}
+.stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
+.stat-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:14px;text-align:center}
+.stat-card .num{font-size:24px;font-weight:700;letter-spacing:-0.02em;color:var(--text)}
+.stat-card .label{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:0.05em;margin-top:2px}
+.stat-card i{font-size:20px;margin-bottom:4px;display:block}
+.scenario-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.scenario-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:14px}
+.scenario-card h4{font-size:13px;margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.scenario-card .rec{font-size:11px;padding:2px 8px;border-radius:100px;display:inline-block;font-weight:600;margin:4px 0 6px}
+.scenario-card p{font-size:12px;color:var(--text2);line-height:1.5}
+.scenario-card ul{list-style:none;font-size:12px;margin-top:6px}
+.scenario-card ul li{padding:2px 0;color:var(--text2);display:flex;gap:6px}
+.scenario-card ul li i{font-size:14px;flex-shrink:0;color:var(--teal)}
+@media(max-width:640px){.grid-3{grid-template-columns:1fr}.stat-grid{grid-template-columns:repeat(2,1fr)}.scenario-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="top-bar">
+    <div class="app-title">Discord</div>
+    <div class="app-sub">150M+ MAU · 4B+ msgs/day · Real-time voice & chat</div>
+  </div>
+  <div class="desc">Discord combines persistent WebSocket gateways, a Cassandra-backed message store, WebRTC SFU for voice, and Redis-cached permissions to serve 150M+ users across 19M+ guilds with sub-200ms message delivery and sub-50ms voice RTT.</div>
+
+  <div class="section">
+    <div class="section-title">System Stats</div>
+    <div class="stat-grid" id="stats-grid"></div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Architecture Components</div>
+    <div class="grid-3" id="components-grid"></div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Voice Architecture — SFU vs MCU</div>
+    <table class="req-table">
+      <thead><tr><th style="width:140px">Dimension</th><th>SFU (Discord)</th><th>MCU</th></tr></thead>
+      <tbody id="voice-body"></tbody>
+    </table>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Tech Stack</div>
+    <table class="req-table">
+      <thead><tr><th style="width:140px">Component</th><th>Technology</th><th>Why</th></tr></thead>
+      <tbody id="stack-body"></tbody>
+    </table>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Failure Modes</div>
+    <table class="req-table">
+      <thead><tr><th style="width:140px">Failure</th><th>Impact</th><th>Mitigation</th></tr></thead>
+      <tbody id="fail-body"></tbody>
+    </table>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Key Scenarios</div>
+    <div class="scenario-grid" id="scenarios-grid"></div>
+  </div>
+</div>
+
+<script>
+const STATS = [
+  { num: '150M+', label: 'MAU', icon: 'ti-users', color: 'var(--blue)' },
+  { num: '19M+', label: 'Active Servers', icon: 'ti-building-community', color: 'var(--teal)' },
+  { num: '4B+', label: 'Messages / Day', icon: 'ti-message', color: 'var(--amber)' },
+  { num: '20M', label: 'Concurrent Voice', icon: 'ti-phone', color: 'var(--purple)' },
+];
+
+const COMPONENTS = [
+  { name: 'WebSocket Gateway', icon: 'ti-plug', tag: 'teal',
+    desc: 'Persistent WS connections, session management, event dispatch. 400K conns/node, sharded by user_id.',
+    pros: ['Persistent connection = real-time push', 'Sharded + resumable (60s window)'],
+    cons: ['Stateful — hard to restart', '45M connections = complex ops'] },
+  { name: 'REST API', icon: 'ti-api', tag: 'blue',
+    desc: 'CRUD for guilds, channels, users, roles, permissions. Rate-limited per token (50/s user, 3/5s bot).',
+    pros: ['Stateless — easy to scale', 'Familiar HTTP semantics'],
+    cons: ['No real-time (polling)', 'Rate limits add client complexity'] },
+  { name: 'Guild Service', icon: 'ti-building', tag: 'amber',
+    desc: 'Membership, role hierarchy, permission evaluation. Precomputed bitset cached in Redis (TTL 60s).',
+    pros: ['Hierarchical roles + overwrites', 'Cached eval < 5ms p99'],
+    cons: ['Complex invalidation on role change', '500K member guilds = heavy fan-out'] },
+  { name: 'Message Store', icon: 'ti-database', tag: 'coral',
+    desc: 'Cassandra with RF=3. Partitioned by channel_id + message_id (desc). 46K writes/s avg, 100K peak.',
+    pros: ['Linear write scaling', 'Time-ordered snowflake IDs'],
+    cons: ['Hot partition for busy channels', 'No joins — denormalized queries'] },
+  { name: 'Voice SFU', icon: 'ti-wave-sine', tag: 'purple',
+    desc: 'Selective Forwarding Unit. Receives all streams, forwards selectively by capability. Opus codec, simulcast.',
+    pros: ['Server just forwards — minimal CPU', 'Client chooses which streams'],
+    cons: ['Client receives N-1 streams', 'Cascade needed for 10K+ listeners'] },
+  { name: 'Presence', icon: 'ti-circle-dot', tag: 'green',
+    desc: 'Online/idle/dnd/offline via Redis hashes. Updates rate-limited to 1/3s per user. Typing indicators TTL 10s.',
+    pros: ['Ephemeral — TTL cleans up', 'Coalesced batch dispatch'],
+    cons: ['500K dispatch per update in large guilds', 'Eventual consistency OK but visible'] },
+  { name: 'File CDN', icon: 'ti-cloud-upload', tag: 'blue',
+    desc: 'S3 attachments with CDN (Fastly/Cloudflare). Presigned URLs for direct upload. ClamAV + ML scanning.',
+    pros: ['S3 = cheap + durable (11 9s)', 'CDN offloads origin traffic'],
+    cons: ['Upload latency (multi-hop)', 'Scan delay before message visible'] },
+  { name: 'Rate Limiter', icon: 'ti-speedometer', tag: 'coral',
+    desc: 'Token bucket per route+method+param. Global and per-endpoint limits. Redis-backed bucket tracking.',
+    pros: ['Prevents abuse at scale', 'Per-bucket granularity'],
+    cons: ['Bucket hash collisions', '429 storms require client backoff'] },
+];
+
+const VOICE = [
+  { dim: 'How it works', sfu: 'Server receives all streams, selectively forwards to each participant based on capability and subscription', mcu: 'Server receives all streams, decodes + mixes (combines) them, sends one composite stream per client' },
+  { dim: 'Bandwidth per client', sfu: 'N-1 streams inbound (each at their own bitrate). Total = sum of incoming streams', mcu: '1 stream inbound (the mix). Lowest bandwidth per client' },
+  { dim: 'Server load', sfu: 'Minimal — just RTP forwarding, no transcoding. Scales horizontally by adding SFU nodes', mcu: 'High — CPU-intensive mixing/transcoding. Limited by per-server processing capacity' },
+  { dim: 'Scalability', sfu: 'Linear. Add SFU nodes for more capacity. Cascade SFU trees for 10K+ channels', mcu: 'Bounded. Mixing complexity grows O(N^2). Hard to exceed ~100 users per bridge' },
+  { dim: 'Stream control', sfu: 'Client chooses which streams to receive (simulcast layers, active speaker priority)', mcu: 'Client gets single mixed stream — no per-speaker control' },
+  { dim: 'Quality adaptation', sfu: 'Per-stream adaptive bitrate. Simulcast layers (360p/720p/1080p) per client', mcu: 'Single bitrate per mix. All clients get the same quality' },
+];
+
+const STACK = [
+  { comp: 'Gateway', tech: 'WebSocket (wss://), zlib/permessage-deflate', why: 'Persistent bidirectional push. 5:1 compression ratio. 400K conns/node with ~8GB RAM.' },
+  { comp: 'Message DB', tech: 'Cassandra (ScyllaDB for metadata)', why: 'Write-optimized LSM tree handles 100K writes/s. Linear scaling. RF=3 for durability.' },
+  { comp: 'Cache / State', tech: 'Redis (sessions, presence, perms, rate limits)', why: '<1ms access. Rich data structures (hashes, sorted sets, pub/sub). ~25GB total.' },
+  { comp: 'Voice', tech: 'WebRTC + Opus + SFU', why: 'Opus adaptive bitrate (8-128 Kbps). SFU forwards without transcoding. Simulcast for multi-quality.' },
+  { comp: 'Search', tech: 'Elasticsearch', why: 'Inverted index for sub-second message search. 24 shard nodes. BM25 relevance scoring.' },
+  { comp: 'File Storage', tech: 'S3 + Fastly/Cloudflare CDN', why: 'S3: 11 9s durability, cheap. CDN: cache thumbnails aggressively (7d TTL). Presigned URLs for direct upload.' },
+  { comp: 'User Data', tech: 'PostgreSQL', why: 'ACID for users, payments, relationships, audit log. Strong consistency where it matters.' },
+  { comp: 'Event Bus', tech: 'Kafka', why: 'Buffers 10B+ events/day. Guild-partitioned topics for ordered delivery. Durable log for replay.' },
+];
+
+const FAILURES = [
+  { fail: 'Connection Storm', impact: '500K clients reconnect after partition. Gateway IDENTIFY flood. Redis write spike.', mit: 'Exponential backoff + jitter. Session resumption within 60s. Auto-scale gateway nodes. Load shedding.' },
+  { fail: 'Cassandra Backlog', impact: 'Compaction falls behind. SSTable accumulation. Write latency spikes. Hinted handoff queue grows.', mit: 'LeveledCompactionStrategy. Write timeout 5s. Batch coalescing (max 10). Alert at >50 pending compactions.' },
+  { fail: 'Permission Staleness', impact: 'Role changed but 100K members see old perms. Cache not invalidated for all affected users.', mit: 'TTL 60s = max inconsistency window. Pub/sub invalidation event. Safe-fail deny on cache miss.' },
+  { fail: 'SFU Crash', impact: '5K users on node lose voice. Call interrupted for 10-30s.', mit: 'Primary + backup SFU (200ms delayed). Regional failover via ICE restart. Opus FEC works at 50% packet loss.' },
+  { fail: 'Message Duplication', impact: 'Client retries on timeout. Server processes same message twice.', mit: 'Nonce-based dedup in Redis (TTL 24h). Server returns existing message on retry. Periodic scan for duplicates.' },
+  { fail: 'Hot Partition', impact: '#general channel hits 1M msgs/day. Single Cassandra partition overloaded.', mit: 'Sub-partition by (channel_id, bucket). Redis caches recent messages (95%+ hit rate). Archive old messages.' },
+];
+
+const SCENARIOS = [
+  { title: '500K Guild Member Join', tag: 'teal',
+    desc: 'A Community server hits 500K members. JOIN event must propagate to all online members without overwhelming gateways.',
+    points: ['Shard large guilds across gateway nodes', 'Lazy load member list — render only first 100', 'Guild Sync throttles at 1K members/sec per conn', 'Permission bitset precomputed in Redis'] },
+  { title: 'Stage Channel with 10K Listeners', tag: 'purple',
+    desc: 'An AMA event in a stage channel with 10K+ listeners and a single presenter. Single SFU can\'t handle 10K connections.',
+    points: ['Cascade SFU tree: Root connects to Leaves', 'Each leaf serves ~1K listeners', '+20ms latency per cascade level', 'Presenter sends one stream to root, root fans out to leaves'] },
+  { title: 'Bot Raid / Spam Wave', tag: 'coral',
+    desc: '10K coordinated bots join a server and flood 1M messages/min. Need automated detection and mitigation.',
+    points: ['Join rate limit: 5 joins / 30s per user', 'Auto slow-mode: >5 msgs/sec triggers rate limit', 'Duplicate content + mention ratio ML detection', 'Bulk delete + account sanctions for recovery'] },
+];
+
+function render() {
+  renderStats();
+  renderComponents();
+  renderVoice();
+  renderStack();
+  renderFailures();
+  renderScenarios();
+}
+
+function renderStats() {
+  document.getElementById('stats-grid').innerHTML = STATS.map(s =>
+    `<div class="stat-card"><i class="${s.icon}" style="color:${s.color}"></i><div class="num">${s.num}</div><div class="label">${s.label}</div></div>`
+  ).join('');
+}
+
+function renderComponents() {
+  document.getElementById('components-grid').innerHTML = COMPONENTS.map(c =>
+    `<div class="card"><h3><i class="${c.icon}" style="color:var(--${c.tag})"></i> ${c.name}</h3><span class="tag tag-${c.tag}">key component</span><p>${c.desc}</p><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:6px"><div style="padding:6px;background:var(--bg3);border-radius:4px;font-size:10px;color:var(--text3)"><i class="ti ti-check" style="color:var(--teal)"></i> ${c.pros[0]}<br><i class="ti ti-check" style="color:var(--teal)"></i> ${c.pros[1]}</div><div style="padding:6px;background:var(--bg3);border-radius:4px;font-size:10px;color:var(--text3)"><i class="ti ti-x" style="color:var(--coral)"></i> ${c.cons[0]}<br><i class="ti ti-x" style="color:var(--coral)"></i> ${c.cons[1]}</div></div></div>`
+  ).join('');
+}
+
+function renderVoice() {
+  document.getElementById('voice-body').innerHTML = VOICE.map(v =>
+    `<tr><td style="font-weight:600;color:var(--text)">${v.dim}</td><td style="font-size:12px;color:var(--text2);line-height:1.4">${v.sfu}</td><td style="font-size:12px;color:var(--text2);line-height:1.4">${v.mcu}</td></tr>`
+  ).join('');
+}
+
+function renderStack() {
+  document.getElementById('stack-body').innerHTML = STACK.map(s =>
+    `<tr><td style="font-weight:600">${s.comp}</td><td style="font-size:12px;color:var(--text2)">${s.tech}</td><td style="font-size:12px;color:var(--text2);line-height:1.4">${s.why}</td></tr>`
+  ).join('');
+}
+
+function renderFailures() {
+  document.getElementById('fail-body').innerHTML = FAILURES.map(f =>
+    `<tr><td style="font-weight:600;color:var(--text)">${f.fail}</td><td style="font-size:12px;color:var(--text2);line-height:1.4">${f.impact}</td><td style="font-size:12px;color:var(--text2);line-height:1.4">${f.mit}</td></tr>`
+  ).join('');
+}
+
+function renderScenarios() {
+  document.getElementById('scenarios-grid').innerHTML = SCENARIOS.map(s =>
+    `<div class="scenario-card"><h4><i class="ti ti-alert-circle" style="color:var(--${s.tag})"></i> ${s.title}</h4><p>${s.desc}</p><ul>${s.points.map(p => `<li><i class="ti ti-check" style="color:var(--${s.tag})"></i> ${p}</li>`).join('')}</ul></div>`
+  ).join('');
+}
+
+render();
+</script>
+</body>
+</html>

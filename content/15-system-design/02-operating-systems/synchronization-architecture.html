@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Synchronization — System Design</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/tabler-icons.min.css">
+<style>
+:root {
+  --bg: #f8f7f4; --bg2: #ffffff; --bg3: #f0efeb;
+  --text: #1a1a18; --text2: #5c5c58; --text3: #8a8a84;
+  --border: rgba(0,0,0,0.10); --border2: rgba(0,0,0,0.18);
+  --teal: #0F6E56; --teal-bg: #E1F5EE; --teal-light: #5DCAA5;
+  --amber: #854F0B; --amber-bg: #FAEEDA; --amber-light: #EF9F27;
+  --blue: #185FA5; --blue-bg: #E6F1FB; --blue-light: #378ADD;
+  --purple: #534AB7; --purple-bg: #EEEDFE; --purple-light: #7F77DD;
+  --coral: #993C1D; --coral-bg: #FAECE7; --coral-light: #D85A30;
+  --green: #3B6D11; --green-bg: #EAF3DE; --green-light: #639922;
+  --red: #A32D2D; --red-bg: #FCEBEB;
+  --radius: 10px; --radius-sm: 6px; --mono: 'Courier New', 'Consolas', monospace;
+}
+@media (prefers-color-scheme: dark) {
+:root {
+  --bg: #111110; --bg2: #1a1a18; --bg3: #222220;
+  --text: #f0ede8; --text2: #a8a8a0; --text3: #6a6a64;
+  --border: rgba(255,255,255,0.10); --border2: rgba(255,255,255,0.20);
+  --teal: #5DCAA5; --teal-bg: #04342C; --teal-light: #9FE1CB;
+  --amber: #EF9F27; --amber-bg: #412402; --amber-light: #FAC775;
+  --blue: #85B7EB; --blue-bg: #042C53; --blue-light: #B5D4F4;
+  --purple: #AFA9EC; --purple-bg: #26215C; --purple-light: #CECBF6;
+  --coral: #F0997B; --coral-bg: #4A1B0C; --coral-light: #F5C4B3;
+  --green: #97C459; --green-bg: #173404; --green-light: #C0DD97;
+  --red: #E24B4A; --red-bg: #501313;
+}
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14px;line-height:1.5;min-height:100vh}
+.app{max-width:1000px;margin:0 auto;padding:24px 16px 60px}
+.top-bar{display:flex;align-items:baseline;gap:12px;margin-bottom:4px}
+.app-title{font-size:22px;font-weight:600;letter-spacing:-0.01em}
+.app-sub{font-size:13px;color:var(--text2)}
+.desc{font-size:13px;color:var(--text2);margin-bottom:20px;padding:10px 14px;background:var(--bg3);border-radius:var(--radius-sm);border-left:3px solid var(--teal)}
+.db-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px}
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:16px}
+.card h3{font-size:15px;margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.card .tag{display:inline-block;font-size:10px;padding:2px 8px;border-radius:100px;font-weight:600;letter-spacing:0.03em;margin-bottom:8px}
+.tag-teal{background:var(--teal-bg);color:var(--teal)}
+.tag-amber{background:var(--amber-bg);color:var(--amber)}
+.tag-blue{background:var(--blue-bg);color:var(--blue)}
+.tag-purple{background:var(--purple-bg);color:var(--purple)}
+.tag-coral{background:var(--coral-bg);color:var(--coral)}
+.tag-green{background:var(--green-bg);color:var(--green)}
+.card p{font-size:12px;color:var(--text2);line-height:1.5;margin-bottom:8px}
+.card ul{list-style:none;font-size:12px}
+.card ul li{padding:3px 0;color:var(--text2);display:flex;gap:6px;align-items:flex-start}
+.card ul li i{color:var(--teal);font-size:14px;flex-shrink:0;margin-top:1px}
+.card ul li .neg{color:var(--coral)}
+.section{margin-bottom:20px}
+.section-title{font-size:11px;text-transform:uppercase;letter-spacing:0.09em;color:var(--text3);font-weight:600;margin-bottom:12px;display:flex;align-items:center;gap:10px}
+.section-title::after{content:'';flex:1;height:1px;background:var(--border)}
+.req-table{width:100%;border-collapse:collapse;font-size:13px}
+.req-table th{font-size:10px;text-transform:uppercase;letter-spacing:0.07em;color:var(--text3);font-weight:600;padding:8px 10px;text-align:left;border-bottom:2px solid var(--border2)}
+.req-table td{padding:8px 10px;border-bottom:1px solid var(--border);vertical-align:top}
+.req-table tr:hover td{background:var(--bg3)}
+.req-table .why{font-size:11px;color:var(--text3);margin-top:3px;line-height:1.4}
+.req-table td:first-child{font-weight:500;white-space:nowrap}
+.why-box{margin-top:16px;padding:12px;background:var(--bg3);border-radius:var(--radius-sm);border-left:3px solid var(--blue)}
+.why-box h4{font-size:12px;margin-bottom:4px;color:var(--text)}
+.why-box p{font-size:12px;color:var(--text2);line-height:1.5}
+.scenario-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.scenario-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:14px}
+.scenario-card h4{font-size:13px;margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.scenario-card .rec{font-size:11px;padding:2px 8px;border-radius:100px;display:inline-block;font-weight:600;margin:4px 0 6px}
+.scenario-card p{font-size:12px;color:var(--text2);line-height:1.5}
+.scenario-card ul{list-style:none;font-size:12px;margin-top:6px}
+.scenario-card ul li{padding:2px 0;color:var(--text2);display:flex;gap:6px}
+.scenario-card ul li i{font-size:14px;flex-shrink:0;color:var(--teal)}
+.shard-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px}
+.shard-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px}
+.shard-card h4{font-size:13px;margin-bottom:4px}
+.shard-card p{font-size:11px;color:var(--text2);line-height:1.4}
+@media(max-width:640px){.db-grid{grid-template-columns:1fr}.shard-grid{grid-template-columns:repeat(2,1fr)}.scenario-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="top-bar">
+    <div class="app-title">Synchronization</div>
+    <div class="app-sub">Mutexes · Semaphores · Spinlocks · Memory Ordering · Deadlock</div>
+  </div>
+  <div class="desc">Synchronization primitives coordinate access to shared memory in concurrent programs. The wrong choice means deadlocks, livelocks, priority inversion, or catastrophic performance collapse under contention.</div>
+
+  <div class="section">
+    <div class="section-title">Synchronization Primitives</div>
+    <div class="db-grid" id="prim-grid"></div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Primitive Comparison</div>
+    <table class="req-table">
+      <thead><tr><th>Primitive</th><th>Overhead</th><th>Spinning vs Blocking</th><th>Fairness</th><th>Use Case</th></tr></thead>
+      <tbody id="compare-body"></tbody>
+    </table>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Deadlock Detection &amp; Prevention</div>
+    <table class="req-table">
+      <thead><tr><th style="width:150px">Condition</th><th>Detection Method</th><th>Prevention Strategy</th></tr></thead>
+      <tbody id="deadlock-body"></tbody>
+    </table>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Memory Ordering Models</div>
+    <table class="req-table">
+      <thead><tr><th style="width:160px">Model</th><th>Guarantees</th><th>Performance</th><th>Best For</th></tr></thead>
+      <tbody id="memory-body"></tbody>
+    </table>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Failure Modes</div>
+    <div class="shard-grid" id="fail-grid"></div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Real-World Scenarios</div>
+    <div class="scenario-grid" id="scenarios-grid"></div>
+  </div>
+</div>
+
+<script>
+const PRIMS = [
+  { name: 'Mutex', icon: 'ti-lock', tag: 'teal',
+    desc: 'Binary lock (locked/unlocked). Mutual exclusion for protecting critical sections. The default primitive for concurrent code.',
+    pros: ['Simple semantics — easy to reason about correctness', 'Low overhead uncontested (atomic CAS, ~0.5µs)'],
+    cons: ['Not reentrant by default (recursive mutex available)', 'No reader concurrency — poor for read-heavy workloads'] },
+  { name: 'Semaphore', icon: 'ti-stack-2', tag: 'purple',
+    desc: 'Counter-based synchronization. Controls access to a finite pool of N identical resources.',
+    pros: ['Limits concurrency (connection pools, thread pools)', 'Signaling between threads (producer-consumer)'],
+    cons: ['No ownership — any thread can post, not just acquirer', 'Counting logic can mask subtle concurrency bugs'] },
+  { name: 'Spinlock', icon: 'ti-loader', tag: 'amber',
+    desc: 'Busy-wait test-and-set loop. No context switch — thread spins until lock becomes available.',
+    pros: ['Fastest for short-held locks (10-50ns vs 0.5µs mutex)', 'No OS scheduler overhead (no syscall)'],
+    cons: ['Wastes CPU while waiting (100% busy-wait)', 'Disastrous on single-CPU if holder is preempted'] },
+  { name: 'RWLock', icon: 'ti-book-2', tag: 'blue',
+    desc: 'Multiple readers OR single writer. Reader-preferred or writer-preferred policies configurable.',
+    pros: ['Multiple readers proceed concurrently (high throughput)', 'Exclusive writer access when needed'],
+    cons: ['2-3× overhead vs mutex (more atomic bookkeeping)', 'Writer starvation possible with reader-preferred policy'] },
+  { name: 'Barrier', icon: 'ti-border-outer', tag: 'coral',
+    desc: 'Synchronization point: threads wait until all N arrive, then proceed together in lockstep.',
+    pros: ['Ensures phased computation (all threads ready)', 'Efficient bulk sync — no point-to-point signaling'],
+    cons: ['All-or-nothing — one slow thread blocks all', 'Reuse requires explicit reset in some implementations'] },
+  { name: 'Condition Variable', icon: 'ti-bell', tag: 'green',
+    desc: 'Blocking wait for a predicate. Always paired with a mutex. Signals blocked waiters when state changes.',
+    pros: ['Efficient — kernel blocks waiter (zero CPU burn)', 'Fine-grained notification (signal vs broadcast)'],
+    cons: ['Spurious wakeups must be handled (loop condition)', 'Lost wakeup if signal delivered before wait arrives'] },
+];
+
+const COMPARE = [
+  { prim: 'Mutex', overhead: '0.5–1µs (uncontested)', spinBlock: 'Adaptive — spin briefly then block', fairness: 'FIFO or unfair (impl-specific)', use: 'Critical sections, shared data protection' },
+  { prim: 'Semaphore', overhead: '1–2µs', spinBlock: 'Blocking (OS scheduler park/unpark)', fairness: 'Varies (wait queue order, ticket impl)', use: 'Resource pools, connection limits, throttling' },
+  { prim: 'Spinlock', overhead: '10–50ns', spinBlock: 'Pure spinning (100% CPU burn)', fairness: 'Unfair (bus contention, CAS wins)', use: 'Very short critical sections (<1µs held)' },
+  { prim: 'RWLock', overhead: '1–3µs', spinBlock: 'Adaptive (readers spin, writers queue)', fairness: 'Writer-preferred or reader-preferred', use: 'Read-heavy workloads (configs, caches)' },
+  { prim: 'Barrier', overhead: '0.5–2µs per phase', spinBlock: 'Spin until all arrive, then wake all', fairness: 'All-or-nothing (last arrival triggers release)', use: 'Parallel loops, phased computation, SIMD' },
+  { prim: 'CondVar', overhead: '1–5µs (signal + wake)', spinBlock: 'Blocking (wait queue, signal/broadcast)', fairness: 'FIFO wait queue (pthread_cond_signal order)', use: 'Condition-dependent work (producer-consumer)' },
+];
+
+const DEADLOCK = [
+  { cond: 'Mutual Exclusion', detect: 'Resource Allocation Graph (cycle detection algorithm)', prevent: 'Lock-free algorithms, RCU, transactional memory bypass locks entirely' },
+  { cond: 'Hold & Wait', detect: 'Wait-For Graph cycle detection (DFS on blocked thread dependencies)', prevent: 'Atomic acquisition — acquire all locks at once, or try-lock with backoff' },
+  { cond: 'No Preemption', detect: 'Lock holder watchdog (timeout detects stuck threads)', prevent: 'Try-lock with timeout. Preemptable locks (OS can reclaim from blocked holder)' },
+  { cond: 'Circular Wait', detect: 'Deadlock detection algorithm (DFS on resource allocation graph)', prevent: 'Total lock ordering — enforce fixed acquisition hierarchy across all threads' },
+];
+
+const MEMORY = [
+  { model: 'Sequential Consistency (SC)', guarantees: 'Total global order. All threads observe the same sequence of all memory operations.', perf: 'Slowest — hardware barriers after every load and store (no reordering)', best: 'Default in Rust SeqCst, Java volatile. Correctness > performance.' },
+  { model: 'Total Store Order (TSO)', guarantees: 'Stores appear in program order. Loads may reorder before older stores. Store buffer with forwarding.', perf: 'Moderate — x86/x64 default. No full barrier for load-to-load reorder.', best: 'x86/x64. Good balance of performance and programmer reasoning.' },
+  { model: 'Acquire-Release', guarantees: 'Acquire: no reorder after (load-load, load-store). Release: no reorder before (store-load, store-store).', perf: 'Fast — ARM/POWER default. One-way barriers only.', best: 'Lock-free (producer-consumer, ref counting). C++ atomic default.' },
+  { model: 'Relaxed (Monotonic)', guarantees: 'No ordering constraints. Only atomicity — no torn reads/writes, no compiler reordering prevention.', perf: 'Fastest — zero barriers, zero fencing instructions emitted.', best: 'Counters, statistics, flags where ordering is irrelevant.' },
+];
+
+const FAILURES = [
+  { name: 'Livelock', icon: 'ti-repeat', desc: 'Threads constantly retry a failing operation — state changes (progress) but no thread completes. CPU burns on futile retries.', sol: 'Exponential backoff, randomized retry timing, yield before retry.' },
+  { name: 'Priority Inversion', icon: 'ti-arrow-ramp-right', desc: 'High-priority thread blocked by low-priority holding lock. Medium-priority preempts low → high waits indefinitely.', sol: 'Priority Inheritance Protocol (PIP). OS temporarily boosts holder to waiter priority.' },
+  { name: 'Convoying', icon: 'ti-train', desc: 'Holder descheduled (page fault, interrupt, preemption) → queued threads pile up behind lock. Cascade effect.', sol: 'Fine-grained locks, lock-free structures, non-blocking algorithms.' },
+  { name: 'Thundering Herd', icon: 'ti-bolt', desc: 'Event fires → all blocked threads wake simultaneously. All but one reacquire lock, rest go back to sleep.', sol: 'Lock striping, wait morphing (wake one), condition signal vs broadcast.' },
+];
+
+const SCENARIOS = [
+  { title: 'Web Server Connection Pool', icon: 'ti-database', tag: 'teal',
+    rec: 'Semaphore (pool limit) + Mutex (per-connection state)',
+    desc: '1000 req/s, 4-core server. Each request needs a DB connection. Pool size = 20 to prevent DB overload.',
+    why: 'Semaphore limits concurrent DB connections to 20. Mutex prevents two threads from using the same connection simultaneously. Pattern: sem_acquire → mutex_lock → query → unlock → release.',
+    points: [
+      'Semaphore counter = pool size (acquire decrements, release increments)',
+      'Mutex guards connection in-use flag + last-used timestamp',
+      'Timeout on semaphore acquire: fail fast if pool exhausted',
+      'Health check thread replaces dead connections under mutex',
+      'Monitor: pool utilization %, avg wait time, acquire timeouts',
+    ] },
+  { title: 'Game Engine Physics Pipeline', icon: 'ti-grid-dots', tag: 'blue',
+    rec: 'Barrier (phase sync) + Spinlock (shared contact data)',
+    desc: 'Physics sim split across 8 threads. Each frame: collision → constraint → integrate → render. Must finish phase N before N+1.',
+    why: 'Barrier ensures all 8 threads complete collision detection before any starts constraint solving. Spinlock protects shared contact manifold generation (<1µs critical section).',
+    points: [
+      'Barrier 1: collision detection done → enter constraint solve phase',
+      'Barrier 2: constraints solved → enter integration step',
+      'Spinlock protects shared contact data (sub-microsecond hold)',
+      'Render step uses lock-free per-thread publish (no barrier needed)',
+      'P99 frame time: 16.6ms (60 FPS). Barrier overhead < 1% of frame',
+    ] },
+  { title: 'Producer-Consumer Work Queue', icon: 'ti-arrows-shuffle', tag: 'purple',
+    rec: 'Mutex (queue) + Condition Variable (signaling)',
+    desc: '4 producers generate tasks, 8 consumers process them. Bounded queue (10K). Block on empty/full — no polling.',
+    why: 'Mutex guards queue head/tail/count. CV not_empty wakes consumers on push. CV not_full wakes producers on pop. Zero CPU burn when idle.',
+    points: [
+      'Consumer: lock → while(empty) wait(not_empty, mutex) → pop → unlock → signal(not_full)',
+      'Producer: lock → while(full) wait(not_full, mutex) → push → unlock → signal(not_empty)',
+      'Always re-check predicate in while loop (spurious wakeup protection)',
+      'FIFO ordering ensures fairness for long-lived work items',
+      'Monitor: queue depth, producer/consumer ratio, wakeup rate',
+    ] },
+];
+
+function render() {
+  let grid = document.getElementById('prim-grid');
+  grid.innerHTML = PRIMS.map(d => `
+    <div class="card">
+      <h3><i class="${d.icon}" style="color:var(--${d.tag})"></i> ${d.name}</h3>
+      <span class="tag tag-${d.tag}">${d.pros.length} pros</span>
+      <p>${d.desc}</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:6px">
+        <div style="padding:6px;background:var(--bg3);border-radius:4px;font-size:10px;color:var(--text3)">
+          <i class="ti ti-check" style="color:var(--teal)"></i> ${d.pros.join('<br><i class="ti ti-check" style="color:var(--teal)"></i> ')}
+        </div>
+        <div style="padding:6px;background:var(--bg3);border-radius:4px;font-size:10px;color:var(--text3)">
+          <i class="ti ti-x" style="color:var(--coral)"></i> ${d.cons.join('<br><i class="ti ti-x" style="color:var(--coral)"></i> ')}
+        </div>
+      </div>
+    </div>
+  `).join('');
+
+  let tbody = document.getElementById('compare-body');
+  tbody.innerHTML = COMPARE.map(c => `<tr><td>${c.prim}</td><td style="font-size:12px;color:var(--text2)">${c.overhead}</td><td style="font-size:12px;color:var(--text2)">${c.spinBlock}</td><td style="font-size:12px;color:var(--text2)">${c.fairness}</td><td style="font-size:12px;color:var(--text2)">${c.use}</td></tr>`).join('');
+
+  tbody = document.getElementById('deadlock-body');
+  tbody.innerHTML = DEADLOCK.map(d => `<tr><td style="font-weight:600">${d.cond}</td><td style="font-size:12px;color:var(--text2)">${d.detect}</td><td style="font-size:12px;color:var(--amber)">${d.prevent}</td></tr>`).join('');
+
+  tbody = document.getElementById('memory-body');
+  tbody.innerHTML = MEMORY.map(m => `<tr><td style="font-weight:600;font-size:12px">${m.model}</td><td style="font-size:11px;color:var(--text2);line-height:1.4">${m.guarantees}</td><td style="font-size:11px;color:var(--text2)">${m.perf}</td><td style="font-size:11px;color:var(--amber)">${m.best}</td></tr>`).join('');
+
+  let fg = document.getElementById('fail-grid');
+  fg.innerHTML = FAILURES.map(f => `
+    <div class="shard-card">
+      <h4><i class="${f.icon}" style="color:var(--coral)"></i> ${f.name}</h4>
+      <p>${f.desc}</p>
+      <div style="margin-top:6px;font-size:10px;color:var(--teal)">→ ${f.sol}</div>
+    </div>
+  `).join('');
+
+  let sg = document.getElementById('scenarios-grid');
+  sg.innerHTML = SCENARIOS.map(s => `
+    <div class="scenario-card">
+      <h4><i class="${s.icon}" style="color:var(--${s.tag})"></i> ${s.title}</h4>
+      <span class="rec tag-${s.tag}" style="font-size:11px;padding:2px 8px;border-radius:100px;display:inline-block;font-weight:600;margin:4px 0 8px;background:var(--${s.tag}-bg);color:var(--${s.tag})">${s.rec}</span>
+      <p>${s.desc}</p>
+      <div class="why-box" style="margin-top:8px;">
+        <h4><i class="ti ti-alert-circle" style="color:var(--${s.tag})"></i> Why</h4>
+        <p>${s.why}</p>
+      </div>
+      <ul>${s.points.map(p => `<li><i class="ti ti-check" style="color:var(--${s.tag})"></i> ${p}</li>`).join('')}</ul>
+    </div>
+  `).join('');
+}
+
+render();
+</script>
+</body>
+</html>

@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Memory Management Architecture — System Design</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/tabler-icons.min.css">
+<style>
+:root {
+  --bg: #f8f7f4; --bg2: #ffffff; --bg3: #f0efeb;
+  --text: #1a1a18; --text2: #5c5c58; --text3: #8a8a84;
+  --border: rgba(0,0,0,0.10); --border2: rgba(0,0,0,0.18);
+  --teal: #0F6E56; --teal-bg: #E1F5EE; --teal-light: #5DCAA5;
+  --amber: #854F0B; --amber-bg: #FAEEDA; --amber-light: #EF9F27;
+  --blue: #185FA5; --blue-bg: #E6F1FB; --blue-light: #378ADD;
+  --purple: #534AB7; --purple-bg: #EEEDFE; --purple-light: #7F77DD;
+  --coral: #993C1D; --coral-bg: #FAECE7; --coral-light: #D85A30;
+  --green: #3B6D11; --green-bg: #EAF3DE; --green-light: #639922;
+  --red: #A32D2D; --red-bg: #FCEBEB;
+  --radius: 10px; --radius-sm: 6px; --mono: 'Courier New', 'Consolas', monospace;
+}
+@media (prefers-color-scheme: dark) {
+:root {
+  --bg: #111110; --bg2: #1a1a18; --bg3: #222220;
+  --text: #f0ede8; --text2: #a8a8a0; --text3: #6a6a64;
+  --border: rgba(255,255,255,0.10); --border2: rgba(255,255,255,0.20);
+  --teal: #5DCAA5; --teal-bg: #04342C; --teal-light: #9FE1CB;
+  --amber: #EF9F27; --amber-bg: #412402; --amber-light: #FAC775;
+  --blue: #85B7EB; --blue-bg: #042C53; --blue-light: #B5D4F4;
+  --purple: #AFA9EC; --purple-bg: #26215C; --purple-light: #CECBF6;
+  --coral: #F0997B; --coral-bg: #4A1B0C; --coral-light: #F5C4B3;
+  --green: #97C459; --green-bg: #173404; --green-light: #C0DD97;
+  --red: #E24B4A; --red-bg: #501313;
+}
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14px;line-height:1.5;min-height:100vh}
+.app{max-width:1000px;margin:0 auto;padding:24px 16px 60px}
+.top-bar{display:flex;align-items:baseline;gap:12px;margin-bottom:4px}
+.app-title{font-size:22px;font-weight:600;letter-spacing:-0.01em}
+.app-sub{font-size:13px;color:var(--text2)}
+.desc{font-size:13px;color:var(--text2);margin-bottom:20px;padding:10px 14px;background:var(--bg3);border-radius:var(--radius-sm);border-left:3px solid var(--teal)}
+.comp-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px}
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:16px}
+.card h3{font-size:15px;margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.card .tag{display:inline-block;font-size:10px;padding:2px 8px;border-radius:100px;font-weight:600;letter-spacing:0.03em;margin-bottom:8px}
+.tag-teal{background:var(--teal-bg);color:var(--teal)}
+.tag-amber{background:var(--amber-bg);color:var(--amber)}
+.tag-blue{background:var(--blue-bg);color:var(--blue)}
+.tag-purple{background:var(--purple-bg);color:var(--purple)}
+.tag-coral{background:var(--coral-bg);color:var(--coral)}
+.tag-green{background:var(--green-bg);color:var(--green)}
+.card p{font-size:12px;color:var(--text2);line-height:1.5;margin-bottom:8px}
+.card ul{list-style:none;font-size:12px}
+.card ul li{padding:3px 0;color:var(--text2);display:flex;gap:6px;align-items:flex-start}
+.card ul li i{color:var(--teal);font-size:14px;flex-shrink:0;margin-top:1px}
+.card ul li .neg{color:var(--coral)}
+.section{margin-bottom:20px}
+.section-title{font-size:11px;text-transform:uppercase;letter-spacing:0.09em;color:var(--text3);font-weight:600;margin-bottom:12px;display:flex;align-items:center;gap:10px}
+.section-title::after{content:'';flex:1;height:1px;background:var(--border)}
+.req-table{width:100%;border-collapse:collapse;font-size:13px}
+.req-table th{font-size:10px;text-transform:uppercase;letter-spacing:0.07em;color:var(--text3);font-weight:600;padding:8px 10px;text-align:left;border-bottom:2px solid var(--border2)}
+.req-table td{padding:8px 10px;border-bottom:1px solid var(--border);vertical-align:top}
+.req-table tr:hover td{background:var(--bg3)}
+.req-table .why{font-size:11px;color:var(--text3);margin-top:3px;line-height:1.4}
+.req-table td:first-child{font-weight:500;white-space:nowrap}
+.why-box{margin-top:16px;padding:12px;background:var(--bg3);border-radius:var(--radius-sm);border-left:3px solid var(--blue)}
+.why-box h4{font-size:12px;margin-bottom:4px;color:var(--text)}
+.why-box p{font-size:12px;color:var(--text2);line-height:1.5}
+.scenario-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.scenario-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:14px}
+.scenario-card h4{font-size:13px;margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.scenario-card .rec{font-size:11px;padding:2px 8px;border-radius:100px;display:inline-block;font-weight:600;margin:4px 0 6px}
+.scenario-card p{font-size:12px;color:var(--text2);line-height:1.5}
+.scenario-card ul{list-style:none;font-size:12px;margin-top:6px}
+.scenario-card ul li{padding:2px 0;color:var(--text2);display:flex;gap:6px}
+.scenario-card ul li i{font-size:14px;flex-shrink:0;color:var(--teal)}
+@media(max-width:640px){.comp-grid{grid-template-columns:1fr}.scenario-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="top-bar">
+    <div class="app-title">Memory Management Architecture</div>
+    <div class="app-sub">Virtual Memory · Paging · TLB · Allocation</div>
+  </div>
+  <div class="desc">Virtual memory lets 16GB RAM support 100GB workloads by mapping virtual addresses to physical pages, swapping to disk when needed. The MMU translates every memory access — a 99.9% TLB hit rate keeps it fast; a page fault costs ~10ms.</div>
+
+  <div class="section">
+    <div class="section-title">Architecture Components</div>
+    <div class="comp-grid" id="comp-grid"></div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Paging vs Segmentation</div>
+    <table class="req-table">
+      <thead><tr><th style="width:140px">Dimension</th><th>Paging</th><th>Segmentation</th></tr></thead>
+      <tbody id="vs-body"></tbody>
+    </table>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Page Replacement Algorithms</div>
+    <table class="req-table">
+      <thead><tr><th>Algorithm</th><th>Eviction Policy</th><th>Hit Rate</th><th>Overhead</th><th>Tradeoff</th></tr></thead>
+      <tbody id="replacement-body"></tbody>
+    </table>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Allocation Strategies</div>
+    <table class="req-table">
+      <thead><tr><th>Strategy</th><th>Mechanism</th><th>Fragmentation</th><th>Speed</th><th>Tradeoff</th></tr></thead>
+      <tbody id="alloc-body"></tbody>
+    </table>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Failure Modes</div>
+    <div class="comp-grid" id="failure-grid"></div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Real-World Scenarios</div>
+    <div class="scenario-grid" id="scenarios-grid"></div>
+  </div>
+</div>
+
+<script>
+const COMPONENTS = [
+  {
+    name: 'MMU', icon: 'ti-cpu', tag: 'teal',
+    desc: 'Hardware unit that translates every virtual address to a physical address on-the-fly. Part of the CPU die.',
+    pros: ['Nanosecond-scale translation per access', 'Hardware caches page table entries in TLB'],
+    cons: ['TLB miss = 10-100x slowdown', 'Context switch flushes TLB (expensive)']
+  },
+  {
+    name: 'TLB', icon: 'ti-database', tag: 'amber',
+    desc: 'Fast cache for recent page table entries. ~64 entries per core. 99%+ hit rate for working-set workloads.',
+    pros: ['TLB hit = ~1 cycle latency', 'Huge pages (2MB) reduce TLB pressure 512x'],
+    cons: ['Must flush on every context switch', 'Limited entries — working set must fit']
+  },
+  {
+    name: 'Page Table', icon: 'ti-hierarchy', tag: 'blue',
+    desc: 'Per-process mapping from virtual page numbers to physical frame numbers. Multi-level radix tree in x86-64.',
+    pros: ['Enables sparse address space (no pre-allocation)', 'Supports demand paging, COW, and shared memory'],
+    cons: ['4KB per page overhead for 4GB = 4MB per process', 'Multi-level walk = 4 memory accesses on TLB miss']
+  },
+  {
+    name: 'Swap / Disk', icon: 'ti-device-floppy', tag: 'purple',
+    desc: 'Extension of RAM onto SSD/HDD. Pages evicted from RAM live here. Transparent to user processes.',
+    pros: ['Allocates more memory than physical RAM exists', 'SSD swap ~0.1ms — acceptable for cold pages'],
+    cons: ['HDD swap ~10ms — thrashing destroys throughput', 'Writes wear out SSD; swap partition sizing is tricky']
+  },
+  {
+    name: 'Heap Allocator', icon: 'ti-layers-intersect', tag: 'coral',
+    desc: 'User-space (malloc) or kernel-space allocator. Manages free lists, splitting, coalescing. glibc ptmalloc, jemalloc, tcmalloc.',
+    pros: ['Bulk allocation reduces system calls (brk/mmap)', 'jemalloc scales to 100+ threads with per-thread caches'],
+    cons: ['Fragmentation can waste 10-30% of heap', 'Allocator metadata overhead (~1-5% of heap)']
+  },
+  {
+    name: 'NUMA', icon: 'ti-server', tag: 'green',
+    desc: 'Non-Uniform Memory Access. Multi-socket — each CPU has local RAM. Remote access is 2-3x slower.',
+    pros: ['Local NUMA access ~100ns vs remote ~250ns', '1.3x throughput when threads pin to local node'],
+    cons: ['Remote access is a hidden performance tax', 'Linux default allocator can place pages on wrong NUMA node']
+  }
+];
+
+const VS = [
+  { dim: 'Unit size', pg: 'Fixed (4KB or 2MB/1GB huge)', seg: 'Variable (code, heap, stack segments)' },
+  { dim: 'Fragmentation', pg: 'Minimal (small internal fragmentation)', seg: 'External fragmentation (holes between segments)' },
+  { dim: 'Address space', pg: 'Sparse flat (e.g., 48-bit virtual)', seg: 'Segmented (base + limit registers)' },
+  { dim: 'Sharing', pg: 'Easy (share page-level; COW for fork)', seg: 'Hard (segment granularity too coarse)' },
+  { dim: 'Protection', pg: 'Per-page read/write/execute bits', seg: 'Per-segment bounds checked in hardware' },
+  { dim: 'Overhead', pg: 'Page table walk (4 levels on x86-64)', seg: 'Base + limit check (2 registers, very fast)' },
+  { dim: 'Use today', pg: 'All modern OS (Linux, Windows, macOS)', seg: 'Legacy (x86 real mode, some embedded)' }
+];
+
+const REPLACEMENT = [
+  { algo: 'FIFO', policy: 'Evict page that entered the RAM earliest', hit: 'Low (60-70%)', overhead: 'Minimal (circular buffer)', tradeoff: 'Beladys anomaly — more frames can hurt hit rate' },
+  { algo: 'LRU', policy: 'Evict page not accessed for the longest time', hit: 'High (95%+, working set fits)', overhead: 'Expensive (maintain access timestamp per page)', tradeoff: 'Hardware counter per access; approximated by CLOCK' },
+  { algo: 'CLOCK', policy: 'Circular scan, clear reference bits, evict first 0', hit: 'Near-LRU (85-95%)', overhead: 'Low (one reference bit per page, periodic scan)', tradeoff: 'Hand-pointer position sensitive; sweep cost at high memory pressure' },
+  { algo: 'LFU', policy: 'Evict page with lowest access frequency', hit: 'Good for stable hot sets (90%+)', overhead: 'High (maintain frequency counter per page)', tradeoff: 'Old hot pages linger after popularity shifts (no aging)' }
+];
+
+const ALLOCS = [
+  { strat: 'First-Fit', mech: 'Scan free list, take first block that fits', frag: 'High (splinters at start of list)', speed: 'Fast O(n)', tradeoff: 'Small holes accumulate near low addresses' },
+  { strat: 'Best-Fit', mech: 'Scan all free blocks, pick smallest sufficient', frag: 'Moderate (wastes least space per alloc)', speed: 'Slowest O(n) (must scan entire list)', tradeoff: 'Tiny fragments left behind; coalescing essential' },
+  { strat: 'Buddy System', mech: 'Split blocks in halves; merge buddies on free', frag: 'Internal ~30% (power-of-2 sizes)', speed: 'Fast O(log n)', tradeoff: 'External coalescing simple; internal waste for odd sizes' },
+  { strat: 'Slab / Slub', mech: 'Pre-allocate object caches for fixed-size structs', frag: 'Near-zero (no internal, no external)', speed: 'Fastest O(1)', tradeoff: 'One cache per type; memory pinned to objects' }
+];
+
+const FAILURES = [
+  {
+    name: 'Out of Memory (OOM)', icon: 'ti-alert-triangle', tag: 'red',
+    desc: 'Linux OOM killer selects and kills the largest process. No graceful degradation.',
+    fix: 'Set memory limits (cgroups). Alert at 80% usage. Provision swap as emergency buffer.'
+  },
+  {
+    name: 'Thrashing', icon: 'ti-settings-exclamation', tag: 'coral',
+    desc: 'Working set exceeds RAM. OS spends >90% CPU on page swaps. Throughput collapses to near-zero.',
+    fix: 'Reduce concurrent processes. Upgrade RAM. Use SSD swap. Profile working set sizes.'
+  },
+  {
+    name: 'Fragmentation', icon: 'ti-puzzle', tag: 'amber',
+    desc: 'Free memory exists but no contiguous block satisfies a large allocation request.',
+    fix: 'Use paging (eliminates external frag). Huge pages cause internal frag — size appropriately.'
+  }
+];
+
+const SCENARIOS = [
+  {
+    title: 'Memory leak in production', icon: 'ti-bug', rec: 'Set RSS limit + OOM score adj', tag: 'coral',
+    desc: 'A microservice grows 1GB/hour. After 6 hours it exceeds the cgroup limit, gets OOM-killed. Other services on the same node are unaffected.',
+    points: ['cgroup memory.max = 4GB per service', 'OOM killer logs killed PID with /proc/kmsg', 'Alert on memory growth >100MB/hour', 'Fix: profile with pprof or Valgrind']
+  },
+  {
+    title: 'Swap thrashing under load', icon: 'ti-chart-line', rec: 'SSD swap + working set sizing', tag: 'amber',
+    desc: '50 Java microservices on a 32GB host. Each has a 1GB heap but in practice uses 700MB. Working set = 35GB exceeds RAM. CPU iowait hits 80%.',
+    points: ['vmstat: si/so >1000 pages/sec = thrashing', 'Solution: reduce to 40 services or add 32GB RAM', 'Drop in latency: 5ms → 500ms P99', 'Long-term: Kubernetes memory requests must sum < RAM']
+  },
+  {
+    title: 'Huge pages for databases', icon: 'ti-database', rec: 'Enable transparent huge pages + THP defrag', tag: 'teal',
+    desc: 'PostgreSQL on bare metal: TLB misses cost 2µs per query. Enabling 2MB huge pages reduces TLB entries from 512 to 1 per 2MB — 40% query throughput improvement.',
+    points: ['Set vm.nr_hugepages = 5120 (10GB)', 'PostgreSQL: huge_pages = on', 'Monitor /proc/meminfo | grep HugePages_Free', 'Downside: compaction stalls during defragmentation']
+  }
+];
+
+function render() {
+  renderComponents();
+  renderVS();
+  renderReplacement();
+  renderAllocs();
+  renderFailures();
+  renderScenarios();
+}
+
+function renderComponents() {
+  document.getElementById('comp-grid').innerHTML = COMPONENTS.map(c => `
+    <div class="card">
+      <h3><i class="ti ${c.icon}" style="color:var(--${c.tag})"></i> ${c.name}</h3>
+      <span class="tag tag-${c.tag}">core component</span>
+      <p>${c.desc}</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:6px">
+        <div style="padding:6px;background:var(--bg3);border-radius:4px;font-size:10px;color:var(--text3)">
+          <i class="ti ti-check" style="color:var(--teal)"></i> ${c.pros.join('<br><i class="ti ti-check" style="color:var(--teal)"></i> ')}
+        </div>
+        <div style="padding:6px;background:var(--bg3);border-radius:4px;font-size:10px;color:var(--text3)">
+          <i class="ti ti-x" style="color:var(--coral)"></i> ${c.cons.join('<br><i class="ti ti-x" style="color:var(--coral)"></i> ')}
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderVS() {
+  document.getElementById('vs-body').innerHTML = VS.map(r => `
+    <tr><td>${r.dim}</td><td style="font-size:12px;color:var(--text2)">${r.pg}</td><td style="font-size:12px;color:var(--text2)">${r.seg}</td></tr>
+  `).join('');
+}
+
+function renderReplacement() {
+  document.getElementById('replacement-body').innerHTML = REPLACEMENT.map(r => `
+    <tr>
+      <td style="font-weight:600;color:var(--text)">${r.algo}</td>
+      <td style="font-size:12px;color:var(--text2)">${r.policy}</td>
+      <td style="font-size:12px;color:var(--amber)">${r.hit}</td>
+      <td style="font-size:12px;color:var(--text2)">${r.overhead}</td>
+      <td style="font-size:12px;color:var(--coral);line-height:1.4">${r.tradeoff}</td>
+    </tr>
+  `).join('');
+}
+
+function renderAllocs() {
+  document.getElementById('alloc-body').innerHTML = ALLOCS.map(a => `
+    <tr>
+      <td style="font-weight:600;color:var(--text)">${a.strat}</td>
+      <td style="font-size:12px;color:var(--text2)">${a.mech}</td>
+      <td style="font-size:12px;color:var(--coral)">${a.frag}</td>
+      <td style="font-size:12px;color:var(--amber)">${a.speed}</td>
+      <td style="font-size:12px;color:var(--text2);line-height:1.4">${a.tradeoff}</td>
+    </tr>
+  `).join('');
+}
+
+function renderFailures() {
+  document.getElementById('failure-grid').innerHTML = FAILURES.map(f => `
+    <div class="card">
+      <h3><i class="ti ${f.icon}" style="color:var(--${f.tag})"></i> ${f.name}</h3>
+      <span class="tag tag-${f.tag}">failure mode</span>
+      <p>${f.desc}</p>
+      <div style="margin-top:6px;padding:6px;background:var(--bg3);border-radius:4px;font-size:10px;color:var(--text3)">
+        <i class="ti ti-wrench" style="color:var(--teal)"></i> ${f.fix}
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderScenarios() {
+  document.getElementById('scenarios-grid').innerHTML = SCENARIOS.map(s => `
+    <div class="scenario-card">
+      <h4><i class="ti ${s.icon}" style="color:var(--${s.tag})"></i> ${s.title}</h4>
+      <span class="rec tag-${s.tag}" style="font-size:11px;padding:2px 8px;border-radius:100px;display:inline-block;font-weight:600;margin:4px 0 8px;background:var(--${s.tag}-bg);color:var(--${s.tag})">${s.rec}</span>
+      <p>${s.desc}</p>
+      <ul>${s.points.map(p => `<li><i class="ti ti-check" style="color:var(--${s.tag})"></i> ${p}</li>`).join('')}</ul>
+    </div>
+  `).join('');
+}
+
+render();
+</script>
+</body>
+</html>

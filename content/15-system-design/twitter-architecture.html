@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Twitter/X Architecture — System Design</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/tabler-icons.min.css">
+<style>
+:root {
+  --bg: #f8f7f4; --bg2: #ffffff; --bg3: #f0efeb;
+  --text: #1a1a18; --text2: #5c5c58; --text3: #8a8a84;
+  --border: rgba(0,0,0,0.10); --border2: rgba(0,0,0,0.18);
+  --teal: #0F6E56; --teal-bg: #E1F5EE; --teal-light: #5DCAA5;
+  --amber: #854F0B; --amber-bg: #FAEEDA; --amber-light: #EF9F27;
+  --blue: #185FA5; --blue-bg: #E6F1FB; --blue-light: #378ADD;
+  --purple: #534AB7; --purple-bg: #EEEDFE; --purple-light: #7F77DD;
+  --coral: #993C1D; --coral-bg: #FAECE7; --coral-light: #D85A30;
+  --green: #3B6D11; --green-bg: #EAF3DE; --green-light: #639922;
+  --red: #A32D2D; --red-bg: #FCEBEB;
+  --radius: 10px; --radius-sm: 6px; --mono: 'Courier New', 'Consolas', monospace;
+}
+@media (prefers-color-scheme: dark) {
+:root {
+  --bg: #111110; --bg2: #1a1a18; --bg3: #222220;
+  --text: #f0ede8; --text2: #a8a8a0; --text3: #6a6a64;
+  --border: rgba(255,255,255,0.10); --border2: rgba(255,255,255,0.20);
+  --teal: #5DCAA5; --teal-bg: #04342C; --teal-light: #9FE1CB;
+  --amber: #EF9F27; --amber-bg: #412402; --amber-light: #FAC775;
+  --blue: #85B7EB; --blue-bg: #042C53; --blue-light: #B5D4F4;
+  --purple: #AFA9EC; --purple-bg: #26215C; --purple-light: #CECBF6;
+  --coral: #F0997B; --coral-bg: #4A1B0C; --coral-light: #F5C4B3;
+  --green: #97C459; --green-bg: #173404; --green-light: #C0DD97;
+  --red: #E24B4A; --red-bg: #501313;
+}
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14px;line-height:1.5;min-height:100vh}
+.app{max-width:1000px;margin:0 auto;padding:24px 16px 60px}
+.top-bar{display:flex;align-items:baseline;gap:12px;margin-bottom:4px}
+.app-title{font-size:22px;font-weight:600;letter-spacing:-0.01em}
+.app-sub{font-size:13px;color:var(--text2)}
+.desc{font-size:13px;color:var(--text2);margin-bottom:20px;padding:10px 14px;background:var(--bg3);border-radius:var(--radius-sm);border-left:3px solid var(--teal)}
+.db-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px}
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:16px}
+.card h3{font-size:15px;margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.card .tag{display:inline-block;font-size:10px;padding:2px 8px;border-radius:100px;font-weight:600;letter-spacing:0.03em;margin-bottom:8px}
+.tag-teal{background:var(--teal-bg);color:var(--teal)}
+.tag-amber{background:var(--amber-bg);color:var(--amber)}
+.tag-blue{background:var(--blue-bg);color:var(--blue)}
+.tag-purple{background:var(--purple-bg);color:var(--purple)}
+.tag-coral{background:var(--coral-bg);color:var(--coral)}
+.tag-green{background:var(--green-bg);color:var(--green)}
+.card p{font-size:12px;color:var(--text2);line-height:1.5;margin-bottom:8px}
+.card ul{list-style:none;font-size:12px}
+.card ul li{padding:3px 0;color:var(--text2);display:flex;gap:6px;align-items:flex-start}
+.card ul li i{color:var(--teal);font-size:14px;flex-shrink:0;margin-top:1px}
+.card ul li .neg{color:var(--coral)}
+.section{margin-bottom:20px}
+.section-title{font-size:11px;text-transform:uppercase;letter-spacing:0.09em;color:var(--text3);font-weight:600;margin-bottom:12px;display:flex;align-items:center;gap:10px}
+.section-title::after{content:'';flex:1;height:1px;background:var(--border)}
+.req-table{width:100%;border-collapse:collapse;font-size:13px}
+.req-table th{font-size:10px;text-transform:uppercase;letter-spacing:0.07em;color:var(--text3);font-weight:600;padding:8px 10px;text-align:left;border-bottom:2px solid var(--border2)}
+.req-table td{padding:8px 10px;border-bottom:1px solid var(--border);vertical-align:top}
+.req-table tr:hover td{background:var(--bg3)}
+.req-table .why{font-size:11px;color:var(--text3);margin-top:3px;line-height:1.4}
+.req-table td:first-child{font-weight:500;white-space:nowrap}
+.why-box{margin-top:16px;padding:12px;background:var(--bg3);border-radius:var(--radius-sm);border-left:3px solid var(--blue)}
+.why-box h4{font-size:12px;margin-bottom:4px;color:var(--text)}
+.why-box p{font-size:12px;color:var(--text2);line-height:1.5}
+.scenario-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.scenario-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:14px}
+.scenario-card h4{font-size:13px;margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.scenario-card .rec{font-size:11px;padding:2px 8px;border-radius:100px;display:inline-block;font-weight:600;margin:4px 0 6px}
+.scenario-card p{font-size:12px;color:var(--text2);line-height:1.5}
+.scenario-card ul{list-style:none;font-size:12px;margin-top:6px}
+.scenario-card ul li{padding:2px 0;color:var(--text2);display:flex;gap:6px}
+.scenario-card ul li i{font-size:14px;flex-shrink:0;color:var(--teal)}
+.shard-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px}
+.shard-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px}
+.shard-card h4{font-size:13px;margin-bottom:4px}
+.shard-card p{font-size:11px;color:var(--text2);line-height:1.4}
+.stats{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:20px}
+.stat{flex:1;min-width:120px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:14px 10px;text-align:center}
+.stat-val{font-size:22px;font-weight:700;letter-spacing:-0.02em;line-height:1.2}
+.stat-label{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.05em;margin-top:4px}
+@media(max-width:640px){.db-grid{grid-template-columns:1fr}.shard-grid{grid-template-columns:repeat(2,1fr)}.scenario-grid{grid-template-columns:1fr}.stats{flex-direction:column}}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="top-bar">
+    <div class="app-title">Twitter/X Architecture</div>
+    <div class="app-sub">500M MAU · 500M tweets/day · Hybrid Timeline</div>
+  </div>
+  <div class="desc">Twitter serves 500M+ users with a hybrid push/pull timeline — normal users get precomputed feeds via fan-out on write, while celebrities use on-demand reads to prevent fan-out meltdown. Cassandra stores tweets and graph; Redis caches timelines, trends, and hot data; Kafka decouples fan-out delivery; Earlybird powers real-time search.</div>
+
+  <div class="section">
+    <div class="section-title">System Stats</div>
+    <div class="stats" id="stats"></div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Architecture Components</div>
+    <div class="db-grid" id="comp-grid"></div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Timeline Strategy</div>
+    <table class="req-table">
+      <thead><tr><th style="width:160px">Strategy</th><th>How It Works</th><th>Tradeoff</th><th>Use Case</th></tr></thead>
+      <tbody id="timeline-body"></tbody>
+    </table>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Tech Stack</div>
+    <table class="req-table">
+      <thead><tr><th style="width:130px">Component</th><th style="width:200px">Technology</th><th>Why</th></tr></thead>
+      <tbody id="stack-body"></tbody>
+    </table>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Failure Modes</div>
+    <table class="req-table">
+      <thead><tr><th style="width:140px">Failure</th><th>Problem</th><th>Mitigation</th></tr></thead>
+      <tbody id="failure-body"></tbody>
+    </table>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Key Scenarios</div>
+    <div class="scenario-grid" id="scenario-grid"></div>
+  </div>
+</div>
+
+<script>
+const STATS = [
+  { val: '500M+', label: 'Monthly Active Users', color: 'teal' },
+  { val: '500M', label: 'Tweets / Day', color: 'blue' },
+  { val: '100K+', label: 'Read QPS', color: 'purple' },
+  { val: '5K+', label: 'Write QPS', color: 'coral' },
+  { val: '<500ms', label: 'Timeline P99 Latency', color: 'green' },
+  { val: '500GB+', label: 'Tweets / Day (Storage)', color: 'amber' },
+];
+
+const COMPONENTS = [
+  { name: 'Tweet Service', icon: 'ti ti-message', tag: 'teal',
+    desc: 'Handles tweet CRUD, validation, spam detection, and write-through to Redis cache + Cassandra storage.',
+    pros: ['Write-through cache reduces read latency', 'Spam detection at ingest prevents abuse'],
+    cons: ['Write amplification from fan-out', 'Hot partition risk for celebrity accounts'] },
+  { name: 'Timeline Service', icon: 'ti ti-list', tag: 'blue',
+    desc: 'Generates home timeline via precomputed Redis sorted sets (push) or on-demand merge (pull).',
+    pros: ['O(1) reads for 99% of users via push', 'Hybrid strategy scales to 100M+ follower celebs'],
+    cons: ['3.2TB Redis cluster across 100+ nodes', 'Cache stampede during viral live events'] },
+  { name: 'Fan-out Engine', icon: 'ti ti-sitemap', tag: 'amber',
+    desc: 'Async Kafka worker pushes tweet IDs to followers\' timeline caches. Auto-scales by queue depth.',
+    pros: ['At-least-once delivery with idempotent ZADD', 'Auto-scale workers based on Kafka lag'],
+    cons: ['Celebrity storm backs up entire queue', 'Wasted ZADD writes for inactive followers'] },
+  { name: 'Search / Earlybird', icon: 'ti ti-search', tag: 'purple',
+    desc: 'Real-time Lucene inverted index. Tweet → Kafka → indexer → searchable in 2-5 seconds.',
+    pros: ['BM25 + engagement signal ranking', 'Near-real-time freshness (2-5s index lag)'],
+    cons: ['Indexer crash returns stale results', 'Memory-heavy (index must fit FS cache)'] },
+  { name: 'Trending Topics', icon: 'ti ti-trending-up', tag: 'coral',
+    desc: 'Sliding-window burst detection per location with abuse prevention and wavelet analysis.',
+    pros: ['Location-aware trends per country/city', 'Wavelet analysis detects frequency spikes'],
+    cons: ['Bot manipulation attacks on hashtags', 'Heavy compute for clustering + dedup'] },
+  { name: 'DM Service', icon: 'ti ti-lock', tag: 'green',
+    desc: 'E2EE messaging via Signal Protocol (X3DH + Double Ratchet). Cassandra wide-row per conversation.',
+    pros: ['Perfect Forward Secrecy via Signal', 'Typing indicators + read receipts'],
+    cons: ['Encrypted blobs cannot be searched', 'Fan-out to push notification per device'] },
+  { name: 'Graph Service', icon: 'ti ti-users', tag: 'purple',
+    desc: 'Follow graph in Cassandra (Pelops) with Redis cache for hot path reads and SINTER intersections.',
+    pros: ['Fast mutual follows via Redis SINTER', 'Paginated follower fetch at any scale'],
+    cons: ['Eventual consistency delay on unfollow', 'CQL BATCH needed for atomic follow/unfollow'] },
+  { name: 'Media Store', icon: 'ti ti-photo', tag: 'teal',
+    desc: 'Blob storage (S3) + CDN with transcoding pipeline. Multi-tier: hot SSD → warm HDD → cold IA.',
+    pros: ['CDN edge caching for global delivery', 'Multi-tier storage reduces cold data costs'],
+    cons: ['~20TB/day media ingest at scale', 'Transcoding CPU/GPU cost for video'] },
+];
+
+const TIMELINE_STRATEGIES = [
+  { name: 'Fan-out on Write (Push)', how: 'On tweet, ZADD tweet_id to each follower\'s Redis sorted set. Precomputes the full feed.', tradeoff: 'O(followers) writes per tweet. Wasted ZADDs for inactive users. 100M followers = 100M ops.', use: 'Normal users (<10K followers). 99% of accounts.' },
+  { name: 'Fan-out on Read (Pull)', how: 'On tweet, ZADD to author\'s timeline only. On read, merge N celebrity timelines.', tradeoff: 'O(following) celebrity merges per read. Higher P99 for heavy followers.', use: 'Celebrities (>=10K followers). Prevents fan-out meltdown.' },
+];
+
+const TECH_STACK = [
+  { comp: 'API Gateway', tech: 'Custom (auth, rate-limit, routing)', why: 'Validates requests, rate-limits per user, routes to services. 200K QPS per node.' },
+  { comp: 'Tweet Cache', tech: 'Redis (tweet:{id}, TTL 7d, LRU)', why: 'Sub-ms hot tweet reads offload Cassandra. ~3TB cluster.' },
+  { comp: 'Tweet Store', tech: 'Cassandra (partition by user_id)', why: 'Write-optimized LSM tree. Linear scaling. TimeUUID for time-range queries.' },
+  { comp: 'Timeline Cache', tech: 'Redis sorted sets (800/user)', why: 'O(1) ZREVRANGE reads. Cursor pagination. ~3.2TB across 100 shards.' },
+  { comp: 'Fan-out Queue', tech: 'Kafka (partitioned by tweet_id)', why: 'Async delivery. At-least-once. Replay on failure. Parallel consumption.' },
+  { comp: 'Graph Store', tech: 'Cassandra (follows / followers)', why: 'Wide-column adjacency. Paginated scans. Counter columns for counts.' },
+  { comp: 'Search Index', tech: 'Earlybird (Lucene per shard)', why: 'Real-time inverted index. BM25 + engagement boost. 2-5s freshness.' },
+  { comp: 'Media Storage', tech: 'S3 + CDN (hot/warm/cold)', why: 'Cheap durable blob storage. CDN edge delivery. Multi-tier cost savings.' },
+  { comp: 'Trend Store', tech: 'Redis sorted sets per location', why: 'Top-K burst scores per country/city. TTL 24h. Updated every 5min.' },
+  { comp: 'DM Store', tech: 'Cassandra (conversation_id)', why: 'E2EE ciphertext blobs. Wide-row per conversation. TTL support.' },
+];
+
+const FAILURES = [
+  { name: 'Fan-out Meltdown', problem: 'Celebrity tweet → 100M fan-out tasks. Kafka backs up, workers overwhelmed.', mitigation: 'Hybrid push/pull at 10K followers. Kafka per-shard topics. Auto-scale workers.' },
+  { name: 'Timeline Stampede', problem: 'Live event → millions read same celebrity keys. Redis hotspot.', mitigation: 'Redis replicas. Cache-aside fallback. Rate-limit at API gateway.' },
+  { name: 'Hot Cassandra Partition', problem: 'Celebrity tweet volume creates single hot partition.', mitigation: 'Partition by (user_id + month) for high-volume users. Pre-split known celebs.' },
+  { name: 'Worker Mid-Batch Crash', problem: 'Fan-out worker crashes. Some followers get tweet, others don\'t.', mitigation: 'At-least-once Kafka. Idempotent ZADD. Retry queue with exponential backoff.' },
+  { name: 'Graph Inconsistency', problem: 'Unfollow still shows tweets due to eventual consistency delay.', mitigation: 'Strong consistency for follow/unfollow. Cache invalidation <5s window.' },
+  { name: 'Trending Abuse', problem: 'Bot network tweets same hashtag 1M times to manipulate trends.', mitigation: 'Velocity checks per user. Account age threshold. Normalize by unique users.' },
+];
+
+const SCENARIOS = [
+  { title: 'Celebrity Tweet Storm', icon: 'ti ti-star', tag: 'coral',
+    desc: '100M-follower celebrity tweets. Without hybrid strategy: 100M ZADD ops, massive Kafka backlog, minutes of timeline delay.',
+    points: ['Hybrid push/pull cutover at 10K followers prevents meltdown', 'Redis pipeline batches 1000 ZADD ops per command', 'Fan-out workers auto-scale on Kafka queue depth'] },
+  { title: 'Live Event Stampede', icon: 'ti ti-flame', tag: 'amber',
+    desc: 'Super Bowl touchdown → millions of simultaneous reads to the same celebrity timeline keys. Redis hotspot risk.',
+    points: ['Redis replicas serve celebrity timeline keys', 'Cache-aside: compute from tweet cache on miss', 'Per-user timeline sharding = natural isolation'] },
+  { title: 'Bot Attack on Trends', icon: 'ti ti-robot', tag: 'purple',
+    desc: 'Coordinated bot network tweets same hashtag 1M times to artificially inflate trending topics.',
+    points: ['Velocity checks per user per hashtag per hour', 'Account age threshold (<24h tweets weighted lower)', 'Burst score normalized by unique users, not raw count'] },
+];
+
+function render() {
+  const statsGrid = document.getElementById('stats');
+  statsGrid.innerHTML = STATS.map(s => `<div class="stat"><div class="stat-val" style="color:var(--${s.color})">${s.val}</div><div class="stat-label">${s.label}</div></div>`).join('');
+
+  const compGrid = document.getElementById('comp-grid');
+  compGrid.innerHTML = COMPONENTS.map(c => `
+    <div class="card">
+      <h3><i class="${c.icon}" style="color:var(--${c.tag})"></i> ${c.name}</h3>
+      <span class="tag tag-${c.tag}">${c.tag}</span>
+      <p>${c.desc}</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:6px">
+        <div style="padding:6px;background:var(--bg3);border-radius:4px;font-size:10px;color:var(--text3)">
+          <i class="ti ti-check" style="color:var(--teal)"></i> ${c.pros[0]}<br><i class="ti ti-check" style="color:var(--teal)"></i> ${c.pros[1]}
+        </div>
+        <div style="padding:6px;background:var(--bg3);border-radius:4px;font-size:10px;color:var(--text3)">
+          <i class="ti ti-x" style="color:var(--coral)"></i> ${c.cons[0]}<br><i class="ti ti-x" style="color:var(--coral)"></i> ${c.cons[1]}
+        </div>
+      </div>
+    </div>
+  `).join('');
+
+  const timelineBody = document.getElementById('timeline-body');
+  timelineBody.innerHTML = TIMELINE_STRATEGIES.map(t => `
+    <tr>
+      <td style="font-weight:600;color:var(--text)">${t.name}</td>
+      <td style="font-size:12px;color:var(--text2);line-height:1.4">${t.how}</td>
+      <td style="font-size:12px;color:var(--coral);line-height:1.4">${t.tradeoff}</td>
+      <td style="font-size:12px;color:var(--text2);line-height:1.4">${t.use}</td>
+    </tr>
+  `).join('');
+
+  const stackBody = document.getElementById('stack-body');
+  stackBody.innerHTML = TECH_STACK.map(s => `
+    <tr>
+      <td style="font-weight:600;color:var(--text)">${s.comp}</td>
+      <td style="font-size:12px;color:var(--text2)">${s.tech}</td>
+      <td style="font-size:12px;color:var(--text2);line-height:1.4">${s.why}</td>
+    </tr>
+  `).join('');
+
+  const failureBody = document.getElementById('failure-body');
+  failureBody.innerHTML = FAILURES.map(f => `
+    <tr>
+      <td style="font-weight:600;color:var(--text)">${f.name}</td>
+      <td style="font-size:12px;color:var(--coral);line-height:1.4">${f.problem}</td>
+      <td style="font-size:12px;color:var(--text2);line-height:1.4">${f.mitigation}</td>
+    </tr>
+  `).join('');
+
+  const scenarioGrid = document.getElementById('scenario-grid');
+  scenarioGrid.innerHTML = SCENARIOS.map(s => `
+    <div class="scenario-card">
+      <h4><i class="${s.icon}" style="color:var(--${s.tag})"></i> ${s.title}</h4>
+      <span class="rec tag-${s.tag}" style="margin:4px 0 8px">${s.tag}</span>
+      <p>${s.desc}</p>
+      <ul>${s.points.map(p => `<li><i class="ti ti-check" style="color:var(--${s.tag})"></i> ${p}</li>`).join('')}</ul>
+    </div>
+  `).join('');
+}
+
+render();
+</script>
+</body>
+</html>

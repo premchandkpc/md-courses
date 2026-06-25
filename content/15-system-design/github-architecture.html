@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GitHub — System Design</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/tabler-icons.min.css">
+<style>
+:root {
+  --bg: #f8f7f4; --bg2: #ffffff; --bg3: #f0efeb;
+  --text: #1a1a18; --text2: #5c5c58; --text3: #8a8a84;
+  --border: rgba(0,0,0,0.10); --border2: rgba(0,0,0,0.18);
+  --teal: #0F6E56; --teal-bg: #E1F5EE; --teal-light: #5DCAA5;
+  --amber: #854F0B; --amber-bg: #FAEEDA; --amber-light: #EF9F27;
+  --blue: #185FA5; --blue-bg: #E6F1FB; --blue-light: #378ADD;
+  --purple: #534AB7; --purple-bg: #EEEDFE; --purple-light: #7F77DD;
+  --coral: #993C1D; --coral-bg: #FAECE7; --coral-light: #D85A30;
+  --green: #3B6D11; --green-bg: #EAF3DE; --green-light: #639922;
+  --red: #A32D2D; --red-bg: #FCEBEB;
+  --radius: 10px; --radius-sm: 6px; --mono: 'Courier New', 'Consolas', monospace;
+}
+@media (prefers-color-scheme: dark) {
+:root {
+  --bg: #111110; --bg2: #1a1a18; --bg3: #222220;
+  --text: #f0ede8; --text2: #a8a8a0; --text3: #6a6a64;
+  --border: rgba(255,255,255,0.10); --border2: rgba(255,255,255,0.20);
+  --teal: #5DCAA5; --teal-bg: #04342C; --teal-light: #9FE1CB;
+  --amber: #EF9F27; --amber-bg: #412402; --amber-light: #FAC775;
+  --blue: #85B7EB; --blue-bg: #042C53; --blue-light: #B5D4F4;
+  --purple: #AFA9EC; --purple-bg: #26215C; --purple-light: #CECBF6;
+  --coral: #F0997B; --coral-bg: #4A1B0C; --coral-light: #F5C4B3;
+  --green: #97C459; --green-bg: #173404; --green-light: #C0DD97;
+  --red: #E24B4A; --red-bg: #501313;
+}
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14px;line-height:1.5;min-height:100vh}
+.app{max-width:1000px;margin:0 auto;padding:24px 16px 60px}
+.top-bar{display:flex;align-items:baseline;gap:12px;margin-bottom:4px}
+.app-title{font-size:22px;font-weight:600;letter-spacing:-0.01em}
+.app-sub{font-size:13px;color:var(--text2)}
+.desc{font-size:13px;color:var(--text2);margin-bottom:20px;padding:10px 14px;background:var(--bg3);border-radius:var(--radius-sm);border-left:3px solid var(--teal)}
+.stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:20px}
+.stat-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px;text-align:center}
+.stat-card .ico{font-size:20px;margin-bottom:2px}
+.stat-card .val{font-size:24px;font-weight:700;letter-spacing:-0.02em}
+.stat-card .lbl{font-size:10px;text-transform:uppercase;letter-spacing:0.07em;color:var(--text3);margin-top:2px}
+.db-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px}
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:16px}
+.card h3{font-size:15px;margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.card .tag{display:inline-block;font-size:10px;padding:2px 8px;border-radius:100px;font-weight:600;letter-spacing:0.03em;margin-bottom:8px}
+.tag-teal{background:var(--teal-bg);color:var(--teal)}
+.tag-amber{background:var(--amber-bg);color:var(--amber)}
+.tag-blue{background:var(--blue-bg);color:var(--blue)}
+.tag-purple{background:var(--purple-bg);color:var(--purple)}
+.tag-coral{background:var(--coral-bg);color:var(--coral)}
+.tag-green{background:var(--green-bg);color:var(--green)}
+.card p{font-size:12px;color:var(--text2);line-height:1.5;margin-bottom:8px}
+.card ul{list-style:none;font-size:12px}
+.card ul li{padding:3px 0;color:var(--text2);display:flex;gap:6px;align-items:flex-start}
+.card ul li i{color:var(--teal);font-size:14px;flex-shrink:0;margin-top:1px}
+.card ul li .neg{color:var(--coral)}
+.section{margin-bottom:20px}
+.section-title{font-size:11px;text-transform:uppercase;letter-spacing:0.09em;color:var(--text3);font-weight:600;margin-bottom:12px;display:flex;align-items:center;gap:10px}
+.section-title::after{content:'';flex:1;height:1px;background:var(--border)}
+.req-table{width:100%;border-collapse:collapse;font-size:13px}
+.req-table th{font-size:10px;text-transform:uppercase;letter-spacing:0.07em;color:var(--text3);font-weight:600;padding:8px 10px;text-align:left;border-bottom:2px solid var(--border2)}
+.req-table td{padding:8px 10px;border-bottom:1px solid var(--border);vertical-align:top}
+.req-table tr:hover td{background:var(--bg3)}
+.req-table .why{font-size:11px;color:var(--text3);margin-top:3px;line-height:1.4}
+.req-table td:first-child{font-weight:500;white-space:nowrap}
+.why-box{margin-top:16px;padding:12px;background:var(--bg3);border-radius:var(--radius-sm);border-left:3px solid var(--blue)}
+.why-box h4{font-size:12px;margin-bottom:4px;color:var(--text)}
+.why-box p{font-size:12px;color:var(--text2);line-height:1.5}
+.scenario-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.scenario-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:14px}
+.scenario-card h4{font-size:13px;margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.scenario-card p{font-size:12px;color:var(--text2);line-height:1.5}
+.scenario-card ul{list-style:none;font-size:12px;margin-top:6px}
+.scenario-card ul li{padding:2px 0;color:var(--text2);display:flex;gap:6px}
+.scenario-card ul li i{font-size:14px;flex-shrink:0;color:var(--teal)}
+@media(max-width:640px){.db-grid{grid-template-columns:1fr}.stat-grid{grid-template-columns:repeat(2,1fr)}.scenario-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="top-bar">
+    <div class="app-title">GitHub</div>
+    <div class="app-sub">System Architecture · 100M+ repos · 50M+ devs</div>
+  </div>
+    <div class="desc">GitHub is the world&rsquo;s largest code hosting platform — 100M+ repositories, 50M+ developers, 200M+ daily git operations. This page breaks down its architecture across storage, CI/CD, search, databases, and failure modes at planetary scale.</div>
+
+  <!-- Stats row showcases GitHub&rsquo;s scale numbers across repos, developers, and daily operations -->
+  <div class="section">
+    <div class="section-title">System Stats</div>
+    <div class="stat-grid" id="stats-grid"></div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Architecture Components</div>
+    <div class="desc">Seven core subsystems power GitHub. Each component handles a specific domain — from Git object storage to CI/CD orchestration — with distinct tradeoffs in consistency, latency, and scalability at internet scale.</div>
+    <div class="db-grid" id="arch-grid"></div>
+  </div>
+
+  <!-- Git relies on four fundamental object types stored in .git/objects/ -->
+  <div class="section">
+    <div class="section-title">Git Storage — Object Model</div>
+    <div class="desc">Git stores content as four object types in a content-addressable store. Objects are compressed with zlib and optionally packed into .pack files with delta compression for efficient storage and transfer.</div>
+    <table class="req-table">
+      <thead><tr><th>Type</th><th>Description</th><th>Storage Format</th><th>Typical Size</th></tr></thead>
+      <tbody id="git-obj-body"></tbody>
+    </table>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Tech Stack — Component Choices</div>
+    <table class="req-table">
+      <thead><tr><th style="width:160px">Component</th><th>Technology</th><th>Why</th></tr></thead>
+      <tbody id="tech-body"></tbody>
+    </table>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Failure Modes &amp; Mitigations</div>
+    <div class="desc">At GitHub&rsquo;s scale, even rare edge cases become daily events. Each failure mode has layered mitigations — from caching and backpressure to circuit breakers and manual failover.</div>
+    <table class="req-table">
+      <thead><tr><th style="width:160px">Failure</th><th>Impact</th><th>Mitigation</th></tr></thead>
+      <tbody id="failure-body"></tbody>
+    </table>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Key Scenarios — How GitHub Handles Real Problems</div>
+    <div class="desc">Walk through three concrete scenarios that test GitHub&rsquo;s architecture: cloning a massive monorepo, racing two git pushes, and surviving a viral repo&rsquo;s traffic spike.</div>
+    <div class="scenario-grid" id="scenario-grid"></div>
+  </div>
+</div>
+
+<script>
+const STATS = [
+  { val: '100M+', lbl: 'Repositories', icon: 'ti-folder', c: 'var(--teal)' },
+  { val: '50M+', lbl: 'Developers', icon: 'ti-users', c: 'var(--blue)' },
+  { val: '200M', lbl: 'Git Ops / Day', icon: 'ti-arrows-up-down', c: 'var(--amber)' },
+  { val: '3M+', lbl: 'Actions Runs / Day', icon: 'ti-run', c: 'var(--purple)' },
+  { val: '99.95%', lbl: 'Uptime SLA', icon: 'ti-heartbeat', c: 'var(--green)' },
+];
+
+const ARCH = [
+  { n: 'Git Storage', i: 'ti-database', t: 'teal',
+    d: 'Object storage for git pack files with delta compression. Multi-tier cache (L0: memory, L1: SSD, L2: S3). Git alternates for fork object sharing.',
+    p: ['Delta compression: 10-30x for text files', 'Multi-region SSD cache for fast clone'],
+    c: ['Pack generation is CPU-intensive', 'Large repos require shallow or partial clone'] },
+  { n: 'Repository Service', i: 'ti-git-branch', t: 'blue',
+    d: 'MySQL (Vitess) stores all metadata — repos, branches, tags, stars, settings. Strong consistency for git refs, Vitess handles horizontal sharding.',
+    p: ['Vitess horizontal sharding (64 shards)', 'Branch protection enforced server-side on push'],
+    c: ['Hot shard for popular repos', 'No cross-shard JOINs — app must scatter queries'] },
+  { n: 'Pull Request Engine', i: 'ti-git-pull-request', t: 'purple',
+    d: 'Manages PR lifecycle: open → review → merge/close. Background jobs compute mergeability. Three merge strategies supported.',
+    p: ['Three merge strategies (merge/squash/rebase)', 'Automated conflict detection per push'],
+    c: ['Merge check can take minutes on large repos', 'Complex branch permission model'] },
+  { n: 'Actions Runner', i: 'ti-player-play', t: 'green',
+    d: 'CI/CD workflow engine. Parses YAML from .github/workflows, schedules jobs, streams logs from runners via WebSocket in real-time.',
+    p: ['Auto-scaling pool (Linux/Win/macOS)', 'Docker/VM isolation — ephemeral per job'],
+    c: ['6hr max job timeout (free tier)', 'Queue backup when viral repos trigger mass CI'] },
+  { n: 'Code Search', i: 'ti-search', t: 'coral',
+    d: 'Dedicated Elasticsearch cluster (~10 PB). Language-aware tokenizer extracts symbols, function names, class names for precise search.',
+    p: ['Sub-second search across 100M+ repos', 'Language-aware symbol + regex search'],
+    c: ['Default branch only — no feature branch search', 'Max 400 char query length, 5s regex timeout'] },
+  { n: 'Issues & Projects', i: 'ti-list-check', t: 'amber',
+    d: 'Issues and PRs share the same MySQL table (subtype pattern). Projects v2 provides table-based project management similar to Notion/Jira.',
+    p: ['Unified issue/PR table — simplifies queries', 'Projects v2: custom fields, sprints, status'],
+    c: ['Cross-repo issue aggregation is limited', 'No built-in time tracking or native Gantt'] },
+  { n: 'Webhooks', i: 'ti-webhook', t: 'purple',
+    d: 'Event-driven delivery via Kafka topics. At-least-once guarantees with HMAC-SHA256 signature. Exponential backoff retry with dead letter queue.',
+    p: ['Kafka-backed reliable at-least-once delivery', 'HMAC-SHA256 signature for payload verification'],
+    c: ['~5K deliveries/sec per endpoint ceiling', 'Dead letter after 3 retries — manual redelivery'] },
+];
+
+const GIT_OBJS = [
+  { t: 'Blob', d: 'File content compressed with zlib', f: 'Loose object or delta in pack file', s: 'File-size dependent' },
+  { t: 'Tree', d: 'Directory listing: name → blob hash', f: 'Sorted flat list in pack or loose', s: 'Bytes per entry' },
+  { t: 'Commit', d: 'Snapshot: tree + parent(s) + author + message', f: 'Loose object, cached in pack', s: '~200-500 bytes' },
+  { t: 'Tag', d: 'Named ref to a commit (annotated with message)', f: 'Loose object or packed', s: '~100-300 bytes' },
+];
+
+const TECH = [
+  { c: 'Web Frontend', t: 'Ruby on Rails', w: 'Mature framework for content-heavy UI — serves repo browsing, issues, PRs, settings, dashboards.' },
+  { c: 'Git HTTP Server', t: 'Custom Go/C (git-http-backend)', w: 'Handles 200M+ git ops/day. Optimized pack generation, delta compression, and ref validation.' },
+  { c: 'API Gateway', t: 'REST + GraphQL (custom)', w: 'Authentication, rate limiting, versioning. GraphQL reduces over-fetching for mobile and modern clients.' },
+  { c: 'Primary Database', t: 'MySQL via Vitess (64 shards)', w: 'ACID compliance for metadata. Vitess provides sharding with minimal application code changes.' },
+  { c: 'Cache Layer', t: 'Redis Cluster (500 GB)', w: 'Sub-millisecond P99 latency for sessions, rate limits, repo cache, Sidekiq queues, pub/sub.' },
+  { c: 'Search Index', t: 'Elasticsearch (~10 PB)', w: 'Custom code analyzer with symbol extraction. Inverted index for sub-second queries across 1B+ files.' },
+  { c: 'Object Storage', t: 'S3-compatible (GFS)', w: 'Durable, low-cost storage for git pack files, LFS objects, Actions artifacts, release assets.' },
+  { c: 'Event Bus', t: 'Kafka / SQS', w: 'Decouples webhook delivery, async re-indexing, notification emails, and status updates from request path.' },
+];
+
+const FAILURES = [
+  { f: 'Clone Overload', i: '500GB monorepo with 100 concurrent clones. On-the-fly pack generation saturates CPU and memory across Git HTTP servers.', m: 'Shallow clone (--depth 1) for CI. Partial clone (--filter=blob:none) lazy-fetches blobs. Pre-generated CDN packs for popular repos. Rate limit 10 concurrent clones per IP.' },
+  { f: 'Shard Hotspot', i: 'Viral repo concentrates all issue/PR traffic on one MySQL shard. CPU spikes, connection pool exhaustion, latency affects co-tenanted repos.', m: 'Vitess resharding (64→128 shards). Aggressive Redis caching (TTL 30s). Batch non-urgent writes — star counts, view counters queued and flushed periodically.' },
+  { f: 'Push Race', i: 'Two developers push to the same branch simultaneously. Without mutual exclusion, one ref update silently overwrites the other.', m: 'Redis SETNX ref lock with 10s TTL. Compare-and-swap UPDATE verifies tip SHA unchanged. Reject non-fast-forward pushes. Atomic multi-ref push via transaction.' },
+  { f: 'Actions Queue Backup', i: 'Viral OSS release triggers CI on 10K+ dependent repos. 100K jobs queued, wait time stretches to hours for free-tier users.', m: 'Priority queues (paid > free, orgs > personal). Autoscaling runners (up to 10K concurrent). Per-repo/org concurrency limits. Dependency caching cuts job time 50-80%.' },
+  { f: 'Webhook Delivery Flood', i: 'Third-party endpoint (Slack, Jenkins) goes down. 5K webhooks failing at once. Retry queue grows unbounded, consuming worker resources.', m: 'Exponential backoff (1min → 5min → 15min). Max 3 retries then dead letter. Circuit breaker: pause 1 hour after 10 consecutive failures. Manual redelivery button.' },
+];
+
+const SCENARIOS = [
+  { t: 'Large Monorepo Clone', i: 'ti-folder', g: 'teal',
+    d: 'A team with a 500GB monorepo (100K+ files) needs CI to clone the full history on every push. Full clone takes 15+ minutes and saturates the Git HTTP server.',
+    s: ['Shallow clone (--depth 1): fetches only the latest commit, discards history. Reduces transfer from 500GB to ~500MB.', 'Partial clone (--filter=blob:none): omits all file blobs initially, fetches them lazily during checkout. Another 4x reduction.', 'Combined result: clone drops to ~2GB data transfer, completes in 30 seconds. Default for all GitHub Actions workflows.'] },
+  { t: 'Concurrent Push Race', i: 'ti-git-commit', g: 'coral',
+    d: 'Two developers push to main simultaneously, both with the same parent commit abc123. Without protection, one push silently overwrites the other.',
+    s: ['Dev A acquires Redis lock on refs/heads/main (SETNX, 10s TTL). Fast-forward check passes. Updates the ref from abc123 → def456. Releases lock.', 'Dev B tries to acquire the same lock — held by A. Waits. Lock released. Fast-forward check: current tip is now def456, not abc123. Not fast-forward!', 'GitHub rejects the push: "Updates were rejected because the remote contains work you do not have locally." Dev B must pull, rebase/merge, and push again.'] },
+  { t: 'Shard Hotspot on Viral Repo', i: 'ti-flame', g: 'amber',
+    d: 'A repository goes viral (100K stars in 24 hours). All issue creation, PR updates, and comment traffic hits a single MySQL shard via Vitess.',
+    s: ['500+ issues and 200+ PRs created rapidly. Shard CPU spikes to 95%. Connection pool saturates. Latency for co-tenanted repos degrades.', 'Redis cache absorbs read traffic (30s TTL). Star/unstar counts queued and batch-flushed to MySQL to avoid real-time COUNT queries.', 'Operations team initiates Vitess resharding plan: split the hot shard. Hot repo pinned to an isolated shard. Long-term fix: add application-level write batching.'] },
+];
+
+function renderStats() {
+  var el = document.getElementById('stats-grid');
+  el.innerHTML = STATS.map(function(s) {
+    return '<div class="stat-card">' +
+      '<div class="ico"><i class="ti ' + s.icon + '" style="color:' + s.c + '"></i></div>' +
+      '<div class="val" style="color:' + s.c + '">' + s.val + '</div>' +
+      '<div class="lbl">' + s.lbl + '</div></div>';
+  }).join('');
+}
+
+function renderArch() {
+  var el = document.getElementById('arch-grid');
+  el.innerHTML = ARCH.map(function(a) {
+    return '<div class="card">' +
+      '<h3><i class="ti ' + a.i + '" style="color:var(--' + a.t + ')"></i> ' + a.n + '</h3>' +
+      '<span class="tag tag-' + a.t + '">component</span>' +
+      '<p>' + a.d + '</p>' +
+      '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:6px">' +
+        '<div style="padding:6px;background:var(--bg3);border-radius:4px;font-size:10px;color:var(--text3)">' +
+          '<i class="ti ti-check" style="color:var(--teal)"></i> ' + a.p[0] + '<br>' +
+          '<i class="ti ti-check" style="color:var(--teal)"></i> ' + a.p[1] +
+        '</div>' +
+        '<div style="padding:6px;background:var(--bg3);border-radius:4px;font-size:10px;color:var(--text3)">' +
+          '<i class="ti ti-x" style="color:var(--coral)"></i> ' + a.c[0] + '<br>' +
+          '<i class="ti ti-x" style="color:var(--coral)"></i> ' + a.c[1] +
+        '</div>' +
+      '</div></div>';
+  }).join('');
+}
+
+function renderGitObjs() {
+  var el = document.getElementById('git-obj-body');
+  el.innerHTML = GIT_OBJS.map(function(o) {
+    return '<tr>' +
+      '<td style="font-family:var(--mono);font-weight:600">' + o.t + '</td>' +
+      '<td style="font-size:12px;color:var(--text2)">' + o.d + '</td>' +
+      '<td style="font-size:12px;color:var(--text2)">' + o.f + '</td>' +
+      '<td style="font-size:12px;color:var(--text3)">' + o.s + '</td></tr>';
+  }).join('');
+}
+
+function renderTech() {
+  var el = document.getElementById('tech-body');
+  el.innerHTML = TECH.map(function(t) {
+    return '<tr>' +
+      '<td>' + t.c + '</td>' +
+      '<td style="font-size:12px;color:var(--blue);font-weight:500">' + t.t + '</td>' +
+      '<td style="font-size:12px;color:var(--text2);line-height:1.4">' + t.w + '</td></tr>';
+  }).join('');
+}
+
+function renderFailures() {
+  var el = document.getElementById('failure-body');
+  el.innerHTML = FAILURES.map(function(f) {
+    return '<tr>' +
+      '<td style="color:var(--coral);font-weight:600">' + f.f + '</td>' +
+      '<td style="font-size:12px;color:var(--text2);line-height:1.4">' + f.i + '</td>' +
+      '<td style="font-size:12px;color:var(--text2);line-height:1.4">' + f.m + '</td></tr>';
+  }).join('');
+}
+
+function renderScenarios() {
+  var el = document.getElementById('scenario-grid');
+  el.innerHTML = SCENARIOS.map(function(s) {
+    return '<div class="scenario-card">' +
+      '<h4><i class="ti ' + s.i + '" style="color:var(--' + s.g + ')"></i> ' + s.t + '</h4>' +
+      '<p>' + s.d + '</p>' +
+      '<ul>' + s.s.map(function(p) { return '<li><i class="ti ti-check" style="color:var(--' + s.g + ')"></i> ' + p + '</li>'; }).join('') + '</ul></div>';
+  }).join('');
+}
+
+function render() {
+  renderStats();
+  renderArch();
+  renderGitObjs();
+  renderTech();
+  renderFailures();
+  renderScenarios();
+}
+
+render();
+</script>
+</body>
+</html>

@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Context Switching — System Design</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/tabler-icons.min.css">
+<style>
+:root {
+  --bg: #f8f7f4; --bg2: #ffffff; --bg3: #f0efeb;
+  --text: #1a1a18; --text2: #5c5c58; --text3: #8a8a84;
+  --border: rgba(0,0,0,0.10); --border2: rgba(0,0,0,0.18);
+  --teal: #0F6E56; --teal-bg: #E1F5EE; --teal-light: #5DCAA5;
+  --amber: #854F0B; --amber-bg: #FAEEDA; --amber-light: #EF9F27;
+  --blue: #185FA5; --blue-bg: #E6F1FB; --blue-light: #378ADD;
+  --purple: #534AB7; --purple-bg: #EEEDFE; --purple-light: #7F77DD;
+  --coral: #993C1D; --coral-bg: #FAECE7; --coral-light: #D85A30;
+  --green: #3B6D11; --green-bg: #EAF3DE; --green-light: #639922;
+  --red: #A32D2D; --red-bg: #FCEBEB;
+  --radius: 10px; --radius-sm: 6px; --mono: 'Courier New', 'Consolas', monospace;
+}
+@media (prefers-color-scheme: dark) {
+:root {
+  --bg: #111110; --bg2: #1a1a18; --bg3: #222220;
+  --text: #f0ede8; --text2: #a8a8a0; --text3: #6a6a64;
+  --border: rgba(255,255,255,0.10); --border2: rgba(255,255,255,0.20);
+  --teal: #5DCAA5; --teal-bg: #04342C; --teal-light: #9FE1CB;
+  --amber: #EF9F27; --amber-bg: #412402; --amber-light: #FAC775;
+  --blue: #85B7EB; --blue-bg: #042C53; --blue-light: #B5D4F4;
+  --purple: #AFA9EC; --purple-bg: #26215C; --purple-light: #CECBF6;
+  --coral: #F0997B; --coral-bg: #4A1B0C; --coral-light: #F5C4B3;
+  --green: #97C459; --green-bg: #173404; --green-light: #C0DD97;
+  --red: #E24B4A; --red-bg: #501313;
+}
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14px;line-height:1.5;min-height:100vh}
+.app{max-width:1000px;margin:0 auto;padding:24px 16px 60px}
+.top-bar{display:flex;align-items:baseline;gap:12px;margin-bottom:4px}
+.app-title{font-size:22px;font-weight:600;letter-spacing:-0.01em}
+.app-sub{font-size:13px;color:var(--text2)}
+.desc{font-size:13px;color:var(--text2);margin-bottom:20px;padding:10px 14px;background:var(--bg3);border-radius:var(--radius-sm);border-left:3px solid var(--teal)}
+.db-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px}
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:16px}
+.card h3{font-size:15px;margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.card .tag{display:inline-block;font-size:10px;padding:2px 8px;border-radius:100px;font-weight:600;letter-spacing:0.03em;margin-bottom:8px}
+.tag-teal{background:var(--teal-bg);color:var(--teal)}
+.tag-amber{background:var(--amber-bg);color:var(--amber)}
+.tag-blue{background:var(--blue-bg);color:var(--blue)}
+.tag-purple{background:var(--purple-bg);color:var(--purple)}
+.tag-coral{background:var(--coral-bg);color:var(--coral)}
+.tag-green{background:var(--green-bg);color:var(--green)}
+.tag-red{background:var(--red-bg);color:var(--red)}
+.card p{font-size:12px;color:var(--text2);line-height:1.5;margin-bottom:8px}
+.card ul{list-style:none;font-size:12px}
+.card ul li{padding:3px 0;color:var(--text2);display:flex;gap:6px;align-items:flex-start}
+.card ul li i{color:var(--teal);font-size:14px;flex-shrink:0;margin-top:1px}
+.card ul li .neg{color:var(--coral)}
+.section{margin-bottom:20px}
+.section-title{font-size:11px;text-transform:uppercase;letter-spacing:0.09em;color:var(--text3);font-weight:600;margin-bottom:12px;display:flex;align-items:center;gap:10px}
+.section-title::after{content:'';flex:1;height:1px;background:var(--border)}
+.req-table{width:100%;border-collapse:collapse;font-size:13px}
+.req-table th{font-size:10px;text-transform:uppercase;letter-spacing:0.07em;color:var(--text3);font-weight:600;padding:8px 10px;text-align:left;border-bottom:2px solid var(--border2)}
+.req-table td{padding:8px 10px;border-bottom:1px solid var(--border);vertical-align:top}
+.req-table tr:hover td{background:var(--bg3)}
+.req-table td:first-child{font-weight:500;white-space:nowrap}
+.failure-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px}
+.fcard{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:14px}
+.fcard h4{font-size:13px;margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.fcard .impact{font-size:11px;padding:6px 8px;background:var(--bg3);border-radius:var(--radius-sm);margin-top:6px;color:var(--text2);line-height:1.4}
+.scenario-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.scenario-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:14px}
+.scenario-card h4{font-size:13px;margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.scenario-card .rec{font-size:11px;padding:2px 8px;border-radius:100px;display:inline-block;font-weight:600;margin:4px 0 6px}
+.scenario-card p{font-size:12px;color:var(--text2);line-height:1.5}
+.scenario-card ul{list-style:none;font-size:12px;margin-top:6px}
+.scenario-card ul li{padding:2px 0;color:var(--text2);display:flex;gap:6px}
+.scenario-card ul li i{font-size:14px;flex-shrink:0;color:var(--teal)}
+@media(max-width:640px){.db-grid{grid-template-columns:1fr}.failure-grid{grid-template-columns:1fr}.scenario-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="top-bar">
+    <div class="app-title">Context Switching</div>
+    <div class="app-sub">Architecture · Cost Analysis · Optimization</div>
+  </div>
+  <div class="desc">A context switch saves and restores CPU state so multiple processes share a single core. The real cost extends beyond register save/load — cache misses, TLB flushes, and scheduler overhead dominate. Understanding each component is critical for latency-sensitive and throughput-oriented systems.</div>
+
+  <div class="section">
+    <div class="section-title">Architecture Components</div>
+    <div class="db-grid" id="comp-grid"></div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Context Switch Cost Breakdown</div>
+    <table class="req-table">
+      <thead><tr><th>Component</th><th style="width:120px">Cost (Cycles)</th><th>Impact</th></tr></thead>
+      <tbody id="cost-body"></tbody>
+    </table>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Process vs Thread Switch</div>
+    <table class="req-table">
+      <thead><tr><th>Attribute</th><th>Process Switch</th><th>Thread Switch</th></tr></thead>
+      <tbody id="compare-body"></tbody>
+    </table>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Optimization Techniques</div>
+    <table class="req-table">
+      <thead><tr><th>Technique</th><th>Benefit</th><th>Tradeoff</th></tr></thead>
+      <tbody id="opt-body"></tbody>
+    </table>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Failure Modes</div>
+    <div class="failure-grid" id="failure-grid"></div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Real-World Scenarios</div>
+    <div class="scenario-grid" id="scenarios-grid"></div>
+  </div>
+</div>
+
+<script>
+const COMPONENTS = [
+  { name: 'PCB (Process Control Block)', icon: 'ti-file-invoice', tag: 'teal',
+    desc: 'Kernel structure storing process state — registers, PC, stack pointer, memory maps, file descriptors. Saved and restored on every context switch.',
+    pros: ['Stores full execution state for reliable resumption', 'Efficient O(1) lookup via runqueue pointer'],
+    cons: ['Memory overhead (~1-2KB per process) adds up at scale', 'Must be located and dereferenced on every switch path'] },
+  { name: 'TSS (Task State Segment)', icon: 'ti-cpu-2', tag: 'purple',
+    desc: 'x86 hardware descriptor holding register snapshots. Used for hardware-assisted switching and interrupt stack pointer reload.',
+    pros: ['Hardware-accelerated switch via far jump/call', 'Automatic stack switch on privilege transitions'],
+    cons: ['x86-32 legacy — unused in 64-bit mode for task switching', 'Limited to one TSS per core (per-CPU allocation)'] },
+  { name: 'Kernel Stack', icon: 'ti-stack', tag: 'amber',
+    desc: 'Per-process kernel stack (4-16KB). Stores call frames during syscalls, interrupts, exceptions. Guard pages detect overflow.',
+    pros: ['Isolates kernel execution context per process', 'Fast per-cpu slab allocator (~100ns allocation)'],
+    cons: ['Fixed size — deep call chains risk stack overflow', '4KB × 100K processes = 400MB kernel virtual memory'] },
+  { name: 'TLB Flush', icon: 'ti-refresh', tag: 'coral',
+    desc: 'Invalidates cached virtual-to-physical mappings on address space switch. Prevents cross-process memory reads via stale TLB entries.',
+    pros: ['Enforces hardware memory isolation between processes', 'ASID support avoids full flush on modern CPUs'],
+    cons: ['100-1000 cycle cost from page walks on refill', 'TLB shootdown across cores (IPI storm at scale)'] },
+  { name: 'FPU / SIMD State', icon: 'ti-calculator', tag: 'green',
+    desc: '128-256 bytes of xmm/ymm registers. Used by HPC, media codecs, ML inference. Saved/restored lazily to avoid unnecessary overhead.',
+    pros: ['Preserves SIMD/FP computation across switch boundary', 'Lazy save/restore skips FPU if process never touches it'],
+    cons: ['128-256 bytes per direction — heavy on memory bandwidth', 'Lazy path incurs #NM fault trap (~300 cycles) on first access'] },
+  { name: 'Signal Frame', icon: 'ti-bell-ringing', tag: 'blue',
+    desc: 'Userspace stack frame pushed on signal delivery. Contains saved registers, signal mask, siginfo_t. Restored via sigreturn.',
+    pros: ['Delivers asynchronous events with full context preservation', 'Nested signal delivery supported via stacked frames'],
+    cons: ['Consumes ~500 bytes of userspace stack per delivery', 'sigreturn is a common ROP gadget (Sigreturn-Oriented Programming)'] },
+];
+
+const COSTS = [
+  { comp: 'Register Save/Load', cost: '100–500', impact: 'Pure CPU overhead (~0.5µs). 64+ general-purpose + special registers copied to/from kernel stack.' },
+  { comp: 'TLB Flush', cost: '100–1,000', impact: 'Page walks refill TLB on first access. ASID mitigates but partial shootdown still costly on multi-core.' },
+  { comp: 'Cache Miss Penalty', cost: '10,000–50,000', impact: 'Dominant cost. L1/L2 cold after switch. Working set rebuild takes 1-10ms of real time.' },
+  { comp: 'FPU/SIMD Save/Restore', cost: '1,000–3,000', impact: '128-256 bytes of SIMD state. Lazy save avoids it if process never uses FPU.' },
+  { comp: 'ASID Switch', cost: '10–50', impact: 'Address Space Identifier preserves TLB entries. Near-zero marginal cost on modern x86/ARM.' },
+  { comp: 'Scheduler Dispatch', cost: '500–2,000', impact: 'CFS or O(1) picks next process. CFS red-black tree has O(log n) insertion + selection.' },
+  { comp: 'Signal Delivery', cost: '3,000–5,000', impact: 'Signal frame setup on userspace stack + sigreturn syscall. Stacked for nested signals.' },
+];
+
+const COMPARE_SWITCH = [
+  { attr: 'Address Space', proc: 'Switched (CR3/pagetable base reloaded)', thread: 'Shared (same CR3 value)' },
+  { attr: 'TLB Impact', proc: 'Full or partial flush (unless ASID tagged)', thread: 'Preserved (same address space)' },
+  { attr: 'Cache State', proc: 'Cold (working set evicted from L1/L2)', thread: 'Warm (shared cache lines preserved)' },
+  { attr: 'Kernel Path', proc: 'Full switch (mm, fs, creds, files reloaded)', thread: 'Light (registers + stack pointer only)' },
+  { attr: 'Typical Latency', proc: '3-10µs switch + 1-10ms cache warmup', thread: '0.5-2µs (no address space change)' },
+  { attr: 'Total Overhead', proc: 'High (TLB + cache + scheduler overhead)', thread: 'Low (register save/restore + scheduler dispatch)' },
+];
+
+const OPTIMIZATIONS = [
+  { tech: 'Ticket Locks', benefit: 'FIFO fair spinlock ordering. Prevents starvation on heavily contended locks in scheduler and interrupt paths.', tradeoff: 'Cache line bouncing on handoff. NUMA-unaware — MCS/qspinlock preferred on large systems.' },
+  { tech: 'RCU (Read-Copy-Update)', benefit: 'Wait-free reads — no locks, no atomic ops. Ideal for read-mostly scheduler data structures (runqueues).', tradeoff: 'Slow write path (synchronize_rcu). Grace period tracking adds memory reclamation complexity.' },
+  { tech: 'Per-CPU Data', benefit: 'Zero contention — each CPU owns private copy. No cache bouncing, no locking in scheduler hot paths.', tradeoff: 'Complex on CPU hotplug (migration needed). Memory scales linearly with core count.' },
+  { tech: 'Restartable Sequences (rseq)', benefit: 'Userspace atomics without syscalls. Fast path completes without kernel involvement for per-CPU data.', tradeoff: 'Requires Linux 4.18+. Critical sections limited to ~100 instructions (must fit in icache).' },
+];
+
+const FAILURES = [
+  { title: 'TLB Thrashing', icon: 'ti-temperature', tag: 'coral',
+    desc: 'High context switch rate causes continuous TLB misses. Each switch flushes mappings, forcing page walks on nearly every memory access.',
+    impact: 'CPU spends 50%+ cycles on page walks. Effective throughput drops 2-10x under heavy switching.' },
+  { title: 'Cache Pollution', icon: 'ti-cloud-storm', tag: 'amber',
+    desc: 'Process A\'s working set evicted from L1/L2 by B. On resume, A faces cold cache — rebuilding from scratch at DRAM latency.',
+    impact: 'Latency spikes of 1-10ms. 100+ processes per core collapse throughput from constant cache turnover.' },
+  { title: 'Priority Inversion', icon: 'ti-alert-triangle', tag: 'red',
+    desc: 'Low-priority task holds lock needed by high-priority task. Medium-priority tasks preempt the holder, blocking the high-priority one indefinitely.',
+    impact: 'Deterministic deadline misses in RT systems. Priority inheritance protocol mitigates but adds scheduler complexity.' },
+];
+
+const SCENARIOS = [
+  { title: 'High-Frequency Trading', icon: 'ti-chart-arrows', rec: 'isolcpus + busy-poll', tag: 'teal',
+    desc: '500µs latency budget. A single context switch costs 10µs + 1ms cache warmup. Cannot afford any switch during the critical path.',
+    why: 'Reserve cores via isolcpus to remove them from the scheduler. Busy-poll the NIC instead of interrupt-driven I/O. 2MB huge pages reduce TLB refill cost 512x.',
+    points: ['isolcpus=2,3 removes cores from scheduler balancing', 'Busy-poll driver: zero interrupt context switches', '2MB huge pages → 512x fewer TLB entries to refill', 'Thread pinned with sched_setaffinity (no migration)'] },
+  { title: 'Web Server (10K Connections)', icon: 'ti-server', rec: 'Event loop + thread pool', tag: 'blue',
+    desc: '10K concurrent connections. Synchronous blocking causes 10K context switches per I/O wait — CPU pegged on switching overhead alone.',
+    why: 'epoll/kqueue event loop handles all connections in one thread. Zero context switches per I/O. Thread pool sized to core count for CPU-bound work.',
+    points: ['epoll_wait returns ready FDs in O(1) — no per-connection threads', 'Single event loop thread = zero process switches per I/O', 'Thread pool bound to CPU count (no oversubscription)', 'Work stealing balances CPU load across pool threads'] },
+  { title: 'Real-Time Audio', icon: 'ti-music', rec: 'SCHED_FIFO + mlockall', tag: 'purple',
+    desc: '5ms audio buffer. A context switch of 3-10ms causes audible glitch. Need deterministic scheduling with bounded worst-case latency.',
+    why: 'SCHED_FIFO real-time priority preempts all normal tasks. mlockall locks pages to prevent fault-induced switches. Full tickless operation on an isolated core.',
+    points: ['SCHED_FIFO priority 99 — preempts all normal tasks', 'mlockall(MCL_FUTURE) — zero page faults guaranteed', 'nohz_full + rcu_nocbs — tickless isolated core', 'Never yields CPU — busy-spin audio pipeline'] },
+];
+
+function render() {
+  renderComponents();
+  renderCosts();
+  renderCompareSwitch();
+  renderOptimizations();
+  renderFailures();
+  renderScenarios();
+}
+
+function renderComponents() {
+  const grid = document.getElementById('comp-grid');
+  grid.innerHTML = COMPONENTS.map(d => `
+    <div class="card">
+      <h3><i class="${d.icon}" style="color:var(--${d.tag})"></i> ${d.name}</h3>
+      <span class="tag tag-${d.tag}">${d.pros.length} pros</span>
+      <p>${d.desc}</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:6px">
+        <div style="padding:6px;background:var(--bg3);border-radius:4px;font-size:10px;color:var(--text3)">
+          <i class="ti ti-check" style="color:var(--teal)"></i> ${d.pros.slice(0,2).join('<br><i class="ti ti-check" style="color:var(--teal)"></i> ')}
+        </div>
+        <div style="padding:6px;background:var(--bg3);border-radius:4px;font-size:10px;color:var(--text3)">
+          <i class="ti ti-x" style="color:var(--coral)"></i> ${d.cons.slice(0,2).join('<br><i class="ti ti-x" style="color:var(--coral)"></i> ')}
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderCosts() {
+  const tbody = document.getElementById('cost-body');
+  tbody.innerHTML = COSTS.map(c => `
+    <tr><td style="font-weight:600">${c.comp}</td><td style="font-variant-numeric:tabular-nums">${c.cost}</td><td style="font-size:12px;color:var(--text2);line-height:1.4">${c.impact}</td></tr>
+  `).join('');
+}
+
+function renderCompareSwitch() {
+  const tbody = document.getElementById('compare-body');
+  tbody.innerHTML = COMPARE_SWITCH.map(c => `
+    <tr><td style="font-weight:500">${c.attr}</td><td style="font-size:12px;color:var(--text2);line-height:1.4">${c.proc}</td><td style="font-size:12px;color:var(--text2);line-height:1.4">${c.thread}</td></tr>
+  `).join('');
+}
+
+function renderOptimizations() {
+  const tbody = document.getElementById('opt-body');
+  tbody.innerHTML = OPTIMIZATIONS.map(o => `
+    <tr><td style="font-weight:600">${o.tech}</td><td style="font-size:12px;color:var(--text2);line-height:1.4">${o.benefit}</td><td style="font-size:12px;color:var(--coral);line-height:1.4">${o.tradeoff}</td></tr>
+  `).join('');
+}
+
+function renderFailures() {
+  const grid = document.getElementById('failure-grid');
+  grid.innerHTML = FAILURES.map(f => `
+    <div class="fcard">
+      <h4><i class="${f.icon}" style="color:var(--${f.tag})"></i> ${f.title}</h4>
+      <p style="font-size:12px;color:var(--text2);line-height:1.5;margin-bottom:8px">${f.desc}</p>
+      <div class="impact"><i class="ti ti-alert-circle" style="color:var(--${f.tag})"></i> Impact: ${f.impact}</div>
+    </div>
+  `).join('');
+}
+
+function renderScenarios() {
+  const grid = document.getElementById('scenarios-grid');
+  grid.innerHTML = SCENARIOS.map(s => `
+    <div class="scenario-card">
+      <h4><i class="${s.icon}" style="color:var(--${s.tag})"></i> ${s.title}</h4>
+      <span class="rec" style="background:var(--${s.tag}-bg);color:var(--${s.tag})">${s.rec}</span>
+      <p>${s.desc}</p>
+      <div style="margin-top:8px;padding:8px;background:var(--bg3);border-radius:var(--radius-sm);font-size:11px;color:var(--text2);line-height:1.5">
+        <strong style="color:var(--${s.tag})">Why:</strong> ${s.why}
+      </div>
+      <ul>${s.points.map(p => `<li><i class="ti ti-check" style="color:var(--${s.tag})"></i> ${p}</li>`).join('')}</ul>
+    </div>
+  `).join('');
+}
+
+render();
+</script>
+</body>
+</html>

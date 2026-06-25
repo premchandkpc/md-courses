@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Deadlock Architecture — System Design</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/tabler-icons.min.css">
+<style>
+:root{--bg:#f8f7f4;--bg2:#fff;--bg3:#f0efeb;--text:#1a1a18;--text2:#5c5c58;--text3:#8a8a84;--border:rgba(0,0,0,.10);--border2:rgba(0,0,0,.18);--teal:#0F6E56;--teal-bg:#E1F5EE;--amber:#854F0B;--amber-bg:#FAEEDA;--blue:#185FA5;--blue-bg:#E6F1FB;--purple:#534AB7;--purple-bg:#EEEDFE;--coral:#993C1D;--coral-bg:#FAECE7;--green:#3B6D11;--green-bg:#EAF3DE;--red:#A32D2D;--red-bg:#FCEBEB;--radius:10px;--radius-sm:6px}
+@media(prefers-color-scheme:dark){:root{--bg:#111110;--bg2:#1a1a18;--bg3:#222220;--text:#f0ede8;--text2:#a8a8a0;--text3:#6a6a64;--border:rgba(255,255,255,.10);--border2:rgba(255,255,255,.20);--teal:#5DCAA5;--teal-bg:#04342C;--amber:#EF9F27;--amber-bg:#412402;--blue:#85B7EB;--blue-bg:#042C53;--purple:#AFA9EC;--purple-bg:#26215C;--coral:#F0997B;--coral-bg:#4A1B0C;--green:#97C459;--green-bg:#173404;--red:#E24B4A;--red-bg:#501313}}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14px;line-height:1.5;min-height:100vh}
+.app{max-width:1000px;margin:0 auto;padding:24px 16px 60px}
+.top-bar{display:flex;align-items:baseline;gap:12px;margin-bottom:4px}
+.app-title{font-size:22px;font-weight:600;letter-spacing:-.01em}
+.app-sub{font-size:13px;color:var(--text2)}
+.desc{font-size:13px;color:var(--text2);margin-bottom:20px;padding:10px 14px;background:var(--bg3);border-radius:var(--radius-sm);border-left:3px solid var(--teal)}
+.db-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px}
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:16px}
+.card h3{font-size:15px;margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.card .tag{display:inline-block;font-size:10px;padding:2px 8px;border-radius:100px;font-weight:600;letter-spacing:.03em;margin-bottom:8px}
+.tag-teal,.tag-amber,.tag-blue,.tag-purple,.tag-coral,.tag-green{padding:2px 8px;border-radius:100px;font-weight:600;letter-spacing:.03em;font-size:10px}
+.tag-teal{background:var(--teal-bg);color:var(--teal)}.tag-amber{background:var(--amber-bg);color:var(--amber)}.tag-blue{background:var(--blue-bg);color:var(--blue)}.tag-purple{background:var(--purple-bg);color:var(--purple)}.tag-coral{background:var(--coral-bg);color:var(--coral)}.tag-green{background:var(--green-bg);color:var(--green)}
+.card p{font-size:12px;color:var(--text2);line-height:1.5;margin-bottom:8px}
+.card ul{list-style:none;font-size:12px}.card ul li{padding:3px 0;color:var(--text2);display:flex;gap:6px;align-items:flex-start}
+.card ul li i{color:var(--teal);font-size:14px;flex-shrink:0;margin-top:1px}
+.section{margin-bottom:20px}
+.section-title{font-size:11px;text-transform:uppercase;letter-spacing:.09em;color:var(--text3);font-weight:600;margin-bottom:12px;display:flex;align-items:center;gap:10px}
+.section-title::after{content:'';flex:1;height:1px;background:var(--border)}
+.req-table{width:100%;border-collapse:collapse;font-size:13px}
+.req-table th{font-size:10px;text-transform:uppercase;letter-spacing:.07em;color:var(--text3);font-weight:600;padding:8px 10px;text-align:left;border-bottom:2px solid var(--border2)}
+.req-table td{padding:8px 10px;border-bottom:1px solid var(--border);vertical-align:top}
+.req-table tr:hover td{background:var(--bg3)}.req-table td:first-child{font-weight:500;white-space:nowrap}
+.why-box{margin-top:16px;padding:12px;background:var(--bg3);border-radius:var(--radius-sm);border-left:3px solid var(--blue)}
+.why-box h4{font-size:12px;margin-bottom:4px;color:var(--text)}.why-box p{font-size:12px;color:var(--text2);line-height:1.5}
+.scenario-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.scenario-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:14px}
+.scenario-card h4{font-size:13px;margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.scenario-card p{font-size:12px;color:var(--text2);line-height:1.5}
+.scenario-card ul{list-style:none;font-size:12px;margin-top:6px}.scenario-card ul li{padding:2px 0;color:var(--text2);display:flex;gap:6px}
+.scenario-card ul li i{font-size:14px;flex-shrink:0;color:var(--teal)}
+.failure-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px}
+@media(max-width:640px){.db-grid{grid-template-columns:1fr}.failure-grid{grid-template-columns:1fr}.scenario-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="top-bar">
+    <div class="app-title">Deadlock Architecture</div>
+    <div class="app-sub">Detection · Prevention · Avoidance · Recovery</div>
+  </div>
+  <div class="desc">Deadlock: threads in a circular wait, each holding a resource another needs. Four Coffman conditions must all hold. Prevention eliminates one condition; detection finds cycles in the wait-for graph via DFS; Banker's algorithm avoids unsafe states by simulating allocation. This page covers all strategies, failure modes, and production scenarios.</div>
+
+  <div class="section">
+    <div class="section-title">Components</div>
+    <div class="db-grid" id="components-grid"></div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Four Coffman Conditions</div>
+    <table class="req-table">
+      <thead><tr><th style="width:140px">Condition</th><th>Description</th><th>Prevention Strategy</th></tr></thead>
+      <tbody id="conditions-body"></tbody>
+    </table>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Detection vs Prevention</div>
+    <div class="why-box">
+      <h4><i class="ti ti-alert-triangle" style="color:var(--amber)"></i> The Real Answer</h4>
+      <p>Most production systems use <strong>both</strong>. Prevention via lock ordering eliminates deadlock by design. Detection + timeout catches violations from misordered acquisitions. Banker's algorithm is rarely used in practice — too conservative and requires max claims. Start with lock ordering + timeout, add WFG monitoring for production observability.</p>
+    </div>
+    <table class="req-table">
+      <thead><tr><th style="width:140px">Dimension</th><th>Deadlock Detection</th><th>Deadlock Prevention</th></tr></thead>
+      <tbody id="comparison-body"></tbody>
+    </table>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Banker's Algorithm — Safe vs Unsafe State</div>
+    <table class="req-table">
+      <thead><tr><th style="width:100px">State</th><th>Meaning</th><th>Resource Allocation</th><th>Example</th></tr></thead>
+      <tbody id="banker-body"></tbody>
+    </table>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Failure Modes</div>
+    <div class="failure-grid" id="failure-grid"></div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Real Scenarios</div>
+    <div class="scenario-grid" id="scenarios-grid"></div>
+  </div>
+</div>
+
+<script>
+const COMPONENTS = [
+  {name:'Deadlock Detection',icon:'ti-search',tag:'teal',desc:'Periodic cycle detection in resource allocation or wait-for graph via DFS/BFS. O(n²) but catches deadlocks prevention misses.',
+    pros:['Catches deadlocks prevention misses','No false positives if graph accurate'],cons:['Runtime overhead (scan all processes)','Detection delay until next scan']},
+  {name:'Deadlock Recovery',icon:'ti-refresh',tag:'coral',desc:'Break deadlock via termination, rollback, or resource preemption. Victim selection minimises overall cost.',
+    pros:['Resolves deadlock automatically','Can rollback to safe checkpoint'],cons:['Killing processes loses work','Starvation risk if same victim chosen repeatedly']},
+  {name:'Deadlock Prevention',icon:'ti-shield',tag:'blue',desc:'Eliminate one of four Coffman conditions. Lock ordering for circular wait. Request-all for hold-and-wait.',
+    pros:['Zero runtime detection overhead','Guaranteed no deadlock by design'],cons:['Reduces resource utilisation','Request-all wastes resources while idle']},
+  {name:'Deadlock Avoidance',icon:'ti-chart-lines',tag:'purple',desc:'Dynamic resource allocation: grant only if resulting state is safe. Banker\'s algorithm is the canonical implementation.',
+    pros:['Better utilisation than prevention','Knows future requests (max claim)'],cons:['Requires future knowledge (max claim)','O(n×m) complexity per request']},
+  {name:'Banker\'s Algorithm',icon:'ti-calculator',tag:'amber',desc:'Dijkstra: grant request only if safe sequence exists. Tracks available, max, allocated, and needed resources.',
+    pros:['No deadlock, no starvation','Optimal utilisation for known max'],cons:['Assumes fixed max claim (unrealistic)','Impractical for dynamic systems']},
+  {name:'Wait-For Graph',icon:'ti-network',tag:'green',desc:'Directed graph where nodes=processes and edges="waiting for". Cycle detection via DFS. Used in Postgres, MySQL InnoDB.',
+    pros:['Precise deadlock detection','Built into many DB engines natively'],cons:['Only catches current deadlocks','Graph rebuild can be expensive at scale']},
+];
+
+const CONDITIONS = [
+  {name:'Mutual Exclusion',desc:'Resource held by one thread at a time. Non-sharable: mutexes, file handles.',prevent:'Use shareable resources (read-write locks, shared memory). Not always feasible.'},
+  {name:'Hold & Wait',desc:'Thread holds allocated resources while requesting additional ones. Lock A held, requests lock B.',prevent:'Request all resources at once (atomic acquisition). Tradeoff: resource underutilisation, starvation risk.'},
+  {name:'No Preemption',desc:'Resources cannot be forcibly taken from a thread. Only the holder can voluntarily release them.',prevent:'Timeout-based acquisition: release and retry on failure. Adds CPU overhead but prevents deadlock.'},
+  {name:'Circular Wait',desc:'Closed chain: T1→R1→T2→R2→T1. Each thread holds a resource requested by the next in the cycle.',prevent:'Strict lock ordering (global hierarchy). All threads acquire locks in same order. Most practical. Used in Postgres, Linux kernel.'},
+];
+
+const COMPARISON = [
+  {dim:'Approach',det:'Let deadlock happen, then detect and recover',prev:'Guarantee deadlock can never occur'},
+  {dim:'Complexity',det:'Low (periodic cycle scan, O(n²))',prev:'Medium (design-time ordering). Zero runtime cost.'},
+  {dim:'Utilisation',det:'Full (no artificial constraints)',prev:'Reduced (request-all wastes resources)'},
+  {dim:'Concurrency',det:'Maximum (no acquisition restrictions)',prev:'Limited (forced ordering reduces parallelism)'},
+  {dim:'Starvation Risk',det:'Low (any victim can be chosen)',prev:'Higher (ordering biases certain patterns)'},
+  {dim:'Best For',det:'Databases, kernels where prevention is too restrictive',prev:'Embedded, real-time with known lock hierarchies'},
+];
+
+const BANKER = [
+  {state:'Safe',meaning:'Exists an ordering allowing all processes to complete',alloc:'Max(avail)+sum(alloc)=total. Sequence P1→P3→P2 satisfies all.',example:'Avail [3,2,1]. P1 needs [1,1,0]. Grant, finish, release, P3 runs.'},
+  {state:'Unsafe',meaning:'No safe sequence. Deadlock may occur but not guaranteed.',alloc:'No process can be satisfied even if all holders release. System at risk.',example:'Avail [1,1,0]. Every process needs ≥2 of resource A. No safe path.'},
+  {state:'Deadlock',meaning:'Cycle exists — processes permanently blocked',alloc:'Each holds ≥1 resource and waits for ≥1 held by another in cycle.',example:'P1 holds R1 waits R2. P2 holds R2 waits R1. No progress.'},
+];
+
+const FAILURES = [
+  {title:'Starvation',icon:'ti-hourglass-empty',tag:'coral',desc:'Thread never gets resource because others always win. Repeated victim.',cost:'Unbounded delay. No progress. Degrades to livelock.',prevent:'Age-based priority. FIFO/ticket locks. Bounded wait guarantee.'},
+  {title:'Livelock',icon:'ti-loop',tag:'amber',desc:'Threads repeatedly acquire and release in response to each other. Active but stuck.',cost:'Wasted CPU (100% utilisation). No user-visible progress.',prevent:'Randomised exponential backoff. Different retry timers per thread.'},
+  {title:'Recovery Cost',icon:'ti-currency-dollar',tag:'red',desc:'Overhead of rollback, termination, or preemption after deadlock detection.',cost:'Lost work. Rollback replay. Cascading aborts in transactions.',prevent:'Checkpointing, idempotent ops, stateless recovery.'},
+];
+
+const SCENARIOS = [
+  {title:'Two-Phase Commit Deadlock',icon:'ti-database',rec:'Lock ordering + timeout',tag:'teal',desc:'Distributed xact holds DB locks across two shards. A→B + B→A = global deadlock. Coordinator cannot decide.',
+    why:'Lock ordering prevents this entirely. All shards acquire locks in the same ascending order. Timeout gives a safety net for violations or unforeseen lock chains.',
+    points:['Global lock ordering (shard ID ascending)','Set lock_timeout per statement (e.g., 5s PostgreSQL)','Application retry with exponential backoff','Monitor pg_locks for blocked processes > threshold']},
+  {title:'Thread Pool Starvation',icon:'ti-cpu',rec:'Bounded pool + queue',tag:'blue',desc:'N threads in pool. All block waiting for IO that posts callbacks to same pool. No thread left for callbacks.',
+    why:'This is a liveness failure, not a classic deadlock. The fix is structural: separate pools for IO and compute, or use non-blocking IO that does not occupy a thread while awaiting data.',
+    points:['Separate IO and compute thread pools','Use async IO (epoll, io_uring) instead of blocking','Queue with bounded size + rejection policy','Monitor pool utilisation and active thread count']},
+  {title:'Phantom Deadlock',icon:'ti-ghost',rec:'Ignore + retry',tag:'purple',desc:'Timeout-based detection fires prematurely. Process was not deadlocked — just slow (GC, page fault). Killed unnecessarily.',
+    why:'Rate-limit detection to avoid false positives. Wait for multiple consecutive cycles before declaring deadlock. Tune timeouts on P99 latency, not mean, to survive normal jitter.',
+    points:['Multi-cycle detection (wait 2+ scans before acting)','Tune timeout based on P99 execution time, not mean','Design idempotent operations (safe to retry)','Log all recovery actions for post-mortem analysis']},
+];
+
+function render(){renderComponents();renderConditions();renderComparison();renderBanker();renderFailures();renderScenarios()}
+
+function renderComponents(){
+  const grid=document.getElementById('components-grid');
+  if(!grid) return;
+  grid.innerHTML=COMPONENTS.map(c=>`
+    <div class="card">
+      <h3><i class="ti ${c.icon}" style="color:var(--${c.tag})"></i> ${c.name}</h3>
+      <span class="tag tag-${c.tag}">${c.pros.length} pros / ${c.cons.length} cons</span>
+      <p>${c.desc}</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:6px">
+        <div style="padding:6px;background:var(--bg3);border-radius:4px;font-size:10px;color:var(--text3)">
+          <i class="ti ti-check" style="color:var(--teal)"></i> ${c.pros[0]}<br><i class="ti ti-check" style="color:var(--teal)"></i> ${c.pros[1]}
+        </div>
+        <div style="padding:6px;background:var(--bg3);border-radius:4px;font-size:10px;color:var(--text3)">
+          <i class="ti ti-x" style="color:var(--coral)"></i> ${c.cons[0]}<br><i class="ti ti-x" style="color:var(--coral)"></i> ${c.cons[1]}
+        </div>
+      </div>
+    </div>
+  `).join('')}
+
+function renderConditions(){
+  const tbody=document.getElementById('conditions-body');
+  if(!tbody) return;
+  tbody.innerHTML=CONDITIONS.map(c=>`
+    <tr>
+      <td style="font-weight:600;color:var(--text)">${c.name}</td>
+      <td style="font-size:12px;color:var(--text2);line-height:1.4">${c.desc}</td>
+      <td style="font-size:12px;color:var(--green);line-height:1.4">${c.prevent}</td>
+    </tr>
+  `).join('')}
+
+function renderComparison(){
+  const tbody=document.getElementById('comparison-body');
+  if(!tbody) return;
+  tbody.innerHTML=COMPARISON.map(c=>`
+    <tr>
+      <td style="font-weight:600;color:var(--text)">${c.dim}</td>
+      <td style="font-size:12px;color:var(--text2);line-height:1.4">${c.det}</td>
+      <td style="font-size:12px;color:var(--text2);line-height:1.4">${c.prev}</td>
+    </tr>
+  `).join('')}
+
+function renderBanker(){
+  const tbody=document.getElementById('banker-body');
+  if(!tbody) return;
+  tbody.innerHTML=BANKER.map(b=>`
+    <tr>
+      <td style="font-weight:600;color:var(--text)">${b.state}</td>
+      <td style="font-size:12px;color:var(--text2);line-height:1.4">${b.meaning}</td>
+      <td style="font-size:12px;color:var(--text2);line-height:1.4">${b.alloc}</td>
+      <td style="font-size:12px;color:var(--text2);line-height:1.4">${b.example}</td>
+    </tr>
+  `).join('')}
+
+function renderFailures(){
+  const grid=document.getElementById('failure-grid');
+  if(!grid) return;
+  grid.innerHTML=FAILURES.map(f=>`
+    <div class="card">
+      <h3><i class="ti ${f.icon}" style="color:var(--${f.tag})"></i> ${f.title}</h3>
+      <span class="tag tag-${f.tag}">failure mode</span>
+      <p>${f.desc}</p>
+      <div style="margin-top:8px;padding:6px;background:var(--bg3);border-radius:4px;font-size:10px;color:var(--coral);line-height:1.4">
+        <i class="ti ti-alert-triangle" style="color:var(--coral)"></i> Cost: ${f.cost}
+      </div>
+      <div style="margin-top:4px;padding:6px;background:var(--bg3);border-radius:4px;font-size:10px;color:var(--teal);line-height:1.4">
+        <i class="ti ti-check" style="color:var(--teal)"></i> Prevention: ${f.prevent}
+      </div>
+    </div>
+  `).join('')}
+
+function renderScenarios(){
+  const grid=document.getElementById('scenarios-grid');
+  if(!grid) return;
+  grid.innerHTML=SCENARIOS.map(s=>`
+    <div class="scenario-card">
+      <h4><i class="ti ${s.icon}" style="color:var(--${s.tag})"></i> ${s.title}</h4>
+      <span class="rec tag-${s.tag}" style="font-size:11px;padding:2px 8px;border-radius:100px;display:inline-block;font-weight:600;margin:4px 0 8px;background:var(--${s.tag}-bg);color:var(--${s.tag})">${s.rec}</span>
+      <p>${s.desc}</p>
+      ${s.why?`<div class="why-box" style="margin-top:8px;"><h4><i class="ti ti-alert-circle" style="color:var(--${s.tag})"></i> Why</h4><p>${s.why}</p></div>`:''}
+      <ul>${s.points.map(p=>`<li><i class="ti ti-check" style="color:var(--${s.tag})"></i> ${p}</li>`).join('')}</ul>
+    </div>
+  `).join('')}
+
+render();
+</script>
+</body>
+</html>

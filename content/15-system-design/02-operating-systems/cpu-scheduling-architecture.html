@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CPU Scheduling — System Design</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/tabler-icons.min.css">
+<style>
+:root {
+  --bg: #f8f7f4; --bg2: #ffffff; --bg3: #f0efeb;
+  --text: #1a1a18; --text2: #5c5c58; --text3: #8a8a84;
+  --border: rgba(0,0,0,0.10); --border2: rgba(0,0,0,0.18);
+  --teal: #0F6E56; --teal-bg: #E1F5EE; --teal-light: #5DCAA5;
+  --amber: #854F0B; --amber-bg: #FAEEDA; --amber-light: #EF9F27;
+  --blue: #185FA5; --blue-bg: #E6F1FB; --blue-light: #378ADD;
+  --purple: #534AB7; --purple-bg: #EEEDFE; --purple-light: #7F77DD;
+  --coral: #993C1D; --coral-bg: #FAECE7; --coral-light: #D85A30;
+  --green: #3B6D11; --green-bg: #EAF3DE; --green-light: #639922;
+  --red: #A32D2D; --red-bg: #FCEBEB;
+  --radius: 10px; --radius-sm: 6px; --mono: 'Courier New', 'Consolas', monospace;
+}
+@media (prefers-color-scheme: dark) {
+:root {
+  --bg: #111110; --bg2: #1a1a18; --bg3: #222220;
+  --text: #f0ede8; --text2: #a8a8a0; --text3: #6a6a64;
+  --border: rgba(255,255,255,0.10); --border2: rgba(255,255,255,0.20);
+  --teal: #5DCAA5; --teal-bg: #04342C; --teal-light: #9FE1CB;
+  --amber: #EF9F27; --amber-bg: #412402; --amber-light: #FAC775;
+  --blue: #85B7EB; --blue-bg: #042C53; --blue-light: #B5D4F4;
+  --purple: #AFA9EC; --purple-bg: #26215C; --purple-light: #CECBF6;
+  --coral: #F0997B; --coral-bg: #4A1B0C; --coral-light: #F5C4B3;
+  --green: #97C459; --green-bg: #173404; --green-light: #C0DD97;
+  --red: #E24B4A; --red-bg: #501313;
+}
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14px;line-height:1.5;min-height:100vh}
+.app{max-width:1000px;margin:0 auto;padding:24px 16px 60px}
+.top-bar{display:flex;align-items:baseline;gap:12px;margin-bottom:4px}
+.app-title{font-size:22px;font-weight:600;letter-spacing:-0.01em}
+.app-sub{font-size:13px;color:var(--text2)}
+.desc{font-size:13px;color:var(--text2);margin-bottom:20px;padding:10px 14px;background:var(--bg3);border-radius:var(--radius-sm);border-left:3px solid var(--teal)}
+.db-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px}
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:16px}
+.card h3{font-size:15px;margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.card .tag{display:inline-block;font-size:10px;padding:2px 8px;border-radius:100px;font-weight:600;letter-spacing:0.03em;margin-bottom:8px}
+.tag-teal{background:var(--teal-bg);color:var(--teal)}
+.tag-amber{background:var(--amber-bg);color:var(--amber)}
+.tag-blue{background:var(--blue-bg);color:var(--blue)}
+.tag-purple{background:var(--purple-bg);color:var(--purple)}
+.tag-coral{background:var(--coral-bg);color:var(--coral)}
+.tag-green{background:var(--green-bg);color:var(--green)}
+.card p{font-size:12px;color:var(--text2);line-height:1.5;margin-bottom:8px}
+.card ul{list-style:none;font-size:12px}
+.card ul li{padding:3px 0;color:var(--text2);display:flex;gap:6px;align-items:flex-start}
+.card ul li i{color:var(--teal);font-size:14px;flex-shrink:0;margin-top:1px}
+.card ul li .neg{color:var(--coral)}
+.section{margin-bottom:20px}
+.section-title{font-size:11px;text-transform:uppercase;letter-spacing:0.09em;color:var(--text3);font-weight:600;margin-bottom:12px;display:flex;align-items:center;gap:10px}
+.section-title::after{content:'';flex:1;height:1px;background:var(--border)}
+.req-table{width:100%;border-collapse:collapse;font-size:13px}
+.req-table th{font-size:10px;text-transform:uppercase;letter-spacing:0.07em;color:var(--text3);font-weight:600;padding:8px 10px;text-align:left;border-bottom:2px solid var(--border2)}
+.req-table td{padding:8px 10px;border-bottom:1px solid var(--border);vertical-align:top}
+.req-table tr:hover td{background:var(--bg3)}
+.req-table td:first-child{font-weight:500;white-space:nowrap}
+.scenario-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.scenario-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:14px}
+.scenario-card h4{font-size:13px;margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.scenario-card .rec{font-size:11px;padding:2px 8px;border-radius:100px;display:inline-block;font-weight:600;margin:4px 0 6px}
+.scenario-card p{font-size:12px;color:var(--text2);line-height:1.5}
+.scenario-card ul{list-style:none;font-size:12px;margin-top:6px}
+.scenario-card ul li{padding:2px 0;color:var(--text2);display:flex;gap:6px}
+.scenario-card ul li i{font-size:14px;flex-shrink:0;color:var(--teal)}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:6px}
+.mini-box{padding:6px;background:var(--bg3);border-radius:4px;font-size:10px;color:var(--text3)}
+@media(max-width:640px){.db-grid{grid-template-columns:1fr}.scenario-grid{grid-template-columns:1fr}.two-col{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="top-bar">
+    <div class="app-title">CPU Scheduling</div>
+    <div class="app-sub">Algorithms · Preemption · Fairness · Real-World OS</div>
+  </div>
+  <div class="desc">How does the OS decide which process runs next? The scheduler balances throughput, fairness, and latency across competing processes. This guide covers scheduling algorithms, architecture components, and real-world OS schedulers.</div>
+
+  <div class="section">
+    <div class="section-title">Architecture Components</div>
+    <div class="db-grid" id="arch-grid"></div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Scheduling Algorithms</div>
+    <table class="req-table">
+      <thead><tr><th>Algorithm</th><th>Fairness</th><th>Starvation</th><th>Overhead</th><th>Use Case</th></tr></thead>
+      <tbody id="algo-body"></tbody>
+    </table>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Algorithm Tradeoffs</div>
+    <table class="req-table">
+      <thead><tr><th>Algorithm</th><th>Fairness</th><th>Throughput</th><th>Latency</th><th>Tradeoff</th></tr></thead>
+      <tbody id="tradeoff-body"></tbody>
+    </table>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Preemptive vs Non-Preemptive</div>
+    <table class="req-table">
+      <thead><tr><th style="width:140px">Dimension</th><th>Preemptive</th><th>Non-Preemptive</th></tr></thead>
+      <tbody id="preempt-body"></tbody>
+    </table>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Scheduling in Practice</div>
+    <table class="req-table">
+      <thead><tr><th style="width:100px">OS</th><th>Scheduler</th><th>Strategy</th><th>Key Feature</th></tr></thead>
+      <tbody id="os-body"></tbody>
+    </table>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Failure Modes</div>
+    <div class="scenario-grid" id="failure-grid"></div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Key Monitoring Metrics</div>
+    <div class="why-box" style="margin-bottom:20px">
+      <h4><i class="ti ti-dashboard" style="color:var(--teal)"></i> Scheduler Health Checklist</h4>
+      <p><strong>Scheduling latency</strong> — time from process becoming runnable to actually running. Target <10ms for interactive.<br>
+      <strong>Context switch rate</strong> — if >50K/s per core, timeslice may be too small.<br>
+      <strong>Run queue depth</strong> — sustained >2-3 per core means overloaded system.<br>
+      <strong>Priority distribution</strong> — watch for starvation (low-pri never gets CPU).<br>
+      <strong>Per-core utilization</strong> — imbalance signals poor load balancing.</p>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Real-World Scenarios</div>
+    <div class="scenario-grid" id="scenario-grid"></div>
+  </div>
+</div>
+
+<script>
+const ARCH = [
+  { name: 'Scheduler', icon: 'ti-cpu', tag: 'teal', desc: 'Core decision-making component. Selects the next process from the run queue based on policy.',
+    pros: ['Enforces scheduling policy', 'Manages process state transitions'], cons: ['Decision overhead per schedule', 'Policy complexity increases cost'] },
+  { name: 'Run Queue', icon: 'ti-list', tag: 'amber', desc: 'Multi-level priority queues holding processes ready to execute on a CPU core.',
+    pros: ['Per-priority ordering', 'O(1) dequeue operations'], cons: ['Memory per queue entry', 'Priority aging needed'] },
+  { name: 'Context Switch', icon: 'ti-arrows-left-right', tag: 'purple', desc: 'Saves current process state (registers, PC, stack) and restores the next process state.',
+    pros: ['Enables multi-tasking', 'Isolation between processes'], cons: ['Pure CPU overhead (~1-10µs)', 'Cache/TLB pollution on switch'] },
+  { name: 'Timer Interrupt', icon: 'ti-clock', tag: 'blue', desc: 'Hardware timer fires periodically to preempt the running process and invoke the scheduler.',
+    pros: ['Enforces timeslice limit', 'Prevents CPU monopoly'], cons: ['Periodic overhead even when idle', 'Tick resolution limits precision'] },
+  { name: 'Priority', icon: 'ti-layers-difference', tag: 'coral', desc: 'Numeric level assigned to each process. Higher priority = more CPU time / faster response.',
+    pros: ['Prioritizes interactive/real-time', 'Configurable per process'], cons: ['Risk of starvation', 'Priority inversion possible'] },
+  { name: 'Load Balancer', icon: 'ti-scale', tag: 'green', desc: 'Migrates processes between CPU cores to balance workload and maximize throughput.',
+    pros: ['Improves core utilization', 'Prevents idle cores'], cons: ['Migration overhead (cache cold)', 'Remote access vs local imbalance'] },
+];
+
+const ALGOS = [
+  { name: 'FCFS', fairness: 'Poor', starve: 'None', overhead: 'Low', use: 'Batch processing. Simple sequential jobs.' },
+  { name: 'SJF', fairness: 'Unfair', starve: 'Possible (long jobs)', overhead: 'Medium', use: 'Optimal avg. wait time. Short jobs first.' },
+  { name: 'Round-Robin', fairness: 'Fair (equal slices)', starve: 'None (cyclic)', overhead: 'High', use: 'Interactive systems. Timeslice ~10-100ms.' },
+  { name: 'Priority', fairness: 'Unfair', starve: 'Yes (low priority)', overhead: 'Medium', use: 'Realtime systems. Hard/soft deadlines.' },
+  { name: 'MLFQ', fairness: 'Fair (aging)', starve: 'Prevented (priority boost)', overhead: 'High', use: 'General purpose OS (Linux, Windows, macOS).' },
+];
+
+const TRADEOFFS = [
+  { name: 'FCFS', fair: 'Poor', thru: 'Good (no overhead)', lat: 'Bad (convoy)', trade: 'Simple but unfair to short jobs' },
+  { name: 'SJF', fair: 'Unfair', thru: 'Good (optimal avg.)', lat: 'Good (short fast)', trade: 'Starvation risk for long jobs. Need burst estimation.' },
+  { name: 'RR', fair: 'Fair', thru: 'OK (switch overhead)', lat: 'OK (< timeslice)', trade: 'Timeslice tuning is critical. Too small = overhead.' },
+  { name: 'Priority', fair: 'Unfair', thru: 'Good', lat: 'Best (realtime)', trade: 'Starvation. Priority inversion. Needs aging mechanism.' },
+  { name: 'MLFQ', fair: 'Fair (aged)', thru: 'Good', lat: 'Good', trade: 'Complex to tune. Queue count + promotion rules matter.' },
+];
+
+const PREEMPT = [
+  { dim: 'Decision timing', pre: 'On timer interrupt, I/O completion, or yield', non: 'Only when process voluntarily yields (I/O, wait, exit)' },
+  { dim: 'Process switch', pre: 'Any instruction boundary (transparent to process)', non: 'Only at system call / blocking operation boundary' },
+  { dim: 'Responsiveness', pre: 'Excellent — bounded wake-up latency (~ms)', non: 'Poor — long process can starve others' },
+  { dim: 'Overhead', pre: 'Higher (periodic timer + context switch)', non: 'Lower (no forced preemption overhead)' },
+  { dim: 'Starvation risk', pre: 'Low (scheduler enforces fairness)', non: 'High (cooperative — buggy process hogs CPU)' },
+  { dim: 'Fairness', pre: 'Enforced by scheduler policy', non: 'Depends on process cooperation' },
+];
+
+const OS_SCHED = [
+  { os: 'Linux', sched: 'CFS (Completely Fair Scheduler)', strat: 'Virtual runtime (vruntime). Red-black tree. Always picks lowest vruntime.', feat: 'Fair sharing + O(log n) selection. SCHED_DEADLINE for realtime.' },
+  { os: 'Windows', sched: 'Priority-based (32 levels)', strat: 'Dynamic priority boost for interactive/window focus. Round-robin within level.', feat: 'Foreground boost (+2 priority for visible window). I/O completion boost.' },
+  { os: 'macOS', sched: 'Hybrid MLFQ (XNU)', strat: 'Multilevel feedback queues. Energy-aware. QoS classes (background → user-interactive).', feat: 'QoS promotes/de-promotes based on workload. Power-efficient on battery.' },
+];
+
+const FAILURES = [
+  { title: 'Priority Inversion', icon: 'ti-arrow-ramp-left', tag: 'coral', rec: 'Priority inheritance', role: 'Mars Pathfinder (1997) bug',
+    desc: 'A low-priority process holds a lock needed by a high-priority process. The high-priority process blocks on the low-priority one — priority inverted.',
+    points: ['High-pri blocked on mutex held by low-pri', 'Medium-pri preempts low-pri (runs instead)', 'Solution: temporarily boost lock holder to high priority'] },
+  { title: 'Starvation', icon: 'ti-hierarchy-2', tag: 'amber', rec: 'Priority aging', role: 'Batch jobs on interactive systems',
+    desc: 'A runnable process never gets CPU because higher-priority processes always occupy all cores.',
+    points: ['Low-priority job waits indefinitely', 'Realtime processes consume 100% CPU', 'Solution: age priority over time (gradual boost)'] },
+  { title: 'Convoy Effect', icon: 'ti-cpu-2', tag: 'purple', rec: 'Preemption', role: 'FCFS + long CPU burst',
+    desc: 'A long CPU-bound process holds the core, forcing many short I/O-bound processes to wait.',
+    points: ['Short I/O processes queue behind long CPU process', 'I/O devices idle (underutilized)', 'Solution: preemptive scheduling or priority boost for I/O'] },
+];
+
+const SCENARIOS = [
+  { title: 'Interactive Web Server', icon: 'ti-server', tag: 'teal', rec: 'MLFQ + short timeslice (~20ms)',
+    desc: '100s of concurrent connections. Mix of short request handlers and occasional long-running tasks. User-facing latency target <100ms.',
+    points: ['Use MLFQ — short requests complete fast in top queue', 'Long requests demoted to lower queues (no starvation)', 'Set timeslice 20ms for responsive context switching', 'Pin listener threads to dedicated cores (affinity)'] },
+  { title: 'Batch Processing Pipeline', icon: 'ti-align-box-bottom-right', tag: 'blue', rec: 'FCFS + dedicated cores',
+    desc: 'Data processing jobs with predictable runtimes (30s-5min). No user interaction. Throughput is the only goal.',
+    points: ['FCFS minimizes context switch overhead (max throughput)', 'Pin each job to a core (no migration overhead)', 'No preemption — jobs run to completion sequentially', 'Monitor avg. turnaround time, not per-job latency'] },
+  { title: 'Mixed Workload Desktop', icon: 'ti-layout-grid', tag: 'purple', rec: 'MLFQ with priority aging',
+    desc: 'Background sync (low priority), video call (realtime), text editor (interactive), compiler (batch). All at once.',
+    points: ['Video/audio: SCHED_FIFO or SCHED_RR (realtime class)', 'Text editor: top MLFQ queue (wake-up boost)', 'Compiler: demoted quickly (spends time in low queues)', 'Aging boosts long-waiting processes to prevent starvation'] },
+];
+
+function render() {
+  renderArch();
+  renderAlgos();
+  renderTradeoff();
+  renderPreempt();
+  renderOS();
+  renderFailures();
+  renderScenarios();
+}
+
+function renderArch() {
+  document.getElementById('arch-grid').innerHTML = ARCH.map(a => `
+    <div class="card">
+      <h3><i class="${a.icon}" style="color:var(--${a.tag})"></i> ${a.name}</h3>
+      <span class="tag tag-${a.tag}">component</span>
+      <p>${a.desc}</p>
+      <div class="two-col">
+        <div class="mini-box"><i class="ti ti-check" style="color:var(--teal)"></i> ${a.pros[0]}<br><i class="ti ti-check" style="color:var(--teal)"></i> ${a.pros[1]}</div>
+        <div class="mini-box"><i class="ti ti-x" style="color:var(--coral)"></i> ${a.cons[0]}<br><i class="ti ti-x" style="color:var(--coral)"></i> ${a.cons[1]}</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderAlgos() {
+  document.getElementById('algo-body').innerHTML = ALGOS.map(a => `
+    <tr>
+      <td style="font-weight:600;color:var(--text)">${a.name}</td>
+      <td style="font-size:12px;color:var(--text2)">${a.fairness}</td>
+      <td style="font-size:12px;color:var(--text2)">${a.starve}</td>
+      <td style="font-size:12px;color:var(--text2)">${a.overhead}</td>
+      <td style="font-size:12px;color:var(--text2);line-height:1.4">${a.use}</td>
+    </tr>
+  `).join('');
+}
+
+function renderTradeoff() {
+  document.getElementById('tradeoff-body').innerHTML = TRADEOFFS.map(t => `
+    <tr>
+      <td style="font-weight:600;color:var(--text)">${t.name}</td>
+      <td style="font-size:12px;color:var(--text2)">${t.fair}</td>
+      <td style="font-size:12px;color:var(--text2)">${t.thru}</td>
+      <td style="font-size:12px;color:var(--text2)">${t.lat}</td>
+      <td style="font-size:12px;color:var(--text2);line-height:1.4">${t.trade}</td>
+    </tr>
+  `).join('');
+}
+
+function renderPreempt() {
+  document.getElementById('preempt-body').innerHTML = PREEMPT.map(p => `
+    <tr><td>${p.dim}</td><td style="font-size:12px;color:var(--text2)">${p.pre}</td><td style="font-size:12px;color:var(--text2)">${p.non}</td></tr>
+  `).join('');
+}
+
+function renderOS() {
+  document.getElementById('os-body').innerHTML = OS_SCHED.map(o => `
+    <tr>
+      <td style="font-weight:600;color:var(--text)">${o.os}</td>
+      <td style="font-size:12px;color:var(--text2)">${o.sched}</td>
+      <td style="font-size:12px;color:var(--text2);line-height:1.4">${o.strat}</td>
+      <td style="font-size:12px;color:var(--teal)">${o.feat}</td>
+    </tr>
+  `).join('');
+}
+
+function renderFailures() {
+  document.getElementById('failure-grid').innerHTML = FAILURES.map(f => `
+    <div class="scenario-card">
+      <h4><i class="${f.icon}" style="color:var(--${f.tag})"></i> ${f.title}</h4>
+      <span class="rec tag-${f.tag}" style="background:var(--${f.tag}-bg);color:var(--${f.tag})">${f.rec}</span>
+      <span style="font-size:10px;color:var(--text3);display:block;margin:2px 0 6px">📖 ${f.role}</span>
+      <p>${f.desc}</p>
+      <ul>${f.points.map(p => `<li><i class="ti ti-alert-triangle" style="color:var(--${f.tag})"></i> ${p}</li>`).join('')}</ul>
+    </div>
+  `).join('');
+}
+
+function renderScenarios() {
+  document.getElementById('scenario-grid').innerHTML = SCENARIOS.map(s => `
+    <div class="scenario-card">
+      <h4><i class="${s.icon}" style="color:var(--${s.tag})"></i> ${s.title}</h4>
+      <span class="rec tag-${s.tag}" style="background:var(--${s.tag}-bg);color:var(--${s.tag})">${s.rec}</span>
+      <p>${s.desc}</p>
+      <ul>${s.points.map(p => `<li><i class="ti ti-check" style="color:var(--${s.tag})"></i> ${p}</li>`).join('')}</ul>
+    </div>
+  `).join('');
+}
+
+render();
+</script>
+</body>
+</html>

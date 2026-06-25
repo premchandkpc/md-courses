@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Amazon Architecture — System Design</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/tabler-icons.min.css">
+<style>
+:root {
+  --bg: #f8f7f4; --bg2: #ffffff; --bg3: #f0efeb;
+  --text: #1a1a18; --text2: #5c5c58; --text3: #8a8a84;
+  --border: rgba(0,0,0,0.10); --border2: rgba(0,0,0,0.18);
+  --teal: #0F6E56; --teal-bg: #E1F5EE; --teal-light: #5DCAA5;
+  --amber: #854F0B; --amber-bg: #FAEEDA; --amber-light: #EF9F27;
+  --blue: #185FA5; --blue-bg: #E6F1FB; --blue-light: #378ADD;
+  --purple: #534AB7; --purple-bg: #EEEDFE; --purple-light: #7F77DD;
+  --coral: #993C1D; --coral-bg: #FAECE7; --coral-light: #D85A30;
+  --green: #3B6D11; --green-bg: #EAF3DE; --green-light: #639922;
+  --red: #A32D2D; --red-bg: #FCEBEB;
+  --radius: 10px; --radius-sm: 6px; --mono: 'Courier New', 'Consolas', monospace;
+}
+@media (prefers-color-scheme: dark) {
+:root {
+  --bg: #111110; --bg2: #1a1a18; --bg3: #222220;
+  --text: #f0ede8; --text2: #a8a8a0; --text3: #6a6a64;
+  --border: rgba(255,255,255,0.10); --border2: rgba(255,255,255,0.20);
+  --teal: #5DCAA5; --teal-bg: #04342C; --teal-light: #9FE1CB;
+  --amber: #EF9F27; --amber-bg: #412402; --amber-light: #FAC775;
+  --blue: #85B7EB; --blue-bg: #042C53; --blue-light: #B5D4F4;
+  --purple: #AFA9EC; --purple-bg: #26215C; --purple-light: #CECBF6;
+  --coral: #F0997B; --coral-bg: #4A1B0C; --coral-light: #F5C4B3;
+  --green: #97C459; --green-bg: #173404; --green-light: #C0DD97;
+  --red: #E24B4A; --red-bg: #501313;
+}
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14px;line-height:1.5;min-height:100vh}
+.app{max-width:1000px;margin:0 auto;padding:24px 16px 60px}
+.top-bar{display:flex;align-items:baseline;gap:12px;margin-bottom:4px}
+.app-title{font-size:22px;font-weight:600;letter-spacing:-0.01em}
+.app-sub{font-size:13px;color:var(--text2)}
+.desc{font-size:13px;color:var(--text2);margin-bottom:20px;padding:10px 14px;background:var(--bg3);border-radius:var(--radius-sm);border-left:3px solid var(--teal)}
+.db-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px}
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:16px}
+.card h3{font-size:15px;margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.card .tag{display:inline-block;font-size:10px;padding:2px 8px;border-radius:100px;font-weight:600;letter-spacing:0.03em;margin-bottom:8px}
+.tag-teal{background:var(--teal-bg);color:var(--teal)}
+.tag-amber{background:var(--amber-bg);color:var(--amber)}
+.tag-blue{background:var(--blue-bg);color:var(--blue)}
+.tag-purple{background:var(--purple-bg);color:var(--purple)}
+.tag-coral{background:var(--coral-bg);color:var(--coral)}
+.tag-green{background:var(--green-bg);color:var(--green)}
+.card p{font-size:12px;color:var(--text2);line-height:1.5;margin-bottom:8px}
+.card ul{list-style:none;font-size:12px}
+.card ul li{padding:3px 0;color:var(--text2);display:flex;gap:6px;align-items:flex-start}
+.card ul li i{color:var(--teal);font-size:14px;flex-shrink:0;margin-top:1px}
+.card ul li .neg{color:var(--coral)}
+.section{margin-bottom:20px}
+.section-title{font-size:11px;text-transform:uppercase;letter-spacing:0.09em;color:var(--text3);font-weight:600;margin-bottom:12px;display:flex;align-items:center;gap:10px}
+.section-title::after{content:'';flex:1;height:1px;background:var(--border)}
+.req-table{width:100%;border-collapse:collapse;font-size:13px}
+.req-table th{font-size:10px;text-transform:uppercase;letter-spacing:0.07em;color:var(--text3);font-weight:600;padding:8px 10px;text-align:left;border-bottom:2px solid var(--border2)}
+.req-table td{padding:8px 10px;border-bottom:1px solid var(--border);vertical-align:top}
+.req-table tr:hover td{background:var(--bg3)}
+.req-table .why{font-size:11px;color:var(--text3);margin-top:3px;line-height:1.4}
+.req-table td:first-child{font-weight:500;white-space:nowrap}
+.why-box{margin-top:16px;padding:12px;background:var(--bg3);border-radius:var(--radius-sm);border-left:3px solid var(--blue)}
+.why-box h4{font-size:12px;margin-bottom:4px;color:var(--text)}
+.why-box p{font-size:12px;color:var(--text2);line-height:1.5}
+.scenario-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.scenario-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:14px}
+.scenario-card h4{font-size:13px;margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.scenario-card .rec{font-size:11px;padding:2px 8px;border-radius:100px;display:inline-block;font-weight:600;margin:4px 0 6px}
+.scenario-card p{font-size:12px;color:var(--text2);line-height:1.5}
+.scenario-card ul{list-style:none;font-size:12px;margin-top:6px}
+.scenario-card ul li{padding:2px 0;color:var(--text2);display:flex;gap:6px}
+.scenario-card ul li i{font-size:14px;flex-shrink:0;color:var(--teal)}
+.shard-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px}
+.shard-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px}
+.shard-card h4{font-size:13px;margin-bottom:4px}
+.shard-card p{font-size:11px;color:var(--text2);line-height:1.4}
+@media(max-width:640px){.db-grid{grid-template-columns:1fr}.shard-grid{grid-template-columns:repeat(2,1fr)}.scenario-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="top-bar">
+    <div class="app-title">Amazon Architecture</div>
+    <div class="app-sub">300M+ customers · 1.5M+ sellers · 350M+ SKUs</div>
+  </div>
+  <div class="desc">System design deep dive into Amazon's e-commerce platform: product catalog, search, cart, order management, payment, recommendations, seller marketplace, and infrastructure scaling to 60K+ orders/minute during Prime Day peak.</div>
+
+  <div class="section">
+    <div class="section-title">System Stats</div>
+    <div class="shard-grid" id="stats-grid"></div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Architecture Components</div>
+    <div class="db-grid" id="comp-grid"></div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Order State Machine</div>
+    <table class="req-table">
+      <thead><tr><th style="width:120px">Current</th><th style="width:120px">Next</th><th>Trigger / Condition</th></tr></thead>
+      <tbody id="state-body"></tbody>
+    </table>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Tech Stack</div>
+    <table class="req-table">
+      <thead><tr><th style="width:140px">Component</th><th>Technology</th><th>Why</th></tr></thead>
+      <tbody id="tech-body"></tbody>
+    </table>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Failure Modes</div>
+    <table class="req-table">
+      <thead><tr><th style="width:140px">Failure</th><th>Impact</th><th>Mitigation</th></tr></thead>
+      <tbody id="failure-body"></tbody>
+    </table>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Key Scenarios</div>
+    <div class="scenario-grid" id="scenarios-grid"></div>
+  </div>
+</div>
+
+<script>
+const STATS = [
+  { v: '300M+', l: 'Active Customers', i: 'ti-users' },
+  { v: '1.5M+', l: 'Active Sellers', i: 'ti-store' },
+  { v: '350M+', l: 'Products (SKUs)', i: 'ti-package' },
+  { v: '~3.3M', l: 'Orders per Day', i: 'ti-shopping-cart' },
+];
+
+const COMPONENTS = [
+  { n: 'Catalog', i: 'ti-books', t: 'blue', d: 'Product metadata, browse tree, category hierarchy. DynamoDB + DAX.',
+    p: ['Sub-ms reads via DAX cache', 'Auto-scaling for Prime Day traffic'], c: ['No joins → denormalized data', 'Hot partition on popular categories'] },
+  { n: 'Search', i: 'ti-search', t: 'purple', d: 'Full-text search, faceted navigation, autocomplete. Elasticsearch.',
+    p: ['Sub-200ms search across 350M products', 'Near-real-time indexing via SQS'], c: ['Memory-heavy (index in FS cache)', 'Eventual consistency for updates'] },
+  { n: 'Cart', i: 'ti-shopping-cart', t: 'amber', d: 'Multi-device sync, server-side persistence. DynamoDB + Redis.',
+    p: ['Seamless cross-device cart sync', 'Redis cache for <5ms reads'], c: ['Merge conflicts on concurrent edits', 'TTL-based cleanup can lose data'] },
+  { n: 'Order', i: 'ti-truck-delivery', t: 'coral', d: 'Order lifecycle, fulfillment routing. RDS Aurora state machine.',
+    p: ['ACID transactions prevent overselling', 'Full audit trail (status_history)'], c: ['Sharding adds complexity (64 shards)', 'Write bottleneck per shard leader'] },
+  { n: 'Payment', i: 'ti-credit-card', t: 'green', d: 'Multi-PSP, idempotent processing, fraud detection. Stripe + Adyen.',
+    p: ['Idempotency keys prevent duplicates', 'Multi-PSP failover (Stripe → Adyen)'], c: ['Fraud scoring adds latency', 'External gateway dependency risk'] },
+  { n: 'Recommendations', i: 'ti-star', t: 'purple', d: 'Item-to-item CF, real-time personalization. Spark + Redis.',
+    p: ['CF scales to 350M products', 'Session-based real-time ranking'], c: ['Cold start for new products', 'Batch pipeline delay (daily)'] },
+  { n: 'Seller', i: 'ti-store', t: 'teal', d: 'Merchant onboarding, analytics, Buy Box. RDS + DynamoDB.',
+    p: ['Multi-tenant with per-seller analytics', 'FBA handles fulfillment complexity'], c: ['Buy Box algorithm is opaque', 'Commission limits seller margins'] },
+  { n: 'Inventory', i: 'ti-package', t: 'amber', d: 'Real-time stock across 100+ FCs. DynamoDB + Redis atomic DECR.',
+    p: ['Real-time stock visibility globally', 'Atomic DECR prevents oversell'], c: ['Cross-FC allocation is NP-hard', 'Over-booking buffer reduces stock'] },
+];
+
+const STATES = [
+  { f: 'PENDING', t: 'CONFIRMED', tr: 'Payment authorized. Inventory reserved. Fraud score < 0.3.' },
+  { f: 'CONFIRMED', t: 'PROCESSING', tr: 'Fulfillment center assigned. Pick/pack workflow started.' },
+  { f: 'PROCESSING', t: 'SHIPPED', tr: 'Carrier pickup. Tracking number generated.' },
+  { f: 'SHIPPED', t: 'DELIVERED', tr: 'Carrier delivery confirmation. Payment captured.' },
+  { f: 'DELIVERED', t: 'RETURNED', tr: 'Return request approved. Item received at FC.' },
+  { f: 'Any', t: 'CANCELLED', tr: 'User request, payment failure, or fraud detection > 0.7.' },
+  { f: 'Any', t: 'REFUNDED', tr: 'Refund processed after cancellation or return.' },
+];
+
+const TECH = [
+  { c: 'Product Catalog', t: 'DynamoDB + DAX', w: 'Serverless auto-scale. DAX gives microsecond reads for 350M items.' },
+  { c: 'Search', t: 'Elasticsearch', w: 'BM25 full-text search. Faceted aggregation. 48 shards across 24 nodes.' },
+  { c: 'Shopping Cart', t: 'DynamoDB + Redis', w: 'DynamoDB for persistence + TTL. Redis for <5ms cache reads.' },
+  { c: 'Order Management', t: 'RDS Aurora', w: 'ACID for payments/inventory. 64 shards with 2 read replicas each.' },
+  { c: 'Payment', t: 'Stripe / Adyen', w: 'Multi-PSP redundancy. Idempotency keys. 10K TPS peak.' },
+  { c: 'Recommendations', t: 'Spark + Redis', w: 'Batch CF training on Spark. Real-time serving from Redis.' },
+  { c: 'Seller Portal', t: 'RDS + DynamoDB', w: 'RDS for relational seller data. DynamoDB for inventory KV.' },
+  { c: 'CDN', t: 'CloudFront', w: 'Edge caching. Lambda@Edge for image resize + WebP conversion.' },
+  { c: 'Event Bus', t: 'SNS / SQS / Kafka', w: 'Async decoupling. Order-preserving via Kafka partition key.' },
+];
+
+const FAILURES = [
+  { f: 'Prime Day Overload', i: '10x traffic. Checkout bottleneck. Inventory oversubscribed.', m: 'Pre-warming, DAX cache pre-load, order queue, waitlist for OOS items.' },
+  { f: 'Cart DB Throttling', i: 'Customers can\'t add items. Abandoned carts spike.', m: 'Bulkhead → Redis-only → localStorage fallback. Async DynamoDB sync.' },
+  { f: 'Payment Gateway Down', i: 'Checkout fails. Revenue stops.', m: 'Multi-PSP failover in 60s. Graceful degradation with async retry (5min × 12).' },
+  { f: 'Inventory Oversell', i: 'Two customers buy last unit. Both confirmed.', m: 'Optimistic locking + atomic Redis DECR. Compensation cancels last order.' },
+  { f: 'Cold Start (Recs)', i: 'New products invisible in recommendations.', m: 'Content-based fallback + 5% explore slot + trending boost.' },
+  { f: 'Search Indexing Lag', i: 'New product not searchable for minutes.', m: 'SQS near-real-time indexer (<5s). Fallback to DynamoDB scan.' },
+];
+
+const SCENARIOS = [
+  { t: 'Prime Day Flash Sale', i: 'ti-flash', tag: 'coral', rec: 'Pre-warming · Async order queue · Waitlist',
+    d: '70% off Electronics. 60K+ orders/min. 10x normal traffic. Product pages must load <100ms and checkout must not drop orders.',
+    p: ['Auto-scale all services 1 hour before deal starts; DAX pre-loads deal products', 'Orders accepted async via SQS queue; payment auth in parallel with inventory reserve', 'OOS items show "Join waitlist" — customer notified when restocked'] },
+  { t: 'Multi-Device Cart Sync', i: 'ti-devices', tag: 'blue', rec: 'Server-side cart · Merge algorithm',
+    d: 'User adds items on phone, then continues on desktop. Cart must be identical with no duplicates or lost items.',
+    p: ['Cart persisted in DynamoDB keyed by user_id; anonymous cart in localStorage', 'On login: merge algorithm — higher qty wins, newer price wins, OOS items marked', 'Conflict resolution: price changes show banner, deleted items removed with note'] },
+  { t: 'Multi-Seller Checkout', i: 'ti-building-store', tag: 'teal', rec: 'Sub-orders · Parallel fulfillment',
+    d: 'Single cart with items from 3 sellers (FBA + FBM). One payment but parallel fulfillment from different FCs.',
+    p: ['Cart splits into sub-orders per seller; single payment auth covers all sub-orders', 'Each sub-order routed to nearest FC (FBA) or seller notified (FBM)', 'Customer sees one unified order; fulfillment status tracked per item'] },
+];
+
+function render() {
+  const sg = document.getElementById('stats-grid');
+  sg.innerHTML = STATS.map(s => `<div class="shard-card"><h4><i class="${s.i}" style="color:var(--teal)"></i> ${s.v}</h4><p>${s.l}</p></div>`).join('');
+
+  const cg = document.getElementById('comp-grid');
+  cg.innerHTML = COMPONENTS.map(c => `
+    <div class="card">
+      <h3><i class="${c.i}" style="color:var(--${c.t})"></i> ${c.n}</h3>
+      <span class="tag tag-${c.t}">Service</span>
+      <p>${c.d}</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:6px">
+        <div style="padding:6px;background:var(--bg3);border-radius:4px;font-size:10px;color:var(--text3)">
+          <i class="ti ti-check" style="color:var(--teal)"></i> ${c.p[0]}<br><i class="ti ti-check" style="color:var(--teal)"></i> ${c.p[1]}
+        </div>
+        <div style="padding:6px;background:var(--bg3);border-radius:4px;font-size:10px;color:var(--text3)">
+          <i class="ti ti-x" style="color:var(--coral)"></i> ${c.c[0]}<br><i class="ti ti-x" style="color:var(--coral)"></i> ${c.c[1]}
+        </div>
+      </div>
+    </div>
+  `).join('');
+
+  const sb = document.getElementById('state-body');
+  sb.innerHTML = STATES.map(s => `<tr><td>${s.f}</td><td><strong>${s.t}</strong></td><td style="font-size:12px;color:var(--text2)">${s.tr}</td></tr>`).join('');
+
+  const tb = document.getElementById('tech-body');
+  tb.innerHTML = TECH.map(t => `<tr><td>${t.c}</td><td style="font-size:12px;color:var(--text2);font-weight:500">${t.t}</td><td style="font-size:12px;color:var(--text2);line-height:1.4"><span class="why">${t.w}</span></td></tr>`).join('');
+
+  const fb = document.getElementById('failure-body');
+  fb.innerHTML = FAILURES.map(f => `<tr><td>${f.f}</td><td style="font-size:12px;color:var(--text2);line-height:1.4">${f.i}</td><td style="font-size:12px;color:var(--text2);line-height:1.4">${f.m}</td></tr>`).join('');
+
+  const scg = document.getElementById('scenarios-grid');
+  scg.innerHTML = SCENARIOS.map(s => `
+    <div class="scenario-card">
+      <h4><i class="${s.i}" style="color:var(--${s.tag})"></i> ${s.t}</h4>
+      <span class="rec tag-${s.tag}">${s.rec}</span>
+      <p>${s.d}</p>
+      <ul>${s.p.map(p => `<li><i class="ti ti-check" style="color:var(--${s.tag})"></i> ${p}</li>`).join('')}</ul>
+    </div>
+  `).join('');
+}
+
+render();
+</script>
+</body>
+</html>

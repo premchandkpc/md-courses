@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Networking — System Design</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/tabler-icons.min.css">
+<style>
+:root {
+  --bg: #f8f7f4; --bg2: #ffffff; --bg3: #f0efeb;
+  --text: #1a1a18; --text2: #5c5c58; --text3: #8a8a84;
+  --border: rgba(0,0,0,0.10); --border2: rgba(0,0,0,0.18);
+  --teal: #0F6E56; --teal-bg: #E1F5EE; --teal-light: #5DCAA5;
+  --amber: #854F0B; --amber-bg: #FAEEDA; --amber-light: #EF9F27;
+  --blue: #185FA5; --blue-bg: #E6F1FB; --blue-light: #378ADD;
+  --purple: #534AB7; --purple-bg: #EEEDFE; --purple-light: #7F77DD;
+  --coral: #993C1D; --coral-bg: #FAECE7; --coral-light: #D85A30;
+  --green: #3B6D11; --green-bg: #EAF3DE; --green-light: #639922;
+  --red: #A32D2D; --red-bg: #FCEBEB;
+  --radius: 10px; --radius-sm: 6px; --mono: 'Courier New', 'Consolas', monospace;
+}
+@media (prefers-color-scheme: dark) {
+:root {
+  --bg: #111110; --bg2: #1a1a18; --bg3: #222220;
+  --text: #f0ede8; --text2: #a8a8a0; --text3: #6a6a64;
+  --border: rgba(255,255,255,0.10); --border2: rgba(255,255,255,0.20);
+  --teal: #5DCAA5; --teal-bg: #04342C; --teal-light: #9FE1CB;
+  --amber: #EF9F27; --amber-bg: #412402; --amber-light: #FAC775;
+  --blue: #85B7EB; --blue-bg: #042C53; --blue-light: #B5D4F4;
+  --purple: #AFA9EC; --purple-bg: #26215C; --purple-light: #CECBF6;
+  --coral: #F0997B; --coral-bg: #4A1B0C; --coral-light: #F5C4B3;
+  --green: #97C459; --green-bg: #173404; --green-light: #C0DD97;
+  --red: #E24B4A; --red-bg: #501313;
+}
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14px;line-height:1.5;min-height:100vh}
+.app{max-width:1000px;margin:0 auto;padding:24px 16px 60px}
+.top-bar{display:flex;align-items:baseline;gap:12px;margin-bottom:4px}
+.app-title{font-size:22px;font-weight:600;letter-spacing:-0.01em}
+.app-sub{font-size:13px;color:var(--text2)}
+.desc{font-size:13px;color:var(--text2);margin-bottom:20px;padding:10px 14px;background:var(--bg3);border-radius:var(--radius-sm);border-left:3px solid var(--teal)}
+.proto-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px}
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:16px}
+.card h3{font-size:15px;margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.card .tag{display:inline-block;font-size:10px;padding:2px 8px;border-radius:100px;font-weight:600;letter-spacing:0.03em;margin-bottom:8px}
+.tag-teal{background:var(--teal-bg);color:var(--teal)}
+.tag-amber{background:var(--amber-bg);color:var(--amber)}
+.tag-blue{background:var(--blue-bg);color:var(--blue)}
+.tag-purple{background:var(--purple-bg);color:var(--purple)}
+.tag-coral{background:var(--coral-bg);color:var(--coral)}
+.tag-green{background:var(--green-bg);color:var(--green)}
+.card p{font-size:12px;color:var(--text2);line-height:1.5;margin-bottom:8px}
+.card ul{list-style:none;font-size:12px}
+.card ul li{padding:3px 0;color:var(--text2);display:flex;gap:6px;align-items:flex-start}
+.card ul li i{color:var(--teal);font-size:14px;flex-shrink:0;margin-top:1px}
+.card ul li .neg{color:var(--coral)}
+.section{margin-bottom:20px}
+.section-title{font-size:11px;text-transform:uppercase;letter-spacing:0.09em;color:var(--text3);font-weight:600;margin-bottom:12px;display:flex;align-items:center;gap:10px}
+.section-title::after{content:'';flex:1;height:1px;background:var(--border)}
+.req-table{width:100%;border-collapse:collapse;font-size:13px}
+.req-table th{font-size:10px;text-transform:uppercase;letter-spacing:0.07em;color:var(--text3);font-weight:600;padding:8px 10px;text-align:left;border-bottom:2px solid var(--border2)}
+.req-table td{padding:8px 10px;border-bottom:1px solid var(--border);vertical-align:top}
+.req-table tr:hover td{background:var(--bg3)}
+.req-table .why{font-size:11px;color:var(--text3);margin-top:3px;line-height:1.4}
+.req-table td:first-child{font-weight:500;white-space:nowrap}
+.why-box{margin-top:16px;padding:12px;background:var(--bg3);border-radius:var(--radius-sm);border-left:3px solid var(--blue)}
+.why-box h4{font-size:12px;margin-bottom:4px;color:var(--text)}
+.why-box p{font-size:12px;color:var(--text2);line-height:1.5}
+.scenario-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.scenario-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:14px}
+.scenario-card h4{font-size:13px;margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.scenario-card .rec{font-size:11px;padding:2px 8px;border-radius:100px;display:inline-block;font-weight:600;margin:4px 0 6px}
+.scenario-card p{font-size:12px;color:var(--text2);line-height:1.5}
+.scenario-card ul{list-style:none;font-size:12px;margin-top:6px}
+.scenario-card ul li{padding:2px 0;color:var(--text2);display:flex;gap:6px}
+.scenario-card ul li i{font-size:14px;flex-shrink:0;color:var(--teal)}
+.lb-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px}
+.lb-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px}
+.lb-card h4{font-size:13px;margin-bottom:4px}
+.lb-card p{font-size:11px;color:var(--text2);line-height:1.4}
+@media(max-width:640px){.proto-grid{grid-template-columns:1fr}.lb-grid{grid-template-columns:repeat(2,1fr)}.scenario-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="top-bar">
+    <div class="app-title">Networking</div>
+    <div class="app-sub">Protocols · DNS · HTTP · Load Balancing · CDN · Real-Time</div>
+  </div>
+  <div class="desc">Networking is the backbone of distributed systems. Every request, replication stream, cache miss, and service call traverses the network. Understanding protocol tradeoffs, latency budgets, and failure modes separates senior from staff engineers.</div>
+
+  <div class="section">
+    <div class="section-title">Protocol &amp; Transport Layers</div>
+    <div class="proto-grid" id="proto-grid"></div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Load Balancing Algorithms</div>
+    <div class="why-box">
+      <h4><i class="ti ti-alert-triangle" style="color:var(--amber)"></i> The Real Choice</h4>
+      <p>Round-robin is never the right answer in production for latency-sensitive traffic. Least connections + weighted distribution + circuit breakers is the baseline. For stateful services, consistent hashing avoids cache stampedes on scale events.</p>
+    </div>
+    <div class="lb-grid" id="lb-grid"></div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">L4 vs L7 Load Balancing</div>
+    <table class="req-table">
+      <thead><tr><th style="width:140px">Attribute</th><th>Layer 4 (Transport)</th><th>Layer 7 (Application)</th></tr></thead>
+      <tbody id="l4l7-body"></tbody>
+    </table>
+  </div>
+
+  <div class="section">
+    <div class="section-title">CDN Strategies</div>
+    <table class="req-table">
+      <thead><tr><th style="width:140px">Strategy</th><th>How It Works</th><th>Cache Hit Rate</th><th>Use Case</th><th>Tradeoff</th></tr></thead>
+      <tbody id="cdn-body"></tbody>
+    </table>
+  </div>
+
+  <div class="section">
+    <div class="section-title">DNS Resolution Chain</div>
+    <table class="req-table">
+      <thead><tr><th style="width:140px">Step</th><th>Description</th><th>Latency</th><th>Caching</th><th>Failure Mode</th></tr></thead>
+      <tbody id="dns-body"></tbody>
+    </table>
+  </div>
+
+  <div class="section">
+    <div class="section-title">When to Use What — Real Scenarios</div>
+    <div class="scenario-grid" id="scenarios-grid"></div>
+  </div>
+</div>
+
+<script>
+const PROTOCOLS = [
+  { name: 'TCP', icon: 'ti-plug', tag: 'teal',
+    desc: 'Reliable, ordered, connection-oriented transport. Used by HTTP, SSH, databases, and any workload that cannot tolerate data loss.',
+    pros: ['Guaranteed delivery (ACK + retransmission)', 'In-order delivery with sequence numbers', 'Congestion control (slow start, AIMD, BBR)', 'Flow control (sliding window)'],
+    cons: ['Head-of-line blocking (TCP meltdown)', '3-way handshake adds 1 RTT latency', 'Connection state overhead (kernel memory per socket)', 'Slow start reduces throughput on new connections'] },
+  { name: 'UDP', icon: 'ti-zap', tag: 'amber',
+    desc: 'Connectionless, unreliable, low-latency. Best for real-time audio/video, gaming, DNS, and QUIC. No handshake = no delay.',
+    pros: ['Zero connection setup (no handshake)', 'Lowest possible latency (no retransmissions)', 'Multicast/broadcast support', 'No head-of-line blocking'],
+    cons: ['No delivery guarantee (packets can drop)', 'No ordering (packets may arrive out of order)', 'No congestion control (can flood network)', 'No flow control (sender can overwhelm receiver)'] },
+  { name: 'HTTP/1.1', icon: 'ti-file-text', tag: 'blue',
+    desc: 'Text-based request/response. Pipelining limited. One connection per request. Still used but legacy for new designs.',
+    pros: ['Simple text protocol (debug with telnet)', 'Widest compatibility (every server/language)', 'Persistent connections (Keep-Alive)'],
+    cons: ['Head-of-line blocking (one request at a time per connection)', 'Verbose headers (300-800 bytes overhead per request)', 'No server push', 'No multiplexing (requires multiple connections)'] },
+  { name: 'HTTP/2', icon: 'ti-arrows-diff', tag: 'purple',
+    desc: 'Binary, multiplexed, compressed headers. Single connection carries multiple streams. Base for gRPC.',
+    pros: ['Multiplexing (multiple requests on single connection)', 'Header compression (HPACK — 90% reduction)', 'Server push (send resources before client asks)', 'Binary framing (efficient parsing)'],
+    cons: ['TCP-level HoL blocking (single lost packet blocks all streams)', 'Implementation complexity (framing, flow control)', 'Server push is often wasteful (browser already knows)', 'TLS overhead (most deployments are HTTPS-only)'] },
+  { name: 'HTTP/3 (QUIC)', icon: 'ti-rocket', tag: 'coral',
+    desc: 'UDP-based, built-in encryption, 0-RTT handshake. Solves TCP HoL blocking. Used by YouTube, Google, Meta.',
+    pros: ['0-RTT handshake (no TCP handshake + TLS)', 'No TCP HoL blocking (UDP + per-stream framing)', 'Connection migration (survives IP change — mobile friendly)', 'Built-in encryption (always-on TLS 1.3)'],
+    cons: ['UDP is often throttled by enterprise firewalls', 'Higher CPU usage (user-space stack)', 'Still rolling out (not all CDNs support it)', 'Kernel bypass (QUIC uses DPDK/io_uring for performance)'] },
+  { name: 'WebSocket', icon: 'ti-brand-wechat', tag: 'green',
+    desc: 'Full-duplex persistent connection over a single TCP socket. Upgraded from HTTP. Used for real-time apps.',
+    pros: ['Persistent connection (no handshake per message)', 'Full duplex (client and server send anytime)', 'Low overhead (2 bytes per frame after upgrade)', 'Bidirectional real-time communication'],
+    cons: ['Not cacheable (proxies can\'t cache frames)', 'Connection scaling is hard (10M concurrent = 10M open fds)', 'No built-in reconnection (must implement at app layer)', 'HTTP upgrade adds initial RTT cost'] },
+  { name: 'gRPC', icon: 'ti-code', tag: 'purple',
+    desc: 'HTTP/2-based RPC framework with protobuf serialization. Streaming, bidirectional, deadline-aware. Standard for internal microservices.',
+    pros: ['Protobuf serialization (compact, typed, fast)', 'Bidirectional streaming (server + client streaming)', 'Deadlines + cancellation propagation', 'Code generation (strongly typed clients in 10+ languages)'],
+    cons: ['Protobuf debuggability (need grpcurl, not curl)', 'HTTP/2 required (not all LBs support it well)', 'Connection management (gRPC keeps connections alive = monitoring cost)', 'No browser support (gRPC-web is a translation layer)'] },
+];
+const LB_ALGOS = [
+  { name: 'Round Robin', desc: 'Sequentially distributes requests to each backend in order. Best for homogeneous servers with uniform request cost.', perf: 'Simple, fair distribution', tradeoff: 'No awareness of server load, response time, or connection count. Slow servers get the same share as fast ones.' },
+  { name: 'Least Connections', desc: 'Routes to the backend with the fewest active connections. Accounts for requests that take variable time.', perf: 'Best for variable-length requests', tradeoff: 'Needs connection tracking state. Can still overload a server if new connections arrive faster than old ones complete.' },
+  { name: 'Weighted Distribution', desc: 'Assigns weights to backends based on capacity (CPU, RAM). 2x weight = 2x traffic. Used with any other algorithm.', perf: 'Handles heterogeneous capacity', tradeoff: 'Weights must be manually tuned. Static weights don\'t adapt to runtime load changes.' },
+  { name: 'Consistent Hashing', desc: 'Hash of request (IP, user_id, URL) → position on hash ring → nearest backend clockwise. Cache-friendly + sticky.', perf: 'Minimal cache churn on scale events', tradeoff: 'Uneven distribution without virtual nodes. Rebalancing requires virtual node tuning. Hot keys still cause imbalance.' },
+];
+const L4L7 = [
+  { attr: 'OSI Layer', l4: 'Layer 4 (Transport)', l7: 'Layer 7 (Application)',
+    l4_why: 'Operates on TCP/UDP packets. No visibility into HTTP headers, cookies, or request content.', l7_why: 'Full visibility into HTTP headers, URLs, cookies, bodies. Can inspect and modify application-layer data.' },
+  { attr: 'Routing decision', l4: 'Based on IP + port', l7: 'Based on URL path, headers, cookies, content type',
+    l4_why: 'Routes to any backend in the pool. Cannot distinguish /api/users from /api/orders.', l7_why: 'Routes /api/users/* → user-svc, /api/orders/* → order-svc. Content-based routing.' },
+  { attr: 'Throughput', l4: '1M+ pps (packets per second)', l7: '100-500K req/s',
+    l4_why: 'Minimal packet inspection. NLB does 1M+ pps on 8 vCPU. No TLS termination overhead.', l7_why: 'HTTP parsing + TLS termination + header inspection = CPU bound. ALB ~100K req/s.' },
+  { attr: 'Latency overhead', l4: '&lt;1ms', l7: '1-10ms',
+    l4_why: 'No header parsing. Just NAT/DSR. Standard ECMP routing.', l7_why: 'Parse HTTP, terminate TLS, inspect headers, may modify request. Envoy adds ~3ms at P99.' },
+  { attr: 'TLS termination', l4: 'No (passes raw TCP)', l7: 'Yes',
+    l4_why: 'L4 LB sees encrypted packets. Cannot decrypt. TLS termination happens on backend servers.', l7_why: 'Terminates TLS at LB, forwards plain HTTP to backends. Offloads CPU from app servers.' },
+  { attr: 'Sticky sessions', l4: 'Source IP hash', l7: 'Cookie-based',
+    l4_why: 'Routes same client IP to same backend. Breaks if clients share NAT IP (corporate proxies).', l7_why: 'Sets cookie on first request. Subsequent requests with cookie go to same backend. More reliable than IP hash.' },
+  { attr: 'Use cases', l4: 'TCP-based protocols (gRPC, WebSocket, database), high-throughput, low-latency', l7: 'HTTP APIs, microservices routing, auth/rate-limiting at edge, CDN origin',
+    l4_why: 'NLB for gRPC, TCP listeners for databases, WebSocket connection pooling.', l7_why: 'ALB for REST APIs, API Gateway for microservices, Cloud LB for global HTTP traffic.' },
+];
+const CDN_STRATS = [
+  { strategy: 'Edge Caching', how: 'Static assets (CSS, JS, images) cached at CDN edge nodes. Cache-control headers set TTL.', hit: '90-99%', use: 'Web apps with static assets. Single Page Apps.', tradeoff: 'Long TTL = stale content on update. Cache purge takes minutes to propagate globally. Versioned filenames (hash in URL) solve this.' },
+  { strategy: 'Dynamic Content Cache', how: 'API responses cached with short TTL (1-60s). Cache key includes headers (Accept-Language, Authorization).', hit: '30-70%', use: 'News feeds, product listings, search results (read-heavy, changes slow).', tradeoff: 'Cache invalidation on content update. Stale reads during TTL window. Must vary cache key by user for personalized content = lower hit rate.' },
+  { strategy: 'Origin Shield', how: 'Hierarchical caching: edge → shield → origin. Shield acts as a single point of origin fetch, preventing cache stampede.', hit: 'Edge: 90% + Shield: 99%', use: 'High-traffic events (product launches, Super Bowl). Reduces origin load by 10x.', tradeoff: 'Additional latency for shield miss (1 extra hop). Shield is same region as origin — minimizes cross-region data transfer costs.' },
+  { strategy: 'Cache Stampede Prevention', how: 'Request coalescing: only one request per key to origin. Others wait on the in-flight response. Re-validation with If-None-Match / If-Modified-Since.', hit: 'N/A (prevents origin meltdown)', use: 'Database-backed API, computationally expensive responses, cache miss at peak traffic.', tradeoff: 'Increased P99 latency for cache misses (queuing). Requires conditional header logic at origin. Stale-while-revalidate pattern mitigates.' },
+];
+const DNS_STEPS = [
+  { step: '1. Browser cache', desc: 'Browser checks local DNS cache. TTL from previous resolution. Zero network cost if cached.', lat: '0ms', caching: 'Browser cache (TTL-based, typically 60-300s)', failure: 'Stale DNS (page shows old IP if cached past TTL). Clear with dns flush.' },
+  { step: '2. OS resolver', desc: 'Checks /etc/hosts first, then OS-level DNS cache (nscd, systemd-resolved).', lat: '0-1ms', caching: 'OS cache (nscd/systemd-resolved, configurable)', failure: 'OS cache poisoning. Hosts file misconfiguration.' },
+  { step: '3. Recursive resolver', desc: 'ISP or public resolver (8.8.8.8, 1.1.1.1). Queries root → TLD → authoritative servers.', lat: '10-50ms', caching: 'Resolver cache (respects TTL, typically capped at 1hr)', failure: 'Resolver outage = total DNS failure. Use secondary resolver for fallback.' },
+  { step: '4. Root server', desc: '13 root server clusters (a-root through m-root). Returns TLD nameserver (e.g., .com, .org).', lat: '10-50ms', caching: 'Root hints cached by resolver (days)', failure: 'Root server DDoS (rare). Anycast mitigates.' },
+  { step: '5. TLD server', desc: 'Authoritative for TLD (.com, .org, .io). Returns domain\'s authoritative nameserver (e.g., ns1.cloudflare.com).', lat: '10-50ms', caching: 'TLD records cached by resolver (2-48hrs)', failure: 'TLD delegation error. Expired domain registration.' },
+  { step: '6. Authoritative server', desc: 'Hosted by DNS provider (Route53, CloudDNS, Cloudflare). Returns actual A/AAAA/CNAME record.', lat: '10-50ms', caching: 'Authoritative response (TTL set by domain owner)', failure: 'Authoritative server down = DNS resolution fails. Use multiple NS for HA.' },
+  { step: '7. Full resolution', desc: 'Recursive resolver returns IP to OS → browser. Browser opens TCP connection to IP.', lat: '50-250ms (uncached)', caching: 'Full chain cached until TTL expiry', failure: 'Slow resolution adds to page load time. Prefetch DNS (<link rel="dns-prefetch">).' },
+];
+const SCENARIOS = [
+  { title: 'Live video streaming', icon: 'ti-player-play', rec: 'UDP + HTTP/3 (QUIC) + CDN', tag: 'teal',
+    desc: '1M concurrent viewers watching a live event. Sub-second latency requirement. Can tolerate occasional frame drops.',
+    why: 'UDP (via SRT/WebRTC) for real-time ingest — no retransmission delay, low latency. HTTP/3 (QUIC) for playback — 0-RTT connect, no TCP HoL blocking. CDN with origin shield absorbs 1M viewers without melting the origin.',
+    points: ['Ingest: SRT (UDP-based) with FEC for packet loss recovery', 'Playback: QUIC streams via CDN edge (0-RTT reconnect on network change)', 'ABR (adaptive bitrate): client switches resolution based on bandwidth estimation', 'Origin shield: single fetch from origin, edge nodes serve from shield cache'] },
+  { title: 'Global real-time chat', icon: 'ti-messages', rec: 'WebSocket + L4 LB + gRPC (internal)', tag: 'blue',
+    desc: '10M concurrent WebSocket connections. Messages delivered in &lt;100ms globally. No message loss allowed.',
+    why: 'WebSocket provides persistent full-duplex connections (no per-message handshake overhead). L4 LB (NLB) handles 10M concurrent TCP connections without parsing app-layer. gRPC for inter-service message relay (protobuf = compact, streaming = efficient).',
+    points: ['WebSocket upgrade via HTTP (101 Switching Protocols) at connection time', 'L4 NLB: 10M connections at &lt;1ms overhead per packet', 'gRPC bidirectional stream for message fan-out between chat servers', 'Connection migration: QUIC-based WebSocket survives mobile network handoff'] },
+  { title: 'High-throughput API gateway', icon: 'ti-sitemap', rec: 'HTTP/2 (gRPC) + L7 LB + Consistent Hashing', tag: 'purple',
+    desc: '500K req/s internal API. P95 latency must be &lt;10ms. Most requests are small protobuf messages.',
+    why: 'gRPC over HTTP/2 multiplexes many requests on one connection (reduces TCP overhead). L7 LB routes by URL path to the right microservice. Consistent hashing ensures cache affinity — same user always hits same backend cache.',
+    points: ['gRPC: protobuf = 3-10x faster than JSON serialization', 'HTTP/2 multiplexing: 100 req/s per connection vs 6 per connection for HTTP/1.1', 'L7 routing: /svc.UserService/GetUser → user-svc, /svc.OrderService/GetOrder → order-svc', 'Consistent hashing: user_id hash → server → cache hit rate &gt;90%'] },
+  { title: 'IoT telemetry ingestion', icon: 'ti-devices', rec: 'UDP + L4 LB + QUIC (for critical)', tag: 'coral',
+    desc: '10M devices sending telemetry every 5 seconds. 2M writes/s. 99.9% of data can tolerate loss (temperature reading every 5s — next one arrives anyway).',
+    why: 'UDP for bulk telemetry (no connection state, no retransmission = no thundering herd). L4 LB distributes UDP datagrams across ingestion servers. QUIC for critical control messages (firmware updates, alerts) where reliability matters.',
+    points: ['UDP: 2M datagrams/s per LB instance (TCP would need 10M open connections)', 'Stateless ingestion: each datagram is self-contained (device_id + timestamp + value)', 'QUIC for control channel: survives network changes (mobile IoT devices)', 'L4 anycast: devices connect to nearest regional ingestion endpoint'] },
+];
+function render() {
+  renderProtocols();
+  renderLB();
+  renderL4L7();
+  renderCDN();
+  renderDNS();
+  renderScenarios();
+}
+function renderProtocols() {
+  const grid = document.getElementById('proto-grid');
+  grid.innerHTML = PROTOCOLS.map(d => `
+    <div class="card">
+      <h3><i class="${d.icon}" style="color:var(--${d.tag})"></i> ${d.name}</h3>
+      <span class="tag tag-${d.tag}">${d.pros.length} pros</span>
+      <p>${d.desc}</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:6px">
+        <div style="padding:6px;background:var(--bg3);border-radius:4px;font-size:10px;color:var(--text3)">
+          <i class="ti ti-check" style="color:var(--teal)"></i> ${d.pros.slice(0,2).join('<br><i class="ti ti-check" style="color:var(--teal)"></i> ')}
+        </div>
+        <div style="padding:6px;background:var(--bg3);border-radius:4px;font-size:10px;color:var(--text3)">
+          <i class="ti ti-x" style="color:var(--coral)"></i> ${d.cons.slice(0,2).join('<br><i class="ti ti-x" style="color:var(--coral)"></i> ')}
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+function renderLB() {
+  const grid = document.getElementById('lb-grid');
+  grid.innerHTML = LB_ALGOS.map(s => `
+    <div class="lb-card">
+      <h4><i class="ti ti-layers-intersect" style="color:var(--teal)"></i> ${s.name}</h4>
+      <p>${s.desc}</p>
+      <div style="margin-top:6px;font-size:10px"><span class="tag-teal" style="padding:1px 6px;border-radius:100px">${s.perf}</span></div>
+      <div style="margin-top:4px;font-size:10px;color:var(--coral)">&#9888; ${s.tradeoff}</div>
+    </div>
+  `).join('');
+}
+function renderL4L7() {
+  const tbody = document.getElementById('l4l7-body');
+  tbody.innerHTML = L4L7.map(c => `
+    <tr><td>${c.attr}</td><td style="font-size:12px;color:var(--text2);line-height:1.4">${c.l4}<div class="why"><i class="ti ti-info-circle" style="font-size:11px;color:var(--text3)"></i> ${c.l4_why}</div></td><td style="font-size:12px;color:var(--text2);line-height:1.4">${c.l7}<div class="why"><i class="ti ti-info-circle" style="font-size:11px;color:var(--text3)"></i> ${c.l7_why}</div></td></tr>
+  `).join('');
+}
+function renderCDN() {
+  const tbody = document.getElementById('cdn-body');
+  tbody.innerHTML = CDN_STRATS.map(c => `
+    <tr>
+      <td style="font-weight:600;color:var(--text)">${c.strategy}</td>
+      <td style="font-size:12px;color:var(--text2);line-height:1.4">${c.how}</td>
+      <td style="font-size:12px;color:var(--amber)">${c.hit}</td>
+      <td style="font-size:12px;color:var(--text2);line-height:1.4">${c.use}</td>
+      <td style="font-size:12px;color:var(--coral);line-height:1.4">${c.tradeoff}</td>
+    </tr>
+  `).join('');
+}
+function renderDNS() {
+  const tbody = document.getElementById('dns-body');
+  tbody.innerHTML = DNS_STEPS.map(d => `
+    <tr>
+      <td style="font-weight:600;color:var(--text)">${d.step}</td>
+      <td style="font-size:12px;color:var(--text2);line-height:1.4">${d.desc}</td>
+      <td style="font-size:12px;color:var(--amber)">${d.lat}</td>
+      <td style="font-size:12px;color:var(--text2);line-height:1.4">${d.caching}</td>
+      <td style="font-size:12px;color:var(--coral);line-height:1.4">${d.failure}</td>
+    </tr>
+  `).join('');
+}
+function renderScenarios() {
+  const grid = document.getElementById('scenarios-grid');
+  grid.innerHTML = SCENARIOS.map(s => `
+    <div class="scenario-card">
+      <h4><i class="${s.icon}" style="color:var(--${s.tag})"></i> ${s.title}</h4>
+      <span class="rec tag-${s.tag}" style="font-size:11px;padding:2px 8px;border-radius:100px;display:inline-block;font-weight:600;margin:4px 0 8px;background:var(--${s.tag}-bg);color:var(--${s.tag})">${s.rec}</span>
+      <p>${s.desc}</p>
+      <div class="why-box" style="margin-top:8px;">
+        <h4><i class="ti ti-alert-circle" style="color:var(--${s.tag})"></i> Why</h4>
+        <p>${s.why}</p>
+      </div>
+      <ul>${s.points.map(p => `<li><i class="ti ti-check" style="color:var(--${s.tag})"></i> ${p}</li>`).join('')}</ul>
+    </div>
+  `).join('');
+}
+render();
+</script>
+</body>
+</html>

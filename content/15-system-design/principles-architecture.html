@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>System Design Principles</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/tabler-icons.min.css">
+<style>
+:root {
+  --bg: #f8f7f4; --bg2: #ffffff; --bg3: #f0efeb;
+  --text: #1a1a18; --text2: #5c5c58; --text3: #8a8a84;
+  --border: rgba(0,0,0,0.10); --border2: rgba(0,0,0,0.18);
+  --teal: #0F6E56; --teal-bg: #E1F5EE; --teal-light: #5DCAA5;
+  --amber: #854F0B; --amber-bg: #FAEEDA; --amber-light: #EF9F27;
+  --blue: #185FA5; --blue-bg: #E6F1FB; --blue-light: #378ADD;
+  --purple: #534AB7; --purple-bg: #EEEDFE; --purple-light: #7F77DD;
+  --coral: #993C1D; --coral-bg: #FAECE7; --coral-light: #D85A30;
+  --green: #3B6D11; --green-bg: #EAF3DE; --green-light: #639922;
+  --red: #A32D2D; --red-bg: #FCEBEB;
+  --radius: 10px; --radius-sm: 6px; --mono: 'Courier New', 'Consolas', monospace;
+}
+@media (prefers-color-scheme: dark) {
+:root {
+  --bg: #111110; --bg2: #1a1a18; --bg3: #222220;
+  --text: #f0ede8; --text2: #a8a8a0; --text3: #6a6a64;
+  --border: rgba(255,255,255,0.10); --border2: rgba(255,255,255,0.20);
+  --teal: #5DCAA5; --teal-bg: #04342C; --teal-light: #9FE1CB;
+  --amber: #EF9F27; --amber-bg: #412402; --amber-light: #FAC775;
+  --blue: #85B7EB; --blue-bg: #042C53; --blue-light: #B5D4F4;
+  --purple: #AFA9EC; --purple-bg: #26215C; --purple-light: #CECBF6;
+  --coral: #F0997B; --coral-bg: #4A1B0C; --coral-light: #F5C4B3;
+  --green: #97C459; --green-bg: #173404; --green-light: #C0DD97;
+  --red: #E24B4A; --red-bg: #501313;
+}
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14px;line-height:1.5;min-height:100vh}
+.app{max-width:1000px;margin:0 auto;padding:24px 16px 60px}
+.top-bar{display:flex;align-items:baseline;gap:12px;margin-bottom:4px}
+.app-title{font-size:22px;font-weight:600;letter-spacing:-0.01em}
+.app-sub{font-size:13px;color:var(--text2)}
+.desc{font-size:13px;color:var(--text2);margin-bottom:20px;padding:10px 14px;background:var(--bg3);border-radius:var(--radius-sm);border-left:3px solid var(--teal)}
+.princ-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px}
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:16px}
+.card h3{font-size:15px;margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.card .tag{display:inline-block;font-size:10px;padding:2px 8px;border-radius:100px;font-weight:600;letter-spacing:0.03em;margin-bottom:8px}
+.tag-teal{background:var(--teal-bg);color:var(--teal)}
+.tag-amber{background:var(--amber-bg);color:var(--amber)}
+.tag-blue{background:var(--blue-bg);color:var(--blue)}
+.tag-purple{background:var(--purple-bg);color:var(--purple)}
+.tag-coral{background:var(--coral-bg);color:var(--coral)}
+.tag-green{background:var(--green-bg);color:var(--green)}
+.card p{font-size:12px;color:var(--text2);line-height:1.5;margin-bottom:8px}
+.section{margin-bottom:20px}
+.section-title{font-size:11px;text-transform:uppercase;letter-spacing:0.09em;color:var(--text3);font-weight:600;margin-bottom:12px;display:flex;align-items:center;gap:10px}
+.section-title::after{content:'';flex:1;height:1px;background:var(--border)}
+.req-table{width:100%;border-collapse:collapse;font-size:13px}
+.req-table th{font-size:10px;text-transform:uppercase;letter-spacing:0.07em;color:var(--text3);font-weight:600;padding:8px 10px;text-align:left;border-bottom:2px solid var(--border2)}
+.req-table td{padding:8px 10px;border-bottom:1px solid var(--border);vertical-align:top}
+.req-table tr:hover td{background:var(--bg3)}
+.req-table td:first-child{font-weight:500;white-space:nowrap}
+.insight-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.insight-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:14px}
+.insight-card h4{font-size:13px;margin-bottom:6px;display:flex;align-items:center;gap:6px;color:var(--text)}
+.insight-card p{font-size:12px;color:var(--text2);line-height:1.5}
+@media(max-width:640px){.princ-grid,.insight-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="top-bar">
+    <div class="app-title">System Design Principles</div>
+    <div class="app-sub">Scalability · Availability · Performance · Reliability</div>
+  </div>
+  <div class="desc">System design is building a restaurant empire. Vertical scaling = bigger kitchen. Horizontal = more locations. Load balancer = the host. Caching = pre-made menu items. Consistency = how fast prices update across all locations. CAP = pick two.</div>
+
+  <div class="section">
+    <div class="section-title">Core Principles</div>
+    <div class="princ-grid" id="princ-grid"></div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Scalability: Vertical vs Horizontal</div>
+    <table class="req-table">
+      <thead><tr><th style="width:140px">Dimension</th><th>Vertical (Scale Up)</th><th>Horizontal (Scale Out)</th></tr></thead>
+      <tbody id="scale-body"></tbody>
+    </table>
+    <div class="desc" style="margin-top:10px;font-size:12px"><strong>Key insight:</strong> Always prefer horizontal for growth. Start vertical for simplicity, go horizontal when you hit ceiling. Stateless design is prerequisite — move sessions to Redis, use load balancer.</div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Consistency Models</div>
+    <table class="req-table">
+      <thead><tr><th>Model</th><th>Guarantee</th><th>Latency</th><th>Use Case</th><th>Tradeoff</th></tr></thead>
+      <tbody id="consistency-body"></tbody>
+    </table>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Caching Strategies</div>
+    <table class="req-table">
+      <thead><tr><th>Strategy</th><th>Location</th><th>Hit Rate</th><th>Use Case</th></tr></thead>
+      <tbody id="cache-body"></tbody>
+    </table>
+    <div class="desc" style="margin-top:10px;font-size:12px"><strong>Eviction policies:</strong> LRU (general purpose), LFU (stable popularity), TTL (predictable staleness), 2Q (better than LRU for scans), ARC (adaptive LRU/LFU). Avoid cache stampede with mutex locks + early refresh.</div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Database Patterns</div>
+    <table class="req-table">
+      <thead><tr><th>Pattern</th><th>How It Works</th><th>Consistency</th><th>Use Case</th></tr></thead>
+      <tbody id="db-patterns-body"></tbody>
+    </table>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Key Insights</div>
+    <div class="insight-grid" id="insight-grid"></div>
+  </div>
+</div>
+
+<script>
+const PRINCIPLES = [
+  { name: 'Scalability', icon: 'ti-arrows-maximize', tag: 'teal',
+    desc: 'Ability to handle increased load by adding resources without degrading performance.',
+    pros: ['Horizontal adds servers linearly with throughput', 'Consistent hashing minimizes remapping on reshard'],
+    cons: ['Stateful design complicates horizontal scaling', 'Sharding adds query complexity and cross-shard joins'] },
+  { name: 'Availability', icon: 'ti-cloud-up', tag: 'blue',
+    desc: 'System remains operational despite component or infrastructure failures.',
+    pros: ['Active-Active replication gives instant failover', 'N+1 redundancy tolerates any single node loss'],
+    cons: ['Multi-region replication significantly raises cost', 'Cross-region latency adds 30-200ms to writes'] },
+  { name: 'Performance', icon: 'ti-speedometer', tag: 'coral',
+    desc: 'Low latency and high throughput under varying load. Governed by Little\'s Law (concurrency = latency x throughput).',
+    pros: ['P99 <200ms achievable with proper caching', 'CDN reduces origin load 90%+ for static assets'],
+    cons: ['Tail latency at P999 affects millions of users', 'HOL blocking delays entire queue behind one slow request'] },
+  { name: 'Reliability', icon: 'ti-shield-check', tag: 'purple',
+    desc: 'Correct results consistently over time. Measured via SLI (metrics), SLO (targets), SLA (contracts).',
+    pros: ['Error budgets guide deploy velocity vs reliability', 'Chaos engineering finds weaknesses proactively'],
+    cons: ['99.9% SLO = only 8.76h allowed downtime per year', 'Byzantine faults are notoriously hard to detect and isolate'] },
+  { name: 'Consistency', icon: 'ti-database', tag: 'green',
+    desc: 'Guarantees about data correctness across replicas. Follows a spectrum from eventual to strong.',
+    pros: ['Strong = no stale reads, perfect for financial data', 'Eventual = high availability and lowest latency'],
+    cons: ['Strong = lower availability per CAP theorem', 'Eventual = temporary incoherence until convergence'] },
+  { name: 'Caching', icon: 'ti-zap', tag: 'amber',
+    desc: 'Store frequently accessed data in fast storage for sub-millisecond retrieval.',
+    pros: ['Reduces DB query load by 80%+ for hot data', 'Cache-Aside (lazy loading) is simple and widely applicable'],
+    cons: ['Cache stampede: thundering herd on TTL expiry', 'Stale data served until invalidation or TTL expiry'] },
+];
+
+const SCALE = [
+  { dim: 'Upper limit', v: 'Single machine ceiling (CPU, RAM, IO)', h: 'Theoretically infinite (add more nodes)' },
+  { dim: 'Cost curve', v: 'Exponential (bigger hardware costs disproportional)', h: 'Linear (commodity hardware each node)' },
+  { dim: 'Operational complexity', v: 'Low — one machine to manage', h: 'High — coordination, monitoring, deployment' },
+  { dim: 'Failure domain', v: 'Single point of failure (that one machine)', h: 'No SPOF with proper replication' },
+  { dim: 'State management', v: 'Simple — local memory and disk', h: 'Must externalize state (Redis, shared DB)' },
+  { dim: 'Example', v: 'Upgrade from 64-core to 128-core server', h: 'Add 10 more 8-core commodity servers' },
+];
+
+const CONSISTENCY = [
+  { model: 'Strong (Linearizable)', guarantee: 'After write completes, all subsequent reads see it. Single-node DB, Paxos/Raft commit.', latency: 'Highest (requires quorum, multiple RTT)', use: 'Financial transactions, leader election, locking', tradeoff: 'Lower availability, higher latency (CP in CAP)' },
+  { model: 'Causal', guarantee: 'Causally related writes seen in correct order. Concurrent writes can appear in any order.', latency: 'Medium (vector clocks, version vectors)', use: 'Collaborative editing, CRDT-based systems', tradeoff: 'Vector clock overhead grows with node count' },
+  { model: 'Eventual', guarantee: 'Given enough time without updates, all replicas converge. Classic DNS propagation pattern.', latency: 'Lowest (write anywhere, async propagate)', use: 'DNS, social feeds, CDN, Cassandra default', tradeoff: 'Temporary inconsistency until convergence' },
+  { model: 'Bounded Staleness', guarantee: 'Reads are within K versions or T seconds of latest write. Between eventual and strong.', latency: 'Configurable (tune K or T)', use: 'Leaderboards, trending topics, analytics', tradeoff: 'Still eventual under partition, needs monitoring' },
+];
+
+const CACHE = [
+  { strategy: 'Cache-Aside (Lazy Loading)', location: 'App checks cache first, fills on miss, sets TTL', hit: 'High with good working set', use: 'General-purpose, most common pattern' },
+  { strategy: 'Write-Through', location: 'Write to DB + cache synchronously in same operation', hit: 'Very high (cache always current)', use: 'Read-heavy workloads needing consistent cache' },
+  { strategy: 'Write-Behind (Write-Back)', location: 'Write to cache immediately, async batch flush to DB', hit: 'High', use: 'Write-heavy, batch-oriented, tolerant of loss' },
+  { strategy: 'Refresh-Ahead', location: 'Proactively refresh cache before TTL expires', hit: 'Highest (near 100% for predictable patterns)', use: 'Hot data with predictable access patterns' },
+  { strategy: 'Stale-While-Revalidate', location: 'Serve stale data immediately, fetch fresh version async', hit: 'High perceived (zero wait time)', use: 'APIs where slight staleness is tolerable' },
+];
+
+const DB_PATTERNS = [
+  { pattern: 'CQRS', how: 'Separate command (write) and query (read) models. Write DB normalized for integrity, read DB denormalized for fast queries.', consistency: 'Eventual (sync between models via events)', use: 'Complex domains with different read/write shapes, reporting, high-traffic systems' },
+  { pattern: 'Event Sourcing', how: 'Append-only event log captures every state change. Current state rebuilt by replaying events. Snapshots for performance.', consistency: 'Strong (append atomic). Read projections eventual.', use: 'Auditing, temporal queries, undo/history, compliance' },
+  { pattern: 'Saga', how: 'Distributed transaction broken into steps. Each step emits event triggering next. Compensating transactions roll back on failure.', consistency: 'Eventual (no global lock, no 2PC). Compensations must fully undo.', use: 'Multi-service transactions, order fulfillment, travel booking' },
+];
+
+const INSIGHTS = [
+  { title: 'Restaurant Empire', icon: 'ti-building-store', tag: 'teal', text: 'Vertical = bigger kitchen with more stoves — hits ceiling. Horizontal = more restaurant locations — requires coordination. Load balancer = host who seats you. Cache = pre-made menu items. CAP = up-to-date menu (C), open during phone outage (P), always serving (A) — pick two.' },
+  { title: 'Error Budgets', icon: 'ti-chart-pie', tag: 'amber', text: 'SLO of 99.9% = 0.1% error budget = ~8.76h/yr. Deploy during surplus; stop when exhausted. Error budgets align velocity with reliability instead of punishing teams for failures. Chaos engineering deliberately burns budget to test resilience.' },
+  { title: 'CAP Theorem in Practice', icon: 'ti-scale-outline', tag: 'purple', text: 'Strong consistency = CP — pay in availability. Eventual = AP — pay in temporary staleness. Real-world systems choose AP for core data paths, then add strong consistency via coordination services (ZooKeeper, etcd) for metadata, locks, and leader election.' },
+];
+
+function render() {
+  renderPrinciples();
+  renderScale();
+  renderConsistency();
+  renderCache();
+  renderDBPatterns();
+  renderInsights();
+}
+
+function renderPrinciples() {
+  document.getElementById('princ-grid').innerHTML = PRINCIPLES.map(p => `
+    <div class="card">
+      <h3><i class="ti ${p.icon}" style="color:var(--${p.tag})"></i> ${p.name}</h3>
+      <span class="tag tag-${p.tag}">${p.pros.length + p.cons.length} key points</span>
+      <p>${p.desc}</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:6px">
+        <div style="padding:6px;background:var(--bg3);border-radius:4px;font-size:10px;color:var(--text3)">
+          <i class="ti ti-check" style="color:var(--teal)"></i> ${p.pros[0]}<br>
+          <i class="ti ti-check" style="color:var(--teal)"></i> ${p.pros[1]}
+        </div>
+        <div style="padding:6px;background:var(--bg3);border-radius:4px;font-size:10px;color:var(--text3)">
+          <i class="ti ti-x" style="color:var(--coral)"></i> ${p.cons[0]}<br>
+          <i class="ti ti-x" style="color:var(--coral)"></i> ${p.cons[1]}
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderScale() {
+  document.getElementById('scale-body').innerHTML = SCALE.map(r =>
+    `<tr><td>${r.dim}</td><td style="font-size:12px;color:var(--text2)">${r.v}</td><td style="font-size:12px;color:var(--text2)">${r.h}</td></tr>`
+  ).join('');
+}
+
+function renderConsistency() {
+  document.getElementById('consistency-body').innerHTML = CONSISTENCY.map(r =>
+    `<tr><td style="font-weight:600;color:var(--text)">${r.model}</td><td style="font-size:12px;color:var(--text2);line-height:1.4">${r.guarantee}</td><td style="font-size:12px;color:var(--amber)">${r.latency}</td><td style="font-size:12px;color:var(--text2)">${r.use}</td><td style="font-size:12px;color:var(--coral);line-height:1.4">${r.tradeoff}</td></tr>`
+  ).join('');
+}
+
+function renderCache() {
+  document.getElementById('cache-body').innerHTML = CACHE.map(r =>
+    `<tr><td style="font-weight:600;color:var(--text)">${r.strategy}</td><td style="font-size:12px;color:var(--text2);line-height:1.4">${r.location}</td><td style="font-size:12px;color:var(--green)">${r.hit}</td><td style="font-size:12px;color:var(--text2)">${r.use}</td></tr>`
+  ).join('');
+}
+
+function renderDBPatterns() {
+  document.getElementById('db-patterns-body').innerHTML = DB_PATTERNS.map(r =>
+    `<tr><td style="font-weight:600;color:var(--text)">${r.pattern}</td><td style="font-size:12px;color:var(--text2);line-height:1.4">${r.how}</td><td style="font-size:12px;color:var(--amber)">${r.consistency}</td><td style="font-size:12px;color:var(--text2)">${r.use}</td></tr>`
+  ).join('');
+}
+
+function renderInsights() {
+  document.getElementById('insight-grid').innerHTML = INSIGHTS.map(i =>
+    `<div class="insight-card"><h4><i class="ti ${i.icon}" style="color:var(--${i.tag})"></i> ${i.title}</h4><p>${i.text}</p></div>`
+  ).join('');
+}
+
+render();
+</script>
+</body>
+</html>

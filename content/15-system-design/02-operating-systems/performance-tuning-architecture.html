@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Performance Tuning — System Design</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/tabler-icons.min.css">
+<style>
+:root {
+  --bg: #f8f7f4; --bg2: #ffffff; --bg3: #f0efeb;
+  --text: #1a1a18; --text2: #5c5c58; --text3: #8a8a84;
+  --border: rgba(0,0,0,0.10); --border2: rgba(0,0,0,0.18);
+  --teal: #0F6E56; --teal-bg: #E1F5EE; --teal-light: #5DCAA5;
+  --amber: #854F0B; --amber-bg: #FAEEDA; --amber-light: #EF9F27;
+  --blue: #185FA5; --blue-bg: #E6F1FB; --blue-light: #378ADD;
+  --purple: #534AB7; --purple-bg: #EEEDFE; --purple-light: #7F77DD;
+  --coral: #993C1D; --coral-bg: #FAECE7; --coral-light: #D85A30;
+  --green: #3B6D11; --green-bg: #EAF3DE; --green-light: #639922;
+  --red: #A32D2D; --red-bg: #FCEBEB;
+  --radius: 10px; --radius-sm: 6px; --mono: 'Courier New', 'Consolas', monospace;
+}
+@media (prefers-color-scheme: dark) {
+:root {
+  --bg: #111110; --bg2: #1a1a18; --bg3: #222220;
+  --text: #f0ede8; --text2: #a8a8a0; --text3: #6a6a64;
+  --border: rgba(255,255,255,0.10); --border2: rgba(255,255,255,0.20);
+  --teal: #5DCAA5; --teal-bg: #04342C; --teal-light: #9FE1CB;
+  --amber: #EF9F27; --amber-bg: #412402; --amber-light: #FAC775;
+  --blue: #85B7EB; --blue-bg: #042C53; --blue-light: #B5D4F4;
+  --purple: #AFA9EC; --purple-bg: #26215C; --purple-light: #CECBF6;
+  --coral: #F0997B; --coral-bg: #4A1B0C; --coral-light: #F5C4B3;
+  --green: #97C459; --green-bg: #173404; --green-light: #C0DD97;
+  --red: #E24B4A; --red-bg: #501313;
+}
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14px;line-height:1.5;min-height:100vh}
+.app{max-width:1000px;margin:0 auto;padding:24px 16px 60px}
+.top-bar{display:flex;align-items:baseline;gap:12px;margin-bottom:4px}
+.app-title{font-size:22px;font-weight:600;letter-spacing:-0.01em}
+.app-sub{font-size:13px;color:var(--text2)}
+.desc{font-size:13px;color:var(--text2);margin-bottom:20px;padding:10px 14px;background:var(--bg3);border-radius:var(--radius-sm);border-left:3px solid var(--teal)}
+.comp-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px}
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:16px}
+.card h3{font-size:15px;margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.card .tag{display:inline-block;font-size:10px;padding:2px 8px;border-radius:100px;font-weight:600;letter-spacing:0.03em;margin-bottom:8px}
+.tag-teal{background:var(--teal-bg);color:var(--teal)}
+.tag-amber{background:var(--amber-bg);color:var(--amber)}
+.tag-blue{background:var(--blue-bg);color:var(--blue)}
+.tag-purple{background:var(--purple-bg);color:var(--purple)}
+.tag-coral{background:var(--coral-bg);color:var(--coral)}
+.tag-green{background:var(--green-bg);color:var(--green)}
+.card p{font-size:12px;color:var(--text2);line-height:1.5;margin-bottom:8px}
+.section{margin-bottom:20px}
+.section-title{font-size:11px;text-transform:uppercase;letter-spacing:0.09em;color:var(--text3);font-weight:600;margin-bottom:12px;display:flex;align-items:center;gap:10px}
+.section-title::after{content:'';flex:1;height:1px;background:var(--border)}
+.tune-table{width:100%;border-collapse:collapse;font-size:13px}
+.tune-table th{font-size:10px;text-transform:uppercase;letter-spacing:0.07em;color:var(--text3);font-weight:600;padding:8px 10px;text-align:left;border-bottom:2px solid var(--border2)}
+.tune-table td{padding:8px 10px;border-bottom:1px solid var(--border);vertical-align:top}
+.tune-table tr:hover td{background:var(--bg3)}
+.tune-table td:first-child{font-weight:500;white-space:nowrap;font-family:var(--mono);font-size:12px}
+.tune-table .cmd{font-family:var(--mono);font-size:11px;background:var(--bg3);padding:2px 6px;border-radius:3px}
+.tune-table .impact{font-size:11px;color:var(--text3);margin-top:2px}
+.fail-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.fail-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:14px}
+.fail-card h4{font-size:13px;margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.fail-card p{font-size:12px;color:var(--text2);line-height:1.5}
+.scenario-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.scenario-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:14px}
+.scenario-card h4{font-size:13px;margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.scenario-card .rec{font-size:11px;padding:2px 8px;border-radius:100px;display:inline-block;font-weight:600;margin:4px 0 6px}
+.scenario-card p{font-size:12px;color:var(--text2);line-height:1.5}
+.scenario-card ul{list-style:none;font-size:12px;margin-top:6px}
+.scenario-card ul li{padding:2px 0;color:var(--text2);display:flex;gap:6px}
+.scenario-card ul li i{font-size:14px;flex-shrink:0;color:var(--teal)}
+@media(max-width:640px){.comp-grid{grid-template-columns:1fr}.fail-grid{grid-template-columns:1fr}.scenario-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="top-bar">
+    <div class="app-title">Performance Tuning</div>
+    <div class="app-sub">Profiling · CPU · Memory · I/O · Network · Failure Modes</div>
+  </div>
+  <div class="desc">Bottlenecks are invisible without measurement. Guessing which layer is slow wastes time. This guide covers profiling tools, OS-level tuning knobs across CPU/memory/I/O/network, and the failure modes that follow every optimization.</div>
+
+  <div class="section">
+    <div class="section-title">Profiling &amp; Analysis Tools</div>
+    <div class="comp-grid" id="comp-grid"></div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">CPU Tuning</div>
+    <table class="tune-table">
+      <thead><tr><th style="width:160px">Parameter</th><th>Command</th><th>Impact</th><th>Risk</th></tr></thead>
+      <tbody id="cpu-body"></tbody>
+    </table>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Memory Tuning</div>
+    <table class="tune-table">
+      <thead><tr><th style="width:160px">Parameter</th><th>Command</th><th>Impact</th><th>Risk</th></tr></thead>
+      <tbody id="mem-body"></tbody>
+    </table>
+  </div>
+
+  <div class="section">
+    <div class="section-title">I/O Tuning</div>
+    <table class="tune-table">
+      <thead><tr><th style="width:160px">Parameter</th><th>Command</th><th>Impact</th><th>Risk</th></tr></thead>
+      <tbody id="io-body"></tbody>
+    </table>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Network Tuning</div>
+    <table class="tune-table">
+      <thead><tr><th style="width:160px">Parameter</th><th>Command</th><th>Impact</th><th>Risk</th></tr></thead>
+      <tbody id="net-body"></tbody>
+    </table>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Failure Modes</div>
+    <div class="fail-grid" id="fail-grid"></div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Scenarios</div>
+    <div class="scenario-grid" id="scenario-grid"></div>
+  </div>
+</div>
+
+<script>
+const TOOLS = [
+  { name: 'perf', icon: 'ti-dashboard', tag: 'teal',
+    desc: 'Linux profiler: CPU sampling, hardware counters, tracepoints, dynamic probes.',
+    pros: ['Stack trace sampling every 1ms', 'Hardware PMU counters (cache misses, branches)'],
+    cons: ['Requires root for most events', 'High overhead with -g call-graph'] },
+  { name: 'Ftrace', icon: 'ti-radar', tag: 'blue',
+    desc: 'Kernel function tracer. Zero-overhead when disabled. Dynamic events, latency triggers.',
+    pros: ['Near-zero overhead when off', 'Function graph with latency histograms'],
+    cons: ['Kernel-space only (no userspace)', 'Steep learning curve (tracefs API)'] },
+  { name: 'eBPF', icon: 'ti-circuit-diode', tag: 'purple',
+    desc: 'Safe, programmable in-kernel VM. No module loading. Used by Cilium, Falco, Pixie.',
+    pros: ['Safe — verifier rejects bad programs', 'No kernel recompile needed'],
+    cons: ['Limited loops & stack depth (verifier)', 'Complex toolchain (CO-RE, BTF)'] },
+  { name: 'Flamegraph', icon: 'ti-chart-pie', tag: 'amber',
+    desc: 'Visual CPU time distribution. Stack frames as rectangles, width = samples.',
+    pros: ['Instant visual bottleneck identification', 'Works with perf, DTrace, eBPF'],
+    cons: ['Only CPU samples (no I/O/memory)', 'Wide graphs need zooming (SVG)'] },
+  { name: 'sar', icon: 'ti-report-analytics', tag: 'green',
+    desc: 'System Activity Reporter. Historical CPU/memory/IO/network from /var/log/sa/.',
+    pros: ['Historical data out of the box', 'Low overhead (5min sampling default)'],
+    cons: ['Coarse granularity (misses spikes)', 'No per-process detail'] },
+  { name: 'Valgrind', icon: 'ti-bug', tag: 'coral',
+    desc: 'Memory debugger: leak detection, heap profiling, cache simulation (cachegrind).',
+    pros: ['Catches use-after-free & leaks', 'Cachegrind simulates L1/L2/LL misses'],
+    cons: ['10-50x runtime slowdown', 'No production use (dev only)'] },
+];
+
+const CPU_TUNE = [
+  { param: 'cpufreq governor', cmd: 'cpupower frequency-set -g performance', impact: 'Lock CPU to max freq. Eliminates ramp-up latency from ondemand/conservative.', risk: 'Higher power draw & thermals. Laptop battery drain.' },
+  { param: 'CPU affinity', cmd: 'taskset -c 0-3 ./app', impact: 'Pin process to specific cores. Improves cache locality. Avoids NUMA migrations.', risk: 'Wasted capacity if pinned cores idle while others busy.' },
+  { param: 'NO_HZ (tickless)', cmd: 'nohz_full=1-3 kernel param', impact: 'Stops timer ticks on isolated cores. Eliminates jitter for HPC/real-time.', risk: 'Soft lockup warnings if CPU spins too long. Requires careful RCU config.' },
+  { param: 'Mitigations', cmd: 'mitigations=off kernel param', impact: 'Disable Spectre/Meltdown fixes. Recovers 5-30% syscall/latency overhead.', risk: 'Exposes host to side-channel attacks. Never on multi-tenant.' },
+];
+
+const MEM_TUNE = [
+  { param: 'vm.swappiness', cmd: 'sysctl vm.swappiness=10', impact: 'Reduces anon page swap. Keeps app memory resident. Default=60 is too high for servers.', risk: 'OOM risk under memory pressure (no swap cushion).' },
+  { param: 'Transparent HugePages', cmd: 'echo never > /sys/kernel/mm/transparent_hugepage/enabled', impact: 'Disable THP defrag. Prevents jitter from khugepaged compaction. Database servers.', risk: 'Fragmentation with 4K pages under long uptime.' },
+  { param: 'HugePages (explicit)', cmd: 'vm.nr_hugepages=1024', impact: '2MB/1GB pages. Reduces TLB misses. Essential for Redis, MySQL, VMs.', risk: 'Wasted memory if app does not use hugepages. Fragmentation at boot.' },
+  { param: 'vm.dirty_ratio', cmd: 'sysctl vm.dirty_ratio=20', impact: 'Max dirty page % before writeback. Lower = smoother IO, higher = throughput.', risk: 'Too high: writeback storm with latency spikes. Too low: write amplification.' },
+  { param: 'OOM settings', cmd: 'echo -1000 > /proc/PID/oom_score_adj', impact: 'Protect critical processes from OOM killer. Adjust oom_adj per priority.', risk: 'Reclaim stuck if protected process leaks. Other processes die first.' },
+];
+
+const IO_TUNE = [
+  { param: 'IO scheduler', cmd: 'echo none > /sys/block/nvme0n1/queue/scheduler', impact: 'NVMe: use none (no-op). SATA SSD: mq-deadline or kyber. Reduces latency.', risk: 'Wrong scheduler for workload increases latency 2-5x.' },
+  { param: 'nr_requests', cmd: 'echo 512 > /sys/block/nvme0n1/queue/nr_requests', impact: 'Queue depth per device. Higher = better throughput. Lower = fairness.', risk: 'Too high: starvation under mixed r/w. Too low: underutilized device.' },
+  { param: 'readahead', cmd: 'blockdev --setra 4096 /dev/nvme0n1', impact: 'Prefetch sequential reads. 4MB for streaming. 256KB for random I/O.', risk: 'Wasted IO on random workloads. Pollutes page cache.' },
+  { param: 'Mount opts', cmd: 'mount -o noatime,nodiratime,barrier=0', impact: 'noatime skips access time writes. nodiratime avoids dir atime updates.', risk: 'barrier=0 risks metadata corruption on power loss.' },
+];
+
+const NET_TUNE = [
+  { param: 'net.core.rmem_default', cmd: 'sysctl net.core.rmem_default=262144', impact: 'Default socket receive buffer. Larger = better throughput for bulk TCP.', risk: 'Too large: memory exhaustion under many connections (C10k).' },
+  { param: 'net.ipv4.tcp_congestion', cmd: 'sysctl net.ipv4.tcp_congestion_control=bbr', impact: 'BBR paces based on measured bandwidth & RTT. Better than CUBIC on lossy links.', risk: 'BBR can be unfair to CUBIC flows. Needs kernel 4.9+.' },
+  { param: 'Ring buffer', cmd: 'ethtool -G eth0 rx 4096 tx 4096', impact: 'Larger ring buffer reduces packet drops under burst. Prevents tail drop at NIC.', risk: 'More DRAM per queue. Doesn't help if kernel cannot consume fast enough.' },
+  { param: 'RPS/XPS', cmd: 'echo f > /sys/class/net/eth0/queues/rx-0/rps_cpus', impact: 'RPS spreads RX IRQ across cores. XPS assigns TX to same core for locality.', risk: 'RPS floods single core if not pinned. XPS misconfig causes cache bounce.' },
+];
+
+const FAILURES = [
+  { title: 'Misconfiguration', icon: 'ti-alert-triangle', tag: 'coral',
+    desc: 'Tuning parameter set too aggressively (vm.dirty_ratio=80, mitigations=off on prod). Causes latency spikes, crashes, or security holes that surface weeks later under load.' },
+  { title: 'Regression Blindness', icon: 'ti-eye-off', tag: 'amber',
+    desc: '"Optimization" applied without before/after baseline. Throughput drops 10% but nobody notices for months. Rollback is painful without metrics.' },
+  { title: 'Bottleneck Shifting', icon: 'ti-arrows-shuffle', tag: 'purple',
+    desc: 'CPU optimized (50% → 10%). Now I/O is the bottleneck. Fix I/O → lock contention appears. The bottleneck always moves. Need layered measurement.' },
+];
+
+const SCENARIOS = [
+  { title: 'Database query latency spike', icon: 'ti-database', rec: 'perf + flamegraph + vmstat', tag: 'teal',
+    desc: 'PostgreSQL P99 latency went from 5ms → 500ms. perf top shows huge_page_fault. Flamegraph: khugepaged stealing CPU.',
+    steps: ['perf top: 20% CPU in compaction', 'Flamegraph: defrag under transparent_hugepage=always', 'Disable THP: echo never > /sys/kernel/mm/transparent_hugepage/enabled', 'Latency back to 5ms. Pinned kernel to mq-deadline for IO.'] },
+  { title: 'Incident: OOM kill on Redis', icon: 'ti-bolt', rec: 'swappiness + oom_score_adj + hugepages', tag: 'amber',
+    desc: 'Redis primary killed by OOM killer during peak. Swap storm before kill. Kernel chose wrong process.',
+    steps: ['vm.swappiness=60 was too high — Redis pages swapped', 'oom_score_adj=-1000 for Redis/mysql keepalive', 'vm.overcommit_memory=1 for Redis (never overcommit)', 'Set vm.nr_hugepages to match Redis dataset'] },
+  { title: 'Network throughput plateau', icon: 'ti-wifi', rec: 'ethtool + sysctl + BBR + RPS', tag: 'blue',
+    desc: 'Web server caps at 2Gbps on 10Gbps NIC. Softirq on one core. Default congestion = CUBIC.',
+    steps: ['ethtool -S: rx_missed_errors rising (ring drop)', 'ethtool -G eth0 rx 4096: halves drops', 'RPS: spread RX IRQ across 4 cores', 'sysctl tcp_congestion_control=bbr: +40% throughput'] },
+];
+
+function render() {
+  renderTools();
+  renderTable('cpu-body', CPU_TUNE);
+  renderTable('mem-body', MEM_TUNE);
+  renderTable('io-body', IO_TUNE);
+  renderTable('net-body', NET_TUNE);
+  renderFailures();
+  renderScenarios();
+}
+
+function renderTools() {
+  const grid = document.getElementById('comp-grid');
+  grid.innerHTML = TOOLS.map(t => `
+    <div class="card">
+      <h3><i class="${t.icon}" style="color:var(--${t.tag})"></i> ${t.name}</h3>
+      <span class="tag tag-${t.tag}">${t.pros.length} pros</span>
+      <p>${t.desc}</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:6px">
+        <div style="padding:6px;background:var(--bg3);border-radius:4px;font-size:10px;color:var(--text3)">
+          <i class="ti ti-check" style="color:var(--teal)"></i> ${t.pros[0]}<br><i class="ti ti-check" style="color:var(--teal)"></i> ${t.pros[1]}
+        </div>
+        <div style="padding:6px;background:var(--bg3);border-radius:4px;font-size:10px;color:var(--text3)">
+          <i class="ti ti-x" style="color:var(--coral)"></i> ${t.cons[0]}<br><i class="ti ti-x" style="color:var(--coral)"></i> ${t.cons[1]}
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderTable(id, data) {
+  const tbody = document.getElementById(id);
+  tbody.innerHTML = data.map(r => `
+    <tr>
+      <td>${r.param}</td>
+      <td style="font-size:12px"><span class="cmd">${r.cmd}</span></td>
+      <td style="font-size:12px;color:var(--text2);line-height:1.4">${r.impact}</td>
+      <td style="font-size:12px;color:var(--coral);line-height:1.4">${r.risk}</td>
+    </tr>
+  `).join('');
+}
+
+function renderFailures() {
+  const grid = document.getElementById('fail-grid');
+  grid.innerHTML = FAILURES.map(f => `
+    <div class="fail-card">
+      <h4><i class="${f.icon}" style="color:var(--${f.tag})"></i> ${f.title}</h4>
+      <p>${f.desc}</p>
+    </div>
+  `).join('');
+}
+
+function renderScenarios() {
+  const grid = document.getElementById('scenario-grid');
+  grid.innerHTML = SCENARIOS.map(s => `
+    <div class="scenario-card">
+      <h4><i class="${s.icon}" style="color:var(--${s.tag})"></i> ${s.title}</h4>
+      <span class="rec tag-${s.tag}" style="font-size:11px;padding:2px 8px;border-radius:100px;display:inline-block;font-weight:600;margin:4px 0 8px;background:var(--${s.tag}-bg);color:var(--${s.tag})">${s.rec}</span>
+      <p>${s.desc}</p>
+      <ul>${s.steps.map(p => `<li><i class="ti ti-check" style="color:var(--${s.tag})"></i> ${p}</li>`).join('')}</ul>
+    </div>
+  `).join('');
+}
+
+render();
+</script>
+</body>
+</html>

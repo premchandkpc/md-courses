@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>File System Architecture — System Design</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/tabler-icons.min.css">
+<style>
+:root {
+  --bg: #f8f7f4; --bg2: #ffffff; --bg3: #f0efeb;
+  --text: #1a1a18; --text2: #5c5c58; --text3: #8a8a84;
+  --border: rgba(0,0,0,0.10); --border2: rgba(0,0,0,0.18);
+  --teal: #0F6E56; --teal-bg: #E1F5EE; --teal-light: #5DCAA5;
+  --amber: #854F0B; --amber-bg: #FAEEDA; --amber-light: #EF9F27;
+  --blue: #185FA5; --blue-bg: #E6F1FB; --blue-light: #378ADD;
+  --purple: #534AB7; --purple-bg: #EEEDFE; --purple-light: #7F77DD;
+  --coral: #993C1D; --coral-bg: #FAECE7; --coral-light: #D85A30;
+  --green: #3B6D11; --green-bg: #EAF3DE; --green-light: #639922;
+  --red: #A32D2D; --red-bg: #FCEBEB;
+  --radius: 10px; --radius-sm: 6px; --mono: 'Courier New', 'Consolas', monospace;
+}
+@media (prefers-color-scheme: dark) {
+:root {
+  --bg: #111110; --bg2: #1a1a18; --bg3: #222220;
+  --text: #f0ede8; --text2: #a8a8a0; --text3: #6a6a64;
+  --border: rgba(255,255,255,0.10); --border2: rgba(255,255,255,0.20);
+  --teal: #5DCAA5; --teal-bg: #04342C; --teal-light: #9FE1CB;
+  --amber: #EF9F27; --amber-bg: #412402; --amber-light: #FAC775;
+  --blue: #85B7EB; --blue-bg: #042C53; --blue-light: #B5D4F4;
+  --purple: #AFA9EC; --purple-bg: #26215C; --purple-light: #CECBF6;
+  --coral: #F0997B; --coral-bg: #4A1B0C; --coral-light: #F5C4B3;
+  --green: #97C459; --green-bg: #173404; --green-light: #C0DD97;
+  --red: #E24B4A; --red-bg: #501313;
+}
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14px;line-height:1.5;min-height:100vh}
+.app{max-width:1000px;margin:0 auto;padding:24px 16px 60px}
+.top-bar{display:flex;align-items:baseline;gap:12px;margin-bottom:4px}
+.app-title{font-size:22px;font-weight:600;letter-spacing:-0.01em}
+.app-sub{font-size:13px;color:var(--text2)}
+.desc{font-size:13px;color:var(--text2);margin-bottom:20px;padding:10px 14px;background:var(--bg3);border-radius:var(--radius-sm);border-left:3px solid var(--teal)}
+.db-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px}
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:16px}
+.card h3{font-size:15px;margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.card .tag{display:inline-block;font-size:10px;padding:2px 8px;border-radius:100px;font-weight:600;letter-spacing:0.03em;margin-bottom:8px}
+.tag-teal{background:var(--teal-bg);color:var(--teal)}
+.tag-amber{background:var(--amber-bg);color:var(--amber)}
+.tag-blue{background:var(--blue-bg);color:var(--blue)}
+.tag-purple{background:var(--purple-bg);color:var(--purple)}
+.tag-coral{background:var(--coral-bg);color:var(--coral)}
+.tag-green{background:var(--green-bg);color:var(--green)}
+.card p{font-size:12px;color:var(--text2);line-height:1.5;margin-bottom:8px}
+.card ul{list-style:none;font-size:12px}
+.card ul li{padding:3px 0;color:var(--text2);display:flex;gap:6px;align-items:flex-start}
+.card ul li i{color:var(--teal);font-size:14px;flex-shrink:0;margin-top:1px}
+.card ul li .neg{color:var(--coral)}
+.section{margin-bottom:20px}
+.section-title{font-size:11px;text-transform:uppercase;letter-spacing:0.09em;color:var(--text3);font-weight:600;margin-bottom:12px;display:flex;align-items:center;gap:10px}
+.section-title::after{content:'';flex:1;height:1px;background:var(--border)}
+.req-table{width:100%;border-collapse:collapse;font-size:13px}
+.req-table th{font-size:10px;text-transform:uppercase;letter-spacing:0.07em;color:var(--text3);font-weight:600;padding:8px 10px;text-align:left;border-bottom:2px solid var(--border2)}
+.req-table td{padding:8px 10px;border-bottom:1px solid var(--border);vertical-align:top}
+.req-table tr:hover td{background:var(--bg3)}
+.req-table .why{font-size:11px;color:var(--text3);margin-top:3px;line-height:1.4}
+.req-table td:first-child{font-weight:500;white-space:nowrap}
+.why-box{margin-top:16px;padding:12px;background:var(--bg3);border-radius:var(--radius-sm);border-left:3px solid var(--blue)}
+.why-box h4{font-size:12px;margin-bottom:4px;color:var(--text)}
+.why-box p{font-size:12px;color:var(--text2);line-height:1.5}
+.scenario-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.scenario-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:14px}
+.scenario-card h4{font-size:13px;margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.scenario-card .rec{font-size:11px;padding:2px 8px;border-radius:100px;display:inline-block;font-weight:600;margin:4px 0 6px}
+.scenario-card p{font-size:12px;color:var(--text2);line-height:1.5}
+.scenario-card ul{list-style:none;font-size:12px;margin-top:6px}
+.scenario-card ul li{padding:2px 0;color:var(--text2);display:flex;gap:6px}
+.scenario-card ul li i{font-size:14px;flex-shrink:0;color:var(--teal)}
+.fail-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:14px}
+.shard-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px}
+.shard-card h4{font-size:13px;margin-bottom:4px}
+.shard-card p{font-size:11px;color:var(--text2);line-height:1.4}
+@media(max-width:640px){.db-grid{grid-template-columns:1fr}.fail-grid{grid-template-columns:1fr}.scenario-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="top-bar">
+    <div class="app-title">File System Architecture</div>
+    <div class="app-sub">VFS · Inode · Journaling · Allocation · Recovery</div>
+  </div>
+  <div class="desc">Filesystems are the OS layer that turns block devices into named, structured data. They must survive crashes, defragment efficiently, and provide predictable performance under diverse workloads. This guide covers the internal machinery of production Unix-like filesystems.</div>
+
+  <div class="section">
+    <div class="section-title">Core Components</div>
+    <div class="db-grid" id="comp-grid"></div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Filesystem Types Comparison</div>
+    <table class="req-table">
+      <thead><tr><th style="width:120px">FS</th><th>Features</th><th>Max Size</th><th>Journaling</th><th>Use Case</th></tr></thead>
+      <tbody id="fstypes-body"></tbody>
+    </table>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Storage Allocation Strategies</div>
+    <table class="req-table">
+      <thead><tr><th style="width:120px">Strategy</th><th>Fragmentation</th><th>Speed</th><th>Max File</th><th>Tradeoff</th></tr></thead>
+      <tbody id="alloc-body"></tbody>
+    </table>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Journaling Modes</div>
+    <table class="req-table">
+      <thead><tr><th style="width:120px">Mode</th><th>Consistency</th><th>Performance</th><th>Tradeoff</th></tr></thead>
+      <tbody id="journal-body"></tbody>
+    </table>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Failure Modes</div>
+    <div class="fail-grid" id="fail-grid"></div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Real-World Scenarios</div>
+    <div class="scenario-grid" id="scenarios-grid"></div>
+  </div>
+</div>
+
+<script>
+const COMPONENTS = [
+  { name: 'VFS', icon: 'ti-stack', tag: 'teal', desc: 'Virtual File System — abstraction layer between syscalls and concrete FS implementations. All file operations go through VFS.',
+    pros: ['Unified interface for all filesystem types', 'Pluggable — add FS without modifying kernel'], cons: ['Double-dispatch overhead (syscall → VFS → FS)', 'Abstraction leaks for some operations'] },
+  { name: 'Inode', icon: 'ti-file-invoice', tag: 'blue', desc: 'Index node — metadata structure for each file: size, owner, permissions, timestamps, block pointers.',
+    pros: ['Efficient for small files (direct pointers)', 'Hard links share inode → no data copy'], cons: ['Fixed-size inode table at mkfs time', 'Single inode per file limits concurrent metadata updates'] },
+  { name: 'Dentry', icon: 'ti-folder', tag: 'amber', desc: 'Directory entry — maps filename → inode number. Stored per-directory as a list of (name, ino) pairs.',
+    pros: ['Fast path-component lookup via dcache', 'Supports hard/soft links naturally'], cons: ['dcache eviction cost under memory pressure', 'Large directories need hashed B-tree (ext4 dx)'] },
+  { name: 'Superblock', icon: 'ti-server', tag: 'purple', desc: 'Filesystem metadata header: block size, total blocks, inode count, mount state, feature flags.',
+    pros: ['Single authoritative metadata record', 'Redundant copies on disk for recovery'], cons: ['Superblock corruption = filesystem dead', 'Lock contention on superblock updates'] },
+  { name: 'Page Cache', icon: 'ti-cpu', tag: 'green', desc: 'Kernel cache of disk blocks in RAM. All read/write goes through page cache. Writeback is asynchronous.',
+    pros: ['Dramatically reduces disk I/O (cache hits)', 'Read-ahead prefetching for sequential access'], cons: ['Writeback delay = data loss on crash (no fsync)', 'Cache pressure thrashes with large working sets'] },
+  { name: 'Journal', icon: 'ti-book', tag: 'coral', desc: 'Write-ahead log. Record intent before making changes to on-disk structures. Replay on recovery.',
+    pros: ['Atomic multi-step operations (rename, truncate)', 'Fast recovery (seconds vs fsck hours)'], cons: ['Double-write penalty (journal + data)', 'Journal size caps concurrent transactions'] },
+];
+
+const FSTYPES = [
+  { name: 'ext4', feat: 'Extents, multi-block alloc, delayed allocation, checksums', max: '1 EiB', jrnl: 'Ordered (default)', use: 'Linux default. General purpose, boot, embedded.' },
+  { name: 'XFS', feat: 'B-tree allocation, delayed allocation, online defrag, COW for reflink/dedupe', max: '8 EiB', jrnl: 'Metadata only', use: 'Large files, media, HPC, RHEL/CentOS default.' },
+  { name: 'Btrfs', feat: 'Copy-on-write, snapshots, compression, RAID (0/1/10/5/6), self-healing', max: '16 EiB', jrnl: 'COW (no journal needed)', use: 'Snapshots, rollback, subvolumes, NAS appliances.' },
+  { name: 'ZFS', feat: 'COW, pooled storage, checksums (all data), snapshots, compression, dedup, RAID-Z', max: '256 ZiB', jrnl: 'COW + ZIL + intent log', use: 'Enterprise storage, FreeBSD, large NAS, archival.' },
+  { name: 'NTFS', feat: 'MFT (master file table), ACLs, encryption (EFS), compression, reparse points', max: '256 TB', jrnl: 'Metadata ($LogFile)', use: 'Windows boot/system, external drives, dual-boot.' },
+  { name: 'APFS', feat: 'COW, snapshots, clones, space sharing (container), encryption, TRIM', max: '16 EiB', jrnl: 'COW (journal-less)', use: 'macOS/iOS default. SSDs and Fusion drives.' },
+];
+
+const ALLOC = [
+  { name: 'Contiguous', frag: 'None (single block range)', spd: 'Fastest sequential', max: 'Depends on free space', trade: 'External fragmentation over time. Need compaction.' },
+  { name: 'Linked', frag: 'None (lists free blocks)', spd: 'Sequential only (no random)', max: 'Unlimited (linked chain)', trade: 'No random access. Each block has pointer overhead.' },
+  { name: 'Indexed', frag: 'Minimal indirect blocks', spd: 'Good random access', max: 'Limited by index block size', trade: 'Pointer table overhead. Indirect blocks slow for huge files.' },
+  { name: 'Extents', frag: 'Very low (runs of blocks)', spd: 'Fast sequential + good random', max: 'Unlimited (extent tree)', trade: 'Extent fragmentation under heavy write/truncate.' },
+];
+
+const JOURNAL_MODES = [
+  { name: 'Writeback', consist: 'Metadata only. Data may be from before crash.', perf: 'Best (no data double-write)', trade: 'Stale/corrupt file data after crash. Metadata consistent.' },
+  { name: 'Ordered', consist: 'Data written before journal commit. File content + metadata consistent.', perf: 'Good (data + metadata journaled once)', trade: 'Most popular. Data written to final location first, then journal metadata.' },
+  { name: 'Data', consist: 'Full data + metadata journaled. Everything consistent.', perf: 'Worst (every write goes to journal twice)', trade: 'Data journaled twice (journal + final). 2x write amplification.' },
+];
+
+const FAILURES = [
+  { name: 'Filesystem Corruption', icon: 'ti-alert-triangle', tag: 'red', desc: 'Bit rot, bad sector, partial write to superblock. Entire FS can become unmountable.', fix: 'fsck offline. Btrfs/ZFS: self-healing via checksums + RAID parity.' },
+  { name: 'Journal Replay Failure', icon: 'ti-refresh-alert', tag: 'amber', desc: 'Journal itself is corrupt (bad sector during log write). Recovery cannot replay.', fix: 'Force mount (discard journal) → fsck. Journal checksums help detect early.' },
+  { name: 'Fsck Time Explosion', icon: 'ti-clock-hour-9', tag: 'coral', desc: 'Linear fsck on multi-TB volumes can take hours. Unacceptable for production 24x7.', fix: 'XFS: metadata checksums + fast replay (seconds). Btrfs/ZFS: no fsck needed (COW).' },
+  { name: 'Inode Exhaustion', icon: 'ti-file-off', tag: 'purple', desc: 'Inode count fixed at mkfs. Millions of tiny files can fill inode table before disk space.', fix: 'Monitor inode usage. Btrfs: dynamic inode allocation (no limit).' },
+];
+
+const SCENARIOS = [
+  { title: 'Database crash recovery', icon: 'ti-database', rec: 'Ordered journaling + fsync', tag: 'teal',
+    desc: 'PostgreSQL crash mid-LIKE query. Need to recover data and metadata consistently.',
+    why: 'Ordered journaling ensures data blocks written before journal metadata commit. On crash, journal replay completes partial writes. Fsync guarantees durable write.',
+    points: ['Pg writes WAL, fsyncs, then writes data (FUA or cache flush)', 'Journal ordered mode mirrors this pattern', 'Recovery: replay journal → data + inode consistent', 'Without journal: last uncommitted write may leave corrupt rows'] },
+  { title: 'Multi-TB media server', icon: 'ti-photo', rec: 'XFS (large files) + ZFS (archive)', tag: 'blue',
+    desc: '500TB video library. 4K/8K raw footage, long sequential writes, concurrent transcoding reads.',
+    why: 'XFS extents handle large files efficiently. Delayed allocation merges small writes. ZFS provides compression + checksums for archival storage.',
+    points: ['XFS: extent allocation reduces fragmentation for huge video files', 'XFS: no fsck needed (fast replay even at 100TB+)', 'ZFS: compression saves 20-40% on video, checksums detect bit rot', 'ZFS snapshots enable nightly backup with near-zero overhead'] },
+  { title: 'Container host with 10K pods', icon: 'ti-box', rec: 'ext4 + overlayfs + no journal (if throwaway)', tag: 'green',
+    desc: 'Kubernetes node running 10K containers. Each has ephemeral layer, overlayfs merge. High inode pressure.',
+    why: 'ext4 handles large directory trees with dir_index. Overlayfs avoids media journal double-write. Throwaway overlay layers can use data=writeback for perf.',
+    points: ['ext4 dir_index (HTree) for directory lookups among 10K+ entries', 'Overlayfs upper dir uses inodes per modified file', 'Data=writeback: metadata journal only, data loss acceptable (ephemeral)', 'Monitor inode usage: mkfs with nbpi=4096 for container workloads'] },
+];
+
+function render() { renderComps(); renderFSTypes(); renderAlloc(); renderJournal(); renderFails(); renderScenarios(); }
+
+function renderComps() {
+  const grid = document.getElementById('comp-grid');
+  grid.innerHTML = COMPONENTS.map(d => `
+    <div class="card">
+      <h3><i class="${d.icon}" style="color:var(--${d.tag})"></i> ${d.name}</h3>
+      <span class="tag tag-${d.tag}">${d.pros.length} pros</span>
+      <p>${d.desc}</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:6px">
+        <div style="padding:6px;background:var(--bg3);border-radius:4px;font-size:10px;color:var(--text3)">
+          <i class="ti ti-check" style="color:var(--teal)"></i> ${d.pros.join('<br><i class="ti ti-check" style="color:var(--teal)"></i> ')}
+        </div>
+        <div style="padding:6px;background:var(--bg3);border-radius:4px;font-size:10px;color:var(--text3)">
+          <i class="ti ti-x" style="color:var(--coral)"></i> ${d.cons.join('<br><i class="ti ti-x" style="color:var(--coral)"></i> ')}
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderFSTypes() {
+  const tbody = document.getElementById('fstypes-body');
+  tbody.innerHTML = FSTYPES.map(f => `
+    <tr><td style="font-weight:600;color:var(--text)">${f.name}</td><td style="font-size:12px;color:var(--text2);line-height:1.4">${f.feat}</td><td style="font-size:12px;color:var(--blue)">${f.max}</td><td style="font-size:12px;color:var(--amber)">${f.jrnl}</td><td style="font-size:12px;color:var(--text2)">${f.use}</td></tr>
+  `).join('');
+}
+
+function renderAlloc() {
+  const tbody = document.getElementById('alloc-body');
+  tbody.innerHTML = ALLOC.map(a => `
+    <tr><td style="font-weight:600;color:var(--text)">${a.name}</td><td style="font-size:12px;color:var(--text2)">${a.frag}</td><td style="font-size:12px;color:var(--green)">${a.spd}</td><td style="font-size:12px;color:var(--text2)">${a.max}</td><td style="font-size:12px;color:var(--coral);line-height:1.4">${a.trade}</td></tr>
+  `).join('');
+}
+
+function renderJournal() {
+  const tbody = document.getElementById('journal-body');
+  tbody.innerHTML = JOURNAL_MODES.map(j => `
+    <tr><td style="font-weight:600;color:var(--text)">${j.name}</td><td style="font-size:12px;color:var(--text2);line-height:1.4">${j.consist}</td><td style="font-size:12px;color:${j.name === 'Data' ? 'var(--coral)' : 'var(--green)'}">${j.perf}</td><td style="font-size:12px;color:var(--amber);line-height:1.4">${j.trade}</td></tr>
+  `).join('');
+}
+
+function renderFails() {
+  const grid = document.getElementById('fail-grid');
+  grid.innerHTML = FAILURES.map(f => `
+    <div class="shard-card">
+      <h4><i class="${f.icon}" style="color:var(--${f.tag})"></i> ${f.name}</h4>
+      <p>${f.desc}</p>
+      <div style="margin-top:6px;font-size:10px;padding:4px 6px;background:var(--${f.tag}-bg);color:var(--${f.tag});border-radius:4px">${f.fix}</div>
+    </div>
+  `).join('');
+}
+
+function renderScenarios() {
+  const grid = document.getElementById('scenarios-grid');
+  grid.innerHTML = SCENARIOS.map(s => `
+    <div class="scenario-card">
+      <h4><i class="${s.icon}" style="color:var(--${s.tag})"></i> ${s.title}</h4>
+      <span class="rec tag-${s.tag}" style="font-size:11px;padding:2px 8px;border-radius:100px;display:inline-block;font-weight:600;margin:4px 0 8px;background:var(--${s.tag}-bg);color:var(--${s.tag})">${s.rec}</span>
+      <p>${s.desc}</p>
+      <div class="why-box" style="margin-top:8px;">
+        <h4><i class="ti ti-alert-circle" style="color:var(--${s.tag})"></i> Why</h4>
+        <p>${s.why}</p>
+      </div>
+      <ul>${s.points.map(p => `<li><i class="ti ti-check" style="color:var(--${s.tag})"></i> ${p}</li>`).join('')}</ul>
+    </div>
+  `).join('');
+}
+
+render();
+</script>
+</body>
+</html>

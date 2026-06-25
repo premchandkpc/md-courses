@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Stripe — System Design</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/tabler-icons.min.css">
+<style>
+:root {
+  --bg: #f8f7f4; --bg2: #ffffff; --bg3: #f0efeb;
+  --text: #1a1a18; --text2: #5c5c58; --text3: #8a8a84;
+  --border: rgba(0,0,0,0.10); --border2: rgba(0,0,0,0.18);
+  --teal: #0F6E56; --teal-bg: #E1F5EE; --teal-light: #5DCAA5;
+  --amber: #854F0B; --amber-bg: #FAEEDA; --amber-light: #EF9F27;
+  --blue: #185FA5; --blue-bg: #E6F1FB; --blue-light: #378ADD;
+  --purple: #534AB7; --purple-bg: #EEEDFE; --purple-light: #7F77DD;
+  --coral: #993C1D; --coral-bg: #FAECE7; --coral-light: #D85A30;
+  --green: #3B6D11; --green-bg: #EAF3DE; --green-light: #639922;
+  --red: #A32D2D; --red-bg: #FCEBEB;
+  --radius: 10px; --radius-sm: 6px; --mono: 'Courier New', 'Consolas', monospace;
+}
+@media (prefers-color-scheme: dark) {
+:root {
+  --bg: #111110; --bg2: #1a1a18; --bg3: #222220;
+  --text: #f0ede8; --text2: #a8a8a0; --text3: #6a6a64;
+  --border: rgba(255,255,255,0.10); --border2: rgba(255,255,255,0.20);
+  --teal: #5DCAA5; --teal-bg: #04342C; --teal-light: #9FE1CB;
+  --amber: #EF9F27; --amber-bg: #412402; --amber-light: #FAC775;
+  --blue: #85B7EB; --blue-bg: #042C53; --blue-light: #B5D4F4;
+  --purple: #AFA9EC; --purple-bg: #26215C; --purple-light: #CECBF6;
+  --coral: #F0997B; --coral-bg: #4A1B0C; --coral-light: #F5C4B3;
+  --green: #97C459; --green-bg: #173404; --green-light: #C0DD97;
+  --red: #E24B4A; --red-bg: #501313;
+}
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14px;line-height:1.5;min-height:100vh}
+.app{max-width:1000px;margin:0 auto;padding:24px 16px 60px}
+.top-bar{display:flex;align-items:baseline;gap:12px;margin-bottom:4px}
+.app-title{font-size:22px;font-weight:600;letter-spacing:-0.01em}
+.app-sub{font-size:13px;color:var(--text2)}
+.desc{font-size:13px;color:var(--text2);margin-bottom:20px;padding:10px 14px;background:var(--bg3);border-radius:var(--radius-sm);border-left:3px solid var(--teal)}
+.stat-grid,.comp-grid{display:grid;gap:12px;margin-bottom:20px}
+.stat-grid{grid-template-columns:repeat(4,1fr)}
+.comp-grid{grid-template-columns:repeat(3,1fr)}
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:16px}
+.card h3{font-size:15px;margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.stat-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:14px;text-align:center}
+.stat-card .val{font-size:26px;font-weight:700;letter-spacing:-0.02em;margin:4px 0 2px}
+.stat-card .lbl{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:0.06em;font-weight:600}
+.stat-card .unit{font-size:12px;color:var(--text3)}
+.card .tag{display:inline-block;font-size:10px;padding:2px 8px;border-radius:100px;font-weight:600;letter-spacing:0.03em;margin-bottom:8px}
+.tag-teal{background:var(--teal-bg);color:var(--teal)}
+.tag-amber{background:var(--amber-bg);color:var(--amber)}
+.tag-blue{background:var(--blue-bg);color:var(--blue)}
+.tag-purple{background:var(--purple-bg);color:var(--purple)}
+.tag-coral{background:var(--coral-bg);color:var(--coral)}
+.tag-green{background:var(--green-bg);color:var(--green)}
+.card p{font-size:12px;color:var(--text2);line-height:1.5;margin-bottom:8px}
+.card .pros-cons{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:6px}
+.card .pros-cons>div{padding:6px;background:var(--bg3);border-radius:4px;font-size:10px;color:var(--text3);line-height:1.5}
+.section{margin-bottom:20px}
+.section-title{font-size:11px;text-transform:uppercase;letter-spacing:0.09em;color:var(--text3);font-weight:600;margin-bottom:12px;display:flex;align-items:center;gap:10px}
+.section-title::after{content:'';flex:1;height:1px;background:var(--border)}
+.req-table{width:100%;border-collapse:collapse;font-size:13px}
+.req-table th{font-size:10px;text-transform:uppercase;letter-spacing:0.07em;color:var(--text3);font-weight:600;padding:8px 10px;text-align:left;border-bottom:2px solid var(--border2)}
+.req-table td{padding:8px 10px;border-bottom:1px solid var(--border);vertical-align:top}
+.req-table tr:hover td{background:var(--bg3)}
+.req-table td:first-child{font-weight:500;white-space:nowrap}
+.why-box{margin-top:16px;padding:12px;background:var(--bg3);border-radius:var(--radius-sm);border-left:3px solid var(--blue)}
+.why-box h4{font-size:12px;margin-bottom:4px;color:var(--text)}
+.why-box p{font-size:12px;color:var(--text2);line-height:1.5}
+.scenario-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.scenario-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:14px}
+.scenario-card h4{font-size:13px;margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.scenario-card .rec{font-size:11px;padding:2px 8px;border-radius:100px;display:inline-block;font-weight:600;margin:4px 0 6px}
+.scenario-card p{font-size:12px;color:var(--text2);line-height:1.5}
+.scenario-card ul{list-style:none;font-size:12px;margin-top:6px}
+.scenario-card ul li{padding:2px 0;color:var(--text2);display:flex;gap:6px}
+.scenario-card ul li i{font-size:14px;flex-shrink:0;color:var(--teal)}
+@media(max-width:640px){.stat-grid{grid-template-columns:repeat(2,1fr)}.comp-grid{grid-template-columns:1fr}.scenario-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="top-bar">
+    <div class="app-title">Stripe</div>
+    <div class="app-sub">Payment Infrastructure · Idempotency · Fraud · Compliance</div>
+  </div>
+  <div class="desc">Stripe processes billions of dollars in payments annually across 45+ countries. Its architecture must be idempotent, PCI-DSS compliant, fraud-aware, and globally available — all while keeping API latencies under 100ms at p50.</div>
+
+  <div class="section">
+    <div class="section-title">System Stats</div>
+    <div class="stat-grid" id="stats-grid"></div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Architecture Components</div>
+    <div class="comp-grid" id="comp-grid"></div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Payment State Machine</div>
+    <table class="req-table">
+      <thead><tr><th style="width:130px">From</th><th style="width:130px">To</th><th style="width:200px">Trigger</th><th>Description</th></tr></thead>
+      <tbody id="state-body"></tbody>
+    </table>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Tech Stack</div>
+    <table class="req-table">
+      <thead><tr><th style="width:140px">Component</th><th>Technology</th><th>Why</th></tr></thead>
+      <tbody id="tech-body"></tbody>
+    </table>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Failure Modes</div>
+    <table class="req-table">
+      <thead><tr><th style="width:180px">Failure Mode</th><th>Problem</th><th>Mitigation</th></tr></thead>
+      <tbody id="failure-body"></tbody>
+    </table>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Key Scenarios</div>
+    <div class="scenario-grid" id="scenarios-grid"></div>
+  </div>
+</div>
+
+<script>
+const STATS = [
+  { label: 'API Requests', value: '100M+', unit: '/day', icon: 'ti-cloud', color: 'blue' },
+  { label: 'Uptime', value: '99.99%', unit: '', icon: 'ti-heartbeat', color: 'green' },
+  { label: 'Payment Methods', value: '100+', unit: '', icon: 'ti-credit-card', color: 'purple' },
+  { label: 'Global Reach', value: '45+', unit: 'countries', icon: 'ti-world', color: 'amber' },
+];
+
+const COMPONENTS = [
+  { name: 'API Gateway', icon: 'ti-shield-lock', tag: 'blue', desc: 'TLS termination, rate limiting, auth, request routing.',
+    pros: ['First defense layer (DDoS, auth)', 'Consistent rate limit per API key'], cons: ['Single choke point if unscaled', 'Adds latency hop to each request'] },
+  { name: 'Payment Intent', icon: 'ti-arrows-shuffle', tag: 'teal', desc: 'Orchestrates payment lifecycle: creation → auth → capture → settlement.',
+    pros: ['Centralized state machine logic', 'Handles auth vs capture dual flow'], cons: ['State explosion with payment methods', 'Concurrent modify race conditions'] },
+  { name: 'Fraud Radar', icon: 'ti-radar', tag: 'coral', desc: 'Real-time ML fraud scoring. 500+ features, <100ms decision.',
+    pros: ['Real-time ensemble scoring', 'Custom rule DSL for merchants'], cons: ['False positives block legit sales', 'Model drift requires daily retrain'] },
+  { name: 'Idempotency Store', icon: 'ti-repeat', tag: 'purple', desc: 'Prevents double charges. Redis primary + PostgreSQL backup.',
+    pros: ['SET NX prevents concurrent dupes', 'PG persistence past 24h TTL'], cons: ['Lock contention at peak traffic', 'Race window between check + process'] },
+  { name: 'Card Vault', icon: 'ti-lock', tag: 'amber', desc: 'PCI-scoped. AES-256-GCM encrypted PANs. HSM-backed keys.',
+    pros: ['PCI SAQ A for merchants', 'Key hierarchy: Master → KEK → DEK'], cons: ['HSM decryption latency', 'Strict access slows debugging'] },
+  { name: 'Payout Engine', icon: 'ti-coin', tag: 'green', desc: 'Scheduled + on-demand merchant settlements. Multi-currency.',
+    pros: ['Automated payout scheduling', 'Multi-currency conversion built-in'], cons: ['Complex reconciliation across processors', 'Payout delays frustrate merchants'] },
+  { name: 'Webhook Delivery', icon: 'ti-bell', tag: 'blue', desc: 'Async event notification. 20+ event types. At-least-once delivery.',
+    pros: ['Guaranteed retry with backoff', 'Event types for every state change'], cons: ['At-least-once means dupes', 'Slow merchant endpoint blocks queue'] },
+  { name: 'Dashboard API', icon: 'ti-chart-bar', tag: 'purple', desc: 'Merchant-facing analytics, dispute management, reporting.',
+    pros: ['Real-time charge/refund reporting', 'Self-service dispute evidence submit'], cons: ['Analytics queries impact primary DB', 'Complex role-based permissions'] },
+];
+
+const STATES = [
+  { from: 'requires_payment_method', to: 'requires_confirmation', trigger: 'Payment method attached', desc: 'Card or wallet set on intent. Ready for /confirm.' },
+  { from: 'requires_confirmation', to: 'processing', trigger: 'Intent confirmed', desc: 'API receives /confirm call. Authorization begins.' },
+  { from: 'processing', to: 'requires_action', trigger: '3D Secure needed', desc: 'SCA challenge required before issuer auth.' },
+  { from: 'requires_action', to: 'processing', trigger: '3DS completed', desc: 'Customer passes biometric/SMS challenge.' },
+  { from: 'processing', to: 'requires_capture', trigger: 'Auth-only flow', desc: 'Funds reserved on card. Not yet captured.' },
+  { from: 'processing', to: 'succeeded', trigger: 'Auth + capture', desc: 'Funds reserved and captured in one step.' },
+  { from: 'processing', to: 'failed', trigger: 'Decline / timeout', desc: 'Card declined, insufficient funds, or network error.' },
+  { from: 'requires_capture', to: 'succeeded', trigger: 'Capture call', desc: 'Settle funds from auth hold to merchant.' },
+  { from: 'requires_capture', to: 'canceled', trigger: 'Cancel intent', desc: 'Release auth hold. No funds transferred.' },
+  { from: 'succeeded', to: 'refunded', trigger: 'Full refund', desc: 'Entire amount returned to customer.' },
+  { from: 'succeeded', to: 'partially_refunded', trigger: 'Partial refund', desc: 'Portion of amount returned.' },
+  { from: 'succeeded', to: 'disputed', trigger: 'Chargeback filed', desc: 'Customer disputes with issuing bank.' },
+  { from: 'disputed', to: 'won', trigger: 'Merchant wins', desc: 'Evidence proves transaction legitimate.' },
+  { from: 'disputed', to: 'lost', trigger: 'Merchant loses', desc: 'Charge reversed + $15-25 dispute fee.' },
+];
+
+const TECH = [
+  { component: 'API Layer', tech: 'Envoy / Google GLB', why: 'L4 GLB + L7 Envoy for rate limiting, TLS termination, routing.' },
+  { component: 'Idempotency', tech: 'Redis + PostgreSQL', why: 'Redis SET NX (<5ms). PG durable backup after 24h TTL.' },
+  { component: 'Primary DB', tech: 'PostgreSQL', why: 'ACID for payment_intents, charges, refunds. Unique constraint on idempotency_key.' },
+  { component: 'Event Log', tech: 'Cassandra', why: 'High write throughput for charge events. Query by charge_id (partition key).' },
+  { component: 'Cache & Rate Limit', tech: 'Redis', why: 'Sub-ms idempotency lookups, velocity counters, hot API key cache.' },
+  { component: 'Fraud ML', tech: 'GBDT + Neural Net', why: 'Ensemble: GBDT for interpretability, NN for complex interactions.' },
+  { component: 'Card Vault', tech: 'HSM + AES-256-GCM', why: 'Hardware root of trust. Master → KEK → DEK key hierarchy.' },
+  { component: 'Async Events', tech: 'Webhooks + Queue', why: 'At-least-once. Exp backoff. 20+ event types for lifecycle.' },
+];
+
+const FAILURES = [
+  { mode: 'Idempotency Key Collision', problem: 'Concurrent reqs with same key. Both pass SET NX. Both create charges.', mitigation: 'Redlock + PG unique constraint + dedup verification job (async scan).' },
+  { mode: 'Payment Gateway Timeout', problem: 'Acquirer takes >30s. Client gets timeout but charge may have succeeded.', mitigation: 'Idempotent retry + status polling + webhook + 202 Accepted for pending.' },
+  { mode: 'Double Charge (No Key)', problem: 'Network drops after charge created. Retry creates second charge (no idempotency).', mitigation: 'Mandatory idempotency keys on POST charges/refunds. Stripe enforces server-side.' },
+  { mode: 'Provider Downtime', problem: 'Primary processor (First Data, Chase) goes down. All traffic to that processor fails.', mitigation: 'Circuit breaker (>50% fail in 60s → open). Failover routing table per BIN.' },
+  { mode: '3DS Timeout', problem: 'Customer starts SCA challenge but never completes. Payment stuck in requires_action.', mitigation: '15min timeout → mark failed. Webhook trigger. SCA exemption for <30 EUR.' },
+  { mode: 'Issuer Timeout', problem: 'Issuing bank does not respond to auth within timeout window.', mitigation: 'Per-issuer timeout (10-30s). 3 retries with backoff. BIN circuit breaker.' },
+];
+
+const SCENARIOS = [
+  { title: 'Recurring SaaS Subscription', icon: 'ti-refresh', tag: 'blue',
+    desc: 'Customer signs up for $29/mo SaaS. Merchant charges saved card monthly via Stripe\'s Invoice API.',
+    flow: ['Stripe.js tokenizes card → pm_xxx saved to customer', 'SetupIntent creates reusable payment method for recurring',
+           'Invoice API creates subscription → Stripe charges on due date', 'Idempotency key prevents double charge on retry',
+           'Webhook invoice.payment_succeeded notifies merchant'] },
+  { title: 'High-Risk Cross-Border Purchase', icon: 'ti-plane', tag: 'amber',
+    desc: 'Customer from Nigeria buys $500 electronics from US merchant. Cross-continent, high amount, new customer.',
+    flow: ['Radar extracts 500+ features: IP Nigeria, BIN US, new device', 'ML ensemble scores risk at 78/100 — above merchant threshold',
+           '3DS challenge triggered for SCA liability shift', 'Customer passes biometric → auth sent to issuer',
+           'Issuer approves. Fraud liability shifted to issuer (SCA).'] },
+  { title: 'Idempotency Saves a $20K Charge', icon: 'ti-shield-check', tag: 'teal',
+    desc: 'API client charges $20,000 for enterprise license. Network drops after charge created, before HTTP response.',
+    flow: ['POST /v1/payment_intents with idempotency_key="ent-license-001"', 'Charge processed, response stored in Redis (SET NX)',
+           'Network timeout → TCP RST, no HTTP response to client', 'Client retries with same key → Redis returns cached response',
+           'Single charge. No double billing.'] },
+];
+
+function render() {
+  renderStats();
+  renderComponents();
+  renderStates();
+  renderTech();
+  renderFailures();
+  renderScenarios();
+}
+
+function renderStats() {
+  document.getElementById('stats-grid').innerHTML = STATS.map(s => `
+    <div class="stat-card">
+      <i class="${s.icon}" style="font-size:20px;color:var(--${s.color})"></i>
+      <div class="val" style="color:var(--${s.color})">${s.value}</div>
+      <div class="lbl">${s.label}</div>
+      ${s.unit ? `<div class="unit">${s.unit}</div>` : ''}
+    </div>
+  `).join('');
+}
+
+function renderComponents() {
+  document.getElementById('comp-grid').innerHTML = COMPONENTS.map(c => `
+    <div class="card">
+      <h3><i class="${c.icon}" style="color:var(--${c.tag})"></i> ${c.name}</h3>
+      <span class="tag tag-${c.tag}">Component</span>
+      <p>${c.desc}</p>
+      <div class="pros-cons">
+        <div><i class="ti ti-check" style="color:var(--teal)"></i> ${c.pros[0]}<br><i class="ti ti-check" style="color:var(--teal)"></i> ${c.pros[1]}</div>
+        <div><i class="ti ti-x" style="color:var(--coral)"></i> ${c.cons[0]}<br><i class="ti ti-x" style="color:var(--coral)"></i> ${c.cons[1]}</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderStates() {
+  document.getElementById('state-body').innerHTML = STATES.map(s => `
+    <tr><td style="font-family:var(--mono);font-size:12px">${s.from}</td><td style="font-family:var(--mono);font-size:12px">${s.to}</td><td style="font-size:12px;color:var(--text)">${s.trigger}</td><td style="font-size:12px;color:var(--text2)">${s.desc}</td></tr>
+  `).join('');
+}
+
+function renderTech() {
+  document.getElementById('tech-body').innerHTML = TECH.map(t => `
+    <tr><td style="font-weight:600">${t.component}</td><td style="font-size:12px;color:var(--text2)">${t.tech}</td><td style="font-size:12px;color:var(--text2);line-height:1.4">${t.why}</td></tr>
+  `).join('');
+}
+
+function renderFailures() {
+  document.getElementById('failure-body').innerHTML = FAILURES.map(f => `
+    <tr><td style="font-weight:600;color:var(--coral)">${f.mode}</td><td style="font-size:12px;color:var(--text2)">${f.problem}</td><td style="font-size:12px;color:var(--text2);line-height:1.4">${f.mitigation}</td></tr>
+  `).join('');
+}
+
+function renderScenarios() {
+  document.getElementById('scenarios-grid').innerHTML = SCENARIOS.map(s => `
+    <div class="scenario-card">
+      <h4><i class="${s.icon}" style="color:var(--${s.tag})"></i> ${s.title}</h4>
+      <span class="rec tag-${s.tag}" style="font-size:11px;padding:2px 8px;border-radius:100px;display:inline-block;font-weight:600;margin:4px 0 8px;background:var(--${s.tag}-bg);color:var(--${s.tag})">Scenario</span>
+      <p>${s.desc}</p>
+      <ul>${s.flow.map(f => `<li><i class="ti ti-arrow-right" style="color:var(--${s.tag})"></i> ${f}</li>`).join('')}</ul>
+    </div>
+  `).join('');
+}
+
+render();
+</script>
+</body>
+</html>

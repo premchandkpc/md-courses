@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Zoom Architecture — System Design</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/tabler-icons.min.css">
+<style>
+:root {
+  --bg: #f8f7f4; --bg2: #ffffff; --bg3: #f0efeb;
+  --text: #1a1a18; --text2: #5c5c58; --text3: #8a8a84;
+  --border: rgba(0,0,0,0.10); --border2: rgba(0,0,0,0.18);
+  --teal: #0F6E56; --teal-bg: #E1F5EE; --teal-light: #5DCAA5;
+  --amber: #854F0B; --amber-bg: #FAEEDA; --amber-light: #EF9F27;
+  --blue: #185FA5; --blue-bg: #E6F1FB; --blue-light: #378ADD;
+  --purple: #534AB7; --purple-bg: #EEEDFE; --purple-light: #7F77DD;
+  --coral: #993C1D; --coral-bg: #FAECE7; --coral-light: #D85A30;
+  --green: #3B6D11; --green-bg: #EAF3DE; --green-light: #639922;
+  --red: #A32D2D; --red-bg: #FCEBEB;
+  --radius: 10px; --radius-sm: 6px; --mono: 'Courier New', 'Consolas', monospace;
+}
+@media (prefers-color-scheme: dark) {
+:root {
+  --bg: #111110; --bg2: #1a1a18; --bg3: #222220;
+  --text: #f0ede8; --text2: #a8a8a0; --text3: #6a6a64;
+  --border: rgba(255,255,255,0.10); --border2: rgba(255,255,255,0.20);
+  --teal: #5DCAA5; --teal-bg: #04342C; --teal-light: #9FE1CB;
+  --amber: #EF9F27; --amber-bg: #412402; --amber-light: #FAC775;
+  --blue: #85B7EB; --blue-bg: #042C53; --blue-light: #B5D4F4;
+  --purple: #AFA9EC; --purple-bg: #26215C; --purple-light: #CECBF6;
+  --coral: #F0997B; --coral-bg: #4A1B0C; --coral-light: #F5C4B3;
+  --green: #97C459; --green-bg: #173404; --green-light: #C0DD97;
+  --red: #E24B4A; --red-bg: #501313;
+}
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14px;line-height:1.5;min-height:100vh}
+.app{max-width:1000px;margin:0 auto;padding:24px 16px 60px}
+.top-bar{display:flex;align-items:baseline;gap:12px;margin-bottom:4px}
+.app-title{font-size:22px;font-weight:600;letter-spacing:-0.01em}
+.app-sub{font-size:13px;color:var(--text2)}
+.desc{font-size:13px;color:var(--text2);margin-bottom:20px;padding:10px 14px;background:var(--bg3);border-radius:var(--radius-sm);border-left:3px solid var(--teal)}
+.db-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px}
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:16px}
+.card h3{font-size:15px;margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.card .tag{display:inline-block;font-size:10px;padding:2px 8px;border-radius:100px;font-weight:600;letter-spacing:0.03em;margin-bottom:8px}
+.tag-teal{background:var(--teal-bg);color:var(--teal)}
+.tag-amber{background:var(--amber-bg);color:var(--amber)}
+.tag-blue{background:var(--blue-bg);color:var(--blue)}
+.tag-purple{background:var(--purple-bg);color:var(--purple)}
+.tag-coral{background:var(--coral-bg);color:var(--coral)}
+.tag-green{background:var(--green-bg);color:var(--green)}
+.card p{font-size:12px;color:var(--text2);line-height:1.5;margin-bottom:8px}
+.section{margin-bottom:20px}
+.section-title{font-size:11px;text-transform:uppercase;letter-spacing:0.09em;color:var(--text3);font-weight:600;margin-bottom:12px;display:flex;align-items:center;gap:10px}
+.section-title::after{content:'';flex:1;height:1px;background:var(--border)}
+.req-table{width:100%;border-collapse:collapse;font-size:13px}
+.req-table th{font-size:10px;text-transform:uppercase;letter-spacing:0.07em;color:var(--text3);font-weight:600;padding:8px 10px;text-align:left;border-bottom:2px solid var(--border2)}
+.req-table td{padding:8px 10px;border-bottom:1px solid var(--border);vertical-align:top}
+.req-table tr:hover td{background:var(--bg3)}
+.req-table td:first-child{font-weight:500;white-space:nowrap}
+.why-box{margin-top:16px;padding:12px;background:var(--bg3);border-radius:var(--radius-sm);border-left:3px solid var(--blue)}
+.why-box h4{font-size:12px;margin-bottom:4px;color:var(--text)}
+.why-box p{font-size:12px;color:var(--text2);line-height:1.5}
+.scenario-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.scenario-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:14px}
+.scenario-card h4{font-size:13px;margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.scenario-card .rec{font-size:11px;padding:2px 8px;border-radius:100px;display:inline-block;font-weight:600;margin:4px 0 6px}
+.scenario-card p{font-size:12px;color:var(--text2);line-height:1.5}
+.scenario-card ul{list-style:none;font-size:12px;margin-top:6px}
+.scenario-card ul li{padding:2px 0;color:var(--text2);display:flex;gap:6px}
+.scenario-card ul li i{font-size:14px;flex-shrink:0;color:var(--teal)}
+.stat-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:16px;text-align:center}
+.stat-card:hover{border-color:var(--text3)}
+.stat-value{font-size:28px;font-weight:700;letter-spacing:-0.02em;line-height:1;color:var(--text)}
+.stat-unit{font-size:14px;color:var(--text3);margin-left:2px}
+.stat-label{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:0.05em;margin-top:6px}
+@media(max-width:640px){.db-grid{grid-template-columns:1fr}.scenario-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="top-bar">
+    <div class="app-title">Zoom Architecture</div>
+    <div class="app-sub">Video Conferencing · SFU · WebRTC · E2EE · Global Scale</div>
+  </div>
+  <div class="desc">Zoom serves 300M+ daily meeting participants across 40+ data center regions with P99 media latency &lt; 150ms. Architecture centers on Selective Forwarding Units (SFU) for scalable media distribution, WebSocket-based signaling for real-time control, and E2EE using X25519 ECDH key exchange.</div>
+
+  <div class="section">
+    <div class="section-title">System Stats</div>
+    <div class="db-grid" id="stats-grid"></div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Architecture Components</div>
+    <div class="db-grid" id="comp-grid"></div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">SFU vs MCU</div>
+    <table class="req-table">
+      <thead><tr><th style="width:120px">Attribute</th><th>SFU (Zoom)</th><th>MCU (Legacy)</th></tr></thead>
+      <tbody id="sfu-body"></tbody>
+    </table>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Meeting Lifecycle</div>
+    <table class="req-table">
+      <thead><tr><th style="width:150px">Step</th><th>Description</th><th>Protocol</th></tr></thead>
+      <tbody id="lifecycle-body"></tbody>
+    </table>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Tech Stack</div>
+    <table class="req-table">
+      <thead><tr><th style="width:150px">Component</th><th style="width:200px">Technology</th><th>Why</th></tr></thead>
+      <tbody id="tech-body"></tbody>
+    </table>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Failure Modes</div>
+    <table class="req-table">
+      <thead><tr><th style="width:160px">Failure</th><th>Impact</th><th>Mitigation</th></tr></thead>
+      <tbody id="failure-body"></tbody>
+    </table>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Key Scenarios</div>
+    <div class="scenario-grid" id="scenarios-grid"></div>
+  </div>
+</div>
+
+<script>
+const STATS = [
+  { value: '300M', unit: '+', label: 'Daily Participants' },
+  { value: '3.3T', unit: '+', label: 'Annual Minutes' },
+  { value: '40', unit: '+', label: 'Data Center Regions' },
+  { value: '99.99', unit: '%', label: 'Uptime SLA' },
+  { value: '200M', unit: '+', label: 'Daily Meetings' },
+  { value: '<1', unit: 's', label: 'P99 Join Latency' },
+];
+
+const COMPONENTS = [
+  { name: 'Signaling Server', icon: 'ti-server-2', tag: 'blue', role: 'Control',
+    desc: 'WebSocket-based control plane for join/leave, room state, and participant event fan-out.',
+    pros: ['100K+ concurrent WS connections per node', 'Stateless — state in Redis, easy to scale'],
+    cons: ['Extra hop between media and signaling path', 'Event fan-out required across signaling nodes'] },
+  { name: 'SFU Media Node', icon: 'ti-shuffle', tag: 'coral', role: 'Media',
+    desc: 'Selective Forwarding Unit. Forwards RTP packets between participants. No decode/encode — just packet routing.',
+    pros: ['O(N) forwarding — no transcode cost', 'E2EE possible — forwards encrypted packets'],
+    cons: ['High network bandwidth (40 Gbps NIC per node)', 'Client receives N-1 streams (CPU intensive)'] },
+  { name: 'Recording Bridge', icon: 'ti-device-floppy', tag: 'purple', role: 'Storage',
+    desc: 'Composes N incoming streams into layout, encodes H.264 MP4, uploads to S3.',
+    pros: ['Gallery/active-speaker layout options', 'Dual recording for fault tolerance (5s delay)'],
+    cons: ['Cannot record E2EE meetings (server can\'t decrypt)', 'Expensive decode → compose → re-encode pipeline'] },
+  { name: 'Chat Service', icon: 'ti-message', tag: 'teal', role: 'Messaging',
+    desc: 'Persistent messaging per meeting with history replay, file sharing, and emoji reactions.',
+    pros: ['Messages survive reconnection', 'Redis pub/sub for cross-node fan-out'],
+    cons: ['Not E2EE (server stores message history)', 'History replay on late join requires buffering'] },
+  { name: 'Breakout Rooms', icon: 'ti-layout-cards', tag: 'amber', role: 'Meetings',
+    desc: 'Sub-meetings within a main meeting. Each room has separate SFU, keys, and participant roster.',
+    pros: ['Reuses meeting infrastructure per room', 'Separate encryption key per room'],
+    cons: ['Host broadcast requires fan-out to N rooms', 'Recording N rooms needs N pipelines'] },
+  { name: 'E2EE Key Mgmt', icon: 'ti-key', tag: 'green', role: 'Security',
+    desc: 'X25519 ECDH key exchange per participant. AES-256-GCM media crypto. Key rotation every 10 min.',
+    pros: ['True end-to-end (server cannot decrypt)', 'Forward secrecy through key rotation'],
+    cons: ['Cloud recording/transcription breaks with E2EE', 'Breakout rooms need independent key sets'] },
+  { name: 'PSTN Gateway', icon: 'ti-phone', tag: 'blue', role: 'Telephony',
+    desc: 'SIP trunking bridge. Transcodes G.711/G.729 ↔ Opus. Enables dial-in for legacy phone users.',
+    pros: ['Works without internet (audio only)', 'Enterprise PBX integration via SIP'],
+    cons: ['Transcoding cost (G.711 ↔ Opus)', 'No video, no E2EE over phone network'] },
+  { name: 'Dashboard', icon: 'ti-chart-bar', tag: 'purple', role: 'Analytics',
+    desc: 'Real-time and post-meeting analytics: participant count, duration, attendance, QoE metrics.',
+    pros: ['Real-time meeting health monitoring', 'Post-meeting attendance reports'],
+    cons: ['Extra storage for event log stream', 'Aggregation queries can load primary DB'] },
+];
+
+const SFU_MCU = [
+  { attr: 'Bandwidth', sfu: 'Server O(N) egress. Client receives N-1 streams', mcu: 'Server decodes N, encodes 1. Client receives 1 stream' },
+  { attr: 'Server CPU', sfu: 'Low — packet forwarding only (~5% per 100 clients)', mcu: 'High — O(N) decode + O(N) encode per participant' },
+  { attr: 'Scalability', sfu: 'Linear — add nodes. Cascading SFU tree for 1000+', mcu: 'Bottlenecked — single box limit, hard to cluster' },
+  { attr: 'Latency', sfu: 'Low — no transcode (<10ms added through SFU)', mcu: 'High — encode/decode adds 50-100ms round-trip' },
+  { attr: 'E2EE', sfu: 'Yes — forwards encrypted RTP. Server opaque', mcu: 'No — must decrypt, compose, re-encrypt' },
+  { attr: 'Client CPU', sfu: 'High — decodes N-1 streams, composes layout', mcu: 'Low — decodes 1 pre-composed stream' },
+];
+
+const LIFECYCLE = [
+  { step: 'Create Meeting', desc: 'Host schedules via Zoom REST API. Generates meeting ID, password, encryption config.', proto: 'HTTP REST (POST /v2/users/{id}/meetings)' },
+  { step: 'Start Meeting', desc: 'Host authenticates via start_url. Server validates license, allocates SFU, generates keys.', proto: 'HTTP REST + Signaling WebSocket' },
+  { step: 'Join Meeting', desc: 'DNS routing to nearest signaling server. WS connect → JOIN with capabilities → SFU assigned.', proto: 'WebSocket (WSS) + DTLS handshake' },
+  { step: 'Media Exchange', desc: 'WebRTC ICE/STUN/TURN for NAT. SRTP encrypted media via UDP. Simulcast layers adapt.', proto: 'SRTP/SCTP over UDP (WebRTC)' },
+  { step: 'In-Meeting Events', desc: 'Join/leave, mute, video toggle, screen share, chat, raise hand — all via signaling WS.', proto: 'JSON messages over WebSocket' },
+  { step: 'Leave Meeting', desc: 'Participant sends LEAVE → SFU stops forwarding → roster updated → recording chunk finalized.', proto: 'WebSocket + SRTP teardown' },
+  { step: 'End Meeting', desc: 'Host sends END_MEETING. All disconnected. Recording uploaded to S3. Post-processing runs.', proto: 'WebSocket + HTTP callback' },
+];
+
+const TECH_STACK = [
+  { comp: 'Signaling Server', tech: 'Node.js / WebSocket (WSS)', why: 'Event-driven I/O handles 100K+ concurrent connections. JSON protocol for room state and participant events.' },
+  { comp: 'SFU Media Node', tech: 'C++ / Rust (custom RTP stack)', why: 'Zero-GC packet forwarding. Custom RTP/RTCP for performance. No transcode — just route packets.' },
+  { comp: 'Recording Bridge', tech: 'FFmpeg / GPU compositor', why: 'Decodes N streams, composes layout, re-encodes H.264 MP4. GPU acceleration for scale.' },
+  { comp: 'Meeting State', tech: 'Redis (hashes + pub/sub)', why: 'Sub-ms participant roster reads. Pub/sub fan-out across signaling nodes for event broadcast.' },
+  { comp: 'Persistent Store', tech: 'MySQL / Aurora', why: 'ACID for meetings, users, recordings. Read replicas for analytics. JSON column for flexible settings.' },
+  { comp: 'Object Storage', tech: 'AWS S3 / Azure Blob', why: 'Recordings and transcripts with 11 nines durability. Tiered: SSD (hot), HDD (warm), Glacier (cold).' },
+  { comp: 'PSTN Gateway', tech: 'SIP / FreeSWITCH', why: 'Transcodes G.711/G.729 ↔ Opus. Bridges legacy phone network to Zoom WebRTC media plane.' },
+];
+
+const FAILURES = [
+  { failure: 'SFU Node Crash', impact: '500 participants lose media (3-8s outage)', mitigation: 'Hot spare with 10% reserve. Health check every 5s. Signal all to reconnect to new SFU.' },
+  { failure: 'Signaling Server Down', impact: 'No join/leave/mute/chat. Existing media continues.', mitigation: 'Stateless design (state in Redis). Client auto-reconnects to new signaling server (~2s).' },
+  { failure: 'Region Outage', impact: '100K+ participants in region lose connection', mitigation: 'Multi-cloud (AWS + Azure + GCP). Auto-failover to nearest healthy region. PSTN fallback.' },
+  { failure: 'Packet Loss >30%', impact: 'Frozen video, garbled audio, disconnections', mitigation: 'FEC + NACK retransmission. Opus PLC conceals loss. ABR drops to audio-only if needed.' },
+  { failure: 'Recording Failure', impact: 'Meeting not archived — compliance risk', mitigation: 'Dual recording bridge (5s buffer). 5-min chunking. Local recording fallback notification.' },
+];
+
+const SCENARIOS = [
+  { title: 'Global All-Hands (1000 participants)', icon: 'ti-video', tag: 'coral',
+    rec: 'Cascading SFU tree',
+    desc: 'CEO presents to entire company. Participants span US, EU, Asia across varied network conditions.',
+    why: 'Root SFU receives active speaker + top 3 audio. Leaf SFUs serve 200-500 participants in a 2-3 level cascade. Attendees see active speaker full-res plus 4 thumbnails; others audio-only.',
+    points: ['DNS routes each participant to nearest regional SFU cluster', 'Cascading tree: root → level 1 → level 2 SFU nodes', 'Cross-region latency: 50ms transatlantic, 100ms transpacific', '100K+ webinar viewers use CDN broadcast (HLS/DASH)'] },
+  { title: 'E2EE Board Meeting', icon: 'ti-shield-lock', tag: 'purple',
+    rec: 'Per-participant ECDH keys',
+    desc: '10 board members discuss sensitive financials. Legal mandate for end-to-end encryption.',
+    why: 'Host generates X25519 keypair + meeting_key. Each participant negotiates shared secret via ECDH. SFU forwards AES-256-GCM encrypted packets — cannot decrypt. Key rotates every 10 min.',
+    points: ['Media encrypted end-to-end — server is crypto-blind', 'Key rotation evicts removed participants (post-compromise)', 'No cloud recording or transcription with E2EE', 'PSTN participants excluded (phone network not E2EE)'] },
+  { title: 'Bad Wi-Fi Graceful Degradation', icon: 'ti-wifi-off', tag: 'amber',
+    rec: 'Adaptive bitrate + simulcast',
+    desc: 'Participant on congested Wi-Fi with 20%+ packet loss. Connection keeps dropping.',
+    why: 'Simulcast: SFU switches from 720p@30fps → 360p@15fps → 180p@7.5fps → audio-only. FEC adds redundant packets. Opus PLC conceals audio loss. WebSocket fallback if UDP blocked. PSTN last resort.',
+    points: ['ABR detects >5% loss → drops bitrate 20% instantly', 'FEC (10-50% redundancy) + NACK retransmission', 'Progressive fallback: UDP → TURN → TCP → WSS → PSTN', 'All steps automatic — user sees "connection unstable" toast'] },
+];
+
+function render() {
+  renderStats();
+  renderComponents();
+  renderSfuMcu();
+  renderLifecycle();
+  renderTech();
+  renderFailures();
+  renderScenarios();
+}
+
+function renderStats() {
+  const grid = document.getElementById('stats-grid');
+  grid.innerHTML = STATS.map(s => `
+    <div class="stat-card">
+      <div class="stat-value">${s.value}<span class="stat-unit">${s.unit}</span></div>
+      <div class="stat-label">${s.label}</div>
+    </div>
+  `).join('');
+}
+
+function renderComponents() {
+  const grid = document.getElementById('comp-grid');
+  grid.innerHTML = COMPONENTS.map(d => `
+    <div class="card">
+      <h3><i class="${d.icon}" style="color:var(--${d.tag})"></i> ${d.name}</h3>
+      <span class="tag tag-${d.tag}">${d.role}</span>
+      <p>${d.desc}</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:6px">
+        <div style="padding:6px;background:var(--bg3);border-radius:4px;font-size:10px;color:var(--text3)">
+          <i class="ti ti-check" style="color:var(--teal)"></i> ${d.pros.join('<br><i class="ti ti-check" style="color:var(--teal)"></i> ')}
+        </div>
+        <div style="padding:6px;background:var(--bg3);border-radius:4px;font-size:10px;color:var(--text3)">
+          <i class="ti ti-x" style="color:var(--coral)"></i> ${d.cons.join('<br><i class="ti ti-x" style="color:var(--coral)"></i> ')}
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderSfuMcu() {
+  const tbody = document.getElementById('sfu-body');
+  tbody.innerHTML = SFU_MCU.map(r => `
+    <tr><td>${r.attr}</td><td style="font-size:12px;color:var(--text2);line-height:1.4">${r.sfu}</td><td style="font-size:12px;color:var(--text2);line-height:1.4">${r.mcu}</td></tr>
+  `).join('');
+}
+
+function renderLifecycle() {
+  const tbody = document.getElementById('lifecycle-body');
+  tbody.innerHTML = LIFECYCLE.map(r => `
+    <tr><td style="font-weight:600;color:var(--text)">${r.step}</td><td style="font-size:12px;color:var(--text2);line-height:1.4">${r.desc}</td><td style="font-size:12px;color:var(--blue);font-family:var(--mono);line-height:1.4">${r.proto}</td></tr>
+  `).join('');
+}
+
+function renderTech() {
+  const tbody = document.getElementById('tech-body');
+  tbody.innerHTML = TECH_STACK.map(r => `
+    <tr><td style="font-weight:600;color:var(--text)">${r.comp}</td><td style="font-size:12px;color:var(--text2);font-family:var(--mono)">${r.tech}</td><td style="font-size:12px;color:var(--text2);line-height:1.4">${r.why}</td></tr>
+  `).join('');
+}
+
+function renderFailures() {
+  const tbody = document.getElementById('failure-body');
+  tbody.innerHTML = FAILURES.map(r => `
+    <tr><td style="font-weight:600;color:var(--coral)">${r.failure}</td><td style="font-size:12px;color:var(--text2);line-height:1.4">${r.impact}</td><td style="font-size:12px;color:var(--text2);line-height:1.4">${r.mitigation}</td></tr>
+  `).join('');
+}
+
+function renderScenarios() {
+  const grid = document.getElementById('scenarios-grid');
+  grid.innerHTML = SCENARIOS.map(s => `
+    <div class="scenario-card">
+      <h4><i class="${s.icon}" style="color:var(--${s.tag})"></i> ${s.title}</h4>
+      <span class="rec tag-${s.tag}" style="font-size:11px;padding:2px 8px;border-radius:100px;display:inline-block;font-weight:600;margin:4px 0 8px;background:var(--${s.tag}-bg);color:var(--${s.tag})">${s.rec}</span>
+      <p>${s.desc}</p>
+      <div class="why-box" style="margin-top:8px">
+        <h4><i class="ti ti-alert-circle" style="color:var(--${s.tag})"></i> Why</h4>
+        <p>${s.why}</p>
+      </div>
+      <ul>${s.points.map(p => `<li><i class="ti ti-check" style="color:var(--${s.tag})"></i> ${p}</li>`).join('')}</ul>
+    </div>
+  `).join('');
+}
+
+render();
+</script>
+</body>
+</html>

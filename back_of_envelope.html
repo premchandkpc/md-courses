@@ -84,7 +84,6 @@ body { background: var(--bg); color: var(--text); font-family: -apple-system, Bl
 .t-val { font-family: var(--mono); font-size: 21px; font-weight: 600; line-height: 1; margin-bottom: 3px; transition: opacity 0.15s; }
 .t-card { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 16px; }
 .t-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.09em; color: var(--text3); margin-bottom: 5px; }
-.t-val { font-family: var(--mono); font-size: 21px; font-weight: 600; line-height: 1; margin-bottom: 3px; }
 .t-sub { font-family: var(--mono); font-size: 11px; color: var(--text3); }
 .t-card.teal .t-val { color: var(--teal); }
 .t-card.amber .t-val { color: var(--amber); }
@@ -496,17 +495,7 @@ button:focus:not(:focus-visible){outline:none}
     <span class="search-count" id="search-count">20 scenarios</span>
     <span class="kbd-hint"><kbd class="kbd">/</kbd> to search</span>
   </div>
-  <div class="filter-chips" id="filter-chips">
-    <button class="chip active" data-cat="all">All</button>
-    <button class="chip" data-cat="infra">Infra</button>
-    <button class="chip" data-cat="messaging">Messaging</button>
-    <button class="chip" data-cat="streaming">Streaming</button>
-    <button class="chip" data-cat="realtime">Real-time</button>
-    <button class="chip" data-cat="storage">Storage</button>
-    <button class="chip" data-cat="ecommerce">E-commerce</button>
-    <button class="chip" data-cat="ml">ML/LLM</button>
-    <button class="chip" data-cat="pipeline">Pipeline</button>
-  </div>
+  <div class="filter-chips" id="filter-chips"></div>
   <div class="scenario-nav" id="scenario-nav"></div>
   <div class="compare-bar">
     <button class="compare-btn" id="compare-toggle" aria-expanded="false"><i class="ti ti-columns"></i> Compare Scenarios</button>
@@ -1658,6 +1647,7 @@ const SCENARIOS = [
         { label: 'Hot: Payment Authorization', type: 'hot',   nodes: ['client','api_gw','payment_svc','idempotency','gateway','ext_gw','ledger'] },
         { label: 'Event → Audit Trail',        type: 'async', nodes: ['payment_svc','outbox','kafka','ledger'] },
         { label: 'Daily Reconciliation',       type: 'async', nodes: ['ledger','recon','ext_gw'] },
+        { label: 'Hot: Fraud / Risk Check',   type: 'hot',   nodes: ['api_gw','payment_svc','kafka','gateway'] },
       ],
       choices: [
         { component: 'Transactional Outbox', icon: 'database', color: 'teal', why: 'The dual-write problem: you cannot atomically write to Postgres AND publish to Kafka. Outbox pattern: write both in same Postgres txn, then a relay process reads outbox and publishes to Kafka. Zero message loss.', alternatives: 'Saga choreography (eventual, complex), CDC (Debezium on WAL, more infra), 2PC (too slow, single point of failure)' },
@@ -1943,6 +1933,7 @@ const SCENARIOS = [
         { label: 'Hot: Cache Hit',       type: 'hot',   nodes: ['client','api_gw','embed_svc','cache','client'] },
         { label: 'RAG: Full Pipeline',   type: 'hot',   nodes: ['client','api_gw','embed_svc','vector_db','context','llm','guard','client'] },
         { label: 'Async: Doc Indexing',  type: 'async', nodes: ['doc_store','indexer','embed_svc','vector_db'] },
+        { label: 'Guardrail Post-filter', type: 'hot',   nodes: ['llm','guard','client'] },
       ],
       choices: [
         { component: 'vLLM Continuous Batching', icon: 'cpu', color: 'coral', why: 'Naive batching: wait for N requests, then process together → high latency. Continuous batching: as each request finishes a token step, add new requests to batch. GPU utilization 30% → 80%+. Critical for cost.', alternatives: 'TensorRT-LLM (NVIDIA, best throughput), DeepSpeed-FastGen (Microsoft), naive batching (simple but expensive)' },
@@ -2201,6 +2192,7 @@ const SCENARIOS = [
         { label: 'Hot: Search Query',       type: 'hot',   nodes: ['client','lb','query_svc','doc_index','rank','client'] },
         { label: 'Autocomplete',            type: 'hot',   nodes: ['client','lb','query_svc','autocomplete','client'] },
         { label: 'Crawl → Index Pipeline',  type: 'async', nodes: ['crawl','parser','indexer','doc_index'] },
+        { label: 'Async: Index Merge',      type: 'async', nodes: ['indexer','doc_index'] },
       ],
       choices: [
         { component: 'Inverted Index (Lucene shards)', icon: 'search', color: 'teal', why: 'Two-phase: retrieve (inverted index, BM25 score, fast) then rank (ML model, slower). Sharding by doc_id allows parallel retrieval from all shards simultaneously. Merge top-K from each shard.', alternatives: 'Vector search only (semantic but misses exact match), ElasticSearch (built on Lucene, managed), Solr (older, less momentum)' },
@@ -3415,6 +3407,7 @@ const SCENARIOS = [
         { label: 'Hot: Flash Sale Purchase',  type: 'hot',   nodes: ['client','cdn','gw','queue','inventory','order_svc','redis','db'] },
         { label: 'Async: Fulfillment',        type: 'async', nodes: ['kafka','db','anti_fraud'] },
         { label: 'Inventory Check',           type: 'hot',   nodes: ['client','gw','inventory','redis'] },
+        { label: 'Order Processing Pipeline',  type: 'async', nodes: ['queue','order_svc','kafka','db','anti_fraud'] },
       ],
       choices: [
         { component: 'Virtual Waiting Queue (Redis)', icon: 'list-ordered', color: 'teal', why: 'Without queue: 100K requests hit order service simultaneously → DB connection pool exhausted → cascade failure. Queue: accept all at edge, meter release to backend at sustainable rate (N per second = inventory throughput). Prevents thundering herd.', alternatives: 'Rate limit only (rejects legitimate users), DB locking (deadlocks at scale), first-come-first-served direct (no metering = collapse)' },
@@ -3594,29 +3587,42 @@ const SCENARIOS = [
   return { compute, storage: storageMonthly, bandwidth: bwMonthly, cache, db, total };
 }
 
+let _saveTimer = null;
+function scheduleSave() {
+  if (_saveTimer) clearTimeout(_saveTimer);
+  _saveTimer = setTimeout(saveState, 500);
+}
+
 const state = {
   scenarioId: SCENARIOS[0].id,
   params: {},
   peakMult: 5,
   filter: 'all',
+  searchQuery: '',
   compareOpen: false,
   cmpA: null,
   cmpB: null,
   flowIdx: 0,
   favorites: new Set(),
+  savedParams: {},
   animFrames: [],
 };
 
 function saveState() {
-  try { localStorage.setItem('boe_state', JSON.stringify({
-    scenarioId: state.scenarioId,
-    peakMult: state.peakMult,
-    compareOpen: state.compareOpen,
-    cmpA: state.cmpA ? state.cmpA.id : null,
-    cmpB: state.cmpB ? state.cmpB.id : null,
-    flowIdx: state.flowIdx,
-    favorites: [...state.favorites],
-  })); } catch(e) {}
+  const paramsKey = 'boe_params_' + state.scenarioId;
+  try {
+    localStorage.setItem('boe_state', JSON.stringify({
+      scenarioId: state.scenarioId,
+      peakMult: state.peakMult,
+      compareOpen: state.compareOpen,
+      cmpA: state.cmpA ? state.cmpA.id : null,
+      cmpB: state.cmpB ? state.cmpB.id : null,
+      flowIdx: state.flowIdx,
+      filter: state.filter,
+      favorites: [...state.favorites],
+    }));
+    localStorage.setItem(paramsKey, JSON.stringify(state.params));
+  } catch(e) {}
 }
 
 function loadState() {
@@ -3629,15 +3635,41 @@ function loadState() {
     if (saved.cmpA) state.cmpA = SCENARIOS.find(s => s.id === saved.cmpA);
     if (saved.cmpB) state.cmpB = SCENARIOS.find(s => s.id === saved.cmpB);
     if (saved.flowIdx !== undefined) state.flowIdx = saved.flowIdx;
+    if (saved.filter) state.filter = saved.filter;
     if (saved.favorites) state.favorites = new Set(saved.favorites);
   } catch(e) {}
 }
 
-function saveFavorites() {
-  try { localStorage.setItem('boe_favorites', JSON.stringify([...state.favorites])); } catch(e) {}
+const CATEGORIES = [
+  { cat: 'all', label: 'All' },
+  { cat: 'infra', label: 'Infra' },
+  { cat: 'messaging', label: 'Messaging' },
+  { cat: 'streaming', label: 'Streaming' },
+  { cat: 'realtime', label: 'Real-time' },
+  { cat: 'storage', label: 'Storage' },
+  { cat: 'ecommerce', label: 'E-commerce' },
+  { cat: 'ml', label: 'ML/LLM' },
+  { cat: 'pipeline', label: 'Pipeline' },
+];
+
+function renderFilterChips() {
+  const el = document.getElementById('filter-chips');
+  if (!el) return;
+  el.innerHTML = CATEGORIES.map(c => {
+    const count = c.cat === 'all' ? SCENARIOS.length : SCENARIOS.filter(s => s.meta && s.meta.category === c.cat).length;
+    const active = state.filter === c.cat ? ' active' : '';
+    const pressed = state.filter === c.cat ? 'true' : 'false';
+    return `<button class="chip${active}" data-cat="${c.cat}" aria-pressed="${pressed}">${c.label} <span class="f11c3">${count}</span></button>`;
+  }).join('');
 }
 
 function initParams(scenario) {
+  // Check for saved per-scenario params first
+  const paramsKey = 'boe_params_' + scenario.id;
+  try {
+    const saved = JSON.parse(localStorage.getItem(paramsKey));
+    if (saved) return saved;
+  } catch(e) {}
   const p = {};
   scenario.params.forEach(param => {
     p[param.id] = param.val;
@@ -3674,7 +3706,9 @@ function formatParamDisplay(param, val) {
 function renderScenarioNav() {
   const nav = document.getElementById('scenario-nav');
   const filterCat = state.filter || 'all';
-  const filtered = filterCat === 'all' ? SCENARIOS : SCENARIOS.filter(s => s.meta && s.meta.category === filterCat);
+  const q = (state.searchQuery || '').toLowerCase();
+  let filtered = filterCat === 'all' ? SCENARIOS : SCENARIOS.filter(s => s.meta && s.meta.category === filterCat);
+  if (q) filtered = filtered.filter(s => s.name.toLowerCase().includes(q) || s.desc.toLowerCase().includes(q));
   const sorted = [...filtered].sort((a, b) => {
     if (state.favorites.has(a.id) && !state.favorites.has(b.id)) return -1;
     if (!state.favorites.has(a.id) && state.favorites.has(b.id)) return 1;
@@ -3687,13 +3721,14 @@ function renderScenarioNav() {
       <i class="ti ${s.icon}" aria-hidden="true"></i>${s.name}${diffBadge}<span class="star-icon" data-star="${s.id}" title="Bookmark">★</span>
     </button>`;
   }).join('');
-  document.getElementById('search-count').textContent = sorted.length + ' scenario' + (sorted.length !== 1 ? 's' : '');
+  const total = filterCat === 'all' ? SCENARIOS.length : SCENARIOS.filter(s => s.meta && s.meta.category === filterCat).length;
+  document.getElementById('search-count').textContent = sorted.length + ' of ' + total + ' scenario' + (total !== 1 ? 's' : '');
   nav.querySelectorAll('.s-btn').forEach(btn => {
     btn.addEventListener('click', (e) => {
       if (e.target.dataset.star) {
         const id = e.target.dataset.star;
         if (state.favorites.has(id)) state.favorites.delete(id); else state.favorites.add(id);
-        saveFavorites();
+        scheduleSave();
         renderScenarioNav();
         return;
       }
@@ -3725,6 +3760,7 @@ function renderParams(scenario) {
       document.getElementById('pval-' + paramId).textContent = formatParamDisplay(param, state.params[paramId]);
       updateSliderFill(input);
       recalcAndUpdate(scenario);
+      scheduleSave();
     });
   });
 }
@@ -3891,6 +3927,7 @@ function renderAll() {
   if (!scenario) return;
   state.flowIdx = 0;
   document.getElementById('scenario-desc').textContent = scenario.desc;
+  renderFilterChips();
   renderScenarioNav();
   renderParams(scenario);
   renderInsights(scenario);
@@ -3899,6 +3936,7 @@ function renderAll() {
   renderAssumptions(scenario);
   renderIncidents(scenario);
   renderInterview(scenario);
+  scheduleSave();
 }
 
 // Filter chips
@@ -3909,12 +3947,13 @@ document.getElementById('filter-chips').addEventListener('click', function(e) {
   chip.classList.add('active');
   chip.setAttribute('aria-pressed', 'true');
   state.filter = chip.dataset.cat;
+  document.getElementById('scenario-search').value = '';
+  state.searchQuery = '';
   renderScenarioNav();
 });
 
 // ── Keyboard shortcuts ──
 document.addEventListener('keydown', function(e) {
-  // Don't trigger when typing in inputs
   if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
     if (e.key === 'Escape') e.target.blur();
     return;
@@ -3922,7 +3961,8 @@ document.addEventListener('keydown', function(e) {
   switch (e.key) {
     case '/':
       e.preventDefault();
-      document.getElementById('scenario-search').focus();
+      const search = document.getElementById('scenario-search');
+      search.focus(); search.select();
       break;
     case '[':
       switchScenarioBy(-1);
@@ -3930,8 +3970,8 @@ document.addEventListener('keydown', function(e) {
     case ']':
       switchScenarioBy(1);
       break;
-    case '1': case '2': case '3': case '4': case '5': {
-      const tabs = ['overview','requirements','architecture','estimate','interview'];
+    case '1': case '2': case '3': case '4': case '5': case '6': {
+      const tabs = ['overview','requirements','architecture','estimate','interview','sim'];
       const tab = tabs[parseInt(e.key) - 1];
       const btn = document.querySelector(`.tab-btn[data-tab="${tab}"]`);
       if (btn) btn.click();
@@ -3940,21 +3980,36 @@ document.addEventListener('keydown', function(e) {
     case 'c':
       document.getElementById('compare-toggle').click();
       break;
+    case 'e':
+      document.getElementById('export-single-btn').click();
+      break;
     case 's':
       if (state.favorites.has(state.scenarioId)) state.favorites.delete(state.scenarioId);
       else state.favorites.add(state.scenarioId);
-      saveFavorites();
+      scheduleSave();
       renderScenarioNav();
       break;
     case 'Escape':
       document.getElementById('arch-detail-close').click();
       document.getElementById('scenario-search').blur();
       break;
+    case 'Tab': {
+      const panel = document.getElementById('arch-detail-panel');
+      if (!panel.classList.contains('open')) return;
+      const focusable = panel.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
+      if (!focusable.length) return;
+      const first = focusable[0], last = focusable[focusable.length - 1];
+      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+      break;
+    }
   }
 });
 
 function switchScenarioBy(dir) {
-  const scs = SCENARIOS;
+  const scs = state.filter === 'all'
+    ? SCENARIOS
+    : SCENARIOS.filter(s => s.meta && s.meta.category === state.filter);
   const idx = scs.findIndex(s => s.id === state.scenarioId);
   if (idx < 0) return;
   const next = (idx + dir + scs.length) % scs.length;
@@ -3969,6 +4024,7 @@ document.getElementById('peak-slider').addEventListener('input', function() {
   document.getElementById('peak-val').textContent = state.peakMult + '×';
   const scenario = SCENARIOS.find(s => s.id === state.scenarioId);
   if (scenario) recalcAndUpdate(scenario);
+  scheduleSave();
 });
 
 function setupToggle(btnId, bodyId) {
@@ -4168,41 +4224,8 @@ document.getElementById('main-tabs').addEventListener('click', function(e) {
 
 // ── Search filtering ──
 document.getElementById('scenario-search').addEventListener('input', function() {
-  const q = this.value.toLowerCase();
-  let count = 0;
-  document.querySelectorAll('.s-btn').forEach(btn => {
-    const match = btn.textContent.toLowerCase().includes(q);
-    btn.style.display = match ? '' : 'none';
-    if (match) count++;
-  });
-  document.getElementById('search-count').textContent = count + ' of ' + SCENARIOS.length + ' scenarios';
-});
-
-// ── Keyboard shortcut: / to focus search ──
-document.addEventListener('keydown', function(e) {
-  if (e.key === '/' && document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'TEXTAREA') {
-    e.preventDefault();
-    document.getElementById('scenario-search').focus();
-    document.getElementById('scenario-search').select();
-  }
-  if (e.key === 'Escape') {
-    const panel = document.getElementById('arch-detail-panel');
-    if (panel.classList.contains('open')) {
-      panel.classList.remove('open');
-      e.preventDefault();
-    }
-    document.getElementById('scenario-search').blur();
-  }
-  // Focus trap: Tab within arch detail panel
-  if (e.key === 'Tab') {
-    const panel = document.getElementById('arch-detail-panel');
-    if (!panel.classList.contains('open')) return;
-    const focusable = panel.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
-    if (!focusable.length) return;
-    const first = focusable[0], last = focusable[focusable.length - 1];
-    if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
-    else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
-  }
+  state.searchQuery = this.value;
+  renderScenarioNav();
 });
 
 // ── Slider fill helper ──
@@ -4210,11 +4233,6 @@ function updateSliderFill(input) {
   const min = parseFloat(input.min), max = parseFloat(input.max), val = parseFloat(input.value);
   const pct = ((val - min) / (max - min)) * 100;
   input.style.background = `linear-gradient(to right, var(--teal) 0%, var(--teal) ${pct}%, var(--border2) ${pct}%, var(--border2) 100%)`;
-}
-
-// ── Favorites ──
- {
-  try { localStorage.setItem('boe_favorites', JSON.stringify([...state.favorites])); } catch(e) {}
 }
 
 // ── Traffic chart ──
@@ -4848,7 +4866,11 @@ document.getElementById('whatif-panel').addEventListener('click', function(e) {
   const stressMp = { ...mp };
   if (btn.dataset.mult) {
     const m = parseFloat(btn.dataset.mult);
-    Object.keys(stressMp).forEach(k => { stressMp[k] *= m; });
+    // Only scale volume params (user counts with large mult), not ratios/sizes/config
+    Object.keys(stressMp).forEach(k => {
+      const paramDef = sc.params.find(p => p.id === k);
+      if (paramDef && paramDef.mult >= 1e6) stressMp[k] *= m;
+    });
   }
   if (btn.dataset.cache) {
     stressMp.cache_hit_pct = stressMp.cache_hit_pct * parseFloat(btn.dataset.cache);

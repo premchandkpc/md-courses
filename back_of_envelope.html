@@ -121,6 +121,11 @@ input[type=range]::-moz-range-thumb { width: 16px; height: 16px; border-radius: 
 .insight-item i { color: var(--teal); font-size: 14px; margin-top: 1px; flex-shrink: 0; }
 .section-divider { font-size: 11px; text-transform: uppercase; letter-spacing: 0.09em; color: var(--text3); font-weight: 600; margin: 20px 0 12px; display: flex; align-items: center; gap: 10px; }
 .section-divider::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+.formula-row{display:flex;justify-content:space-between;align-items:baseline;padding:4px 0;border-bottom:1px solid var(--border);font-size:11px;gap:8px}
+.formula-row:last-child{border-bottom:none}
+.fr-label{color:var(--text2);flex-shrink:0}
+.fr-expr{color:var(--text3);font-family:var(--mono);font-size:10px;flex:1;text-align:center}
+.fr-result{font-weight:600;font-family:var(--mono);color:var(--text)}
 .whatif-panel{margin-bottom:14px}
 .whatif-btns{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px}
 .whatif-btn{padding:6px 14px;border-radius:var(--radius-sm);border:1px solid var(--border2);background:var(--bg2);color:var(--text2);font-size:12px;font-family:inherit;cursor:pointer;transition:all.12s}
@@ -281,7 +286,14 @@ input[type=range]::-moz-range-thumb { width: 16px; height: 16px; border-radius: 
 .compare-btn:hover { background: var(--text); color: var(--bg); border-color: var(--text); }
 .compare-btn.active { background: var(--teal); color: #fff; border-color: var(--teal); }
 .compare-panel { display: none; gap: 14px; margin-bottom: 14px; }
-.compare-panel.open { display: grid; grid-template-columns: 1fr 1fr; }
+.compare-panel.open { display: grid; grid-template-columns: 1fr auto 1fr; }
+#cmp-delta-col{width:180px;min-width:180px}
+.delta-row{display:flex;justify-content:space-between;align-items:center;padding:5px 8px;border-bottom:1px solid var(--border);font-size:11px}
+.delta-row:last-child{border-bottom:none}
+.delta-label{color:var(--text2)}
+.delta-val{font-weight:600;font-family:var(--mono);font-size:12px}
+.delta-val.delta-pos{color:var(--coral)}
+.delta-val.delta-neg{color:var(--teal)}
 .compare-col { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px; }
 .compare-col select { width: 100%; padding: 6px 10px; border: 1px solid var(--border2); border-radius: var(--radius-sm); background: var(--bg3); color: var(--text); font-size: 13px; font-family: inherit; margin-bottom: 12px; cursor: pointer; }
 .compare-col .ticker-bar { grid-template-columns: repeat(2, 1fr); margin-bottom: 10px; }
@@ -358,7 +370,11 @@ input[type=range]::-moz-range-thumb { width: 16px; height: 16px; border-radius: 
 .st{font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.05em}
 .cb{background:var(--bg3);border-radius:6px;padding:10px;font-family:var(--mono);font-size:11px;line-height:1.6;color:var(--text2)}
 .rt{width:100%;border-collapse:collapse;font-size:11px}
-}.mt14{margin-top:14px}.mt10{margin-top:10px}.mb14{margin-bottom:14px;color:var(--text2);font-size:12px}.tc12{text-align:center;color:var(--text3);padding:12px}.f11c3{font-size:11px;color:var(--text3)}.fw6{font-weight:600}.ct15{color:var(--text);font-size:15px}.df6{display:flex;align-items:center;gap:6px}.ct2{color:var(--text2)}</style>
+.mt14{margin-top:14px}.mt10{margin-top:10px}.mb14{margin-bottom:14px;color:var(--text2);font-size:12px}.tc12{text-align:center;color:var(--text3);padding:12px}.f11c3{font-size:11px;color:var(--text3)}.fw6{font-weight:600}.ct15{color:var(--text);font-size:15px}.df6{display:flex;align-items:center;gap:6px}.ct2{color:var(--text2)}
+/* Focus & responsive polish */
+:focus-visible{outline:2px solid var(--text);outline-offset:3px;border-radius:3px}
+button:focus:not(:focus-visible){outline:none}
+@media(max-width:640px){.app{padding:16px 10px 40px}.content-grid{grid-template-columns:1fr}.ticker-bar{grid-template-columns:repeat(2,1fr)}.compare-panel.open{grid-template-columns:1fr}.ref-grid{grid-template-columns:1fr}.insights-row{grid-template-columns:1fr}.bot-grid{grid-template-columns:1fr}.reqs-grid{grid-template-columns:1fr}.assum-grid{grid-template-columns:1fr}#cmp-delta-col{width:100%;min-width:auto}.tabs{gap:0}.tab-btn{padding:8px 10px;font-size:11px}}</style>
 </head>
 <body>
 <div class="app">
@@ -368,7 +384,7 @@ input[type=range]::-moz-range-thumb { width: 16px; height: 16px; border-radius: 
   </div>
   <div class="search-wrap">
     <i class="ti ti-search"></i>
-    <input class="search-input" id="scenario-search" placeholder="Search scenarios by name, tech, or category…" autocomplete="off">
+    <input class="search-input" id="scenario-search" placeholder="Search scenarios by name, tech, or category…" autocomplete="off" role="combobox" aria-label="Search scenarios">
     <span class="search-count" id="search-count">20 scenarios</span>
     <span class="kbd-hint"><kbd class="kbd">/</kbd> to search</span>
   </div>
@@ -385,14 +401,19 @@ input[type=range]::-moz-range-thumb { width: 16px; height: 16px; border-radius: 
   </div>
   <div class="scenario-nav" id="scenario-nav"></div>
   <div class="compare-bar">
-    <button class="compare-btn" id="compare-toggle"><i class="ti ti-columns"></i> Compare Scenarios</button>
-    <button class="export-btn" id="export-btn" class="dn"><i class="ti ti-file-text"></i> Export as Text</button>
+    <button class="compare-btn" id="compare-toggle" aria-expanded="false"><i class="ti ti-columns"></i> Compare Scenarios</button>
+    <button class="export-btn" id="export-single-btn"><i class="ti ti-file-text"></i> Export Scenario</button>
+    <button class="export-btn" id="export-btn" class="dn"><i class="ti ti-file-text"></i> Export Comparison</button>
   </div>
   <div class="compare-panel" id="compare-panel">
     <div class="compare-col" id="cmp-a">
       <div class="cmp-title"><span>Scenario A</span></div>
       <select id="cmp-select-a" aria-label="Select scenario A"></select>
       <div id="cmp-a-content"><div class="cmp-empty">Select a scenario</div></div>
+    </div>
+    <div class="compare-col" id="cmp-delta-col">
+      <div class="cmp-title"><span>Delta</span></div>
+      <div id="cmp-delta"><div class="cmp-empty">Select both scenarios</div></div>
     </div>
     <div class="compare-col" id="cmp-b">
       <div class="cmp-title"><span>Scenario B</span></div>
@@ -401,11 +422,11 @@ input[type=range]::-moz-range-thumb { width: 16px; height: 16px; border-radius: 
     </div>
   </div>
   <div class="tabs" id="main-tabs">
-    <button class="tab-btn active" data-tab="overview">Overview</button>
-    <button class="tab-btn" data-tab="requirements">Requirements</button>
-    <button class="tab-btn" data-tab="architecture">Architecture</button>
-    <button class="tab-btn" data-tab="estimate">Estimation</button>
-    <button class="tab-btn" data-tab="interview">Interview</button>
+    <button class="tab-btn active" data-tab="overview" role="tab" aria-selected="true">Overview</button>
+    <button class="tab-btn" data-tab="requirements" role="tab" aria-selected="false">Requirements</button>
+    <button class="tab-btn" data-tab="architecture" role="tab" aria-selected="false">Architecture</button>
+    <button class="tab-btn" data-tab="estimate" role="tab" aria-selected="false">Estimation</button>
+    <button class="tab-btn" data-tab="interview" role="tab" aria-selected="false">Interview</button>
   </div>
   <div class="tab-content active" id="tab-overview">
   <div class="ticker-bar sticky" id="ticker-bar">
@@ -418,7 +439,7 @@ input[type=range]::-moz-range-thumb { width: 16px; height: 16px; border-radius: 
   <!-- Traffic chart -->
   <div class="chart-panel">
     <div class="chart-title">24-Hour Traffic Pattern (simulated)</div>
-    <canvas id="traffic-canvas" height="120"></canvas>
+    <canvas id="traffic-canvas" height="120" role="img" aria-label="24-hour traffic chart showing read and write QPS"></canvas>
     <div class="chart-legend">
       <span class="read-leg">Read QPS</span>
       <span class="write-leg">Write QPS</span>
@@ -803,6 +824,15 @@ const SCENARIOS = [
       { attr: 'Scalability (writes)', val: '10K+ shortens/sec', why: 'Write throughput limited by DB primary. Shard by shortcode prefix (62 shards). Each shard handles its own key generation pool' },
       { attr: 'Consistency', val: 'Eventual for reads, strong for writes', why: 'Redirects tolerate stale data (5min TTL lag is fine). Custom alias creation needs immediate uniqueness guarantee via DB primary' },
     ],
+    meta: {category:'infra', difficulty:'senior', pattern:'read-heavy', consistency:'eventual', dominantBottleneck:'db-writes', storageEngine:'postgres', cacheStrategy:'cache-aside'},
+    formulas: [
+      { label: 'Writes/day', expr: 'DAU × shortens_per_user = MAU×0.3 × shortens/user/day' },
+      { label: 'Write QPS', expr: 'writes/day / 86400' },
+      { label: 'Read QPS', expr: 'write_qps × read_write_ratio' },
+      { label: 'Storage/day', expr: 'write_qps × 86400 × record_size (URL + shortcode + metadata)' },
+      { label: 'Cache size', expr: 'read_qps × record_size × cache_TTL × hit_ratio' },
+      { label: 'Servers', expr: 'read_qps / 5000 req/sec per server' },
+    ],
     arch: {
       nodes: [
         { id: 'client', label: 'Client', icon: '🌐', tech: 'Browser/App' },
@@ -914,6 +944,15 @@ const SCENARIOS = [
       { attr: 'Availability', val: '99.95% (4h/yr)', why: 'Read path (timeline) can serve stale data from cache if DB is down. Write path needs Kafka durability + DB multi-AZ' },
       { attr: 'Durability', val: '3× replication, Kafka retention 7d', why: 'Tweets are immutable once created. Never lose a tweet. Kafka + DB write-ahead log. S3 backup for media' },
       { attr: 'Consistency', val: 'Eventual for timeline, strong for tweet creation', why: 'Timeline can lag by seconds. Tweet creation must be immediately visible to author. Likes/retweets are eventually consistent counters' },
+    ],
+    meta: {category:'messaging', difficulty:'senior', pattern:'write-heavy', consistency:'eventual', dominantBottleneck:'fanout', storageEngine:'cassandra', cacheStrategy:'read-through'},
+    formulas: [
+      { label: 'Writes/day', expr: 'DAU × tweets_per_user' },
+      { label: 'Write QPS', expr: 'writes/day / 86400' },
+      { label: 'Fanout pushes', expr: 'write_qps × avg_followers' },
+      { label: 'Storage/day', expr: 'tweet_storage + media_storage' },
+      { label: 'Cache size', expr: 'DAU × 20 tweets × tweet_size' },
+      { label: 'Servers', expr: 'read_qps / 2000' },
     ],
     arch: {
       nodes: [
@@ -1030,6 +1069,16 @@ const SCENARIOS = [
       { attr: 'Availability', val: '99.999% (5min/yr)', why: 'Message delivery cannot fail. Queue messages if recipient offline. Store-and-forward: Cassandra holds messages until delivery confirmed' },
       { attr: 'Storage growth', val: '500 TB+/day', why: 'Media dominates (70% of storage for 30% of messages). S3 lifecycle: hot 30 days, Glacier archive. Photos/videos compressed client-side before upload' },
       { attr: 'Security', val: 'End-to-end encrypted (Signal Protocol)', why: 'Server never sees plaintext. Each message encrypted with per-message key. Perfect forward secrecy via ephemeral key exchange. No content inspection possible' },
+    ],
+    formulas: [
+      { label: 'Writes/day', expr: 'DAU × shortens_per_user = 50M × 2', result: '100M' },
+      { label: 'Avg write QPS', expr: 'writes/day / 86400 = 100M / 86400', result: '1,157' },
+      { label: 'Avg read QPS', expr: 'write_qps × read/write_ratio = 1,157 × 100', result: '115,740' },
+      { label: 'Storage/day', expr: 'writes/day × record_size = 100M × 90 bytes', result: '8.6 GB' },
+      { label: '5-year storage', expr: 'daily_storage × 365 × 5 × 3× replication', result: '46.8 TB' },
+      { label: 'Cache size (GB)', expr: 'read_qps × record_size × cache_TTL × hit_ratio', result: '~80 GB' },
+      { label: 'Server estimate', expr: 'peak_read_qps / 5000 (per server)', result: '~58 servers' },
+      { label: 'Bandwidth out', expr: 'read_qps × 50 bytes × 8 (bits)', result: '~46 Gbps' },
     ],
     meta: {category:'messaging', difficulty:'senior', pattern:'write-heavy', consistency:'causal', dominantBottleneck:'fanout', storageEngine:'cassandra', cacheStrategy:'write-behind'},
     arch: {
@@ -1152,6 +1201,15 @@ const SCENARIOS = [
       { attr: 'Availability', val: '99.99% uptime', why: 'CDN edge is distributed globally. Regional origin clusters. Multi-region failover for metadata/control plane. Playback degrades gracefully if metadata unavailable' },
     ],
     meta: {category:'streaming', difficulty:'staff', pattern:'read-heavy', consistency:'eventual', dominantBottleneck:'network-egress', storageEngine:'bigtable', cacheStrategy:'cache-aside'},
+    formulas: [
+      { label: 'Read QPS', expr: 'DAU × videos_watched / 86400 = 100M × 5 / 86400', result: '5,787' },
+      { label: 'Write QPS', expr: 'upload_mins/sec × 60 / 86400 = 500 × 60 / 86400', result: '0.35' },
+      { label: 'Ingest bandwidth', expr: 'upload_mins/sec × 300 Mbps = 500 × 300 Mbps', result: '150 Gbps' },
+      { label: 'Storage/day', expr: 'upload_mins/sec × DAY × 300 MB × 0.2 compression', result: '2.6 PB' },
+      { label: 'CDN bandwidth', expr: 'rqps × avg_video_len × bitrate = 5,787 × 420s × 3 Mbps', result: '7.3 Tbps' },
+      { label: 'Transcode workers', expr: 'upload_min/s × transcode_factor = 500 × 10', result: '5,000' },
+      { label: 'Servers total', expr: 'app + transcode + overhead = 6 + 500 + 20', result: '~526' },
+    ],
     arch: {
       nodes: [
         { id: 'client',    label: 'Client',          icon: '📺', tech: 'Web/App/TV', layer: 'client',
@@ -1279,6 +1337,15 @@ const SCENARIOS = [
       { attr: 'Consistency', val: 'Eventual for location, strong for trip state', why: 'Driver location is ephemeral (seconds-old is fine). Trip state transitions (accepted, started, ended) need strong consistency for billing correctness' },
     ],
     meta: {category:'realtime', difficulty:'staff', pattern:'write-heavy', consistency:'causal', dominantBottleneck:'hot-partitions', storageEngine:'cassandra', cacheStrategy:'write-through'},
+    formulas: [
+      { label: 'Location writes/sec', expr: 'active_drivers / location_interval = 1M / 4s', result: '250,000' },
+      { label: 'Match QPS', expr: 'trips_per_day / 86400 × 3 = 5M / 86400 × 3', result: '174' },
+      { label: 'ETA QPS', expr: 'match_QPS × 2 = 174 × 2', result: '348' },
+      { label: 'Rider location reads', expr: 'active_riders / 5s = 10M / 5', result: '2M/s' },
+      { label: 'Storage/day', expr: 'loc_storage + trip_storage = 864 GB + 10 GB', result: '874 GB' },
+      { label: 'Surge compute QPS', expr: 'active_drivers / surge_interval = 1M / 60s', result: '16,667' },
+      { label: 'Server estimate', expr: 'max(rqps, wqps) / 2000 + surge_QPS / 100', result: '~1,168' },
+    ],
     arch: {
       nodes: [
         { id: 'driver',   label: 'Driver App',     icon: '🚗', tech: 'iOS/Android', layer: 'client',
@@ -1401,6 +1468,15 @@ const SCENARIOS = [
       { attr: 'Availability', val: '99.995% (26 min/yr)', why: 'Payment downtime = revenue loss + regulatory risk. Multi-region active-active. Gateways are independent failure domains. Fallback to secondary gateway in < 100ms' },
     ],
     meta: {category:'infra', difficulty:'architect', pattern:'balanced', consistency:'strong', dominantBottleneck:'db-writes', storageEngine:'postgres', cacheStrategy:'none'},
+    formulas: [
+      { label: 'Transactions/day', expr: '5M' },
+      { label: 'Write QPS', expr: 'txns / 86400 = 5M / 86400', result: '58' },
+      { label: 'Read QPS', expr: '(txns × 2 + auth_reqs) / 86400 = (10M + 10M) / 86400', result: '231' },
+      { label: 'Auth requests/sec', expr: 'txns × auth_pct / 86400 = 5M × 2 / 86400', result: '116' },
+      { label: 'Storage/day', expr: 'txns × 2KB + reconciliation + audit = 10.2 GB + 0.5 GB + 5.8 GB', result: '16.5 GB' },
+      { label: '10-year storage', expr: '16.5 GB × 365 × 7 years × 3× replica', result: '~126 TB' },
+      { label: 'Server estimate', expr: 'rqps / 3000 + gateways × 2 = 231/3000 + 3×2', result: '~7' },
+    ],
     arch: {
       nodes: [
         { id: 'client',    label: 'Merchant App',    icon: '🛒', tech: 'Web/Mobile SDK', layer: 'client',
@@ -1526,6 +1602,16 @@ const SCENARIOS = [
       { attr: 'Cost efficiency', val: '$0.10 per 1000 push, $0.05 per 1000 email', why: 'Push is cheapest (FCM/APNs free up to limits). Email via SES ~$0.10/1000. SMS is expensive ($0.0075/message). Optimize channel selection per notification type' },
     ],
     meta: {category:'messaging', difficulty:'senior', pattern:'write-heavy', consistency:'eventual', dominantBottleneck:'queue-lag', storageEngine:'postgres', cacheStrategy:'cache-aside'},
+    formulas: [
+      { label: 'Total notifications/day', expr: 'DAU × notifs_per_user × channels = 100M × 10 × 2', result: '2B' },
+      { label: 'Write QPS', expr: '2B / 86400', result: '23,148' },
+      { label: 'Push QPS', expr: '23,148 × 70%', result: '16,204' },
+      { label: 'Email QPS', expr: '23,148 × 20%', result: '4,630' },
+      { label: 'SMS QPS', expr: '23,148 × 10%', result: '2,315' },
+      { label: 'Storage/day', expr: '2B × 2 KB', result: '3.7 TB' },
+      { label: '90-day history', expr: '3.7 TB × 90 days', result: '333 TB' },
+      { label: 'Server estimate', expr: 'rqps / 10000 = 46,296 / 10000', result: '~5' },
+    ],
     arch: {
       nodes: [
         { id: 'api',      label: 'Notification API', icon: '📡', tech: 'REST / gRPC', layer: 'edge',
@@ -1666,6 +1752,16 @@ const SCENARIOS = [
       { attr: 'Availability', val: '99.9%', why: 'GPU nodes have higher failure rates than CPU. Preemptible/spot instances can be terminated. Graceful degradation: fall back to smaller model or cache-only responses during GPU shortage' },
     ],
     meta: {category:'ml', difficulty:'architect', pattern:'read-heavy', consistency:'eventual', dominantBottleneck:'cache-memory', storageEngine:'postgres', cacheStrategy:'none'},
+    formulas: [
+      { label: 'Raw queries/sec', expr: 'DAU × queries_per_user / 86400 = 10M × 5 / 86400', result: '579' },
+      { label: 'Effective QPS (70%)', expr: '579 × (1 − 30% cache_hit)', result: '405' },
+      { label: 'Tokens/sec', expr: '405 × (500 input + 200 output)', result: '283,500' },
+      { label: 'A100 GPUs needed', expr: 'tokens/sec / 2000 tok/s per A100', result: '142' },
+      { label: 'GPU nodes (8× A100)', expr: '142 / 8', result: '18' },
+      { label: 'Vector index memory', expr: '100M × 768d × 4B × 1.2 overhead', result: '369 GB' },
+      { label: 'Storage/day', expr: 'tokens/sec × 86400 × 2 bytes/token', result: '49 GB' },
+      { label: 'GPU monthly cost', expr: '18 nodes × 8 GPUs × $300/hr × 730hr', result: '$31.5M' },
+    ],
     arch: {
       nodes: [
         { id: 'client',   label: 'User',             icon: '👤', tech: 'Web / API', layer: 'client',
@@ -1789,6 +1885,14 @@ const SCENARIOS = [
       { attr: 'Availability', val: 'Fail-open: 100% uptime from client perspective', why: 'Rate limiter is non-critical. Redis failure → skip check. Async restoration when Redis recovers. Metrics track rate limiter availability separately' },
     ],
     meta: {category:'infra', difficulty:'senior', pattern:'balanced', consistency:'strong', dominantBottleneck:'cache-memory', storageEngine:'redis', cacheStrategy:'none'},
+    formulas: [
+      { label: 'Total RPS to check', expr: 'services × rps_per_service = 100 × 10,000', result: '1M' },
+      { label: 'Active users tracked', expr: 'DAU × 10% = 10M × 0.1', result: '1M' },
+      { label: 'Redis memory needed', expr: 'active_users × (mem_per_user + window × 4B) = 1M × (80 + 240)', result: '320 MB' },
+      { label: 'Redis shards', expr: 'ceil(total_RPS / 100K per shard) = ceil(1M / 100K)', result: '10' },
+      { label: 'Memory per user', expr: '80 bytes (sliding window counter)', result: '80 B' },
+      { label: 'Algorithm', expr: 'Sliding Window Counter (hybrid)' },
+    ],
     arch: {
       nodes: [
         { id: 'client',   label: 'API Client',       icon: '📱', tech: 'Any service', layer: 'client',
@@ -1909,6 +2013,15 @@ const SCENARIOS = [
       { attr: 'Availability', val: '99.99%', why: 'Index servers are partitioned for fault isolation. Hot query cache at edge. Degraded mode: fall back to cached results if index server unreachable. Multi-region index replicas' },
     ],
     meta: {category:'infra', difficulty:'staff', pattern:'read-heavy', consistency:'eventual', dominantBottleneck:'storage', storageEngine:'bigtable', cacheStrategy:'cache-aside'},
+    formulas: [
+      { label: 'Query QPS', expr: 'queries_per_day / 86400 = 5B / 86400', result: '57,870' },
+      { label: 'Crawl rate', expr: 'pages_indexed / (crawl_days × 86400) = 30B / (30 × 86400)', result: '11,574/s' },
+      { label: 'Raw web corpus', expr: '30B × 100 KB/page', result: '2.8 EB' },
+      { label: 'Inverted index', expr: '2.8 EB × 20% compression ratio', result: '560 PB' },
+      { label: 'Index shards', expr: '560 PB / 1 TB per shard', result: '560K' },
+      { label: 'Hot query cache', expr: 'queries × snippet_len × 50% = 5B × 300 × 0.5', result: '750 GB' },
+      { label: 'Serving tier servers', expr: 'ceil(qps / 500 per server) = 57,870 / 500', result: '116' },
+    ],
     arch: {
       nodes: [
         { id: 'client',   label: 'User',              icon: '🔎', tech: 'Browser / App', layer: 'client',
@@ -2031,6 +2144,16 @@ const SCENARIOS = [
       { attr: 'Scalability (flash sales)', val: '10× normal traffic', why: 'Pre-warm cache 1hr before sale. Disable real-time inventory checks for non-critical items. Queue checkout requests. Token bucket per user (1 req/s). Auto-scale ec2 instances' },
     ],
     meta: {category:'ecommerce', difficulty:'staff', pattern:'read-heavy', consistency:'strong', dominantBottleneck:'db-writes', storageEngine:'postgres', cacheStrategy:'cache-aside'},
+    formulas: [
+      { label: 'Page view QPS', expr: 'DAU × 20 pages / 86400 = 50M × 20 / 86400', result: '11,574' },
+      { label: 'Search QPS', expr: 'DAU × 8 searches / 86400 = 50M × 8 / 86400', result: '4,630' },
+      { label: 'Orders/sec', expr: 'orders_per_day / 86400 = 5M / 86400', result: '58' },
+      { label: 'Catalog storage', expr: '500M products × 10 KB', result: '4.7 TB' },
+      { label: 'Review storage/day', expr: '5M orders × 50 KB avg', result: '250 GB' },
+      { label: '5-year order history', expr: '25 GB/day × 365 × 5', result: '46 TB' },
+      { label: 'Cache (hot 1%)', expr: '500M × 1% × 10 KB', result: '50 GB' },
+      { label: 'Server estimate', expr: 'ceil(rqps / 1000) = 16,204 / 1000', result: '17' },
+    ],
     arch: {
       nodes: [
         { id: 'client',    label: 'Customer',         icon: '🛍️', tech: 'Web / App', layer: 'client',
@@ -2159,6 +2282,15 @@ const SCENARIOS = [
       { attr: 'Availability', val: '99.99% (control plane), 99.9% (content)', why: '3-region active-active control plane (DynamoDB Global Tables). Content plane is fully distributed via Open Connect. If one region fails, traffic reroutes. Playback continues if control plane is down (session cached)' },
     ],
     meta: {category:'streaming', difficulty:'staff', pattern:'read-heavy', consistency:'eventual', dominantBottleneck:'network-egress', storageEngine:'cassandra', cacheStrategy:'cache-aside'},
+    formulas: [
+      { label: 'Peak concurrent streams', expr: 'subs × concurrent_pct = 250M × 12%', result: '30M' },
+      { label: 'CDN bandwidth (peak)', expr: '30M × 6 Mbps', result: '180 Tbps' },
+      { label: 'Monthly data delivered', expr: '180 Tbps × 86400 × 30 / 8', result: '5.8 EB' },
+      { label: 'Read QPS', expr: '30M × 30 requests/stream', result: '900M' },
+      { label: 'Content edge cache', expr: 'catalog × 20% hot = 30 PB × 20%', result: '6 PB' },
+      { label: 'Encode hours/day', expr: '20,000 hrs/day at 2× real-time', result: '20K hrs' },
+      { label: 'Monthly encode cost', expr: '20,000 hrs × 30 days × $2/hr', result: '$1.2M' },
+    ],
     arch: {
       nodes: [
         { id: 'client',    label: 'Device',           icon: '📺', tech: 'Smart TV/App', layer: 'client',
@@ -2284,6 +2416,15 @@ const SCENARIOS = [
       { attr: 'Latency (P99)', val: '< 100ms feed load', why: 'Pre-computed feed avoids DB query at read time. CDN delivers photos from edge. API servers are metadata-only, running on cheap CPU instances. No image processing on read path' },
     ],
     meta: {category:'messaging', difficulty:'staff', pattern:'write-heavy', consistency:'eventual', dominantBottleneck:'storage', storageEngine:'cassandra', cacheStrategy:'cache-aside'},
+    formulas: [
+      { label: 'Photo uploads/sec', expr: '100M / 86400', result: '1,157' },
+      { label: 'Story uploads/sec', expr: '500M / 86400', result: '5,787' },
+      { label: 'Feed refresh QPS', expr: 'DAU × freq / 86400 = 500M × 8 / 86400', result: '46,296' },
+      { label: 'Reels QPS', expr: 'DAU × reels_watched / 86400 = 500M × 6 / 86400', result: '34,722' },
+      { label: 'Raw image ingest/day', expr: '100M photos × 2 MB', result: '200 TB' },
+      { label: 'Stories active storage', expr: '500M × 2 MB × 2 copies × 24h TTL', result: '2 PB' },
+      { label: 'Server estimate', expr: 'ceil(rqps/3000) + ceil(wqps/2000)', result: '~31' },
+    ],
     arch: {
       nodes: [
         { id: 'client',    label: 'Client',           icon: '📷', tech: 'iOS / Android', layer: 'client',
@@ -2414,6 +2555,16 @@ const SCENARIOS = [
       { attr: 'Availability', val: '99.99%', why: 'File access is critical for enterprise. Multi-region metadata DB. Block store uses S3 (11 9s durability). LAN sync works even if cloud is down. Offline mode queues changes locally' },
     ],
     meta: {category:'storage', difficulty:'staff', pattern:'balanced', consistency:'strong', dominantBottleneck:'storage', storageEngine:'postgres', cacheStrategy:'write-behind'},
+    formulas: [
+      { label: 'Total files stored', expr: '500M users × 500 files/user', result: '250B' },
+      { label: 'Total storage (deduped)', expr: '250B × 1 MB × 50% dedup', result: '125 EB' },
+      { label: 'Daily changed files', expr: '250B × 5% churn', result: '12.5B' },
+      { label: 'Write QPS', expr: '12.5B / 86400', result: '144,676' },
+      { label: 'Read QPS', expr: 'wqps × 5 read/write ratio', result: '723,380' },
+      { label: 'Delta size per change', expr: '1 MB × 30% (binary diff)', result: '300 KB' },
+      { label: 'Version storage (30d)', expr: '12.5B × 300 KB × 50% dedup × 30', result: '56 PB' },
+      { label: 'Block writes/sec', expr: 'changed_files × blocks_per_file / DAY', result: '36,169' },
+    ],
     arch: {
       nodes: [
         { id: 'client',    label: 'Desktop Client',   icon: '💻', tech: 'Sync client', layer: 'client',
@@ -2539,6 +2690,15 @@ const SCENARIOS = [
       { attr: 'Availability', val: '99.9% for viewers', why: 'Edge nodes are disposable: if one fails, viewer reconnects to another. Origin nodes are N+2 redundant. Multi-region for disaster recovery. CDN health-based routing' },
     ],
     meta: {category:'streaming', difficulty:'staff', pattern:'write-heavy', consistency:'eventual', dominantBottleneck:'network-egress', storageEngine:'s3', cacheStrategy:'none'},
+    formulas: [
+      { label: 'Total viewers (peak)', expr: 'concurrent × viewers_per_stream = 5M × 500', result: '2.5B' },
+      { label: 'Ingest bandwidth', expr: '5M × 6 Mbps (streamer upload)', result: '30 Tbps' },
+      { label: 'Transcode bandwidth', expr: '5M × 6 Mbps × 3 renditions', result: '90 Tbps' },
+      { label: 'CDN egress (peak)', expr: '2.5B viewers × 3 Mbps', result: '7.5 Ebps' },
+      { label: 'VOD storage/day', expr: '5M × 6 Mbps × 86400 × 0.125 × 20%', result: '6.5 PB' },
+      { label: 'Ingest + transcode servers', expr: 'ceil(5M/50K) + ceil(5M×2×3/10)', result: '~3M' },
+      { label: 'Latency mode', expr: 'LL-HLS/WebRTC (≤3s target)' },
+    ],
     arch: {
       nodes: [
         { id: 'streamer',  label: 'Streamer',         icon: '🎙️', tech: 'OBS / Mobile', layer: 'client',
@@ -2666,6 +2826,15 @@ const SCENARIOS = [
       { attr: 'Scalability', val: 'Horizontal SFU scaling', why: 'SFU capacity = ~5000 participants per instance. CPU-bound: packet forwarding + encryption. Co-located in 20+ regions for < 50ms RTT. Auto-scale based on regional demand' },
     ],
     meta: {category:'realtime', difficulty:'staff', pattern:'balanced', consistency:'eventual', dominantBottleneck:'network-egress', storageEngine:'postgres', cacheStrategy:'none'},
+    formulas: [
+      { label: 'Meetings/sec', expr: 'DAU × meetings_per_user / 86400 = 300M × 3 / 86400', result: '10,417' },
+      { label: 'Peak concurrent meetings', expr: '10,417 × (40 min × 60s)', result: '25M' },
+      { label: 'Total participants (peak)', expr: '25M × 8 avg participants', result: '200M' },
+      { label: 'Video bandwidth', expr: '200M × 1.5 Mbps', result: '300 Tbps' },
+      { label: 'Audio bandwidth', expr: '200M × 32 Kbps', result: '6.4 Tbps' },
+      { label: 'Screen share bandwidth', expr: '200M × 3 Mbps × 30%', result: '180 Tbps' },
+      { label: 'SFU servers needed', expr: 'ceil(200M / 5000 per SFU)', result: '40,000' },
+    ],
     arch: {
       nodes: [
         { id: 'client',    label: 'Participants',     icon: '🎥', tech: 'Zoom App / Browser', layer: 'client',
@@ -2787,6 +2956,16 @@ const SCENARIOS = [
       { attr: 'Availability', val: '99.99%', why: 'Workspaces are isolated failure domains. Redis PUB/SUB is single-node bottleneck → need sharding at scale. WebSocket connections re-establish on disconnect with exponential backoff. Read replicas for search history' },
     ],
     meta: {category:'messaging', difficulty:'senior', pattern:'write-heavy', consistency:'causal', dominantBottleneck:'fanout', storageEngine:'cassandra', cacheStrategy:'write-behind'},
+    formulas: [
+      { label: 'Total messages/day', expr: 'DAU × msgs_per_user × (1 + integrations) = 50M × 200 × 1.15', result: '11.5B' },
+      { label: 'Write QPS', expr: '11.5B / 86400', result: '133,102' },
+      { label: 'Read QPS', expr: 'wqps × 3 = 133,102 × 3', result: '399,306' },
+      { label: 'Text storage/day', expr: '11.5B × 150 bytes', result: '1.6 TB' },
+      { label: 'File storage/day', expr: '11.5B × 10% × 50 KB', result: '57.5 TB' },
+      { label: '5-year archive', expr: '59.1 TB × 365 × 5', result: '108 PB' },
+      { label: 'Search QPS', expr: 'rqps × 10% = 399,306 × 0.1', result: '39,931' },
+      { label: 'Server estimate', expr: 'ceil(rqps/2000) + ceil(wqps/1000)', result: '~333' },
+    ],
     arch: {
       nodes: [
         { id: 'client',    label: 'Client',           icon: '💻', tech: 'Desktop / Web / Mobile', layer: 'client',
@@ -2912,6 +3091,15 @@ const SCENARIOS = [
       { attr: 'Scalability', val: 'Multi-sided marketplace capacity', why: '3 sides (restaurants, partners, customers) each scale independently. Restaurants added by onboarding team. Partners onboard via verification. Customers auto-scale. Each side has separate service boundary' },
     ],
     meta: {category:'ecommerce', difficulty:'staff', pattern:'write-heavy', consistency:'strong', dominantBottleneck:'hot-partitions', storageEngine:'postgres', cacheStrategy:'cache-aside'},
+    formulas: [
+      { label: 'Orders/day', expr: 'DAU × orders_per_user / 30 = 50M × 4/30', result: '6.67M' },
+      { label: 'Browse QPS', expr: 'DAU × 8 / 86400 = 50M × 8 / 86400', result: '4,630' },
+      { label: 'Write QPS (orders)', expr: '6.67M / 86400', result: '77' },
+      { label: 'Location writes/sec', expr: 'delivery_partners × 1000 / 10s', result: '50M' },
+      { label: 'ETA compute QPS', expr: 'orders/sec × 3 = 77 × 3', result: '231' },
+      { label: 'Restaurant cache', expr: '500K restaurants × 1K items × 5KB', result: '2.5 TB' },
+      { label: '5-year order history', expr: 'orders/day × 5KB × 365 × 5', result: '61 TB' },
+    ],
     arch: {
       nodes: [
         { id: 'customer',  label: 'Customer App',     icon: '📱', tech: 'iOS / Android', layer: 'client',
@@ -3037,6 +3225,15 @@ const SCENARIOS = [
       { attr: 'Availability', val: '99.995% during sale window', why: 'Sale windows are fixed duration → downtime = lost revenue. Pre-sale load testing. Canary deployment 1hr before. War room on p99 > 200ms or error rate > 2%. Automated rollback if latency spikes' },
     ],
     meta: {category:'ecommerce', difficulty:'architect', pattern:'write-heavy', consistency:'strong', dominantBottleneck:'db-writes', storageEngine:'redis', cacheStrategy:'write-through'},
+    formulas: [
+      { label: 'Baseline QPS', expr: 'DAU × 8 / 86400 = 50M × 8 / 86400', result: '4,630' },
+      { label: 'Peak QPS (10×)', expr: '4,630 × sale_dau_mult = 4,630 × 10', result: '46,296' },
+      { label: 'Checkout attempts/sec', expr: '500K (peak) × 1K checkout_rate', result: '500,000' },
+      { label: 'Inventory write QPS', expr: 'checkout_rate × 2 = 500K × 2', result: '1M' },
+      { label: 'Storage per sale event', expr: 'checkout_rate × 24h × 3600 × 500B × 6hr/24hr', result: '~5.4 TB' },
+      { label: 'Inventory cache (pre-warm)', expr: '100K items × 1K variants × 200B', result: '20 GB' },
+      { label: 'App + inventory servers', expr: '(ceil(checkout/500) + ceil(1M/10K)) × 2', result: '~2,204' },
+    ],
     arch: {
       nodes: [
         { id: 'client',    label: 'Customer',         icon: '🛍️', tech: 'Web / App', layer: 'client',
@@ -3163,6 +3360,16 @@ const SCENARIOS = [
       { attr: 'Query performance', val: '< 10s for daily aggregate queries', why: 'Columnar pruning: scan only columns needed. Partition pruning: scan only day/hour range. Trino worker autoscaling. Materialized views for common aggregations. Result caching: 5min TTL for repeated queries' },
     ],
     meta: {category:'pipeline', difficulty:'staff', pattern:'batch', consistency:'eventual', dominantBottleneck:'queue-lag', storageEngine:'kafka', cacheStrategy:'none'},
+    formulas: [
+      { label: 'Events/day', expr: '10B' },
+      { label: 'Write QPS', expr: '10B / 86400', result: '115,741' },
+      { label: 'Stream QPS (20%)', expr: '115,741 × 20%', result: '23,148' },
+      { label: 'Batch QPS (80%)', expr: '115,741 × 80% / 3600 (batched)', result: '26' },
+      { label: 'Raw data/day', expr: '10B × 500 bytes', result: '5 TB' },
+      { label: 'Compressed storage/day', expr: '5 TB / 5:1 compression', result: '1 TB' },
+      { label: '30-day retention', expr: '1 TB × 30 days', result: '30 TB' },
+      { label: 'Kafka partitions', expr: 'ceil(115,741 / 10K per partition)', result: '12' },
+    ],
     arch: {
       nodes: [
         { id: 'producer',  label: 'Event Producers',    icon: '📡', tech: '10K+ apps/services', layer: 'client',
@@ -3544,8 +3751,9 @@ function renderAll() {
 document.getElementById('filter-chips').addEventListener('click', function(e) {
   const chip = e.target.closest('.chip');
   if (!chip) return;
-  this.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+  this.querySelectorAll('.chip').forEach(c => { c.classList.remove('active'); c.setAttribute('aria-pressed', 'false'); });
   chip.classList.add('active');
+  chip.setAttribute('aria-pressed', 'true');
   state.filter = chip.dataset.cat;
   renderScenarioNav();
 });
@@ -3638,10 +3846,35 @@ function renderCompareSelects() {
 function renderCompare() {
   const aContent = document.getElementById('cmp-a-content');
   const bContent = document.getElementById('cmp-b-content');
+  const deltaEl = document.getElementById('cmp-delta');
   const exportBtn = document.getElementById('export-btn');
   aContent.innerHTML = state.cmpA ? renderCompareScenario(state.cmpA) : '<div class="cmp-empty">Select a scenario</div>';
   bContent.innerHTML = state.cmpB ? renderCompareScenario(state.cmpB) : '<div class="cmp-empty">Select a scenario</div>';
-  exportBtn.style.display = (state.cmpA && state.cmpB) ? 'flex' : 'none';
+  if (state.cmpA && state.cmpB) {
+    const paramsA = initParams(state.cmpA);
+    const rA = state.cmpA.calc(getParamMultiplied(state.cmpA, paramsA));
+    const paramsB = initParams(state.cmpB);
+    const rB = state.cmpB.calc(getParamMultiplied(state.cmpB, paramsB));
+    if (rA && rB) {
+      const metrics = [
+        { label: 'Read QPS', a: rA.rqps, b: rB.rqps, fmt: fmtQPS },
+        { label: 'Write QPS', a: rA.wqps, b: rB.wqps, fmt: fmtQPS },
+        { label: 'Storage/day', a: rA.storPerDay, b: rB.storPerDay, fmt: fmtBytes },
+        { label: 'Servers', a: rA.servers || 0, b: rB.servers || 0, fmt: v => v.toString() },
+        { label: 'Monthly Cost', a: (rA.cost || rA).total || rA.monthlyCost || 0, b: (rB.cost || rB).total || rB.monthlyCost || 0, fmt: fmtMoney },
+      ];
+      deltaEl.innerHTML = metrics.map(m => {
+        const pct = m.a > 0 ? ((m.b - m.a) / m.a * 100) : 0;
+        const cls = Math.abs(pct) < 1 ? '' : pct > 0 ? 'delta-pos' : 'delta-neg';
+        const arrow = pct > 1 ? '↑' : pct < -1 ? '↓' : '→';
+        return `<div class="delta-row"><span class="delta-label">${m.label}</span><span class="delta-val ${cls}">${arrow} ${pct > 0 ? '+' : ''}${pct.toFixed(1)}%</span></div>`;
+      }).join('');
+    }
+    exportBtn.style.display = 'flex';
+  } else {
+    deltaEl.innerHTML = '<div class="cmp-empty">Select both scenarios to see deltas</div>';
+    exportBtn.style.display = 'none';
+  }
 }
 
 function renderCompareScenario(scenario) {
@@ -3699,24 +3932,66 @@ function getCompareExportText() {
 document.getElementById('compare-toggle').addEventListener('click', function() {
   state.compareOpen = !state.compareOpen;
   this.classList.toggle('active', state.compareOpen);
+  this.setAttribute('aria-expanded', state.compareOpen);
   document.getElementById('compare-panel').classList.toggle('open', state.compareOpen);
   if (state.compareOpen) renderCompareSelects();
 });
 
+function exportScenario(id) {
+  const sc = SCENARIOS.find(s => s.id === id);
+  if (!sc) return '';
+  const params = initParams(sc);
+  const mp = getParamMultiplied(sc, params);
+  const r = sc.calc(mp);
+  if (!r) return '';
+  const line = s => `  ${s}\n`;
+  const costTotal = r.cost ? r.cost.total : (r.monthlyCost || 0);
+  let txt = '═══════════════════════════════════════════════════════════\n';
+  txt += '  BACK OF ENVELOPE — SYSTEM DESIGN ESTIMATOR\n';
+  txt += '  ' + sc.name + '\n';
+  txt += '  Generated ' + new Date().toISOString().slice(0, 10) + '\n';
+  txt += '═══════════════════════════════════════════════════════════\n\n';
+  txt += line('Description: ' + sc.desc);
+  txt += line('Category: ' + (sc.meta ? sc.meta.category : '—'));
+  txt += line('Difficulty: ' + (sc.meta ? sc.meta.difficulty : '—'));
+  txt += line('');
+  txt += line('Read QPS: ' + fmtQPS(r.rqps) + ' (peak: ' + fmtQPS(r.rqps * state.peakMult) + ')');
+  txt += line('Write QPS: ' + fmtQPS(r.wqps) + ' (peak: ' + fmtQPS(r.wqps * state.peakMult) + ')');
+  txt += line('Storage/day: ' + fmtBytes(r.storPerDay));
+  txt += line('5-year storage: ' + fmtBytes(r.storPerDay * 365 * 5));
+  txt += line('Bandwidth: ' + fmtBW(r.bwOut));
+  txt += line('Servers: ' + (r.servers || '—').toLocaleString());
+  txt += line('Monthly cost: ' + (costTotal ? fmtMoney(costTotal) : '—'));
+  if (r.cacheGB) txt += line('Cache: ' + fmtBytes(r.cacheGB * 1e9));
+  if (r.extras) r.extras.forEach(e => txt += line(e.label + ': ' + e.val));
+  txt += '\n─── Insights ───\n';
+  sc.insights.slice(0, 5).forEach(i => txt += line('• ' + i));
+  txt += '\n═══════════════════════════════════════════════════════════\n';
+  return txt;
+}
+
+function downloadText(txt, filename) {
+  if (!txt) return;
+  const blob = new Blob([txt], {type: 'text/plain'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = filename;
+  a.click();
+}
+
+// Single-scenario export
+document.getElementById('export-single-btn').addEventListener('click', function() {
+  const txt = exportScenario(state.scenarioId);
+  if (!txt) return;
+  const name = SCENARIOS.find(s => s.id === state.scenarioId)?.name || 'scenario';
+  downloadText(txt, 'boe-' + name.toLowerCase().replace(/\s+/g, '-') + '.txt');
+});
+
+// Compare export
 document.getElementById('export-btn').addEventListener('click', function() {
   const txt = getCompareExportText();
   if (!txt) return;
-  navigator.clipboard.writeText(txt).then(() => {
-    const orig = this.innerHTML;
-    this.innerHTML = '<i class="ti ti-check"></i> Copied!';
-    setTimeout(() => this.innerHTML = orig, 2000);
-  }).catch(() => {
-    const blob = new Blob([txt], {type: 'text/plain'});
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = 'scenario-comparison.txt';
-    a.click();
-  });
+  downloadText(txt, 'boe-comparison.txt');
 });
 
 // ── Tab switching ──
@@ -3725,8 +4000,9 @@ document.getElementById('main-tabs').addEventListener('click', function(e) {
   if (!btn) return;
   const prev = document.querySelector('.tab-btn.active');
   if (prev && prev.dataset.tab !== 'architecture') stopArchAnimations();
-  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => { b.classList.remove('active'); b.setAttribute('aria-selected', 'false'); });
   btn.classList.add('active');
+  btn.setAttribute('aria-selected', 'true');
   document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
   document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
   // Redraw arch when switching to it (SVG needs width)
@@ -3756,7 +4032,22 @@ document.addEventListener('keydown', function(e) {
     document.getElementById('scenario-search').select();
   }
   if (e.key === 'Escape') {
+    const panel = document.getElementById('arch-detail-panel');
+    if (panel.classList.contains('open')) {
+      panel.classList.remove('open');
+      e.preventDefault();
+    }
     document.getElementById('scenario-search').blur();
+  }
+  // Focus trap: Tab within arch detail panel
+  if (e.key === 'Tab') {
+    const panel = document.getElementById('arch-detail-panel');
+    if (!panel.classList.contains('open')) return;
+    const focusable = panel.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
+    if (!focusable.length) return;
+    const first = focusable[0], last = focusable[focusable.length - 1];
+    if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+    else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
   }
 });
 
@@ -4288,6 +4579,7 @@ function openNodeDetail(node, layer) {
   layerEl.style.background = lm.col + '22';
   layerEl.style.color = lm.col;
   document.getElementById('arch-detail-panel').classList.add('open');
+  document.getElementById('arch-detail-close').focus();
 }
 
 function renderAssumptions(scenario) {
@@ -4348,7 +4640,7 @@ function updateFormulas(scenario) {
     return;
   }
   el.innerHTML = scenario.formulas.map(f =>
-    `<div class="formula-row"><span class="fr-label">${f.label}</span><span class="fr-expr">${f.expr}</span><span class="fr-result">${f.result}</span></div>`
+    `<div class="formula-row"><span class="fr-label">${f.label}</span><span class="fr-expr">${f.expr||''}</span><span class="fr-result">${f.result||'—'}</span></div>`
   ).join('');
 }
 

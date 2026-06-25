@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Databases — System Design</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/tabler-icons.min.css">
+<style>
+:root {
+  --bg: #f8f7f4; --bg2: #ffffff; --bg3: #f0efeb;
+  --text: #1a1a18; --text2: #5c5c58; --text3: #8a8a84;
+  --border: rgba(0,0,0,0.10); --border2: rgba(0,0,0,0.18);
+  --teal: #0F6E56; --teal-bg: #E1F5EE; --teal-light: #5DCAA5;
+  --amber: #854F0B; --amber-bg: #FAEEDA; --amber-light: #EF9F27;
+  --blue: #185FA5; --blue-bg: #E6F1FB; --blue-light: #378ADD;
+  --purple: #534AB7; --purple-bg: #EEEDFE; --purple-light: #7F77DD;
+  --coral: #993C1D; --coral-bg: #FAECE7; --coral-light: #D85A30;
+  --green: #3B6D11; --green-bg: #EAF3DE; --green-light: #639922;
+  --red: #A32D2D; --red-bg: #FCEBEB;
+  --radius: 10px; --radius-sm: 6px; --mono: 'Courier New', 'Consolas', monospace;
+}
+@media (prefers-color-scheme: dark) {
+:root {
+  --bg: #111110; --bg2: #1a1a18; --bg3: #222220;
+  --text: #f0ede8; --text2: #a8a8a0; --text3: #6a6a64;
+  --border: rgba(255,255,255,0.10); --border2: rgba(255,255,255,0.20);
+  --teal: #5DCAA5; --teal-bg: #04342C; --teal-light: #9FE1CB;
+  --amber: #EF9F27; --amber-bg: #412402; --amber-light: #FAC775;
+  --blue: #85B7EB; --blue-bg: #042C53; --blue-light: #B5D4F4;
+  --purple: #AFA9EC; --purple-bg: #26215C; --purple-light: #CECBF6;
+  --coral: #F0997B; --coral-bg: #4A1B0C; --coral-light: #F5C4B3;
+  --green: #97C459; --green-bg: #173404; --green-light: #C0DD97;
+  --red: #E24B4A; --red-bg: #501313;
+}
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14px;line-height:1.5;min-height:100vh}
+.app{max-width:1000px;margin:0 auto;padding:24px 16px 60px}
+.top-bar{display:flex;align-items:baseline;gap:12px;margin-bottom:4px}
+.app-title{font-size:22px;font-weight:600;letter-spacing:-0.01em}
+.app-sub{font-size:13px;color:var(--text2)}
+.desc{font-size:13px;color:var(--text2);margin-bottom:20px;padding:10px 14px;background:var(--bg3);border-radius:var(--radius-sm);border-left:3px solid var(--teal)}
+.db-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px}
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:16px}
+.card h3{font-size:15px;margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.card .tag{display:inline-block;font-size:10px;padding:2px 8px;border-radius:100px;font-weight:600;letter-spacing:0.03em;margin-bottom:8px}
+.tag-teal{background:var(--teal-bg);color:var(--teal)}
+.tag-amber{background:var(--amber-bg);color:var(--amber)}
+.tag-blue{background:var(--blue-bg);color:var(--blue)}
+.tag-purple{background:var(--purple-bg);color:var(--purple)}
+.tag-coral{background:var(--coral-bg);color:var(--coral)}
+.tag-green{background:var(--green-bg);color:var(--green)}
+.card p{font-size:12px;color:var(--text2);line-height:1.5;margin-bottom:8px}
+.card ul{list-style:none;font-size:12px}
+.card ul li{padding:3px 0;color:var(--text2);display:flex;gap:6px;align-items:flex-start}
+.card ul li i{color:var(--teal);font-size:14px;flex-shrink:0;margin-top:1px}
+.card ul li .neg{color:var(--coral)}
+.section{margin-bottom:20px}
+.section-title{font-size:11px;text-transform:uppercase;letter-spacing:0.09em;color:var(--text3);font-weight:600;margin-bottom:12px;display:flex;align-items:center;gap:10px}
+.section-title::after{content:'';flex:1;height:1px;background:var(--border)}
+.req-table{width:100%;border-collapse:collapse;font-size:13px}
+.req-table th{font-size:10px;text-transform:uppercase;letter-spacing:0.07em;color:var(--text3);font-weight:600;padding:8px 10px;text-align:left;border-bottom:2px solid var(--border2)}
+.req-table td{padding:8px 10px;border-bottom:1px solid var(--border);vertical-align:top}
+.req-table tr:hover td{background:var(--bg3)}
+.req-table .why{font-size:11px;color:var(--text3);margin-top:3px;line-height:1.4}
+.req-table td:first-child{font-weight:500;white-space:nowrap}
+.why-box{margin-top:16px;padding:12px;background:var(--bg3);border-radius:var(--radius-sm);border-left:3px solid var(--blue)}
+.why-box h4{font-size:12px;margin-bottom:4px;color:var(--text)}
+.why-box p{font-size:12px;color:var(--text2);line-height:1.5}
+.scenario-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.scenario-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:14px}
+.scenario-card h4{font-size:13px;margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.scenario-card .rec{font-size:11px;padding:2px 8px;border-radius:100px;display:inline-block;font-weight:600;margin:4px 0 6px}
+.scenario-card p{font-size:12px;color:var(--text2);line-height:1.5}
+.scenario-card ul{list-style:none;font-size:12px;margin-top:6px}
+.scenario-card ul li{padding:2px 0;color:var(--text2);display:flex;gap:6px}
+.scenario-card ul li i{font-size:14px;flex-shrink:0;color:var(--teal)}
+.shard-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px}
+.shard-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px}
+.shard-card h4{font-size:13px;margin-bottom:4px}
+.shard-card p{font-size:11px;color:var(--text2);line-height:1.4}
+@media(max-width:640px){.db-grid{grid-template-columns:1fr}.shard-grid{grid-template-columns:repeat(2,1fr)}.scenario-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="top-bar">
+    <div class="app-title">Databases</div>
+    <div class="app-sub">SQL vs NoSQL · Sharding · Replication · Tradeoffs</div>
+  </div>
+  <div class="desc">Database choice is the most consequential architectural decision in any system. The wrong pick means years of pain — migrations, sharding nightmares, consistency bugs. This guide covers the major categories, when to use each, and how to scale.</div>
+
+  <div class="section">
+    <div class="section-title">Database Categories</div>
+    <div class="db-grid" id="db-grid"></div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">SQL vs NoSQL — Decision Matrix</div>
+    <div class="why-box">
+      <h4><i class="ti ti-alert-triangle" style="color:var(--amber)"></i> The Real Answer</h4>
+      <p>Most production systems use <strong>both</strong>. PostgreSQL as source of truth + Redis for caching + Elasticsearch for search + Kafka for event log. The question is not "SQL or NoSQL" but "which tool for which job." Start with PostgreSQL for anything that needs ACID, add specialized stores only when you hit a specific bottleneck.</p>
+    </div>
+    <table class="req-table">
+      <thead><tr><th style="width:140px">Attribute</th><th>PostgreSQL</th><th>Cassandra</th><th>MongoDB</th><th>DynamoDB</th><th>Bigtable</th></tr></thead>
+      <tbody id="compare-body"></tbody>
+    </table>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Sharding Strategies</div>
+    <div class="shard-grid" id="shard-grid"></div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Replication Patterns</div>
+    <table class="req-table">
+      <thead><tr><th style="width:140px">Pattern</th><th>How It Works</th><th>Consistency</th><th>Use Case</th><th>Tradeoff</th></tr></thead>
+      <tbody id="replication-body"></tbody>
+    </table>
+  </div>
+
+  <div class="section">
+    <div class="section-title">When to Use What — Real Scenarios</div>
+    <div class="scenario-grid" id="scenarios-grid"></div>
+  </div>
+</div>
+
+<script>
+const DB_TYPES = [
+  { name: 'Relational (PostgreSQL/MySQL)', icon: 'ti-database', tag: 'teal',
+    desc: 'ACID-compliant. Strong consistency. Joins, transactions, foreign keys. The default choice for any data that needs integrity.',
+    pros: ['ACID transactions — never lose data', 'Mature ecosystem (ORM, migrations, tools)', 'Powerful query language (SQL, window functions, CTEs)', 'JSON support — hybrid document/relational'],
+    cons: ['Hard to shard (joins across shards are painful)', 'Vertical scale ceiling (single writer bottleneck)', 'Connection overhead at high concurrency', 'Expensive read replicas for read scaling'] },
+  { name: 'Wide-Column (Cassandra/Bigtable)', icon: 'ti-columns', tag: 'purple',
+    desc: 'Columnar NoSQL. Designed for write-heavy workloads with no single point of failure. Linear scalability via consistent hashing.',
+    pros: ['Linear horizontal scaling (add nodes = more throughput)', 'No single point of failure (peer-to-peer)', 'Excellent write throughput (log-structured merge tree)', 'Multi-datacenter replication built-in'],
+    cons: ['No joins, no foreign keys', 'Eventual consistency (tunable, but tradeoff)', 'Query pattern must match partition key design', 'Read repair + hinted handoff = complexity'] },
+  { name: 'Document (MongoDB/DynamoDB)', icon: 'ti-file-text', tag: 'coral',
+    desc: 'JSON/BSON documents with flexible schema. Good for rapidly evolving data models. DynamoDB is fully managed with predictable performance.',
+    pros: ['Schema-flexible — great for rapid iteration', 'Native JSON — maps to application objects', 'DynamoDB: auto-scaling, single-digit ms at any scale', 'MongoDB: rich query language (aggregation pipeline)'],
+    cons: ['No joins (need denormalization)', 'MongoDB: write lock per database (older versions)', 'DynamoDB: no cross-partition transactions', 'Hot partitions if partition key is poorly chosen'] },
+  { name: 'In-Memory (Redis/Memcached)', icon: 'ti-bolt', tag: 'amber',
+    desc: 'Sub-millisecond latency. Best for caching, session stores, real-time counters, pub/sub. Not a primary database (data in RAM = loss risk).',
+    pros: ['<1ms P99 latency', 'Rich data structures (sorted sets, streams, hyperloglog)', 'Pub/sub (real-time messaging)', 'Atomic operations (INCR, Lua scripting)'],
+    cons: ['RAM is expensive (10-100x disk cost)', 'Durability is secondary (RDB/AOF help but not ACID)', 'Limited by single-threaded event loop', 'No complex queries (scan all keys is O(n))'] },
+  { name: 'Search Engine (Elasticsearch/Solr)', icon: 'ti-search', tag: 'blue',
+    desc: 'Full-text search, faceted navigation, log analytics. Built on Apache Lucene. Inverted index for sub-second search across billions of documents.',
+    pros: ['Full-text search with relevance scoring (BM25)', 'Near-real-time indexing (<1s)', 'Aggregations (facets, histograms, geospatial)', 'Horizontal scaling via shard replication'],
+    cons: ['No ACID transactions', 'Split-brain risk (cluster coordination)', 'Memory-heavy (index must fit in filesystem cache)', 'Not a primary data store (eventual consistency for deletes/updates)'] },
+  { name: 'Time-Series (InfluxDB/TimescaleDB)', icon: 'ti-chart-line', tag: 'green',
+    desc: 'Optimized for timestamped data (metrics, logs, IoT). Columnar compression, automatic downsampling, retention policies.',
+    pros: ['10-100x compression vs general-purpose DB', 'Automatic downsampling and retention', 'Built-in continuous queries / materialized views', 'SQL interface (TimescaleDB extends PostgreSQL)'],
+    cons: ['Not suitable for general-purpose workloads', 'Cross-time-series joins are limited', 'Schema designed for time + measurement, not relationships', 'Smaller ecosystem than PostgreSQL/MongoDB'] },
+];
+
+const COMPARE = [
+  { attr: 'Consistency model', pg: 'Strong (ACID, Serializable)', ca: 'Tunable (Eventual → Strong via QUORUM)', mo: 'Strong (primary reads). Eventual (secondary).', dy: 'Eventual (default). Strong (DAX/Transactions).', bt: 'Strong (Paxos-based)' },
+  { attr: 'Query model', pg: 'SQL (joins, CTEs, window functions, GIS)', ca: 'CQL (Cassandra Query Language). Must filter by partition key.', mo: 'MQL (aggregation pipeline, text search, geospatial)', dy: 'Key-value + secondary indexes. PartiQL.', bt: 'HBase API (get/scan). Bigtable SQL via Apache Phoenix.' },
+  { attr: 'Write throughput', pg: '10-50K writes/s per node (SSD)', ca: '100K-1M writes/s per node (LSM tree)', mo: '50-200K writes/s per node', dy: 'Unlimited (auto-sharding). 1K WCU per partition.', bt: '100K+ writes/s per node (tablet-based)' },
+  { attr: 'Read throughput', pg: '50-200K reads/s per node (with replicas)', ca: '100K-500K reads/s per node', mo: '100-300K reads/s per node', dy: 'Unlimited (auto-scaling). 3K RCU per partition.', bt: '200K+ reads/s per node' },
+  { attr: 'Scaling model', pg: 'Vertical (bigger instance) + read replicas. Sharding = application logic.', ca: 'Horizontal (add nodes). Consistent hashing. No manual sharding.', mo: 'Horizontal (sharding via hashed/range keys). Auto-rebalancing.', dy: 'Auto-scaling. Partition via hash key. No downtime scale.', bt: 'Horizontal (tablets auto-split). Colossus storage.' },
+  { attr: 'Latency P99', pg: '5-20ms (local SSD). 50-100ms (network EBS).', ca: '5-15ms (tunable: ONE = 5ms, QUORUM = 15ms)', mo: '10-50ms (wiredTiger cache, SSD)', dy: 'Single-digit ms (DAX: microsecond).', bt: '5-20ms (tablet server)' },
+  { attr: 'Storage model', pg: 'B-tree (heap storage). TOAST for large values.', ca: 'LSM tree (SSTables, memtables, compaction)', mo: 'WiredTiger (B-tree + LSM hybrid). MMAPv1 (legacy).', bt: 'SSD-backed (DynamoDB). LSM tree.', bt2: 'LSM tree (SSTables in Colossus/GFS). Tablet-based.' },
+  { attr: 'Replication', pg: 'Streaming replication (WAL). Sync/async. Cascading.', ca: 'Peer-to-peer (gossip protocol). Multi-DC.', mo: 'Replica set (primary + secondaries). Arbiter for elections.', dy: '3-AZ replication (automatic). Global Tables.', bt: 'Paxos (tablet server replication).' },
+  { attr: 'Best for', pg: 'Default choice. ACID data, transactions, complex queries, reporting, GIS.', ca: 'Write-heavy, time-series, IoT, event logging, recommendation engines.', mo: 'Rapid prototyping, content management, catalogs, real-time analytics.', dy: 'Serverless apps, high-scale key-value, shopping carts, gaming.', bt: 'Large-scale analytics, time-series (Google Search, BigTable), MapReduce.' },
+];
+
+const SHARDS = [
+  { name: 'Hash-Based', desc: 'Partition key → hash → consistent hashing ring. Even distribution regardless of key semantics.', perf: 'Best distribution uniformity', tradeoff: 'Range queries impossible (scatter-gather). Re-sharding requires rehashing.' },
+  { name: 'Range-Based', desc: 'Partition by key range (e.g., user_id 1-1M → shard 1). Supports range scans within shard.', perf: 'Efficient range scans', tradeoff: 'Hot spots if range is skewed (e.g., recent data gets all writes). Manual rebalancing.' },
+  { name: 'Directory-Based', desc: 'Lookup table maps key → shard. Full flexibility — can move data between shards offline.', perf: 'Most flexible (no downtime moves)', tradeoff: 'Lookup becomes bottleneck (extra hop). Directory must be highly available.' },
+  { name: 'Geo-Based', desc: 'Partition by geographic region (e.g., US → shard A, EU → shard B). Minimizes cross-region latency.', perf: 'Best latency per region', tradeoff: 'Uneven load (more users in one region). Cross-region queries are expensive.' },
+];
+
+const REPLICATION = [
+  { pattern: 'Single-Leader (Master-Replica)', how: 'One node handles writes (leader). Replicas copy WAL/oplog. Reads from any replica.', consistency: 'Strong (leader reads). Eventual (replica reads, configurable sync).', use: 'Read-heavy workloads. Reporting off replicas. HA failover.', tradeoff: 'Writes bottleneck on single leader. Replica lag. Failover window (election).' },
+  { pattern: 'Multi-Leader (Active-Active)', how: 'Multiple nodes accept writes. Each replicates its writes to all others. Conflict resolution via CRDT or LWW.', consistency: 'Eventual (conflict resolution needed). CRDTs = automatic merge.', use: 'Multi-DC deployments. Offline-first apps (local leader). Collaborative editing.', tradeoff: 'Write conflicts. Require conflict resolution strategy (CRDT, LWW, custom merge). Network partition risk.' },
+  { pattern: 'Leaderless (Peer-to-Peer)', how: 'Any node accepts reads/writes. Consistency via quorum (R+W > N). Cassandra = default.', consistency: 'Tunable (ONE, QUORUM, ALL). Read repair + hinted handoff.', use: 'Write-heavy, always-available workloads. IoT, time-series, event log.', tradeoff: 'Read repair overhead. Tombstones for deletes. Inconsistent reads if quorum not met.' },
+  { pattern: 'Consensus-Based (Paxos/Raft)', how: 'All writes go through consensus algorithm. Majority required for commit. Etcd, ZooKeeper, Spanner.', consistency: 'Strong (Linearizable). No stale reads.', use: 'Coordination, locking, leader election. Distributed config. Metadata management.', tradeoff: 'Slow (3-5ms per write, multiple RTT). Low throughput (few thousand writes/s). Majority must be alive.' },
+];
+
+const SCENARIOS = [
+  { title: 'Social network timeline', icon: 'ti-messages', rec: 'Cassandra (writes) + PostgreSQL (relationships) + Redis (cache)', tag: 'teal',
+    desc: '500M DAU. Each user has a feed showing posts from followed accounts. Write-heavy (every follow, every post). Need fast reads of pre-computed timelines.',
+    why: 'Cassandra handles write fanout (each post inserted into all followers timelines). Reliable, linear scaling, no single point of failure. PostgreSQL stores user graph (relationships need joins). Redis caches hot timelines (<1ms reads).',
+    points: ['Timeline materialized in Cassandra (user_id + timestamp + post_id)', 'User graph in PostgreSQL (follower/followee relations with joins)', 'Redis cache: pre-computed timelines for active users (TTL 5min)', 'Fanout: push for <10K followers, pull + cache for >10K'] },
+  { title: 'E-commerce order processing', icon: 'ti-shopping-cart', rec: 'PostgreSQL (ACID) + DynamoDB (catalog) + ElastiCache (session)', tag: 'blue',
+    desc: '5M orders/day. Inventory must be strongly consistent (no overselling). Product catalog is read-heavy. Shopping cart needs fast reads/writes.',
+    why: 'PostgreSQL handles transactional order lifecycle (ACID for payments + inventory). DynamoDB stores product catalog (flexible schema for different product types). Session/cart data goes to Redis (ephemeral, needs <1ms).',
+    points: ['Order DB: PostgreSQL with serializable isolation', 'Inventory: SELECT ... FOR UPDATE (pessimistic lock no more than 50ms)', 'Catalog: DynamoDB with DAX for microsecond reads', 'Cart: Redis hash with 24hr TTL. Persist to PostgreSQL on checkout'] },
+  { title: 'Real-time analytics pipeline', icon: 'ti-chart-bar', rec: 'Kafka (ingest) + Bigtable (raw) + Elasticsearch (query) + Presto (SQL)', tag: 'amber',
+    desc: '10B events/day. Need sub-second ingest, ad-hoc query, and pre-computed dashboards. Schema changes weekly.',
+    why: 'Kafka buffers 10B events with persistence. Bigtable stores raw events (LSM tree handles write throughput, columnar for efficient scan). Elasticsearch indexes for search. Presto/Trino provides SQL interface over Bigtable.',
+    points: ['Raw events: Bigtable row key = (event_type + timestamp + shard_id)', 'Index: Elasticsearch for ad-hoc field search', 'Aggregations: Flink → hourly rollups in PostgreSQL', 'SQL layer: Presto queries Bigtable + PostgreSQL with unified schema'] },
+  { title: 'Global file storage (Drive/Dropbox)', icon: 'ti-file', rec: 'PostgreSQL (metadata) + S3 (blobs) + Cassandra (block index)', tag: 'purple',
+    desc: '1B files stored. 100M daily active users. Files deduplicated at block level. Need version history + sharing.',
+    why: 'PostgreSQL stores file metadata (name, owner, permissions) — needs ACID for sharing invariants. S3 stores raw file blocks (cheap, durable, 11 9s). Cassandra tracks block → file mappings (write-heavy index with no joins needed).',
+    points: ['Metadata: PostgreSQL with row-level security for sharing', 'Blocks: S3 with SHA256 content-addressed keys', 'Block index: Cassandra (block_hash → {file_id, ref_count})', 'Versioning: PostgreSQL event log (append-only, snapshot from log)'] },
+  { title: 'Time-series metrics platform', icon: 'ti-chart-line', rec: 'TimescaleDB (metrics) + PostgreSQL (metadata) + Redis (latest)', tag: 'green',
+    desc: '100K servers reporting 10 metrics/10s. Store for 90 days. Query recent (1h) in real-time, historic (90d) via downsampled aggregates.',
+    why: 'TimescaleDB (PostgreSQL extension) automatically partitions by time (hypertables), compresses old chunks, and down-samples. Native SQL for analytics. PostgreSQL stores server metadata (joins needed). Redis caches latest 1h of metrics.',
+    points: ['Metrics: TimescaleDB hypertable partitioned by host + time', 'Compression: after 7 days → columnar (90% space reduction)', 'Downsample: after 30 days → 1min → 1hr aggregates', 'Real-time: Redis sorted set per metric (latest 1h, trim old)'] },
+];
+
+function render() {
+  renderDBTypes();
+  renderCompare();
+  renderShards();
+  renderReplication();
+  renderScenarios();
+}
+
+function renderDBTypes() {
+  const grid = document.getElementById('db-grid');
+  grid.innerHTML = DB_TYPES.map(d => `
+    <div class="card">
+      <h3><i class="${d.icon}" style="color:var(--${d.tag})"></i> ${d.name}</h3>
+      <span class="tag tag-${d.tag}">${d.pros.length} pros</span>
+      <p>${d.desc}</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:6px">
+        <div style="padding:6px;background:var(--bg3);border-radius:4px;font-size:10px;color:var(--text3)">
+          <i class="ti ti-check" style="color:var(--teal)"></i> ${d.pros.slice(0,2).join('<br><i class="ti ti-check" style="color:var(--teal)"></i> ')}
+        </div>
+        <div style="padding:6px;background:var(--bg3);border-radius:4px;font-size:10px;color:var(--text3)">
+          <i class="ti ti-x" style="color:var(--coral)"></i> ${d.cons.slice(0,2).join('<br><i class="ti ti-x" style="color:var(--coral)"></i> ')}
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderCompare() {
+  const tbody = document.getElementById('compare-body');
+  tbody.innerHTML = COMPARE.map(c => `
+    <tr><td>${c.attr}</td><td style="font-size:12px;color:var(--text2);line-height:1.4">${c.pg}</td><td style="font-size:12px;color:var(--text2)">${c.ca}</td><td style="font-size:12px;color:var(--text2)">${c.mo}</td><td style="font-size:12px;color:var(--text2)">${c.dy}</td><td style="font-size:12px;color:var(--text2)">${c.bt}</td></tr>
+  `).join('');
+}
+
+function renderShards() {
+  const grid = document.getElementById('shard-grid');
+  grid.innerHTML = SHARDS.map(s => `
+    <div class="shard-card">
+      <h4><i class="ti ti-layers-intersect" style="color:var(--teal)"></i> ${s.name}</h4>
+      <p>${s.desc}</p>
+      <div style="margin-top:6px;font-size:10px"><span class="tag-teal" style="padding:1px 6px;border-radius:100px">${s.perf}</span></div>
+      <div style="margin-top:4px;font-size:10px;color:var(--coral)">⚠ ${s.tradeoff}</div>
+    </div>
+  `).join('');
+}
+
+function renderReplication() {
+  const tbody = document.getElementById('replication-body');
+  tbody.innerHTML = REPLICATION.map(r => `
+    <tr>
+      <td style="font-weight:600;color:var(--text)">${r.pattern}</td>
+      <td style="font-size:12px;color:var(--text2);line-height:1.4">${r.how}</td>
+      <td style="font-size:12px;color:var(--amber)">${r.consistency}</td>
+      <td style="font-size:12px;color:var(--text2);line-height:1.4">${r.use}</td>
+      <td style="font-size:12px;color:var(--coral);line-height:1.4">${r.tradeoff}</td>
+    </tr>
+  `).join('');
+}
+
+function renderScenarios() {
+  const grid = document.getElementById('scenarios-grid');
+  grid.innerHTML = SCENARIOS.map(s => `
+    <div class="scenario-card">
+      <h4><i class="${s.icon}" style="color:var(--${s.tag})"></i> ${s.title}</h4>
+      <span class="rec tag-${s.tag}" style="font-size:11px;padding:2px 8px;border-radius:100px;display:inline-block;font-weight:600;margin:4px 0 8px;background:var(--${s.tag}-bg);color:var(--${s.tag})">${s.rec}</span>
+      <p>${s.desc}</p>
+      <div class="why-box" style="margin-top:8px;">
+        <h4><i class="ti ti-alert-circle" style="color:var(--${s.tag})"></i> Why</h4>
+        <p>${s.why}</p>
+      </div>
+      <ul>${s.points.map(p => `<li><i class="ti ti-check" style="color:var(--${s.tag})"></i> ${p}</li>`).join('')}</ul>
+    </div>
+  `).join('');
+}
+
+render();
+</script>
+</body>
+</html>

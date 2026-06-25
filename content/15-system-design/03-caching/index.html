@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Caching — System Design</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/tabler-icons.min.css">
+<style>
+:root {
+  --bg: #f8f7f4; --bg2: #ffffff; --bg3: #f0efeb;
+  --text: #1a1a18; --text2: #5c5c58; --text3: #8a8a84;
+  --border: rgba(0,0,0,0.10); --border2: rgba(0,0,0,0.18);
+  --teal: #0F6E56; --teal-bg: #E1F5EE; --teal-light: #5DCAA5;
+  --amber: #854F0B; --amber-bg: #FAEEDA; --amber-light: #EF9F27;
+  --blue: #185FA5; --blue-bg: #E6F1FB; --blue-light: #378ADD;
+  --purple: #534AB7; --purple-bg: #EEEDFE; --purple-light: #7F77DD;
+  --coral: #993C1D; --coral-bg: #FAECE7; --coral-light: #D85A30;
+  --green: #3B6D11; --green-bg: #EAF3DE; --green-light: #639922;
+  --red: #A32D2D; --red-bg: #FCEBEB;
+  --radius: 10px; --radius-sm: 6px; --mono: 'Courier New', 'Consolas', monospace;
+}
+@media (prefers-color-scheme: dark) {
+:root {
+  --bg: #111110; --bg2: #1a1a18; --bg3: #222220;
+  --text: #f0ede8; --text2: #a8a8a0; --text3: #6a6a64;
+  --border: rgba(255,255,255,0.10); --border2: rgba(255,255,255,0.20);
+  --teal: #5DCAA5; --teal-bg: #04342C; --teal-light: #9FE1CB;
+  --amber: #EF9F27; --amber-bg: #412402; --amber-light: #FAC775;
+  --blue: #85B7EB; --blue-bg: #042C53; --blue-light: #B5D4F4;
+  --purple: #AFA9EC; --purple-bg: #26215C; --purple-light: #CECBF6;
+  --coral: #F0997B; --coral-bg: #4A1B0C; --coral-light: #F5C4B3;
+  --green: #97C459; --green-bg: #173404; --green-light: #C0DD97;
+  --red: #E24B4A; --red-bg: #501313;
+}
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14px;line-height:1.5;min-height:100vh}
+.app{max-width:1000px;margin:0 auto;padding:24px 16px 60px}
+.top-bar{display:flex;align-items:baseline;gap:12px;margin-bottom:4px}
+.app-title{font-size:22px;font-weight:600;letter-spacing:-0.01em}
+.app-sub{font-size:13px;color:var(--text2)}
+.desc{font-size:13px;color:var(--text2);margin-bottom:20px;padding:10px 14px;background:var(--bg3);border-radius:var(--radius-sm);border-left:3px solid var(--teal)}
+.strategy-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px}
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:16px}
+.card h3{font-size:15px;margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.card .tag{display:inline-block;font-size:10px;padding:2px 8px;border-radius:100px;font-weight:600;letter-spacing:0.03em;margin-bottom:8px}
+.tag-teal{background:var(--teal-bg);color:var(--teal)}
+.tag-amber{background:var(--amber-bg);color:var(--amber)}
+.tag-blue{background:var(--blue-bg);color:var(--blue)}
+.tag-purple{background:var(--purple-bg);color:var(--purple)}
+.tag-coral{background:var(--coral-bg);color:var(--coral)}
+.card p{font-size:12px;color:var(--text2);line-height:1.5;margin-bottom:8px}
+.card ul{list-style:none;font-size:12px}
+.card ul li{padding:3px 0;color:var(--text2);display:flex;gap:6px;align-items:flex-start}
+.card ul li i{color:var(--teal);font-size:14px;flex-shrink:0;margin-top:1px}
+.card ul li .neg{color:var(--coral)}
+.section{margin-bottom:20px}
+.section-title{font-size:11px;text-transform:uppercase;letter-spacing:0.09em;color:var(--text3);font-weight:600;margin-bottom:12px;display:flex;align-items:center;gap:10px}
+.section-title::after{content:'';flex:1;height:1px;background:var(--border)}
+.req-table{width:100%;border-collapse:collapse;font-size:13px}
+.req-table th{font-size:10px;text-transform:uppercase;letter-spacing:0.07em;color:var(--text3);font-weight:600;padding:8px 10px;text-align:left;border-bottom:2px solid var(--border2)}
+.req-table td{padding:8px 10px;border-bottom:1px solid var(--border);vertical-align:top}
+.req-table tr:hover td{background:var(--bg3)}
+.req-table .why{font-size:11px;color:var(--text3);margin-top:3px;line-height:1.4}
+.req-table td:first-child{font-weight:500;white-space:nowrap}
+.why-box{margin-top:16px;padding:12px;background:var(--bg3);border-radius:var(--radius-sm);border-left:3px solid var(--blue)}
+.why-box h4{font-size:12px;margin-bottom:4px;color:var(--text)}
+.why-box p{font-size:12px;color:var(--text2);line-height:1.5}
+.scenario-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.scenario-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:14px}
+.scenario-card h4{font-size:13px;margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.scenario-card .rec{font-size:11px;padding:2px 8px;border-radius:100px;display:inline-block;font-weight:600;margin:4px 0 6px}
+.scenario-card p{font-size:12px;color:var(--text2);line-height:1.5}
+.scenario-card ul{list-style:none;font-size:12px;margin-top:6px}
+.scenario-card ul li{padding:2px 0;color:var(--text2);display:flex;gap:6px}
+.scenario-card ul li i{font-size:14px;flex-shrink:0;color:var(--teal)}
+.eviction-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px}
+.eviction-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px;text-align:center}
+.eviction-card h4{font-size:13px;margin-bottom:4px}
+.eviction-card p{font-size:11px;color:var(--text2)}
+.metrics{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px}
+.metric{padding:8px;background:var(--bg3);border-radius:4px;font-size:11px;color:var(--text2)}
+.metric strong{display:block;font-size:13px;color:var(--text);font-family:var(--mono)}
+@media(max-width:640px){.strategy-grid{grid-template-columns:1fr}.eviction-grid{grid-template-columns:repeat(2,1fr)}.scenario-grid{grid-template-columns:1fr}.metrics{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="top-bar">
+    <div class="app-title">Caching</div>
+    <div class="app-sub">Strategies · Eviction · Tradeoffs · System Design</div>
+  </div>
+  <div class="desc">Caching is the single highest-leverage performance optimization in distributed systems. Getting it right means 10-100x latency reduction and 80-99% backend load reduction. Getting it wrong means serving stale data or melting your cache tier under thundering herds.</div>
+
+  <div class="section">
+    <div class="section-title">Cache Strategies</div>
+    <div class="strategy-grid" id="strategy-grid"></div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Eviction Policies</div>
+    <div class="eviction-grid" id="eviction-grid"></div>
+    <div class="why-box">
+      <h4><i class="ti ti-alert-triangle" style="color:var(--amber)"></i> Choosing the Right Policy</h4>
+      <p>LRU is the default choice for most workloads — works well when recency correlates with probability of access. LFU beats LRU for content with stable popularity distributions (e.g., CDN caching). FIFO is never the right choice except for caches with uniform TTL. TTL-only is essential for time-sensitive data (auth tokens, rate limit counters). Most production caches combine LRU + TTL: evict by LRU among expired entries first.</p>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Cache Technologies — Comparison</div>
+    <table class="req-table">
+      <thead><tr><th style="width:160px">Attribute</th><th>Redis</th><th>Memcached</th><th>CDN (CloudFront/Fastly)</th><th>Local Cache (Caffeine/Guava)</th></tr></thead>
+      <tbody id="tech-body"></tbody>
+    </table>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Cache Failure Modes</div>
+    <table class="req-table">
+      <thead><tr><th style="width:160px">Failure Mode</th><th>What Happens</th><th>Impact</th><th>Mitigation</th></tr></thead>
+      <tbody id="failure-body"></tbody>
+    </table>
+  </div>
+
+  <div class="section">
+    <div class="section-title">When to Use What — Real Scenarios</div>
+    <div class="scenario-grid" id="scenarios-grid"></div>
+  </div>
+</div>
+
+<script>
+const STRATEGIES = [
+  { name: 'Cache-Aside', icon: 'ti-corner-down-right', tag: 'teal',
+    desc: 'Application checks cache first. On miss, reads from DB and populates cache. Most common pattern.',
+    pros: ['Simple, widely understood', 'Cache only stores data that is actually read', 'Easy to implement in any language', 'Cache can crash without losing data (DB is source of truth)'],
+    cons: ['Cache stampede on first miss after TTL expiry', 'Three round trips on cache miss (cache → DB → cache)', 'Stale data until TTL expiry (eventual consistency)'] },
+  { name: 'Read-Through', icon: 'ti-download', tag: 'blue',
+    desc: 'Cache library handles DB reads automatically. Application talks only to cache layer, never directly to DB.',
+    pros: ['Simpler application code — no cache miss logic', 'Cache library can prefetch and batch', 'Works well with ORM-like cache providers'],
+    cons: ['Cache library becomes bottleneck', 'Harder to debug cache miss issues', 'Vendor lock-in to specific caching library'] },
+  { name: 'Write-Through', icon: 'ti-upload', tag: 'amber',
+    desc: 'Every write goes through cache first. Cache writes to DB synchronously. Strong consistency between cache and DB.',
+    pros: ['No stale reads — cache always matches DB', 'Simple invalidation (cache always has latest)', 'Good for data that is read immediately after write'],
+    cons: ['Higher write latency (two round trips)', 'Writes are slower even for data that is rarely read', 'Uses cache memory for data that may never be read again'] },
+  { name: 'Write-Behind (Write-Back)', icon: 'ti-cloud-upload', tag: 'purple',
+    desc: 'Writes go to cache immediately and are asynchronously persisted to DB. Cache acts as write buffer.',
+    pros: ['Very low write latency (cache only)', 'Can batch writes to DB for throughput', 'Absorbs write spikes — DB sees smoothed load'],
+    cons: ['Data loss risk if cache crashes before DB write', 'Complex reconciliation if write fails', 'Not suitable for transactional data'] },
+  { name: 'Write-Around', icon: 'ti-arrows-left-right', tag: 'coral',
+    desc: 'Writes go directly to DB, bypassing cache. Cache is populated only on read. Combines with cache-aside.',
+    pros: ['Cache not polluted by write-once data', 'Reduces cache churn for write-heavy workloads', 'Lower memory pressure on cache tier'],
+    cons: ['First read after write is always a miss (slow)', 'Slightly more complex — two code paths', 'Not suitable for read-after-write consistency'] },
+  { name: 'Refresh-Ahead', icon: 'ti-refresh', tag: 'green',
+    desc: 'Cache proactively refreshes hot keys before they expire. Predicts which keys will be accessed next.',
+    pros: ['Eliminates cache stampede for hot keys', 'Consistently low read latency', 'Works well with predictive ML models'],
+    cons: ['Over-fetches data that may not be read', 'Requires prediction logic (ML or heuristic)', 'Increases DB load from prefetching'] },
+];
+
+const EVICTIONS = [
+  { name: 'LRU', desc: 'Evict least recently used', use: 'General purpose. Best for workloads where recently accessed is likely to be re-accessed (e.g., user sessions, API responses). O(1) with doubly-linked list + hash map.', perf: 'O(1)', mem: 'Low overhead' },
+  { name: 'LFU', desc: 'Evict least frequently used', use: 'Content with stable popularity (e.g., CDN, product catalog). Avoids cache pollution from one-time spikes. Needs frequency aging to avoid stale heat.', perf: 'O(log n)', mem: 'Higher (frequency counters)' },
+  { name: 'FIFO', desc: 'Evict oldest (first in)', use: 'Simple TTL-based caches. Rarely optimal. Can evict hot data that lives long. Only used when access pattern is uniformly random.', perf: 'O(1)', mem: 'Minimal' },
+  { name: 'TTL', desc: 'Expire after time', use: 'Essential for all caches — bounds staleness. Combine with LRU/LFU. Not an eviction policy alone (cache full = TTL must be short).', perf: 'O(1) expiry', mem: 'Timer wheel' },
+];
+
+const TECHNOLOGIES = [
+  { attr: 'Data model', r: 'Rich (strings, hashes, lists, sets, sorted sets, streams, bitmaps, hyperloglog, geospatial)', m: 'Simple (key-value, strings only)', c: 'File/blob cache', l: 'Object cache (Java/Python objects)' },
+  { attr: 'Persistence', r: 'RDB snapshots + AOF log. Can recover all data.', m: 'None. Pure in-memory. Data lost on restart.', c: 'Files on disk at edge. Persistent.', l: 'None. Lost on process restart.' },
+  { attr: 'Replication', r: 'Master-replica, Redis Cluster (sharding), Sentinel (HA)', m: 'No built-in replication. Client-side consistent hashing.', c: 'Global network of edge nodes. Automatic.', l: 'None. Per-process.' },
+  { attr: 'P99 Latency', r: '<1ms (in-memory), ~5ms with persistence fsync', m: '<1ms (simpler code path)', c: '~10-50ms (edge → origin on miss)', l: '<0.1ms (same process)' },
+  { attr: 'Max throughput', r: '~100K ops/s per node (single-threaded). 1M+ with Redis Cluster.', m: '~500K ops/s per node (multi-threaded)', c: 'Millions of req/s globally (distributed)', l: 'Limited by application heap' },
+  { attr: 'Memory efficiency', r: 'Good (data structures optimized for memory)', m: 'Better (minimal overhead per key)', c: 'N/A (disk-based at edge)', l: 'Depends on GC (Java: high overhead)' },
+  { attr: 'When to choose', r: 'Need data structures, persistence, replication, pub/sub. The default cache for most systems.', m: 'Need simple, fast, multi-threaded KV. Good for session stores, API response cache.', c: 'Static/media content, global distribution, DDoS absorption. Essential for video, images.', l: 'Need absolute lowest latency. Hot data that fits in process heap. CPU cache, L1/L2.' },
+  { attr: 'Cost (managed)', r: 'AWS ElastiCache: $0.016/hr per GB. Redis Enterprise: $0.05/hr per GB.', m: 'AWS ElastiCache: $0.012/hr per GB. Free for small deployments.', c: 'CloudFront: $0.085/GB egress. Fastly: $0.10/GB. Free tier available.', l: 'Free (part of application memory).' },
+];
+
+const FAILURES = [
+  { mode: 'Cache Stampede (Thundering Herd)', what: 'Hot key expires → thousands of concurrent requests all miss cache → all hit DB simultaneously → DB overloaded → cascading failure.', impact: 'DB meltdown. P99 latency goes from <5ms to >10s. Service may become unavailable.', fix: 'Mutex/per-key locking (only one process recomputes). Jitter TTL (add random offset). Refresh-ahead (predict and refresh before expiry). Stale-while-revalidate (serve stale + async refresh).' },
+  { mode: 'Hot Key (Dogpile)', what: 'Single key receives disproportionate traffic (e.g., celebrity tweet, viral product). One cache node handles 10x+ traffic of others.', impact: 'Cache node CPU/memory saturation. Increased latency for all keys on that shard. Client-side connection pool exhaustion.', fix: 'Replicate hot key across multiple shards (random suffix). Local cache (Caffeine) absorbs reads. Rate limit at gateway before cache. Invalidation broadcast on write.' },
+  { mode: 'Cache Penetration', what: 'Massive number of requests for non-existent keys (e.g., random user IDs, expired inventory). Every request misses cache and hits DB.', impact: 'DB overloaded by queries that will always return empty. Wasted cache lookups.', fix: 'Bloom filter before cache (checks existence). Cache null results with short TTL (negative caching). Validate keys before cache lookup (e.g., UUID format check).' },
+  { mode: 'Cache Breakdown', what: 'Cache node fails (e.g., OOM, network partition). All keys on that node become unavailable. Equivalent to mass expiry.', impact: 'Sudden load spike on DB. P99 latency spike. Risk of cascading failure to upstream services.', fix: 'Graceful degradation: serve stale data from local cache. Circuit breaker: if DB is also struggling, return last-known-good data. Warmup: pre-populate cache on restart (avoid cold start).' },
+  { mode: 'Write-Delete Race', what: 'Two concurrent operations: one reads stale data (cache hit) while another writes new data. The read populates cache with stale data after write invalidated it.', impact: 'Inconsistent data served until next TTL expiry. Stale data window = cache TTL.', fix: 'Write-through (cache and DB updated atomically). Compare-and-set (CAS) on cache update. Version numbers in cache entries. Eventual consistency: accept short staleness.' },
+];
+
+const SCENARIOS = [
+  { title: 'User profile service', icon: 'ti-user', rec: 'Cache-Aside + Redis', tag: 'teal',
+    desc: '500M users. 10M reads/sec for profile data. Profile changes are infrequent (<1% per day). 90% of reads are for 10% of users.',
+    why: 'Cache-aside gives control over what to cache (only profiles that are read). Redis handles the throughput and TTL-based staleness is acceptable for profile data. The 90/10 skew means cache hit rate is excellent.',
+    points: ['Cache key: user:{id}:profile with 1hr TTL', 'Estimated hit rate: 95%+ using LRU', 'Write invalidates cache key (delete, not update)', 'P99 latency: <5ms (cache hit) vs 50ms (DB miss)'] },
+  { title: 'E-commerce product catalog', icon: 'ti-shopping-cart', rec: 'Write-Through + CDN + Local Cache', tag: 'blue',
+    desc: '500M products. Product data changes via admin panel (not user-facing writes). 99% of traffic is reads.',
+    why: 'Write-through ensures catalog cache is always consistent with DB (no stale prices). Local cache on app servers absorbs the hottest 1% of products. CDN caches product images globally.',
+    points: ['Admin writes → cache update + DB update (write-through)', 'App servers: Caffeine cache for top 1% SKUs', 'CDN: CloudFront for images with 24hr TTL', 'Browser: product page HTML cached with Service Worker'] },
+  { title: 'Real-time leaderboard', icon: 'ti-trophy', rec: 'Write-Behind + Redis Sorted Sets', tag: 'amber',
+    desc: 'Game with 10M DAU. Scores update every game (10M writes/sec peak). Leaderboard must be sub-second for display.',
+    why: 'Write-behind absorbs the write storm: Redis ZINCRBY is O(log n) and handles 100K ops/s per node. Periodic async flush to DB for persistence. Leaderboard reads are always from cache.',
+    points: ['Redis ZINCRBY with Write-Behind flush every 30s', 'Shard by game_id to distribute write load', 'DB persistence: batch upsert every 30s (10M → 300K writes)', 'Leaderboard display: ZREVRANGE with scores (O(log n + k))'] },
+  { title: 'Global news feed', icon: 'ti-news', rec: 'Refresh-Ahead + CDN + Stale-while-revalidate', tag: 'coral',
+    desc: '100M DAU news app. Stories published by editors. Readers globally. Cache miss = slow UX, but stale story is OK for a few minutes.',
+    why: 'Refresh-ahead predicts which stories will trend (based on engagement) and proactively refreshes them before TTL expires. Stale-while-revalidate serves cached version while fetching fresh data in background. CDN caches at 50+ edge locations.',
+    points: ['Hot stories: refresh-ahead with 30s pre-expiry refresh', 'CDN: 1min TTL + stale-while-revalidate=300s', 'Trending detection: Flink window → refresh signal', 'Cold stories: cache-aside with 5min TTL'] },
+];
+
+function render() {
+  renderStrategies();
+  renderEvictions();
+  renderTech();
+  renderFailures();
+  renderScenarios();
+}
+
+function renderStrategies() {
+  const grid = document.getElementById('strategy-grid');
+  grid.innerHTML = STRATEGIES.map(s => `
+    <div class="card">
+      <h3><i class="${s.icon}" style="color:var(--${s.tag})"></i> ${s.name}</h3>
+      <span class="tag tag-${s.tag}">${s.pros.length} pros / ${s.cons.length} cons</span>
+      <p>${s.desc}</p>
+      <div class="metrics">
+        <div class="metric"><i class="ti ti-check" style="color:var(--teal)"></i> <strong>${s.pros.length}</strong>${s.pros.slice(0,2).join('<br>• ')}</div>
+        <div class="metric"><i class="ti ti-x" style="color:var(--coral)"></i> <strong>${s.cons.length}</strong>${s.cons.slice(0,2).join('<br>• ')}</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderEvictions() {
+  const grid = document.getElementById('eviction-grid');
+  grid.innerHTML = EVICTIONS.map(e => `
+    <div class="eviction-card">
+      <h4>${e.name}</h4>
+      <p>${e.desc}</p>
+      <div style="margin-top:6px;font-size:10px;color:var(--text3)">${e.perf} · ${e.mem}</div>
+    </div>
+  `).join('');
+}
+
+function renderTech() {
+  const tbody = document.getElementById('tech-body');
+  tbody.innerHTML = TECHNOLOGIES.map(t => `
+    <tr><td>${t.attr}</td><td style="font-size:12px;color:var(--text2);line-height:1.4">${t.r}</td><td style="font-size:12px;color:var(--text2)">${t.m}</td><td style="font-size:12px;color:var(--text2)">${t.c}</td><td style="font-size:12px;color:var(--text2)">${t.l}</td></tr>
+  `).join('');
+}
+
+function renderFailures() {
+  const tbody = document.getElementById('failure-body');
+  tbody.innerHTML = FAILURES.map(f => `
+    <tr>
+      <td style="font-weight:600;color:var(--coral)">${f.mode}</td>
+      <td style="font-size:12px;color:var(--text2);line-height:1.4">${f.what}</td>
+      <td style="font-size:12px;color:var(--coral)">${f.impact}</td>
+      <td style="font-size:12px;color:var(--text2);line-height:1.4">${f.fix}</td>
+    </tr>
+  `).join('');
+}
+
+function renderScenarios() {
+  const grid = document.getElementById('scenarios-grid');
+  grid.innerHTML = SCENARIOS.map(s => `
+    <div class="scenario-card">
+      <h4><i class="${s.icon}" style="color:var(--${s.tag})"></i> ${s.title}</h4>
+      <span class="rec tag-${s.tag}" style="font-size:11px;padding:2px 8px;border-radius:100px;display:inline-block;font-weight:600;margin:4px 0 8px;background:var(--${s.tag}-bg);color:var(--${s.tag})">${s.rec}</span>
+      <p>${s.desc}</p>
+      <div class="why-box" style="margin-top:8px;">
+        <h4><i class="ti ti-alert-circle" style="color:var(--${s.tag})"></i> Why</h4>
+        <p>${s.why}</p>
+      </div>
+      <ul>${s.points.map(p => `<li><i class="ti ti-check" style="color:var(--${s.tag})"></i> ${p}</li>`).join('')}</ul>
+    </div>
+  `).join('');
+}
+
+render();
+</script>
+</body>
+</html>

@@ -871,7 +871,7 @@ const LANG_QPS = {
 };
 
 function fmtBytes(b) {
-  if (b === 0) return '0 B';
+  if (!b || isNaN(b)) return '0 B';
   const u = ['B','KB','MB','GB','TB','PB','EB'];
   const i = Math.floor(Math.log2(Math.max(b,1)) / 10);
   const idx = Math.min(i, u.length - 1);
@@ -1048,6 +1048,7 @@ const SCENARIOS = [
       { id: 'following_avg', label: 'Avg Following / User', val: 400, min: 50, max: 5000, step: 50, unit: '', mult: 1 },
       { id: 'celebrity_threshold', label: 'Celebrity Follower Threshold', val: 1000000, min: 100000, max: 10000000, step: 100000, unit: '', mult: 1 },
       { id: 'media_pct', label: 'Media Attachment %', val: 20, min: 0, max: 80, step: 5, unit: '%', mult: 1 },
+      { id: 'tweet_size', label: 'Tweet Size (incl. metadata)', val: 1024, min: 280, max: 10000, step: 100, unit: 'B', mult: 1 },
     ],
     calc(p) {
       const dau = p.dau;

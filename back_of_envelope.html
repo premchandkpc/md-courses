@@ -511,7 +511,7 @@ button:focus:not(:focus-visible){outline:none}
   <div class="compare-bar">
     <button class="compare-btn" id="compare-toggle" aria-expanded="false"><i class="ti ti-columns"></i> Compare Scenarios</button>
     <button class="export-btn" id="export-single-btn"><i class="ti ti-file-text"></i> Export Scenario</button>
-    <button class="export-btn" id="export-btn" class="dn"><i class="ti ti-file-text"></i> Export Comparison</button>
+    <button class="export-btn dn" id="export-btn"><i class="ti ti-file-text"></i> Export Comparison</button>
   </div>
   <div class="compare-panel" id="compare-panel">
     <div class="compare-col" id="cmp-a">
@@ -572,7 +572,7 @@ button:focus:not(:focus-visible){outline:none}
     <div class="panel">
       <div class="panel-title">Output Breakdown</div>
       <div id="output-grid" class="out-grid"></div>
-      <div class="panel-title" class="mt14">Storage Timeline</div>
+      <div class="panel-title mt14">Storage Timeline</div>
       <table class="storage-table">
         <thead><tr><th>Period</th><th>Write Volume</th><th>Cumulative</th></tr></thead>
         <tbody id="storage-tbody"></tbody>
@@ -752,14 +752,14 @@ button:focus:not(:focus-visible){outline:none}
           <div class="ref-row"><span class="ref-key">Seconds/day</span><span class="ref-val">86,400 ≈ 10⁵</span></div>
           <div class="ref-row"><span class="ref-key">Seconds/month</span><span class="ref-val">2.6M ≈ 3×10⁶</span></div>
           <div class="ref-row"><span class="ref-key">Seconds/year</span><span class="ref-val">3.15×10⁷ ≈ π×10⁷</span></div>
-          <div class="ref-group-title" class="mt12">Data Sizes</div>
+          <div class="ref-group-title mt12">Data Sizes</div>
           <div class="ref-row"><span class="ref-key">Int / Long</span><span class="ref-val">4 / 8 B</span></div>
           <div class="ref-row"><span class="ref-key">UUID</span><span class="ref-val">16 B</span></div>
           <div class="ref-row"><span class="ref-key">Tweet</span><span class="ref-val">~300 B</span></div>
           <div class="ref-row"><span class="ref-key">Web page</span><span class="ref-val">~100 KB</span></div>
           <div class="ref-row"><span class="ref-key">Image</span><span class="ref-val">~200 KB</span></div>
           <div class="ref-row"><span class="ref-key">1-min HD video</span><span class="ref-val">~50 MB</span></div>
-          <div class="ref-group-title" class="mt12">Rules</div>
+          <div class="ref-group-title mt12">Rules</div>
           <div class="ref-row"><span class="ref-key">DAU/MAU ratio</span><span class="ref-val">30-50%</span></div>
           <div class="ref-row"><span class="ref-key">Cache hit rate</span><span class="ref-val">80-99%</span></div>
           <div class="ref-row"><span class="ref-key">Peak/avg traffic</span><span class="ref-val">2-5×</span></div>
@@ -769,12 +769,12 @@ button:focus:not(:focus-visible){outline:none}
       <div class="mt16">
         <div class="ref-group-title">Storage Units Quick Reference</div>
         <div class="fu">
-          <div class="ref-row"><span class="ref-key">KB</span><span class="ref-val" class="ml8">10³ B</span></div>
-          <div class="ref-row"><span class="ref-key">MB</span><span class="ref-val" class="ml8">10⁶ B</span></div>
-          <div class="ref-row"><span class="ref-key">GB</span><span class="ref-val" class="ml8">10⁹ B</span></div>
-          <div class="ref-row"><span class="ref-key">TB</span><span class="ref-val" class="ml8">10¹² B</span></div>
-          <div class="ref-row"><span class="ref-key">PB</span><span class="ref-val" class="ml8">10¹⁵ B</span></div>
-          <div class="ref-row"><span class="ref-key">EB</span><span class="ref-val" class="ml8">10¹⁸ B</span></div>
+          <div class="ref-row"><span class="ref-key">KB</span><span class="ref-val ml8">10³ B</span></div>
+          <div class="ref-row"><span class="ref-key">MB</span><span class="ref-val ml8">10⁶ B</span></div>
+          <div class="ref-row"><span class="ref-key">GB</span><span class="ref-val ml8">10⁹ B</span></div>
+          <div class="ref-row"><span class="ref-key">TB</span><span class="ref-val ml8">10¹² B</span></div>
+          <div class="ref-row"><span class="ref-key">PB</span><span class="ref-val ml8">10¹⁵ B</span></div>
+          <div class="ref-row"><span class="ref-key">EB</span><span class="ref-val ml8">10¹⁸ B</span></div>
         </div>
       </div>
     </div>
@@ -3624,8 +3624,8 @@ function loadState() {
     const saved = JSON.parse(localStorage.getItem('boe_state'));
     if (!saved) return;
     if (saved.scenarioId) state.scenarioId = saved.scenarioId;
-    if (saved.state.peakMult) state.peakMult = saved.state.peakMult;
-    if (saved.state.compareOpen !== undefined) state.compareOpen = saved.state.compareOpen;
+    if (saved.peakMult) state.peakMult = saved.peakMult;
+    if (saved.compareOpen !== undefined) state.compareOpen = saved.compareOpen;
     if (saved.cmpA) state.cmpA = SCENARIOS.find(s => s.id === saved.cmpA);
     if (saved.cmpB) state.cmpB = SCENARIOS.find(s => s.id === saved.cmpB);
     if (saved.flowIdx !== undefined) state.flowIdx = saved.flowIdx;
@@ -3852,8 +3852,8 @@ function updateCost(r) {
     <div class="mt10">
       ${items.map(i => `<div class="lang-row"><span class="lang-name">${i.label}</span><span class="lang-cost">${fmtMoney(i.value)}</span><span class="f11c3">(${i.pct.toFixed(0)}%)</span></div>`).join('')}
       <div class="lang-row" style="border-top:2px solid var(--border);margin-top:4px;padding-top:8px;">
-        <span class="lang-name" class="fw6">Total Monthly</span>
-        <span class="lang-cost" class="ct15">${fmtMoney(total)}</span>
+        <span class="lang-name fw6">Total Monthly</span>
+        <span class="lang-cost ct15">${fmtMoney(total)}</span>
       </div>
     </div>
   `;
@@ -3866,7 +3866,7 @@ function updateLangCompare(r) {
     const instances = Math.ceil(maxQPS / lang.qps);
     const cost = instances * (lang.cpu * COST.server_per_vcpu + lang.mem * COST.server_per_gb_ram);
     return `<div class="lang-row">
-      <span class="lang-name" class="df6">
+      <span class="lang-name df6">
         <span style="width:8px;height:8px;border-radius:50%;background:${lang.color};display:inline-block;"></span>
         ${lang.label}
       </span>

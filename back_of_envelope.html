@@ -374,7 +374,115 @@ input[type=range]::-moz-range-thumb { width: 16px; height: 16px; border-radius: 
 /* Focus & responsive polish */
 :focus-visible{outline:2px solid var(--text);outline-offset:3px;border-radius:3px}
 button:focus:not(:focus-visible){outline:none}
-@media(max-width:640px){.app{padding:16px 10px 40px}.content-grid{grid-template-columns:1fr}.ticker-bar{grid-template-columns:repeat(2,1fr)}.compare-panel.open{grid-template-columns:1fr}.ref-grid{grid-template-columns:1fr}.insights-row{grid-template-columns:1fr}.bot-grid{grid-template-columns:1fr}.reqs-grid{grid-template-columns:1fr}.assum-grid{grid-template-columns:1fr}#cmp-delta-col{width:100%;min-width:auto}.tabs{gap:0}.tab-btn{padding:8px 10px;font-size:11px}}</style>
+@media(max-width:640px){.app{padding:16px 10px 40px}.content-grid{grid-template-columns:1fr}.ticker-bar{grid-template-columns:repeat(2,1fr)}.compare-panel.open{grid-template-columns:1fr}.ref-grid{grid-template-columns:1fr}.insights-row{grid-template-columns:1fr}.bot-grid{grid-template-columns:1fr}.reqs-grid{grid-template-columns:1fr}.assum-grid{grid-template-columns:1fr}#cmp-delta-col{width:100%;min-width:auto}.tabs{gap:0}.tab-btn{padding:8px 10px;font-size:11px}}
+
+/* ── Bottleneck Analyzer ── */
+.bottleneck-panel{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:14px}
+.bottleneck-title{font-size:11px;text-transform:uppercase;letter-spacing:.09em;color:var(--text3);font-weight:600;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.bn-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:8px}
+.bn-card{padding:10px 12px;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--bg3);position:relative;overflow:hidden}
+.bn-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:var(--radius-sm) var(--radius-sm) 0 0}
+.bn-card.ok::before{background:var(--teal)}
+.bn-card.warn::before{background:var(--amber)}
+.bn-card.critical::before{background:var(--coral)}
+.bn-name{font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--text3);margin-bottom:4px}
+.bn-val{font-family:var(--mono);font-size:13px;font-weight:700;color:var(--text);margin-bottom:3px}
+.bn-status{font-size:10px;font-weight:600;display:flex;align-items:center;gap:4px}
+.bn-status.ok{color:var(--teal)}.bn-status.warn{color:var(--amber)}.bn-status.critical{color:var(--coral)}
+.bn-bar-wrap{margin-top:6px;height:3px;background:var(--border);border-radius:2px;overflow:hidden}
+.bn-bar{height:100%;border-radius:2px;transition:width .4s cubic-bezier(.4,0,.2,1)}
+.bn-bar.ok{background:var(--teal)}.bn-bar.warn{background:var(--amber)}.bn-bar.critical{background:var(--coral)}
+
+/* ── Markdown render in AI response ── */
+.ai-response .ai-md-p{margin-bottom:8px;font-size:13px;color:var(--text2);line-height:1.65}
+.ai-response .ai-md-p:last-child{margin-bottom:0}
+.ai-response .ai-md-b{font-weight:700;color:var(--text)}
+.ai-response .ai-md-code{font-family:var(--mono);font-size:11px;background:var(--bg3);padding:1px 5px;border-radius:3px;color:var(--text)}
+.ai-response .ai-md-ul{margin:6px 0 8px 16px}
+.ai-response .ai-md-li{font-size:12px;color:var(--text2);line-height:1.55;margin-bottom:3px;list-style:disc}
+.ai-response .ai-md-h{font-size:12px;font-weight:700;color:var(--text);margin:10px 0 4px;text-transform:uppercase;letter-spacing:.05em}
+.ai-response-copy{display:flex;justify-content:flex-end;margin-top:8px}
+.copy-btn{padding:3px 10px;border:1px solid var(--border2);border-radius:100px;background:transparent;color:var(--text3);font-size:10px;font-family:inherit;cursor:pointer;transition:all .12s;display:flex;align-items:center;gap:4px}
+.copy-btn:hover{background:var(--bg3);color:var(--text)}
+.copy-btn.copied{color:var(--teal);border-color:var(--teal)}
+
+/* ── Interview Simulator ── */
+.sim-wrap{display:flex;flex-direction:column;gap:14px}
+.sim-header{display:flex;align-items:center;gap:12px;margin-bottom:6px}
+.sim-title{font-size:15px;font-weight:700;color:var(--text)}
+.sim-badge{font-size:10px;padding:2px 9px;border-radius:100px;background:var(--teal-bg);color:var(--teal);font-weight:700;letter-spacing:.04em}
+.sim-badge.live{background:var(--coral-bg);color:var(--coral)}
+.sim-meta{font-size:12px;color:var(--text3);margin-left:auto}
+.sim-controls{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.sim-btn{padding:8px 18px;border-radius:var(--radius-sm);border:1px solid var(--border2);background:var(--bg2);color:var(--text2);font-size:13px;font-family:inherit;cursor:pointer;transition:all .12s;display:flex;align-items:center;gap:6px;font-weight:500}
+.sim-btn:hover{background:var(--teal);color:#fff;border-color:var(--teal)}
+.sim-btn.primary{background:var(--teal);color:#fff;border-color:var(--teal)}
+.sim-btn.primary:hover{opacity:.85}
+.sim-btn.danger{border-color:var(--coral);color:var(--coral)}
+.sim-btn.danger:hover{background:var(--coral);color:#fff}
+.sim-btn:disabled{opacity:.4;cursor:default}
+.sim-difficulty{display:flex;gap:6px;align-items:center}
+.diff-btn{padding:5px 12px;border-radius:100px;border:1px solid var(--border2);background:transparent;color:var(--text3);font-size:11px;font-family:inherit;cursor:pointer;transition:all .12s}
+.diff-btn:hover{border-color:var(--text2);color:var(--text2)}
+.diff-btn.active.senior{background:var(--teal-bg);color:var(--teal);border-color:var(--teal)}
+.diff-btn.active.staff{background:var(--amber-bg);color:var(--amber);border-color:var(--amber)}
+.diff-btn.active.architect{background:var(--purple-bg);color:var(--purple);border-color:var(--purple)}
+.sim-thread{display:flex;flex-direction:column;gap:12px;min-height:200px;padding:4px 0}
+.sim-msg{display:flex;gap:10px;align-items:flex-start;animation:msgIn .25s ease-out}
+@keyframes msgIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.sim-avatar{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;margin-top:2px}
+.sim-avatar.ai{background:var(--teal-bg);color:var(--teal)}
+.sim-avatar.user{background:var(--purple-bg);color:var(--purple)}
+.sim-bubble{flex:1;padding:10px 14px;border-radius:10px;font-size:13px;line-height:1.6}
+.sim-bubble.ai{background:var(--bg3);color:var(--text2)}
+.sim-bubble.user{background:var(--purple-bg);color:var(--text)}
+.sim-bubble.score{background:var(--teal-bg);border-left:3px solid var(--teal);color:var(--text2)}
+.sim-bubble .bubble-role{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--text3);margin-bottom:4px}
+.sim-input-wrap{display:flex;flex-direction:column;gap:8px}
+.sim-textarea{width:100%;padding:10px 12px;border:1px solid var(--border2);border-radius:var(--radius-sm);background:var(--bg3);color:var(--text);font-size:13px;font-family:inherit;outline:none;resize:vertical;min-height:80px;line-height:1.5;transition:border .15s}
+.sim-textarea:focus{border-color:var(--teal)}
+.sim-textarea::placeholder{color:var(--text3)}
+.sim-action-row{display:flex;gap:8px;align-items:center}
+.sim-submit-btn{padding:9px 20px;border-radius:var(--radius-sm);border:none;background:var(--teal);color:#fff;font-size:13px;font-family:inherit;font-weight:600;cursor:pointer;transition:opacity .12s;display:flex;align-items:center;gap:6px}
+.sim-submit-btn:hover{opacity:.85}
+.sim-submit-btn:disabled{opacity:.4;cursor:default}
+.sim-hint{font-size:11px;color:var(--text3)}
+.sim-score-ring{display:inline-flex;align-items:center;justify-content:center;width:48px;height:48px;border-radius:50%;font-size:18px;font-weight:800;font-family:var(--mono);margin-bottom:8px}
+.sim-score-ring.s-good{background:var(--teal-bg);color:var(--teal)}
+.sim-score-ring.s-ok{background:var(--amber-bg);color:var(--amber)}
+.sim-score-ring.s-poor{background:var(--coral-bg);color:var(--coral)}
+.sim-progress{display:flex;align-items:center;gap:8px;font-size:11px;color:var(--text3)}
+.sim-progress-dots{display:flex;gap:4px}
+.sim-dot{width:8px;height:8px;border-radius:50%;background:var(--border2);transition:background .2s}
+.sim-dot.done{background:var(--teal)}
+.sim-dot.current{background:var(--amber)}
+.sim-empty{text-align:center;padding:40px 20px;color:var(--text3)}
+.sim-empty i{font-size:36px;display:block;margin-bottom:10px;opacity:.4}
+.sim-empty p{font-size:13px;line-height:1.5}
+.sim-summary{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:16px}
+.sim-summary-title{font-size:14px;font-weight:700;color:var(--text);margin-bottom:12px}
+.sim-score-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px;margin-bottom:14px}
+.score-card{padding:10px;background:var(--bg3);border-radius:var(--radius-sm);text-align:center}
+.score-card-val{font-family:var(--mono);font-size:20px;font-weight:800;margin-bottom:2px}
+.score-card-label{font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--text3)}
+.sim-loading{display:flex;align-items:center;gap:8px;padding:10px 14px;font-size:12px;color:var(--text3)}
+.sim-loading-dots{display:flex;gap:4px}
+.sim-loading-dot{width:6px;height:6px;border-radius:50%;background:var(--teal);animation:dotBounce .9s ease-in-out infinite}
+.sim-loading-dot:nth-child(2){animation-delay:.15s}
+.sim-loading-dot:nth-child(3){animation-delay:.3s}
+@keyframes dotBounce{0%,80%,100%{transform:scale(0.6);opacity:.4}40%{transform:scale(1);opacity:1}}
+
+/* ── Ticker counter animation ── */
+.t-val{transition:color .3s}
+.t-val.flash{animation:numFlash .35s ease-out}
+@keyframes numFlash{0%{opacity:.3;transform:translateY(-3px)}100%{opacity:1;transform:translateY(0)}}
+
+/* ── Metric copy button ── */
+.ticker-bar .t-card{position:relative}
+.metric-copy{position:absolute;top:8px;right:8px;width:20px;height:20px;display:flex;align-items:center;justify-content:center;border:none;background:transparent;color:var(--text3);cursor:pointer;opacity:0;transition:opacity .12s;border-radius:3px;font-size:12px}
+.t-card:hover .metric-copy{opacity:1}
+.metric-copy:hover{background:var(--bg3);color:var(--text)}
+</style>
 </head>
 <body>
 <div class="app">
@@ -427,13 +535,14 @@ button:focus:not(:focus-visible){outline:none}
     <button class="tab-btn" data-tab="architecture" role="tab" aria-selected="false">Architecture</button>
     <button class="tab-btn" data-tab="estimate" role="tab" aria-selected="false">Estimation</button>
     <button class="tab-btn" data-tab="interview" role="tab" aria-selected="false">Interview</button>
+    <button class="tab-btn" data-tab="sim" role="tab" aria-selected="false">🎯 Sim <span class="badge" style="background:var(--teal-bg);color:var(--teal)">AI</span></button>
   </div>
   <div class="tab-content active" id="tab-overview">
   <div class="ticker-bar sticky" id="ticker-bar">
-      <div class="t-card teal"><div class="t-label">Avg Read QPS</div><div class="t-val" id="t-rqps">—</div><div class="t-sub" id="t-rqps-sub">peak: —</div></div>
-      <div class="t-card amber"><div class="t-label">Avg Write QPS</div><div class="t-val" id="t-wqps">—</div><div class="t-sub" id="t-wqps-sub">peak: —</div></div>
-      <div class="t-card blue"><div class="t-label">Storage / Day</div><div class="t-val" id="t-stor">—</div><div class="t-sub" id="t-stor-sub">5-year: —</div></div>
-      <div class="t-card purple"><div class="t-label">Est. Monthly Cost</div><div class="t-val" id="t-cost">—</div><div class="t-sub" id="t-cost-sub">servers + infra</div></div>
+      <div class="t-card teal"><div class="t-label">Avg Read QPS</div><div class="t-val" id="t-rqps">—</div><div class="t-sub" id="t-rqps-sub">peak: —</div><button class="metric-copy" title="Copy" onclick="copyMetric('t-rqps')"><i class="ti ti-copy"></i></button></div>
+      <div class="t-card amber"><div class="t-label">Avg Write QPS</div><div class="t-val" id="t-wqps">—</div><div class="t-sub" id="t-wqps-sub">peak: —</div><button class="metric-copy" title="Copy" onclick="copyMetric('t-wqps')"><i class="ti ti-copy"></i></button></div>
+      <div class="t-card blue"><div class="t-label">Storage / Day</div><div class="t-val" id="t-stor">—</div><div class="t-sub" id="t-stor-sub">5-year: —</div><button class="metric-copy" title="Copy" onclick="copyMetric('t-stor')"><i class="ti ti-copy"></i></button></div>
+      <div class="t-card purple"><div class="t-label">Est. Monthly Cost</div><div class="t-val" id="t-cost">—</div><div class="t-sub" id="t-cost-sub">servers + infra</div><button class="metric-copy" title="Copy" onclick="copyMetric('t-cost')"><i class="ti ti-copy"></i></button></div>
     </div>
   <div id="scenario-desc" class="scenario-desc"></div>
   <!-- Traffic chart -->
@@ -445,6 +554,11 @@ button:focus:not(:focus-visible){outline:none}
       <span class="write-leg">Write QPS</span>
       <span class="peak-leg">Peak zone</span>
     </div>
+  </div>
+  <!-- Bottleneck Analyzer -->
+  <div class="bottleneck-panel">
+    <div class="bottleneck-title"><i class="ti ti-flame" style="color:var(--coral)"></i> Bottleneck Analyzer <span class="sn">— what breaks first</span></div>
+    <div class="bn-grid" id="bn-grid"></div>
   </div>
   <div class="content-grid">
     <div class="panel">
@@ -496,17 +610,15 @@ button:focus:not(:focus-visible){outline:none}
       <span class="ai-panel-title">Ask Claude about this scenario</span>
       <span class="ai-badge">✦ AI</span>
     </div>
-    <div class="ai-chips" id="ai-chips">
-      <button class="ai-chip" data-q="What's the biggest scaling challenge for this system?">Biggest scaling challenge?</button>
-      <button class="ai-chip" data-q="What would break first at 10x traffic?">What breaks at 10× traffic?</button>
-      <button class="ai-chip" data-q="How would you reduce the monthly cost by 50%?">Cut cost by 50%?</button>
-      <button class="ai-chip" data-q="What are the most common interview mistakes when designing this system?">Common interview mistakes?</button>
-    </div>
+    <div class="ai-chips" id="ai-chips"></div>
     <div class="ai-input-row">
       <input class="ai-input" id="ai-input" placeholder="Ask anything about this system design…" autocomplete="off">
       <button class="ai-ask-btn" id="ai-ask-btn"><i class="ti ti-sparkles"></i> Ask</button>
     </div>
     <div class="ai-response" id="ai-response"></div>
+    <div class="ai-response-copy" id="ai-response-copy" style="display:none">
+      <button class="copy-btn" id="copy-ai-btn"><i class="ti ti-copy"></i> Copy answer</button>
+    </div>
   </div>
   </div>
   <div class="tab-content" id="tab-requirements">
@@ -565,6 +677,47 @@ button:focus:not(:focus-visible){outline:none}
   </div>
   <div class="tab-content" id="tab-interview">
     <div id="interview-content"><p class="cmp-empty">Select a scenario to see the structured interview answer.</p></div>
+  </div>
+  <!-- Interview Simulator Tab -->
+  <div class="tab-content" id="tab-sim">
+    <div class="sim-wrap">
+      <div class="sim-header">
+        <div class="sim-title">Interview Simulator</div>
+        <div class="sim-badge" id="sim-badge">Ready</div>
+        <div class="sim-meta" id="sim-meta">Pick a difficulty and start</div>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:8px">
+        <span style="font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.07em">Difficulty:</span>
+        <div class="sim-difficulty">
+          <button class="diff-btn active senior" data-diff="senior">Senior</button>
+          <button class="diff-btn staff" data-diff="staff">Staff</button>
+          <button class="diff-btn architect" data-diff="architect">Architect</button>
+        </div>
+        <button class="sim-btn primary" id="sim-start-btn"><i class="ti ti-player-play"></i> Start Session</button>
+        <button class="sim-btn danger" id="sim-reset-btn" style="display:none"><i class="ti ti-refresh"></i> Reset</button>
+      </div>
+      <div class="sim-progress" id="sim-progress" style="display:none">
+        <span>Progress:</span>
+        <div class="sim-progress-dots" id="sim-dots"></div>
+        <span id="sim-progress-text"></span>
+      </div>
+      <div id="sim-thread" class="sim-thread">
+        <div class="sim-empty">
+          <i class="ti ti-messages"></i>
+          <p>Start a session to begin your mock interview.<br>Claude will play the interviewer for the selected scenario.</p>
+        </div>
+      </div>
+      <div id="sim-input-area" style="display:none">
+        <div class="sim-input-wrap">
+          <textarea class="sim-textarea" id="sim-answer" placeholder="Type your answer here… be thorough, structure your thoughts"></textarea>
+          <div class="sim-action-row">
+            <button class="sim-submit-btn" id="sim-submit-btn"><i class="ti ti-send"></i> Submit Answer</button>
+            <span class="sim-hint">Tip: Structure → Scale → Trade-offs → Bottlenecks</span>
+          </div>
+        </div>
+      </div>
+      <div id="sim-summary-area" style="display:none"></div>
+    </div>
   </div>
   <div class="section-divider">Interview Reference</div>
   <div class="ref-wrap">

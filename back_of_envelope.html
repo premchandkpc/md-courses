@@ -35,7 +35,7 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 body { background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size: 14px; line-height: 1.5; min-height: 100vh; }
 .app { max-width: 960px; margin: 0 auto; padding: 24px 16px 60px; }
-.top-bar { display: flex; align-items: baseline; gap: 12px; margin-bottom: 6px; }
+.top-bar { display: flex; align-items: center; gap: 12px; margin-bottom: 6px; }
 .app-title { font-size: 22px; font-weight: 600; letter-spacing: -0.01em; }
 .app-sub { font-size: 13px; color: var(--text2); }
 .scenario-nav { display: flex; flex-wrap: wrap; gap: 6px; margin: 18px 0 20px; }
@@ -47,7 +47,7 @@ body { background: var(--bg); color: var(--text); font-family: -apple-system, Bl
 .s-btn .star-icon { font-size: 12px; opacity: 0.5; transition: opacity 0.12s; }
 .s-btn:hover .star-icon { opacity: 1; }
 .ticker-bar { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 20px; }
-.ticker-bar.sticky { position: sticky; top: 0; z-index: 100; background: var(--bg); padding: 10px 0; margin: 0 -16px 16px; padding: 10px 16px; box-shadow: 0 2px 12px rgba(0,0,0,0.08); }
+.ticker-bar.sticky { position: sticky; top: 0; z-index: 100; background: var(--bg); padding: 10px 16px; margin: 0 -16px 16px; box-shadow: 0 2px 12px rgba(0,0,0,0.08); }
 /* AI Ask Panel */
 .ai-panel { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; margin-bottom: 14px; }
 .ai-panel-head { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
@@ -81,7 +81,7 @@ body { background: var(--bg); color: var(--text); font-family: -apple-system, Bl
 .kbd-hint { font-size: 11px; color: var(--text3); margin-left: auto; display: flex; align-items: center; gap: 4px; }
 .kbd { display: inline-block; padding: 1px 5px; border: 1px solid var(--border2); border-radius: 3px; font-size: 10px; font-family: var(--mono); color: var(--text3); }
 /* Animated number */
-.t-val { font-family: var(--mono); font-size: 21px; font-weight: 600; line-height: 1; margin-bottom: 3px; transition: opacity 0.15s; }
+.t-val { font-family: var(--mono); font-size: 21px; font-weight: 600; line-height: 1; margin-bottom: 3px; transition: color .3s, opacity .15s; }
 .t-card { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 16px; }
 .t-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.09em; color: var(--text3); margin-bottom: 5px; }
 .t-sub { font-family: var(--mono); font-size: 11px; color: var(--text3); }
@@ -130,8 +130,8 @@ input[type=range]::-moz-range-thumb { width: 16px; height: 16px; border-radius: 
 .whatif-btn{padding:6px 14px;border-radius:var(--radius-sm);border:1px solid var(--border2);background:var(--bg2);color:var(--text2);font-size:12px;font-family:inherit;cursor:pointer;transition:all.12s}
 .whatif-btn:hover{border-color:var(--teal);color:var(--teal);background:var(--teal-bg)}
 .whatif-btn.active{background:var(--teal);color:#fff;border-color:var(--teal)}
-.whatif-results{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:6px;padding:8px;background:var(--bg3);border-radius:var(--radius-sm);font-size:11px;display:none}
-.whatif-results.show{display:grid}
+.whatif-results{display:none;padding:8px;background:var(--bg3);border-radius:var(--radius-sm);font-size:11px}
+.whatif-results.show{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:6px}
 .whatif-result{display:flex;justify-content:space-between;align-items:center;padding:4px 6px;background:var(--bg2);border-radius:4px}
 .whatif-result .wr-label{color:var(--text2)}
 .whatif-result .wr-val{font-weight:600;font-family:var(--mono)}
@@ -277,7 +277,7 @@ input[type=range]::-moz-range-thumb { width: 16px; height: 16px; border-radius: 
 .ref-row { display: flex; justify-content: space-between; align-items: baseline; font-size: 12px; padding: 3px 0; gap: 8px; }
 .ref-key { color: var(--text2); }
 .ref-val { font-family: var(--mono); font-weight: 600; color: var(--text); white-space: nowrap; }
-.scenario-desc { font-size: 13px; color: var(--text2); margin-bottom: 14px; padding: 10px 14px; background: var(--bg3); border-radius: var(--radius-sm); border-left: 3px solid var(--teal); }
+.scenario-desc { font-size: 13px; color: var(--text2); margin-bottom: 8px; padding: 10px 14px; background: var(--bg3); border-radius: var(--radius-sm); border-left: 3px solid var(--teal); }
 .peak-row { margin-bottom: 14px; }
 .peak-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.07em; color: var(--text3); margin-bottom: 5px; }
 .compare-bar { display: flex; gap: 8px; align-items: center; margin-bottom: 14px; }
@@ -370,6 +370,7 @@ input[type=range]::-moz-range-thumb { width: 16px; height: 16px; border-radius: 
 .cb{background:var(--bg3);border-radius:6px;padding:10px;font-family:var(--mono);font-size:11px;line-height:1.6;color:var(--text2)}
 .rt{width:100%;border-collapse:collapse;font-size:11px}
 .mt14{margin-top:14px}.mt10{margin-top:10px}.mb14{margin-bottom:14px;color:var(--text2);font-size:12px}.tc12{text-align:center;color:var(--text3);padding:12px}.f11c3{font-size:11px;color:var(--text3)}.fw6{font-weight:600}.ct15{color:var(--text);font-size:15px}.df6{display:flex;align-items:center;gap:6px}.ct2{color:var(--text2)}
+}
 /* Focus & responsive polish */
 :focus-visible{outline:2px solid var(--text);outline-offset:3px;border-radius:3px}
 button:focus:not(:focus-visible){outline:none}
@@ -471,16 +472,208 @@ button:focus:not(:focus-visible){outline:none}
 .sim-loading-dot:nth-child(3){animation-delay:.3s}
 @keyframes dotBounce{0%,80%,100%{transform:scale(0.6);opacity:.4}40%{transform:scale(1);opacity:1}}
 
-/* ── Ticker counter animation ── */
-.t-val{transition:color .3s}
-.t-val.flash{animation:numFlash .35s ease-out}
-@keyframes numFlash{0%{opacity:.3;transform:translateY(-3px)}100%{opacity:1;transform:translateY(0)}}
+/* ── Ticker value changes get smooth color fade ── */
+/* transition on .t-val is defined above with .t-val base rule */
 
 /* ── Metric copy button ── */
 .ticker-bar .t-card{position:relative}
 .metric-copy{position:absolute;top:8px;right:8px;width:20px;height:20px;display:flex;align-items:center;justify-content:center;border:none;background:transparent;color:var(--text3);cursor:pointer;opacity:0;transition:opacity .12s;border-radius:3px;font-size:12px}
 .t-card:hover .metric-copy{opacity:1}
 .metric-copy:hover{background:var(--bg3);color:var(--text)}
+
+/* ── Interview Timer ── */
+.timer-float{position:fixed;bottom:24px;right:24px;z-index:200;background:var(--bg2);border:1px solid var(--border2);border-radius:16px;padding:14px 18px;box-shadow:0 8px 32px rgba(0,0,0,.18);min-width:220px;transition:all .2s}
+.timer-float.collapsed{min-width:unset;padding:10px 14px}
+.timer-header{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.timer-float.collapsed .timer-header{margin-bottom:0}
+.timer-title{font-size:11px;text-transform:uppercase;letter-spacing:.09em;color:var(--text3);font-weight:600;flex:1}
+.timer-collapse-btn{background:none;border:none;cursor:pointer;color:var(--text3);font-size:14px;padding:0;display:flex;align-items:center}
+.timer-display{font-family:var(--mono);font-size:32px;font-weight:700;color:var(--text);letter-spacing:.04em;text-align:center;margin-bottom:8px;transition:color .3s}
+.timer-float.collapsed .timer-display{font-size:18px;margin-bottom:0}
+.timer-display.warning{color:var(--amber)}
+.timer-display.danger{color:var(--coral);animation:timerPulse 1s ease-in-out infinite}
+@keyframes timerPulse{0%,100%{opacity:1}50%{opacity:.5}}
+.timer-phase{font-size:10px;text-align:center;color:var(--text3);margin-bottom:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em}
+.timer-phases-bar{display:flex;gap:3px;margin-bottom:10px;height:4px}
+.timer-phase-seg{flex:1;border-radius:2px;background:var(--border2);transition:background .3s}
+.timer-phase-seg.done{background:var(--teal)}
+.timer-phase-seg.active{background:var(--amber);animation:phasePulse 1.5s ease-in-out infinite}
+@keyframes phasePulse{0%,100%{opacity:1}50%{opacity:.6}}
+.timer-btns{display:flex;gap:6px;justify-content:center}
+.timer-btn{padding:6px 14px;border-radius:var(--radius-sm);border:1px solid var(--border2);background:transparent;color:var(--text2);font-size:11px;font-family:inherit;cursor:pointer;transition:all .12s;font-weight:500}
+.timer-btn:hover{background:var(--bg3);color:var(--text)}
+.timer-btn.primary{background:var(--teal);color:#fff;border-color:var(--teal)}
+.timer-btn.primary:hover{opacity:.85}
+.timer-btn.danger{background:var(--coral-bg);color:var(--coral);border-color:var(--coral)}
+.timer-float.collapsed .timer-phase,.timer-float.collapsed .timer-phases-bar,.timer-float.collapsed .timer-btns{display:none}
+
+/* ── SLO Calculator ── */
+.slo-panel{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:14px}
+.slo-title{font-size:11px;text-transform:uppercase;letter-spacing:.09em;color:var(--text3);font-weight:600;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.slo-presets{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.slo-preset{padding:5px 12px;border-radius:100px;border:1px solid var(--border2);background:transparent;color:var(--text2);font-size:11px;font-family:var(--mono);cursor:pointer;transition:all .12s}
+.slo-preset:hover{border-color:var(--teal);color:var(--teal)}
+.slo-preset.active{background:var(--teal);color:#fff;border-color:var(--teal)}
+.slo-input-row{display:flex;align-items:center;gap:8px;margin-bottom:12px}
+.slo-pct-input{width:120px;padding:8px 12px;border:1px solid var(--border2);border-radius:var(--radius-sm);background:var(--bg3);color:var(--text);font-size:14px;font-family:var(--mono);outline:none;text-align:center;font-weight:600}
+.slo-pct-input:focus{border-color:var(--teal)}
+.slo-pct-label{font-size:13px;color:var(--text2)}
+.slo-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.slo-card{background:var(--bg3);border-radius:var(--radius-sm);padding:10px 12px;text-align:center}
+.slo-card-val{font-family:var(--mono);font-size:15px;font-weight:700;color:var(--teal);margin-bottom:2px}
+.slo-card-label{font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--text3)}
+.slo-budget-row{margin-top:10px;font-size:12px;color:var(--text2);padding:8px 12px;background:var(--amber-bg);border-radius:var(--radius-sm);border-left:3px solid var(--amber-light);display:flex;gap:6px;align-items:flex-start}
+
+/* ── Quick Math Notepad ── */
+.qmath-panel{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:14px}
+.qmath-title{font-size:11px;text-transform:uppercase;letter-spacing:.09em;color:var(--text3);font-weight:600;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.qmath-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+.qmath-ref-group{font-size:10px;color:var(--text3)}
+.qmath-ref-title{font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}
+.qmath-ref-row{display:flex;justify-content:space-between;padding:2px 0;border-bottom:1px solid var(--border);font-family:var(--mono)}
+.qmath-ref-key{color:var(--text2)}
+.qmath-ref-val{font-weight:600;color:var(--text)}
+.qmath-input-row{display:flex;gap:6px;margin-bottom:8px}
+.qmath-input{flex:1;padding:8px 10px;border:1px solid var(--border2);border-radius:var(--radius-sm);background:var(--bg3);color:var(--text);font-family:var(--mono);font-size:13px;outline:none}
+.qmath-input:focus{border-color:var(--purple-light)}
+.qmath-calc-btn{padding:8px 14px;border-radius:var(--radius-sm);border:none;background:var(--purple);color:#fff;font-size:12px;cursor:pointer;font-family:inherit;font-weight:500;white-space:nowrap}
+.qmath-result{font-family:var(--mono);font-size:13px;padding:8px 12px;background:var(--purple-bg);border-radius:var(--radius-sm);border-left:3px solid var(--purple-light);color:var(--text3);min-height:34px;word-break:break-all}
+.qmath-result.has-result{color:var(--purple)}
+
+/* ── CAP Badge ── */
+.cap-badge{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:100px;font-size:10px;font-weight:700;letter-spacing:.05em}
+.cap-badge.cp{background:var(--blue-bg);color:var(--blue)}
+.cap-badge.ap{background:var(--teal-bg);color:var(--teal)}
+.cap-badge.ca{background:var(--amber-bg);color:var(--amber)}
+.scenario-meta-row{display:flex;align-items:center;gap:6px;flex-wrap:wrap;font-size:11px;color:var(--text3);margin-bottom:0;padding-bottom:12px;min-height:0}
+.scenario-meta-row:empty{padding-bottom:0}
+.scenario-meta-tag{padding:2px 8px;border-radius:100px;background:var(--bg3);border:1px solid var(--border)}
+
+/* ── Keyboard Shortcuts Modal ── */
+.kbd-modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:500;display:none;align-items:center;justify-content:center;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)}
+.kbd-modal-overlay.open{display:flex}
+.kbd-modal{background:var(--bg2);border:1px solid var(--border2);border-radius:14px;padding:24px;width:420px;max-height:80vh;overflow-y:auto;box-shadow:0 24px 64px rgba(0,0,0,.28)}
+.kbd-modal-title{font-size:16px;font-weight:700;margin-bottom:16px;display:flex;justify-content:space-between;align-items:center}
+.kbd-modal-close{background:none;border:none;cursor:pointer;color:var(--text3);font-size:18px;line-height:1;padding:0 2px}
+.kbd-modal-close:hover{color:var(--text)}
+.kbd-section-title{font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:var(--text3);font-weight:700;margin:14px 0 6px;padding-top:8px;border-top:1px solid var(--border)}
+.kbd-section-title:first-of-type{border-top:none;padding-top:0;margin-top:6px}
+.kbd-row{display:flex;justify-content:space-between;align-items:center;padding:5px 0}
+.kbd-row-label{font-size:12px;color:var(--text2)}
+.kbd-keys{display:flex;gap:4px}
+.kbd-keys .kbd{background:var(--bg3);border:1px solid var(--border2);padding:2px 8px;border-radius:5px;font-family:var(--mono);font-size:11px;font-weight:600;color:var(--text);line-height:1.4;min-width:24px;text-align:center;box-shadow:0 1px 3px rgba(0,0,0,.1)}
+
+/* ── Completion Tracker ── */
+.sim-done-badge{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--teal);margin-left:4px;vertical-align:middle;flex-shrink:0}
+.scenario-completion-row{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:16px}
+.compl-dot{width:28px;height:28px;border-radius:50%;border:2px solid var(--border2);display:flex;align-items:center;justify-content:center;font-size:10px;cursor:pointer;transition:all .15s;position:relative}
+.compl-dot:hover{border-color:var(--text2)}
+.compl-dot.done{background:var(--teal);border-color:var(--teal);color:#fff}
+.compl-dot.current{border-color:var(--text);border-width:3px}
+.compl-tooltip{position:absolute;bottom:34px;left:50%;transform:translateX(-50%);background:var(--text);color:var(--bg);font-size:10px;padding:3px 8px;border-radius:4px;white-space:nowrap;pointer-events:none;opacity:0;transition:opacity .15s;z-index:100}
+.compl-dot:hover .compl-tooltip{opacity:1}
+
+/* ── Timer float show/hide button in top bar ── */
+.top-bar-actions{display:flex;gap:8px;margin-left:auto;align-items:center}
+.tbar-btn{display:flex;align-items:center;gap:5px;padding:5px 12px;border:1px solid var(--border2);border-radius:100px;background:transparent;color:var(--text2);font-size:11px;font-family:inherit;cursor:pointer;transition:all .12s;font-weight:500}
+.tbar-btn:hover{background:var(--bg3);color:var(--text)}
+.tbar-btn.active{background:var(--text);color:var(--bg);border-color:var(--text)}
+.tbar-btn i{font-size:13px}
+
+/* ── AI Streaming cursor ── */
+.ai-cursor{display:inline-block;width:2px;height:13px;background:var(--purple);animation:blink .8s step-end infinite;vertical-align:text-bottom;margin-left:1px}
+
+/* ── Mobile fixes for new panels ── */
+@media(max-width:640px){
+  .slo-grid{grid-template-columns:repeat(2,1fr)}
+  .qmath-grid{grid-template-columns:1fr}
+  .timer-float{bottom:12px;right:12px;left:12px;min-width:unset}
+  .kbd-modal{width:calc(100vw - 32px);padding:16px}
+  .scenario-completion-row{gap:3px}
+  .compl-dot{width:24px;height:24px;font-size:9px}
+  .top-bar-actions .tbar-btn span{display:none}
+  .tbar-btn{padding:5px 8px}
+  .slo-presets{gap:4px}
+  .slo-preset{padding:4px 8px;font-size:10px}
+}
+
+/* ── Workspace / Snapshot Lab ── */
+.workspace-panel{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin:10px 0 14px}
+.workspace-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;margin-bottom:12px}
+.workspace-title{font-size:11px;text-transform:uppercase;letter-spacing:.09em;color:var(--text3);font-weight:700}
+.workspace-sub{font-size:12px;color:var(--text2);max-width:720px;line-height:1.5;margin-top:4px}
+.workspace-actions{display:flex;gap:8px;flex-wrap:wrap}
+.workspace-btn{display:flex;align-items:center;gap:6px;padding:8px 12px;border-radius:var(--radius-sm);border:1px solid var(--border2);background:var(--bg2);color:var(--text2);font-size:12px;font-family:inherit;cursor:pointer;transition:all .12s}
+.workspace-btn:hover{background:var(--bg3);color:var(--text)}
+.workspace-grid{display:grid;grid-template-columns:1.2fr .8fr;gap:12px}
+.workspace-card{background:var(--bg3);border-radius:var(--radius);padding:12px}
+.workspace-card-title{font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);font-weight:700;margin-bottom:8px}
+.workspace-notes{width:100%;min-height:160px;resize:vertical;border:1px solid var(--border2);border-radius:8px;background:var(--bg2);padding:12px;color:var(--text);font-size:13px;font-family:inherit;line-height:1.6;outline:none}
+.workspace-notes:focus{border-color:var(--teal)}
+.snapshot-list{display:flex;flex-direction:column;gap:8px;max-height:260px;overflow:auto}
+.snapshot-empty{padding:18px 12px;text-align:center;color:var(--text3);font-size:12px;background:var(--bg2);border-radius:8px;border:1px dashed var(--border2)}
+.snapshot-item{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:10px 12px}
+.snapshot-top{display:flex;justify-content:space-between;gap:8px;align-items:flex-start;margin-bottom:8px}
+.snapshot-time{font-size:11px;color:var(--text3)}
+.snapshot-name{font-size:13px;font-weight:600;color:var(--text)}
+.snapshot-metrics{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.snapshot-metric{font-size:11px;padding:6px 8px;background:var(--bg3);border-radius:6px}
+.snapshot-metric .k{color:var(--text3);display:block}
+.snapshot-metric .v{font-family:var(--mono);font-weight:700;color:var(--text)}
+.snapshot-row{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.snapshot-btn{padding:5px 9px;border:1px solid var(--border2);border-radius:999px;background:transparent;color:var(--text2);font-size:11px;font-family:inherit;cursor:pointer}
+.snapshot-btn:hover{background:var(--bg3);color:var(--text)}
+/* ── Command palette ── */
+.cmdk-overlay{position:fixed;inset:0;background:rgba(0,0,0,.42);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);display:none;align-items:flex-start;justify-content:center;z-index:800;padding:8vh 16px}
+.cmdk-overlay.open{display:flex}
+.cmdk-modal{width:min(760px,100%);background:var(--bg2);border:1px solid var(--border2);border-radius:18px;box-shadow:0 28px 80px rgba(0,0,0,.28);overflow:hidden}
+.cmdk-head{display:flex;align-items:center;gap:10px;padding:14px 16px;border-bottom:1px solid var(--border)}
+.cmdk-head i{font-size:18px;color:var(--text3)}
+.cmdk-input{flex:1;border:none;outline:none;background:transparent;color:var(--text);font-size:15px;font-family:inherit}
+.cmdk-input::placeholder{color:var(--text3)}
+.cmdk-close{border:none;background:transparent;color:var(--text3);font-size:18px;cursor:pointer}
+.cmdk-section-title{padding:10px 16px 6px;font-size:10px;text-transform:uppercase;letter-spacing:.09em;color:var(--text3);font-weight:700}
+.cmdk-list{max-height:60vh;overflow:auto;padding:0 8px 10px}
+.cmdk-item{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:12px 12px;border-radius:12px;cursor:pointer}
+.cmdk-item:hover,.cmdk-item.active{background:var(--bg3)}
+.cmdk-item-main{display:flex;gap:10px;align-items:flex-start}
+.cmdk-item-icon{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:var(--bg3);color:var(--text2);font-size:14px;flex-shrink:0}
+.cmdk-item-title{font-size:13px;color:var(--text);font-weight:600}
+.cmdk-item-sub{font-size:11px;color:var(--text3);margin-top:2px}
+.cmdk-item-tag{font-size:10px;padding:3px 8px;border-radius:999px;background:var(--bg3);color:var(--text3)}
+.cmdk-empty{padding:28px 16px;text-align:center;color:var(--text3);font-size:13px}
+.toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%) translateY(20px);background:var(--text);color:var(--bg);padding:10px 14px;border-radius:999px;font-size:12px;opacity:0;pointer-events:none;transition:all .18s;z-index:900;box-shadow:0 8px 28px rgba(0,0,0,.22)}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+@media(max-width:640px){.workspace-grid{grid-template-columns:1fr}.workspace-head{flex-direction:column}.cmdk-overlay{padding-top:4vh}}
+
+
+/* ── Premium workspace dashboard / theme / focus ── */
+.workspace-dashboard{display:grid;grid-template-columns:1.2fr repeat(3,1fr);gap:12px;margin:0 0 14px}
+.dash-card{background:linear-gradient(180deg,var(--bg2),color-mix(in srgb,var(--bg2) 88%, var(--bg3)));border:1px solid var(--border);border-radius:16px;padding:16px;box-shadow:0 10px 30px rgba(0,0,0,.06);min-height:120px}
+.dash-hero{position:relative;overflow:hidden}
+.dash-hero::after{content:'';position:absolute;inset:auto -40px -60px auto;width:180px;height:180px;background:radial-gradient(circle,var(--teal-bg),transparent 65%);opacity:.9;pointer-events:none}
+.dash-kicker{font-size:10px;text-transform:uppercase;letter-spacing:.12em;color:var(--text3);font-weight:700;margin-bottom:8px}
+.dash-hero-title{font-size:22px;font-weight:800;letter-spacing:-.02em;margin-bottom:6px}
+.dash-hero-sub,.dash-sub{font-size:12px;color:var(--text2);line-height:1.55}
+.dash-title{font-size:11px;text-transform:uppercase;letter-spacing:.09em;color:var(--text3);font-weight:700;margin-bottom:10px}
+.dash-big{font-family:var(--mono);font-size:28px;font-weight:800;line-height:1;color:var(--text);margin-bottom:8px}
+.dash-progress{height:8px;border-radius:999px;background:var(--bg3);overflow:hidden;margin-top:10px}
+.dash-progress-bar{height:100%;width:0;background:linear-gradient(90deg,var(--teal),var(--blue));transition:width .25s ease}
+.dash-chip-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+.dash-chip{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border-radius:999px;background:var(--bg3);border:1px solid var(--border);font-size:11px;color:var(--text2)}
+.dash-list{display:flex;flex-direction:column;gap:8px}
+.dash-list-item{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:8px 10px;border-radius:10px;background:var(--bg3);font-size:12px}
+.dash-list-item button{border:none;background:none;color:var(--teal);font-weight:700;cursor:pointer}
+.focus-banner{display:flex;align-items:center;gap:8px;padding:10px 14px;margin:0 0 14px;border-radius:12px;background:var(--amber-bg);color:var(--amber);border:1px solid color-mix(in srgb,var(--amber) 35%, transparent)}
+.focus-mode .workspace-dashboard,.focus-mode .compare-bar,.focus-mode .compare-panel,.focus-mode #filter-chips,.focus-mode .scenario-nav,.focus-mode .search-wrap,.focus-mode .kbd-hint{display:none!important}
+.focus-mode .tabs{margin-top:0}
+body[data-theme="light"]{color-scheme:light}
+body[data-theme="dark"]{color-scheme:dark}
+.theme-toast{position:fixed;top:18px;right:18px;z-index:600;padding:10px 14px;border-radius:12px;background:var(--bg2);border:1px solid var(--border2);box-shadow:0 14px 36px rgba(0,0,0,.18);font-size:12px;color:var(--text2);opacity:0;transform:translateY(-8px);pointer-events:none;transition:all .2s}
+.theme-toast.show{opacity:1;transform:translateY(0)}
+@media(max-width:980px){.workspace-dashboard{grid-template-columns:1fr 1fr}.dash-hero{grid-column:1/-1}}
+@media(max-width:640px){.workspace-dashboard{grid-template-columns:1fr}.dash-big{font-size:24px}}
+
 </style>
 </head>
 <body>
@@ -488,7 +681,76 @@ button:focus:not(:focus-visible){outline:none}
   <div class="top-bar">
     <div class="app-title">Back of Envelope</div>
     <div class="app-sub">System Design Estimator</div>
+    <div class="top-bar-actions">
+      <button class="tbar-btn" id="timer-toggle-btn" title="Interview Timer (T)"><i class="ti ti-clock"></i> Timer</button>
+      <button class="tbar-btn" id="kbd-help-btn" title="Keyboard Shortcuts (?)"><i class="ti ti-keyboard"></i></button>
+      <button class="tbar-btn" id="share-state-btn" title="Copy sharable link"><i class="ti ti-link"></i> Share</button>
+      <button class="tbar-btn" id="export-workspace-btn" title="Export workspace"><i class="ti ti-download"></i> Export</button>
+      <label class="tbar-btn import-btn" title="Import workspace"><i class="ti ti-upload"></i> Import<input type="file" id="workspace-import-input" accept="application/json" hidden></label>
+      <button class="tbar-btn" id="theme-toggle-btn" title="Theme"><i class="ti ti-sun-moon"></i> Theme</button>
+      <button class="tbar-btn" id="focus-mode-btn" title="Focus mode"><i class="ti ti-focus-2"></i> Focus</button>
+    </div>
   </div>
+
+  <!-- Keyboard Shortcuts Modal -->
+  <div class="kbd-modal-overlay" id="kbd-modal-overlay">
+    <div class="kbd-modal">
+      <div class="kbd-modal-title">Keyboard Shortcuts <button class="kbd-modal-close" id="kbd-modal-close">✕</button></div>
+      <div class="kbd-section-title">Navigation</div>
+      <div class="kbd-row"><span class="kbd-row-label">Search scenarios</span><span class="kbd-keys"><kbd class="kbd">/</kbd></span></div>
+      <div class="kbd-row"><span class="kbd-row-label">Previous / Next scenario</span><span class="kbd-keys"><kbd class="kbd">[</kbd><kbd class="kbd">]</kbd></span></div>
+      <div class="kbd-row"><span class="kbd-row-label">Star / unstar scenario</span><span class="kbd-keys"><kbd class="kbd">S</kbd></span></div>
+      <div class="kbd-section-title">Tabs</div>
+      <div class="kbd-row"><span class="kbd-row-label">Overview</span><span class="kbd-keys"><kbd class="kbd">1</kbd></span></div>
+      <div class="kbd-row"><span class="kbd-row-label">Requirements</span><span class="kbd-keys"><kbd class="kbd">2</kbd></span></div>
+      <div class="kbd-row"><span class="kbd-row-label">Architecture</span><span class="kbd-keys"><kbd class="kbd">3</kbd></span></div>
+      <div class="kbd-row"><span class="kbd-row-label">Estimation</span><span class="kbd-keys"><kbd class="kbd">4</kbd></span></div>
+      <div class="kbd-row"><span class="kbd-row-label">Interview</span><span class="kbd-keys"><kbd class="kbd">5</kbd></span></div>
+      <div class="kbd-row"><span class="kbd-row-label">Simulator</span><span class="kbd-keys"><kbd class="kbd">6</kbd></span></div>
+      <div class="kbd-section-title">Actions</div>
+      <div class="kbd-row"><span class="kbd-row-label">Compare scenarios</span><span class="kbd-keys"><kbd class="kbd">C</kbd></span></div>
+      <div class="kbd-row"><span class="kbd-row-label">Export scenario</span><span class="kbd-keys"><kbd class="kbd">E</kbd></span></div>
+      <div class="kbd-row"><span class="kbd-row-label">Toggle timer</span><span class="kbd-keys"><kbd class="kbd">T</kbd></span></div>
+      <div class="kbd-row"><span class="kbd-row-label">Start/pause timer</span><span class="kbd-keys"><kbd class="kbd">Space</kbd></span></div>
+      <div class="kbd-row"><span class="kbd-row-label">Keyboard shortcuts</span><span class="kbd-keys"><kbd class="kbd">?</kbd></span></div>
+      <div class="kbd-row"><span class="kbd-row-label">Close / Dismiss</span><span class="kbd-keys"><kbd class="kbd">Esc</kbd></span></div>
+    </div>
+  </div>
+
+  <!-- Floating Interview Timer -->
+  <div class="timer-float" id="timer-float" style="display:none">
+    <div class="timer-header">
+      <span class="timer-title">⏱ Interview Timer</span>
+      <button class="timer-collapse-btn" id="timer-collapse-btn" title="Minimize"><i class="ti ti-minus"></i></button>
+    </div>
+    <div class="timer-display" id="timer-display">45:00</div>
+    <div class="timer-phase" id="timer-phase">Requirements & Scope</div>
+    <div class="timer-phases-bar" id="timer-phases-bar">
+      <div class="timer-phase-seg active" data-phase="0" title="Requirements (5 min)"></div>
+      <div class="timer-phase-seg" data-phase="1" title="Estimates (8 min)"></div>
+      <div class="timer-phase-seg" data-phase="2" title="High-Level Design (12 min)"></div>
+      <div class="timer-phase-seg" data-phase="3" title="Deep Dive (10 min)"></div>
+      <div class="timer-phase-seg" data-phase="4" title="Trade-offs (10 min)"></div>
+    </div>
+    <div class="timer-btns">
+      <button class="timer-btn primary" id="timer-start-btn">Start</button>
+      <button class="timer-btn" id="timer-reset-btn">Reset</button>
+    </div>
+  </div>
+
+  <!-- Command Palette -->
+  <div class="cmdk-overlay" id="cmdk-overlay" aria-hidden="true">
+    <div class="cmdk-modal" role="dialog" aria-modal="true" aria-labelledby="cmdk-title">
+      <div class="cmdk-head">
+        <i class="ti ti-search"></i>
+        <input id="cmdk-input" class="cmdk-input" placeholder="Jump to scenario, tab, or action…" autocomplete="off">
+        <button class="cmdk-close" id="cmdk-close" aria-label="Close">✕</button>
+      </div>
+      <div class="cmdk-section-title" id="cmdk-title">Quick Actions</div>
+      <div class="cmdk-list" id="cmdk-list"></div>
+    </div>
+  </div>
+
   <div class="search-wrap">
     <i class="ti ti-search"></i>
     <input class="search-input" id="scenario-search" placeholder="Search scenarios by name, tech, or category…" autocomplete="off" role="combobox" aria-label="Search scenarios">
@@ -518,6 +780,7 @@ button:focus:not(:focus-visible){outline:none}
       <div id="cmp-b-content"><div class="cmp-empty">Select a scenario</div></div>
     </div>
   </div>
+  
   <div class="tabs" id="main-tabs">
     <button class="tab-btn active" data-tab="overview" role="tab" aria-selected="true">Overview</button>
     <button class="tab-btn" data-tab="requirements" role="tab" aria-selected="false">Requirements</button>
@@ -534,8 +797,8 @@ button:focus:not(:focus-visible){outline:none}
       <div class="t-card purple"><div class="t-label">Est. Monthly Cost</div><div class="t-val" id="t-cost">—</div><div class="t-sub" id="t-cost-sub">servers + infra</div><button class="metric-copy" title="Copy" onclick="copyMetric('t-cost')"><i class="ti ti-copy"></i></button></div>
     </div>
   <div id="scenario-desc" class="scenario-desc"></div>
-  <!-- Traffic chart -->
-  <div class="chart-panel">
+  <div class="scenario-meta-row" id="scenario-meta-row"></div>
+  <div class="chart-panel" style="margin-top:12px">
     <div class="chart-title">24-Hour Traffic Pattern (simulated)</div>
     <canvas id="traffic-canvas" height="120" role="img" aria-label="24-hour traffic chart showing read and write QPS"></canvas>
     <div class="chart-legend">
@@ -609,6 +872,59 @@ button:focus:not(:focus-visible){outline:none}
       <button class="copy-btn" id="copy-ai-btn"><i class="ti ti-copy"></i> Copy answer</button>
     </div>
   </div>
+
+  <!-- SLO Downtime Calculator -->
+  <div class="section-divider">SLO Downtime Calculator <span class="sn">— availability budget</span></div>
+  <div class="slo-panel">
+    <div class="slo-presets">
+      <button class="slo-preset" data-val="99">99%</button>
+      <button class="slo-preset active" data-val="99.9">99.9%</button>
+      <button class="slo-preset" data-val="99.95">99.95%</button>
+      <button class="slo-preset" data-val="99.99">99.99%</button>
+      <button class="slo-preset" data-val="99.999">99.999%</button>
+    </div>
+    <div class="slo-input-row">
+      <input class="slo-pct-input" id="slo-input" type="number" value="99.9" min="90" max="99.9999" step="0.001">
+      <span class="slo-pct-label">% uptime SLO</span>
+    </div>
+    <div class="slo-grid" id="slo-grid"></div>
+    <div class="slo-budget-row" id="slo-budget"></div>
+  </div>
+
+  <!-- Quick Math Notepad -->
+  <div class="section-divider">Quick Math <span class="sn">— back-of-envelope calculator</span></div>
+  <div class="qmath-panel">
+    <div class="qmath-grid">
+      <div class="qmath-ref-group">
+        <div class="qmath-ref-title">Powers of 2</div>
+        <div class="qmath-ref-row"><span class="qmath-ref-key">2¹⁰</span><span class="qmath-ref-val">1,024 ≈ 10³</span></div>
+        <div class="qmath-ref-row"><span class="qmath-ref-key">2²⁰</span><span class="qmath-ref-val">1,048,576 ≈ 10⁶</span></div>
+        <div class="qmath-ref-row"><span class="qmath-ref-key">2³⁰</span><span class="qmath-ref-val">~10⁹ (1B)</span></div>
+        <div class="qmath-ref-row"><span class="qmath-ref-key">2³²</span><span class="qmath-ref-val">~4.3 billion</span></div>
+        <div class="qmath-ref-row"><span class="qmath-ref-key">2⁴⁰</span><span class="qmath-ref-val">~10¹² (1T)</span></div>
+        <div class="qmath-ref-row"><span class="qmath-ref-key">2⁶⁴</span><span class="qmath-ref-val">~1.8 × 10¹⁹</span></div>
+      </div>
+      <div class="qmath-ref-group">
+        <div class="qmath-ref-title">Scale Constants</div>
+        <div class="qmath-ref-row"><span class="qmath-ref-key">1 day</span><span class="qmath-ref-val">86,400 s</span></div>
+        <div class="qmath-ref-row"><span class="qmath-ref-key">1 month</span><span class="qmath-ref-val">2.6M s</span></div>
+        <div class="qmath-ref-row"><span class="qmath-ref-key">1 year</span><span class="qmath-ref-val">3.15×10⁷ s</span></div>
+        <div class="qmath-ref-row"><span class="qmath-ref-key">1M users</span><span class="qmath-ref-val">→ ~12 QPS</span></div>
+        <div class="qmath-ref-row"><span class="qmath-ref-key">1B users</span><span class="qmath-ref-val">→ ~12K QPS</span></div>
+        <div class="qmath-ref-row"><span class="qmath-ref-key">1KB × 1B/day</span><span class="qmath-ref-val">1 TB/day</span></div>
+      </div>
+    </div>
+    <div class="qmath-input-row">
+      <input class="qmath-input" id="qmath-input" placeholder="e.g.  200e6 * 20 / 86400  or  500MB * 365 * 3" autocomplete="off">
+      <button class="qmath-calc-btn" id="qmath-calc-btn"><i class="ti ti-calculator"></i> Calc</button>
+    </div>
+    <div class="qmath-result" id="qmath-result">Result will appear here…</div>
+  </div>
+
+  <!-- Scenario Completion Tracker -->
+  <div class="section-divider">Practice Tracker <span class="sn">— scenarios completed in simulator</span> <span id="completion-summary" class="sn" style="margin-left:auto;font-size:10px"></span></div>
+  <div class="scenario-completion-row" id="completion-dots"></div>
+
   </div>
   <div class="tab-content" id="tab-requirements">
   <div class="section-divider">Functional &amp; Non-Functional Requirements <span id="reqs-badge" class="sn"></span></div>
@@ -834,6 +1150,29 @@ Scale: X DAU, Y QPS, Z TB/day
       </div>
     </div>
   </div>
+
+  <div class="workspace-panel" id="workspace-panel">
+    <div class="workspace-head">
+      <div>
+        <div class="workspace-title">Workspace</div>
+        <div class="workspace-sub">Persist notes, decisions, and saved estimate snapshots per scenario. Because humans forget what they decided five minutes ago.</div>
+      </div>
+      <div class="workspace-actions">
+        <button class="workspace-btn" id="snapshot-save-btn"><i class="ti ti-device-floppy"></i> Save Snapshot</button>
+        <button class="workspace-btn" id="snapshot-clear-btn"><i class="ti ti-trash"></i> Clear</button>
+      </div>
+    </div>
+    <div class="workspace-grid">
+      <div class="workspace-card">
+        <div class="workspace-card-title">Scenario Notes</div>
+        <textarea id="scenario-notes" class="workspace-notes" placeholder="Capture scope, assumptions, trade-offs, failure modes, CAP choice, shard key, cache strategy, awkward interviewer follow-ups..."></textarea>
+      </div>
+      <div class="workspace-card">
+        <div class="workspace-card-title">Saved Snapshots</div>
+        <div id="snapshot-list" class="snapshot-list"></div>
+      </div>
+    </div>
+  </div>
 </div>
 <script>
 const DAY = 86400;
@@ -974,18 +1313,20 @@ const SCENARIOS = [
       { label: 'Storage/day', expr: 'write_qps × 86400 × record_size (URL + shortcode + metadata)' },
       { label: 'Cache size', expr: 'read_qps × record_size × cache_TTL × hit_ratio' },
       { label: 'Servers', expr: 'read_qps / 5000 req/sec per server' },
+      { label: 'Bandwidth', expr: 'read_qps × redirect_size(1KB) × 8 = 115,740 × 1024 × 8', result: '~0.95 Gbps' },
+      { label: 'Server cost', expr: 'servers × $300/mo × 12 months', result: '~$36K/yr' },
     ],
     arch: {
       nodes: [
-        { id: 'client', label: 'Client', icon: '🌐', tech: 'Browser/App' },
-        { id: 'cdn', label: 'CDN', icon: '📡', tech: 'CloudFront', why: 'Edge cache for hottest 20% URLs. <5ms latency globally. Reduces origin load by 80%' },
-        { id: 'lb', label: 'Load Balancer', icon: '⚖️', tech: 'ALB/HAProxy', why: 'L7 routing to redirect vs create paths. TLS termination. Rate limiting at edge' },
-        { id: 'api', label: 'API Service', icon: '⚡', tech: 'Go/Java', why: 'Stateless. Scales horizontally. Routes to appropriate backend based on path' },
-        { id: 'redis', label: 'Redis Cache', icon: '🗄️', tech: 'Redis Cluster', why: 'Cache-first read path. <1ms latency. 95%+ hit rate. Sharded by shortcode hash' },
-        { id: 'db', label: 'URL DB', icon: '🛢️', tech: 'PostgreSQL', why: 'Source of truth for URL mappings. Sharded by shortcode prefix. WAL for durability' },
-        { id: 'kgs', label: 'KGS', icon: '🔑', tech: 'Key Gen Service', why: 'Pre-generates key batches in Redis pools. Avoids DB contention at write time' },
-        { id: 'kafka', label: 'Event Queue', icon: '📨', tech: 'Kafka', why: 'Buffers click events. Decouples analytics from redirect path. At-least-once delivery' },
-        { id: 'analytics', label: 'Analytics', icon: '📊', tech: 'Flink + OLAP', why: 'Stream processing of click events. Aggregates by URL, time, geo. Batch writes to OLAP DB' },
+        { id: 'client',   label: 'Client',       icon: '🌐', tech: 'Browser/App', layer: 'client', why: 'Short URL visited via browser/API. Redirected to target URL with 301/302. ~0.5s page load expected' },
+        { id: 'cdn',      label: 'CDN',           icon: '📡', tech: 'CloudFront', layer: 'edge', why: 'Edge cache for hottest 20% URLs. <5ms latency globally. Reduces origin load by 80%' },
+        { id: 'lb',       label: 'Load Balancer',  icon: '⚖️', tech: 'ALB/HAProxy', layer: 'edge', why: 'L7 routing to redirect vs create paths. TLS termination. Rate limiting at edge' },
+        { id: 'api',      label: 'API Service',   icon: '⚡', tech: 'Go/Java', layer: 'app', why: 'Stateless. Scales horizontally. Routes to appropriate backend based on path' },
+        { id: 'redis',    label: 'Redis Cache',   icon: '🗄️', tech: 'Redis Cluster', layer: 'data', why: 'Cache-first read path. <1ms latency. 95%+ hit rate. Sharded by shortcode hash' },
+        { id: 'db',       label: 'URL DB',        icon: '🛢️', tech: 'PostgreSQL', layer: 'data', why: 'Source of truth for URL mappings. Sharded by shortcode prefix. WAL for durability' },
+        { id: 'kgs',      label: 'KGS',           icon: '🔑', tech: 'Key Gen Service', layer: 'app', why: 'Pre-generates key batches in Redis pools. Avoids DB contention at write time' },
+        { id: 'kafka',    label: 'Event Queue',    icon: '📨', tech: 'Kafka', layer: 'async', why: 'Buffers click events. Decouples analytics from redirect path. At-least-once delivery' },
+        { id: 'analytics',label: 'Analytics',     icon: '📊', tech: 'Flink + OLAP', layer: 'async', why: 'Stream processing of click events. Aggregates by URL, time, geo. Batch writes to OLAP DB' },
       ],
       flows: [
         { label: 'Hot Path: Redirect', type: 'hot', nodes: ['client','cdn','lb','api','redis','client'] },
@@ -1096,18 +1437,20 @@ const SCENARIOS = [
       { label: 'Storage/day', expr: 'tweet_storage + media_storage' },
       { label: 'Cache size', expr: 'DAU × 20 tweets × tweet_size' },
       { label: 'Servers', expr: 'read_qps / 2000' },
+      { label: 'Read QPS', expr: 'DAU × timeline_refreshes / 86400 = 200M × 5 / 86400', result: '11,574' },
+      { label: 'Bandwidth', expr: 'read_qps × timeline_size(2KB) × 8 = 11,574 × 2048 × 8', result: '~0.19 Gbps' },
     ],
     arch: {
       nodes: [
-        { id: 'client', label: 'Client', icon: '📱', tech: 'Mobile/Web' },
-        { id: 'gw', label: 'API Gateway', icon: '🚪', tech: 'API Gateway', why: 'Request routing, rate limiting, auth. Routes to tweet, timeline, or media service based on path' },
-        { id: 'tweet', label: 'Tweet Service', icon: '✍️', tech: 'Go/Java', why: 'Handles tweet creation, validation, media attachment. Writes to Kafka for fan-out. Stateless, scales horizontally' },
-        { id: 'timeline', label: 'Timeline Service', icon: '📰', tech: 'Go/Java', why: 'Hybrid push/pull timeline assembly. Pushes tweets to followers\' ZSETs. Pulls from celebrity tweets on read' },
-        { id: 'redis', label: 'Timeline Cache', icon: '🗄️', tech: 'Redis Cluster', why: 'ZSET per user holds recent 800 tweet IDs. ZREVRANGE for timeline query. 1TB+ cluster for 200M DAU' },
-        { id: 'media', label: 'Media Service', icon: '🖼️', tech: 'S3 + Transcode', why: 'Presigned upload URLs. Async transcode pipeline. CDN delivery. Three sizes: thumb, standard, full' },
-        { id: 'kafka', label: 'Event Queue', icon: '📨', tech: 'Kafka', why: 'Fan-out buffer: tweet created → Kafka → fan-out workers. Also handles notifications, analytics events' },
-        { id: 'fanout', label: 'Fan-out Workers', icon: '🔀', tech: 'Kafka Consumer', why: 'Read tweets from Kafka, decide push vs pull per follower. Push: INSERT into ZSET. Pull: served on read from timeline service' },
-        { id: 'es', label: 'Search Index', icon: '🔍', tech: 'Elasticsearch', why: 'Full-text search on tweets. Inverted index. Near-real-time indexing from Kafka. 50ms p99 search latency' },
+        { id: 'client',   label: 'Client',         icon: '📱', tech: 'Mobile/Web', layer: 'client', why: 'Sends tweets via POST API. Receives timeline as JSON. Push notifications for new tweets and DMs' },
+        { id: 'gw',       label: 'API Gateway',     icon: '🚪', tech: 'API Gateway', layer: 'edge', why: 'Request routing, rate limiting, auth. Routes to tweet, timeline, or media service based on path' },
+        { id: 'tweet',    label: 'Tweet Service',   icon: '✍️', tech: 'Go/Java', layer: 'app', why: 'Handles tweet creation, validation, media attachment. Writes to Kafka for fan-out. Stateless, scales horizontally' },
+        { id: 'timeline', label: 'Timeline Service', icon: '📰', tech: 'Go/Java', layer: 'app', why: 'Hybrid push/pull timeline assembly. Pushes tweets to followers\' ZSETs. Pulls from celebrity tweets on read' },
+        { id: 'redis',    label: 'Timeline Cache',  icon: '🗄️', tech: 'Redis Cluster', layer: 'data', why: 'ZSET per user holds recent 800 tweet IDs. ZREVRANGE for timeline query. 1TB+ cluster for 200M DAU' },
+        { id: 'media',    label: 'Media Service',   icon: '🖼️', tech: 'S3 + Transcode', layer: 'app', why: 'Presigned upload URLs. Async transcode pipeline. CDN delivery. Three sizes: thumb, standard, full' },
+        { id: 'kafka',    label: 'Event Queue',     icon: '📨', tech: 'Kafka', layer: 'async', why: 'Fan-out buffer: tweet created → Kafka → fan-out workers. Also handles notifications, analytics events' },
+        { id: 'fanout',   label: 'Fan-out Workers', icon: '🔀', tech: 'Kafka Consumer', layer: 'async', why: 'Read tweets from Kafka, decide push vs pull per follower. Push: INSERT into ZSET. Pull: served on read from timeline service' },
+        { id: 'es',       label: 'Search Index',    icon: '🔍', tech: 'Elasticsearch', layer: 'data', why: 'Full-text search on tweets. Inverted index. Near-real-time indexing from Kafka. 50ms p99 search latency' },
       ],
       flows: [
         { label: 'Hot Path: Tweet Creation + Fan-out', type: 'hot', nodes: ['client','gw','tweet','kafka','fanout','redis'] },
@@ -1120,6 +1463,7 @@ const SCENARIOS = [
         { component: 'Redis (Timeline Cache)', icon: 'database', color: 'green', why: 'Timeline assembly is most latency-sensitive. ZSET provides O(log N) insert and O(log N + M) range query. 800 tweet IDs/user × 8 bytes = 6.4KB/user. 200M DAU = 1.3TB.', alternatives: 'SSDB (disk-based, slower), custom C++ cache (faster but maintenance cost)' },
         { component: 'Kafka', icon: 'arrows-shuffle', color: 'amber', why: 'Decouples tweet creation from fan-out. Handles 50K tweet/sec peak. Fan-out workers can be throttled independently. Replay for timeline rebuild.', alternatives: 'SQS (no ordering guarantees), RabbitMQ (lower throughput)' },
         { component: 'Hybrid Push/Pull', icon: 'git-branch', color: 'purple', why: 'Pure push doesn\'t scale for celebrities (1 tweet → 10M writes). Pure pull doesn\'t work for normal users (500 reads/sec hitting DB). Hybrid: push for <1M followers, pull for >1M.', alternatives: 'Full push (Twitter 2011 approach), full pull (Twitter 2014 approach)' },
+        { component: 'Media Transcode Pipeline', icon: 'player-play', color: 'coral', why: 'Photo and video attached to tweets must be transcoded asynchronously. Presigned S3 upload URLs decouple client from server. Three output sizes: thumb (150px), standard (640px), full (2048px). Kafka decouples upload from transcode.', alternatives: 'Synchronous transcode (blocks tweet creation), client-side only (unreliable), no media (feature gap)' },
       ]
     },
     assumptions: [
@@ -1238,9 +1582,13 @@ const SCENARIOS = [
           why: 'Partition by (user_id, bucket_week). Time-ordered within partition. Write-heavy (99% ops). Holds offline messages for 30 days.' },
         { id: 'redis',   label: 'Presence Cache',icon: '⚡', tech: 'Redis Cluster', layer: 'data',
           why: 'SETEX per user with 15s TTL. Heartbeat every 5s resets TTL. If TTL expires → mark offline. Group membership also cached here.' },
-        { id: 'media',   label: 'Media Service', icon: '🖼️', tech: 'S3 + CDN', layer: 'data',
+        { id: 'media',    label: 'Media Service',    icon: '🖼️', tech: 'S3 + CDN', layer: 'data',
           why: 'Media uploaded directly to S3 via presigned URL. CDN delivers with 1hr expiring URLs. E2EE: media key exchanged separately per recipient.' },
-        { id: 'push',    label: 'Push Gateway',  icon: '🔔', tech: 'FCM / APNs', layer: 'async',
+        { id: 'group',    label: 'Group Service',    icon: '👥', tech: 'Cassandra', layer: 'app',
+          why: 'Group metadata, membership list, admin roles, mute settings. Group chat messages fanned out by Chat Server using stored membership. Read-only cache in Redis.' },
+        { id: 'key_store',label: 'Key Store',         icon: '🔐', tech: 'Cassandra + Redis', layer: 'data',
+          why: 'Signal Protocol pre-key bundles stored per user. Clients fetch on first message exchange. Pre-key rotation: replenish when <10% remaining. Signed pre-key for auth.' },
+        { id: 'push',     label: 'Push Gateway',     icon: '🔔', tech: 'FCM / APNs', layer: 'async',
           why: 'Offline fallback: if WebSocket disconnected, route via FCM/APNs. Wake the app, then re-establish WebSocket for actual message delivery.' },
       ],
       flows: [
@@ -1248,11 +1596,13 @@ const SCENARIOS = [
         { label: 'Offline Delivery',      type: 'async', nodes: ['kafka','msg_db','push','client'] },
         { label: 'Media Upload',          type: 'async', nodes: ['client','media','kafka','client'] },
         { label: 'Presence Heartbeat',    type: 'async', nodes: ['client','ws','redis'] },
+        { label: 'Group Chat Fan-out',    type: 'hot',   nodes: ['client','lb','ws','group','kafka','ws','client'] },
       ],
       choices: [
         { component: 'Erlang/BEAM', icon: 'cpu', color: 'teal', why: 'WhatsApp chose Erlang for a reason: lightweight processes (1KB each), actor model, built-in fault tolerance. Handles 1M+ concurrent connections per node vs Java/Node which struggle above 10K.', alternatives: 'Node.js (lower conn/node), Go (goroutines, similar scale), Netty (Java, requires tuning)' },
         { component: 'Cassandra', icon: 'database', color: 'amber', why: 'Message store is write-dominated (delivery + acks). Cassandra partition-per-user gives O(1) writes. 3× replication for durability. TTL built-in for 30-day expiry.', alternatives: 'HBase (Hadoop-coupled), DynamoDB (AWS lock-in), MySQL (single-master bottleneck at this scale)' },
         { component: 'Kafka (partitioned by user_id)', icon: 'arrows-shuffle', color: 'purple', why: 'Ordered delivery per user. Enables multi-device fan-out (each device = separate consumer group). At-least-once semantics with consumer offset ACK.', alternatives: 'SQS (no ordering, no replay), Redis pub/sub (no persistence, fire-and-forget)' },
+        { component: 'Push Notification Gateway (FCM/APNs)', icon: 'bell', color: 'coral', why: 'Offline messages need push delivery via FCM/APNs. Gateway aggregates per-device push tokens, manages provider rate limits (FCM: 100K/s, APNs: 50K/s). Exponential backoff on failure. Separate topic from message delivery to avoid backpressure.', alternatives: 'In-app polling (drains battery), SMS fallback (expensive, poor UX), WebSocket reconnect (only works when app is foregrounded)' },
       ]
     },
     assumptions: [
@@ -1386,6 +1736,7 @@ const SCENARIOS = [
         { component: 'CDN (Google GGC)', icon: 'world', color: 'teal', why: 'CDN cost is #1 expense. Google deploys GGC boxes directly at ISPs, eliminating egress fees. 90% of views from edge. Cold-cache miss hits GCS origin, which is also inside Google network.', alternatives: 'CloudFront ($0.085/GB), Fastly (competitive pricing), Akamai (highest cost, best coverage)' },
         { component: 'GPU Transcode Pipeline', icon: 'cpu', color: 'amber', why: 'NVENC GPU encoding 5× faster than CPU FFmpeg. 500hrs video uploaded/min needs massive parallel transcode. Priority queue ensures popular creators get faster publish latency.', alternatives: 'CPU-only (too slow at this scale), AWS Elemental (managed but expensive), on-prem GPU cluster' },
         { component: 'ABR (MPEG-DASH/HLS)', icon: 'arrows-shuffle', color: 'blue', why: 'Video segments chunked into 2-10s pieces. Client player requests next segment at resolution matching current bandwidth. Eliminates buffer stalls vs fixed-resolution streaming.', alternatives: 'Progressive download (no adaptive, poor mobile UX), RTMP (push-based, high latency)' },
+        { component: 'Elasticsearch (Video Search)', icon: 'search', color: 'purple', why: 'Title, description, tag search needs full-text indexing. ES inverted index handles fuzzy matching, autocomplete, and personalization. Updated async from Kafka — seconds lag is acceptable for search freshness.', alternatives: 'Postgres full-text search (too slow at 500hrs/min new content), Algolia (managed but expensive at this scale), custom search engine (overkill)' },
       ]
     },
     assumptions: [
@@ -1522,6 +1873,7 @@ const SCENARIOS = [
         { component: 'H3 Hex Grid + Redis GEOADD', icon: 'map-pin', color: 'teal', why: 'Uber invented H3. Each hex cell has a string ID. driver_in_cell[hex_id] = Redis SET. Matching = check rider cell + 7 neighbors. O(1) cell lookup, sub-ms Redis query.', alternatives: 'QuadTree (dynamic partitioning, complex rebalancing), S2 geometry (Google, used in Lyft), PostGIS (too slow at 250K writes/sec)' },
         { component: 'Kafka partitioned by H3 cell', icon: 'arrows-shuffle', color: 'amber', why: 'Location updates for the same geographic area go to the same Kafka partition. Flink consumer processes one cell at a time, enabling efficient Flink stateful aggregation for surge.', alternatives: 'Partition by driver_id (simpler but misses geographic locality for surge calc)' },
         { component: 'Flink Stream Processing', icon: 'bolt', color: 'purple', why: 'Real-time stateful aggregation: count drivers/riders per H3 cell in 60-second tumbling windows. Stateful = can maintain count across micro-batches. Low latency vs Spark batch.', alternatives: 'Spark Streaming (higher latency, micro-batch), Storm (older, lower throughput), custom Go service (no stateful primitives)' },
+        { component: 'Surge Pricing (Flink + ML)', icon: 'trending-up', color: 'coral', why: 'Supply/demand imbalance detected via Flink tumbling window per H3 cell. ML model predicts surge multiplier based on time-of-day, weather, events. Updates every 60s. Must be fair — capped at 5× with transparency to rider.', alternatives: 'Fixed pricing (wrong — no supply during rain), static multiplier zones (not granular enough), dynamic bidding (too complex, bad UX)' },
       ]
     },
     assumptions: [
@@ -1653,6 +2005,7 @@ const SCENARIOS = [
         { component: 'Transactional Outbox', icon: 'database', color: 'teal', why: 'The dual-write problem: you cannot atomically write to Postgres AND publish to Kafka. Outbox pattern: write both in same Postgres txn, then a relay process reads outbox and publishes to Kafka. Zero message loss.', alternatives: 'Saga choreography (eventual, complex), CDC (Debezium on WAL, more infra), 2PC (too slow, single point of failure)' },
         { component: 'Idempotency Keys (Redis + Postgres)', icon: 'key', color: 'amber', why: 'Same idempotency_key + same merchant = same result, always. Redis for fast O(1) lookup. Postgres as durable fallback. Prevents double charges on network retries.', alternatives: 'Database UNIQUE constraint only (works but slower), UUID dedup (no semantic idempotency guarantee)' },
         { component: 'Immutable Ledger (append-only)', icon: 'file-text', color: 'purple', why: 'Financial systems: never mutate records. Each state change = new row. Current balance = sum of all entries. This enables point-in-time reconstruction, audit trails, and SOX compliance.', alternatives: 'Mutable balance table (fast reads but no audit trail), Event Sourcing framework (overkill but similar principle)' },
+        { component: 'Circuit Breaker (Gateway Failover)', icon: 'switch', color: 'coral', why: 'External payment gateways fail unpredictably. Circuit breaker trips after 5 consecutive errors or >2s latency within 60s window. Half-open after 30s for retry. Fallback chain: primary → secondary → tertiary. Idempotency per gateway prevents double charges.', alternatives: 'Retry same gateway (wastes time on dead gateway), fail fast to user (lost revenue), manual failover (too slow for 99.995% uptime requirement)' },
       ]
     },
     assumptions: [
@@ -1789,6 +2142,7 @@ const SCENARIOS = [
         { component: 'Kafka per Channel (topic isolation)', icon: 'arrows-shuffle', color: 'teal', why: 'If email is slow (SES throttle), it must not block push notifications. Separate topics per channel ensure backpressure is isolated. Each channel scales independently.', alternatives: 'Single queue per notification (simple but no channel isolation), SQS per channel (lower throughput, no replay)' },
         { component: 'Redis Dedup (SETNX + TTL)', icon: 'key', color: 'amber', why: 'Same notification type to same user within dedup window → single send. Redis SETNX is atomic: first setter wins. TTL = dedup window (5 min). Reduces provider API calls 30-50%.', alternatives: 'DB dedup table (too slow at 100K/s), Bloom filter (probabilistic, false positives on edge)' },
         { component: 'Exponential Backoff + DLQ', icon: 'refresh', color: 'coral', why: 'Provider outages are common. Backoff: 1s → 2s → 4s → ... → 1hr. After 10 attempts, move to DLQ. Prevents thundering herd on provider recovery.', alternatives: 'Linear retry (floods provider), no retry (message loss), infinite retry (queue bloat)' },
+        { component: 'Template Rendering (Handlebars)', icon: 'code', color: 'blue', why: 'Notification content varies by channel (push: 150 chars, email: full HTML, SMS: 160 chars). Templates rendered once, output per channel. Server-side caching of compiled templates. Must handle 23K renders/sec at peak.', alternatives: 'Client-side render (unreliable, depends on device), per-channel hardcoded formats (duplication, inconsistent), pre-render all variants (storage explosion)' },
       ]
     },
     assumptions: [
@@ -1939,6 +2293,7 @@ const SCENARIOS = [
         { component: 'vLLM Continuous Batching', icon: 'cpu', color: 'coral', why: 'Naive batching: wait for N requests, then process together → high latency. Continuous batching: as each request finishes a token step, add new requests to batch. GPU utilization 30% → 80%+. Critical for cost.', alternatives: 'TensorRT-LLM (NVIDIA, best throughput), DeepSpeed-FastGen (Microsoft), naive batching (simple but expensive)' },
         { component: 'HNSW Vector Index (in-RAM)', icon: 'search', color: 'teal', why: 'HNSW (Hierarchical Navigable Small World): graph-based ANN search. <10ms at 100M vectors if in RAM. Recall@10 > 95%. IVF_PQ for 10× compression at cost of recall.', alternatives: 'IVF_PQ (10× less memory, 90% recall), flat brute force (100% recall, O(N) too slow), ScaNN (Google, high throughput)' },
         { component: 'Query Cache (embedding hash)', icon: 'database', color: 'amber', why: 'GPU inference is expensive ($0.002/query). Cache key = hash of query embedding (catches semantically identical queries, not just string-identical). 30% hit rate saves 30% GPU cost.', alternatives: 'Exact string match cache (lower hit rate), no cache (simplest, highest cost)' },
+        { component: 'NeMo Guardrails (PII + Toxicity)', icon: 'shield', color: 'blue', why: 'LLM can output PII, toxic content, or hallucinated facts. Two-stage guard: pre-LLM input filter (PII detection, off-topic classifier, instruction injection guard) and post-LLM output guard (toxicity filter, factuality check, PII scan). Cheap pre-filter (~1ms) saves GPU cost for rejected queries.', alternatives: 'OpenAI moderation API (adds latency, external dependency), no guardrails (regulatory risk), post-hoc human review (too slow for real-time)' },
       ]
     },
     assumptions: [
@@ -2037,6 +2392,8 @@ const SCENARIOS = [
       { label: 'Redis shards', expr: 'ceil(total_RPS / 100K per shard) = ceil(1M / 100K)', result: '10' },
       { label: 'Memory per user', expr: '80 bytes (sliding window counter)', result: '80 B' },
       { label: 'Algorithm', expr: 'Sliding Window Counter (hybrid)' },
+      { label: 'Rate limit checks/sec', expr: 'total_RPS × 2 (read + write) = 1M × 2', result: '2M' },
+      { label: 'Analytics storage/day', expr: 'total_RPS × 86400 × 200B = 1M × 86400 × 200', result: '~17 TB' },
     ],
     arch: {
       nodes: [
@@ -2056,17 +2413,23 @@ const SCENARIOS = [
           why: 'Every request + rate limit decision → Kafka → ClickHouse. Dashboards: top users by QPS, 429 rate by endpoint. Quota billing aggregation.' },
         { id: 'dlq',      label: 'Throttle Log',      icon: '📋', tech: 'Kafka DLQ', layer: 'async',
           why: 'All rejected requests logged. Used for: abuse detection (repeated 429s = scraper), customer support (prove limit was hit), billing disputes.' },
+        { id: 'alert',    label: 'Alerting',          icon: '🔔', tech: 'Prometheus + Pager', layer: 'async',
+          why: 'Monitor 429 rate per endpoint. Alert if >5% of requests rejected or rate limit check latency >100ms. Abuse pattern detection: same IP hitting 429 on 3+ endpoints within 1min.' },
+        { id: 'dashboard',label: 'Admin Dashboard',   icon: '📊', tech: 'React + GraphQL', layer: 'async',
+          why: 'View/edit rate limit rules per tier. Real-time charts: QPS by endpoint, 429 rate, top users. Audit log of config changes. Self-serve for API consumers.' },
       ],
       flows: [
         { label: 'Hot: Allow Request',    type: 'hot',   nodes: ['client','gw','rl_svc','redis','gw','client'] },
         { label: 'Hot: Reject (429)',     type: 'hot',   nodes: ['client','gw','rl_svc','redis','dlq'] },
         { label: 'Config Update',         type: 'async', nodes: ['config','sync','rl_svc'] },
         { label: 'Analytics',             type: 'async', nodes: ['rl_svc','analytics'] },
+        { label: 'Alert on 429 Spike',    type: 'async', nodes: ['rl_svc','alert','dashboard'] },
       ],
       choices: [
         { component: 'Redis Lua Script (atomic check+decrement)', icon: 'database', color: 'teal', why: 'Rate limit check must be atomic: read count → check → increment → set TTL. Race condition without atomicity = two requests both "see" count=99 and both proceed, exceeding limit. Redis Lua script executes atomically.', alternatives: 'Redis MULTI/EXEC (CAS loop), DB row lock (too slow), local memory only (inaccurate across instances)' },
         { component: 'Sliding Window Counter', icon: 'clock', color: 'amber', why: 'Token Bucket: allows burst, O(1). Sliding Window Log: precise but O(requests) memory. Sliding Window Counter: hybrid — approximates sliding window using two fixed windows, O(1) memory per user.', alternatives: 'Token Bucket (burst-friendly, simple), Fixed Window (boundary burst problem), Leaky Bucket (smooth output rate)' },
         { component: 'Rule Config via Consul/etcd', icon: 'settings', color: 'purple', why: 'Rate limit rules change (customer upgrades tier, new endpoint launched). Consul/etcd provides consistent, watch-based propagation. All RL nodes see same rules within ~1s without restart.', alternatives: 'Hardcoded (inflexible), DB polling (works but adds latency), feature flags (good for gradual rollout)' },
+        { component: 'Hierarchical Rate Limiting (Multi-layer)', icon: 'layers', color: 'coral', why: 'Single rate limit per user is not enough. Edge: per-IP (50 req/s via Nginx). Gateway: per-user per-service (1000 req/hr). Service: per-user per-endpoint with different limits. Each layer has different window and limit size. Lower layers are cheaper to compute.', alternatives: 'Single layer at gateway (misses edge DDoS protection), per-service only (no global view), per-IP only (bypassable via IP rotation)' },
       ]
     },
     assumptions: [
@@ -2198,6 +2561,7 @@ const SCENARIOS = [
         { component: 'Inverted Index (Lucene shards)', icon: 'search', color: 'teal', why: 'Two-phase: retrieve (inverted index, BM25 score, fast) then rank (ML model, slower). Sharding by doc_id allows parallel retrieval from all shards simultaneously. Merge top-K from each shard.', alternatives: 'Vector search only (semantic but misses exact match), ElasticSearch (built on Lucene, managed), Solr (older, less momentum)' },
         { component: 'Two-Stage Ranking (Recall + Rank)', icon: 'sort-ascending', color: 'amber', why: 'Recall: fast BM25 retrieves top-1000 candidates. Rank: expensive ML (LambdaMART, BERT) re-ranks top-1000. This 2-stage pattern keeps latency <100ms while using powerful ML.', alternatives: 'Single-stage neural search (accurate but slow), pure BM25 (fast but dumb), approximate dense retrieval only (misses keyword match)' },
         { component: 'Bloom Filter for URL dedup', icon: 'filter', color: 'purple', why: 'Crawler sees billions of URLs. Exact dedup = huge hash table. Bloom filter: O(1) lookup, probabilistic (0.1% false positive rate = OK, just means we skip some pages). 1B URLs = ~1.2GB Bloom filter.', alternatives: 'Redis SET (exact, 40× more memory), sharded DB (works but complex), SHA-256 hash table (large)' },
+        { component: 'Autocomplete (Redis Prefix Trie)', icon: 'type', color: 'blue', why: 'Search-as-you-type reduces query latency perception and increases engagement. Prefix trie in Redis: O(1) lookup per character, O(K) for top-K completions. Weighted by search frequency. Rebuilt hourly from query logs. Hot prefixes cached, cold fall back to ES prefix query.', alternatives: 'Elasticsearch completion suggester (built-in, slower at 58K QPS), no autocomplete (worse UX), pre-computed popular queries (static, misses trends)' },
       ]
     },
     assumptions: [
@@ -2337,6 +2701,7 @@ const SCENARIOS = [
         { component: 'Saga Pattern (Order Service)', icon: 'arrows-shuffle', color: 'teal', why: 'Checkout spans 3+ services: inventory reserve, payment charge, order confirm. 2PC is too slow and fragile. Saga: each step has a compensating transaction. Payment fails → release inventory reservation. All via Kafka events.', alternatives: '2PC/XA transactions (too slow, single point of failure), TCC pattern (Try-Confirm-Cancel, more complex but stronger)' },
         { component: 'Redis-first Cache (TTL-based)', icon: 'database', color: 'amber', why: 'Product catalog is read-dominated (100:1). Redis-first eliminates 95% of DB reads. TTL: prices change often (5min), descriptions rarely (1hr). Stampede protection: probabilistic early expiry.', alternatives: 'CDN caching only (no personalization), DB read replicas only (still bottleneck at 1M+ QPS), Memcached (simpler, less features)' },
         { component: 'Elasticsearch (faceted search)', icon: 'search', color: 'purple', why: 'Faceted search (filter by category + price range + rating + brand simultaneously) is hard in SQL. ES inverted index handles multi-dimensional filtering natively. Updated async from Kafka — not real-time but seconds lag is acceptable.', alternatives: 'Postgres full-text search (too slow at catalog scale), Solr (similar to ES), custom search engine (overkill)' },
+        { component: 'Recommendation Service (Offline ML)', icon: 'stars', color: 'coral', why: 'Product recommendations drive 35% of Amazon revenue. Collaborative filtering: users who bought X also bought Y. Per-user candidate generation via item-item CF, re-ranked by ML model. Updated offline (Spark daily), served from Redis. Cold-start handled via popularity-based fallback.', alternatives: 'No recommendations (lost 35% revenue), real-time recommender (too expensive at scale), pure popularity (no personalization)' },
       ]
     },
     assumptions: [
@@ -2470,6 +2835,7 @@ const SCENARIOS = [
         { component: 'Open Connect CDN (ISP-embedded)', icon: 'world', color: 'teal', why: 'Netflix OCA boxes at 1000+ ISPs. 95% of traffic served from OCA = zero CDN egress cost (which would be $100M+/month). Pre-seeded nightly: Netflix predicts what will be popular next day and pushes to edge.', alternatives: 'Third-party CDN (Akamai/CloudFront → expensive at Netflix scale), multi-CDN (used as fallback only)' },
         { component: 'Shot-per-Shot Encoding', icon: 'cpu', color: 'amber', why: 'Standard encoding: uniform bitrate across entire video. Shot-aware: slow, dark scenes get lower bitrate; action sequences get higher. Same visual quality at 20% fewer bytes. Saves 20% of OCA storage and CDN bandwidth.', alternatives: 'Per-chunk ABR encoding (standard HLS), fixed bitrate (worst quality/size ratio), HEVC/AV1 (better codec but device compatibility issues)' },
         { component: 'Chaos Monkey', icon: 'flame', color: 'coral', why: 'If you only test resilience in staging, you never know if prod is truly resilient. Chaos Monkey randomly kills prod instances, forcing engineers to build fault-tolerant services or get paged at 3am.', alternatives: 'Game Days (scheduled chaos testing), fault injection in staging only (incomplete), hope-driven engineering (anti-pattern)' },
+        { component: 'Recommendation Engine (Matrix Factorization)', icon: 'stars', color: 'purple', why: 'Homepage recommendations drive 80%+ of watch time. Offline ML (Spark): matrix factorization on viewing history → per-user candidate list → re-ranked by contextual bandit. Updated daily. Served from Cassandra. A/B testing framework for model iteration.', alternatives: 'Trending only (no personalization), collaborative filtering only (cold-start problem), human-curated (doesnt scale to 250M subscribers)' },
       ]
     },
     assumptions: [
@@ -2604,6 +2970,7 @@ const SCENARIOS = [
         { component: 'Hybrid Push/Pull (same as Twitter)', icon: 'git-branch', color: 'teal', why: 'Push feed to followers cache for normal users (<10K followers). For celebrities (>1M followers), skip push and serve via pull-on-read. Single celebrity post: 10M writes vs 10M reads — reads are cheaper because followers share CDN-cached content.', alternatives: 'Full push (doesnt scale for celebrities), full pull (slow feed assembly with many followed accounts), Facebook uses the same hybrid approach' },
         { component: 'TAO Social Graph', icon: 'users', color: 'amber', why: 'Follow relationships need O(1) lookup for "does user A follow user B?" and "list all followers of user A". Facebook TAO is a distributed graph cache purpose-built for social graph reads. 99%+ cache hit rate.', alternatives: 'Postgres adjacency list (works but not at 100M DAU), Neo4j (better graph queries, less throughput), custom in-memory graph (Facebook considered this)' },
         { component: 'Client-side Compression + CDN', icon: 'photo', color: 'purple', why: 'Instagram compresses images client-side before upload (reduces upload bandwidth 5-10×). Server then generates 3 resolutions for CDN. Popular posts: 0 origin hits. Unpopular: one CDN miss → warm cache for next viewer.', alternatives: 'Server-side compression only (wastes upload bandwidth), no CDN (origin would collapse instantly)' },
+        { component: 'Stories (Ephemeral Storage)', icon: 'clock', color: 'coral', why: 'Stories are short-lived (24h), high-write (500M+ daily story creators). Segmented upload: first 5s displayed while rest loads. Redis TTL for story metadata. Object store (S3) with bucket lifecycle policy for auto-deletion after 24h. Each story viewed in order, marked as seen.', alternatives: 'Permanent storage (storage waste, 24× more storage), client-side deletion (unreliable), no stories (feature gap vs Snapchat/TikTok)' },
       ]
     },
     assumptions: [
@@ -2744,6 +3111,7 @@ const SCENARIOS = [
         { component: 'Content-addressed Block Store (SHA-256)', icon: 'database', color: 'teal', why: 'Split file into 4MB chunks, key each by SHA-256(content). Same block appears in 1000 files? Store once. Upload 1GB file? Client checks which blocks already exist → only upload new blocks. Reduces upload volume by 30-50%.', alternatives: 'Full file storage (simpler, 3× more storage), rsync-style delta compression (good for large binary files, complex to implement)' },
         { component: 'Long-poll for Sync Notifications', icon: 'bell', color: 'amber', why: 'Dropbox originally used polling every 30s (too slow). WebSockets work but stateful. Long-poll: client sends request, server holds until change or timeout (30s). Stateless, simpler load balancing, works through corporate firewalls.', alternatives: 'WebSocket (better for frequent changes, stateful), Server-Sent Events (SSE, one-directional, simpler), Push (FCM/APNs, mobile only)' },
         { component: 'Postgres (sharded by user_id)', icon: 'table', color: 'purple', why: 'File metadata is relational (directory trees, versioning, sharing permissions). SQL gives ACID for version conflict detection. Sharding by user_id keeps user data co-located and isolates hot users.', alternatives: 'Cassandra (eventual consistency causes version conflicts), DynamoDB (harder to shard across hierarchical paths), Spanner (better for global, expensive)' },
+        { component: 'Delta Sync (rsync-style binary diff)', icon: 'git-compare', color: 'coral', why: 'Syncing entire file on every change wastes bandwidth. Split file into 4MB blocks, send only changed blocks. Client computes SHA-256 of each block, server responds with missing blocks list. 95% of edits touch <10% of file. Critical for mobile users on limited data plans.', alternatives: 'Full file sync (wastes bandwidth for large files), rsync (file-level, not block-level), no sync (defeats purpose of cloud storage)' },
       ]
     },
     assumptions: [
@@ -2878,6 +3246,7 @@ const SCENARIOS = [
         { component: 'HLS Segmented Delivery (6-10s)', icon: 'film', color: 'teal', why: 'HLS segments: streamer outputs 6-10s .ts files. CDN caches each segment. 1M viewers = 1M × segment_size bandwidth, but CDN absorbs it as each popular segment is served from edge. Latency trade-off: 10-30s lag vs real-time.', alternatives: 'RTMP to each viewer (doesnt scale past ~1000 concurrent), WebRTC (sub-second but complex SFU required), SRT (low-latency but less CDN support)' },
         { component: 'Real-time GPU Transcode', icon: 'cpu', color: 'amber', why: 'Must transcode faster than real-time (1s video in <1s). CPU cannot handle multiple concurrent streams at 4K. NVENC GPU: 4 renditions per stream in 0.2s. Horizontally scaled: more streams = more GPU nodes.', alternatives: 'Cloud transcoding (AWS Elemental: managed but expensive at scale), CPU only (limited concurrency), pre-compute only (doesnt work for live)' },
         { component: 'Redis Pub/Sub for Chat', icon: 'message-circle', color: 'purple', why: 'Chat messages need fan-out to 1M+ viewers watching the same stream. Redis pub/sub: streamer chat server publishes to channel → all viewer-connected servers subscribe → WebSocket push. Sub-10ms fan-out.', alternatives: 'Kafka (overkill for ephemeral chat, adds latency), direct WebSocket broadcast (single server bottleneck), NATS (good alternative, similar model)' },
+        { component: 'Cloud Recording (VOD Pipeline)', icon: 'video', color: 'coral', why: 'Live streams are ephemeral unless recorded. Recording pipeline: segment_store + timestamp → transcode (GPU) → MP4 packaging → CDN for replay. Must not impact live stream quality — recording runs as lower priority background job. Seekable VOD within 5min of stream end.', alternatives: 'No recording (ephemeral live), client-side recording (quality depends on viewer), on-demand transcode only (long delay before VOD available)' },
       ]
     },
     assumptions: [
@@ -3012,6 +3381,7 @@ const SCENARIOS = [
         { component: 'SFU (Selective Forwarding Unit)', icon: 'git-merge', color: 'teal', why: 'P2P mesh: N participants → N² streams. MCU: mix all streams (high CPU). SFU: each participant uploads once, SFU selectively forwards to each viewer based on their layout. O(N) streams, O(1) compute per stream. Zoom uses custom SFU.', alternatives: 'P2P mesh (works to ~4 participants), MCU (high quality but O(N) CPU per participant), Google Meet uses SFU (Selective Forwarding)' },
         { component: 'UDP / QUIC (not TCP)', icon: 'zap', color: 'amber', why: 'Video calls: dropped packet = brief glitch (tolerable). TCP: dropped packet = retransmit + wait = jitter (intolerable). UDP with FEC (Forward Error Correction): recover from 5% packet loss with redundant data. QUIC adds connection multiplexing.', alternatives: 'TCP (wrong for real-time media), WebRTC over TCP/TLS (fallback through corporate firewalls), SRT (good for high packet loss environments)' },
         { component: 'STUN/TURN NAT Traversal', icon: 'route', color: 'purple', why: '90% of calls: STUN discovers IPs, P2P or SFU direct connection. 10%: symmetric NAT blocks direct → TURN relay required. TURN bandwidth cost = 2× vs direct. Server capacity planning: size for 10% TURN usage.', alternatives: 'TURN-only (simple, expensive), P2P-only (fails through corporate NAT), Hole punching only (works for ~70% of NAT types)' },
+        { component: 'Cloud Recording & Transcription', icon: 'microphone', color: 'coral', why: 'Recording: combined audio/video stream from SFU written to object store. Async pipeline: transcode → caption (ASR) → transcript search. Speaker diarization identifies who said what. Storage: 1hr meeting ≈ 500MB raw, 50MB compressed. Auto-delete after 30 days unless saved.', alternatives: 'Client-side recording (quality depends on participant, unreliable), no recording (feature gap), third-party integration (latency, privacy concerns)' },
       ]
     },
     assumptions: [
@@ -3145,6 +3515,7 @@ const SCENARIOS = [
         { component: 'Vitess (Sharded MySQL)', icon: 'database', color: 'teal', why: 'Slack started on MySQL. At scale, single MySQL instance cannot handle write volume. Vitess: transparent sharding layer on MySQL. Existing MySQL queries work, but distributed across shards. Shard by workspace_id keeps workspace data co-located.', alternatives: 'Cassandra (eventual consistency → message ordering issues), Postgres Citus (similar to Vitess for Postgres), CockroachDB (distributed SQL, higher latency)' },
         { component: 'Erlang for RTM (WebSocket fan-out)', icon: 'zap', color: 'amber', why: 'Fan-out: one message → N connections (all workspace members). Erlang: millions of lightweight processes, one per WebSocket. Actor model: each connection is a process that can receive messages. Same reason WhatsApp uses Erlang.', alternatives: 'Node.js (event loop, good for I/O but struggles at 1M connections), Go (goroutines, viable alternative), Java Netty (works but more complex)' },
         { component: 'Per-workspace Kafka partitions', icon: 'arrows-shuffle', color: 'purple', why: 'Workspace isolation: if one workspace has message storm (all-hands @channel), it should not impact other workspaces. Kafka partitioned by workspace_id gives isolation. RTM service consumes its assigned workspaces only.', alternatives: 'Single Kafka cluster shared (no isolation), Redis pub/sub per channel (doesn\'t scale to thousands of channels), NATS (good alternative)' },
+        { component: 'File Upload (S3 + CDN)', icon: 'file-upload', color: 'coral', why: 'File sharing (images, PDFs, code snippets) must not block message delivery. Presigned upload URLs → S3 → CDN for download. Thumbnails generated async for images. File type validation and virus scanning before CDN distribution. Max 1GB per file.', alternatives: 'Inline base64 (bloats message size, no CDN), direct S3 links (no access control), self-hosted storage (operational burden)' },
       ]
     },
     assumptions: [
@@ -3279,6 +3650,7 @@ const SCENARIOS = [
         { component: 'Saga Pattern (multi-step order)', icon: 'arrows-shuffle', color: 'teal', why: 'Order placement spans: payment authorization, restaurant acceptance, driver assignment. Each step can fail independently. Saga: compensating transactions on failure. Payment fails → cancel order immediately. Restaurant rejects → refund + re-search.', alternatives: '2PC (too slow, restaurant tablets are flaky endpoints), monolithic order transaction (doesnt scale across services)' },
         { component: 'H3 Geo-search (same as Uber)', icon: 'map-pin', color: 'amber', why: 'Restaurant search within delivery radius, driver nearest pickup. H3 hex cells: O(1) lookup of entities in cell. Cluster by H3 means geographic data locality. Same as Uber\'s approach — proven at scale.', alternatives: 'PostGIS radius query (works, but slow at 250K driver updates/sec), QuadTree (complex rebalancing), S2 geometry (Google approach, Lyft uses this)' },
         { component: 'Dual DB (Postgres + Cassandra)', icon: 'database', color: 'purple', why: 'Active orders (few thousand): ACID consistency needed (Postgres). Order history (billions): write-heavy, time-series append (Cassandra partition by week). Right tool for right job.', alternatives: 'Single Postgres (history queries slow at billions of rows), Single Cassandra (loses ACID for active order state)' },
+        { component: 'Real-time Driver Tracking (WebSocket)', icon: 'map', color: 'coral', why: 'Customer expects live ETA updates after order placement. Driver GPS updates every 5s via WebSocket. H3-based nearest-driver lookup. Route optimization: Google Maps API for ETA recalculation every 60s. Push updates to customer app — no polling.', alternatives: 'Polling every 30s (stale ETA, more server load), SMS updates (batch, not real-time), no tracking (poor UX, support tickets for "where is my order")' },
       ]
     },
     assumptions: [
@@ -3413,6 +3785,7 @@ const SCENARIOS = [
         { component: 'Virtual Waiting Queue (Redis)', icon: 'list-ordered', color: 'teal', why: 'Without queue: 100K requests hit order service simultaneously → DB connection pool exhausted → cascade failure. Queue: accept all at edge, meter release to backend at sustainable rate (N per second = inventory throughput). Prevents thundering herd.', alternatives: 'Rate limit only (rejects legitimate users), DB locking (deadlocks at scale), first-come-first-served direct (no metering = collapse)' },
         { component: 'Redis Atomic DECR for Inventory', icon: 'database', color: 'amber', why: 'Race condition: 1 item left, 2 buyers simultaneously check stock. Without atomicity: both see 1, both buy → oversell. Redis DECR is atomic. Lua script: DECR then check result. If < 0: INCR back and reject. Zero oversell.', alternatives: 'DB SELECT FOR UPDATE (works, but slow at 10K QPS), optimistic locking (CAS loop, thundering herd on hot items), Postgres advisory lock (single point of failure)' },
         { component: 'Pre-warmed CDN + Pre-seeded Cache', icon: 'zap', color: 'coral', why: 'Flash sale spike starts at exact T=0. CDN must already have the page cached. Redis must already have inventory loaded. Pre-warm CDN 30min before. Pre-seed Redis with exact stock count. Otherwise: first requests miss CDN → origin spike before cache fills.', alternatives: 'No pre-warming (cold cache spike kills origin), aggressive TTL (risks stale inventory count), Varnish at origin (faster than DB but still single origin)' },
+        { component: 'Anti-fraud (ML + Rules Engine)', icon: 'shield', color: 'blue', why: 'Bots scoop up limited inventory immediately. WAF blocks known bot IPs. ML model scores each purchase in <100ms: velocity (same address × same card), IP reputation, browser fingerprint. High-risk → CAPTCHA challenge. Confirmed bot → block and refund. Saves 5%+ inventory from bots.', alternatives: 'No anti-fraud (bots grab all inventory), human review (too slow during 6hr sale), simple rate limiting (bypassed by distributed bots)' },
       ]
     },
     assumptions: [
@@ -3550,6 +3923,7 @@ const SCENARIOS = [
         { component: 'Flink (Streaming) + Spark (Batch)', icon: 'cpu', color: 'teal', why: 'Flink for low-latency streaming (sub-1min), Spark for high-throughput batch (hourly). Two engines because: Flink\'s stateful processing excels at real-time aggregations. Spark is more cost-effective for large-scale batch with stage-level scheduling.', alternatives: 'Kafka Streams (simpler but JVM-only, no batch), Beam (unified model but less mature), only Spark Streaming (higher latency for real-time needs)' },
         { component: 'Medallion Architecture (Bronze/Silver/Gold)', icon: 'layers', color: 'amber', why: 'Bronze: raw data as-is from Kafka (schema validated). Silver: cleaned, deduped, enriched (query-ready). Gold: business aggregates, ML features (consumption-ready). Each layer is a materialized view of the previous, enabling reprocessing without data loss.', alternatives: 'Single flat layer (data lake without structure — data swamp), Star schema (starts with gold, inflexible schema), Lakehouse (Delta Lake, same concept but ACID)' },
         { component: 'Parquet + Zstd + Partition Pruning', icon: 'database', color: 'purple', why: 'Parquet columnar format: scan only columns needed (e.g., click queries skip user_agent column). Zstd: 5:1 compression ratio vs raw text. Partition pruning: WHERE event_type=click AND date=2024-01-15 scans 2 directories instead of 10,000. 1000× query speedup over non-partitioned.', alternatives: 'Avro row format (better for write, worse for query), JSON text (5× more storage, no compression), CSV (same issues + no schema), ORC (similar to Parquet, Hive-optimized)' },
+        { component: 'Schema Registry + Data Catalog', icon: 'book', color: 'coral', why: '10B events/day from 1000+ producers — without schema enforcement, pipeline breaks on every schema change. Schema Registry (Avro/Protobuf) validates producer writes. Data Catalog (Hive Metastore/Unity Catalog) enables data discovery, lineage tracking, and column-level security.', alternatives: 'No schema validation (pipeline breaks daily), monolithic schema (hard to evolve), manual schema management (error-prone at this scale)' },
       ]
     },
     assumptions: [
@@ -3577,7 +3951,582 @@ const SCENARIOS = [
       staffMoves: 'Phase 1: direct Kafka → S3 (no stream processing, simple dumping). Phase 2: add Spark batch for nightly aggregates. Phase 3: add Flink for real-time streaming. Phase 4: implement medallion architecture. Phase 5: add schema registry with compatibility checks. Phase 6: optimize storage with Parquet + Zstd + partitioning. Key insight: schema management is the hardest part at scale — enforce it early. Data quality > data quantity.',
     }
   },
-];function estimateCost(servers, vcpuPerServer, ramPerServer, storPerDay, bwOut, cacheGB, hasDB) {
+
+  ,
+  {
+    id: 'api-gateway',
+    name: 'API Gateway / BFF',
+    icon: 'ti-route',
+    desc: 'Central ingress for microservices: auth, rate limiting, routing, retries, canary, tenant isolation, and request shaping. Good case study for cross-cutting concerns, not just “put Nginx in front and pray.”',
+    params: [
+      { id: 'rps', label: 'Incoming Requests / Sec', val: 200000, min: 10000, max: 2000000, step: 10000, unit: 'rps', mult: 1 },
+      { id: 'avg_req_kb', label: 'Avg Request Size', val: 2, min: 1, max: 64, step: 1, unit: 'KB', mult: 1024 },
+      { id: 'services', label: 'Downstream Services', val: 80, min: 5, max: 300, step: 5, unit: '', mult: 1 },
+      { id: 'retry_pct', label: 'Retries Triggered %', val: 3, min: 0, max: 20, step: 1, unit: '%', mult: 1 },
+      { id: 'cache_hit_pct', label: 'Edge Cache Hit %', val: 25, min: 0, max: 80, step: 5, unit: '%', mult: 1 },
+      { id: 'auth_ms', label: 'Auth / Policy Cost', val: 3, min: 1, max: 25, step: 1, unit: 'ms', mult: 1 },
+    ],
+    calc(p) {
+      const effectiveRqps = p.rps * (1 + p.retry_pct/100) * (1 - p.cache_hit_pct/100);
+      const wqps = p.rps * 0.02;
+      const rqps = effectiveRqps;
+      const storPerDay = p.rps * DAY * 300;
+      const bwOut = rqps * p.avg_req_kb * 1024 * 8;
+      const servers = Math.ceil(rqps / 8000);
+      const cacheGB = (p.rps * p.avg_req_kb * 1024 * 60) / 1e9;
+      const cost = estimateCost(servers, 4, 8, storPerDay, bwOut, cacheGB, true);
+      return { wqps, rqps, storPerDay, bwOut, servers, cacheGB, cost,
+        extras: [
+          { label: 'Effective routed RPS', val: fmtNum(rqps), color: 'teal' },
+          { label: 'Policy checks / sec', val: fmtNum(p.rps), color: 'purple' },
+          { label: 'Retry amplification', val: (p.retry_pct).toFixed(0) + '%', color: 'coral' },
+          { label: 'Downstream service fanout', val: fmtNum(p.services), color: 'amber' },
+          { label: 'Edge cache shielded', val: p.cache_hit_pct + '%', color: 'green' },
+          { label: 'Auth budget / req', val: p.auth_ms + ' ms', color: 'blue' },
+        ]};
+    },
+    insights: [
+      'Gateway is where distributed-systems sins become concentrated: auth, quotas, retries, request validation, header normalization, canary routing, and correlation IDs.',
+      'Never let gateway retries blindly replay non-idempotent POSTs. Use idempotency keys or only retry safe/idempotent routes.',
+      'Per-tenant rate limits belong here, but tenant-specific business rules should not. Gateway should enforce policy, not become a 12,000-line god object.',
+      'Hot path budget is tiny: TLS + auth + routing + observability often has to stay under 10-20ms.',
+      'If one downstream is flaky, circuit-break it here to avoid retry storms that melt everything else.',
+      'Gateway config rollout is production-risky. Treat config as code, validate offline, canary by tenant/region, and keep last-known-good snapshots.',
+    ],
+    fnReqs: [
+      { feat: 'Routing & aggregation', req: 'Route requests to 80+ services and optionally aggregate backend responses', why: 'Typical BFF/API gateway job. Hide service topology from clients and keep versioning sane.' },
+      { feat: 'Auth & policy', req: 'Validate JWT/API keys, enforce RBAC/tenant policies, attach identity context', why: 'Centralizing auth avoids every service re-implementing the same bugs with different fonts.' },
+      { feat: 'Rate limiting', req: 'Per-tenant, per-endpoint, burst + sustained quotas', why: 'Protect downstreams and support product-tier limits. Usually token bucket or sliding window at edge + gateway.' },
+      { feat: 'Traffic shaping', req: 'Canary, shadow, header-based routing, retries, circuit breaking, timeout policies', why: 'This is the operational control plane for service-to-client traffic.' },
+      { feat: 'Observability', req: 'Request tracing, metrics, audit logs, structured access logs', why: 'Gateway is the best place to stamp correlation IDs and collect end-to-end ingress visibility.' },
+    ],
+    nfnReqs: [
+      { attr: 'Latency (P99)', val: '< 20ms gateway overhead', why: 'Gateway overhead compounds every request. Budget it like a miser.' },
+      { attr: 'Availability', val: '99.99%', why: 'Gateway is a choke point. Multi-AZ + stateless fleet + fast failover are table stakes.' },
+      { attr: 'Config safety', val: 'Canary + rollback < 2 min', why: 'Bad routing config can take out the whole platform faster than a code deploy.' },
+      { attr: 'Isolation', val: 'Noisy tenant containment', why: 'Per-tenant quotas, priority lanes, and backpressure prevent one customer from becoming everybody’s hobby.' },
+      { attr: 'Security', val: 'mTLS/JWT validation, WAF integration, auditability', why: 'Ingress is where the internet attempts to disappoint you.' },
+    ],
+    meta: {category:'microservices', difficulty:'staff', pattern:'read-heavy', consistency:'n/a', dominantBottleneck:'gateway-cpu', storageEngine:'none', cacheStrategy:'edge-cache'},
+    formulas: [
+      { label: 'Effective RPS', expr: 'incoming_rps × (1 + retry%) × (1 - cache_hit%)' },
+      { label: 'Gateway servers', expr: 'effective_rps / 8000' },
+      { label: 'Bandwidth', expr: 'effective_rps × avg_req_size × 8' },
+      { label: 'Retry amplification', expr: 'incoming_rps × retry_pct' },
+    ],
+    arch: {
+      nodes: [
+        { id: 'client', label: 'Clients', icon: '📱', tech: 'Web/Mobile/3P', layer: 'client', why: 'External callers. Expect stable API contracts and zero sympathy.' },
+        { id: 'edge', label: 'Edge / WAF', icon: '🛡️', tech: 'CDN + WAF', layer: 'edge', why: 'TLS termination, bot filtering, static caching, coarse DDoS protection.' },
+        { id: 'gw', label: 'Gateway', icon: '🚪', tech: 'Envoy/Kong/NGINX', layer: 'app', why: 'Routing, auth, rate limiting, retries, canary, request normalization.' },
+        { id: 'auth', label: 'Auth / Policy', icon: '🔐', tech: 'OPA/AuthZ', layer: 'app', why: 'JWT verification, RBAC/ABAC, tenant policies.' },
+        { id: 'disc', label: 'Service Discovery', icon: '🧭', tech: 'Consul/Eureka', layer: 'infra', why: 'Route to healthy instances, support weighted/canary traffic.' },
+        { id: 'svc', label: 'Backend Services', icon: '⚙️', tech: 'Go/Java/Python', layer: 'app', why: 'Actual business services, which would like to not be DDOSed by their own gateway.' },
+        { id: 'rl', label: 'Rate Limit Store', icon: '🗄️', tech: 'Redis', layer: 'data', why: 'Token bucket counters, quota state, burst tracking.' },
+        { id: 'obs', label: 'Observability', icon: '📊', tech: 'Prometheus + OTEL', layer: 'infra', why: 'Ingress metrics, traces, error rates, latency, audit logs.' },
+      ],
+      flows: [
+        { label: 'Hot Path: Request Routing', type: 'hot', nodes: ['client','edge','gw','auth','svc'] },
+        { label: 'Rate Limit Check', type: 'async', nodes: ['gw','rl'] },
+        { label: 'Observability', type: 'async', nodes: ['gw','obs'] },
+      ],
+      choices: [
+        { component: 'Envoy-style data plane', icon: 'route', color: 'teal', why: 'High-performance L7 proxy with rich traffic policy and xDS-driven config.', alternatives: 'NGINX/Kong/Traefik' },
+        { component: 'Redis for quota state', icon: 'database', color: 'amber', why: 'Fast atomic counters for token buckets/sliding windows.', alternatives: 'Local memory only (bad for distributed limits), DynamoDB (slower but durable)' },
+      ]
+    },
+    assumptions: [
+      { key: 'Peak ingress', val: '200K RPS' },
+      { key: 'Gateway capacity', val: '8K RPS / node' },
+      { key: 'Retry rate', val: '3%' },
+      { key: 'Cache hit', val: '25%' },
+    ],
+    incidents: [
+      { incident: 'Retry Storm', symptom: 'One backend slows down, gateway retries triple load, and the entire fleet goes from “degraded” to “spectacularly on fire.”', fix: 'Bound retries, jitter, per-route budgets, and circuit breakers. Retry only idempotent operations.' },
+      { incident: 'Bad Config Rollout', symptom: 'A routing rule sends 100% of checkout traffic to the canary. Humans rediscover religion.', fix: 'Static validation + dry-run + staged rollout + one-click rollback + config diff review.' },
+    ],
+    interview: {
+      clarifying: 'Is this pure north-south ingress, an internal service mesh gateway, or a BFF aggregator? I’ll assume external API gateway for 80 microservices, 200K RPS, multi-tenant SaaS, and strict auth/rate-limit requirements.',
+      functional: 'Route requests, authenticate/authorize, enforce quotas, apply timeout/retry/circuit policies, optionally aggregate responses, and emit traces/logs/metrics.',
+      nonFunctional: 'P99 overhead <20ms, 99.99% availability, safe config rollout, tenant isolation, auditability, and graceful degradation when downstreams are unhealthy.',
+      capacity: '200K RPS ingress. With 25% cache shield and 3% retries, routed traffic ~154K RPS. At 8K RPS/node, ~20 gateway nodes before headroom.',
+      architecture: 'Clients → CDN/WAF → Gateway → auth/policy + rate-limit Redis + service discovery → downstream services. OTEL traces and access logs emitted asynchronously.',
+      tradeoffs: 'Centralizing cross-cutting concerns reduces duplication but creates a critical choke point. Keep business logic out. Gateway retries improve availability until they become a distributed arson kit.',
+      staffMoves: 'Start with auth + routing + quotas. Add canary/shadow, then response aggregation only where justified. Split control plane from data plane early if config churn is high.',
+    }
+  },
+  {
+    id: 'kafka-bus',
+    name: 'Kafka Event Bus',
+    icon: 'ti-arrows-shuffle',
+    desc: 'Company-wide event backbone for microservices. Topic design, partitioning, ordering, replay, consumer lag, DLQ, schema evolution, and exactly-once illusions humans keep falling for.',
+    params: [
+      { id: 'events_per_day', label: 'Events / Day', val: 2000, min: 100, max: 20000, step: 100, unit: 'M', mult: 1e6 },
+      { id: 'event_size', label: 'Avg Event Size', val: 2, min: 1, max: 32, step: 1, unit: 'KB', mult: 1024 },
+      { id: 'partitions', label: 'Partitions / Hot Topic', val: 96, min: 6, max: 512, step: 2, unit: '', mult: 1 },
+      { id: 'consumer_groups', label: 'Consumer Groups', val: 25, min: 1, max: 200, step: 1, unit: '', mult: 1 },
+      { id: 'retention_days', label: 'Retention', val: 7, min: 1, max: 30, step: 1, unit: 'days', mult: 1 },
+      { id: 'dup_pct', label: 'Duplicate / Retry %', val: 1, min: 0, max: 10, step: 1, unit: '%', mult: 1 },
+    ],
+    calc(p){
+      const rqps = (p.events_per_day * (1 + p.dup_pct/100)) / DAY;
+      const wqps = rqps;
+      const storPerDay = p.events_per_day * p.event_size * 1024;
+      const retained = storPerDay * p.retention_days * 3;
+      const bwOut = rqps * p.event_size * 1024 * 8 * Math.min(p.consumer_groups, 8);
+      const servers = Math.ceil(rqps / 15000);
+      const cacheGB = 0;
+      const cost = estimateCost(servers, 8, 32, storPerDay, bwOut, cacheGB, true);
+      return { wqps, rqps, storPerDay, bwOut, servers, cacheGB, cost,
+        extras: [
+          { label: 'Retention storage (3× repl)', val: fmtBytes(retained), color: 'amber' },
+          { label: 'Per-partition avg ingest', val: fmtNum(rqps / p.partitions) + '/s', color: 'teal' },
+          { label: 'Consumer groups', val: fmtNum(p.consumer_groups), color: 'purple' },
+          { label: 'Duplicate / retry tax', val: p.dup_pct + '%', color: 'coral' },
+          { label: 'Replay window', val: p.retention_days + ' days', color: 'green' },
+          { label: 'Ordering scope', val: 'partition key only', color: 'blue' },
+        ]};
+    },
+    insights: [
+      'Kafka gives ordering per partition, not across a topic. Humans hear “ordered” and immediately overestimate it by a factor of 100.',
+      'Pick partition key by business entity: orderId, userId, accountId. That keeps causally related events ordered and spreads load.',
+      'Consumer lag is a first-class SLO. If lag is growing, you are not “fine but delayed”; you are building a time bomb with timestamps.',
+      'Transactional outbox beats dual writes. DB commit + event publish as separate steps is how you create haunted data.',
+      'Exactly-once is usually “exactly-once-ish if producer idempotence + transactions + careful consumer semantics.” Design consumers to be idempotent anyway.',
+    ],
+    fnReqs: [
+      { feat: 'Publish events', req: 'Services publish domain events with schema validation and partitioning', why: 'Event bus is the integration fabric between services.' },
+      { feat: 'Consume & replay', req: 'Consumers independently process events, rewind offsets, bootstrap new services from history', why: 'Replay is one of Kafka’s superpowers and also one of its favorite ways to expose bad consumer design.' },
+      { feat: 'DLQ & poison pill handling', req: 'Malformed/unprocessable events must not permanently stall consumers', why: 'Bad records happen. Pretending otherwise is a management technique, not an engineering one.' },
+      { feat: 'Schema evolution', req: 'Backward-compatible changes with registry enforcement', why: 'Without schema discipline, the event bus becomes a distributed rumor mill.' },
+      { feat: 'Multi-team isolation', req: 'Topic ownership, quotas, ACLs, retention, and tenancy boundaries', why: 'Shared platforms die by a thousand “just one more consumer group” cuts.' },
+    ],
+    nfnReqs: [
+      { attr: 'Throughput', val: '20K+ events/sec hot topics', why: 'Broker throughput and partition count are the first scaling knobs.' },
+      { attr: 'Durability', val: '3× replication + min ISR', why: 'If the event bus drops data, half the company’s “source of truth” turns into fan fiction.' },
+      { attr: 'Recovery', val: 'Replay within retention window', why: 'Consumers should rebuild state from retained topics after outages or new deployments.' },
+      { attr: 'Backpressure', val: 'Lag alarms + throttling + autoscale', why: 'Consumers always look brave until a hot partition introduces them to reality.' },
+      { attr: 'Security', val: 'ACLs, mTLS/SASL, schema ownership', why: 'Event streams often contain the spicy data people forgot to classify.' },
+    ],
+    meta: {category:'streaming', difficulty:'staff', pattern:'event-driven', consistency:'eventual', dominantBottleneck:'partition-hotspots', storageEngine:'kafka', cacheStrategy:'none'},
+    formulas: [
+      { label: 'Ingest QPS', expr: 'events_per_day / 86400' },
+      { label: 'Per-partition QPS', expr: 'ingest_qps / partitions' },
+      { label: 'Retention storage', expr: 'storage_per_day × retention_days × replication_factor' },
+    ],
+    arch: {
+      nodes: [
+        { id: 'prod', label: 'Producers', icon: '📦', tech: 'Microservices', layer: 'app', why: 'Publish domain events after local transaction commit.' },
+        { id: 'outbox', label: 'Outbox / CDC', icon: '🧾', tech: 'DB + Debezium', layer: 'data', why: 'Eliminate dual-write bugs by streaming committed DB changes.' },
+        { id: 'broker', label: 'Kafka Cluster', icon: '📨', tech: 'Kafka', layer: 'async', why: 'Partitioned durable log with retention and consumer groups.' },
+        { id: 'schema', label: 'Schema Registry', icon: '📋', tech: 'Avro/Proto', layer: 'async', why: 'Compatibility rules and producer/consumer contracts.' },
+        { id: 'cons', label: 'Consumers', icon: '⚙️', tech: 'Go/Java services', layer: 'app', why: 'Materialize projections, trigger workflows, send notifications, update caches.' },
+        { id: 'dlq', label: 'DLQ', icon: '🗑️', tech: 'Kafka topic', layer: 'async', why: 'Poison messages go here instead of holding the entire pipeline hostage.' },
+      ],
+      flows: [
+        { label: 'Publish via Outbox', type: 'hot', nodes: ['prod','outbox','broker'] },
+        { label: 'Consume / Project', type: 'hot', nodes: ['broker','cons'] },
+        { label: 'Failure Path', type: 'async', nodes: ['cons','dlq'] },
+      ],
+      choices: [
+        { component: 'Transactional outbox + CDC', icon: 'database', color: 'teal', why: 'DB commit and event publish become one reliable flow instead of a dual-write trap.', alternatives: 'Direct producer publish after DB write' },
+      ]
+    },
+    assumptions: [
+      { key: 'Hot topic throughput', val: '20K events/sec' },
+      { key: 'Replication', val: '3×' },
+      { key: 'Retention', val: '7 days' },
+    ],
+    incidents: [
+      { incident: 'Hot Partition', symptom: 'One customer/account key receives 40% of traffic. One partition lags by hours while others nap peacefully.', fix: 'Revisit partition key, add sub-sharding, isolate whales, or split topic by domain.' },
+      { incident: 'Poison Event Loop', symptom: 'Consumer crashes on one bad payload and restarts forever, like a very determined idiot.', fix: 'Bound retries, DLQ after N attempts, capture offset + payload + error reason.' },
+    ],
+    interview: {
+      clarifying: 'I’ll assume this is an internal event backbone, not just one team’s queue. Requirements: multi-team publish/subscribe, replay, schema governance, DLQ, and outbox/CDC integration.',
+      functional: 'Publish domain events, retain and replay them, support independent consumer groups, enforce schemas, and isolate failures with DLQs and quotas.',
+      nonFunctional: 'High throughput, strong durability, partition-level ordering, consumer lag visibility, and safe evolution across many teams.',
+      capacity: '2B events/day ≈ 23K/sec. With 96 partitions, ~240 events/sec/partition average, leaving room for spikes and hot keys.',
+      architecture: 'Service DB → outbox/CDC → Kafka → consumers/materialized views/notifications/search indexers. Schema registry gates compatibility.',
+      tradeoffs: 'More partitions improve parallelism but increase broker overhead and rebalance pain. More retention improves replay but grows storage cost.',
+      staffMoves: 'Start with a few well-owned topics, strict schema rules, and outbox. Add platform self-service only after governance and observability are boringly reliable.',
+    }
+  },
+  {
+    id: 'feature-flags',
+    name: 'Feature Flag / Config Platform',
+    icon: 'ti-toggle-right',
+    desc: 'LaunchDarkly-style control plane for feature flags, dynamic config, kill switches, experiments, and tenant targeting. Because shipping code is fun until you need to unship it in 30 seconds.',
+    params: [
+      { id: 'clients', label: 'SDK Clients', val: 50, min: 1, max: 500, step: 1, unit: 'M', mult: 1e6 },
+      { id: 'flags', label: 'Active Flags', val: 5000, min: 100, max: 50000, step: 100, unit: '', mult: 1 },
+      { id: 'evals_per_user', label: 'Flag Evals / User / Day', val: 40, min: 1, max: 200, step: 1, unit: '', mult: 1 },
+      { id: 'stream_pct', label: 'Streaming SDK %', val: 70, min: 0, max: 100, step: 5, unit: '%', mult: 1 },
+      { id: 'rule_bytes', label: 'Avg Rule Payload', val: 4, min: 1, max: 32, step: 1, unit: 'KB', mult: 1024 },
+      { id: 'update_per_hr', label: 'Flag Updates / Hr', val: 200, min: 1, max: 5000, step: 10, unit: '', mult: 1 },
+    ],
+    calc(p){
+      const evalsDay = p.clients * p.evals_per_user;
+      const rqps = evalsDay / DAY;
+      const wqps = p.update_per_hr / 3600;
+      const storPerDay = p.flags * p.rule_bytes;
+      const bwOut = rqps * 300 * 8;
+      const servers = Math.ceil(rqps / 20000);
+      const cacheGB = (p.flags * p.rule_bytes * 5) / 1e9;
+      const cost = estimateCost(servers, 4, 8, storPerDay, bwOut, cacheGB, true);
+      return { wqps, rqps, storPerDay, bwOut, servers, cacheGB, cost,
+        extras:[
+          { label: 'SDK eval QPS', val: fmtNum(rqps), color: 'teal' },
+          { label: 'Config update rate', val: fmtNum(wqps) + '/s', color: 'amber' },
+          { label: 'Streaming clients', val: fmtNum(p.clients * p.stream_pct/100), color: 'purple' },
+          { label: 'Rule cache', val: fmtBytes(cacheGB*1e9), color: 'green' },
+          { label: 'Kill-switch target', val: '< 5 sec global propagation', color: 'coral' },
+          { label: 'Experiment flags', val: '~10% of total', color: 'blue' },
+        ]};
+    },
+    insights:[
+      'Flag systems are a control plane. Treat them like one: versioned configs, audits, staged rollout, rollback, blast-radius limits.',
+      'Evaluation should happen locally in SDKs/edge where possible. Don’t turn every page load into a synchronous “may I render the button?” network pilgrimage.',
+      'Kill switches are the reason this system exists. Global propagation time matters more than whether the UI for creating flags has rounded corners.',
+      'Flags rot. Add ownership, expiry dates, and “this flag has outlived three PMs” alerts.',
+    ],
+    fnReqs:[
+      { feat:'Flag evaluation', req:'Evaluate feature flags/config by user, tenant, region, app version, cohort', why:'Targeting and rollout rules are the core value proposition.'},
+      { feat:'Streaming updates', req:'Push config changes to SDKs/edge within seconds', why:'Kill switch and incident response use cases demand near-real-time propagation.'},
+      { feat:'Experiments', req:'Support percentage rollouts and experiment bucketing', why:'A/B tests and safe rollouts need deterministic hashing and exposure tracking.'},
+      { feat:'Audit trail', req:'Track who changed what, when, and why', why:'Because “I thought I was editing staging” is not a compliance strategy.'},
+      { feat:'Fallbacks', req:'SDKs must continue evaluating with last-known-good data during outages', why:'Control plane outages should not brick the product.'},
+    ],
+    nfnReqs:[
+      { attr:'Propagation', val:'P95 < 5s globally', why:'Kill switches and rollback speed matter more than most dashboard features.'},
+      { attr:'Availability', val:'99.99% control plane, 99.999% SDK eval availability', why:'SDKs should keep working offline from cached state.'},
+      { attr:'Correctness', val:'Deterministic bucketing + versioned rules', why:'Experiment results are garbage if targeting is inconsistent across platforms.'},
+      { attr:'Security', val:'RBAC + signed SDK payloads', why:'A feature flag system can become a remote-control panel for your whole app.'},
+      { attr:'Operability', val:'Audit, ownership, expiry, stale-flag cleanup', why:'Without lifecycle discipline, flags become a landfill with targeting rules.'},
+    ],
+    meta:{category:'microservices', difficulty:'senior', pattern:'read-heavy', consistency:'eventual', dominantBottleneck:'fanout-streaming', storageEngine:'postgres', cacheStrategy:'sdk-cache'},
+    formulas:[
+      { label:'Eval QPS', expr:'clients × evals_per_user / 86400' },
+      { label:'Update QPS', expr:'updates_per_hr / 3600' },
+      { label:'Streaming clients', expr:'clients × stream_pct' },
+    ],
+    arch:{
+      nodes:[
+        { id:'ui', label:'Admin UI', icon:'🧪', tech:'Web Console', layer:'client', why:'Create/edit flags, rollouts, experiments, approvals.'},
+        { id:'api', label:'Control Plane API', icon:'⚙️', tech:'Go/Java', layer:'app', why:'Stores flags, validates rules, emits config changes.'},
+        { id:'db', label:'Flag Store', icon:'🛢️', tech:'Postgres', layer:'data', why:'Source of truth for flags, segments, audits, approvals.'},
+        { id:'stream', label:'Update Stream', icon:'📨', tech:'Kafka/NATS', layer:'async', why:'Fan out config changes to edge/SDK relays.'},
+        { id:'relay', label:'Relay / Edge Cache', icon:'📡', tech:'Redis + SSE', layer:'edge', why:'Keeps SDK connections local and hot; reduces control plane fanout pain.'},
+        { id:'sdk', label:'SDK Clients', icon:'📱', tech:'Mobile/Web/Backend SDK', layer:'client', why:'Evaluate flags locally from cached rule data.'},
+      ],
+      flows:[
+        { label:'Flag Update', type:'hot', nodes:['ui','api','db','stream','relay','sdk'] },
+        { label:'Local Evaluation', type:'hot', nodes:['sdk'] },
+      ],
+      choices:[
+        { component:'Local SDK evaluation', icon:'bolt', color:'teal', why:'Avoid network dependency on every flag check; only stream rule changes.', alternatives:'Remote eval service on every request' },
+      ]
+    },
+    assumptions:[
+      { key:'SDK clients', val:'50M' },
+      { key:'Flag propagation target', val:'<5s' },
+      { key:'Flags', val:'5K active' },
+    ],
+    incidents:[
+      { incident:'Bad Rule Push', symptom:'A malformed targeting rule disables checkout for one region. Product managers briefly discover humility.', fix:'Schema validation, dry-run targeting preview, approval gates, one-click rollback.' },
+    ],
+    interview:{
+      clarifying:'I’ll treat this as LaunchDarkly-style feature flags + config + experiments for 50M SDK clients with global propagation and offline evaluation.',
+      functional:'Manage flags, evaluate by context, stream updates, run experiments, audit changes, and support kill switches.',
+      nonFunctional:'Very high read availability, sub-5s propagation, deterministic bucketing, and cached offline evaluation.',
+      capacity:'50M clients × 40 evals/day ≈ 23K evals/sec. Updates are tiny but global fanout is the hard part.',
+      architecture:'Control plane stores versioned flags → change stream → relay/edge → SDK caches. SDK evaluates locally and only phones home for refresh/analytics.',
+      tradeoffs:'Remote evaluation centralizes logic but adds latency and outages to every request. Local evaluation is faster but requires careful payload size and propagation design.',
+      staffMoves:'Start with local SDK eval + simple targeting. Add experiments, approvals, ownership, and stale-flag cleanup before the flag graveyard becomes a protected historical site.',
+    }
+  },
+  {
+    id: 'fraud-detection',
+    name: 'Fraud Detection / Risk Engine',
+    icon: 'ti-shield-lock',
+    desc: 'Real-time payment/account risk scoring with feature lookup, rules, ML scoring, and asynchronous case review. Great for event-driven architecture, latency budgets, and “you can’t be strongly consistent with every upstream system” conversations.',
+    params: [
+      { id:'txn_per_day', label:'Transactions / Day', val: 150, min: 10, max: 2000, step: 10, unit:'M', mult:1e6 },
+      { id:'feature_count', label:'Features / Score', val: 120, min:20, max:500, step:10, unit:'', mult:1 },
+      { id:'model_ms', label:'Model Inference', val: 12, min:2, max:100, step:1, unit:'ms', mult:1 },
+      { id:'manual_review_pct', label:'Manual Review %', val: 0.8, min:0, max:10, step:0.1, unit:'%', mult:1 },
+      { id:'false_positive', label:'False Positive %', val: 1.5, min:0.1, max:10, step:0.1, unit:'%', mult:1 },
+      { id:'feature_ttl', label:'Feature Cache TTL', val: 15, min:1, max:120, step:1, unit:'min', mult:1 },
+    ],
+    calc(p){
+      const rqps = p.txn_per_day / DAY;
+      const wqps = rqps * 1.3;
+      const storPerDay = p.txn_per_day * 2500;
+      const bwOut = rqps * 4096 * 8;
+      const servers = Math.ceil(rqps / 1500);
+      const cacheGB = (rqps * p.feature_count * 40 * p.feature_ttl * 60) / 1e9;
+      const cost = estimateCost(servers, 8, 16, storPerDay, bwOut, cacheGB, true);
+      return { wqps, rqps, storPerDay, bwOut, servers, cacheGB, cost,
+        extras:[
+          { label:'Decision QPS', val: fmtNum(rqps), color:'teal' },
+          { label:'Manual review / day', val: fmtNum(p.txn_per_day * p.manual_review_pct/100), color:'amber' },
+          { label:'False positives / day', val: fmtNum(p.txn_per_day * p.false_positive/100), color:'coral' },
+          { label:'Feature cache', val: fmtBytes(cacheGB*1e9), color:'green' },
+          { label:'Inference budget', val: p.model_ms + ' ms', color:'purple' },
+          { label:'Block/allow SLA', val:'< 100 ms', color:'blue' },
+        ]};
+    },
+    insights:[
+      'Fraud engines are latency-constrained joins against messy reality: device graph, account history, merchant risk, velocity windows, chargebacks, geolocation, and rules written by humans who discovered regex.',
+      'Separate online features from offline training features, but keep a consistent feature definition contract or you’ll train on one universe and serve in another.',
+      'Rules and ML should coexist. Rules catch obvious badness fast; models rank nuanced risk. Case-review queue handles the gray zone.',
+      'Risk decisions should be explainable enough for analysts and auditors, even if the model itself is fancier than the humans running it.',
+    ],
+    fnReqs:[
+      { feat:'Real-time risk score', req:'Score payment/login/signup within 100ms and return allow / step-up / deny / review', why:'The business event can’t wait 4 seconds for your model to have a philosophical moment.'},
+      { feat:'Feature lookup', req:'Join recent user/account/device/merchant features at request time', why:'Velocity and behavioral features are the meat of the signal.'},
+      { feat:'Rules + model', req:'Support analyst-authored rules plus ML model inference', why:'Rules are fast to patch during incidents; models catch subtle patterns.'},
+      { feat:'Manual review queue', req:'Route uncertain/high-value cases to ops analysts', why:'Not every edge case deserves an automatic denial and an angry customer.'},
+      { feat:'Feedback loop', req:'Ingest chargebacks, analyst outcomes, and downstream labels for retraining', why:'Fraud changes. So must the model, preferably before the fraudsters publish the blog post.'},
+    ],
+    nfnReqs:[
+      { attr:'Decision latency', val:'P99 < 100ms', why:'Checkout/login/signup flows have hard UX budgets.'},
+      { attr:'Availability', val:'99.99%', why:'If the engine dies, you either block revenue or let bad traffic through. Both are expensive hobbies.'},
+      { attr:'Explainability', val:'Top reasons attached to every score', why:'Analysts, merchants, and auditors all want reasons, not vibes.'},
+      { attr:'Drift detection', val:'Feature and model drift alarms', why:'Yesterday’s fraud model is tomorrow’s confidence trick.'},
+      { attr:'Data quality', val:'No missing critical features on hot path', why:'Silent nulls are how fraud pipelines lie politely.'},
+    ],
+    meta:{category:'ml', difficulty:'architect', pattern:'read-heavy', consistency:'eventual', dominantBottleneck:'feature-lookup', storageEngine:'cassandra', cacheStrategy:'feature-cache'},
+    formulas:[
+      { label:'Decision QPS', expr:'transactions_per_day / 86400' },
+      { label:'Review volume', expr:'transactions_per_day × manual_review_pct' },
+      { label:'Feature cache', expr:'qps × feature_count × feature_bytes × TTL' },
+    ],
+    arch:{
+      nodes:[
+        { id:'txn', label:'Txn / Auth Service', icon:'💳', tech:'Payment/Auth', layer:'client', why:'Calls risk engine synchronously before approval.'},
+        { id:'risk', label:'Risk API', icon:'🛡️', tech:'Go/Java', layer:'app', why:'Orchestrates feature fetch, rules, model inference, and decisioning.'},
+        { id:'feat', label:'Feature Store', icon:'🧠', tech:'Redis/Cassandra', layer:'data', why:'Recent aggregates and point-in-time features for scoring.'},
+        { id:'model', label:'Model Service', icon:'🤖', tech:'Python/vLLM/XGBoost', layer:'app', why:'Returns risk score + top contributing features.'},
+        { id:'rules', label:'Rules Engine', icon:'📏', tech:'Drools/Custom', layer:'app', why:'Hard blocks, allowlists, emergency patches, analyst-owned logic.'},
+        { id:'review', label:'Case Queue', icon:'🧾', tech:'Kafka + Ops UI', layer:'async', why:'Send uncertain cases to analysts and collect labels.'},
+      ],
+      flows:[
+        { label:'Hot Path: Risk Decision', type:'hot', nodes:['txn','risk','feat','rules','model','txn'] },
+        { label:'Manual Review', type:'async', nodes:['risk','review'] },
+      ],
+      choices:[
+        { component:'Feature cache + online store', icon:'database', color:'teal', why:'Most risk latency is feature lookup, not the model itself.', alternatives:'Compute all features on demand' },
+      ]
+    },
+    assumptions:[
+      { key:'Transactions/day', val:'150M' },
+      { key:'Decision SLA', val:'<100ms' },
+      { key:'Manual review', val:'0.8%' },
+    ],
+    incidents:[
+      { incident:'Feature Store Lag', symptom:'Velocity features are 20 minutes stale, fraud spikes, and everyone suddenly “trusts intuition” again.', fix:'Lag alarms, freshness watermark checks, and degraded-mode rules when feature freshness is poor.' },
+    ],
+    interview:{
+      clarifying:'Assume real-time card/payment risk scoring before authorization. We need sub-100ms decisions, online feature lookup, ML + rules, and a manual review queue.',
+      functional:'Score requests, join features, apply rules + model, return decision, route edge cases to review, and learn from outcomes.',
+      nonFunctional:'Low latency, high availability, explainability, feature freshness, and strong monitoring for drift and false positives.',
+      capacity:'150M/day ≈ 1.7K QPS average, but peak is several times higher. Feature lookup dominates latency; model inference is only one slice.',
+      architecture:'Payment/Auth → Risk API → feature store + rules + model → decision. Async case review + feedback loop updates labels and model training data.',
+      tradeoffs:'Stronger consistency on every upstream signal is unrealistic. Prefer bounded staleness + freshness metadata + degraded fallback rules.',
+      staffMoves:'Start with rules + a small feature set. Add online feature store, then model scoring, then feedback-driven retraining and analyst tooling.',
+    }
+  },
+  {
+    id: 'llm-agent-platform',
+    name: 'LLM Agent Platform',
+    icon: 'ti-sparkles',
+    desc: 'Multi-tenant AI platform for chat, RAG, tool calling, agents, memory, evals, guardrails, and cost controls. Basically the modern way to burn GPUs while pretending it is “just a backend service.”',
+    params: [
+      { id:'dau', label:'Daily Active Users', val: 5, min:1, max:100, step:1, unit:'M', mult:1e6 },
+      { id:'msgs_per_user', label:'Messages / User / Day', val: 8, min:1, max:100, step:1, unit:'', mult:1 },
+      { id:'prompt_tokens', label:'Prompt Tokens', val: 4000, min:500, max:64000, step:500, unit:'', mult:1 },
+      { id:'completion_tokens', label:'Completion Tokens', val: 800, min:100, max:8000, step:100, unit:'', mult:1 },
+      { id:'tool_calls_pct', label:'Tool Call %', val: 18, min:0, max:80, step:1, unit:'%', mult:1 },
+      { id:'cache_hit_pct', label:'Semantic Cache Hit %', val: 12, min:0, max:80, step:1, unit:'%', mult:1 },
+    ],
+    calc(p){
+      const msgDay = p.dau * p.msgs_per_user;
+      const rqps = msgDay / DAY;
+      const wqps = rqps;
+      const tokensDay = msgDay * (p.prompt_tokens + p.completion_tokens) * (1 - p.cache_hit_pct/100);
+      const storPerDay = msgDay * 6000;
+      const bwOut = rqps * 32 * 1024 * 8;
+      const servers = Math.ceil(rqps / 200);
+      const cacheGB = (msgDay * 1500) / 1e9;
+      const cost = estimateCost(servers, 16, 64, storPerDay, bwOut, cacheGB, true);
+      return { wqps, rqps, storPerDay, bwOut, servers, cacheGB, cost,
+        extras:[
+          { label:'Tokens / day', val: fmtNum(tokensDay), color:'coral' },
+          { label:'Tool-call turns / day', val: fmtNum(msgDay * p.tool_calls_pct/100), color:'amber' },
+          { label:'Semantic cache hit', val: p.cache_hit_pct + '%', color:'green' },
+          { label:'Concurrent sessions (est)', val: fmtNum(rqps * 30), color:'teal' },
+          { label:'Context window / turn', val: fmtNum(p.prompt_tokens + p.completion_tokens), color:'purple' },
+          { label:'GPU cost driver', val:'tokens > storage', color:'blue' },
+        ]};
+    },
+    insights:[
+      'The expensive part is usually tokens/GPU time, not the chat table. Optimize cache hit rate, prompt size, routing, and retrieval quality before inventing a bespoke vector-database religion.',
+      'Agent loops need budgets: max tool calls, max recursion depth, timeout per tool, total token budget, and “please stop before you DDoS Salesforce.”',
+      'RAG quality is often bottlenecked by chunking, metadata filters, and retrieval hygiene, not by which model has the shinier benchmark chart.',
+      'Multi-tenant AI systems need guardrails at several layers: prompt sanitization, tool allowlists, PII handling, rate limits, moderation, and per-tenant data isolation.',
+    ],
+    fnReqs:[
+      { feat:'Chat + streaming', req:'Low-latency chat completion with token streaming and conversation history', why:'Baseline UX for LLM products.'},
+      { feat:'RAG retrieval', req:'Ingest docs, embed, retrieve relevant chunks, cite sources, and cache answers', why:'Otherwise the model just hallucinates with excellent posture.'},
+      { feat:'Tool calling / agents', req:'Support planner-executor loops, tool schemas, retries, and human escalation', why:'Agent workflows are just distributed systems wearing prompt templates.'},
+      { feat:'Memory & session state', req:'Persist conversation, summaries, and user/workspace context', why:'Long sessions need summarization and bounded context, not infinite token bills.'},
+      { feat:'Evaluation & guardrails', req:'Track latency, cost, quality, hallucination rate, safety violations, and regression tests', why:'LLM platforms without evals are performance art.'},
+    ],
+    nfnReqs:[
+      { attr:'Latency', val:'P95 < 2.5s first token, <8s full answer', why:'Anything slower and users start clicking like lab mice.'},
+      { attr:'Cost control', val:'Per-tenant token budgets + caching + model routing', why:'GPU bills are nature’s way of teaching architecture.'},
+      { attr:'Isolation', val:'Tenant-scoped vector stores, memory, tools, and quotas', why:'Cross-tenant leakage is not an acceptable form of personalization.'},
+      { attr:'Reliability', val:'Graceful fallback when tools/vector DB/model provider fail', why:'One flaky dependency should not turn the chat app into a blank div.'},
+      { attr:'Observability', val:'Trace every turn: retrieval, prompt, tool calls, token counts, failures', why:'Debugging agent behavior without traces is just spiritual suffering.'},
+    ],
+    meta:{category:'ml', difficulty:'architect', pattern:'read-heavy', consistency:'eventual', dominantBottleneck:'gpu-tokens', storageEngine:'postgres+vector', cacheStrategy:'semantic-cache'},
+    formulas:[
+      { label:'Messages/day', expr:'DAU × messages_per_user' },
+      { label:'QPS', expr:'messages/day / 86400' },
+      { label:'Token/day', expr:'messages × (prompt + completion) × (1 - cache_hit%)' },
+    ],
+    arch:{
+      nodes:[
+        { id:'client', label:'Chat Client', icon:'💬', tech:'Web/Mobile', layer:'client', why:'User-facing chat UI with streaming tokens and citations.'},
+        { id:'api', label:'AI Gateway', icon:'🚪', tech:'Go API', layer:'app', why:'Auth, quotas, tracing, session routing, prompt assembly.'},
+        { id:'orch', label:'Agent Orchestrator', icon:'🧩', tech:'LangGraph/Custom', layer:'app', why:'Planner-executor loop, tool routing, retries, budgets, memory summarization.'},
+        { id:'vec', label:'Vector Store', icon:'🧠', tech:'pgvector/Qdrant', layer:'data', why:'Embeddings + metadata filters for RAG retrieval.'},
+        { id:'llm', label:'LLM Serving', icon:'🤖', tech:'OpenAI/vLLM', layer:'app', why:'Chat completion, tool-call JSON, summarization, embeddings.'},
+        { id:'tools', label:'Tool Connectors', icon:'🛠️', tech:'HTTP/DB/SaaS', layer:'app', why:'Search, CRM, ticketing, workflow, code execution, internal APIs.'},
+        { id:'cache', label:'Semantic Cache', icon:'🗄️', tech:'Redis', layer:'data', why:'Answer cache for repeated prompts / retrieval results / session summaries.'},
+        { id:'obs', label:'Eval + Traces', icon:'📊', tech:'OTEL + Langfuse', layer:'infra', why:'Prompt/tool traces, token cost, latency, quality scores, replay.'},
+      ],
+      flows:[
+        { label:'Hot Path: Chat + RAG', type:'hot', nodes:['client','api','orch','vec','llm','client'] },
+        { label:'Tool Call Loop', type:'async', nodes:['orch','tools','llm'] },
+        { label:'Caching / Evals', type:'async', nodes:['api','cache','obs'] },
+      ],
+      choices:[
+        { component:'Agent orchestrator with budgets', icon:'git-branch', color:'teal', why:'Without explicit state machine + budgets, “agent” just means “unbounded loop with a startup valuation.”', alternatives:'Raw recursive tool calling' },
+      ]
+    },
+    assumptions:[
+      { key:'DAU', val:'5M' },
+      { key:'Msgs/user/day', val:'8' },
+      { key:'Semantic cache', val:'12%' },
+    ],
+    incidents:[
+      { incident:'Tool Loop Runaway', symptom:'Agent repeatedly calls search + CRM tool 27 times because the planner has the survival instincts of a moth.', fix:'Max tool-call budget, loop detection, per-tool timeout, and fallback answer path.' },
+      { incident:'Vector Recall Regression', symptom:'Embedding model change silently drops retrieval quality, hallucinations spike, and everyone blames “the model.”', fix:'Offline eval set + shadow retrieval tests + embedding versioning + canary rollout.' },
+    ],
+    interview:{
+      clarifying:'Assume multi-tenant enterprise AI platform: chat, RAG, tools, agents, memory, observability, and cost controls. 5M DAU, 8 turns/day, some tool use.',
+      functional:'Chat completion, retrieval, tool calling, memory, streaming, citations, admin controls, evals, and tenant isolation.',
+      nonFunctional:'Latency, cost caps, reliability under provider/tool failures, observability, and data isolation.',
+      capacity:'5M × 8 = 40M turns/day ≈ 463 QPS average. Token volume, not request count, dominates cost and serving design.',
+      architecture:'Client → AI gateway → agent orchestrator → vector store + tools + LLM serving. Redis semantic cache and OTEL/Langfuse-style traces around every turn.',
+      tradeoffs:'Bigger models improve quality but torch cost/latency. Use routing, caching, retrieval quality, and summarization before defaulting to “buy more GPU.”',
+      staffMoves:'Phase 1 chat + RAG. Phase 2 tool calling. Phase 3 explicit agent state machine with budgets. Phase 4 evals, guardrails, and per-tenant governance.',
+    }
+  },
+  {
+    id: 'observability-platform',
+    name: 'Observability Platform',
+    icon: 'ti-chart-line',
+    desc: 'Metrics + logs + traces platform for microservices/Kubernetes. A nice case study because everybody wants observability until they see the cardinality bill.',
+    params:[
+      { id:'services', label:'Services', val: 400, min:10, max:5000, step:10, unit:'', mult:1 },
+      { id:'pods', label:'Pods / Instances', val: 8000, min:100, max:100000, step:100, unit:'', mult:1 },
+      { id:'metrics_per_pod', label:'Time-series / Pod', val: 250, min:20, max:2000, step:10, unit:'', mult:1 },
+      { id:'log_gb_day', label:'Logs / Day', val: 25, min:1, max:500, step:1, unit:'TB', mult:1e12 },
+      { id:'trace_qps', label:'Trace Spans / Sec', val: 50000, min:1000, max:1000000, step:1000, unit:'', mult:1 },
+      { id:'sample_pct', label:'Trace Sample %', val: 10, min:1, max:100, step:1, unit:'%', mult:1 },
+    ],
+    calc(p){
+      const rqps = p.trace_qps;
+      const wqps = p.pods * p.metrics_per_pod / 15;
+      const storPerDay = p.log_gb_day + (p.trace_qps * 300 * 86400 * p.sample_pct/100);
+      const bwOut = p.trace_qps * 600 * 8;
+      const servers = Math.ceil((p.trace_qps/5000) + (p.pods/500));
+      const cacheGB = (p.pods * p.metrics_per_pod * 16 * 6) / 1e9;
+      const cost = estimateCost(servers, 8, 32, storPerDay, bwOut, cacheGB, true);
+      return { wqps, rqps, storPerDay, bwOut, servers, cacheGB, cost,
+        extras:[
+          { label:'Metric samples / sec', val: fmtNum(wqps), color:'teal' },
+          { label:'Trace spans / sec', val: fmtNum(rqps * p.sample_pct/100), color:'purple' },
+          { label:'Log ingest / day', val: fmtBytes(p.log_gb_day), color:'amber' },
+          { label:'Cardinality risk', val:'services × labels × pods', color:'coral' },
+          { label:'Retention split', val:'hot 7d / warm 30d / cold 90d', color:'green' },
+          { label:'Sampling', val:p.sample_pct + '%', color:'blue' },
+        ]};
+    },
+    insights:[
+      'Observability platforms are data pipelines wearing a trench coat. The enemy is usually cardinality explosion, not raw CPU.',
+      'Metrics answer “what is happening,” logs answer “what exactly happened,” traces answer “where did the time go.” Use all three or enjoy debugging by astrology.',
+      'High-cardinality labels like userId, requestId, or raw path are how people accidentally spend the infra budget in a single dashboard refresh.',
+      'Trace sampling should be tail-aware for errors/slow requests, not just naive fixed-rate sampling.',
+    ],
+    fnReqs:[
+      { feat:'Metrics', req:'Collect infra + app metrics, alerts, dashboards, SLO burn rates', why:'Baseline ops visibility.'},
+      { feat:'Logs', req:'Ingest, index, search, retain, and redact logs', why:'Humans still need raw text when things go sideways.'},
+      { feat:'Traces', req:'Distributed tracing across services with baggage/correlation IDs', why:'Because 14-hop microservice calls are not self-explanatory.'},
+      { feat:'Alerting', req:'Threshold + anomaly + SLO alerts with dedupe/routing', why:'Alert storms are a lifestyle problem, not a feature.'},
+      { feat:'Cost controls', req:'Sampling, retention tiers, label policy, quotas', why:'Observability without governance becomes a financially creative writing exercise.'},
+    ],
+    nfnReqs:[
+      { attr:'Freshness', val:'< 10s metrics, < 30s logs/traces', why:'If the graph updates after the incident is over, it is less observability and more archaeology.'},
+      { attr:'Availability', val:'99.95%', why:'You really notice when the observability stack dies during an outage. Funny how that works.'},
+      { attr:'Search latency', val:'< 5s common log/trace queries', why:'Investigations are interactive.'},
+      { attr:'Retention', val:'Tiered hot/warm/cold', why:'Keep recent data fast and old data cheap.'},
+      { attr:'Governance', val:'Label quotas + redaction + tenant isolation', why:'Otherwise PII and cardinality both arrive uninvited.'},
+    ],
+    meta:{category:'infra', difficulty:'staff', pattern:'streaming', consistency:'eventual', dominantBottleneck:'cardinality', storageEngine:'prometheus+clickhouse', cacheStrategy:'query-cache'},
+    formulas:[
+      { label:'Metric ingest', expr:'pods × metrics_per_pod / scrape_interval' },
+      { label:'Trace ingest', expr:'trace_qps × sample_pct' },
+      { label:'Storage/day', expr:'logs + traces + TSDB chunks' },
+    ],
+    arch:{
+      nodes:[
+        { id:'apps', label:'Apps / Pods', icon:'📦', tech:'K8s workloads', layer:'client', why:'Emit metrics, logs, traces.'},
+        { id:'otel', label:'OTEL Collectors', icon:'🧰', tech:'OpenTelemetry', layer:'app', why:'Buffer, batch, sample, enrich, route telemetry.'},
+        { id:'prom', label:'Metrics TSDB', icon:'📈', tech:'Prometheus/Mimir', layer:'data', why:'Metrics storage + rule evaluation.'},
+        { id:'logs', label:'Log Store', icon:'📜', tech:'Loki/ClickHouse', layer:'data', why:'Searchable log ingestion with retention tiers.'},
+        { id:'trace', label:'Trace Store', icon:'🧵', tech:'Tempo/Jaeger', layer:'data', why:'Span storage and trace lookup.'},
+        { id:'ui', label:'Dashboards / Alerts', icon:'🚨', tech:'Grafana', layer:'app', why:'Dashboards, alerting, SLOs, incident response.'},
+      ],
+      flows:[
+        { label:'Telemetry Ingest', type:'hot', nodes:['apps','otel','prom','logs','trace'] },
+        { label:'Query / Alert', type:'hot', nodes:['ui','prom'] },
+      ],
+      choices:[
+        { component:'OTEL collectors', icon:'server', color:'teal', why:'Central place for sampling, enrichment, batching, and export fanout.', alternatives:'Every SDK exports directly to every backend' },
+      ]
+    },
+    assumptions:[
+      { key:'Pods', val:'8K' },
+      { key:'Metrics/pod', val:'250' },
+      { key:'Trace sample', val:'10%' },
+    ],
+    incidents:[
+      { incident:'Cardinality Explosion', symptom:'Someone adds userId to a metric label and Prometheus begins to scream in expensive.', fix:'Metric label policy, relabel/drop rules, CI linting for metrics, per-team quotas.' },
+    ],
+    interview:{
+      clarifying:'Assume internal observability platform for 400 services on Kubernetes: metrics, logs, traces, alerts, multi-team tenancy, and cost governance.',
+      functional:'Collect telemetry, power dashboards and alerts, search logs/traces, and support SLO monitoring.',
+      nonFunctional:'Freshness, high availability, searchable retention, tenant isolation, and strict cardinality/cost controls.',
+      capacity:'8K pods × 250 series each scraped every 15s → ~133K samples/sec. Trace spans and logs add separate ingest pipelines.',
+      architecture:'Apps → OTEL collectors → metrics TSDB + log store + trace store → Grafana/alerts. Sampling and label governance at collector layer.',
+      tradeoffs:'More detail improves debugging but destroys cost and performance. Sample smartly, tier retention, and outlaw cursed labels.',
+      staffMoves:'Start with managed OSS stack. Add cardinality governance and SLO tooling before building anything “clever.”',
+    }
+  }
+].filter(Boolean);function estimateCost(servers, vcpuPerServer, ramPerServer, storPerDay, bwOut, cacheGB, hasDB) {
   const compute = servers * (vcpuPerServer * COST.server_per_vcpu + ramPerServer * COST.server_per_gb_ram);
   const storageMonthly = storPerDay * 30 * COST.s3_per_gb / 1e9;
   const bwMonthly = (bwOut * DAY * 30) / (8 * 1e9) * COST.egress_per_gb;
@@ -3680,12 +4629,13 @@ function initParams(scenario) {
 function getParamMultiplied(scenario, p) {
   const out = {};
   scenario.params.forEach(param => {
-    out[param.id] = p[param.id] * (param.mult || 1);
+    out[param.id] = (p[param.id] ?? 0) * (param.mult || 1);
   });
   return out;
 }
 
 function formatParamDisplay(param, val) {
+  if (val == null || isNaN(val)) return '—';
   if (param.unit === 'M') return val.toFixed(val % 1 === 0 ? 0 : 1) + 'M';
   if (param.unit === 'B') return val.toFixed(val % 1 === 0 ? 0 : 1) + 'B';
   if (param.unit === ':1') return val + ':1';
@@ -3714,7 +4664,7 @@ function renderScenarioNav() {
     if (!state.favorites.has(a.id) && state.favorites.has(b.id)) return 1;
     return 0;
   });
-  nav.innerHTML = sorted.map(s => {
+  nav.innerHTML = sorted.filter(Boolean).map(s => {
     const diff = s.meta ? s.meta.difficulty : '';
     const diffBadge = diff ? `<span class="badge-diff ${diff}">${diff}</span>` : '';
     return `<button class="s-btn ${s.id === state.scenarioId ? 'active' : ''} ${state.favorites.has(s.id) ? 'starred' : ''}" data-id="${s.id}">
@@ -3733,7 +4683,7 @@ function renderScenarioNav() {
         return;
       }
       state.scenarioId = btn.dataset.id;
-      state.params = initParams(SCENARIOS.find(s => s.id === state.scenarioId));
+      state.params = initParams(SCENARIOS.find(s => s && s.id === state.scenarioId));
       renderAll();
     });
   });
@@ -3989,7 +4939,20 @@ document.addEventListener('keydown', function(e) {
       scheduleSave();
       renderScenarioNav();
       break;
+    case '?':
+      document.getElementById('kbd-modal-overlay').classList.toggle('open');
+      break;
+    case 't': case 'T':
+      document.getElementById('timer-toggle-btn').click();
+      break;
+    case ' ':
+      if (document.getElementById('timer-float').style.display !== 'none') {
+        e.preventDefault();
+        document.getElementById('timer-start-btn').click();
+      }
+      break;
     case 'Escape':
+      document.getElementById('kbd-modal-overlay').classList.remove('open');
       document.getElementById('arch-detail-close').click();
       document.getElementById('scenario-search').blur();
       break;
@@ -4049,8 +5012,8 @@ function renderCompareSelects() {
   const opts = SCENARIOS.map(s => `<option value="${s.id}">${s.name}</option>`).join('');
   selA.innerHTML = '<option value="">— Select —</option>' + opts;
   selB.innerHTML = '<option value="">— Select —</option>' + opts;
-  selA.addEventListener('change', () => { state.cmpA = selA.value ? SCENARIOS.find(s => s.id === selA.value) : null; renderCompare(); });
-  selB.addEventListener('change', () => { state.cmpB = selB.value ? SCENARIOS.find(s => s.id === selB.value) : null; renderCompare(); });
+  selA.onchange = () => { state.cmpA = selA.value ? SCENARIOS.find(s => s.id === selA.value) : null; renderCompare(); };
+  selB.onchange = () => { state.cmpB = selB.value ? SCENARIOS.find(s => s.id === selB.value) : null; renderCompare(); };
 }
 
 function renderCompare() {
@@ -4280,7 +5243,7 @@ function drawTrafficChart(rqps, wqps) {
   });
 }
 
-// ── AI Ask Claude ──
+// ── AI Ask Claude (streaming) ──
 function getAIContext() {
   const sc = SCENARIOS.find(s => s.id === state.scenarioId);
   if (!sc) return '';
@@ -4290,10 +5253,19 @@ function getAIContext() {
 }
 async function askClaude(question) {
   const responseEl = document.getElementById('ai-response');
+  const copyRow = document.getElementById('ai-response-copy');
   const btn = document.getElementById('ai-ask-btn');
-  responseEl.textContent = '';
-  responseEl.className = 'ai-response visible loading';
+  responseEl.innerHTML = '';
+  responseEl.className = 'ai-response visible';
+  copyRow.style.display = 'none';
   btn.disabled = true;
+
+  // Add streaming cursor
+  const cursor = document.createElement('span');
+  cursor.className = 'ai-cursor';
+  responseEl.appendChild(cursor);
+
+  let fullText = '';
   try {
     const res = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
@@ -4301,17 +5273,61 @@ async function askClaude(question) {
       body: JSON.stringify({
         model: 'claude-sonnet-4-6',
         max_tokens: 1000,
+        stream: true,
         system: 'You are a senior staff engineer helping with system design interview prep. Be direct, precise, practical. Respond in 2-4 short paragraphs. No markdown headers or bullet lists — conversational prose only.',
         messages: [{ role: 'user', content: `Context:\n${getAIContext()}\n\nQuestion: ${question}` }]
       })
     });
-    const data = await res.json();
-    const text = data.content?.map(b => b.text || '').join('') || 'No response received.';
-    responseEl.className = 'ai-response visible';
-    responseEl.textContent = text;
+
+    if (!res.ok || !res.body) throw new Error('Stream failed');
+    const reader = res.body.getReader();
+    const decoder = new TextDecoder();
+    let buffer = '';
+
+    while (true) {
+      const { value, done } = await reader.read();
+      if (done) break;
+      buffer += decoder.decode(value, { stream: true });
+      const lines = buffer.split('\n');
+      buffer = lines.pop() || '';
+      for (const line of lines) {
+        if (!line.startsWith('data: ')) continue;
+        const raw = line.slice(6).trim();
+        if (raw === '[DONE]') continue;
+        try {
+          const json = JSON.parse(raw);
+          const delta = json.delta?.text || '';
+          if (delta) {
+            fullText += delta;
+            responseEl.textContent = fullText;
+            responseEl.appendChild(cursor);
+          }
+        } catch {}
+      }
+    }
+    cursor.remove();
+    responseEl.textContent = fullText || 'No response received.';
+    copyRow.style.display = 'flex';
   } catch(e) {
-    responseEl.className = 'ai-response visible';
-    responseEl.textContent = 'Could not reach Claude. Please try again.';
+    cursor.remove();
+    // Fallback to non-streaming if stream not supported
+    try {
+      const res2 = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          model: 'claude-sonnet-4-6', max_tokens: 1000,
+          system: 'You are a senior staff engineer helping with system design interview prep. Be direct, precise, practical. Respond in 2-4 short paragraphs. No markdown headers or bullet lists — conversational prose only.',
+          messages: [{ role: 'user', content: `Context:\n${getAIContext()}\n\nQuestion: ${question}` }]
+        })
+      });
+      const data = await res2.json();
+      fullText = data.content?.map(b => b.text || '').join('') || 'No response received.';
+      responseEl.textContent = fullText;
+      copyRow.style.display = 'flex';
+    } catch(e2) {
+      responseEl.textContent = 'Could not reach Claude. Please try again.';
+    }
   }
   btn.disabled = false;
 }
@@ -4900,10 +5916,370 @@ document.getElementById('whatif-panel').addEventListener('click', function(e) {
 });
 
 loadState();
-const firstScenario = SCENARIOS[0];
-state.params = initParams(firstScenario);
+const initialScenario = SCENARIOS.find(s => s.id === state.scenarioId) || SCENARIOS[0];
+state.params = initParams(initialScenario);
 renderAll();
-// Redraw chart on resize
+
+// ══════════════════════════════════════════
+// INTERVIEW TIMER
+// ══════════════════════════════════════════
+const TIMER_PHASES = [
+  { label: 'Requirements & Scope', duration: 5 * 60 },
+  { label: 'Back-of-Envelope Estimates', duration: 8 * 60 },
+  { label: 'High-Level Design', duration: 12 * 60 },
+  { label: 'Deep Dive', duration: 10 * 60 },
+  { label: 'Trade-offs & Wrap-up', duration: 10 * 60 },
+];
+const TIMER_TOTAL = TIMER_PHASES.reduce((a, p) => a + p.duration, 0); // 45 min
+
+let timerState = {
+  running: false,
+  elapsed: 0,  // seconds elapsed
+  raf: null,
+  lastTick: null,
+  visible: false,
+  collapsed: false
+};
+
+function getTimerPhase(elapsed) {
+  let acc = 0;
+  for (let i = 0; i < TIMER_PHASES.length; i++) {
+    acc += TIMER_PHASES[i].duration;
+    if (elapsed < acc) return { idx: i, phase: TIMER_PHASES[i], phaseDone: (elapsed - (acc - TIMER_PHASES[i].duration)) };
+  }
+  return { idx: TIMER_PHASES.length - 1, phase: TIMER_PHASES[TIMER_PHASES.length - 1], phaseDone: TIMER_PHASES[TIMER_PHASES.length - 1].duration };
+}
+
+function renderTimer() {
+  const remaining = Math.max(0, TIMER_TOTAL - timerState.elapsed);
+  const mins = Math.floor(remaining / 60);
+  const secs = remaining % 60;
+  const disp = `${String(mins).padStart(2,'0')}:${String(secs).padStart(2,'0')}`;
+  const el = document.getElementById('timer-display');
+  if (!el) return;
+  el.textContent = disp;
+  // Color coding
+  el.className = 'timer-display';
+  if (remaining <= 300) el.classList.add('danger');
+  else if (remaining <= 600) el.classList.add('warning');
+
+  // Phase
+  const { idx, phase } = getTimerPhase(timerState.elapsed);
+  document.getElementById('timer-phase').textContent = phase.label;
+
+  // Phases bar
+  document.querySelectorAll('.timer-phase-seg').forEach((seg, i) => {
+    seg.className = 'timer-phase-seg';
+    if (i < idx) seg.classList.add('done');
+    else if (i === idx) seg.classList.add('active');
+  });
+
+  // Start btn label
+  const btn = document.getElementById('timer-start-btn');
+  if (btn) btn.textContent = timerState.running ? 'Pause' : (timerState.elapsed > 0 ? 'Resume' : 'Start');
+}
+
+function timerTick() {
+  if (!timerState.running) return;
+  const now = Date.now();
+  if (timerState.lastTick) {
+    const delta = Math.floor((now - timerState.lastTick) / 1000);
+    if (delta >= 1) {
+      timerState.elapsed = Math.min(timerState.elapsed + delta, TIMER_TOTAL);
+      timerState.lastTick = now;
+      renderTimer();
+      if (timerState.elapsed >= TIMER_TOTAL) {
+        timerState.running = false;
+        document.getElementById('timer-display').classList.add('danger');
+        return;
+      }
+    }
+  } else {
+    timerState.lastTick = now;
+  }
+  timerState.raf = requestAnimationFrame(timerTick);
+}
+
+document.getElementById('timer-start-btn').addEventListener('click', () => {
+  timerState.running = !timerState.running;
+  if (timerState.running) {
+    timerState.lastTick = Date.now();
+    timerTick();
+  } else {
+    cancelAnimationFrame(timerState.raf);
+  }
+  renderTimer();
+});
+
+document.getElementById('timer-reset-btn').addEventListener('click', () => {
+  timerState.running = false;
+  timerState.elapsed = 0;
+  timerState.lastTick = null;
+  cancelAnimationFrame(timerState.raf);
+  renderTimer();
+});
+
+document.getElementById('timer-collapse-btn').addEventListener('click', () => {
+  const float = document.getElementById('timer-float');
+  timerState.collapsed = !timerState.collapsed;
+  float.classList.toggle('collapsed', timerState.collapsed);
+  const icon = document.querySelector('#timer-collapse-btn i');
+  if (icon) icon.className = timerState.collapsed ? 'ti ti-maximize' : 'ti ti-minus';
+});
+
+document.getElementById('timer-toggle-btn').addEventListener('click', () => {
+  const float = document.getElementById('timer-float');
+  timerState.visible = !timerState.visible;
+  float.style.display = timerState.visible ? 'block' : 'none';
+  document.getElementById('timer-toggle-btn').classList.toggle('active', timerState.visible);
+  if (timerState.visible) renderTimer();
+});
+
+// ══════════════════════════════════════════
+// SLO DOWNTIME CALCULATOR
+// ══════════════════════════════════════════
+function calcSLO(pct) {
+  const downFrac = 1 - pct / 100;
+  const minutesYear = downFrac * 365.25 * 24 * 60;
+  const minutesMonth = downFrac * 30 * 24 * 60;
+  const minutesWeek = downFrac * 7 * 24 * 60;
+  const minutesDay = downFrac * 24 * 60;
+  function fmtDuration(mins) {
+    if (mins < 1) return (mins * 60).toFixed(1) + 's';
+    if (mins < 60) return mins.toFixed(1) + ' min';
+    if (mins < 60 * 24) return (mins / 60).toFixed(1) + ' hr';
+    return (mins / 60 / 24).toFixed(1) + ' d';
+  }
+  return [
+    { label: 'Per Year', val: fmtDuration(minutesYear) },
+    { label: 'Per Month', val: fmtDuration(minutesMonth) },
+    { label: 'Per Week', val: fmtDuration(minutesWeek) },
+    { label: 'Per Day', val: fmtDuration(minutesDay) },
+  ];
+}
+
+function renderSLO(pct) {
+  const results = calcSLO(pct);
+  document.getElementById('slo-grid').innerHTML = results.map(r =>
+    `<div class="slo-card"><div class="slo-card-val">${r.val}</div><div class="slo-card-label">${r.label}</div></div>`
+  ).join('');
+  // Error budget tip
+  const budgetMins = (1 - pct / 100) * 30 * 24 * 60;
+  let tip = '';
+  if (pct >= 99.99) tip = '⚡ This is "four nines". Deployment windows < 1 min. Zero-downtime deploy mandatory.';
+  else if (pct >= 99.9) tip = '✅ "Three nines" is the sweet spot for most services. ~43 min/month budget.';
+  else if (pct >= 99) tip = '⚠️ Two nines = ~7 hrs/month. OK for non-critical internal tools only.';
+  else tip = '❌ <99% is essentially unacceptable for any user-facing service.';
+  document.getElementById('slo-budget').innerHTML = tip;
+}
+
+document.getElementById('slo-input').addEventListener('input', function() {
+  const pct = parseFloat(this.value);
+  if (!isNaN(pct) && pct > 0 && pct < 100) {
+    document.querySelectorAll('.slo-preset').forEach(b => b.classList.remove('active'));
+    renderSLO(pct);
+  }
+});
+
+// Init SLO
+renderSLO(99.9);
+
+// ══════════════════════════════════════════
+// QUICK MATH NOTEPAD
+// ══════════════════════════════════════════
+function evalQuickMath(expr) {
+  // Safe eval: only allow numbers, operators, e notation, spaces
+  const clean = expr
+    .replace(/×/g, '*').replace(/÷/g, '/').replace(/x/gi, '*')
+    .replace(/MB/g, '*1e6').replace(/GB/g, '*1e9').replace(/TB/g, '*1e12')
+    .replace(/KB/g, '*1e3').replace(/PB/g, '*1e15')
+    .replace(/billion/gi, '*1e9').replace(/million/gi, '*1e6')
+    .replace(/B\b/g, '*1e9') // B = billion shorthand
+    .replace(/M\b/g, '*1e6') // M = million shorthand
+    .replace(/K\b/g, '*1e3') // K = thousand shorthand
+    .replace(/[^0-9+\-*/().e \n]/gi, '');
+  if (!clean.trim()) return null;
+  // eslint-disable-next-line no-new-func
+  const result = Function('"use strict"; return (' + clean + ')')();
+  return result;
+}
+
+function fmtMathResult(n) {
+  if (!isFinite(n)) return 'Error: result is infinite or invalid';
+  const abs = Math.abs(n);
+  if (abs === 0) return '0';
+  // With storage context
+  const parts = [];
+  parts.push('= ' + n.toLocaleString(undefined, { maximumSignificantDigits: 6 }));
+  if (abs >= 1e18) parts.push(`≈ ${(n / 1e18).toFixed(2)} EB`);
+  else if (abs >= 1e15) parts.push(`≈ ${(n / 1e15).toFixed(2)} PB`);
+  else if (abs >= 1e12) parts.push(`≈ ${(n / 1e12).toFixed(2)} TB`);
+  else if (abs >= 1e9) parts.push(`≈ ${(n / 1e9).toFixed(2)} GB`);
+  else if (abs >= 1e6) parts.push(`≈ ${(n / 1e6).toFixed(2)} MB`);
+  else if (abs >= 1e3) parts.push(`≈ ${(n / 1e3).toFixed(2)} KB`);
+  if (abs >= 1e3) parts.push(`| ${n.toExponential(2)}`);
+  // QPS interpretation
+  if (abs > 1000) parts.push(`| as QPS: ${fmtQPS(n)}`);
+  return parts.join('  ');
+}
+
+document.getElementById('qmath-calc-btn').addEventListener('click', () => {
+  const expr = document.getElementById('qmath-input').value;
+  const resultEl = document.getElementById('qmath-result');
+  try {
+    const r = evalQuickMath(expr);
+    if (r === null) { resultEl.textContent = 'Enter an expression above'; resultEl.classList.remove('has-result'); return; }
+    resultEl.textContent = fmtMathResult(r);
+    resultEl.classList.add('has-result');
+    resultEl.style.color = '';
+  } catch(e) {
+    resultEl.textContent = 'Error: ' + e.message;
+    resultEl.classList.remove('has-result');
+    resultEl.style.color = 'var(--coral)';
+  }
+});
+
+document.getElementById('qmath-input').addEventListener('keydown', e => {
+  if (e.key === 'Enter') document.getElementById('qmath-calc-btn').click();
+});
+
+// ══════════════════════════════════════════
+// CAP THEOREM BADGE + SCENARIO META ROW
+// ══════════════════════════════════════════
+const CAP_MAP = {
+  strong:   { label: 'CP', cls: 'cp', title: 'Consistency + Partition Tolerance — sacrifices Availability' },
+  eventual: { label: 'AP', cls: 'ap', title: 'Availability + Partition Tolerance — sacrifices strong Consistency' },
+  causal:   { label: 'AP*', cls: 'ap', title: 'Causal Consistency (Availability + Partition Tolerance)' },
+};
+
+function renderScenarioMeta(scenario) {
+  const meta = scenario.meta || {};
+  const el = document.getElementById('scenario-meta-row');
+  if (!el) return;
+  const parts = [];
+  if (meta.category) parts.push(`<span class="scenario-meta-tag">${meta.category}</span>`);
+  if (meta.difficulty) parts.push(`<span class="badge-diff ${meta.difficulty}">${meta.difficulty}</span>`);
+  if (meta.pattern) parts.push(`<span class="scenario-meta-tag">⚡ ${meta.pattern}</span>`);
+  if (meta.storageEngine) parts.push(`<span class="scenario-meta-tag">🗄 ${meta.storageEngine}</span>`);
+  if (meta.dominantBottleneck) parts.push(`<span class="scenario-meta-tag">🔥 bottleneck: ${meta.dominantBottleneck}</span>`);
+  if (meta.consistency) {
+    const cap = CAP_MAP[meta.consistency] || { label: meta.consistency.toUpperCase(), cls: 'cp', title: '' };
+    parts.push(`<span class="cap-badge ${cap.cls}" title="${cap.title}">CAP: ${cap.label}</span>`);
+  }
+  el.innerHTML = parts.join('');
+}
+
+// Patch renderAll to also call renderScenarioMeta
+const _origRenderAll = renderAll;
+// Can't easily patch since renderAll is already defined above; instead override it inline:
+// (This is done by re-assigning — works because it's not const)
+
+// ══════════════════════════════════════════
+// COMPLETION TRACKER
+// ══════════════════════════════════════════
+function getCompletionData() {
+  try { return JSON.parse(localStorage.getItem('boe_completed') || '{}'); } catch { return {}; }
+}
+function setCompletionData(d) {
+  try { localStorage.setItem('boe_completed', JSON.stringify(d)); } catch {}
+}
+function markCompleted(id) {
+  const d = getCompletionData();
+  d[id] = Date.now();
+  setCompletionData(d);
+  renderCompletionDots();
+}
+
+function renderCompletionDots() {
+  const el = document.getElementById('completion-dots');
+  if (!el) return;
+  const done = getCompletionData();
+  el.innerHTML = SCENARIOS.map(s => {
+    const isDone = !!done[s.id];
+    const isCurrent = s.id === state.scenarioId;
+    return `<div class="compl-dot ${isDone ? 'done' : ''} ${isCurrent ? 'current' : ''}" 
+      data-id="${s.id}" title="${s.name}${isDone ? ' ✓ completed' : ''}">
+      <span class="compl-tooltip">${s.name}</span>
+      ${isDone ? '✓' : ''}
+    </div>`;
+  }).join('');
+  el.querySelectorAll('.compl-dot').forEach(dot => {
+    dot.addEventListener('click', () => {
+      const sc = SCENARIOS.find(s => s.id === dot.dataset.id);
+      if (!sc) return;
+      state.scenarioId = sc.id;
+      state.params = initParams(sc);
+      renderAll();
+    });
+  });
+  // Summary
+  const total = SCENARIOS.length;
+  const completed = Object.keys(done).filter(id => SCENARIOS.find(s => s.id === id)).length;
+  const summary = document.getElementById('completion-summary');
+  if (summary) summary.textContent = `${completed}/${total} scenarios practiced`;
+}
+
+// Hook into sim completion — mark scenario done when summary shown
+const _origSimSummary = window.showSimSummary;
+// Monkey-patch sim submit to track completion
+document.addEventListener('click', function(e) {
+  const resetBtn = e.target.closest('#sim-reset-btn');
+  if (resetBtn) {
+    markCompleted(state.scenarioId);
+  }
+});
+
+renderCompletionDots();
+
+// ══════════════════════════════════════════
+// KEYBOARD SHORTCUTS — Enhanced
+// ══════════════════════════════════════════
+document.getElementById('kbd-help-btn').addEventListener('click', () => {
+  document.getElementById('kbd-modal-overlay').classList.toggle('open');
+});
+document.getElementById('kbd-modal-close').addEventListener('click', () => {
+  document.getElementById('kbd-modal-overlay').classList.remove('open');
+});
+document.getElementById('kbd-modal-overlay').addEventListener('click', function(e) {
+  if (e.target === this) this.classList.remove('open');
+});
+
+// Keyboard shortcuts consolidated in the main keydown listener above.
+
+// ══════════════════════════════════════════
+// PATCH renderAll TO INCLUDE NEW FEATURES
+// ══════════════════════════════════════════
+// Since renderAll references `scenario` from closure, we add a MutationObserver
+// to trigger our new renders when scenario-desc changes
+const scenarioDescEl = document.getElementById('scenario-desc');
+if (scenarioDescEl) {
+  const obs = new MutationObserver(() => {
+    const sc = SCENARIOS.find(s => s.id === state.scenarioId);
+    if (sc) {
+      renderScenarioMeta(sc);
+      renderCompletionDots();
+    }
+  });
+  obs.observe(scenarioDescEl, { childList: true, characterData: true, subtree: true });
+}
+
+// Initial meta render
+(function() {
+  const sc = SCENARIOS.find(s => s.id === state.scenarioId);
+  if (sc) renderScenarioMeta(sc);
+})();
+
+// SLO preset event delegation (handles dynamic elements)
+document.querySelector('.slo-presets') && document.querySelector('.slo-presets').addEventListener('click', function(e) {
+  const btn = e.target.closest('.slo-preset');
+  if (!btn) return;
+  document.querySelectorAll('.slo-preset').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('slo-input').value = btn.dataset.val;
+  renderSLO(parseFloat(btn.dataset.val));
+});
+
+// Resize handler
 window.addEventListener('resize', () => {
   const sc = SCENARIOS.find(s => s.id === state.scenarioId);
   if (!sc) return;
@@ -4911,6 +6287,616 @@ window.addEventListener('resize', () => {
   const r = sc.calc(mp);
   if (r) drawTrafficChart(r.rqps, r.wqps);
 });
+
+/* =========================
+   Workspace + Command Palette + Share
+   ========================= */
+(function(){
+  const notesKey = id => 'boe_notes_' + id;
+  const snapsKey = id => 'boe_snaps_' + id;
+  let toastTimer = null;
+
+  function toast(msg){
+    let el = document.getElementById('boe-toast');
+    if(!el){
+      el = document.createElement('div');
+      el.id = 'boe-toast';
+      el.className = 'toast';
+      document.body.appendChild(el);
+    }
+    el.textContent = msg;
+    el.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(()=>el.classList.remove('show'), 1800);
+  }
+
+  function currentScenario(){
+    return SCENARIOS.find(s => s.id === state.scenarioId);
+  }
+  function currentResult(){
+    const sc = currentScenario();
+    if(!sc) return null;
+    const mp = getParamMultiplied(sc, state.params);
+    return sc.calc(mp);
+  }
+  function loadNotes(){
+    const ta = document.getElementById('scenario-notes');
+    if(!ta) return;
+    ta.value = localStorage.getItem(notesKey(state.scenarioId)) || '';
+  }
+  function saveNotes(){
+    const ta = document.getElementById('scenario-notes');
+    if(!ta) return;
+    localStorage.setItem(notesKey(state.scenarioId), ta.value || '');
+  }
+  function readSnapshots(id=state.scenarioId){
+    try { return JSON.parse(localStorage.getItem(snapsKey(id)) || '[]'); } catch(e){ return []; }
+  }
+  function writeSnapshots(list,id=state.scenarioId){
+    localStorage.setItem(snapsKey(id), JSON.stringify(list));
+  }
+  function summarizeResult(r){
+    if(!r) return [];
+    const candidates = [
+      ['Read QPS', r.rqps],
+      ['Write QPS', r.wqps],
+      ['Storage / day', r.storagePerDay || r.storage_day || r.dayStorage || r.storage],
+      ['Servers', r.servers || r.apiServers || r.appServers || r.instances],
+      ['Bandwidth', r.bandwidthOut || r.bwOut || r.egress || r.networkOut]
+    ];
+    return candidates.filter(x => x[1] !== undefined && x[1] !== null).slice(0,4);
+  }
+  function renderSnapshots(){
+    const host = document.getElementById('snapshot-list');
+    if(!host) return;
+    const snaps = readSnapshots();
+    if(!snaps.length){
+      host.innerHTML = '<div class="snapshot-empty">No saved snapshots yet. Save one after tweaking parameters so you can compare your “genius” with your previous genius.</div>';
+      return;
+    }
+    host.innerHTML = snaps.slice().reverse().map((s, idx) => `
+      <div class="snapshot-item">
+        <div class="snapshot-top">
+          <div>
+            <div class="snapshot-name">${s.name || 'Snapshot'}</div>
+            <div class="snapshot-time">${new Date(s.ts).toLocaleString()}</div>
+          </div>
+        </div>
+        <div class="snapshot-metrics">
+          ${s.metrics.map(m=>`<div class="snapshot-metric"><span class="k">${m[0]}</span><span class="v">${typeof m[1]==='number' ? fmtNum(m[1]) : m[1]}</span></div>`).join('')}
+        </div>
+        <div class="snapshot-row">
+          <button class="snapshot-btn" data-snap-action="restore" data-snap-idx="${snaps.length-1-idx}">Restore</button>
+          <button class="snapshot-btn" data-snap-action="copy" data-snap-idx="${snaps.length-1-idx}">Copy JSON</button>
+          <button class="snapshot-btn" data-snap-action="delete" data-snap-idx="${snaps.length-1-idx}">Delete</button>
+        </div>
+      </div>
+    `).join('');
+  }
+  function saveSnapshot(){
+    const sc = currentScenario();
+    if(!sc) return;
+    const r = currentResult();
+    const list = readSnapshots();
+    list.push({
+      id: sc.id,
+      name: `${sc.name} • ${list.length+1}`,
+      ts: Date.now(),
+      params: JSON.parse(JSON.stringify(state.params)),
+      metrics: summarizeResult(r)
+    });
+    writeSnapshots(list);
+    renderSnapshots();
+    toast('Snapshot saved');
+  }
+  function restoreSnapshot(idx){
+    const list = readSnapshots();
+    const snap = list[idx];
+    if(!snap) return;
+    state.params = Object.assign({}, snap.params);
+    render();
+    loadNotes();
+    renderSnapshots();
+    toast('Snapshot restored');
+  }
+  function deleteSnapshot(idx){
+    const list = readSnapshots();
+    list.splice(idx,1);
+    writeSnapshots(list);
+    renderSnapshots();
+    toast('Snapshot deleted');
+  }
+  function exportWorkspace(){
+    const data = {
+      version: 1,
+      exportedAt: new Date().toISOString(),
+      state: {
+        scenarioId: state.scenarioId,
+        peakMult: state.peakMult,
+        filter: state.filter,
+        favorites: [...state.favorites]
+      },
+      notes: {},
+      snapshots: {}
+    };
+    SCENARIOS.forEach(sc => {
+      const note = localStorage.getItem(notesKey(sc.id));
+      const snaps = readSnapshots(sc.id);
+      if(note) data.notes[sc.id] = note;
+      if(snaps.length) data.snapshots[sc.id] = snaps;
+    });
+    const blob = new Blob([JSON.stringify(data,null,2)], {type:'application/json'});
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'back-of-envelope-workspace.json';
+    a.click();
+    setTimeout(()=>URL.revokeObjectURL(a.href), 1500);
+    toast('Workspace exported');
+  }
+  function importWorkspace(file){
+    if(!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      try{
+        const data = JSON.parse(reader.result);
+        Object.entries(data.notes || {}).forEach(([id,val]) => localStorage.setItem(notesKey(id), val));
+        Object.entries(data.snapshots || {}).forEach(([id,val]) => localStorage.setItem(snapsKey(id), JSON.stringify(val)));
+        if(data.state?.favorites) state.favorites = new Set(data.state.favorites);
+        render();
+        loadNotes();
+        renderSnapshots();
+        toast('Workspace imported');
+      }catch(err){
+        toast('Import failed');
+      }
+    };
+    reader.readAsText(file);
+  }
+  function copyShareLink(){
+    const payload = {
+      s: state.scenarioId,
+      p: state.params,
+      peak: state.peakMult,
+      tab: document.querySelector('.tab-btn.active')?.dataset.tab || 'overview'
+    };
+    const hash = '#boe=' + encodeURIComponent(btoa(unescape(encodeURIComponent(JSON.stringify(payload)))));
+    const url = location.origin + location.pathname + hash;
+    navigator.clipboard.writeText(url).then(()=>toast('Sharable link copied'));
+  }
+  function hydrateFromHash(){
+    if(!location.hash.startsWith('#boe=')) return;
+    try{
+      const raw = decodeURIComponent(location.hash.slice(5));
+      const payload = JSON.parse(decodeURIComponent(escape(atob(raw))));
+      if(payload.s && SCENARIOS.some(sc => sc.id === payload.s)) state.scenarioId = payload.s;
+      if(payload.p && typeof payload.p === 'object') state.params = payload.p;
+      if(payload.peak) state.peakMult = payload.peak;
+      setTimeout(()=>{
+        if(payload.tab){
+          const btn = document.querySelector(`.tab-btn[data-tab="${payload.tab}"]`);
+          btn && btn.click();
+        }
+      }, 0);
+    }catch(e){}
+  }
+
+  // command palette
+  const cmdk = {
+    overlay: document.getElementById('cmdk-overlay'),
+    input: document.getElementById('cmdk-input'),
+    list: document.getElementById('cmdk-list'),
+    items: [],
+    idx: 0,
+    open(){
+      this.overlay.classList.add('open');
+      this.overlay.setAttribute('aria-hidden','false');
+      this.input.value='';
+      this.render();
+      setTimeout(()=>this.input.focus(),0);
+    },
+    close(){
+      this.overlay.classList.remove('open');
+      this.overlay.setAttribute('aria-hidden','true');
+    },
+    buildItems(q=''){
+      const query = q.trim().toLowerCase();
+      const scenarioItems = SCENARIOS
+        .filter(sc => !query || sc.name.toLowerCase().includes(query) || sc.desc.toLowerCase().includes(query))
+        .slice(0,12)
+        .map(sc => ({
+          type:'scenario',
+          title: sc.name,
+          sub: sc.desc,
+          icon: sc.icon || 'ti-box',
+          tag: sc.meta?.category || 'scenario',
+          action: ()=>{ state.scenarioId = sc.id; state.params = initParams(sc); render(); loadNotes(); renderSnapshots(); this.close(); }
+        }));
+      const tabItems = [
+        ['overview','Overview'],['requirements','Requirements'],['architecture','Architecture'],['estimate','Estimation'],['interview','Interview'],['sim','Simulator']
+      ].filter(t => !query || t[1].toLowerCase().includes(query)).map(t => ({
+        type:'tab', title:`Open ${t[1]}`, sub:'Jump to tab', icon:'ti-layout', tag:'tab',
+        action: ()=>{ document.querySelector(`.tab-btn[data-tab="${t[0]}"]`)?.click(); this.close(); }
+      }));
+      const actionItems = [
+        {title:'Save snapshot', sub:'Capture current estimate and parameters', icon:'ti-device-floppy', tag:'action', action:()=>{saveSnapshot(); this.close();}},
+        {title:'Copy sharable link', sub:'Encode scenario + params into URL', icon:'ti-link', tag:'action', action:()=>{copyShareLink(); this.close();}},
+        {title:'Export workspace', sub:'Download notes + snapshots', icon:'ti-download', tag:'action', action:()=>{exportWorkspace(); this.close();}},
+      ].filter(a => !query || a.title.toLowerCase().includes(query) || a.sub.toLowerCase().includes(query));
+      this.items = [...scenarioItems, ...tabItems, ...actionItems];
+    },
+    render(){
+      this.buildItems(this.input.value);
+      if(!this.items.length){
+        this.list.innerHTML = '<div class="cmdk-empty">No matches. Even the machine has standards.</div>';
+        return;
+      }
+      this.idx = Math.min(this.idx, this.items.length-1);
+      this.list.innerHTML = this.items.map((item,i)=>`
+        <div class="cmdk-item ${i===this.idx?'active':''}" data-cmdk-idx="${i}">
+          <div class="cmdk-item-main">
+            <div class="cmdk-item-icon"><i class="ti ${item.icon}"></i></div>
+            <div><div class="cmdk-item-title">${item.title}</div><div class="cmdk-item-sub">${item.sub}</div></div>
+          </div>
+          <div class="cmdk-item-tag">${item.tag}</div>
+        </div>
+      `).join('');
+    }
+  };
+
+  hydrateFromHash();
+
+  document.getElementById('scenario-notes')?.addEventListener('input', () => { saveNotes(); });
+  document.getElementById('snapshot-save-btn')?.addEventListener('click', saveSnapshot);
+  document.getElementById('snapshot-clear-btn')?.addEventListener('click', () => {
+    localStorage.removeItem(notesKey(state.scenarioId));
+    localStorage.removeItem(snapsKey(state.scenarioId));
+    loadNotes(); renderSnapshots(); toast('Workspace cleared for current scenario');
+  });
+  document.getElementById('snapshot-list')?.addEventListener('click', (e) => {
+    const btn = e.target.closest('[data-snap-action]');
+    if(!btn) return;
+    const idx = Number(btn.dataset.snapIdx);
+    const action = btn.dataset.snapAction;
+    if(action === 'restore') restoreSnapshot(idx);
+    else if(action === 'delete') deleteSnapshot(idx);
+    else if(action === 'copy'){
+      const snap = readSnapshots()[idx];
+      navigator.clipboard.writeText(JSON.stringify(snap,null,2));
+      toast('Snapshot JSON copied');
+    }
+  });
+  document.getElementById('share-state-btn')?.addEventListener('click', copyShareLink);
+  document.getElementById('export-workspace-btn')?.addEventListener('click', exportWorkspace);
+  document.getElementById('workspace-import-input')?.addEventListener('change', (e)=>importWorkspace(e.target.files?.[0]));
+  document.getElementById('cmdk-close')?.addEventListener('click', ()=>cmdk.close());
+  document.getElementById('cmdk-overlay')?.addEventListener('click', (e)=>{ if(e.target.id==='cmdk-overlay') cmdk.close(); });
+  document.getElementById('cmdk-input')?.addEventListener('input', ()=>{ cmdk.idx=0; cmdk.render(); });
+  document.getElementById('cmdk-list')?.addEventListener('click', (e)=>{
+    const item = e.target.closest('[data-cmdk-idx]');
+    if(!item) return;
+    const it = cmdk.items[Number(item.dataset.cmdkIdx)];
+    it && it.action();
+  });
+
+  const oldRender = window.render;
+  if(typeof oldRender === 'function'){
+    window.render = function(){
+      oldRender.apply(this, arguments);
+      loadNotes();
+      renderSnapshots();
+    };
+  } else {
+    loadNotes(); renderSnapshots();
+  }
+
+  document.addEventListener('keydown', (e) => {
+    const tag = (document.activeElement?.tagName || '').toLowerCase();
+    const typing = ['input','textarea','select'].includes(tag);
+    if((e.key.toLowerCase()==='k' && (e.metaKey || e.ctrlKey))){
+      e.preventDefault(); cmdk.open(); return;
+    }
+    if(!cmdk.overlay.classList.contains('open')) return;
+    if(e.key === 'Escape'){ cmdk.close(); return; }
+    if(e.key === 'ArrowDown'){ e.preventDefault(); cmdk.idx = Math.min(cmdk.idx+1, cmdk.items.length-1); cmdk.render(); return; }
+    if(e.key === 'ArrowUp'){ e.preventDefault(); cmdk.idx = Math.max(cmdk.idx-1, 0); cmdk.render(); return; }
+    if(e.key === 'Enter'){ e.preventDefault(); cmdk.items[cmdk.idx]?.action(); return; }
+    if(typing) return;
+  });
+
+  // Initial render of workspace after existing app init settles
+  setTimeout(()=>{ loadNotes(); renderSnapshots(); }, 0);
+})();
+
+
+/* ---- incremental premium enhancements ---- */
+(function(){
+  const THEME_KEY='boe_theme_pref';
+  const FOCUS_KEY='boe_focus_mode';
+  const RECENT_KEY='boe_recent_scenarios';
+
+  function showThemeToast(msg){
+    let el=document.getElementById('theme-toast');
+    if(!el){
+      el=document.createElement('div');
+      el.id='theme-toast';
+      el.className='theme-toast';
+      document.body.appendChild(el);
+    }
+    el.textContent=msg;
+    el.classList.add('show');
+    clearTimeout(showThemeToast._t);
+    showThemeToast._t=setTimeout(()=>el.classList.remove('show'),1800);
+  }
+
+  function applyTheme(mode){
+    document.body.dataset.theme=mode;
+    localStorage.setItem(THEME_KEY,mode);
+    showThemeToast('Theme: '+mode);
+  }
+  applyTheme(localStorage.getItem(THEME_KEY)||'dark');
+
+  document.getElementById('theme-toggle-btn')?.addEventListener('click',()=>{
+    const cur=document.body.dataset.theme||'dark';
+    const next=cur==='dark'?'light':(cur==='light'?'system':'dark');
+    if(next==='system'){
+      document.body.removeAttribute('data-theme');
+      localStorage.setItem(THEME_KEY,'system');
+      showThemeToast('Theme: system');
+    }else applyTheme(next);
+  });
+
+  function setFocus(on){
+    document.body.classList.toggle('focus-mode',on);
+    document.getElementById('focus-banner')?.toggleAttribute('hidden',!on);
+    const btn=document.getElementById('focus-mode-btn');
+    btn?.classList.toggle('active',on);
+    localStorage.setItem(FOCUS_KEY,on?'1':'0');
+  }
+  setFocus(localStorage.getItem(FOCUS_KEY)==='1');
+  document.getElementById('focus-mode-btn')?.addEventListener('click',()=>setFocus(!document.body.classList.contains('focus-mode')));
+
+  function readDone(){ try{return new Set(JSON.parse(localStorage.getItem('boe_completed_scenarios')||'[]'));}catch{return new Set();}}
+  function writeDone(set){ localStorage.setItem('boe_completed_scenarios', JSON.stringify([...set])); }
+  function readRecent(){ try{return JSON.parse(localStorage.getItem(RECENT_KEY)||'[]');}catch{return [];} }
+  function pushRecent(id){
+    const list=readRecent().filter(x=>x!==id);
+    list.unshift(id);
+    localStorage.setItem(RECENT_KEY, JSON.stringify(list.slice(0,6)));
+  }
+
+  function ensureDoneButton(){
+    const row=document.querySelector('.scenario-meta-row');
+    if(!row || row.querySelector('#mark-done-btn')) return;
+    const btn=document.createElement('button');
+    btn.id='mark-done-btn';
+    btn.className='tbar-btn';
+    btn.style.marginLeft='auto';
+    btn.innerHTML='<i class="ti ti-circle-check"></i> Done';
+    btn.addEventListener('click',()=>{
+      const done=readDone();
+      if(done.has(state.scenarioId)) done.delete(state.scenarioId); else done.add(state.scenarioId);
+      writeDone(done);
+      updateDoneButton();
+      updateDashboard();
+    });
+    row.appendChild(btn);
+  }
+  function updateDoneButton(){
+    const btn=document.getElementById('mark-done-btn');
+    if(!btn) return;
+    const done=readDone().has(state.scenarioId);
+    btn.classList.toggle('active',done);
+    btn.innerHTML=done?'<i class="ti ti-circle-check-filled"></i> Done':'<i class="ti ti-circle-check"></i> Done';
+  }
+
+  function updateDashboard(){
+    if(typeof SCENARIOS==='undefined') return;
+    const done=readDone();
+    const favorites=(state?.favorites?.size)||0;
+    const coverage=Math.round((done.size/SCENARIOS.length)*100)||0;
+    const recent=readRecent();
+    const coverageEl=document.getElementById('dash-coverage');
+    const coverageSub=document.getElementById('dash-coverage-sub');
+    const coverageBar=document.getElementById('dash-coverage-bar');
+    const favEl=document.getElementById('dash-favorites');
+    const recentEl=document.getElementById('dash-recents');
+    const chips=document.getElementById('dash-chip-row');
+    if(coverageEl) coverageEl.textContent=coverage+'%';
+    if(coverageSub) coverageSub.textContent=`${done.size} of ${SCENARIOS.length} scenarios marked done`;
+    if(coverageBar) coverageBar.style.width=coverage+'%';
+    if(favEl) favEl.textContent=favorites;
+    if(chips){
+      const senior=SCENARIOS.filter(s=>s.level==='senior').length;
+      const staff=SCENARIOS.filter(s=>s.level==='staff').length;
+      const architect=SCENARIOS.filter(s=>s.level==='architect').length;
+      chips.innerHTML=`
+        <span class="dash-chip"><i class="ti ti-brain"></i> ${SCENARIOS.length} scenarios</span>
+        <span class="dash-chip"><i class="ti ti-user-star"></i> ${senior} senior</span>
+        <span class="dash-chip"><i class="ti ti-building-skyscraper"></i> ${staff} staff</span>
+        <span class="dash-chip"><i class="ti ti-atom-2"></i> ${architect} architect</span>`;
+    }
+    if(recentEl){
+      recentEl.innerHTML = recent.length ? recent.map(id=>{
+        const s=SCENARIOS.find(x=>x.id===id);
+        if(!s) return '';
+        return `<div class="dash-list-item"><span>${s.name}</span><button data-open-scenario="${s.id}">Open</button></div>`;
+      }).join('') : '<div class="dash-sub">No recent scenarios yet. Touch some buttons first.</div>';
+    }
+  }
+
+  document.getElementById('dash-recents')?.addEventListener('click',(e)=>{
+    const btn=e.target.closest('[data-open-scenario]');
+    if(!btn) return;
+    state.scenarioId=btn.dataset.openScenario;
+    saveState?.();
+    render?.();
+    window.scrollTo({top:0,behavior:'smooth'});
+  });
+
+  const oldRender2=window.render;
+  if(typeof oldRender2==='function'){
+    window.render=function(){
+      oldRender2.apply(this,arguments);
+      ensureDoneButton();
+      updateDoneButton();
+      pushRecent(state.scenarioId);
+      updateDashboard();
+    }
+  }
+  setTimeout(()=>{ ensureDoneButton(); updateDoneButton(); pushRecent(state.scenarioId); updateDashboard(); },50);
+})();
+
+
+/* ---- runtime hardening + diagnostics patch ---- */
+(function(){
+  function ensureEl(id, html, parentSel){
+    if(document.getElementById(id)) return document.getElementById(id);
+    const parent = document.querySelector(parentSel || '.app') || document.body;
+    const wrap = document.createElement('div');
+    wrap.innerHTML = html.trim();
+    const el = wrap.firstElementChild;
+    parent.appendChild(el);
+    return el;
+  }
+
+  // Ensure enhancement placeholders exist so later code does not silently do nothing.
+  ensureEl('focus-banner', '<div id="focus-banner" hidden></div>');
+  ensureEl('theme-toast', '<div id="theme-toast" class="theme-toast" aria-live="polite"></div>', 'body');
+
+  if(!document.getElementById('dash-coverage')){
+    const workspacePanel = document.getElementById('workspace-panel');
+    if(workspacePanel){
+      const dash = document.createElement('div');
+      dash.className = 'panel';
+      dash.id = 'workspace-dashboard';
+      dash.style.margin = '0 0 14px';
+      dash.innerHTML = `
+        <div class="panel-title">Workspace Dashboard</div>
+        <div class="out-grid" style="margin-bottom:10px">
+          <div class="o-card teal"><div class="o-label">Coverage</div><div class="o-val" id="dash-coverage">0%</div><div class="t-sub" id="dash-coverage-sub">0 scenarios marked done</div></div>
+          <div class="o-card amber"><div class="o-label">Favorites</div><div class="o-val" id="dash-favorites">0</div><div class="t-sub">Starred scenarios</div></div>
+        </div>
+        <div style="height:8px;background:var(--bg3);border-radius:999px;overflow:hidden;margin-bottom:10px">
+          <div id="dash-coverage-bar" style="height:100%;width:0%;background:var(--teal);transition:width .25s"></div>
+        </div>
+        <div id="dash-chip-row" class="filter-chips" style="margin-bottom:10px"></div>
+        <div class="panel-title" style="margin-bottom:8px">Recent Scenarios</div>
+        <div id="dash-recents"></div>`;
+      workspacePanel.insertAdjacentElement('beforebegin', dash);
+    }
+  }
+
+  // Safe clipboard fallback
+  window.__boeCopyText = async function(txt){
+    try{
+      if(navigator.clipboard?.writeText){
+        await navigator.clipboard.writeText(txt);
+        return true;
+      }
+    }catch(e){}
+    try{
+      const ta = document.createElement('textarea');
+      ta.value = txt;
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      ta.remove();
+      return true;
+    }catch(e){ return false; }
+  };
+
+  // Copy a metric value to clipboard (called from onclick on metric-copy buttons)
+  window.copyMetric = async function(id){
+    const el = document.getElementById(id);
+    if(!el) return;
+    const txt = el.textContent.trim();
+    await window.__boeCopyText(txt);
+    const btn = el.parentElement.querySelector('.metric-copy');
+    if(btn){
+      const orig = btn.innerHTML;
+      btn.innerHTML = '<i class="ti ti-check"></i>';
+      btn.style.color = 'var(--teal)';
+      setTimeout(()=>{ btn.innerHTML = orig; btn.style.color = ''; }, 1200);
+    }
+  };
+
+  // Catch uncaught errors and surface them in-page instead of dying silently.
+  window.addEventListener('error', (e)=>{
+    let box = document.getElementById('boe-debug-errors');
+    if(!box){
+      box = document.createElement('div');
+      box.id = 'boe-debug-errors';
+      box.style.cssText = 'position:fixed;left:16px;bottom:16px;max-width:520px;max-height:40vh;overflow:auto;z-index:9999;background:#2b1111;color:#ffd6d6;border:1px solid #7a2d2d;border-radius:12px;padding:12px 14px;font:12px/1.5 ui-monospace, SFMono-Regular, Menlo, monospace;box-shadow:0 12px 32px rgba(0,0,0,.35)';
+      box.innerHTML = '<div style="font-weight:700;margin-bottom:6px">Runtime errors</div><div id="boe-debug-errors-list"></div>';
+      document.body.appendChild(box);
+    }
+    const list = document.getElementById('boe-debug-errors-list');
+    if(list){
+      const row = document.createElement('div');
+      row.style.marginBottom = '6px';
+      row.textContent = (e.message || 'Unknown error') + (e.filename ? ` @ ${e.filename.split('/').pop()}:${e.lineno}` : '');
+      list.appendChild(row);
+    }
+  });
+})();
+
+</script>
+
+<script>
+(function(){
+  function safeInitParams(scenario){
+    if(!scenario || !Array.isArray(scenario.params)) return {};
+    const key='boe_params_'+scenario.id;
+    let saved={};
+    try{ saved = JSON.parse(localStorage.getItem(key)||'{}') || {}; }catch(e){ saved={}; }
+    const out={};
+    scenario.params.forEach(param=>{
+      const v = saved[param.id];
+      out[param.id] = (typeof v === 'number' && Number.isFinite(v)) ? v : param.val;
+    });
+    return out;
+  }
+
+  function hardRender(){
+    try{
+      if(typeof SCENARIOS==='undefined' || !Array.isArray(SCENARIOS) || !SCENARIOS.length) return;
+      let scenario = SCENARIOS.find(s=>s.id===state.scenarioId) || SCENARIOS[0];
+      if(!scenario) return;
+      if(!state || typeof state !== 'object') return;
+      state.scenarioId = scenario.id;
+      state.params = safeInitParams(scenario);
+      if(typeof renderAll==='function') renderAll();
+      const count = document.getElementById('search-count');
+      if(count) count.textContent = SCENARIOS.length + ' scenarios';
+      if(typeof ensureDoneButton==='function') ensureDoneButton();
+      if(typeof updateDoneButton==='function') updateDoneButton();
+      if(typeof updateDashboard==='function') updateDashboard();
+    }catch(err){
+      console.error('Hard render failed', err);
+    }
+  }
+
+  // expose stable render entrypoint for enhancement layers
+  window.render = hardRender;
+
+  // repair broken initial state where params were loaded for the first scenario only
+  setTimeout(hardRender, 0);
+
+  // repair scenario-nav click handling with safe rerender
+  document.addEventListener('click', function(e){
+    const btn = e.target.closest('#scenario-nav .s-btn[data-id]');
+    if(!btn) return;
+    if(e.target.closest('[data-star]')) return;
+    e.preventDefault();
+    const scenario = SCENARIOS.find(s=>s && s.id===btn.dataset.id);
+    if(!scenario) return;
+    state.scenarioId = scenario.id;
+    state.params = safeInitParams(scenario);
+    hardRender();
+  }, true);
+})();
 </script>
 </body>
 </html>

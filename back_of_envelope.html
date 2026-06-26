@@ -372,6 +372,58 @@ input[type=range]::-moz-range-thumb { width: 16px; height: 16px; border-radius: 
 .mt14{margin-top:14px}.mt10{margin-top:10px}.mb14{margin-bottom:14px;color:var(--text2);font-size:12px}.tc12{text-align:center;color:var(--text3);padding:12px}.f11c3{font-size:11px;color:var(--text3)}.fw6{font-weight:600}.ct15{color:var(--text);font-size:15px}.df6{display:flex;align-items:center;gap:6px}.ct2{color:var(--text2)}
 }
 /* Focus & responsive polish */
+
+/* ── Interview Checklist ── */
+.chk-btn{display:flex;align-items:center;gap:5px;padding:6px 13px;border:1px solid var(--border2);border-radius:100px;background:transparent;color:var(--text2);cursor:pointer;font-size:12px;font-family:inherit;transition:all .12s}
+.chk-btn:hover{background:var(--amber-bg);color:var(--amber);border-color:var(--amber)}
+.chk-btn.has-checked{background:var(--amber-bg);color:var(--amber);border-color:var(--amber)}
+.chk-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px);display:none;align-items:flex-start;justify-content:flex-end;z-index:700;padding:16px 24px 0}
+.chk-overlay.open{display:flex}
+.chk-modal{width:min(420px,calc(100vw - 32px));background:var(--bg2);border:1px solid var(--border2);border-radius:16px;box-shadow:0 20px 60px rgba(0,0,0,.3);overflow:hidden;max-height:90vh;display:flex;flex-direction:column}
+.chk-head{display:flex;align-items:center;gap:10px;padding:14px 16px;border-bottom:1px solid var(--border);flex-shrink:0}
+.chk-head-title{font-size:14px;font-weight:700;color:var(--text);flex:1}
+.chk-head-close{border:none;background:transparent;color:var(--text3);cursor:pointer;font-size:18px;line-height:1}
+.chk-progress-bar-wrap{height:4px;background:var(--bg3)}
+.chk-progress-bar{height:100%;background:linear-gradient(90deg,var(--teal),var(--blue));transition:width .3s ease;border-radius:0}
+.chk-body{padding:12px 16px 16px;overflow-y:auto;flex:1}
+.chk-phase{margin-bottom:14px}
+.chk-phase-title{font-size:10px;text-transform:uppercase;letter-spacing:.09em;color:var(--text3);font-weight:700;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.chk-phase-time{font-size:10px;padding:1px 7px;border-radius:100px;background:var(--bg3);color:var(--text3);font-weight:500;letter-spacing:0;text-transform:none}
+.chk-item{display:flex;align-items:flex-start;gap:10px;padding:8px 10px;border-radius:8px;cursor:pointer;transition:background .1s;margin-bottom:4px}
+.chk-item:hover{background:var(--bg3)}
+.chk-item.checked{opacity:.65}
+.chk-checkbox{width:18px;height:18px;border-radius:5px;border:2px solid var(--border2);flex-shrink:0;margin-top:1px;display:flex;align-items:center;justify-content:center;transition:all .15s;background:var(--bg)}
+.chk-item.checked .chk-checkbox{background:var(--teal);border-color:var(--teal)}
+.chk-checkbox-tick{width:10px;height:10px;opacity:0;transition:opacity .1s}
+.chk-item.checked .chk-checkbox-tick{opacity:1}
+.chk-label{font-size:13px;color:var(--text);line-height:1.4}
+.chk-item.checked .chk-label{text-decoration:line-through;color:var(--text3)}
+.chk-sub{font-size:11px;color:var(--text3);line-height:1.4;margin-top:2px}
+.chk-footer{padding:12px 16px;border-top:1px solid var(--border);display:flex;align-items:center;gap:10px;flex-shrink:0}
+.chk-count{font-size:12px;color:var(--text3);flex:1}
+.chk-count strong{color:var(--teal);font-family:var(--mono)}
+.chk-reset{padding:5px 12px;border:1px solid var(--border2);border-radius:100px;background:transparent;color:var(--text3);font-size:11px;cursor:pointer;font-family:inherit;transition:all .12s}
+.chk-reset:hover{background:var(--bg3);color:var(--text)}
+/* ── Score History ── */
+.sim-history-section{margin-top:16px}
+.sim-history-title{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);font-weight:700;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.sim-history-list{display:flex;flex-direction:column;gap:8px;max-height:240px;overflow:auto}
+.sim-history-item{background:var(--bg3);border-radius:10px;padding:10px 12px;display:flex;align-items:center;gap:12px}
+.sim-history-score{font-family:var(--mono);font-size:18px;font-weight:800;min-width:36px;text-align:center}
+.sim-history-score.s-good{color:var(--teal)}
+.sim-history-score.s-ok{color:var(--amber)}
+.sim-history-score.s-poor{color:var(--coral)}
+.sim-history-meta{flex:1;font-size:12px;color:var(--text2)}
+.sim-history-scenario{font-size:11px;color:var(--text3)}
+.sim-history-diff{font-size:9px;padding:2px 7px;border-radius:100px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;flex-shrink:0}
+.sim-history-diff.senior{background:var(--teal-bg);color:var(--teal)}
+.sim-history-diff.staff{background:var(--amber-bg);color:var(--amber)}
+.sim-history-diff.architect{background:var(--purple-bg);color:var(--purple)}
+.sim-history-empty{padding:20px 12px;text-align:center;color:var(--text3);font-size:12px}
+.sim-history-clear{border:none;background:transparent;color:var(--text3);font-size:10px;cursor:pointer;padding:2px 6px;border-radius:4px}
+.sim-history-clear:hover{background:var(--bg3);color:var(--coral)}
+/* ── Scenario count badge on nav ── */
+.scenario-total-badge{font-size:10px;padding:2px 8px;border-radius:100px;background:var(--bg3);color:var(--text3);margin-left:4px;font-weight:600}
 :focus-visible{outline:2px solid var(--text);outline-offset:3px;border-radius:3px}
 button:focus:not(:focus-visible){outline:none}
 @media(max-width:640px){.app{padding:16px 10px 40px}.content-grid{grid-template-columns:1fr}.ticker-bar{grid-template-columns:repeat(2,1fr)}.compare-panel.open{grid-template-columns:1fr}.ref-grid{grid-template-columns:1fr}.insights-row{grid-template-columns:1fr}.bot-grid{grid-template-columns:1fr}.reqs-grid{grid-template-columns:1fr}.assum-grid{grid-template-columns:1fr}#cmp-delta-col{width:100%;min-width:auto}.tabs{gap:0}.tab-btn{padding:8px 10px;font-size:11px}}
@@ -674,14 +726,448 @@ body[data-theme="dark"]{color-scheme:dark}
 @media(max-width:980px){.workspace-dashboard{grid-template-columns:1fr 1fr}.dash-hero{grid-column:1/-1}}
 @media(max-width:640px){.workspace-dashboard{grid-template-columns:1fr}.dash-big{font-size:24px}}
 
+/* ══════════════════════════════════════════
+   ENHANCED ENHANCEMENTS v2
+   ══════════════════════════════════════════ */
+
+/* ── Latency Ruler ── */
+.latency-ruler-wrap {
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 16px; margin-bottom: 14px;
+}
+.latency-ruler-title {
+  font-size: 11px; text-transform: uppercase; letter-spacing: .09em;
+  color: var(--text3); font-weight: 600; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;
+}
+.latency-ruler-title .lr-badge {
+  font-size: 9px; padding: 2px 7px; border-radius: 100px;
+  background: var(--blue-bg); color: var(--blue); font-weight: 700; letter-spacing: .05em;
+}
+.latency-scale {
+  position: relative; height: 28px; background: linear-gradient(90deg,
+    var(--teal-bg) 0%, var(--green-bg) 15%, var(--amber-bg) 40%, var(--coral-bg) 65%, var(--red-bg) 85%, var(--red-bg) 100%);
+  border-radius: 6px; margin: 0 0 8px; overflow: visible;
+}
+.latency-tick {
+  position: absolute; top: 0; bottom: 0; width: 1px;
+  background: var(--border2); opacity: 0.5;
+}
+.latency-marker {
+  position: absolute; top: -2px; transform: translateX(-50%);
+  cursor: pointer; z-index: 2;
+}
+.latency-marker-dot {
+  width: 10px; height: 10px; border-radius: 50%;
+  border: 2px solid var(--bg2); box-shadow: 0 0 0 2px currentColor;
+  margin: 9px auto 0; transition: transform 0.12s;
+}
+.latency-marker:hover .latency-marker-dot { transform: scale(1.4); }
+.latency-marker-tip {
+  position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%) translateY(-6px);
+  background: var(--text); color: var(--bg); font-size: 10px; padding: 4px 8px;
+  border-radius: 6px; white-space: nowrap; pointer-events: none; opacity: 0;
+  transition: opacity .15s; z-index: 10; font-family: var(--mono);
+}
+.latency-marker:hover .latency-marker-tip { opacity: 1; }
+.latency-axis {
+  display: flex; justify-content: space-between; font-size: 9px;
+  color: var(--text3); font-family: var(--mono); margin-top: 4px;
+}
+.latency-comparison-bars { display: flex; flex-direction: column; gap: 5px; margin-top: 10px; }
+.lat-bar-row { display: flex; align-items: center; gap: 8px; font-size: 11px; }
+.lat-bar-label { width: 130px; color: var(--text2); flex-shrink: 0; font-size: 10px; }
+.lat-bar-track { flex: 1; height: 14px; background: var(--bg3); border-radius: 3px; overflow: hidden; position: relative; }
+.lat-bar-fill { height: 100%; border-radius: 3px; transition: width .6s cubic-bezier(.4,0,.2,1); position: relative; }
+.lat-bar-fill::after { content: attr(data-val); position: absolute; right: 6px; top: 50%; transform: translateY(-50%); font-size: 9px; font-family: var(--mono); font-weight: 700; color: #fff; white-space: nowrap; }
+.lat-bar-fill.ns { background: var(--teal); }
+.lat-bar-fill.us { background: var(--green); }
+.lat-bar-fill.ms-low { background: var(--amber); }
+.lat-bar-fill.ms-mid { background: var(--coral); }
+.lat-bar-fill.ms-high { background: var(--red); }
+
+/* ── Concept Glossary ── */
+.concept-glossary-wrap {
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: var(--radius); margin-bottom: 14px; overflow: hidden;
+}
+.concept-glossary-head {
+  display: flex; align-items: center; gap: 8px; padding: 14px 16px;
+  border-bottom: 1px solid var(--border); cursor: pointer; user-select: none;
+}
+.concept-glossary-title {
+  font-size: 11px; text-transform: uppercase; letter-spacing: .09em;
+  color: var(--text3); font-weight: 600; flex: 1;
+}
+.concept-glossary-body { padding: 16px; display: none; }
+.concept-glossary-body.open { display: block; }
+.concept-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 8px;
+}
+.concept-card {
+  background: var(--bg3); border-radius: var(--radius-sm); padding: 10px 12px;
+  border-left: 3px solid var(--border2); cursor: help; transition: all .15s;
+  position: relative;
+}
+.concept-card:hover { border-left-color: var(--teal); background: var(--teal-bg); }
+.concept-card.cap { border-left-color: var(--blue); }
+.concept-card.cap:hover { background: var(--blue-bg); }
+.concept-card.storage { border-left-color: var(--amber); }
+.concept-card.storage:hover { background: var(--amber-bg); }
+.concept-card.network { border-left-color: var(--purple); }
+.concept-card.network:hover { background: var(--purple-bg); }
+.concept-card.pattern { border-left-color: var(--green); }
+.concept-card.pattern:hover { background: var(--green-bg); }
+.concept-card.reliability { border-left-color: var(--coral); }
+.concept-card.reliability:hover { background: var(--coral-bg); }
+.concept-term { font-size: 12px; font-weight: 700; color: var(--text); margin-bottom: 4px; display: flex; align-items: center; gap: 5px; }
+.concept-badge { font-size: 8px; padding: 1px 5px; border-radius: 100px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; }
+.concept-badge.cap { background: var(--blue-bg); color: var(--blue); }
+.concept-badge.storage { background: var(--amber-bg); color: var(--amber); }
+.concept-badge.network { background: var(--purple-bg); color: var(--purple); }
+.concept-badge.pattern { background: var(--green-bg); color: var(--green); }
+.concept-badge.reliability { background: var(--coral-bg); color: var(--coral); }
+.concept-def { font-size: 11px; color: var(--text2); line-height: 1.5; }
+.concept-example { margin-top: 4px; font-size: 10px; color: var(--text3); font-family: var(--mono); padding: 2px 6px; background: var(--bg2); border-radius: 3px; display: inline-block; }
+.concept-filter-row { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px; }
+
+/* ── Pattern Recognition Panel ── */
+.pattern-panel {
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 16px; margin-bottom: 14px;
+}
+.pattern-panel-title {
+  font-size: 11px; text-transform: uppercase; letter-spacing: .09em;
+  color: var(--text3); font-weight: 600; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;
+}
+.pattern-tabs { display: flex; gap: 6px; margin-bottom: 12px; flex-wrap: wrap; }
+.pattern-tab {
+  padding: 5px 12px; border-radius: 100px; border: 1px solid var(--border2);
+  background: transparent; color: var(--text3); font-size: 11px; cursor: pointer;
+  font-family: inherit; transition: all .12s;
+}
+.pattern-tab:hover { border-color: var(--text2); color: var(--text2); }
+.pattern-tab.active { background: var(--text); color: var(--bg); border-color: var(--text); }
+.pattern-content { display: none; }
+.pattern-content.active { display: block; }
+.pattern-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.pattern-card {
+  background: var(--bg3); border-radius: var(--radius-sm); padding: 12px;
+  border-top: 3px solid var(--teal);
+}
+.pattern-card.write-heavy { border-top-color: var(--coral); }
+.pattern-card.fan-out { border-top-color: var(--amber); }
+.pattern-card.real-time { border-top-color: var(--purple); }
+.pattern-card.geo { border-top-color: var(--blue); }
+.pattern-card-title { font-size: 12px; font-weight: 700; color: var(--text); margin-bottom: 6px; display: flex; align-items: center; gap: 6px; }
+.pattern-card-title i { font-size: 14px; }
+.pattern-signal { font-size: 11px; color: var(--text2); margin-bottom: 3px; }
+.pattern-signal::before { content: '→ '; color: var(--teal); font-weight: 700; }
+.pattern-card.write-heavy .pattern-signal::before { color: var(--coral); }
+.pattern-card.fan-out .pattern-signal::before { color: var(--amber); }
+.pattern-card.real-time .pattern-signal::before { color: var(--purple); }
+.pattern-card.geo .pattern-signal::before { color: var(--blue); }
+
+/* ── Capacity Visual Bars ── */
+.cap-bars-panel {
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 16px; margin-bottom: 14px;
+}
+.cap-bars-title {
+  font-size: 11px; text-transform: uppercase; letter-spacing: .09em;
+  color: var(--text3); font-weight: 600; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;
+}
+.cap-compare-grid { display: flex; flex-direction: column; gap: 10px; }
+.cap-compare-row { display: grid; grid-template-columns: 130px 1fr 80px; align-items: center; gap: 10px; font-size: 11px; }
+.cap-compare-label { color: var(--text2); }
+.cap-compare-track { height: 20px; background: var(--bg3); border-radius: 4px; overflow: hidden; position: relative; }
+.cap-compare-fill {
+  height: 100%; border-radius: 4px; display: flex; align-items: center;
+  justify-content: flex-end; padding-right: 8px;
+  font-size: 9px; font-weight: 700; color: #fff; font-family: var(--mono);
+  transition: width .7s cubic-bezier(.4,0,.2,1);
+  min-width: 4px;
+}
+.cap-compare-val { font-family: var(--mono); font-size: 11px; font-weight: 700; color: var(--text); text-align: right; }
+.cap-section-label { font-size: 10px; text-transform: uppercase; letter-spacing: .07em; color: var(--text3); font-weight: 600; margin: 12px 0 6px; border-bottom: 1px solid var(--border); padding-bottom: 4px; }
+
+/* ── Decision Tree / Trade-offs Visual ── */
+.tradeoff-matrix {
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 16px; margin-bottom: 14px;
+}
+.tradeoff-matrix-title {
+  font-size: 11px; text-transform: uppercase; letter-spacing: .09em;
+  color: var(--text3); font-weight: 600; margin-bottom: 12px;
+}
+.tradeoff-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+.tradeoff-table th {
+  font-size: 10px; text-transform: uppercase; letter-spacing: .07em;
+  color: var(--text3); font-weight: 600; padding: 6px 10px; text-align: left;
+  border-bottom: 2px solid var(--border2); background: var(--bg3);
+}
+.tradeoff-table td { padding: 8px 10px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+.tradeoff-table tr:hover td { background: var(--bg3); }
+.tradeoff-star { display: inline-flex; gap: 2px; }
+.tradeoff-star-dot { width: 6px; height: 6px; border-radius: 50%; }
+.tradeoff-star-dot.filled { background: var(--teal); }
+.tradeoff-star-dot.empty { background: var(--border2); }
+.tradeoff-tag { font-size: 9px; padding: 1px 6px; border-radius: 100px; font-weight: 700; }
+.tradeoff-tag.best { background: var(--teal-bg); color: var(--teal); }
+.tradeoff-tag.good { background: var(--blue-bg); color: var(--blue); }
+.tradeoff-tag.ok { background: var(--amber-bg); color: var(--amber); }
+.tradeoff-tag.poor { background: var(--coral-bg); color: var(--coral); }
+
+/* ── Enhanced formula cards ── */
+.formula-card {
+  background: var(--bg3); border-radius: var(--radius-sm); padding: 10px 14px;
+  margin-bottom: 8px; border-left: 3px solid var(--purple-light);
+  display: flex; flex-direction: column; gap: 4px;
+}
+.formula-card-label { font-size: 10px; text-transform: uppercase; letter-spacing: .07em; color: var(--text3); font-weight: 600; }
+.formula-card-expr { font-family: var(--mono); font-size: 12px; color: var(--text2); }
+.formula-card-result { font-family: var(--mono); font-size: 15px; font-weight: 800; color: var(--purple); }
+.formula-cards-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+
+/* ── Scale Mental Model ── */
+.scale-model-panel {
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 16px; margin-bottom: 14px;
+}
+.scale-model-title {
+  font-size: 11px; text-transform: uppercase; letter-spacing: .09em;
+  color: var(--text3); font-weight: 600; margin-bottom: 12px;
+}
+.scale-ladder { display: flex; flex-direction: column; gap: 0; }
+.scale-rung {
+  display: flex; align-items: center; gap: 10px; padding: 8px 12px;
+  border-bottom: 1px solid var(--border); font-size: 12px;
+  transition: background .12s;
+}
+.scale-rung:last-child { border-bottom: none; }
+.scale-rung:hover { background: var(--bg3); border-radius: var(--radius-sm); }
+.scale-rung-dau { font-family: var(--mono); font-weight: 700; color: var(--text); width: 80px; flex-shrink: 0; }
+.scale-rung-qps { font-family: var(--mono); color: var(--teal); width: 60px; flex-shrink: 0; }
+.scale-rung-servers { font-family: var(--mono); color: var(--amber); width: 60px; flex-shrink: 0; }
+.scale-rung-arch { color: var(--text2); font-size: 11px; flex: 1; }
+.scale-rung-examples { font-size: 10px; color: var(--text3); white-space: nowrap; }
+.scale-ladder-head { display: flex; gap: 10px; padding: 0 12px 6px; font-size: 9px; text-transform: uppercase; letter-spacing: .08em; color: var(--text3); font-weight: 600; border-bottom: 2px solid var(--border2); margin-bottom: 0; }
+.scale-ladder-head span:nth-child(1) { width: 80px; flex-shrink: 0; }
+.scale-ladder-head span:nth-child(2) { width: 60px; flex-shrink: 0; }
+.scale-ladder-head span:nth-child(3) { width: 60px; flex-shrink: 0; }
+.scale-ladder-head span:nth-child(4) { flex: 1; }
+
+/* ── Enhanced interview section styles ── */
+.interview-pro-tip {
+  display: flex; gap: 8px; align-items: flex-start;
+  padding: 10px 12px; background: var(--amber-bg);
+  border-radius: var(--radius-sm); border-left: 3px solid var(--amber-light);
+  font-size: 11px; color: var(--text2); margin-top: 8px;
+}
+.interview-pro-tip i { color: var(--amber); font-size: 14px; flex-shrink: 0; }
+.interview-pro-tip strong { color: var(--text); }
+
+/* ── Concept tooltip on any element ── */
+[data-concept] { border-bottom: 1px dashed var(--text3); cursor: help; }
+.concept-tooltip-popup {
+  position: fixed; z-index: 999; background: var(--text); color: var(--bg);
+  padding: 10px 14px; border-radius: 8px; max-width: 260px; font-size: 12px;
+  line-height: 1.5; box-shadow: 0 8px 28px rgba(0,0,0,.28); pointer-events: none;
+  opacity: 0; transition: opacity .15s;
+}
+.concept-tooltip-popup.show { opacity: 1; }
+.concept-tooltip-popup .ctp-term { font-weight: 700; font-size: 13px; margin-bottom: 4px; }
+.concept-tooltip-popup .ctp-def { color: rgba(255,255,255,.8); }
+
+/* ── Insight highlight badge on the overview ── */
+.insight-highlight {
+  display: flex; gap: 10px; padding: 12px 14px;
+  background: linear-gradient(135deg, var(--teal-bg), var(--blue-bg));
+  border-radius: var(--radius); margin-bottom: 12px;
+  border: 1px solid color-mix(in srgb, var(--teal) 30%, transparent);
+}
+.insight-highlight-icon { font-size: 24px; flex-shrink: 0; }
+.insight-highlight-body { flex: 1; }
+.insight-highlight-title { font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 3px; }
+.insight-highlight-sub { font-size: 12px; color: var(--text2); line-height: 1.5; }
+.insight-highlight-tag { font-size: 9px; padding: 2px 7px; border-radius: 100px; background: var(--teal); color: #fff; font-weight: 700; margin-top: 6px; display: inline-block; }
+
+/* ── Animated pulse on active metric ── */
+@keyframes metricPop { 0%{transform:scale(1)} 40%{transform:scale(1.08)} 100%{transform:scale(1)} }
+.t-val.pop { animation: metricPop .25s ease-out; }
+
+/* ── Architecture flow animated paths ── */
+@keyframes dashFlow { to { stroke-dashoffset: -20; } }
+.arch-flow-animated { animation: dashFlow 0.8s linear infinite; }
+
+/* ── Estimation Tab — complete redesign ── */
+
+/* Hero summary bar */
+.est-hero {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px;
+  margin-bottom: 4px;
+}
+.est-hero-card {
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 14px 16px;
+  position: relative; overflow: hidden;
+}
+.est-hero-card::after {
+  content: ''; position: absolute; inset: auto -30px -40px auto;
+  width: 100px; height: 100px;
+  background: radial-gradient(circle, var(--accent-color, var(--teal-bg)), transparent 70%);
+  pointer-events: none; opacity: 0.7;
+}
+.est-hero-card.teal { --accent-color: var(--teal-bg); border-top: 2px solid var(--teal); }
+.est-hero-card.amber { --accent-color: var(--amber-bg); border-top: 2px solid var(--amber); }
+.est-hero-card.blue { --accent-color: var(--blue-bg); border-top: 2px solid var(--blue); }
+.est-hero-card.purple { --accent-color: var(--purple-bg); border-top: 2px solid var(--purple); }
+.est-hero-label {
+  font-size: 9px; text-transform: uppercase; letter-spacing: .1em;
+  color: var(--text3); font-weight: 700; margin-bottom: 6px;
+}
+.est-hero-val {
+  font-family: var(--mono); font-size: 26px; font-weight: 800; line-height: 1;
+  margin-bottom: 4px; letter-spacing: -.02em;
+}
+.est-hero-card.teal .est-hero-val { color: var(--teal); }
+.est-hero-card.amber .est-hero-val { color: var(--amber); }
+.est-hero-card.blue .est-hero-val { color: var(--blue); }
+.est-hero-card.purple .est-hero-val { color: var(--purple); }
+.est-hero-sub { font-size: 10px; color: var(--text3); font-family: var(--mono); }
+.est-hero-peak {
+  margin-top: 8px; font-size: 10px; padding: 3px 8px;
+  border-radius: 4px; display: inline-block;
+  background: var(--bg3); color: var(--text3); font-family: var(--mono);
+}
+
+/* Metrics grid */
+.est-metrics-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 4px;
+}
+.est-metric-card {
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 12px 14px;
+}
+.est-metric-label {
+  font-size: 10px; text-transform: uppercase; letter-spacing: .08em;
+  color: var(--text3); font-weight: 600; margin-bottom: 6px; display: flex; align-items: center; gap: 5px;
+}
+.est-metric-label i { font-size: 12px; }
+.est-metric-val {
+  font-family: var(--mono); font-size: 18px; font-weight: 800; color: var(--text); margin-bottom: 2px;
+}
+.est-metric-sub { font-size: 11px; color: var(--text2); line-height: 1.4; }
+.est-metric-bar-wrap { margin-top: 8px; height: 4px; background: var(--bg3); border-radius: 2px; overflow: hidden; }
+.est-metric-bar { height: 100%; border-radius: 2px; transition: width .6s cubic-bezier(.4,0,.2,1); }
+
+/* Formula breakdown */
+.est-formulas-wrap {
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: var(--radius); overflow: hidden; margin-bottom: 4px;
+}
+.est-formula-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 0;
+}
+.est-formula-card {
+  padding: 14px 16px; border-bottom: 1px solid var(--border);
+  border-right: 1px solid var(--border);
+  transition: background .12s;
+}
+.est-formula-card:hover { background: var(--bg3); }
+.est-formula-card:nth-child(even) { border-right: none; }
+.est-formula-card:nth-last-child(-n+2) { border-bottom: none; }
+.est-formula-step {
+  font-size: 9px; text-transform: uppercase; letter-spacing: .1em;
+  color: var(--text3); font-weight: 700; margin-bottom: 6px; display: flex; align-items: center; gap: 6px;
+}
+.est-formula-step-num {
+  width: 18px; height: 18px; border-radius: 50%;
+  background: var(--purple-bg); color: var(--purple);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 9px; font-weight: 800; flex-shrink: 0;
+}
+.est-formula-name { font-size: 12px; font-weight: 600; color: var(--text); margin-bottom: 5px; }
+.est-formula-expr {
+  font-family: var(--mono); font-size: 11px; color: var(--text3);
+  background: var(--bg3); padding: 4px 8px; border-radius: 4px;
+  margin-bottom: 6px; display: block; line-height: 1.5;
+}
+.est-formula-result {
+  font-family: var(--mono); font-size: 17px; font-weight: 800;
+  color: var(--purple); letter-spacing: -.01em;
+}
+.est-formula-empty {
+  padding: 20px; text-align: center; color: var(--text3);
+  font-size: 12px; grid-column: 1 / -1;
+}
+
+/* Storage timeline */
+.est-storage-timeline {
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: var(--radius); overflow: hidden; margin-bottom: 4px;
+}
+.est-timeline-grid {
+  display: grid; grid-template-columns: repeat(7, 1fr);
+}
+.est-tl-col {
+  padding: 14px 12px; border-right: 1px solid var(--border);
+  text-align: center;
+  transition: background .12s;
+}
+.est-tl-col:last-child { border-right: none; }
+.est-tl-col:hover { background: var(--bg3); }
+.est-tl-period {
+  font-size: 9px; text-transform: uppercase; letter-spacing: .08em;
+  color: var(--text3); font-weight: 700; margin-bottom: 10px;
+}
+.est-tl-bar-wrap {
+  height: 80px; display: flex; align-items: flex-end; justify-content: center;
+  margin-bottom: 8px;
+}
+.est-tl-bar {
+  width: 24px; border-radius: 4px 4px 0 0;
+  background: linear-gradient(180deg, var(--blue), var(--teal));
+  transition: height .7s cubic-bezier(.4,0,.2,1);
+  min-height: 3px;
+}
+.est-tl-val {
+  font-family: var(--mono); font-size: 11px; font-weight: 700; color: var(--text);
+}
+.est-tl-unit { font-size: 9px; color: var(--text3); margin-top: 2px; }
+
+/* Bottleneck flag */
+.est-bottleneck-flag {
+  display: flex; align-items: flex-start; gap: 10px;
+  padding: 12px 16px; border-radius: var(--radius);
+  margin-bottom: 12px; border: 1px solid transparent;
+}
+.est-bottleneck-flag.critical { background: var(--coral-bg); border-color: color-mix(in srgb, var(--coral) 30%, transparent); }
+.est-bottleneck-flag.warn { background: var(--amber-bg); border-color: color-mix(in srgb, var(--amber) 30%, transparent); }
+.est-bottleneck-flag.ok { background: var(--teal-bg); border-color: color-mix(in srgb, var(--teal) 30%, transparent); }
+.est-bn-icon { font-size: 20px; flex-shrink: 0; }
+.est-bn-title { font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 3px; }
+.est-bn-body { font-size: 12px; color: var(--text2); line-height: 1.5; }
+
+@media (max-width: 640px) {
+  .est-hero { grid-template-columns: 1fr 1fr; }
+  .est-metrics-grid { grid-template-columns: 1fr; }
+  .est-formula-grid { grid-template-columns: 1fr; }
+  .est-formula-card { border-right: none; }
+  .est-timeline-grid { grid-template-columns: repeat(4, 1fr); }
+  .est-tl-col:nth-child(n+5) { display: none; }
+}
 </style>
 </head>
 <body>
 <div class="app">
   <div class="top-bar">
-    <div class="app-title">Back of Envelope</div>
-    <div class="app-sub">System Design Estimator</div>
+    <div class="app-title" style="display:flex;align-items:center;gap:8px">
+      <span style="font-size:20px">📐</span>
+      Back of Envelope
+    </div>
+    <div class="app-sub">System Design Estimator · 29 Scenarios · AI-Powered</div>
     <div class="top-bar-actions">
+      <button class="tbar-btn chk-btn" id="chk-open-btn" title="Interview Checklist"><i class="ti ti-checklist"></i> Checklist</button>
       <button class="tbar-btn" id="timer-toggle-btn" title="Interview Timer (T)"><i class="ti ti-clock"></i> Timer</button>
       <button class="tbar-btn" id="kbd-help-btn" title="Keyboard Shortcuts (?)"><i class="ti ti-keyboard"></i></button>
       <button class="tbar-btn" id="share-state-btn" title="Copy sharable link"><i class="ti ti-link"></i> Share</button>
@@ -738,6 +1224,23 @@ body[data-theme="dark"]{color-scheme:dark}
     </div>
   </div>
 
+  <!-- Interview Checklist Modal -->
+  <div class="chk-overlay" id="chk-overlay">
+    <div class="chk-modal">
+      <div class="chk-head">
+        <span style="font-size:20px">📋</span>
+        <span class="chk-head-title">45-Min Interview Checklist</span>
+        <button class="chk-head-close" id="chk-close">✕</button>
+      </div>
+      <div class="chk-progress-bar-wrap"><div class="chk-progress-bar" id="chk-progress-bar" style="width:0%"></div></div>
+      <div class="chk-body" id="chk-body"></div>
+      <div class="chk-footer">
+        <span class="chk-count">Covered: <strong id="chk-count-val">0</strong> / <span id="chk-count-total">0</span> items</span>
+        <button class="chk-reset" id="chk-reset">↺ Reset</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Command Palette -->
   <div class="cmdk-overlay" id="cmdk-overlay" aria-hidden="true">
     <div class="cmdk-modal" role="dialog" aria-modal="true" aria-labelledby="cmdk-title">
@@ -754,7 +1257,7 @@ body[data-theme="dark"]{color-scheme:dark}
   <div class="search-wrap">
     <i class="ti ti-search"></i>
     <input class="search-input" id="scenario-search" placeholder="Search scenarios by name, tech, or category…" autocomplete="off" role="combobox" aria-label="Search scenarios">
-    <span class="search-count" id="search-count">20 scenarios</span>
+    <span class="search-count" id="search-count">29 scenarios</span>
     <span class="kbd-hint"><kbd class="kbd">/</kbd> to search</span>
   </div>
   <div class="filter-chips" id="filter-chips"></div>
@@ -797,6 +1300,14 @@ body[data-theme="dark"]{color-scheme:dark}
       <div class="t-card purple"><div class="t-label">Est. Monthly Cost</div><div class="t-val" id="t-cost">—</div><div class="t-sub" id="t-cost-sub">servers + infra</div><button class="metric-copy" title="Copy" onclick="copyMetric('t-cost')"><i class="ti ti-copy"></i></button></div>
     </div>
   <div id="scenario-desc" class="scenario-desc"></div>
+  <div id="insight-highlight-box" class="insight-highlight" style="display:none">
+    <div class="insight-highlight-icon" id="insight-highlight-icon">💡</div>
+    <div class="insight-highlight-body">
+      <div class="insight-highlight-title" id="insight-highlight-title"></div>
+      <div class="insight-highlight-sub" id="insight-highlight-sub"></div>
+      <span class="insight-highlight-tag" id="insight-highlight-tag"></span>
+    </div>
+  </div>
   <div class="scenario-meta-row" id="scenario-meta-row"></div>
   <div class="chart-panel" style="margin-top:12px">
     <div class="chart-title">24-Hour Traffic Pattern (simulated)</div>
@@ -870,6 +1381,139 @@ body[data-theme="dark"]{color-scheme:dark}
     <div class="ai-response" id="ai-response"></div>
     <div class="ai-response-copy" id="ai-response-copy" style="display:none">
       <button class="copy-btn" id="copy-ai-btn"><i class="ti ti-copy"></i> Copy answer</button>
+    </div>
+  </div>
+
+  <!-- ══ LATENCY VISUAL RULER ══ -->
+  <div class="section-divider">Latency Numbers Everyone Should Know <span class="sn">— every order of magnitude matters</span></div>
+  <div class="latency-ruler-wrap">
+    <div class="latency-ruler-title">
+      Visual Latency Scale
+      <span class="lr-badge">LOG SCALE</span>
+      <span style="font-size:10px;color:var(--text3);margin-left:auto">Hover bars for details</span>
+    </div>
+    <div class="latency-comparison-bars" id="latency-bars">
+      <!-- populated by JS -->
+    </div>
+    <div style="margin-top:12px;font-size:11px;color:var(--text2);padding:8px 12px;background:var(--teal-bg);border-radius:6px;border-left:3px solid var(--teal)">
+      <strong style="color:var(--teal)">Mental model:</strong> Each jump of 1000× costs you a cache miss, a disk seek, or a network hop. Design to minimize how many "levels" a hot request crosses.
+    </div>
+  </div>
+
+  <!-- ══ CAPACITY & SCALE MENTAL MODEL ══ -->
+  <div class="section-divider">Scale Mental Model <span class="sn">— what architecture each scale demands</span></div>
+  <div class="scale-model-panel">
+    <div class="scale-model-title">Scale Ladder — DAU → Architecture</div>
+    <div class="scale-ladder-head">
+      <span>DAU</span><span>~QPS</span><span>Servers</span><span>Architecture pattern</span>
+    </div>
+    <div class="scale-ladder">
+      <div class="scale-rung"><span class="scale-rung-dau">1K</span><span class="scale-rung-qps">~0.01</span><span class="scale-rung-servers">1</span><span class="scale-rung-arch">Monolith on single VM. SQLite or Postgres. No cache.</span><span class="scale-rung-examples">Side project</span></div>
+      <div class="scale-rung"><span class="scale-rung-dau">10K</span><span class="scale-rung-qps">~0.1</span><span class="scale-rung-servers">2</span><span class="scale-rung-arch">Monolith + DB replica. Add Redis for sessions.</span><span class="scale-rung-examples">Early startup</span></div>
+      <div class="scale-rung"><span class="scale-rung-dau">100K</span><span class="scale-rung-qps">~1</span><span class="scale-rung-servers">4–8</span><span class="scale-rung-arch">CDN + load balancer. DB connection pool. Redis cache.</span><span class="scale-rung-examples">Series A startup</span></div>
+      <div class="scale-rung"><span class="scale-rung-dau">1M</span><span class="scale-rung-qps">~12</span><span class="scale-rung-servers">10–20</span><span class="scale-rung-arch">Sharded DB or read replicas. Async jobs via queue. CDN for media.</span><span class="scale-rung-examples">Medium app</span></div>
+      <div class="scale-rung" style="background:var(--amber-bg);border-radius:var(--radius-sm)"><span class="scale-rung-dau">10M</span><span class="scale-rung-qps">~120</span><span class="scale-rung-servers">50–100</span><span class="scale-rung-arch">Microservices split. Kafka for async. Cache-first reads. Multi-AZ.</span><span class="scale-rung-examples">Medium company</span></div>
+      <div class="scale-rung"><span class="scale-rung-dau">100M</span><span class="scale-rung-qps">~1.2K</span><span class="scale-rung-servers">200–500</span><span class="scale-rung-arch">Multi-region. Consistent hashing. Event sourcing. CQRS.</span><span class="scale-rung-examples">Large app</span></div>
+      <div class="scale-rung" style="background:var(--teal-bg);border-radius:var(--radius-sm)"><span class="scale-rung-dau">1B+</span><span class="scale-rung-qps">12K+</span><span class="scale-rung-servers">1K+</span><span class="scale-rung-arch">Data center scale. Custom hardware. Geo-distributed. Edge compute.</span><span class="scale-rung-examples">FAANG</span></div>
+    </div>
+  </div>
+
+  <!-- ══ PATTERN RECOGNITION ══ -->
+  <div class="section-divider">Pattern Recognition <span class="sn">— identify the bottleneck from symptoms</span></div>
+  <div class="pattern-panel">
+    <div class="pattern-panel-title">System Archetypes <i class="ti ti-topology-star" style="color:var(--teal)"></i></div>
+    <div class="pattern-tabs">
+      <button class="pattern-tab active" data-pattern="bottleneck">By Bottleneck</button>
+      <button class="pattern-tab" data-pattern="tradeoff">CAP Trade-offs</button>
+      <button class="pattern-tab" data-pattern="storage">Storage Engines</button>
+    </div>
+    <div class="pattern-content active" id="pattern-bottleneck">
+      <div class="pattern-grid">
+        <div class="pattern-card">
+          <div class="pattern-card-title"><i class="ti ti-arrow-up"></i> Read-Heavy</div>
+          <div class="pattern-signal">Cache everything (Redis, Memcached)</div>
+          <div class="pattern-signal">CDN for static assets</div>
+          <div class="pattern-signal">Read replicas for DB scaling</div>
+          <div class="pattern-signal">Denormalize for query speed</div>
+          <div style="margin-top:6px;font-size:10px;color:var(--text3)">Examples: URL shortener, Twitter timeline, news feed</div>
+        </div>
+        <div class="pattern-card write-heavy">
+          <div class="pattern-card-title"><i class="ti ti-pencil"></i> Write-Heavy</div>
+          <div class="pattern-signal">Write-behind cache (async flush)</div>
+          <div class="pattern-signal">Kafka / message queue to absorb bursts</div>
+          <div class="pattern-signal">LSM-tree DB (Cassandra, RocksDB)</div>
+          <div class="pattern-signal">Partition/shard by write key</div>
+          <div style="margin-top:6px;font-size:10px;color:var(--text3)">Examples: IoT sensors, logging, chat messages, metrics</div>
+        </div>
+        <div class="pattern-card fan-out">
+          <div class="pattern-card-title"><i class="ti ti-broadcast"></i> Fan-out Heavy</div>
+          <div class="pattern-signal">Fan-out on write (push model) for small graphs</div>
+          <div class="pattern-signal">Fan-out on read (pull) for celebrity users</div>
+          <div class="pattern-signal">Hybrid: pre-compute followers under 10K</div>
+          <div class="pattern-signal">Kafka partitioned by source user</div>
+          <div style="margin-top:6px;font-size:10px;color:var(--text3)">Examples: Twitter, Instagram feed, notification systems</div>
+        </div>
+        <div class="pattern-card real-time">
+          <div class="pattern-card-title"><i class="ti ti-bolt"></i> Real-time</div>
+          <div class="pattern-signal">WebSocket for bidirectional push</div>
+          <div class="pattern-signal">Redis pub/sub for presence</div>
+          <div class="pattern-signal">Sticky sessions via consistent hash</div>
+          <div class="pattern-signal">Erlang/Go for connection density</div>
+          <div style="margin-top:6px;font-size:10px;color:var(--text3)">Examples: chat, live sports, collaborative editing, gaming</div>
+        </div>
+      </div>
+    </div>
+    <div class="pattern-content" id="pattern-tradeoff">
+      <div style="overflow-x:auto">
+      <table class="tradeoff-table">
+        <thead><tr><th>Consistency Model</th><th>Latency</th><th>Availability</th><th>Use when</th><th>Tech</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Strong</strong></td><td><span class="tradeoff-tag poor">High</span></td><td><span class="tradeoff-tag ok">Lower</span></td><td>Money, inventory, auth tokens</td><td style="font-family:var(--mono);font-size:11px">Postgres, CockroachDB</td></tr>
+          <tr><td><strong>Read-your-writes</strong></td><td><span class="tradeoff-tag good">Medium</span></td><td><span class="tradeoff-tag good">Good</span></td><td>User profile updates, comments</td><td style="font-family:var(--mono);font-size:11px">DynamoDB, MongoDB</td></tr>
+          <tr><td><strong>Session</strong></td><td><span class="tradeoff-tag good">Medium</span></td><td><span class="tradeoff-tag good">Good</span></td><td>Cart, preferences within session</td><td style="font-family:var(--mono);font-size:11px">Sticky reads + replicas</td></tr>
+          <tr><td><strong>Causal</strong></td><td><span class="tradeoff-tag best">Low</span></td><td><span class="tradeoff-tag best">High</span></td><td>Chat ordering, collaborative docs</td><td style="font-family:var(--mono);font-size:11px">Cassandra LWT, CRDTs</td></tr>
+          <tr><td><strong>Eventual</strong></td><td><span class="tradeoff-tag best">Lowest</span></td><td><span class="tradeoff-tag best">Highest</span></td><td>DNS, social likes, analytics</td><td style="font-family:var(--mono);font-size:11px">Cassandra, DynamoDB</td></tr>
+        </tbody>
+      </table>
+      </div>
+    </div>
+    <div class="pattern-content" id="pattern-storage">
+      <div style="overflow-x:auto">
+      <table class="tradeoff-table">
+        <thead><tr><th>Engine</th><th>Reads</th><th>Writes</th><th>Best for</th><th>Avoid when</th></tr></thead>
+        <tbody>
+          <tr><td><strong>PostgreSQL</strong></td><td><span class="tradeoff-tag best">★★★★★</span></td><td><span class="tradeoff-tag good">★★★★</span></td><td>Relational, ACID, &lt;10K writes/s</td><td>Write throughput &gt;10K/s</td></tr>
+          <tr><td><strong>Cassandra</strong></td><td><span class="tradeoff-tag ok">★★★</span></td><td><span class="tradeoff-tag best">★★★★★</span></td><td>Time-series, 100K+ writes/s</td><td>Complex queries, joins</td></tr>
+          <tr><td><strong>Redis</strong></td><td><span class="tradeoff-tag best">★★★★★</span></td><td><span class="tradeoff-tag best">★★★★★</span></td><td>Cache, sessions, leaderboards</td><td>Dataset larger than RAM</td></tr>
+          <tr><td><strong>S3 / Blob</strong></td><td><span class="tradeoff-tag good">★★★★</span></td><td><span class="tradeoff-tag ok">★★★</span></td><td>Media, backups, large objects</td><td>Low-latency (&lt;100ms) access</td></tr>
+          <tr><td><strong>Elasticsearch</strong></td><td><span class="tradeoff-tag best">★★★★★</span></td><td><span class="tradeoff-tag ok">★★★</span></td><td>Full-text search, log analytics</td><td>Primary transactional store</td></tr>
+          <tr><td><strong>Kafka</strong></td><td><span class="tradeoff-tag good">★★★★</span></td><td><span class="tradeoff-tag best">★★★★★</span></td><td>Event stream, audit log, fan-out</td><td>Request-response, low TTL</td></tr>
+        </tbody>
+      </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ CONCEPT GLOSSARY ══ -->
+  <div class="section-divider">Concept Glossary <span class="sn">— every term you'll need in an interview</span></div>
+  <div class="concept-glossary-wrap">
+    <div class="concept-glossary-head" id="concept-glossary-head">
+      <i class="ti ti-book" style="font-size:15px;color:var(--teal)"></i>
+      <span class="concept-glossary-title">50+ Core Concepts — hover for quick definition</span>
+      <div class="concept-filter-row" id="concept-filter-row" style="margin:0;flex:1;justify-content:flex-end" onclick="event.stopPropagation()">
+        <button class="chip active" data-cfilter="all">All</button>
+        <button class="chip" data-cfilter="cap">CAP / Consistency</button>
+        <button class="chip" data-cfilter="network">Network</button>
+        <button class="chip" data-cfilter="storage">Storage</button>
+        <button class="chip" data-cfilter="pattern">Patterns</button>
+        <button class="chip" data-cfilter="reliability">Reliability</button>
+      </div>
+      <i class="ti ti-chevron-down" style="color:var(--text3);margin-left:8px" id="concept-chevron"></i>
+    </div>
+    <div class="concept-glossary-body open" id="concept-glossary-body">
+      <div class="concept-grid" id="concept-grid">
+        <!-- populated by JS -->
+      </div>
     </div>
   </div>
 
@@ -969,14 +1613,49 @@ body[data-theme="dark"]{color-scheme:dark}
     <div id="incidents-panel"></div>
   </div>
   <div class="tab-content" id="tab-estimate">
-    <p class="mb14">Detailed estimates and capacity numbers are shown per scenario below.</p>
-    <div id="estimate-content"></div>
-    <div class="section-divider">Formula Breakdown <span class="sn">— how estimates are calculated</span></div>
-    <div id="formula-section" class="ref-wrap">
-      <button class="ref-toggle" id="formula-toggle">Show Formulas <i class="ti ti-chevron-down"></i></button>
-      <div class="ref-body" id="formula-body">
-        <div id="formula-content" class="cb2 mt12"></div>
+
+    <!-- ── Hero estimate summary ── -->
+    <div id="est-hero" class="est-hero">
+      <!-- populated by renderEstimateTab() -->
+    </div>
+
+    <!-- ── Core metrics grid ── -->
+    <div class="section-divider">Capacity Numbers <span class="sn" id="est-scenario-label"></span></div>
+    <div id="est-metrics-grid" class="est-metrics-grid">
+      <!-- populated by renderEstimateTab() -->
+    </div>
+
+    <!-- ── Formula Breakdown — OPEN by default ── -->
+    <div class="section-divider">Formula Breakdown <span class="sn">— step-by-step derivation</span></div>
+    <div id="est-formulas" class="est-formulas-wrap">
+      <!-- populated by renderEstimateTab() -->
+    </div>
+
+    <!-- ── Storage timeline ── -->
+    <div class="section-divider">Storage Growth Timeline <span class="sn">— cumulative data at rest</span></div>
+    <div id="est-storage-timeline" class="est-storage-timeline">
+      <!-- populated by renderEstimateTab() -->
+    </div>
+
+    <!-- ── Cross-scenario capacity bars ── -->
+    <div class="section-divider">Cross-Scenario Comparison <span class="sn">— where this scenario sits among all 29</span></div>
+    <div class="cap-bars-panel" id="cap-bars-panel">
+      <div class="cap-bars-title">
+        <i class="ti ti-chart-bar" style="color:var(--blue)"></i>
+        Capacity at a Glance
+        <span style="font-size:10px;color:var(--text3);margin-left:auto">★ = current scenario</span>
       </div>
+      <div class="cap-section-label">Read Throughput (QPS)</div>
+      <div class="cap-compare-grid" id="cap-bars-qps"></div>
+      <div class="cap-section-label" style="margin-top:14px">Storage / Day</div>
+      <div class="cap-compare-grid" id="cap-bars-stor"></div>
+    </div>
+
+    <!-- ── Hidden legacy placeholders (keep for compat) ── -->
+    <div id="estimate-content" style="display:none"></div>
+    <div id="formula-section" style="display:none">
+      <button id="formula-toggle" style="display:none"></button>
+      <div id="formula-body"><div id="formula-content"></div></div>
     </div>
     
   </div>
@@ -4525,7 +5204,347 @@ const SCENARIOS = [
       tradeoffs:'More detail improves debugging but destroys cost and performance. Sample smartly, tier retention, and outlaw cursed labels.',
       staffMoves:'Start with managed OSS stack. Add cardinality governance and SLO tooling before building anything “clever.”',
     }
-  }
+  },
+
+  {
+    id: 'typeahead',
+    name: 'Search Typeahead',
+    icon: 'ti-search',
+    desc: 'Google-style instant suggestions on every keypress. The hard part: sub-100ms P99 at 200K QPS while keeping suggestions fresh, ranked, and personalized.',
+    params: [
+      { id: 'dau', label: 'Daily Active Users', val: 50, min: 5, max: 500, step: 5, unit: 'M', mult: 1e6 },
+      { id: 'searches_per_user', label: 'Searches / User / Day', val: 20, min: 5, max: 100, step: 5, unit: '', mult: 1 },
+      { id: 'avg_keystrokes', label: 'Avg Keystrokes Before Select', val: 5, min: 2, max: 10, step: 1, unit: '', mult: 1 },
+      { id: 'top_k', label: 'Suggestions Returned', val: 5, min: 3, max: 10, step: 1, unit: '', mult: 1 },
+      { id: 'index_size_m', label: 'Unique Queries in Index', val: 1000, min: 100, max: 10000, step: 100, unit: 'M', mult: 1e6 },
+      { id: 'freshness_min', label: 'Index Freshness', val: 10, min: 1, max: 60, step: 1, unit: 'min', mult: 1 },
+    ],
+    calc(p) {
+      const dau = p.dau * 1e6;
+      const rqps = (dau * p.searches_per_user * p.avg_keystrokes) / DAY;
+      const wqps = dau * p.searches_per_user / DAY / 100;
+      const indexBytes = p.index_size_m * 1e6 * 60;
+      const storPerDay = wqps * DAY * 60;
+      const bwOut = rqps * p.top_k * 40 * 8;
+      const servers = Math.ceil(rqps / 20000);
+      const cacheGB = indexBytes / 1e9;
+      const cost = estimateCost(servers, 8, 64, storPerDay, bwOut, cacheGB);
+      return { wqps, rqps, storPerDay, bwOut, servers, cacheGB, cost,
+        extras: [
+          { label: 'Typeahead QPS', val: fmtQPS(rqps), color: 'teal' },
+          { label: 'Peak QPS (3×)', val: fmtQPS(rqps * 3), color: 'coral' },
+          { label: 'Trie/Cache Size', val: fmtBytes(indexBytes), color: 'green' },
+          { label: 'P99 Target', val: '< 100ms', color: 'blue' },
+          { label: 'Servers needed', val: servers + ' nodes', color: 'amber' },
+          { label: 'Index freshness', val: p.freshness_min + ' min lag', color: 'purple' },
+        ]
+      };
+    },
+    insights: [
+      'Keyspace trick: prefix "ap" maps to ["apple", "apartment", "apple pie"]. Store top-K completions per prefix in Redis/in-memory trie. O(1) lookup per prefix.',
+      'Partitioning by first character (a-z) gives 26 shards. Each shard handles ~4% of queries. First-char prefix routing at LB layer.',
+      'Trie vs HashMap: Trie is better for prefix matching and memory efficiency. HashMap of (prefix → top-K list) is simpler and faster at the cost of more memory.',
+      'Freshness: batch re-compute top-K per prefix every 10 minutes using MapReduce over query logs. Kafka streams trending searches into real-time prefix cache.',
+      'Personalization layer (L2): base suggestions from global trie (L1 cache) + personal history merge on API server. Never put personal data in shared cache.',
+      'Browser-side cache: debounce keypresses at 150ms, cache last 5 prefixes client-side. Reduces server QPS by ~60% with no UX cost.',
+      'Response compression: top-5 suggestions + metadata is ~400 bytes. gzip gets it to ~120 bytes. At 200K QPS, compression saves 60MB/s bandwidth.',
+    ],
+    fnReqs: [
+      { feat: 'Prefix suggestions', req: 'Return top-K suggestions for any typed prefix within 100ms P99', why: 'In-memory trie with top-K pre-computed per node. Redis cluster as distributed L2 cache. LRU for memory management.' },
+      { feat: 'Trending update', req: 'Index reflects last 10-min query trends without full rebuild', why: 'Incremental Kafka-driven index updates: stream query events → aggregate top-K per prefix → atomic swap hot prefix entries in Redis.' },
+      { feat: 'Personalized suggestions', req: 'Personal history blended with global suggestions', why: 'Global trie gives base suggestions. API server merges with per-user query history (last 200 queries from user session store).' },
+      { feat: 'Multi-language', req: 'Support prefix matching in Unicode/non-Latin scripts', why: 'Normalize to lowercase NFD unicode. Separate trie partitions per script/locale routed by Accept-Language header.' },
+      { feat: 'SafeSearch filtering', req: 'Filter adult/sensitive completions in default mode', why: 'Blocklist applied at index build time. Separate "safe" and "unsafe" top-K lists per prefix. Filter selected based on user preference at query time.' },
+    ],
+    nfnReqs: [
+      { attr: 'Latency (P99)', val: '< 100ms end-to-end', why: 'Every ms of delay reduces click-through rate measurably. In-memory trie on colocated server = <1ms trie lookup. Network RTT dominates—keep servers CDN-edge-close.' },
+      { attr: 'Throughput', val: '200K QPS peak', why: '50M DAU × 20 searches × 5 keystrokes / 86400 = ~58K avg QPS. 3× peak = 174K. Add 15% headroom = 200K. Each server handles 20K QPS → 10 servers + 50% headroom = 15.' },
+      { attr: 'Availability', val: '99.99%', why: 'Search suggestions degrading silently is OK. Fall back to empty suggestions on cache miss. Circuit breaker on trie service → zero downtime degradation.' },
+      { attr: 'Index Freshness', val: '< 10 min lag', why: 'Breaking news needs fast index updates. Kafka → streaming aggregator → atomic prefix swap in Redis. Full re-index every 1h for consistency.' },
+      { attr: 'Cache Hit Rate', val: '> 90%', why: 'Query distribution follows power law: top 1000 prefixes cover 80% of traffic. Dedicated L1 cache per prefix tier. Miss rate < 10% with LRU.' },
+    ],
+    meta: { category: 'infra', difficulty: 'senior', pattern: 'read-heavy', consistency: 'eventual', dominantBottleneck: 'cache-size', storageEngine: 'redis+trie', cacheStrategy: 'write-through' },
+    formulas: [
+      { label: 'QPS', expr: 'DAU × searches/user × keystrokes / 86400' },
+      { label: 'Cache size', expr: 'unique_prefixes × top_K × avg_suggestion_size' },
+      { label: 'Index size', expr: 'unique_queries × avg_query_len × pointer_size' },
+      { label: 'Servers', expr: 'peak_QPS / 20K QPS per server' },
+    ],
+    arch: {
+      nodes: [
+        { id: 'client', label: 'Browser/App', icon: '🌐', tech: 'Web/Mobile', layer: 'client', why: 'Debounces input at 150ms. Caches last 5 prefix responses client-side. Sends prefix on each keypress after debounce.' },
+        { id: 'cdn', label: 'CDN/Edge', icon: '📡', tech: 'CloudFront', layer: 'edge', why: 'Caches popular prefix responses at edge PoP. ~30% of traffic served from CDN cache. Reduces origin server load significantly.' },
+        { id: 'lb', label: 'Load Balancer', icon: '⚖️', tech: 'ALB + consistent hash', layer: 'edge', why: 'Routes prefix requests to partition-specific servers using first-char consistent hash. Keeps hot prefixes on same server for L1 cache efficiency.' },
+        { id: 'api', label: 'Suggestion API', icon: '⚡', tech: 'Go service', layer: 'app', why: 'Looks up prefix in local in-memory LRU cache (L1). On miss, queries Redis cluster (L2). Merges personal history. Returns top-K in <5ms.' },
+        { id: 'trie', label: 'Trie Cache', icon: '🌳', tech: 'Redis + in-memory', layer: 'data', why: 'Stores pre-computed top-K completions per prefix. Key: "prefix:ap" → Value: ["apple","apartment",...]. Sub-1ms reads. 64GB per partition.' },
+        { id: 'agg', label: 'Aggregator', icon: '📊', tech: 'Flink / Spark', layer: 'async', why: 'Consumes query events from Kafka. Counts query frequency per prefix in 10-min windows. Computes new top-K and pushes atomic update to Redis.' },
+        { id: 'kafka', label: 'Query Events', icon: '📨', tech: 'Kafka', layer: 'async', why: 'Every search query emitted as event (query, user, timestamp). Consumed by aggregator for trending and by data warehouse for analytics.' },
+        { id: 'db', label: 'Query History', icon: '🛢️', tech: 'Cassandra', layer: 'data', why: 'Stores per-user query history (last 200). Cassandra: append-heavy, partition by user_id, no joins needed. TTL on entries > 90 days.' },
+      ],
+      flows: [
+        { label: 'Hot Path: Keystroke → Suggestions', type: 'hot', nodes: ['client', 'cdn', 'lb', 'api', 'trie', 'client'] },
+        { label: 'Write Path: Query logged', type: 'async', nodes: ['api', 'kafka', 'agg', 'trie'] },
+        { label: 'Personalized Path', type: 'async', nodes: ['api', 'db', 'api'] },
+      ],
+      choices: [
+        { component: 'In-memory Trie (L1 Cache)', icon: 'server', color: 'teal', why: 'Sub-millisecond prefix lookup without any network call. Each API server holds ~10GB in-memory cache for top-10K prefixes. Cache hit rate 85%+. No Redis round-trip needed for hot prefixes.', alternatives: 'Redis-only (adds ~1ms network RTT), Database (too slow), Elasticsearch (100ms+, overkill)' },
+        { component: 'Redis Cluster (L2 Cache)', icon: 'database', color: 'green', why: 'Distributed cache for all prefixes not in L1. Scales horizontally to 1TB+. Atomic prefix swap for index updates. ~1ms P99 lookup.', alternatives: 'Memcached (simpler but no atomic operations), Hazelcast (JVM overhead)' },
+        { component: 'Kafka + Flink Aggregator', icon: 'arrows-shuffle', color: 'amber', why: 'Decouples query logging from index updates. Flink computes sliding window top-K per prefix. Enables real-time trending without full re-index.', alternatives: 'Batch Spark job every 1h (staleness), custom stream processor (reinventing the wheel)' },
+        { component: 'Consistent Hash Routing', icon: 'binary-tree', color: 'purple', why: 'Routes same prefix to same server = better L1 cache efficiency. First-char partitioning (a-z) gives 26 natural shards. Avoids cold starts on server restarts.', alternatives: 'Random round-robin (trashes L1 cache), per-server full copy (memory explosion)' },
+      ]
+    },
+    assumptions: [
+      { key: 'Avg keystrokes before select', val: '5' },
+      { key: 'Client-side debounce', val: '150ms' },
+      { key: 'L1 (in-memory) hit rate', val: '85%' },
+      { key: 'L2 (Redis) hit rate', val: '99%' },
+      { key: 'Peak multiplier', val: '3×' },
+      { key: 'Avg suggestion payload', val: '400 bytes compressed' },
+      { key: 'Prefix per query', val: '~5 keystrokes' },
+      { key: 'Index freshness', val: '10-min window' },
+    ],
+    incidents: [
+      { incident: 'Trie Memory OOM', symptom: 'API servers start swapping. Suggestion latency spikes from 5ms to 3s. GC thrashing visible in metrics.', fix: 'LRU eviction kicks in. Reduce L1 cache size from 10GB to 6GB. Add memory utilization SLO alert at 80%. Only cache prefixes with 1000+ queries/hr.' },
+      { incident: 'Trending Storm (celebrity tweet)', symptom: 'Celebrity name prefix gets 100× normal traffic. Redis partition holding that prefix becomes hot key.', fix: 'Local cache (L1) absorbs burst for top-100 prefixes. Redis shard replication: read from replicas. CDN edge caches trending prefixes for 30s TTL.' },
+      { incident: 'Index Propagation Delay', symptom: 'Flink aggregator falls behind Kafka. Suggestions show 45-min-old data. Breaking news queries show stale results.', fix: 'Flink auto-scaling triggered at consumer lag > 5min. Circuit breaker shows "trending results may be delayed" toast. Critical prefixes bypass aggregator via direct write path.' },
+    ],
+    interview: {
+      clarifying: '"Is this a global search bar like Google, or domain-specific like Amazon product search? Scale: 50M DAU, 20 searches/day each. Latency: <100ms P99. Personalization needed? Yes. SafeSearch? Default on."',
+      functional: '(1) Return top-5 suggestions for given prefix within 100ms. (2) Update index with trending queries every 10 minutes. (3) Blend personal query history with global suggestions. (4) Filter unsafe content in default mode.',
+      nonFunctional: 'P99 < 100ms. Throughput: 200K QPS peak. Availability: 99.99% (silent degradation OK). Index freshness: <10 min. Cache hit rate: >90%. Storage: 60GB for 1B unique prefixes.',
+      capacity: 'DAU=50M, 20 searches × 5 keystrokes / 86400 ≈ 58K avg QPS. Peak 3× = 174K. Each server handles 20K QPS → need 9 servers + headroom = 12. Trie cache: 1B prefixes × top-5 completions × 40B = 200GB across 12 servers.',
+      architecture: 'Keypress → debounce 150ms → check L1 (in-memory trie) → miss → Redis L2 → miss → DB. Parallel: API server merges personal history from Cassandra. Write path: query event → Kafka → Flink (10-min window top-K) → Redis atomic swap.',
+      tradeoffs: '(1) Trie vs HashMap: trie is memory-efficient for shared prefixes; hashmap is simpler. At 1B prefixes, trie wins. (2) Push vs pull index update: Kafka push is fresh but complex; scheduled pull is simple but stale. (3) Personalization: accurate but adds 1 DB call per keystroke; sample-based or session-cached is cheaper.',
+      staffMoves: 'Start with Redis-backed prefix store, no personalization. Measure which prefixes drive 80% of traffic (power law, top 10K cover most). Build dedicated hot-prefix in-memory cache for those. Add personalization via session cache, not per-keystroke DB hit.',
+    }
+  },
+  {
+    id: 'nearby',
+    name: 'Nearby Places',
+    icon: 'ti-map-pin',
+    desc: 'Yelp/Google Places: find restaurants, shops, POIs near a location. The real problem is efficient geo-spatial indexing at 200M places and sub-200ms P99 query latency.',
+    params: [
+      { id: 'dau', label: 'Daily Active Users', val: 30, min: 1, max: 200, step: 5, unit: 'M', mult: 1e6 },
+      { id: 'searches_per_user', label: 'Searches / User / Day', val: 5, min: 1, max: 30, step: 1, unit: '', mult: 1 },
+      { id: 'poi_count_m', label: 'Total Places in DB', val: 200, min: 10, max: 2000, step: 10, unit: 'M', mult: 1e6 },
+      { id: 'radius_km', label: 'Default Search Radius', val: 5, min: 1, max: 50, step: 1, unit: 'km', mult: 1 },
+      { id: 'results_per_search', label: 'Results Returned', val: 20, min: 5, max: 50, step: 5, unit: '', mult: 1 },
+      { id: 'reviews_per_day_k', label: 'New Reviews / Day', val: 500, min: 10, max: 5000, step: 50, unit: 'K', mult: 1e3 },
+    ],
+    calc(p) {
+      const dau = p.dau * 1e6;
+      const rqps = (dau * p.searches_per_user) / DAY;
+      const wqps = p.reviews_per_day_k * 1e3 / DAY;
+      const placeBytes = 500;
+      const storPerDay = wqps * DAY * 1500;
+      const indexBytes = p.poi_count_m * 1e6 * 40;
+      const bwOut = rqps * p.results_per_search * placeBytes * 8;
+      const servers = Math.ceil(rqps / 5000);
+      const cacheGB = indexBytes / 1e9;
+      const cost = estimateCost(servers, 4, 16, storPerDay, bwOut, Math.min(cacheGB, 100), true);
+      return { wqps, rqps, storPerDay, bwOut, servers, cacheGB, cost,
+        extras: [
+          { label: 'Search QPS', val: fmtQPS(rqps), color: 'teal' },
+          { label: 'Peak QPS (3×)', val: fmtQPS(rqps * 3), color: 'coral' },
+          { label: 'Geohash Index Size', val: fmtBytes(indexBytes), color: 'green' },
+          { label: 'Places in DB', val: fmtNum(p.poi_count_m * 1e6), color: 'blue' },
+          { label: 'Reviews/sec', val: fmtQPS(wqps), color: 'amber' },
+          { label: 'Radius covered', val: p.radius_km + ' km', color: 'purple' },
+        ]
+      };
+    },
+    insights: [
+      'Geohash: encode lat/lon into a base32 string. Adjacent cells share a prefix. 5-char geohash ≈ 5×5km cell. 6-char ≈ 1×1km. Search = query target cell + 8 neighbors = 9 lookups.',
+      'Quadtree: recursively divide 2D space into 4 quadrants until each node has ≤ K places. Dynamic — adapts to density (city vs desert). Better than uniform geohash grid.',
+      'S2 Geometry (Google): cell hierarchy on sphere. Better for curved earth, used in Google Maps. Overkill for most interviews — mention it but design with geohash.',
+      'Hot spot problem: Manhattan has 10,000 restaurants in 1 geohash cell. Subdivide hot cells to level 7+ to distribute reads. Dynamic cell splitting based on POI density.',
+      'Read : write ratio is 1000:1. Heavily cache geohash → POI list mappings. Redis ZSET scored by distance allows ranked range queries within a cell.',
+      'Database sharding: shard by geohash prefix. Prefix "dr" = Northeast US. Each shard owns a geographic region → locality of reference → lower latency for nearby queries.',
+      'Google Maps approach: pre-compute POI tiles at different zoom levels. Cache tiles aggressively. On search, just return tile IDs + CDN URLs. Avoids DB query per search.',
+    ],
+    fnReqs: [
+      { feat: 'Search nearby places', req: 'Given lat/lon + radius + category, return top-20 ranked POIs within 200ms P99', why: 'Geohash-indexed Redis cache returns candidate POI IDs for target cell + 8 neighbors. DB fetch for metadata. Rank by rating × distance_score.' },
+      { feat: 'Add/update place', req: 'Add new place, update location, operating hours, category', why: 'Write to MySQL (source of truth). Async index update via Kafka → update geohash cell in Redis. Eventual consistency OK for geo index (seconds lag).' },
+      { feat: 'Reviews & ratings', req: 'Submit review with text + rating. View place reviews paginated', why: 'Review stored in MySQL. Rating aggregation: streaming average in Redis updated on each new review. Materialized average, not computed on read.' },
+      { feat: 'Place details', req: 'Return full place details including photos, hours, contact, menus', why: 'Core metadata in MySQL (structured). Photos in S3 via CDN. Hours and menus as JSON blobs. Cache full place detail in Redis for 1hr.' },
+      { feat: 'Business hours filter', req: 'Filter results by "open now" or specific time', why: 'Hours stored as structured schedule (day×hour matrix). Filter applied post-geo-query on API server. Not pushed into geo index to avoid index explosion.' },
+    ],
+    nfnReqs: [
+      { attr: 'Latency (P99)', val: '< 200ms for search', why: 'Redis geohash lookup (<1ms) + 9-cell merge + DB metadata fetch = bulk of latency. Cache hit rate 90%+ gets P99 to 20ms. CDN for place photos.' },
+      { attr: 'Consistency', val: 'Eventual for geo index (1-5s), strong for review writes', why: 'Review count matters for trust (strong). Geo position of a new restaurant being stale for 5s is completely fine.' },
+      { attr: 'Availability', val: '99.99%', why: 'Search is read-heavy and cache-first. Multi-AZ Redis cluster. Read-replica MySQL. Circuit breaker: fall back to stale cache on DB unavailability.' },
+      { attr: 'Scale', val: '200M POIs, 30M DAU, 1000:1 read:write', why: 'MySQL sharded by geohash prefix. Redis holds entire geohash index in 8GB. POI metadata cached per-place for 1h.' },
+      { attr: 'Storage', val: '200M × 500B metadata = 100GB MySQL', why: 'Plus 8GB geohash index in Redis. Plus S3 for photos (avg 5 photos/place × 200KB = 200TB). Lifecycle tier to S3 IA after 90 days.' },
+    ],
+    meta: { category: 'infra', difficulty: 'senior', pattern: 'geo-spatial', consistency: 'eventual', dominantBottleneck: 'geo-index', storageEngine: 'mysql+redis', cacheStrategy: 'geohash-cache' },
+    formulas: [
+      { label: 'Search QPS', expr: 'DAU × searches/user / 86400' },
+      { label: 'Geohash cells (5-char)', expr: '32^5 = ~33M cells globally' },
+      { label: 'Cells to query', expr: 'Target cell + 8 neighbors = 9 geohash lookups' },
+      { label: 'Index size', expr: 'POIs × geohash_string_size × pointer' },
+    ],
+    arch: {
+      nodes: [
+        { id: 'client', label: 'Client App', icon: '📱', tech: 'iOS/Android/Web', layer: 'client', why: 'Sends lat/lon + radius + category. Receives place list with distance, rating, thumbnail. Renders on map or list view.' },
+        { id: 'lb', label: 'Load Balancer', icon: '⚖️', tech: 'ALB', layer: 'edge', why: 'Routes search and write requests to appropriate service. Handles SSL termination, rate limiting (100 searches/min/IP).' },
+        { id: 'api', label: 'Location API', icon: '⚡', tech: 'Go/Java', layer: 'app', why: 'Converts lat/lon to geohash. Queries Redis for candidate POIs in target + 8 neighbor cells. Fetches metadata. Ranks and paginates.' },
+        { id: 'geo', label: 'Geo Index (Redis)', icon: '🗺️', tech: 'Redis ZSET/Cluster', layer: 'data', why: 'Redis GEO commands: GEOSEARCH by lat/lon + radius. Or manual geohash: key=geohash_cell, value=sorted set of poi_ids by score. <1ms reads.' },
+        { id: 'db', label: 'Place DB', icon: '🛢️', tech: 'MySQL (sharded)', layer: 'data', why: 'Source of truth for all place metadata. Sharded by geohash prefix (geographic sharding). WAL for durability. Read replicas for search path.' },
+        { id: 'reviews', label: 'Review DB', icon: '⭐', tech: 'MySQL + Cassandra', layer: 'data', why: 'MySQL for place rating aggregates (updated on each review). Cassandra for review text storage (append-heavy, high volume, partition by place_id).' },
+        { id: 'kafka', label: 'Event Bus', icon: '📨', tech: 'Kafka', layer: 'async', why: 'Place updates → geo index refresh. New reviews → rating recalculation. Search events → analytics. Decouples writes from index updates.' },
+        { id: 'cdn', label: 'Photo CDN', icon: '🖼️', tech: 'S3 + CloudFront', layer: 'edge', why: '5 photos/place × 200M places = 1B photos. S3 storage + CloudFront CDN serves photos at edge. Presigned URLs for business photo uploads.' },
+      ],
+      flows: [
+        { label: 'Hot Path: Nearby Search', type: 'hot', nodes: ['client', 'lb', 'api', 'geo', 'db', 'client'] },
+        { label: 'Write Path: New Place', type: 'async', nodes: ['client', 'lb', 'api', 'db', 'kafka', 'geo'] },
+        { label: 'Async: Review → Rating', type: 'async', nodes: ['api', 'kafka', 'reviews', 'db'] },
+        { label: 'Photo Delivery', type: 'hot', nodes: ['client', 'cdn'] },
+      ],
+      choices: [
+        { component: 'Redis GEO / Geohash Index', icon: 'map-pin', color: 'teal', why: 'Redis GEOSEARCH command: O(N+log(M)) for N results in M total. Sub-1ms. Stores 200M POIs in ~8GB RAM as ZSET. Alternative: Quadtree for dynamic density, S2 for globe-accurate spherical math.', alternatives: 'PostGIS (slower, complex setup), Elasticsearch geo_point (works but heavy), pure MySQL + Haversine (O(N) scan, unusable at scale)' },
+        { component: 'MySQL (geo-sharded)', icon: 'database', color: 'blue', why: 'Place metadata is relational (hours, categories, owners). Sharding by geohash prefix gives geographic locality: same shard holds nearby places → join-efficient for area queries.', alternatives: 'PostgreSQL + PostGIS (better geo queries but single writer), Cassandra (no joins, hard for structured metadata), DynamoDB (expensive at 200M items)' },
+        { component: 'Cassandra for Reviews', icon: 'database', color: 'coral', why: 'Reviews are append-heavy (500K new reviews/day), query pattern is always "reviews for place_id sorted by time". Cassandra partition by place_id, cluster by timestamp = perfect fit.', alternatives: 'MySQL (works at this scale but wasted relational overhead), Elasticsearch (for full-text search on review text - add as search layer)' },
+        { component: 'Geographic Sharding', icon: 'world', color: 'green', why: 'Locality matters: queries for "restaurants in NYC" all hit the same shard. Avoids cross-shard joins. Rebalance by moving geohash prefix ranges. Works well since geography is stable.', alternatives: 'Hash sharding (random distribution, cross-shard for area queries), range by place_id (no locality benefit), single node (can\'t scale past ~50M places)' },
+      ]
+    },
+    assumptions: [
+      { key: 'Searches/user/day', val: '5' },
+      { key: 'Read:Write ratio', val: '1000:1' },
+      { key: 'Geohash precision', val: '5-char (~5km cell)' },
+      { key: 'Neighbor cells queried', val: '9 (target + 8 adj)' },
+      { key: 'Redis GEO index size', val: '~8GB for 200M POIs' },
+      { key: 'Avg metadata size', val: '500 bytes/place' },
+      { key: 'Photo CDN origin size', val: '~200TB (1B photos)' },
+      { key: 'Peak multiplier', val: '3×' },
+    ],
+    incidents: [
+      { incident: 'Hot Geohash Cell (NYC Downtown)', symptom: 'One Redis shard is 10× hotter than others. All "near Times Square" searches hit same partition. P99 latency spikes.', fix: 'Subdivide hot cells to geohash level 7. Route high-density cells to dedicated Redis replicas. Local API server LRU cache for top-100 cells.' },
+      { incident: 'Geo Index Diverges from DB', symptom: 'Kafka consumer lag spikes. Redis shows place X at old location. Users see wrong places on map.', fix: 'Dead-letter queue for failed geo index updates. Nightly reconciliation job: compare DB coordinates vs Redis ZSET, reindex diverged places. Alert if lag > 30s.' },
+      { incident: 'Rating Bombing', symptom: 'Competitor floods a restaurant with 1-star reviews. Rating drops from 4.5 to 1.2 in minutes. Streaming average breaks.', fix: 'Rate limit: 1 review per user per place per day. Anomaly detection on rating velocity: if >10 reviews in 1hr flag for moderation. Show "under review" badge.' },
+    ],
+    interview: {
+      clarifying: '"Global or regional? 200M places globally like Google Maps, or city-focused like Yelp? Scale: 30M DAU, 5 searches each. Features: search by category + radius, place details, reviews. Not needed: navigation/routing, real-time traffic."',
+      functional: '(1) Search nearby places by lat/lon + radius + category. (2) View place details (hours, photos, contact). (3) Submit and read reviews. (4) Add/update place (business owner flow). (5) Filter by "open now" or time.',
+      nonFunctional: 'Latency: <200ms P99 for search. Consistency: eventual for geo index (5s OK), strong for reviews. Availability: 99.99%. Scale: 200M POIs, 30M DAU, 1000:1 read:write.',
+      capacity: '30M DAU × 5 searches / 86400 = ~1,736 QPS avg. Peak 3× = 5.2K QPS. Geo index: 200M POIs × 40 bytes geohash key = 8GB Redis. MySQL: 200M × 500B = 100GB per shard (geohash-partitioned). Reviews: 500K/day × 1.5KB = 750MB/day new data.',
+      architecture: 'Search path: lat/lon → geohash → Redis GEOSEARCH (target + 8 neighbors) → candidate poi_ids → MySQL metadata fetch (read replica) → rank by score = rating × distance_decay → paginate → return. Write path: new place → MySQL → Kafka → geo index refresh (Redis). Reviews → Cassandra + rating aggregation in Redis.',
+      tradeoffs: '(1) Geohash vs Quadtree: geohash is simple, fixed grid, works great for uniform density. Quadtree adapts to density (better for cities vs rural), harder to implement. (2) Redis GEO commands vs manual ZSET: GEO commands are simpler but less control over ranking. Manual ZSET lets you score by distance × rating. (3) Sharding strategy: geo-sharding gives locality but uneven if some regions are denser.',
+      staffMoves: 'Start simple: PostGIS on Postgres, single region, no caching. Once QPS >1K, add Redis ZSET geo index as cache layer. At 10M POIs, shard MySQL by geohash prefix. Add Kafka for async geo index updates. At 100M POIs, distribute Redis cluster by geohash range.',
+    }
+  },
+  {
+    id: 'crawler',
+    name: 'Web Crawler',
+    icon: 'ti-world-www',
+    desc: 'Google-scale distributed web crawler. Crawl 10B URLs in 30 days, de-duplicate content, respect robots.txt, and stay polite. The enemy is infinite loops, duplicate content, and server overload.',
+    params: [
+      { id: 'target_urls_b', label: 'Target URLs to Crawl', val: 10, min: 1, max: 100, step: 1, unit: 'B', mult: 1e9 },
+      { id: 'crawl_days', label: 'Target Crawl Duration', val: 30, min: 7, max: 90, step: 1, unit: 'days', mult: 1 },
+      { id: 'avg_page_kb', label: 'Avg Page Size', val: 100, min: 20, max: 500, step: 10, unit: 'KB', mult: 1024 },
+      { id: 'recrawl_days', label: 'Re-crawl Interval', val: 7, min: 1, max: 30, step: 1, unit: 'days', mult: 1 },
+      { id: 'link_density', label: 'Avg Links Per Page', val: 50, min: 10, max: 200, step: 10, unit: '', mult: 1 },
+    ],
+    calc(p) {
+      const totalPages = p.target_urls_b * 1e9;
+      const crawlSecs = p.crawl_days * DAY;
+      const rqps = Math.ceil(totalPages / crawlSecs);
+      const wqps = rqps;
+      const pageBytes = p.avg_page_kb * 1024;
+      const storPerDay = rqps * DAY * (pageBytes * 0.1 + 200);
+      const bwIn = rqps * pageBytes * 8;
+      const servers = Math.ceil(rqps / 500);
+      const urlStoreBytes = totalPages * 64;
+      const cacheGB = urlStoreBytes / 1e9;
+      const cost = estimateCost(servers, 8, 32, storPerDay, bwIn, Math.min(cacheGB * 0.01, 100), true);
+      return { wqps, rqps, storPerDay, bwOut: bwIn, servers, cacheGB, cost,
+        extras: [
+          { label: 'Required crawl rate', val: fmtQPS(rqps) + '/s', color: 'teal' },
+          { label: 'Crawl workers needed', val: servers + ' servers', color: 'coral' },
+          { label: 'URL frontier size', val: fmtBytes(urlStoreBytes), color: 'amber' },
+          { label: 'Inbound bandwidth', val: fmtBW(bwIn / 8), color: 'blue' },
+          { label: 'New URLs/page', val: p.link_density + ' links', color: 'green' },
+          { label: 'Storage/day (compressed)', val: fmtBytes(storPerDay), color: 'purple' },
+        ]
+      };
+    },
+    insights: [
+      'URL Frontier is the core data structure: a priority queue of (url, priority, last_crawled). Priority based on PageRank, freshness, and domain importance.',
+      'BFS vs Priority BFS: pure BFS crawls low-value pages. Priority BFS with politeness delay per domain = better quality + respectful crawling.',
+      'De-duplication at two levels: URL level (Bloom filter, 64-bit hash, ~12 bytes/URL for 10B URLs = 120GB) + content level (SimHash/MinHash for near-duplicate detection).',
+      'Robots.txt must be fetched and cached per domain before crawling any URL. TTL: 24h. Respect Crawl-delay directive. Never crawl disallowed paths.',
+      'Politeness constraint: max 1 request per domain per N seconds (crawl-delay from robots.txt or default 1s). With 10B URLs across 1B domains, this is fine at scale.',
+      'DNS bottleneck: resolving 10B unique domains at scale requires local DNS cache with TTL honor + dedicated DNS resolver cluster. DNS misses add 50-200ms per URL.',
+      'The web is not a DAG: handle infinite loops with URL normalization + visited set. Handle redirect chains with max 5-hop limit. Handle spider traps (infinite URL generation) with path depth limit.',
+    ],
+    fnReqs: [
+      { feat: 'URL discovery', req: 'Extract all links from crawled pages, normalize, and add to frontier', why: 'HTML parser extracts href attributes. URL normalization: lowercase, remove fragment, canonicalize path. Bloom filter for seen-URL dedup. Push new URLs to Kafka frontier.' },
+      { feat: 'Page fetch', req: 'Fetch pages with proper HTTP headers (User-Agent, If-Modified-Since), handle redirects, timeouts', why: 'Respect robots.txt per domain. Honor crawl-delay. DNS cache to avoid re-resolving. Max 5 redirects. 10s timeout to avoid slow servers blocking workers.' },
+      { feat: 'Content storage', req: 'Store raw HTML, parsed text, metadata per page version', why: 'S3 for raw HTML (WARC format). Elasticsearch/WARC index for full-text. Cassandra for metadata (url, last_crawled, checksum, status_code).' },
+      { feat: 'De-duplication', req: 'Skip re-crawling unchanged content. Detect near-duplicate pages.', why: 'Content checksum (SHA-256) comparison against stored version. SimHash for near-duplicate detection (Hamming distance < 3 = near-duplicate). Saves 40% of storage.' },
+      { feat: 'Politeness & robots.txt', req: 'Never exceed 1 request/second per domain. Never crawl disallowed paths.', why: 'Shared robots.txt cache in Redis (24h TTL per domain). Per-domain rate limiter using Redis token bucket. Domain-grouped crawl worker assignment.' },
+    ],
+    nfnReqs: [
+      { attr: 'Throughput', val: '~3,858 URLs/sec for 10B in 30 days', why: '10B / (30 × 86400) = 3,858 pages/sec. Each worker fetches ~5 pages/sec (I/O bound). Need 772 worker threads across ~97 servers at 8 threads/server each.' },
+      { attr: 'Storage', val: '10B × 100KB page = 1PB raw, ~100TB compressed', why: 'WARC format + gzip compression ≈ 10:1. S3 Intelligent Tiering. Only store most recent version + change diffs (saves 70% for re-crawls).' },
+      { attr: 'URL Frontier', val: '10B URLs × 64 bytes = 640GB', why: 'Too large for pure in-memory. Distributed priority queue: Kafka (persistent, scalable) + Redis mini-queue (hot URLs for current batch). Shard by domain hash.' },
+      { attr: 'Availability', val: '99.9% (can resume from last checkpoint)', why: 'Crawl is a long-running batch job. Checkpoint frontier state every 1 hour. On worker failure, re-queue in-flight URLs after timeout. Crawler can pause/resume.' },
+      { attr: 'Politeness compliance', val: '100% robots.txt compliance', why: 'Legal and ethical requirement. Fines/bans from major sites. robots.txt violation blocks IP range. Domain-level rate limiting enforced at worker scheduler level.' },
+    ],
+    meta: { category: 'pipeline', difficulty: 'senior', pattern: 'batch-pipeline', consistency: 'eventual', dominantBottleneck: 'io-bound', storageEngine: 'cassandra+s3', cacheStrategy: 'bloom-filter' },
+    formulas: [
+      { label: 'Required crawl rate', expr: 'target_URLs / (crawl_days × 86400)' },
+      { label: 'Workers needed', expr: 'crawl_rate / pages_per_worker_per_sec (5)' },
+      { label: 'Storage raw', expr: 'target_URLs × avg_page_size' },
+      { label: 'Bloom filter size', expr: 'n × 1.44 × log2(1/p) ≈ 120GB for 10B URLs at 0.1% FP' },
+    ],
+    arch: {
+      nodes: [
+        { id: 'scheduler', label: 'URL Scheduler', icon: '📋', tech: 'Go service', layer: 'app', why: 'Reads URLs from Kafka frontier. Groups by domain. Applies politeness delay per domain. Dispatches batches to fetcher workers via work queue.' },
+        { id: 'fetcher', label: 'Fetcher Workers', icon: '🕷️', tech: 'Go goroutine pool', layer: 'app', why: '100s of workers, each fetching up to 5 pages/sec. Async I/O (net/http + goroutines). DNS caching. Handle redirects, timeouts, errors.' },
+        { id: 'dns', label: 'DNS Cache', icon: '🔍', tech: 'Local resolver cluster', layer: 'app', why: 'Re-resolving 10B unique domains is 2B+ DNS lookups. Local cache with 1hr TTL saves 90% of DNS calls. Dedicated resolver cluster prevents main DNS saturation.' },
+        { id: 'robots', label: 'Robots Cache', icon: '🤖', tech: 'Redis', layer: 'data', why: 'Robots.txt cached per domain for 24hr. Before crawling any URL, scheduler checks robotsCache[domain]. Fetches robots.txt on cache miss.' },
+        { id: 'frontier', label: 'URL Frontier', icon: '📨', tech: 'Kafka + Redis', layer: 'data', why: 'Kafka: persistent priority queue (topic per priority tier). Redis mini-queue: hot URLs for current 1-minute batch. Bloom filter for seen-URL dedup.' },
+        { id: 'bloom', label: 'Seen-URL Set', icon: '🔵', tech: 'Redis Bloom / Cassandra', layer: 'data', why: '10B URLs × 12 bytes = 120GB Bloom filter (1% FP). Prevents re-crawling known URLs. Cassandra for definitive URL metadata (last_crawled, checksum).' },
+        { id: 'parser', label: 'HTML Parser', icon: '⚙️', tech: 'Go/Python service', layer: 'app', why: 'Extracts links, text, metadata from raw HTML. URL normalization. SimHash for near-duplicate detection. Feeds new URLs back to frontier.' },
+        { id: 'storage', label: 'Content Store', icon: '🗄️', tech: 'S3 (WARC) + ES', layer: 'data', why: 'S3: raw HTML in WARC format (industry standard, compressed). Elasticsearch: indexed full-text for search. Cassandra: URL metadata, crawl history, checksums.' },
+      ],
+      flows: [
+        { label: 'Crawl Loop: Schedule → Fetch → Parse → Store', type: 'hot', nodes: ['frontier', 'scheduler', 'fetcher', 'parser', 'storage'] },
+        { label: 'New URL Discovery', type: 'async', nodes: ['parser', 'bloom', 'frontier'] },
+        { label: 'Robots.txt Check', type: 'async', nodes: ['scheduler', 'robots', 'fetcher'] },
+      ],
+      choices: [
+        { component: 'Kafka URL Frontier', icon: 'arrows-shuffle', color: 'amber', why: 'URL frontier needs persistence (survive worker restarts), parallelism (1000s of consumers), and prioritization (news > old blogs). Kafka topics per priority tier. Compacted for dedup. 640GB frontier fits in Kafka with log compaction.', alternatives: 'Redis sorted set (fast but not persistent at 640GB scale), RabbitMQ (lower throughput), Custom priority queue (reinventing the wheel)' },
+        { component: 'Bloom Filter (Redis)', icon: 'filter', color: 'teal', why: '10B URLs × 12 bytes = 120GB. A Bloom filter answers "have we seen this URL" in O(1) with configurable false-positive rate. 1% FP means 1% of URLs re-crawled unnecessarily — acceptable.', alternatives: 'HashSet in memory (too large), Cassandra exact lookup (50ms per check × 3858/sec = too slow), URL normalization + DB check (SQL join, bottleneck)' },
+        { component: 'Go Goroutine Workers', icon: 'cpu', color: 'green', why: 'Crawling is I/O bound (fetching pages, DNS, storage). Go goroutines: lightweight (2KB vs thread 8MB), 10K concurrent goroutines per process for high I/O concurrency. net/http client is production-ready.', alternatives: 'Python asyncio (2-3× slower), Java threads (heavy, OK), C++ (fastest but dev cost), Node.js (single-threaded model complicates CPU parsing)' },
+        { component: 'SimHash (Near-dup Detection)', icon: 'fingerprint', color: 'purple', why: 'Web has 30%+ near-duplicate content (same article, slightly different ads). SimHash: 64-bit fingerprint. Hamming distance < 3 = near-duplicate. O(1) comparison. Saves storing duplicates and improves search quality.', alternatives: 'SHA-256 exact match (misses near-dups), MinHash (better for sets but slower), full diff (too expensive at scale)' },
+      ]
+    },
+    assumptions: [
+      { key: 'Pages per worker/sec', val: '5 (I/O bound, async)' },
+      { key: 'Compression ratio', val: '10:1 (gzip WARC)' },
+      { key: 'Unique domains', val: '~1B (1 URL/domain avg)' },
+      { key: 'Politeness delay', val: '1s default, per robots.txt' },
+      { key: 'Bloom FP rate', val: '0.1%' },
+      { key: 'URL metadata size', val: '64 bytes/URL (normalized)' },
+      { key: 'Near-dup rate', val: '~30% of web pages' },
+      { key: 'Re-crawl freshness', val: 'Every 7 days per URL' },
+    ],
+    incidents: [
+      { incident: 'Spider Trap', symptom: 'Calendar app generates infinite URLs (e.g. /calendar?date=YYYYMMDD). Frontier size explodes. Storage fills. Workers stuck on one domain.', fix: 'Max path depth limit (10 hops). URL parameterization detection: if 1000+ URLs from same domain share same path pattern, blacklist the pattern. Per-domain crawl quota (max 10K URLs).' },
+      { incident: 'DNS Resolver Overload', symptom: 'DNS lookup latency spikes from 10ms to 2s. Worker threads blocked on DNS. Crawl rate drops 90%.', fix: 'Dedicated DNS resolver cluster (8 nodes). Local DNS cache with 1hr TTL covers 90% of re-encountered domains. Prefetch DNS for domains in upcoming scheduler batch.' },
+      { incident: 'Kafka Frontier Lag', symptom: 'URL frontier consumer lag grows. Workers idle despite 100B URLs queued. Crawl rate drops.', fix: 'Add Kafka consumer group members (scale horizontally). Check if scheduler is bottlenecked on robots.txt cache misses. Increase Redis Bloom filter size if collision rate high.' },
+    ],
+    interview: {
+      clarifying: '"Search engine crawler or data collection? Scale: 10B URLs, 30-day window, re-crawl every 7 days. Multi-language HTML? Yes. Need to respect robots.txt and crawl-delay? Yes, legally required. Priority: fresh/high-PageRank pages crawled first."',
+      functional: '(1) Fetch pages from the web at 3,858 URLs/sec. (2) Extract links and add new URLs to frontier. (3) Respect robots.txt and crawl politeness. (4) De-duplicate at URL and content level. (5) Store crawled content in compressed, indexed format.',
+      nonFunctional: 'Throughput: 3,858 pages/sec. Storage: 1PB raw → 100TB compressed. Frontier: 640GB (Kafka). DNS: <10ms (local cache). Politeness: 1 req/sec/domain. Bloom filter: 120GB at 0.1% FP. Availability: checkpoint-based resumption.',
+      capacity: '10B URLs / 30 days / 86,400 sec = 3,858 URLs/sec. Workers: 3858 / 5 pages/sec = 772 goroutines → ~97 servers (8 goroutines each, with headroom). Storage: 10B × 100KB × 0.1 compress = 100TB. Frontier: 10B × 64B = 640GB in Kafka.',
+      architecture: 'Frontier (Kafka topic per priority) → Scheduler (dequeues, groups by domain, applies politeness) → Fetcher workers (async Go, DNS cache, robots.txt check) → raw HTML → Parser (link extract + SimHash dedup) → new URLs → frontier. Content → S3 (WARC) + Elasticsearch. URL metadata → Cassandra.',
+      tradeoffs: '(1) BFS vs priority BFS: pure BFS crawls low-value pages and wastes quota on spam sites. Priority BFS with PageRank/freshness signal dramatically improves crawl quality. (2) Bloom filter FP rate: lower FP = larger filter. 0.1% FP at 10B URLs = 120GB. 1% FP = 60GB. Accept 1% re-crawl overhead to halve memory. (3) Store raw HTML vs parsed: raw is universal but large; parsed loses original fidelity. Store both in tiered storage.',
+      staffMoves: 'Start with simple BFS queue (Redis sorted set). Add politeness and robots.txt at week 1. Add Bloom filter when frontier dedup becomes expensive. Move frontier to Kafka for scale. Add SimHash for near-dup detection. Add priority tiers when raw QPS reaches quota but quality is poor.',
+    }
+  },
 ].filter(Boolean);function estimateCost(servers, vcpuPerServer, ramPerServer, storPerDay, bwOut, cacheGB, hasDB) {
   const compute = servers * (vcpuPerServer * COST.server_per_vcpu + ramPerServer * COST.server_per_gb_ram);
   const storageMonthly = storPerDay * 30 * COST.s3_per_gb / 1e9;
@@ -4743,10 +5762,141 @@ function recalcAndUpdate(scenario) {
   renderAssumptions(scenario);
   renderIncidents(scenario);
   renderInterview(scenario);
+  renderEstimateTab(scenario, result);
   // Clear what-if results on scenario change
   document.getElementById('whatif-results').classList.remove('show');
   document.querySelectorAll('.whatif-btn').forEach(b => b.classList.remove('active'));
   if (result) requestAnimationFrame(() => drawTrafficChart(result.rqps, result.wqps));
+}
+
+function renderEstimateTab(scenario, r) {
+  if (!r) return;
+  const peakR = r.rqps * state.peakMult;
+  const peakW = r.wqps * state.peakMult;
+  const costTotal = (r.cost && r.cost.total) ? r.cost.total : (r.monthlyCost || 0);
+
+  // Label
+  const labelEl = document.getElementById('est-scenario-label');
+  if (labelEl) labelEl.textContent = '— ' + scenario.name;
+
+  // ── Hero cards ──
+  const heroEl = document.getElementById('est-hero');
+  if (heroEl) {
+    heroEl.innerHTML = [
+      { cls:'teal',  label:'Read QPS (avg)',   val: fmtQPS(r.rqps),         sub: `peak ${fmtQPS(peakR)}`,  peak: peakR, base: r.rqps },
+      { cls:'amber', label:'Write QPS (avg)',  val: fmtQPS(r.wqps),         sub: `peak ${fmtQPS(peakW)}`,  peak: peakW, base: r.wqps },
+      { cls:'blue',  label:'Storage / Day',    val: fmtBytes(r.storPerDay), sub: `5-yr: ${fmtBytes(r.storPerDay*365*5)}`, peak:null },
+      { cls:'purple',label:'Monthly Cost',     val: costTotal ? fmtMoney(costTotal) : '—', sub: `${r.servers||'?'} servers + infra`, peak:null },
+    ].map(h => `
+      <div class="est-hero-card ${h.cls}">
+        <div class="est-hero-label">${h.label}</div>
+        <div class="est-hero-val">${h.val}</div>
+        <div class="est-hero-sub">${h.sub}</div>
+        ${h.peak ? `<div class="est-hero-peak">⚡ peak: ${fmtQPS(h.peak)}</div>` : ''}
+      </div>
+    `).join('');
+  }
+
+  // ── Bottleneck flag ──
+  const bn = detectBottleneck(r);
+  let bnHTML = '';
+  if (bn) {
+    const cls = bn.color === 'coral' ? 'critical' : bn.color === 'amber' ? 'warn' : 'warn';
+    const icon = bn.color === 'coral' ? '🔥' : bn.color === 'amber' ? '⚠️' : '📊';
+    bnHTML = `<div class="est-bottleneck-flag ${cls}">
+      <span class="est-bn-icon">${icon}</span>
+      <div><div class="est-bn-title">${bn.label}</div><div class="est-bn-body">${bn.val}</div></div>
+    </div>`;
+  } else {
+    bnHTML = `<div class="est-bottleneck-flag ok">
+      <span class="est-bn-icon">✅</span>
+      <div><div class="est-bn-title">No single bottleneck detected</div><div class="est-bn-body">Adjust parameters or peak factor to stress-test this design.</div></div>
+    </div>`;
+  }
+
+  // ── Metrics grid ──
+  const extras = r.extras || [];
+  const DAY = 86400;
+  const defaultMetrics = [
+    { label:'Bandwidth Out', icon:'ti-wifi', val: fmtBW(r.bwOut), sub: 'peak egress throughput', pct: Math.min(r.bwOut/50e9*100, 100), color:'var(--teal)' },
+    { label:'Cache Needed', icon:'ti-bolt', val: fmtBytes(r.cacheGB*1e9), sub: 'Redis / Memcached footprint', pct: Math.min(r.cacheGB/500*100, 100), color:'var(--green)' },
+    { label:'Servers', icon:'ti-server', val: (r.servers||0).toLocaleString(), sub: `~${Math.ceil((r.servers||1)/3)} AZ × 3 AZs`, pct: Math.min((r.servers||0)/200*100, 100), color:'var(--blue)' },
+  ];
+  const metricItems = extras.length > 0
+    ? extras.slice(0,6).map(e => ({ label:e.label, icon:'ti-chart-dots', val:e.val, sub:'', pct:50, color:`var(--${e.color||'teal'})` }))
+    : defaultMetrics;
+
+  const metricsEl = document.getElementById('est-metrics-grid');
+  if (metricsEl) {
+    metricsEl.innerHTML = bnHTML + metricItems.map(m => `
+      <div class="est-metric-card">
+        <div class="est-metric-label"><i class="ti ${m.icon}" style="color:${m.color}"></i>${m.label}</div>
+        <div class="est-metric-val">${m.val}</div>
+        <div class="est-metric-sub">${m.sub}</div>
+        <div class="est-metric-bar-wrap"><div class="est-metric-bar" style="width:${Math.max(m.pct,2).toFixed(0)}%;background:${m.color}"></div></div>
+      </div>
+    `).join('');
+    // style the bottleneck flag to span full width
+    const flag = metricsEl.querySelector('.est-bottleneck-flag');
+    if (flag) flag.style.gridColumn = '1 / -1';
+  }
+
+  // ── Formula cards ──
+  const formEl = document.getElementById('est-formulas');
+  if (formEl) {
+    if (!scenario.formulas || !scenario.formulas.length) {
+      formEl.innerHTML = '<div class="est-formula-empty">Formula breakdown not available for this scenario.</div>';
+    } else {
+      formEl.innerHTML = `<div class="est-formula-grid">${scenario.formulas.map((f, i) => `
+        <div class="est-formula-card">
+          <div class="est-formula-step">
+            <span class="est-formula-step-num">${i+1}</span>
+            STEP ${i+1}
+          </div>
+          <div class="est-formula-name">${f.label}</div>
+          ${f.expr ? `<code class="est-formula-expr">${f.expr}</code>` : ''}
+          <div class="est-formula-result">= ${f.result||'—'}</div>
+        </div>
+      `).join('')}</div>`;
+    }
+  }
+
+  // ── Storage timeline ──
+  const tlEl = document.getElementById('est-storage-timeline');
+  if (tlEl) {
+    const sd = r.storPerDay;
+    if (!sd || sd <= 0) {
+      tlEl.innerHTML = '<div class="est-formula-empty">No persistent storage for this scenario.</div>';
+    } else {
+      const periods = [
+        { label: '/sec',    val: sd / DAY },
+        { label: '/hr',     val: sd / 24 },
+        { label: '/day',    val: sd },
+        { label: '/month',  val: sd * 30 },
+        { label: '/year',   val: sd * 365 },
+        { label: '3 years', val: sd * 365 * 3 },
+        { label: '5 years', val: sd * 365 * 5 },
+      ];
+      const maxVal = periods[periods.length - 1].val;
+      tlEl.innerHTML = `<div class="est-timeline-grid">${periods.map(p => {
+        const pct = maxVal > 0 ? (p.val / maxVal * 100) : 2;
+        const parts = fmtBytes(p.val).split(' ');
+        return `
+          <div class="est-tl-col">
+            <div class="est-tl-period">${p.label}</div>
+            <div class="est-tl-bar-wrap">
+              <div class="est-tl-bar" style="height:${Math.max(pct * 0.8, 3).toFixed(0)}%"></div>
+            </div>
+            <div class="est-tl-val">${parts[0]}</div>
+            <div class="est-tl-unit">${parts[1]||''}</div>
+          </div>
+        `;
+      }).join('')}</div>`;
+    }
+  }
+
+  // ── Cross-scenario capacity bars ──
+  _renderCapBars();
 }
 
 function updateTicker(r) {
@@ -6897,6 +8047,490 @@ window.addEventListener('resize', () => {
     hardRender();
   }, true);
 })();
+
+
+/* ── Interview Checklist Feature ── */
+(function(){
+  const CHK_KEY = 'boe_chk_state';
+  const PHASES = [
+    {
+      title: 'Phase 1 — Clarify & Scope', time: '0-5 min', items: [
+        { id:'req1', label:'Ask 3 clarifying questions before touching the board', sub:'Scale, features, constraints. Don\'t assume.' },
+        { id:'req2', label:'State functional requirements (top 3)', sub:'What must the system DO? Core user flows only.' },
+        { id:'req3', label:'State non-functional requirements', sub:'Latency, availability, durability, consistency.' },
+        { id:'req4', label:'Explicitly call out what\'s OUT OF SCOPE', sub:'This shows senior thinking. Say it out loud.' },
+      ]
+    },
+    {
+      title: 'Phase 2 — Capacity Estimation', time: '5-10 min', items: [
+        { id:'est1', label:'Estimate DAU/MAU and QPS (read + write)', sub:'Show your math: users × actions / 86400 = QPS' },
+        { id:'est2', label:'Calculate storage per day + 5-year projection', sub:'Include replication factor (3×) and media if applicable.' },
+        { id:'est3', label:'Estimate bandwidth (read QPS × payload size)', sub:'Both inbound and outbound if asymmetric.' },
+        { id:'est4', label:'State the dominant bottleneck from numbers', sub:'CPU? Network? Storage? DB write throughput? Name it.' },
+      ]
+    },
+    {
+      title: 'Phase 3 — API Design', time: '10-15 min', items: [
+        { id:'api1', label:'Define API endpoints for each functional req', sub:'REST or gRPC. Show method, path, request/response.' },
+        { id:'api2', label:'Specify auth/auth mechanism', sub:'JWT? API key? OAuth2? Who calls this API?' },
+        { id:'api3', label:'Show pagination or streaming for large results', sub:'cursor-based > offset for large datasets.' },
+      ]
+    },
+    {
+      title: 'Phase 4 — High-Level Design', time: '15-25 min', items: [
+        { id:'hld1', label:'Draw the boxes: clients → LB → services → cache → DB', sub:'Label every component and the data that flows between.' },
+        { id:'hld2', label:'Choose database type + justify', sub:'SQL vs NoSQL, why? Trade consistency vs flexibility.' },
+        { id:'hld3', label:'Show the read path and write path separately', sub:'Different scaling stories — separate the concerns.' },
+        { id:'hld4', label:'Add async messaging (Kafka/SQS) if writes need decoupling', sub:'Event-driven → better availability + fan-out.' },
+      ]
+    },
+    {
+      title: 'Phase 5 — Deep Dive (Pick 1-2)', time: '25-35 min', items: [
+        { id:'dd1', label:'Deep dive into the hardest component', sub:'Ask interviewer: "Want me to go deep on X or Y?"' },
+        { id:'dd2', label:'Present 2-3 approaches with trade-offs', sub:'Not just "I\'d use Redis." Why? What breaks? When?' },
+        { id:'dd3', label:'Address the dominant bottleneck identified in Phase 2', sub:'Show you circle back. Connects everything.' },
+      ]
+    },
+    {
+      title: 'Phase 6 — Scale & Reliability', time: '35-42 min', items: [
+        { id:'sc1', label:'Sharding/partitioning strategy for the DB', sub:'By what key? Consistent hash vs range? Hot spots?' },
+        { id:'sc2', label:'Caching strategy (what, where, eviction, TTL)', sub:'Read-through? Write-through? Cache-aside? Why?' },
+        { id:'sc3', label:'Replication + failover (how does it survive AZ failure?)', sub:'Primary-replica? Multi-master? What data can be stale?' },
+        { id:'sc4', label:'State your CAP theorem stance explicitly', sub:'This is CP or AP. Here\'s why this system tolerates X.' },
+      ]
+    },
+    {
+      title: 'Phase 7 — Wrap-up', time: '42-45 min', items: [
+        { id:'wu1', label:'Name 2-3 explicit trade-offs you made', sub:'Show you\'re aware of what you sacrificed and why.' },
+        { id:'wu2', label:'Mention monitoring: SLIs, SLOs, alerts', sub:'Error rate, p99 latency, queue depth. What\'s on the dashboard?' },
+        { id:'wu3', label:'Call out what you\'d do with more time', sub:'Shows strategic thinking. Prioritize biggest risks.' },
+      ]
+    },
+  ];
+
+  let state = {};
+  try { state = JSON.parse(localStorage.getItem(CHK_KEY) || '{}'); } catch(e) { state = {}; }
+
+  function save() { try { localStorage.setItem(CHK_KEY, JSON.stringify(state)); } catch(e){} }
+
+  function totalItems() { return PHASES.reduce((s,p)=>s+p.items.length,0); }
+  function checkedCount() { return Object.values(state).filter(Boolean).length; }
+
+  function renderChk() {
+    const body = document.getElementById('chk-body');
+    if (!body) return;
+    body.innerHTML = PHASES.map(phase => `
+      <div class="chk-phase">
+        <div class="chk-phase-title">
+          ${phase.title}
+          <span class="chk-phase-time">${phase.time}</span>
+        </div>
+        ${phase.items.map(item => `
+          <div class="chk-item${state[item.id] ? ' checked' : ''}" data-chk-id="${item.id}">
+            <div class="chk-checkbox">
+              <svg class="chk-checkbox-tick" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M1.5 5L4 7.5L8.5 2.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <div>
+              <div class="chk-label">${item.label}</div>
+              <div class="chk-sub">${item.sub}</div>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    `).join('');
+    updateProgress();
+  }
+
+  function updateProgress() {
+    const total = totalItems();
+    const done = checkedCount();
+    const pct = total ? (done / total * 100) : 0;
+    const bar = document.getElementById('chk-progress-bar');
+    const countEl = document.getElementById('chk-count-val');
+    const totalEl = document.getElementById('chk-count-total');
+    if (bar) bar.style.width = pct + '%';
+    if (countEl) countEl.textContent = done;
+    if (totalEl) totalEl.textContent = total;
+    const btn = document.getElementById('chk-open-btn');
+    if (btn) btn.classList.toggle('has-checked', done > 0);
+  }
+
+  const overlay = document.getElementById('chk-overlay');
+  document.getElementById('chk-open-btn')?.addEventListener('click', () => {
+    overlay?.classList.add('open');
+    renderChk();
+  });
+  document.getElementById('chk-close')?.addEventListener('click', () => overlay?.classList.remove('open'));
+  overlay?.addEventListener('click', e => { if (e.target === overlay) overlay.classList.remove('open'); });
+  document.getElementById('chk-reset')?.addEventListener('click', () => {
+    state = {};
+    save();
+    renderChk();
+  });
+  document.getElementById('chk-body')?.addEventListener('click', e => {
+    const item = e.target.closest('[data-chk-id]');
+    if (!item) return;
+    const id = item.dataset.chkId;
+    state[id] = !state[id];
+    save();
+    renderChk();
+  });
+
+  // Initial count update
+  updateProgress();
+})();
+
+/* ── Simulator Score History ── */
+(function(){
+  const HIST_KEY = 'boe_sim_history';
+  const MAX_HIST = 20;
+
+  function readHistory() {
+    try { return JSON.parse(localStorage.getItem(HIST_KEY) || '[]'); } catch(e) { return []; }
+  }
+  function writeHistory(h) {
+    try { localStorage.setItem(HIST_KEY, JSON.stringify(h.slice(0, MAX_HIST))); } catch(e) {}
+  }
+
+  function pushScore(scenario, difficulty, score) {
+    const h = readHistory();
+    h.unshift({ scenario, difficulty, score, ts: Date.now() });
+    writeHistory(h);
+    renderHistory();
+  }
+
+  function renderHistory() {
+    const h = readHistory();
+    let target = document.getElementById('sim-history-list');
+    if (!target) {
+      const summaryArea = document.getElementById('sim-summary-area');
+      if (!summaryArea) return;
+      const section = document.createElement('div');
+      section.className = 'sim-history-section';
+      section.innerHTML = `
+        <div class="sim-history-title">
+          <i class="ti ti-history" style="font-size:14px"></i> Past Sessions
+          <button class="sim-history-clear" id="sim-history-clear">Clear</button>
+        </div>
+        <div class="sim-history-list" id="sim-history-list"></div>
+      `;
+      summaryArea.appendChild(section);
+      target = document.getElementById('sim-history-list');
+      document.getElementById('sim-history-clear')?.addEventListener('click', () => {
+        writeHistory([]);
+        renderHistory();
+      });
+    }
+    if (!target) return;
+    if (!h.length) {
+      target.innerHTML = '<div class="sim-history-empty">No sessions yet. Start a simulator session to track scores.</div>';
+      return;
+    }
+    const scoreClass = s => s >= 80 ? 's-good' : s >= 60 ? 's-ok' : 's-poor';
+    const timeAgo = ts => {
+      const m = Math.floor((Date.now() - ts) / 60000);
+      if (m < 60) return m + 'm ago';
+      const h = Math.floor(m / 60);
+      if (h < 24) return h + 'h ago';
+      return Math.floor(h / 24) + 'd ago';
+    };
+    target.innerHTML = h.map(entry => `
+      <div class="sim-history-item">
+        <div class="sim-history-score ${scoreClass(entry.score)}">${entry.score}</div>
+        <div class="sim-history-meta">
+          <div>${entry.scenario}</div>
+          <div class="sim-history-scenario">${timeAgo(entry.ts)}</div>
+        </div>
+        <span class="sim-history-diff ${entry.difficulty}">${entry.difficulty}</span>
+      </div>
+    `).join('');
+  }
+
+  // Hook into simulator to record scores when a session completes
+  // We watch for summary display and extract the overall score
+  const origFetch = window.fetch;
+  const scoreObserver = new MutationObserver(() => {
+    const summaryArea = document.getElementById('sim-summary-area');
+    if (!summaryArea || summaryArea.style.display === 'none') return;
+    const ring = summaryArea.querySelector('.sim-score-ring');
+    if (!ring || ring.dataset.recorded) return;
+    ring.dataset.recorded = '1';
+    const scoreText = ring.textContent?.trim();
+    const score = parseInt(scoreText);
+    if (isNaN(score)) return;
+    const scenario = SCENARIOS.find(s => s.id === (window.state?.scenarioId));
+    const diff = document.querySelector('.diff-btn.active')?.dataset?.diff || 'senior';
+    pushScore(scenario?.name || 'Unknown', diff, score);
+  });
+  scoreObserver.observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['style'] });
+
+  // Initial render (in case there's history)
+  setTimeout(renderHistory, 200);
+
+  // Expose for potential external use
+  window.boePushScore = pushScore;
+})();
+
+/* ═══════════════════════════════════════════════
+   ENHANCED ENHANCEMENTS — New Visual Panels
+   ═══════════════════════════════════════════════ */
+
+/* ── Latency Visual Bars ── */
+(function(){
+  const LATENCY_DATA = [
+    { label: 'L1 cache hit',       ns: 1,          cls: 'ns',      color: '#0F6E56' },
+    { label: 'L2 cache hit',       ns: 4,          cls: 'ns',      color: '#3B6D11' },
+    { label: 'L3 cache hit',       ns: 40,         cls: 'ns',      color: '#639922' },
+    { label: 'RAM access',         ns: 100,        cls: 'us',      color: '#185FA5' },
+    { label: 'SSD random read',    ns: 150000,     cls: 'ms-low',  color: '#EF9F27' },
+    { label: 'HDD random seek',    ns: 10000000,   cls: 'ms-mid',  color: '#D85A30' },
+    { label: 'LAN round trip',     ns: 500000,     cls: 'ms-low',  color: '#534AB7' },
+    { label: 'Same-DC network',    ns: 1000000,    cls: 'ms-low',  color: '#7F77DD' },
+    { label: 'Cross-continent',    ns: 150000000,  cls: 'ms-high', color: '#A32D2D' },
+  ];
+
+  function fmtNs(ns){
+    if(ns < 1000) return ns+'ns';
+    if(ns < 1e6) return (ns/1000).toFixed(0)+'µs';
+    if(ns < 1e9) return (ns/1e6).toFixed(0)+'ms';
+    return (ns/1e9).toFixed(2)+'s';
+  }
+
+  const container = document.getElementById('latency-bars');
+  if(!container) return;
+
+  const maxLog = Math.log10(150000000);
+  const minLog = Math.log10(1);
+
+  container.innerHTML = LATENCY_DATA.map(d => {
+    const logPos = Math.log10(d.ns);
+    const pct = ((logLog = (logPos - minLog) / (maxLog - minLog)) * 85 + 5);
+    return `
+      <div class="lat-bar-row">
+        <div class="lat-bar-label">${d.label}</div>
+        <div class="lat-bar-track">
+          <div class="lat-bar-fill ${d.cls}"
+            style="width:${pct.toFixed(1)}%;background:${d.color}"
+            data-val="${fmtNs(d.ns)}"
+            title="${d.label}: ${fmtNs(d.ns)}">
+          </div>
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  // Animate bars on scroll
+  const observer = new IntersectionObserver(entries => {
+    if(entries[0].isIntersecting){
+      container.querySelectorAll('.lat-bar-fill').forEach(el => {
+        const w = el.style.width;
+        el.style.width = '0';
+        setTimeout(() => el.style.width = w, 50);
+      });
+      observer.disconnect();
+    }
+  }, { threshold: 0.3 });
+  observer.observe(container);
+})();
+
+/* ── Pattern Tab Switching ── */
+(function(){
+  document.querySelectorAll('.pattern-tab').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = btn.dataset.pattern;
+      document.querySelectorAll('.pattern-tab').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.pattern-content').forEach(c => c.classList.remove('active'));
+      btn.classList.add('active');
+      const el = document.getElementById('pattern-' + id);
+      if(el) el.classList.add('active');
+    });
+  });
+})();
+
+/* ── Concept Glossary ── */
+(function(){
+  const CONCEPTS = [
+    // CAP / Consistency
+    { term: 'CAP Theorem', cat: 'cap', def: 'A distributed system can guarantee only 2 of 3: Consistency, Availability, Partition Tolerance. In practice, partition tolerance is mandatory, so the real choice is CP vs AP.', example: 'CP: Zookeeper, HBase | AP: Cassandra, DynamoDB' },
+    { term: 'Strong Consistency', cat: 'cap', def: 'Every read sees the most recent write. Requires coordination (quorum or leader lock). High latency, lower availability. Use for money & auth.', example: 'Postgres with sync replica, CockroachDB' },
+    { term: 'Eventual Consistency', cat: 'cap', def: 'Writes propagate asynchronously. Reads may be stale for ms–seconds. High availability and low latency. Use for counters, likes, DNS.', example: 'Cassandra, DynamoDB, S3' },
+    { term: 'Read-Your-Writes', cat: 'cap', def: 'After a user writes, they always see their own update. Not globally consistent. Achieved via sticky sessions or routing reads to writer.', example: 'User sees their own profile edit immediately' },
+    { term: 'Linearizability', cat: 'cap', def: 'Strictest form of consistency. Operations appear instantaneous at some point between invocation and response. Stronger than serializable.', example: 'etcd, Zookeeper (leader reads only)' },
+    { term: 'CRDT', cat: 'cap', def: 'Conflict-free Replicated Data Type. Data structures that auto-resolve merge conflicts without coordination. Great for collaborative editing.', example: 'Riak counters, collaborative docs (Notion)' },
+    // Network
+    { term: 'Consistent Hashing', cat: 'network', def: 'Maps nodes and keys on a ring. Adding/removing a node only remaps a fraction (1/N) of keys. Essential for cache & shard scaling.', example: 'Redis Cluster, Cassandra ring, CDN routing' },
+    { term: 'Long Polling', cat: 'network', def: 'Client sends request; server holds it open until data is available or timeout. Simpler than WebSocket. 1 open connection per request.', example: 'Facebook Chat (originally), JIRA notifications' },
+    { term: 'WebSocket', cat: 'network', def: 'Full-duplex bidirectional TCP channel. After HTTP upgrade, both sides can push data. ~65K connections/server (Linux limits). Great for real-time.', example: 'Slack, Discord, Live sport scores' },
+    { term: 'Server-Sent Events', cat: 'network', def: 'One-way push from server to browser over HTTP. Cheaper than WebSocket for unidirectional streams. Auto-reconnect built in.', example: 'Live news feed, log streaming, GitHub deploy' },
+    { term: 'gRPC', cat: 'network', def: 'RPC framework using HTTP/2 + Protobuf. 10× smaller payloads than JSON REST. Streaming built-in. Used for internal service-to-service.', example: 'Google internal APIs, Kubernetes, microservices' },
+    { term: 'CDN', cat: 'network', def: 'Content Delivery Network. Caches static/dynamic content at 200+ global PoPs. Reduces origin load, cuts latency by serving geographically close. Cache-Control drives TTL.', example: 'Cloudflare, Fastly, AWS CloudFront' },
+    // Storage
+    { term: 'LSM Tree', cat: 'storage', def: 'Log-Structured Merge-tree. Writes go to in-memory buffer (memtable), flushed to SSTable on disk. Sequential writes = very fast. Reads merge multiple levels. Used by Cassandra, RocksDB.', example: 'Cassandra, LevelDB, RocksDB, HBase' },
+    { term: 'B-Tree Index', cat: 'storage', def: 'Balanced tree that keeps data sorted on disk. Excellent for range queries and random reads. Updates in-place. Used by Postgres/MySQL. O(log n) reads and writes.', example: 'PostgreSQL, MySQL InnoDB, SQLite' },
+    { term: 'Write-Behind Cache', cat: 'storage', def: 'Cache accepts writes immediately and flushes to DB asynchronously. Fast writes, risk of data loss on crash. Use for non-critical high-frequency writes.', example: 'Redis + async Postgres flush for counters' },
+    { term: 'Write-Through Cache', cat: 'storage', def: 'Every write goes to cache AND DB synchronously. Slower writes but no stale cache. Safe for critical data. Use for auth tokens, pricing.', example: 'E-commerce cart, payment session' },
+    { term: 'Bloom Filter', cat: 'storage', def: 'Probabilistic data structure: 100% accurate "definitely not present", but small false-positive rate for "present". Great for avoiding DB lookups.', example: 'Cassandra (skip SSTables), URL shortener (avoid collision check)' },
+    { term: 'Sharding', cat: 'storage', def: 'Horizontal partitioning: split data across multiple DB instances by a shard key. Each shard handles a subset. Eliminates single-node bottleneck at the cost of cross-shard queries.', example: 'user_id % N shards, geo-based sharding' },
+    // Patterns
+    { term: 'Fan-out on Write', cat: 'pattern', def: 'When a user posts, immediately push to all followers\' feeds. O(followers) write cost. Best for non-celebrity users (<10K followers). Twitter hybrid.', example: 'Instagram feed, WhatsApp group messages' },
+    { term: 'Fan-out on Read', cat: 'pattern', def: 'Feed computed at read time by merging all followed users\' posts. O(following) read cost per request. Better for celebrities with millions of followers.', example: 'Twitter for high-follower accounts' },
+    { term: 'CQRS', cat: 'pattern', def: 'Command-Query Responsibility Segregation. Separate write model (command) from read model (query). Read model can be denormalized and cached. Helps at scale.', example: 'Event sourcing + read projections, Kafka + OLAP' },
+    { term: 'Saga Pattern', cat: 'pattern', def: 'Distributed transactions via choreography or orchestration of local transactions with compensating rollbacks. No 2PC needed.', example: 'Order service → payment → inventory (choreography)' },
+    { term: 'Circuit Breaker', cat: 'pattern', def: 'Detects downstream failures, "opens" to stop sending requests for a timeout, then "half-opens" to probe recovery. Prevents cascading failures.', example: 'Netflix Hystrix, Resilience4j, Envoy proxy' },
+    { term: 'Backpressure', cat: 'pattern', def: 'Producer slows down when consumer is overwhelmed. Prevents memory overflow and cascade. Reactive streams, Kafka consumer lag monitoring.', example: 'Kafka consumer lag → slow producer, TCP flow control' },
+    { term: 'Idempotency Key', cat: 'pattern', def: 'Client sends unique request ID. Server stores processed IDs. On retry, deduplicates and returns same response. Critical for payments.', example: 'Stripe API, payment processing, Kafka exactly-once' },
+    // Reliability
+    { term: 'SLO / SLA / SLI', cat: 'reliability', def: 'SLI = metric (p99 latency). SLO = target (p99 < 200ms). SLA = contractual commitment with penalties. SLO is internal, SLA is external.', example: '99.9% availability SLO = 8.7h downtime/yr budget' },
+    { term: 'Error Budget', cat: 'reliability', def: '100% - SLO = error budget. You can burn this on planned downtime, experiments, risky deploys. When budget is exhausted, freeze changes.', example: '99.9% SLO → 0.1% = 8.7hrs/yr error budget' },
+    { term: 'Thundering Herd', cat: 'reliability', def: 'Many clients retry simultaneously after a cache miss or server restart, overwhelming the system. Prevent with cache stampede protection, jitter on retry, mutex locks.', example: 'Cache cold start, server reboot, viral traffic spike' },
+    { term: 'Hot Partition', cat: 'reliability', def: 'One shard/partition receives disproportionate traffic (e.g. celebrity user, trending hashtag). Shard key choice is critical. Detect via Kafka partition lag, DB slow query log.', example: 'NYC cell in Uber at New Year\'s, viral tweet, Black Friday' },
+    { term: 'Bulkhead', cat: 'reliability', def: 'Isolate resources into pools per client/service. Failure in one pool doesn\'t cascade. Like ship compartments. Thread pool per dependency.', example: 'Separate DB connection pools per service, rate limits per tenant' },
+  ];
+
+  const grid = document.getElementById('concept-grid');
+  if(!grid) return;
+
+  function render(filter){
+    const items = filter === 'all' ? CONCEPTS : CONCEPTS.filter(c => c.cat === filter);
+    grid.innerHTML = items.map(c => `
+      <div class="concept-card ${c.cat}" title="${c.term}">
+        <div class="concept-term">
+          ${c.term}
+          <span class="concept-badge ${c.cat}">${c.cat.replace('cap','consistency').replace('network','network').replace('storage','storage').replace('pattern','pattern').replace('reliability','reliability')}</span>
+        </div>
+        <div class="concept-def">${c.def}</div>
+        <span class="concept-example">${c.example}</span>
+      </div>
+    `).join('');
+  }
+
+  render('all');
+
+  document.querySelectorAll('[data-cfilter]').forEach(btn => {
+    btn.addEventListener('click', e => {
+      e.stopPropagation();
+      document.querySelectorAll('[data-cfilter]').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      render(btn.dataset.cfilter);
+    });
+  });
+
+  document.getElementById('concept-glossary-head')?.addEventListener('click', () => {
+    const body = document.getElementById('concept-glossary-body');
+    const chevron = document.getElementById('concept-chevron');
+    if(body){ body.classList.toggle('open'); }
+    if(chevron){ chevron.style.transform = body?.classList.contains('open') ? 'rotate(180deg)' : ''; }
+  });
+})();
+
+/* ── Insight Highlight Box (updates per scenario) ── */
+(function(){
+  const HIGHLIGHTS = {
+    url: { icon:'🔗', title:'Key Insight: KGS (Key Generation Service)', sub:'Pre-generate 7-char base62 codes in batches. Each app server pulls from a Redis pool. No collision checking needed at write time.', tag:'read:write = 100:1 → cache everything' },
+    twitter: { icon:'📣', title:'Key Insight: Hybrid Fan-out', sub:'Fan-out on write for normal users (<10K followers). Fan-out on read for celebrities. This is the core Twitter engineering challenge.', tag:'write amplification vs read latency trade-off' },
+    whatsapp: { icon:'💬', title:'Key Insight: Erlang for Connections', sub:'WhatsApp runs 1M+ WebSocket connections per Erlang node. Each process is 1KB vs ~2MB for OS threads. BEAM actor model = no shared state.', tag:'500M persistent connections = massive density need' },
+    youtube: { icon:'🎬', title:'Key Insight: Adaptive Bitrate Streaming', sub:'HLS/DASH splits video into 10-second chunks at multiple bitrates. Player picks quality based on bandwidth. CDN caches each chunk independently.', tag:'bandwidth cost dominates — optimize encoding first' },
+    uber: { icon:'🚗', title:'Key Insight: H3 Hexagonal Grid', sub:'Uber invented H3. Each hex cell is a string ID. Driver location = Redis GEOADD. Match = query 7 neighboring cells. O(1) lookup, sub-ms.', tag:'250K location writes/sec → Kafka firehose' },
+    payment: { icon:'💳', title:'Key Insight: Idempotency Keys', sub:'Every payment request has a unique UUID. Server stores (idempotency_key, result) in Redis. On retry, return cached result. No double charges.', tag:'correctness > throughput — this is not a speed problem' },
+    netflix: { icon:'🎥', title:'Key Insight: Chaos Engineering', sub:'Netflix invented Chaos Monkey: randomly kills production instances. Forces the system to be resilient by design. Test failure modes before they find you.', tag:'Multi-region active-active — no single point of failure' },
+    search: { icon:'🔍', title:'Key Insight: Inverted Index', sub:'Maps word → list of (doc_id, position). To search "hello world", intersect both lists. Elasticsearch builds, segments, and merges these constantly.', tag:'Query latency < 100ms at 1B+ document scale' },
+    slack: { icon:'💼', title:'Key Insight: Channel Fan-out', sub:'Channels are the unit of fan-out. Message → Kafka (partitioned by channel_id) → fan out to all online members via WebSocket. Offline members queued.', tag:'Workspace isolation is a key multi-tenancy design choice' },
+  };
+
+  function updateHighlight(scenarioId){
+    const box = document.getElementById('insight-highlight-box');
+    const h = HIGHLIGHTS[scenarioId];
+    if(!box) return;
+    if(!h){ box.style.display = 'none'; return; }
+    document.getElementById('insight-highlight-icon').textContent = h.icon;
+    document.getElementById('insight-highlight-title').textContent = h.title;
+    document.getElementById('insight-highlight-sub').textContent = h.sub;
+    document.getElementById('insight-highlight-tag').textContent = h.tag;
+    box.style.display = 'flex';
+  }
+
+  // Hook into scenario changes
+  const origRender = window.renderScenario;
+  if(typeof origRender === 'function'){
+    window.renderScenario = function(){
+      origRender.apply(this, arguments);
+      updateHighlight(window.state?.scenarioId || '');
+    };
+  }
+
+  // Also try MutationObserver as fallback
+  const desc = document.getElementById('scenario-desc');
+  if(desc){
+    const mo = new MutationObserver(() => {
+      updateHighlight(window.state?.scenarioId || '');
+    });
+    mo.observe(desc, { childList: true, characterData: true, subtree: true });
+  }
+})();
+
+/* ── Animated metric pop on value change ── */
+(function(){
+  const targets = ['t-rqps','t-wqps','t-stor','t-cost'];
+  targets.forEach(id => {
+    const el = document.getElementById(id);
+    if(!el) return;
+    const mo = new MutationObserver(() => {
+      el.classList.remove('pop');
+      void el.offsetWidth;
+      el.classList.add('pop');
+    });
+    mo.observe(el, { childList: true, characterData: true, subtree: true });
+  });
+})();
+
+/* ── Cross-scenario Capacity Bars ── */
+function _renderCapBars(){
+  if(!window.SCENARIOS || !window.state) return;
+  const allCalcs = SCENARIOS.map(s => {
+    try {
+      const pVals = {};
+      s.params.forEach(p => pVals[p.id] = p.val * (p.mult||1));
+      const r = s.calc(pVals);
+      return { name: s.name, id: s.id, rqps: r.rqps||0, wqps: r.wqps||0, stor: r.storPerDay||0 };
+    } catch(e){ return null; }
+  }).filter(Boolean);
+
+  const maxRqps = Math.max(...allCalcs.map(c => c.rqps), 1);
+  const maxStor  = Math.max(...allCalcs.map(c => c.stor), 1);
+
+  function fmtQ(n){ if(n>=1e6) return (n/1e6).toFixed(1)+'M/s'; if(n>=1e3) return (n/1e3).toFixed(0)+'K/s'; return Math.round(n)+'/s'; }
+  function fmtS(n){ if(n>=1e12) return (n/1e12).toFixed(1)+' TB'; if(n>=1e9) return (n/1e9).toFixed(1)+' GB'; if(n>=1e6) return (n/1e6).toFixed(1)+' MB'; return Math.round(n)+' B'; }
+
+  const colors = ['#0F6E56','#185FA5','#534AB7','#3B6D11','#EF9F27','#D85A30','#993C1D','#854F0B'];
+
+  function makeRows(list, maxVal, fmtFn, prop) {
+    const sorted = [...list].sort((a,b) => b[prop]-a[prop]).slice(0,10);
+    return sorted.map((item, i) => {
+      const pct = (item[prop]/maxVal)*100;
+      const isCurrent = item.id === state.scenarioId;
+      const color = isCurrent ? 'var(--teal)' : colors[i%colors.length];
+      const label = isCurrent ? `★ ${item.name}` : item.name;
+      return `
+        <div class="cap-compare-row">
+          <div class="cap-compare-label" style="${isCurrent?'font-weight:800;color:var(--teal)':''}">${label}</div>
+          <div class="cap-compare-track">
+            <div class="cap-compare-fill" style="width:${Math.max(pct,1.5).toFixed(1)}%;background:${color}">
+              ${pct > 18 ? fmtFn(item[prop]) : ''}
+            </div>
+          </div>
+          <div class="cap-compare-val" style="${isCurrent?'color:var(--teal);font-weight:800':''}">${fmtFn(item[prop])}</div>
+        </div>`;
+    }).join('');
+  }
+
+  const qpsEl = document.getElementById('cap-bars-qps');
+  const storEl = document.getElementById('cap-bars-stor');
+  if(qpsEl) qpsEl.innerHTML = makeRows(allCalcs, maxRqps, fmtQ, 'rqps');
+  if(storEl) storEl.innerHTML = makeRows(allCalcs, maxStor, fmtS, 'stor');
+}
+
 </script>
 </body>
 </html>

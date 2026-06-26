@@ -1,0 +1,1397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kafka E2E Flow Simulator</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg0:#060b18;--bg1:#0b1120;--bg2:#111827;--bg3:#1a2234;
+  --border:#1e2d4a;--border2:#2a3f5f;
+  --green:#10b981;--blue:#3b82f6;--cyan:#22d3ee;
+  --purple:#8b5cf6;--amber:#f59e0b;--red:#ef4444;--pink:#ec4899;
+  --text:#e2e8f0;--text2:#94a3b8;--text3:#64748b;
+  --mono:'Consolas','Monaco','Courier New',monospace;
+}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg0);color:var(--text);min-height:100vh;overflow-x:hidden}
+
+/* ── HEADER ── */
+.header{
+  background:var(--bg1);border-bottom:1px solid var(--border);
+  padding:12px 20px;display:flex;align-items:center;justify-content:space-between;
+  position:sticky;top:0;z-index:100;gap:12px;flex-wrap:wrap;
+}
+.logo{display:flex;align-items:center;gap:10px}
+.logo-icon{
+  width:36px;height:36px;background:linear-gradient(135deg,var(--blue),var(--cyan));
+  border-radius:8px;display:flex;align-items:center;justify-content:center;
+  font-size:18px;font-weight:900;color:#000;letter-spacing:-1px;
+}
+.logo-text h1{font-size:15px;font-weight:700;color:var(--cyan);letter-spacing:.5px}
+.logo-text p{font-size:10px;color:var(--text3);font-family:var(--mono)}
+.controls{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.step-badge{
+  font-family:var(--mono);font-size:12px;color:var(--text2);
+  background:var(--bg2);padding:5px 10px;border-radius:5px;
+  border:1px solid var(--border);white-space:nowrap;
+}
+.step-badge em{color:var(--cyan);font-style:normal;font-weight:700}
+.btn{
+  padding:7px 14px;border-radius:6px;border:1px solid;cursor:pointer;
+  font-size:12px;font-weight:600;transition:all .2s;white-space:nowrap;
+}
+.btn-play{background:var(--blue);border-color:var(--blue);color:#fff}
+.btn-play:hover{background:#2563eb}
+.btn-play.playing{background:var(--amber);border-color:var(--amber);color:#000}
+.btn-sm{background:transparent;border-color:var(--border2);color:var(--text2)}
+.btn-sm:hover{border-color:var(--blue);color:var(--blue)}
+.btn-reset{background:transparent;border-color:var(--border);color:var(--text3)}
+.btn-reset:hover{border-color:var(--red);color:var(--red)}
+.btn-fail{background:transparent;border-color:var(--red);color:var(--red)}
+.btn-fail:hover{background:rgba(239,68,68,.1)}
+select{
+  background:var(--bg2);border:1px solid var(--border);color:var(--text2);
+  padding:5px 8px;border-radius:5px;font-size:12px;cursor:pointer;
+}
+
+/* ── PROGRESS ── */
+.progress-bar{height:2px;background:var(--border);overflow:hidden}
+.progress-fill{
+  height:100%;width:0%;transition:width .4s ease;
+  background:linear-gradient(90deg,var(--green),var(--blue),var(--purple));
+}
+
+/* ── MAIN LAYOUT ── */
+.main{display:grid;grid-template-columns:300px 1fr 300px;gap:10px;padding:10px;min-height:calc(100vh - 100px)}
+
+/* ── PANELS ── */
+.panel{background:var(--bg1);border:1px solid var(--border);border-radius:10px;overflow:hidden;display:flex;flex-direction:column}
+.panel-head{
+  padding:10px 14px;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:8px;position:sticky;top:0;background:inherit;z-index:10;
+}
+.panel-num{
+  width:22px;height:22px;border-radius:50%;display:flex;align-items:center;
+  justify-content:center;font-size:11px;font-weight:800;flex-shrink:0;
+}
+.panel-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.6px}
+.panel-sub{font-size:9px;color:var(--text3);font-family:var(--mono);margin-left:auto}
+
+.pub .panel-head{background:rgba(16,185,129,.07)}
+.pub .panel-num{background:var(--green);color:#000}
+.pub .panel-title{color:var(--green)}
+.kafka .panel-head{background:rgba(59,130,246,.07)}
+.kafka .panel-num{background:var(--blue);color:#fff}
+.kafka .panel-title{color:var(--blue)}
+.cons .panel-head{background:rgba(139,92,246,.07)}
+.cons .panel-num{background:var(--purple);color:#fff}
+.cons .panel-title{color:var(--purple)}
+
+.panel-body{overflow-y:auto;flex:1}
+.panel-body::-webkit-scrollbar{width:3px}
+.panel-body::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
+
+/* ── STEP CARDS ── */
+.steps{padding:8px;display:flex;flex-direction:column;gap:5px}
+.scard{
+  background:var(--bg2);border:1px solid var(--border);border-radius:7px;
+  padding:9px 11px;cursor:pointer;transition:all .25s ease;position:relative;
+  overflow:hidden;
+}
+.scard::before{
+  content:'';position:absolute;left:0;top:0;bottom:0;width:3px;
+  background:transparent;border-radius:2px 0 0 2px;transition:background .25s;
+}
+.scard:hover{background:var(--bg3);border-color:var(--border2)}
+.scard.done{border-color:rgba(16,185,129,.25)}
+.scard.done::before{background:var(--green)}
+.scard.active{background:var(--bg3);border-color:var(--border2)}
+
+.pub .scard.active{border-color:var(--green);background:rgba(16,185,129,.06);box-shadow:0 0 16px rgba(16,185,129,.15)}
+.pub .scard.active::before{background:var(--green)}
+.kafka .scard.active{border-color:var(--blue);background:rgba(59,130,246,.06);box-shadow:0 0 16px rgba(59,130,246,.15)}
+.kafka .scard.active::before{background:var(--blue)}
+.cons .scard.active{border-color:var(--purple);background:rgba(139,92,246,.06);box-shadow:0 0 16px rgba(139,92,246,.15)}
+.cons .scard.active::before{background:var(--purple)}
+
+.scard-head{display:flex;align-items:center;gap:7px}
+.snum{
+  width:19px;height:19px;border-radius:50%;background:var(--border);
+  display:flex;align-items:center;justify-content:center;font-size:9px;
+  font-weight:800;color:var(--text3);flex-shrink:0;transition:all .25s;
+}
+.scard.done .snum{background:var(--green);color:#000}
+.pub .scard.active .snum{background:var(--green);color:#000}
+.kafka .scard.active .snum{background:var(--blue);color:#fff}
+.cons .scard.active .snum{background:var(--purple);color:#fff}
+.stitle{font-size:11px;font-weight:600;color:var(--text);line-height:1.3}
+.scard.active .stitle{color:#fff}
+.sdot{
+  width:6px;height:6px;border-radius:50%;background:var(--cyan);
+  margin-left:auto;flex-shrink:0;
+  animation:blink 1s ease-in-out infinite;display:none;
+}
+.scard.active .sdot{display:block}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
+
+.sexpand{display:none;margin-top:8px;padding-top:8px;border-top:1px solid var(--border)}
+.scard.active .sexpand{display:block}
+.sdesc{font-size:10.5px;color:var(--text2);line-height:1.55;margin-bottom:7px}
+.scode{
+  font-family:var(--mono);font-size:9.5px;color:#a8d8ff;
+  background:rgba(0,0,0,.4);padding:7px 9px;border-radius:4px;
+  border-left:2px solid var(--cyan);line-height:1.6;white-space:pre;
+  overflow-x:auto;display:block;
+}
+.stags{display:flex;flex-wrap:wrap;gap:3px;margin-top:6px}
+.tag{
+  display:inline-block;padding:2px 6px;border-radius:3px;
+  font-size:9px;font-weight:700;font-family:var(--mono);
+}
+.tg{background:rgba(16,185,129,.15);color:var(--green)}
+.tb{background:rgba(59,130,246,.15);color:var(--blue)}
+.ta{background:rgba(245,158,11,.15);color:var(--amber)}
+.tr{background:rgba(239,68,68,.15);color:var(--red)}
+.tp{background:rgba(139,92,246,.15);color:var(--purple)}
+.tc{background:rgba(34,211,238,.15);color:var(--cyan)}
+
+/* ── KAFKA MIDDLE PANEL ── */
+.kafka-steps-grid{padding:8px;display:grid;grid-template-columns:1fr 1fr;gap:5px}
+
+/* Cluster Internals */
+.cluster-section{
+  margin:0 8px 8px;background:var(--bg0);border:1px solid var(--border);
+  border-radius:8px;padding:10px;
+}
+.cs-title{font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--text3);margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.cs-title::after{content:'';flex:1;height:1px;background:var(--border)}
+
+.brokers{display:flex;gap:5px;margin-bottom:8px}
+.broker{
+  flex:1;background:var(--bg2);border:1px solid var(--border);border-radius:6px;
+  padding:7px;text-align:center;font-size:9px;transition:all .3s;
+}
+.broker.leader{border-color:var(--blue);background:rgba(59,130,246,.08)}
+.broker.follower-active{border-color:rgba(16,185,129,.4)}
+.broker-name{font-weight:700;color:var(--text);font-size:10px;margin-bottom:2px}
+.broker-role{color:var(--text3);font-size:8px}
+.broker-dot{
+  width:7px;height:7px;border-radius:50%;background:var(--green);
+  margin:4px auto 0;
+}
+.broker.leader .broker-dot{background:var(--blue);box-shadow:0 0 8px var(--blue)}
+.broker.follower-active .broker-dot{background:var(--green);box-shadow:0 0 8px var(--green)}
+
+/* Log visualization */
+.log-viz{display:flex;gap:2px;align-items:center;flex-wrap:wrap}
+.log-seg{
+  width:24px;height:15px;border:1px solid var(--border);border-radius:2px;
+  background:var(--bg2);display:flex;align-items:center;justify-content:center;
+  font-size:7px;color:var(--text3);transition:all .4s;font-family:var(--mono);
+}
+.log-seg.written{background:rgba(59,130,246,.2);border-color:var(--blue);color:var(--blue)}
+.log-seg.current{background:rgba(34,211,238,.2);border-color:var(--cyan);color:var(--cyan);animation:blink .8s infinite}
+.log-arrow{color:var(--text3);font-size:10px;margin:0 2px}
+
+/* ISR */
+.isr-row{display:flex;gap:4px;flex-wrap:wrap;margin-top:4px}
+.isr-badge{
+  padding:2px 7px;border-radius:3px;font-size:9px;font-weight:700;font-family:var(--mono);
+  background:rgba(16,185,129,.12);border:1px solid rgba(16,185,129,.3);color:var(--green);
+}
+.isr-badge.out{background:rgba(239,68,68,.12);border-color:rgba(239,68,68,.3);color:var(--red)}
+
+/* ── ACKS CONFIG PANEL ── */
+.acks-panel{margin:0 8px 8px;background:var(--bg0);border:1px solid var(--border);border-radius:8px;padding:10px}
+.acks-row{display:flex;gap:5px;margin-top:6px}
+.ack-opt{
+  flex:1;background:var(--bg2);border:1px solid var(--border);border-radius:5px;
+  padding:6px;font-size:9px;cursor:pointer;transition:all .2s;text-align:center;
+}
+.ack-opt .ao-val{font-size:14px;font-weight:900;font-family:var(--mono);margin-bottom:2px}
+.ack-opt .ao-label{color:var(--text3);font-size:8px}
+.ack-opt .ao-risk{color:var(--amber);font-size:8px;margin-top:2px}
+.ack-opt.selected.ao0{border-color:var(--red);background:rgba(239,68,68,.08)}
+.ack-opt.selected.ao0 .ao-val{color:var(--red)}
+.ack-opt.selected.ao1{border-color:var(--amber);background:rgba(245,158,11,.08)}
+.ack-opt.selected.ao1 .ao-val{color:var(--amber)}
+.ack-opt.selected.aoall{border-color:var(--green);background:rgba(16,185,129,.08)}
+.ack-opt.selected.aoall .ao-val{color:var(--green)}
+
+/* Consumer group */
+.cg-panel{margin:8px;background:var(--bg0);border:1px solid var(--border);border-radius:8px;padding:10px}
+.cg-members{display:flex;gap:4px;margin-top:6px;flex-wrap:wrap}
+.cg-member{
+  background:var(--bg2);border:1px solid var(--border);border-radius:5px;
+  padding:5px 7px;font-size:9px;text-align:center;flex:1;min-width:60px;
+}
+.cg-member.coordinating{border-color:var(--purple);background:rgba(139,92,246,.1)}
+.cg-member .cm-name{font-weight:700;color:var(--text);font-family:var(--mono);font-size:10px}
+.cg-member .cm-part{color:var(--text3);font-size:8px}
+
+/* ── BOTTOM INFO BAR ── */
+.info-bar{
+  margin:0 10px 10px;background:var(--bg1);border:1px solid var(--border);
+  border-radius:10px;padding:12px 14px;
+  display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:12px;
+}
+.ib-section h3{font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--text3);margin-bottom:6px}
+.ib-current-title{font-size:14px;font-weight:700;color:var(--cyan);margin-bottom:3px}
+.ib-current-desc{font-size:11px;color:var(--text2);line-height:1.5}
+.ib-guarantees{display:flex;flex-direction:column;gap:4px}
+.ib-g-row{display:flex;justify-content:space-between;align-items:center;font-size:10px}
+.ib-g-row span:first-child{color:var(--text3)}
+.ib-g-row span:last-child{font-weight:700;font-family:var(--mono)}
+.ib-metrics{display:flex;flex-direction:column;gap:4px}
+.ib-metric{
+  display:flex;justify-content:space-between;align-items:center;
+  background:var(--bg2);border-radius:4px;padding:4px 7px;font-size:10px;
+}
+.ib-metric .m-label{color:var(--text3)}
+.ib-metric .m-val{font-family:var(--mono);font-weight:700;color:var(--cyan)}
+
+/* ── FAILURE MODE ── */
+.fail-bar{
+  margin:0 10px 6px;background:rgba(239,68,68,.05);
+  border:1px solid rgba(239,68,68,.25);border-radius:8px;
+  padding:10px 14px;display:none;
+}
+.fail-bar.show{display:block}
+.fail-bar h3{font-size:11px;font-weight:700;color:var(--red);margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.fail-btns{display:flex;gap:6px;flex-wrap:wrap}
+.fbtn{
+  padding:5px 10px;background:rgba(239,68,68,.08);
+  border:1px solid rgba(239,68,68,.25);border-radius:4px;
+  color:var(--red);font-size:10px;cursor:pointer;transition:all .2s;
+}
+.fbtn:hover{background:rgba(239,68,68,.2)}
+.fail-result{margin-top:8px;font-size:10px;color:var(--amber);font-family:var(--mono);display:none}
+.fail-result.show{display:block}
+
+/* ── TOAST ── */
+.toast{
+  position:fixed;bottom:20px;right:20px;background:var(--bg2);
+  border:1px solid var(--border);border-radius:8px;padding:12px 16px;
+  max-width:300px;z-index:999;transform:translateY(80px);opacity:0;
+  transition:all .3s ease;pointer-events:none;
+}
+.toast.show{transform:translateY(0);opacity:1}
+.toast.err{border-color:var(--red)}
+.toast.ok{border-color:var(--green)}
+.toast-t{font-size:12px;font-weight:700;margin-bottom:3px}
+.toast.err .toast-t{color:var(--red)}
+.toast.ok .toast-t{color:var(--green)}
+.toast-b{font-size:10px;color:var(--text2);line-height:1.4}
+
+/* ── PACKET ANIMATION ── */
+.pkt{
+  display:inline-flex;align-items:center;gap:3px;
+  background:rgba(34,211,238,.12);border:1px solid var(--cyan);
+  color:var(--cyan);padding:2px 7px;border-radius:3px;
+  font-family:var(--mono);font-size:8.5px;
+  animation:pkt-pulse .9s ease-in-out infinite;margin-top:5px;
+}
+@keyframes pkt-pulse{0%,100%{box-shadow:0 0 0 rgba(34,211,238,.3)}50%{box-shadow:0 0 10px rgba(34,211,238,.5)}}
+
+/* replication animation */
+.rep-anim{
+  display:flex;align-items:center;gap:3px;margin-top:4px;
+}
+.rep-dot{
+  width:8px;height:8px;border-radius:50%;background:var(--blue);
+  animation:rep-travel 1.5s ease-in-out infinite;
+}
+.rep-dot:nth-child(2){animation-delay:.4s}
+.rep-dot:nth-child(3){animation-delay:.8s}
+@keyframes rep-travel{0%{opacity:.2;transform:scale(.6)}50%{opacity:1;transform:scale(1)}100%{opacity:.2;transform:scale(.6)}}
+
+/* offset scroll */
+.offset-bar{
+  display:flex;gap:2px;margin-top:4px;
+}
+.offset-cell{
+  flex:1;height:10px;background:var(--bg2);border:1px solid var(--border);
+  border-radius:1px;transition:all .3s;
+}
+.offset-cell.committed{background:var(--green);border-color:var(--green)}
+.offset-cell.current{background:var(--cyan);border-color:var(--cyan);animation:blink .6s infinite}
+
+/* Separator between panels */
+.panel-sep{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:4px;padding:4px 0;
+}
+.sep-arrow{color:var(--text3);font-size:10px}
+.sep-line{width:1px;height:20px;background:linear-gradient(to bottom,transparent,var(--border),transparent)}
+
+/* ── FLOW CONNECTOR ARROWS ── */
+.flow-connector {
+  display:flex;align-items:center;justify-content:center;gap:3px;
+  padding:2px 0;position:relative;height:24px;overflow:visible;
+}
+.flow-line{flex:1;height:2px;background:linear-gradient(90deg,var(--border2),var(--cyan),var(--border2));border-radius:1px;position:relative}
+.flow-packet{
+  position:absolute;left:-10px;width:8px;height:8px;border-radius:50%;
+  background:var(--cyan);box-shadow:0 0 8px var(--cyan);
+  animation:flowPacket 1.8s ease-in-out infinite;
+  opacity:0;
+}
+.flow-connector.active .flow-packet{opacity:1}
+@keyframes flowPacket{
+  0%{left:-8px;opacity:0}
+  10%{opacity:1}
+  85%{opacity:1}
+  100%{left:calc(100% + 4px);opacity:0}
+}
+.flow-packet.pub{background:var(--green);box-shadow:0 0 8px var(--green)}
+.flow-packet.cons{background:var(--purple);box-shadow:0 0 8px var(--purple)}
+.flow-label{font-size:8px;color:var(--text3);font-family:var(--mono);white-space:nowrap;position:absolute;top:-12px;left:50%;transform:translateX(-50%)}
+
+/* ── METRICS BAR ── */
+.metrics-bar{
+  display:flex;gap:6px;margin:0 10px 6px;overflow-x:auto;flex-wrap:nowrap;
+}
+.metric-tile{
+  background:var(--bg1);border:1px solid var(--border);border-radius:6px;
+  padding:6px 10px;display:flex;align-items:center;gap:8px;flex-shrink:0;
+  min-width:120px;transition:all .3s;
+}
+.metric-tile.pulse{border-color:var(--cyan);box-shadow:0 0 12px rgba(34,211,238,.15)}
+.metric-icon{font-size:14px;opacity:.7}
+.metric-info{display:flex;flex-direction:column}
+.metric-val{font-family:var(--mono);font-size:13px;font-weight:800;color:var(--cyan);line-height:1.2;transition:color .4s}
+.metric-tile.thr .metric-val{color:var(--green)}
+.metric-tile.lat .metric-val{color:var(--amber)}
+.metric-tile.bat .metric-val{color:var(--blue)}
+.metric-label{font-size:8px;color:var(--text3);text-transform:uppercase;letter-spacing:.5px}
+.metric-spark{display:flex;gap:1px;align-items:flex-end;height:16px;margin-left:auto}
+.metric-bar{width:3px;background:var(--border2);border-radius:1px;transition:height .4s;min-height:2px}
+.metric-bar.filled{background:var(--cyan)}
+
+/* ── SEARCH & FILTER ── */
+.search-bar{
+  display:flex;gap:6px;margin:0 10px 6px;align-items:center;
+}
+.search-input{
+  flex:1;background:var(--bg2);border:1px solid var(--border);color:var(--text2);
+  padding:6px 10px;border-radius:5px;font-size:11px;font-family:inherit;outline:none;transition:border .2s;
+}
+.search-input:focus{border-color:var(--cyan)}
+.search-input::placeholder{color:var(--text3)}
+.filter-chips{display:flex;gap:3px;flex-shrink:0}
+.filter-chip{
+  padding:3px 8px;border-radius:4px;background:var(--bg2);border:1px solid var(--border);
+  color:var(--text3);font-size:9px;cursor:pointer;transition:all .2s;font-family:var(--mono);
+}
+.filter-chip:hover{border-color:var(--text2);color:var(--text2)}
+.filter-chip.active{background:rgba(34,211,238,.12);border-color:var(--cyan);color:var(--cyan)}
+.search-count{font-size:9px;color:var(--text3);font-family:var(--mono);white-space:nowrap}
+
+/* ── LANGUAGE TOGGLE ── */
+.lang-tabs{display:flex;gap:2px;margin:0 10px 6px}
+.lang-tab{
+  padding:4px 10px;border-radius:4px 4px 0 0;border:1px solid var(--border);
+  border-bottom:none;background:var(--bg1);color:var(--text3);font-size:10px;
+  cursor:pointer;transition:all .2s;font-family:var(--mono);font-weight:700;
+}
+.lang-tab:hover{color:var(--text2)}
+.lang-tab.active{background:var(--bg2);color:var(--cyan)}
+
+/* ── IDEMPOTENCE TOGGLE ── */
+.idem-toggle{
+  display:flex;align-items:center;gap:6px;margin:0 10px 6px;padding:5px 10px;
+  background:var(--bg1);border:1px solid var(--border);border-radius:5px;
+  cursor:pointer;transition:all .2s;user-select:none;
+}
+.idem-toggle:hover{border-color:var(--text2)}
+.idem-toggle.on{border-color:var(--green);background:rgba(16,185,129,.06)}
+.idem-toggle.off{border-color:var(--red);background:rgba(239,68,68,.06)}
+.idem-switch{
+  width:28px;height:16px;border-radius:8px;background:var(--border2);position:relative;transition:all .3s;
+}
+.idem-toggle.on .idem-switch{background:var(--green)}
+.idem-toggle.off .idem-switch{background:var(--red)}
+.idem-switch::after{
+  content:'';position:absolute;top:2px;left:2px;width:12px;height:12px;border-radius:50%;
+  background:#fff;transition:all .3s;
+}
+.idem-toggle.on .idem-switch::after{left:14px}
+.idem-label{font-size:10px;color:var(--text2);font-family:var(--mono);font-weight:600}
+.idem-badge{font-size:8px;padding:1px 5px;border-radius:3px;font-weight:700}
+.idem-toggle.on .idem-badge{background:rgba(16,185,129,.15);color:var(--green)}
+.idem-toggle.off .idem-badge{background:rgba(239,68,68,.15);color:var(--red)}
+
+/* ── TOPIC PARTITIONS OVERVIEW ── */
+.topic-overview{margin:0 8px 8px}
+.topic-ptable{display:grid;grid-template-columns:1fr 1fr 1fr;gap:4px}
+.topic-pcell{
+  background:var(--bg2);border:1px solid var(--border);border-radius:5px;
+  padding:5px 7px;font-size:9px;text-align:center;transition:all .3s;
+  cursor:default;
+}
+.topic-pcell .tp-name{font-weight:700;color:var(--text);font-family:var(--mono)}
+.topic-pcell .tp-leader{font-size:8px;color:var(--text3)}
+.topic-pcell .tp-bar{margin-top:4px;display:flex;gap:2px;height:3px}
+.topic-pcell .tp-bar span{flex:1;border-radius:1px;background:var(--border);transition:background .3s}
+.topic-pcell .tp-bar span.isr{background:var(--green)}
+.topic-pcell.current{border-color:var(--cyan);background:rgba(34,211,238,.06)}
+.topic-pcell .tp-badge{font-size:7px;padding:1px 4px;border-radius:2px;margin-top:3px;display:inline-block}
+
+/* ── REBALANCE VIZ ── */
+.rebal-viz{display:flex;gap:3px;margin-top:6px;padding:6px;background:var(--bg0);border-radius:5px;min-height:28px;align-items:center;flex-wrap:wrap}
+.rebal-part{font-size:8px;padding:2px 6px;border-radius:3px;background:var(--bg2);border:1px solid var(--border);font-family:var(--mono);color:var(--text3);transition:all .3s}
+.rebal-part.assigned{border-color:var(--purple);color:var(--purple);background:rgba(139,92,246,.1)}
+.rebal-part.moving{animation:rebalPulse .6s ease-in-out 3}
+@keyframes rebalPulse{0%,100%{transform:scale(1);border-color:var(--purple)}50%{transform:scale(1.15);border-color:var(--amber)}}
+
+/* ── LATENCY BREAKDOWN ── */
+.lat-breakdown{display:flex;gap:2px;height:6px;margin:4px 8px 8px;border-radius:3px;overflow:hidden}
+.lat-seg{height:100%;transition:width .5s;min-width:2px}
+.lat-seg.linger{background:var(--amber)}
+.lat-seg.network{background:var(--blue)}
+.lat-seg.disk{background:var(--green)}
+.lat-seg.replication{background:var(--purple)}
+.lat-legend{display:flex;gap:8px;margin:0 8px 8px;font-size:7px;color:var(--text3);flex-wrap:wrap}
+.lat-legend span{display:flex;align-items:center;gap:3px}
+.lat-legend span::before{content:'';width:6px;height:6px;border-radius:2px}
+
+/* ── RESPONSIVE ── */
+@media(max-width:900px){
+  .main{grid-template-columns:1fr}
+  .info-bar{grid-template-columns:1fr 1fr}
+  .topic-ptable{grid-template-columns:1fr 1fr}
+  .metrics-bar{flex-wrap:wrap}
+}
+@media(max-width:640px){
+  .topic-ptable{grid-template-columns:1fr}
+  .controls{gap:4px}
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="logo">
+    <div class="logo-icon">K</div>
+    <div class="logo-text">
+      <h1>Kafka End-to-End Simulator</h1>
+      <p>Publisher → Broker → Consumer · All 22 Steps</p>
+    </div>
+  </div>
+  <div class="controls">
+    <div class="step-badge">Step <em id="cur-step">0</em> / <em>22</em></div>
+    <button class="btn btn-sm" onclick="prevStep()">← Prev</button>
+    <button class="btn btn-play" id="play-btn" onclick="togglePlay()">▶ Play All</button>
+    <button class="btn btn-sm" onclick="nextStep()">Next →</button>
+    <select id="speed-sel" onchange="updateSpeed()">
+      <option value="2000">0.5x Speed</option>
+      <option value="1200" selected>1x Speed</option>
+      <option value="700">2x Speed</option>
+      <option value="350">4x Speed</option>
+    </select>
+    <button class="btn btn-fail" onclick="toggleFail()">⚡ Failures</button>
+    <button class="btn btn-reset" onclick="resetSim()">↺ Reset</button>
+  </div>
+</div>
+<div class="progress-bar"><div class="progress-fill" id="progress"></div></div>
+
+<!-- FAILURE BAR -->
+<div class="fail-bar" id="fail-bar">
+  <h3>⚠ Failure Injection Mode — See How Kafka Handles It</h3>
+  <div class="fail-btns">
+    <div class="fbtn" onclick="injectFail('leader-crash')">💥 Leader Crash</div>
+    <div class="fbtn" onclick="injectFail('isr-shrink')">📉 ISR Shrink</div>
+    <div class="fbtn" onclick="injectFail('network')">🌐 Network Timeout</div>
+    <div class="fbtn" onclick="injectFail('disk-full')">💾 Disk Full</div>
+    <div class="fbtn" onclick="injectFail('consumer-down')">👤 Consumer Down</div>
+    <div class="fbtn" onclick="injectFail('msg-too-large')">📦 Message Too Large</div>
+    <div class="fbtn" onclick="injectFail('auth-fail')">🔐 Auth Failed</div>
+  </div>
+  <div class="fail-result" id="fail-result"></div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+  <!-- 1. PUBLISHER PANEL -->
+  <div class="panel pub">
+    <div class="panel-head">
+      <div class="panel-num">1</div>
+      <div class="panel-title">Publisher Application</div>
+      <div class="panel-sub">Steps 1-7</div>
+    </div>
+    <div class="panel-body">
+      <div class="steps" id="pub-steps"></div>
+    </div>
+  </div>
+
+  <!-- 2. KAFKA CLUSTER PANEL -->
+  <div class="panel kafka">
+    <div class="panel-head">
+      <div class="panel-num">2</div>
+      <div class="panel-title">Kafka Cluster</div>
+      <div class="panel-sub">Steps 8-14</div>
+    </div>
+    <div class="panel-body">
+      <div class="kafka-steps-grid" id="kafka-steps"></div>
+
+      <!-- ACK Config chooser -->
+      <div class="acks-panel">
+        <div class="cs-title">acks Config (click to switch)</div>
+        <div class="acks-row">
+          <div class="ack-opt ao0" id="ao0" onclick="setAcks(0)">
+            <div class="ao-val">0</div>
+            <div class="ao-label">No Ack</div>
+            <div class="ao-risk">🔴 Data Loss</div>
+          </div>
+          <div class="ack-opt ao1 selected" id="ao1" onclick="setAcks(1)">
+            <div class="ao-val">1</div>
+            <div class="ao-label">Leader Only</div>
+            <div class="ao-risk">🟡 Some Loss</div>
+          </div>
+          <div class="ack-opt aoall" id="aoall" onclick="setAcks('all')">
+            <div class="ao-val">all</div>
+            <div class="ao-label">ISR Quorum</div>
+            <div class="ao-risk">🟢 No Loss</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Cluster internals: brokers + log -->
+      <div class="cluster-section">
+        <div class="cs-title">Partition P3 — Topic: orders</div>
+        <div class="brokers">
+          <div class="broker leader" id="br1">
+            <div class="broker-name">Broker 1</div>
+            <div class="broker-role">Leader</div>
+            <div class="broker-dot"></div>
+          </div>
+          <div class="broker" id="br2">
+            <div class="broker-name">Broker 2</div>
+            <div class="broker-role">Follower</div>
+            <div class="broker-dot"></div>
+          </div>
+          <div class="broker" id="br3">
+            <div class="broker-name">Broker 3</div>
+            <div class="broker-role">Follower</div>
+            <div class="broker-dot"></div>
+          </div>
+        </div>
+        <div style="font-size:9px;color:var(--text3);margin-bottom:4px">ISR (In-Sync Replicas)</div>
+        <div class="isr-row">
+          <div class="isr-badge" id="isr-1">ISR:1</div>
+          <div class="isr-badge" id="isr-2">ISR:2</div>
+          <div class="isr-badge" id="isr-3">ISR:3</div>
+        </div>
+        <div style="font-size:9px;color:var(--text3);margin:6px 0 4px">Partition Log (orders-P3)</div>
+        <div class="log-viz" id="log-viz">
+          <span class="log-seg written">0</span>
+          <span class="log-seg written">1</span>
+          <span class="log-seg written">2</span>
+          <span class="log-seg written">3</span>
+          <span class="log-seg written">4</span>
+          <span class="log-seg written">5</span>
+          <span class="log-seg written">6</span>
+          <span class="log-seg written">7</span>
+          <span class="log-seg written">8</span>
+          <span class="log-seg current">9</span>
+          <span class="log-arrow">▸</span>
+        </div>
+        <div style="font-size:8px;color:var(--text3);margin-top:3px;font-family:var(--mono)">evt-9001 at offset=9</div>
+      </div>
+
+      <!-- Replication status -->
+      <div class="cluster-section">
+        <div class="cs-title">Replication Status</div>
+        <div class="rep-anim">
+          <div class="rep-dot"></div>
+          <div class="rep-dot"></div>
+          <div class="rep-dot"></div>
+          <span style="font-size:9px;color:var(--text3);margin-left:4px">Syncing to Followers</span>
+        </div>
+        <div style="font-size:9px;color:var(--text3);margin-top:6px">RF=3 · Min ISR=2 · acks=<span id="acks-label" style="color:var(--amber);font-weight:700">1</span></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- 3. CONSUMER PANEL -->
+  <div class="panel cons">
+    <div class="panel-head">
+      <div class="panel-num">3</div>
+      <div class="panel-title">Consumer Application</div>
+      <div class="panel-sub">Steps 15-22</div>
+    </div>
+    <div class="panel-body">
+      <div class="steps" id="cons-steps"></div>
+
+      <!-- Consumer group -->
+      <div class="cg-panel">
+        <div class="cs-title" style="font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--text3);display:flex;align-items:center;gap:6px">
+          Consumer Group: order-service
+          <span style="flex:1;height:1px;background:var(--border);display:block"></span>
+        </div>
+        <div class="cg-members">
+          <div class="cg-member coordinating">
+            <div class="cm-name">C-1</div>
+            <div class="cm-part" id="c1-part">P0, P3</div>
+          </div>
+          <div class="cg-member">
+            <div class="cm-name">C-2</div>
+            <div class="cm-part" id="c2-part">P1, P4</div>
+          </div>
+          <div class="cg-member">
+            <div class="cm-name">C-3</div>
+            <div class="cm-part" id="c3-part">P2, P5</div>
+          </div>
+        </div>
+        <div style="font-size:9px;color:var(--text3);margin-top:7px;margin-bottom:3px">Offset Progress (P3)</div>
+        <div class="offset-bar" id="offset-bar">
+          <div class="offset-cell committed"></div>
+          <div class="offset-cell committed"></div>
+          <div class="offset-cell committed"></div>
+          <div class="offset-cell committed"></div>
+          <div class="offset-cell committed"></div>
+          <div class="offset-cell committed"></div>
+          <div class="offset-cell committed"></div>
+          <div class="offset-cell committed"></div>
+          <div class="offset-cell committed"></div>
+          <div class="offset-cell current"></div>
+          <div class="offset-cell"></div>
+          <div class="offset-cell"></div>
+        </div>
+        <div style="font-size:8px;color:var(--text3);margin-top:2px;font-family:var(--mono)">committed=8 · processing=9 · __consumer_offsets</div>
+      </div>
+
+    </div>
+  </div>
+
+</div><!-- end .main -->
+
+<!-- BOTTOM INFO BAR -->
+<div class="info-bar">
+  <div class="ib-section">
+    <h3>Current Step</h3>
+    <div class="ib-current-title" id="ib-title">Click a step or press Play</div>
+    <div class="ib-current-desc" id="ib-desc">Select any step card to jump directly to it, or press Play to auto-run the complete Kafka flow from publisher to consumer.</div>
+  </div>
+  <div class="ib-section">
+    <h3>Delivery Guarantees</h3>
+    <div class="ib-guarantees">
+      <div class="ib-g-row"><span>At Most Once</span><span class="tr" id="g-amo">acks=0</span></div>
+      <div class="ib-g-row"><span>At Least Once</span><span class="ta" id="g-alo">acks=1+</span></div>
+      <div class="ib-g-row"><span>Exactly Once</span><span class="tg" id="g-eo">Idempotent+Txn</span></div>
+      <div class="ib-g-row"><span>Ordering</span><span class="tc">Per Partition</span></div>
+    </div>
+  </div>
+  <div class="ib-section">
+    <h3>Live Config</h3>
+    <div class="ib-metrics">
+      <div class="ib-metric"><span class="m-label">acks</span><span class="m-val" id="m-acks">1</span></div>
+      <div class="ib-metric"><span class="m-label">partitions</span><span class="m-val">6</span></div>
+      <div class="ib-metric"><span class="m-label">replication.factor</span><span class="m-val">3</span></div>
+      <div class="ib-metric"><span class="m-label">min.insync.replicas</span><span class="m-val">2</span></div>
+    </div>
+  </div>
+  <div class="ib-section">
+    <h3>Key Concepts</h3>
+    <div class="ib-metrics">
+      <div class="ib-metric"><span class="m-label">Offset</span><span class="m-val" id="m-offset">9</span></div>
+      <div class="ib-metric"><span class="m-label">ISR count</span><span class="m-val" id="m-isr">3/3</span></div>
+      <div class="ib-metric"><span class="m-label">Consumer Lag</span><span class="m-val" id="m-lag">0</span></div>
+      <div class="ib-metric"><span class="m-label">Batch Size</span><span class="m-val">16KB</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast">
+  <div class="toast-t" id="toast-t">Title</div>
+  <div class="toast-b" id="toast-b">Body</div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════════
+// STEP DATA
+// ═══════════════════════════════════════════════════════════════
+const STEPS = [
+  // ── PUBLISHER ──
+  {
+    id:1, panel:'pub', title:'Create Event',
+    desc:'Application creates domain event. This is the business trigger — an OrderCreated event with all required fields. The object will be serialized and sent to Kafka.',
+    code:`event := OrderCreated{
+  OrderID:  "101",
+  EventID:  "evt-9001",
+  Amount:   250.0,
+  Ts:       time.Now().UnixMilli(),
+}`,
+    tags:['Domain Event','POCO/Struct','Trigger'],
+    colors:['tg','tc','tb'],
+    packet:'evt-9001'
+  },
+  {
+    id:2, panel:'pub', title:'Call producer.send()',
+    desc:'Wrap event in ProducerRecord with topic, partition key (orderID), and value. The key determines which partition gets this record via the partitioner.',
+    code:`record := &kafka.Message{
+  TopicPartition: kafka.TopicPartition{
+    Topic: &"orders",
+  },
+  Key:   []byte("101"),     // orderID → hashed
+  Value: serialized,        // bytes
+}
+producer.Produce(record, deliveryChan)`,
+    tags:['ProducerRecord','Key=orderID','Topic=orders'],
+    colors:['tb','tc','tg']
+  },
+  {
+    id:3, panel:'pub', title:'Serialization',
+    desc:'Convert Key (String→bytes) and Value (Object→bytes) using configured serializers. JSON, Avro, Protobuf — each has trade-offs in size, schema evolution, and speed.',
+    code:`// Key Serializer
+keyBytes := []byte(orderID)  // string→bytes
+
+// Value Serializer (JSON)
+valueBytes, _ := json.Marshal(event)
+
+// Or Avro (schema registry)
+// valueBytes = avroEncoder.Encode(event)`,
+    tags:['Key Serializer','Value Serializer','Avro/JSON/Proto'],
+    colors:['tc','tg','ta']
+  },
+  {
+    id:4, panel:'pub', title:'Partitioner',
+    desc:'Determines which partition the record goes to. Default: murmur2(key) % numPartitions. Since key="101" (orderID), all events for this order go to the SAME partition — guaranteeing order.',
+    code:`// Default partitioner
+partition := murmur2(key) % numPartitions
+// key="101" → partition P3
+
+// Round-robin (no key)
+// partition = atomicCounter++ % numPartitions
+
+// Custom partitioner
+// based on business logic (region, tier)`,
+    tags:['murmur2 hash','Sticky w/o key','Ordering guarantee'],
+    colors:['ta','tc','tg']
+  },
+  {
+    id:5, panel:'pub', title:'RecordAccumulator',
+    desc:'In-memory buffer (default 32MB). Records for the same partition are batched together. batch.size and linger.ms control when a batch is considered "ready" to send. This is where throughput optimization happens.',
+    code:`// Producer config
+buffer.memory    = 33554432 // 32MB
+batch.size       = 16384    // 16KB per batch
+linger.ms        = 5        // wait 5ms for more
+
+// Accumulator holds:
+// orders-P3 → [rec1, rec2, rec3, ...]
+// When batch full OR linger elapsed:
+// → hand off to Sender thread`,
+    tags:['32MB Buffer','16KB Batch','linger.ms=5'],
+    colors:['tb','ta','tc']
+  },
+  {
+    id:6, panel:'pub', title:'Sender Thread',
+    desc:'Background I/O thread picks ready batches from the accumulator. Groups batches by leader broker. Creates one ProduceRequest per broker, not per record. This is key to Kafka\'s high throughput.',
+    code:`// Sender thread (async I/O)
+for batch := range readyBatches {
+  // Group by broker
+  byBroker[batch.leaderBroker] = batch
+
+  // Includes compression if configured
+  // snappy, lz4, gzip, zstd
+}
+// Fire ONE request per broker
+sendProduceRequests(byBroker)`,
+    tags:['Async I/O','Per-Broker batching','Compression'],
+    colors:['tb','tg','tc']
+  },
+  {
+    id:7, panel:'pub', title:'ProduceRequest → Broker Leader',
+    desc:'TCP request sent to Partition P3\'s leader (Broker 1). Includes Producer ID (PID for idempotence), Sequence Number (dedup), and acks config. This is the network hop.',
+    code:`// ProduceRequest (Kafka Wire Protocol)
+ProduceRequest{
+  Acks:     1,
+  Topic:    "orders",
+  Partition: 3,
+  PID:      42069,    // idempotent producer
+  SeqNo:    9,        // monotonic per partition
+  Batch:    [records...],
+}`,
+    tags:['PID (Idempotence)','SeqNo','acks config'],
+    colors:['tc','tg','ta']
+  },
+
+  // ── KAFKA CLUSTER ──
+  {
+    id:8, panel:'kafka', title:'Broker Leader Receives',
+    desc:'P3 Leader (Broker 1) receives the ProduceRequest. Validates: ACL authorization, CRC check, idempotence sequence check (reject duplicates), message size vs max.message.bytes, and quota check.',
+    code:`// Broker validation pipeline
+1. Auth: ACL check (WRITE on orders)
+2. CRC: validate message integrity
+3. Idempotence: PID+SeqNo dedup
+   expectedSeq = lastSeq + 1
+4. Size: ≤ max.message.bytes (1MB)
+5. Quotas: producer byte-rate check`,
+    tags:['ACL Auth','Idempotence check','Quota'],
+    colors:['tr','ta','tb']
+  },
+  {
+    id:9, panel:'kafka', title:'Append to Log (Leader)',
+    desc:'Record appended to the partition\'s commit log on disk. Kafka uses sequential disk writes — much faster than random writes (even faster than random SSD reads). Log is append-only, immutable.',
+    code:`// Log file: /kafka-logs/orders-3/
+// 00000000000000000009.log ← append
+offset := nextOffset++  // 9
+
+// Sequential write → OS page cache
+// fdatasync() based on flush config
+// log.flush.interval.messages=10000
+
+// LogSegment structure:
+// .log (records) + .index (offsets)`,
+    tags:['Sequential Write','Append-Only','OS Page Cache'],
+    colors:['tg','tc','tb']
+  },
+  {
+    id:10, panel:'kafka', title:'Replication to Followers',
+    desc:'Followers (Brokers 2 & 3) fetch from Leader using FETCH requests. They replicate the new record. ISR = replicas that are caught up within replica.lag.time.max.ms (default 30s).',
+    code:`// Follower fetch loop (continuous)
+FetchRequest{
+  Topic: "orders", Partition: 3,
+  FetchOffset: currentFollowerOffset,
+}
+// Leader responds with new records
+// Follower appends + updates HW
+
+// High Watermark (HW) = min offset
+// across all ISR members
+// Consumer only reads up to HW`,
+    tags:['FETCH request','ISR tracking','High Watermark'],
+    colors:['tb','tc','ta']
+  },
+  {
+    id:11, panel:'kafka', title:'Acks Based on Config',
+    desc:'acks=0: no wait. acks=1: wait for leader write. acks=all: wait until ALL ISR replicas acknowledge — most durable. Min ISR guarantees at least N replicas must be in sync.',
+    code:`// acks=0  → fire and forget (no wait)
+// acks=1  → wait for leader ACK only
+// acks=-1 (all) → wait for ISR quorum
+
+// With min.insync.replicas=2:
+if len(ISR) < minISR {
+  // Reject with NotEnoughReplicasException
+  // Producer gets error → retries
+}
+// ISR=[1,2,3] → all 3 must ACK`,
+    tags:['acks=0/1/all','min.insync.replicas','ISR Quorum'],
+    colors:['tr','ta','tg']
+  },
+  {
+    id:12, panel:'kafka', title:'Send ACK to Producer',
+    desc:'Broker sends ProduceResponse back to the producer. On success: offset where the record was written. On failure: error code. The Sender thread receives this.',
+    code:`// ProduceResponse
+ProduceResponse{
+  Topic:     "orders",
+  Partition: 3,
+  Offset:    9,       // committed offset
+  Timestamp: ...,
+  Error:     nil,     // or ErrorCode
+}
+// Errors that trigger retry:
+// LEADER_NOT_AVAILABLE, NOT_LEADER_FOR_PARTITION
+// NETWORK_EXCEPTION, REQUEST_TIMED_OUT`,
+    tags:['Offset=9','ErrorCode','Retry triggers'],
+    colors:['tg','tr','ta']
+  },
+  {
+    id:13, panel:'kafka', title:'Producer Receives ACK',
+    desc:'Producer\'s delivery callback fires. On success: record.Offset() gives the committed offset. On failure: retry logic kicks in based on retries config and retry.backoff.ms.',
+    code:`// Delivery callback (confluent-kafka-go)
+go func() {
+  for e := range deliveryChan {
+    m := e.(*kafka.Message)
+    if m.TopicPartition.Error != nil {
+      // Retry or DLQ logic
+      log.Errorf("delivery failed: %v",
+        m.TopicPartition.Error)
+    } else {
+      offset := m.TopicPartition.Offset
+      log.Infof("offset: %d", offset)
+    }
+  }
+}()`,
+    tags:['Delivery Callback','Retry logic','DLQ fallback'],
+    colors:['tg','tr','ta']
+  },
+  {
+    id:14, panel:'kafka', title:'Mark Future Complete',
+    desc:'The Future/Promise from producer.send() is resolved. Application gets success/failure notification. The entire round-trip is now complete — record is committed and replicated.',
+    code:`// Java-style (for reference)
+future.get() // blocks until ACK
+// Go: channel-based (non-blocking)
+
+// Total latency breakdown:
+// + Linger wait:   ~5ms
+// + Network RTT:   ~1-2ms
+// + Disk write:    ~1ms (page cache)
+// + Replication:   ~2-5ms (acks=all)
+// Total:          ~10-15ms typical`,
+    tags:['Round-trip complete','~10-15ms','Committed'],
+    colors:['tg','tc','tb']
+  },
+
+  // ── CONSUMER ──
+  {
+    id:15, panel:'cons', title:'Consumer Config & Setup',
+    desc:'Consumer configured with bootstrap servers, group.id (identifies consumer group), auto.offset.reset (earliest/latest for new groups), deserializers, and session.timeout.ms.',
+    code:`config := &kafka.ConfigMap{
+  "bootstrap.servers":  "broker1:9092",
+  "group.id":           "order-service",
+  "auto.offset.reset":  "earliest",
+  "enable.auto.commit": false, // manual!
+  "session.timeout.ms": 30000,
+  "max.poll.interval.ms": 300000,
+}
+consumer, _ := kafka.NewConsumer(config)
+consumer.Subscribe([]string{"orders"}, nil)`,
+    tags:['group.id','auto.offset.reset','Manual commit'],
+    colors:['tp','tc','ta']
+  },
+  {
+    id:16, panel:'cons', title:'Join Consumer Group',
+    desc:'Consumer sends JoinGroup to the Group Coordinator (a Kafka broker). The coordinator picks a Group Leader (first consumer). If group already exists, this triggers rebalance.',
+    code:`// Broker: Group Coordinator
+// ConsumerGroup: order-service
+// Phase 1: JoinGroup Request
+//   → coord assigns memberIDs
+//   → first member = Group Leader
+
+// Phase 2: SyncGroup Request
+//   → Group Leader sends partition map
+//   → Coord distributes assignments
+
+// Rebalance triggered on:
+// new member / member leaves / timeout`,
+    tags:['JoinGroup','SyncGroup','Rebalance'],
+    colors:['tp','ta','tr']
+  },
+  {
+    id:17, panel:'cons', title:'Assign Partitions',
+    desc:'Partition assignment distributed to consumers. Default: RangeAssignor or RoundRobin. With 6 partitions and 3 consumers, each gets 2 partitions. Consumer 1 gets P0, P3.',
+    code:`// 6 partitions, 3 consumers
+// RangeAssignor (default):
+// C-1 → [P0, P3]  (our consumer)
+// C-2 → [P1, P4]
+// C-3 → [P2, P5]
+
+// CooperativeStickyAssignor:
+// Minimizes partition movement
+// on rebalance (preferred in prod)
+
+// Consumer now knows: poll from P3`,
+    tags:['RangeAssignor','P3 assigned','Sticky rebalance'],
+    colors:['tp','tc','tg']
+  },
+  {
+    id:18, panel:'cons', title:'Poll Records',
+    desc:'The poll() loop — the core of consumption. consumer.Poll() fetches a batch of records from assigned partitions. Must be called within max.poll.interval.ms or broker thinks consumer is dead.',
+    code:`// Poll loop (blocking, timeout=100ms)
+for {
+  ev := consumer.Poll(100)
+  if ev == nil { continue }
+
+  switch e := ev.(type) {
+  case *kafka.Message:
+    processRecord(e)
+  case kafka.Error:
+    handleError(e)
+  case kafka.PartitionEOF:
+    log.Info("reached end of partition")
+  }
+}`,
+    tags:['poll() loop','100ms timeout','Heartbeat implied'],
+    colors:['tp','tc','tb']
+  },
+  {
+    id:19, panel:'cons', title:'Deserialize Records',
+    desc:'Convert bytes back to objects. Must match producer\'s serializer exactly. With Avro + Schema Registry: schema ID is embedded in first 5 bytes. Type mismatch = runtime panic.',
+    code:`// Value Deserializer
+var order OrderCreated
+if err := json.Unmarshal(msg.Value, &order); err != nil {
+  // Deserialization error → DLQ!
+  sendToDLQ(msg, err)
+  continue
+}
+
+// Key Deserializer
+orderID := string(msg.Key)
+
+// Avro: first byte = magic (0x00)
+// bytes 1-4 = schema ID (big-endian)`,
+    tags:['Schema matching','DLQ on failure','Type safety'],
+    colors:['tp','tr','tc']
+  },
+  {
+    id:20, panel:'cons', title:'Process Records',
+    desc:'Business logic executes. Must be idempotent if using at-least-once (acks=1+). Save to DB, call downstream services, emit events. Failure here = DON\'T commit offset.',
+    code:`func processOrder(order OrderCreated) error {
+  // 1. Idempotency check
+  if exists, _ := db.OrderExists(order.OrderID); exists {
+    return nil // already processed
+  }
+
+  // 2. Business logic
+  if err := db.SaveOrder(order); err != nil {
+    return err  // don't commit!
+  }
+
+  // 3. Downstream events
+  return notifyFulfillment(order)
+}`,
+    tags:['Idempotent processing','No commit on fail','Downstream'],
+    colors:['tp','tg','ta']
+  },
+  {
+    id:21, panel:'cons', title:'Commit Offsets',
+    desc:'Tell Kafka: "I have processed up to offset X". Stored in internal topic __consumer_offsets. Commit AFTER successful processing. Auto-commit is dangerous with at-least-once semantics.',
+    code:`// Manual commit (safe pattern)
+if err := processOrder(order); err == nil {
+  // Commit THIS partition + offset
+  consumer.CommitMessage(msg)
+  // Stores in __consumer_offsets
+  // group=order-service, P3, offset=10
+}
+
+// CommitAsync: fire-and-forget
+// CommitSync:  blocks until broker ACK
+// Prefer CommitSync for critical data`,
+    tags:['__consumer_offsets','Manual commit','CommitSync'],
+    colors:['tp','tg','tc']
+  },
+  {
+    id:22, panel:'cons', title:'Continue Poll Loop',
+    desc:'Back to Poll(). The cycle repeats forever. Heartbeats are sent implicitly within poll() to prove the consumer is alive. If silent for session.timeout.ms → group rebalance triggered.',
+    code:`// Heartbeat thread (background)
+// Sends heartbeat every heartbeat.interval.ms
+// Default: 3000ms (3s)
+// Must be < session.timeout.ms / 3
+
+// Rebalance triggers:
+// 1. New consumer joins group
+// 2. Consumer crashes / times out
+// 3. Topic partition count changes
+// 4. Subscription change
+
+// The loop never ends ← that's Kafka`,
+    tags:['Heartbeat','Rebalance triggers','Infinite loop'],
+    colors:['tp','tc','ta']
+  },
+];
+
+// ═══════════════════════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════════════════════
+let currentStep = 0;
+let isPlaying = false;
+let playTimer = null;
+let speed = 1200;
+let acksConfig = 1;
+
+// ═══════════════════════════════════════════════════════════════
+// RENDER STEPS
+// ═══════════════════════════════════════════════════════════════
+function renderSteps() {
+  const pubEl = document.getElementById('pub-steps');
+  const kafkaEl = document.getElementById('kafka-steps');
+  const consEl = document.getElementById('cons-steps');
+
+  pubEl.innerHTML = '';
+  kafkaEl.innerHTML = '';
+  consEl.innerHTML = '';
+
+  STEPS.forEach(s => {
+    const el = document.getElementById(`step-${s.id}`);
+    const done = s.id < currentStep;
+    const active = s.id === currentStep;
+
+    const card = document.createElement('div');
+    card.className = `scard ${active?'active':''} ${done?'done':''}`;
+    card.id = `step-${s.id}`;
+    card.onclick = () => goToStep(s.id);
+
+    const tagsHtml = (s.tags||[]).map((t,i)=>`<span class="tag ${s.colors?.[i]||'tc'}">${t}</span>`).join('');
+
+    card.innerHTML = `
+      <div class="scard-head">
+        <div class="snum">${done?'✓':s.id}</div>
+        <div class="stitle">${s.title}</div>
+        <div class="sdot"></div>
+      </div>
+      <div class="sexpand">
+        <div class="sdesc">${s.desc}</div>
+        ${s.code?`<code class="scode">${escHtml(s.code)}</code>`:''}
+        ${s.packet&&active?`<div class="pkt">📦 ${s.packet}</div>`:''}
+        <div class="stags">${tagsHtml}</div>
+      </div>`;
+
+    if(s.panel==='pub') pubEl.appendChild(card);
+    else if(s.panel==='kafka') kafkaEl.appendChild(card);
+    else consEl.appendChild(card);
+  });
+}
+
+function escHtml(s){
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+// ═══════════════════════════════════════════════════════════════
+// NAVIGATION
+// ═══════════════════════════════════════════════════════════════
+function goToStep(n) {
+  currentStep = Math.max(0, Math.min(22, n));
+  renderSteps();
+  updateUI();
+  scrollActiveIntoView();
+}
+
+function nextStep() { if(currentStep < 22) goToStep(currentStep+1); else stopPlay(); }
+function prevStep() { if(currentStep > 0) goToStep(currentStep-1); }
+
+function togglePlay() {
+  if(isPlaying) stopPlay();
+  else startPlay();
+}
+
+function startPlay() {
+  if(currentStep >= 22) resetSim();
+  isPlaying = true;
+  document.getElementById('play-btn').textContent = '⏸ Pause';
+  document.getElementById('play-btn').classList.add('playing');
+  scheduleNext();
+}
+
+function stopPlay() {
+  isPlaying = false;
+  clearTimeout(playTimer);
+  document.getElementById('play-btn').textContent = '▶ Play All';
+  document.getElementById('play-btn').classList.remove('playing');
+}
+
+function scheduleNext() {
+  playTimer = setTimeout(()=>{
+    nextStep();
+    if(isPlaying && currentStep < 22) scheduleNext();
+    else stopPlay();
+  }, speed);
+}
+
+function resetSim() {
+  stopPlay();
+  currentStep = 0;
+  renderSteps();
+  updateUI();
+  resetBrokers();
+}
+
+function updateSpeed() {
+  speed = parseInt(document.getElementById('speed-sel').value);
+  if(isPlaying) { stopPlay(); startPlay(); }
+}
+
+// ═══════════════════════════════════════════════════════════════
+// UI UPDATES
+// ═══════════════════════════════════════════════════════════════
+function updateUI() {
+  // step badge
+  document.getElementById('cur-step').textContent = currentStep;
+  // progress
+  document.getElementById('progress').style.width = `${(currentStep/22)*100}%`;
+  // info bar
+  if(currentStep === 0) {
+    document.getElementById('ib-title').textContent = 'Ready to simulate';
+    document.getElementById('ib-desc').textContent = 'Press Play to auto-run all 22 steps, or click any step card to jump directly to it.';
+  } else {
+    const s = STEPS[currentStep-1];
+    document.getElementById('ib-title').textContent = `Step ${s.id}: ${s.title}`;
+    document.getElementById('ib-desc').textContent = s.desc;
+  }
+  // cluster dynamics
+  updateCluster();
+}
+
+function updateCluster() {
+  const s = currentStep;
+
+  // Log viz: show record being written at step 9
+  const segs = document.querySelectorAll('.log-seg');
+  segs.forEach((el,i) => {
+    el.className = 'log-seg';
+    if(i < 9) el.classList.add(s>=9?'written':'written');
+    if(i===9) {
+      if(s>=9) el.classList.add(s===9?'current':'written');
+    }
+  });
+
+  // Broker highlights
+  resetBrokers();
+  if(s===8||s===9) {
+    document.getElementById('br1').classList.add('leader');
+  }
+  if(s>=10&&s<=12) {
+    document.getElementById('br2').classList.add('follower-active');
+    document.getElementById('br3').classList.add('follower-active');
+  }
+
+  // Consumer lag
+  if(s>=18) {
+    document.getElementById('m-lag').textContent = s>=21?'0':'1';
+  }
+
+  // Offset
+  if(s>=18) {
+    document.getElementById('m-offset').textContent = '9';
+  }
+}
+
+function resetBrokers() {
+  ['br1','br2','br3'].forEach(id=>{
+    const b = document.getElementById(id);
+    b.className = 'broker';
+    if(id==='br1') b.classList.add('leader');
+  });
+}
+
+// ═══════════════════════════════════════════════════════════════
+// ACKS CONFIG
+// ═══════════════════════════════════════════════════════════════
+function setAcks(val) {
+  acksConfig = val;
+  ['ao0','ao1','aoall'].forEach(id=>document.getElementById(id).classList.remove('selected'));
+  if(val===0) document.getElementById('ao0').classList.add('selected');
+  else if(val===1) document.getElementById('ao1').classList.add('selected');
+  else document.getElementById('aoall').classList.add('selected');
+
+  const label = val==='all'?'all':val;
+  document.getElementById('acks-label').textContent = label;
+  document.getElementById('m-acks').textContent = label;
+
+  if(val===0) {
+    document.getElementById('acks-label').style.color = 'var(--red)';
+    showToast('err','acks=0 — Fire & Forget','No acknowledgement. Maximum throughput but data loss possible if broker crashes.');
+  } else if(val===1) {
+    document.getElementById('acks-label').style.color = 'var(--amber)';
+    showToast('ok','acks=1 — Leader ACK','Leader acknowledges. Followers may not have it yet. Leader crash = data loss.');
+  } else {
+    document.getElementById('acks-label').style.color = 'var(--green)';
+    showToast('ok','acks=all — ISR Quorum','All ISR replicas must acknowledge. Strongest durability guarantee.');
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════
+// FAILURE INJECTION
+// ═══════════════════════════════════════════════════════════════
+function toggleFail() {
+  const bar = document.getElementById('fail-bar');
+  bar.classList.toggle('show');
+}
+
+const FAIL_RESPONSES = {
+  'leader-crash': {
+    title:'💥 Leader Crash Injected',
+    msg:'Broker 1 (Leader for P3) crashed!\n→ Controller detects via ZK/KRaft session timeout\n→ Elects Broker 2 as new Leader for P3\n→ Producer retries with metadata refresh\n→ Followers that were in ISR = no data loss\n→ acks=all guarantees data was already on ISR\n→ Producer retries with new leader\n⏱ Recovery: ~30 seconds (default)',
+    isrChange: true,
+  },
+  'isr-shrink': {
+    title:'📉 ISR Shrink',
+    msg:'Broker 3 falls behind (network lag > replica.lag.time.max.ms=30s)\n→ Broker 3 removed from ISR\n→ ISR = [1, 2] only\n→ If acks=all + min.insync.replicas=2: still works ✓\n→ If acks=all + min.insync.replicas=3: FAIL ✗\n   NotEnoughReplicasException → producer retries\n→ Solution: reduce min.insync.replicas or fix Broker 3',
+    isrShrink: true,
+  },
+  'network': {
+    title:'🌐 Network Timeout',
+    msg:'Producer→Broker TCP timeout!\n→ request.timeout.ms exceeded\n→ Producer: TimeoutException\n→ retries config: e.g. retries=3\n→ retry.backoff.ms: 100ms exponential\n→ If idempotent: PID+SeqNo prevents duplicates on retry\n→ If NOT idempotent: DUPLICATE records possible!\n→ Solution: enable.idempotence=true always',
+  },
+  'disk-full': {
+    title:'💾 Disk Full on Broker 1',
+    msg:'Broker log directory disk full!\n→ Produce fails immediately: KafkaStorageException\n→ Broker marks partition as offline\n→ Leader election for all partitions on this broker\n→ Producer gets NOT_LEADER_FOR_PARTITION\n→ Metadata refresh + retry to new leader\n→ Prevention: monitor disk.usage, enable log.retention.bytes',
+  },
+  'consumer-down': {
+    title:'👤 Consumer Instance Down',
+    msg:'Consumer C-1 stopped polling (crashed or GC pause)\n→ No heartbeat for session.timeout.ms (30s)\n→ Group Coordinator detects: triggers REBALANCE\n→ C-2 and C-3 get notified via poll() event\n→ Partitions P0, P3 reassigned to C-2, C-3\n→ Uncommitted offsets re-consumed from last commit\n→ Risk: duplicates if processing was in-flight!\n→ Solution: at-least-once + idempotent processing',
+    consumerFail: true,
+  },
+  'msg-too-large': {
+    title:'📦 Message Too Large',
+    msg:'Message exceeds max.message.bytes (default 1MB)!\n→ Broker rejects: RecordTooLargeException\n→ Producer receives error immediately (no retry)\n→ Application must handle: compress, split, or use external store\n→ Pattern: Large Payload Pattern\n   Store in S3, send only reference in Kafka message\n→ S3 key in message, consumer fetches actual data',
+  },
+  'auth-fail': {
+    title:'🔐 Auth Failed',
+    msg:'Producer lacks WRITE permission on topic orders!\n→ Broker returns: TopicAuthorizationException\n→ NOT retried (auth errors don\'t self-resolve)\n→ Producer callback gets error immediately\n→ Fix: kafka-acls --add --allow-principal User:svc-orders\n        --operation Write --topic orders\n→ Production: use SASL/SCRAM or mTLS + RBAC',
+  },
+};
+
+function injectFail(type) {
+  const f = FAIL_RESPONSES[type];
+  if(!f) return;
+  const el = document.getElementById('fail-result');
+  el.textContent = f.msg;
+  el.classList.add('show');
+  showToast('err', f.title, f.msg.split('\n')[0]);
+
+  if(f.isrShrink) {
+    document.getElementById('isr-3').className = 'isr-badge out';
+    document.getElementById('br3').classList.remove('follower-active');
+    document.getElementById('m-isr').textContent = '2/3';
+  }
+  if(f.consumerFail) {
+    document.getElementById('c1-part').textContent = 'DOWN';
+    document.getElementById('c1-part').style.color = 'var(--red)';
+    document.getElementById('c2-part').textContent = 'P0,P1,P3,P4';
+    document.getElementById('m-lag').textContent = '∞';
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════
+// TOAST
+// ═══════════════════════════════════════════════════════════════
+let toastTimer;
+function showToast(type, title, body) {
+  const t = document.getElementById('toast');
+  const tt = document.getElementById('toast-t');
+  const tb = document.getElementById('toast-b');
+  tt.textContent = title;
+  tb.textContent = body.length > 80 ? body.substring(0,80)+'...' : body;
+  t.className = `toast ${type} show`;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>{ t.classList.remove('show'); }, 3500);
+}
+
+// ═══════════════════════════════════════════════════════════════
+// SCROLL
+// ═══════════════════════════════════════════════════════════════
+function scrollActiveIntoView() {
+  const active = document.querySelector('.scard.active');
+  if(active) active.scrollIntoView({behavior:'smooth', block:'nearest'});
+}
+
+// ═══════════════════════════════════════════════════════════════
+// KEYBOARD
+// ═══════════════════════════════════════════════════════════════
+document.addEventListener('keydown', e => {
+  if(e.key==='ArrowRight'||e.key===' ') { e.preventDefault(); nextStep(); }
+  if(e.key==='ArrowLeft') { e.preventDefault(); prevStep(); }
+  if(e.key==='r'||e.key==='R') resetSim();
+  if(e.key==='p'||e.key==='P') togglePlay();
+});
+
+// ═══════════════════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════════════════
+renderSteps();
+updateUI();
+setAcks(1);
+
+// Show welcome toast
+setTimeout(()=>{
+  showToast('ok','Kafka Simulator Ready','Press Space/→ to step through, P to play, ← to go back. Try Failure Injection mode!');
+},500);
+</script>
+</body>
+</html>

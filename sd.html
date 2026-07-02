@@ -4209,8 +4209,9 @@ const SCENARIOS = [
         { from: 'Admin Dashboard', to: 'GraphQL API', protocol: 'HTTPS', latency: '< 50ms' },
         { from: 'GraphQL API', to: 'ClickHouse', protocol: 'HTTP/8123', latency: '< 100ms' },
       ],
-    },
-  },
+  ,
+    
+  },  },
   {
     id: 'search',
     name: 'Google Search',
@@ -4376,8 +4377,9 @@ const SCENARIOS = [
         { from: 'Indexer', to: 'Inverted Index', protocol: 'gRPC', latency: '< 24hr (batch)' },
         { from: 'Query Service', to: 'Memcached', protocol: 'TCP/11211', latency: '< 1ms' },
       ],
-    },
-  },
+  ,
+    
+  },  },
   {
     id: 'amazon',
     name: 'E-commerce',
@@ -4550,8 +4552,9 @@ const SCENARIOS = [
         { from: 'Order Service', to: 'Kafka', protocol: 'TCP/9092', latency: '< 5ms (async)' },
         { from: 'Kafka', to: 'Inventory Service', protocol: 'TCP/9092', latency: '< 100ms (streaming)' },
       ],
-    },
-  },
+  ,
+    
+  },  },
   {
     id: 'netflix',
     name: 'Netflix',
@@ -4717,8 +4720,9 @@ const SCENARIOS = [
         { from: 'Kafka', to: 'Recommendation Service', protocol: 'TCP/9092', latency: '< 100ms (streaming)' },
         { from: 'Encoding Pipeline', to: 'Open Connect CDN', protocol: 'HTTPS', latency: '< 1hr (batch)' },
       ],
-    },
-  },
+  ,
+    
+  },  },
   {
     id: 'instagram',
     name: 'Instagram',
@@ -4886,8 +4890,9 @@ const SCENARIOS = [
         { from: 'Feed Service', to: 'Feature Store', protocol: 'gRPC', latency: '< 1ms' },
         { from: 'Feed Service', to: 'Redis', protocol: 'RESP', latency: '< 1ms' },
       ],
-    },
-  },
+  ,
+    
+  },  },
   {
     id: 'dropbox',
     name: 'Dropbox / Drive',
@@ -5060,8 +5065,9 @@ const SCENARIOS = [
         { from: 'Kafka', to: 'File Search', protocol: 'HTTP/9200', latency: '< 5min (indexing)' },
         { from: 'Client', to: 'LAN Peers', protocol: 'mDNS/P2P', latency: '< 10ms (LAN)' },
       ],
-    },
-  },
+  ,
+    
+  },  },
   {
     id: 'live',
     name: 'Live Streaming',
@@ -5227,8 +5233,9 @@ const SCENARIOS = [
         { from: 'Redis', to: 'Chat Service', protocol: 'RESP (pub/sub)', latency: '< 1ms' },
         { from: 'Chat Service', to: 'Viewer', protocol: 'WebSocket', latency: '< 50ms' },
       ],
-    },
-  },
+  ,
+    
+  },  },
   {
     id: 'zoom',
     name: 'Zoom / Video',
@@ -5395,8 +5402,9 @@ const SCENARIOS = [
         { from: 'QoS Monitor', to: 'Media Router', protocol: 'RTCP', latency: '< 1s' },
         { from: 'Signaling Server', to: 'Meeting DB', protocol: 'TCP/5432', latency: '< 10ms' },
       ],
-    },
-  },
+  ,
+    
+  },  },
   {
     id: 'slack',
     name: 'Slack / Team Chat',
@@ -5563,8 +5571,9 @@ const SCENARIOS = [
         { from: 'Notification Service', to: 'FCM/APNs', protocol: 'HTTPS', latency: '50-200ms' },
         { from: 'Client', to: 'S3', protocol: 'HTTPS (presigned)', latency: '< 100ms' },
       ],
-    },
-  },
+  ,
+    
+  },  },
   {
     id: 'food',
     name: 'Food Delivery',
@@ -5732,8 +5741,9 @@ const SCENARIOS = [
         { from: 'Order Service', to: 'ETA Service', protocol: 'gRPC', latency: '< 50ms' },
         { from: 'Kafka', to: 'Notification Service', protocol: 'TCP/9092', latency: '< 100ms (streaming)' },
       ],
-    },
-  },
+  ,
+    
+  },  },
   {
     id: 'flash',
     name: 'Flash Sale',
@@ -5900,8 +5910,9 @@ const SCENARIOS = [
         { from: 'Kafka', to: 'Anti-fraud Service', protocol: 'TCP/9092', latency: '< 100ms (streaming)' },
         { from: 'Anti-fraud Service', to: 'Order DB', protocol: 'TCP/5432', latency: '< 10ms' },
       ],
-    },
-  },
+  ,
+    
+  },  },
   {
     id: 'etl',
     name: 'ETL / Data Pipeline',
@@ -6072,8 +6083,9 @@ const SCENARIOS = [
         { from: 'Kafka', to: 'DLQ', protocol: 'TCP/9092', latency: '< 5ms (async)' },
         { from: 'Prometheus', to: 'Kafka/Flink/Spark', protocol: 'HTTP/9090', latency: '< 10ms (scrape)' },
       ],
-    },
-  },
+  ,
+    
+  },  },
 
   ,
   {
@@ -6205,8 +6217,9 @@ const SCENARIOS = [
         { from: 'Gateway', to: 'Observability', protocol: 'OTLP', latency: '< 5ms (async)' },
         { from: 'Observability', to: 'Prometheus', protocol: 'HTTP/9090', latency: '< 10ms (scrape)' },
       ],
-    },
-  },
+  ,
+    
+  },  },
   {
     id: 'kafka-bus',
     name: 'Kafka Event Bus',
@@ -6327,8 +6340,9 @@ const SCENARIOS = [
         { from: 'Consumers', to: 'DLQ', protocol: 'TCP/9092', latency: '< 5ms (async)' },
         { from: 'Consumers', to: 'Downstream Services', protocol: 'gRPC/HTTP', latency: '< 10ms' },
       ],
-    },
-  },
+  ,
+    
+  },  },
   {
     id: 'feature-flags',
     name: 'Feature Flag / Config Platform',
@@ -6422,7 +6436,7 @@ const SCENARIOS = [
       tradeoffs:'Remote evaluation centralizes logic but adds latency and outages to every request. Local evaluation is faster but requires careful payload size and propagation design.',
        staffMoves:'Start with local SDK eval + simple targeting. Add experiments, approvals, ownership, and stale-flag cleanup before the flag graveyard becomes a protected historical site.',
     },
-    lld:{components:[{name:'Control Plane API',icon:'⚙️',tech:'Go/Java',desc:'Stores flags, validates rules, emits config changes.',why:'Go/Java for low latency. Versioned configs with audits and rollback.',calc:'200 updates/hr → 3 nodes. Each: 4 vCPU, 8GB RAM.',specs:[{label:'3 nodes',type:'hot'},{label:'4 vCPU/node'},{label:'8GB RAM/node'}]},{name:'Flag Store',icon:'🛢️',tech:'Postgres',desc:'Source of truth for flags, segments, audits.',why:'Postgres for ACID and versioned flag storage.',calc:'5K flags × 4KB = 20MB. 3 nodes × 4 vCPU, 16GB RAM, 2TB SSD.',specs:[{label:'3 PG nodes',type:'hot'},{label:'20MB flags'},{label:'6 replicas'}]},{name:'Update Stream',icon:'📨',tech:'Kafka/NATS',desc:'Fan out config changes to edge/SDK relays within 5s.',why:'Kafka for durable config streaming. Kill switch propagation <5s.',calc:'200 updates/hr × 4KB = 800KB/hr. 3 brokers.',specs:[{label:'3 brokers',type:'hot'},{label:'<5s propagation'}]},{name:'Relay/Edge',icon:'📡',tech:'Redis+SSE',desc:'Keeps SDK connections local; reduces fanout pain.',why:'Redis for sub-ms reads. SSE for streaming. 35M SSE connections.',calc:'35M SSE → 1000 relay nodes. Each: 8 vCPU, 32GB RAM.',specs:[{label:'1000 nodes',type:'hot'},{label:'35M SSE'},{label:'<10ms'}]},{name:'SDK Clients',icon:'📱',tech:'Mobile/Web SDK',desc:'Evaluate flags locally from cached rule data.',why:'Local eval avoids network dependency. Offline with cached rules.',calc:'50M clients × 40 evals/day = 23K evals/sec. <1ms local.',specs:[{label:'23K evals/s',type:'hot'},{label:'<1ms'},{label:'offline ok'}]}],patterns:[{name:'Local SDK Eval',where:'SDK: evaluate flags locally from cache',why:'Avoid network dependency. <1ms vs 50ms remote.'},{name:'Streaming SSE',where:'Relay→SDK: Server-Sent Events',why:'Push config changes in <5s. Simpler than WebSocket.'},{name:'Versioned Configs',where:'Postgres: versioned flags with rollback',why:'Flag systems are control planes. Version, audit, rollback.'},{name:'Deterministic Bucketing',where:'SDK: consistent hashing for experiments',why:'A/B test bucketing must be deterministic across platforms.'},{name:'Offline Eval',where:'SDK: cached rules during outages',why:'Control plane outages must not brick the product.'},{name:'Stale Flag Cleanup',where:'Admin: ownership, expiry, stale alerts',why:'Flags rot. Cleanup before the landfill.'}],dataFlows:[{from:'Admin UI',to:'Control Plane API',protocol:'HTTPS',latency:'<50ms'},{from:'Control Plane',to:'Postgres',protocol:'TCP/5432',latency:'<10ms'},{from:'Control Plane',to:'Kafka',protocol:'TCP/9092',latency:'<5ms'},{from:'Kafka',to:'Relay',protocol:'TCP/9092',latency:'<5s'},{from:'Relay',to:'SDK',protocol:'SSE',latency:'<10ms'},{from:'SDK',to:'Local Eval',protocol:'in-process',latency:'<1ms'}]},
+    ,
   },
   {
     id: 'fraud-detection',
@@ -6516,7 +6530,7 @@ const SCENARIOS = [
       tradeoffs:'Stronger consistency on every upstream signal is unrealistic. Prefer bounded staleness + freshness metadata + degraded fallback rules.',
        staffMoves:'Start with rules + a small feature set. Add online feature store, then model scoring, then feedback-driven retraining and analyst tooling.',
     },
-    lld:{components:[{name:'Risk API',icon:'🛡️',tech:'Go/Java',desc:'Orchestrates feature fetch, rules, model, decisioning.',why:'Go/Java for <100ms P99. 1.7K QPS → 3 nodes.',calc:'1.7K QPS → 3 nodes (567 each). 8 vCPU, 16GB RAM.',specs:[{label:'3 nodes',type:'hot'},{label:'8 vCPU'},{label:'<100ms'}]},{name:'Feature Store',icon:'🧠',tech:'Redis/Cassandra',desc:'Recent aggregates for scoring. Velocity features are key.',why:'Redis for sub-ms reads. Cassandra for durable storage.',calc:'1.7K QPS × 120 features × 40B = 8.2MB/s. Redis 10 shards, Cassandra 50 nodes.',specs:[{label:'10 Redis',type:'hot'},{label:'50 Cassandra'},{label:'95% hit'}]},{name:'Model Service',icon:'🤖',tech:'Python/XGBoost',desc:'Returns risk score + top features. <12ms inference.',why:'Python for ML ecosystem. XGBoost for fast inference.',calc:'1.7K QPS → 5 GPU nodes. NVIDIA T4, 32GB RAM. <12ms.',specs:[{label:'5 GPU',type:'hot'},{label:'T4'},{label:'<12ms'}]},{name:'Rules Engine',icon:'📏',tech:'Drools/Custom',desc:'Hard blocks, allowlists, emergency patches.',why:'Rules fast to patch during incidents. Models catch subtle patterns.',calc:'1.7K QPS × 50 rules = 85K evals/sec. 3 nodes.',specs:[{label:'3 nodes',type:'hot'},{label:'<5ms'}]},{name:'Case Queue',icon:'🧾',tech:'Kafka+Ops UI',desc:'Send uncertain cases to analysts.',why:'Not every edge case deserves automatic denial.',calc:'0.8% = 14 cases/sec. Kafka 3 brokers. Ops UI 10 nodes.',specs:[{label:'3 brokers',type:'hot'},{label:'<24hr review'}]}],patterns:[{name:'Feature Cache',where:'Redis: cache recent aggregates',why:'Most latency is feature lookup, not model.'},{name:'Rules+Model',where:'Rules for fast patches, Model for subtle patterns',why:'Both coexist. Case-review handles gray zone.'},{name:'Explainability',where:'Every score includes top features',why:'Risk decisions must be explainable for analysts/auditors.'},{name:'Feedback Loop',where:'Kafka: ingest chargebacks for retraining',why:'Fraud changes. Model must retrain before fraudsters adapt.'},{name:'Bounded Staleness',where:'Freshness metadata + degraded fallback rules',why:'Strong consistency on every upstream is unrealistic.'},{name:'Drift Detection',where:'Monitoring: feature and model drift alarms',why:'Yesterday model = tomorrow confidence trick.'}],dataFlows:[{from:'Txn Service',to:'Risk API',protocol:'gRPC',latency:'<10ms'},{from:'Risk API',to:'Feature Store',protocol:'RESP',latency:'<20ms'},{from:'Risk API',to:'Rules Engine',protocol:'gRPC',latency:'<5ms'},{from:'Risk API',to:'Model Service',protocol:'gRPC',latency:'<12ms'},{from:'Risk API',to:'Case Queue',protocol:'TCP/9092',latency:'<5ms'},{from:'Case Queue',to:'Ops UI',protocol:'HTTPS',latency:'<50ms'}]},
+    ,
   },
   {
     id: 'llm-agent-platform',
@@ -6644,8 +6658,9 @@ const SCENARIOS = [
         { from: 'AI Gateway', to: 'Eval + Traces', protocol: 'OTLP', latency: '< 5ms (async)' },
         { from: 'LLM Serving', to: 'Chat Client', protocol: 'SSE', latency: '< 8s (full answer)' },
       ],
-    },
-  },
+  ,
+    
+  },  },
   {
     id: 'observability-platform',
     name: 'Observability Platform',
@@ -6738,7 +6753,7 @@ const SCENARIOS = [
       tradeoffs:'More detail improves debugging but destroys cost and performance. Sample smartly, tier retention, and outlaw cursed labels.',
       staffMoves:'Start with managed OSS stack. Add cardinality governance and SLO tooling before building anything “clever.”',
     },
-    lld:{components:[{name:'OTEL Collectors',icon:'🧰',tech:'OpenTelemetry',desc:'Buffer, batch, sample, enrich, route telemetry.',why:'Central place for sampling, enrichment, and export fanout.',calc:'50K spans+133K metrics/sec → 20 nodes. 8 vCPU, 32GB RAM.',specs:[{label:'20 nodes',type:'hot'},{label:'8 vCPU'},{label:'10% sample'}]},{name:'Metrics TSDB',icon:'📈',tech:'Prometheus/Mimir',desc:'Metrics storage + rule evaluation.',why:'Enemy is cardinality explosion, not CPU.',calc:'133K samples/sec. 10 Prometheus+50 Mimir nodes. 4TB SSD.',specs:[{label:'60 nodes',type:'hot'},{label:'133K/s'},{label:'90d retention'}]},{name:'Log Store',icon:'📜',tech:'Loki/ClickHouse',desc:'Searchable logs with retention tiers.',why:'Humans still need raw text when things go sideways.',calc:'25TB/day → 100 nodes. 8 vCPU, 32GB RAM. <5s search.',specs:[{label:'100 nodes',type:'hot'},{label:'25TB/day'},{label:'<5s'}]},{name:'Trace Store',icon:'🧵',tech:'Tempo/Jaeger',desc:'Span storage and trace lookup for debugging.',why:'14-hop microservice calls are not self-explanatory.',calc:'50K spans/sec × 10%=5K stored. 50 nodes. 7d retention.',specs:[{label:'50 nodes',type:'hot'},{label:'tail-aware'},{label:'7d'}]},{name:'Dashboards',icon:'🚨',tech:'Grafana',desc:'Dashboards, alerting, SLOs, incident response.',why:'Alert storms are a lifestyle problem.',calc:'4K dashboards. 5 Grafana nodes. 10K alert rules. <1min.',specs:[{label:'5 nodes',type:'hot'},{label:'10K rules'},{label:'<1min'}]}],patterns:[{name:'OTEL Collectors',where:'Central: buffer, batch, sample, enrich',why:'Avoids every SDK exporting directly to every backend.'},{name:'Cardinality Governance',where:'Metrics: label policy, relabel/drop, CI linting',why:'High-cardinality labels like userId burn the budget.'},{name:'Tail-Aware Sampling',where:'Traces: 100% errors, 50% slow, 10% normal',why:'Preserve debugging signal while cutting storage cost.'},{name:'Tiered Retention',where:'Hot 7d/warm 30d/cold 90d',why:'Recent fast, old cheap. 80% cost savings.'},{name:'SLO Burn Rate',where:'Alerting: burn rate>14.4× exhausts in 1d',why:'Catch degradation before threshold breach.'},{name:'Tenant Isolation',where:'Multi-tenant: label quotas+redaction',why:'PII and cardinality both arrive uninvited.'}],dataFlows:[{from:'Apps',to:'OTEL',protocol:'OTLP/gRPC',latency:'<10ms'},{from:'OTEL',to:'Prometheus',protocol:'RemoteWrite',latency:'<5s'},{from:'OTEL',to:'Log Store',protocol:'HTTP',latency:'<30s'},{from:'OTEL',to:'Trace Store',protocol:'OTLP',latency:'<5s'},{from:'Grafana',to:'Prometheus',protocol:'HTTP/9090',latency:'<5s'},{from:'Grafana',to:'Log Store',protocol:'HTTP/3100',latency:'<5s'},{from:'Grafana',to:'Trace Store',protocol:'HTTP/3200',latency:'<5s'},{from:'Prometheus',to:'Alertmanager',protocol:'HTTP/9093',latency:'<1min'}]},
+    ,
   },
 
   {
@@ -6853,7 +6868,7 @@ const SCENARIOS = [
       tradeoffs: '(1) Trie vs HashMap: trie is memory-efficient for shared prefixes; hashmap is simpler. At 1B prefixes, trie wins. (2) Push vs pull index update: Kafka push is fresh but complex; scheduled pull is simple but stale. (3) Personalization: accurate but adds 1 DB call per keystroke; sample-based or session-cached is cheaper.',
       staffMoves: 'Start with Redis-backed prefix store, no personalization. Measure which prefixes drive 80% of traffic (power law, top 10K cover most). Build dedicated hot-prefix in-memory cache for those. Add personalization via session cache, not per-keystroke DB hit.',
     },
-    lld:{components:[{name:'API Gateway',icon:'🚪',tech:'Go',desc:'Routes suggestions, handles auth, rate limiting.',why:'Go for sub-100ms P99. 200K QPS → 10 nodes.',calc:'200K QPS → 10 nodes (20K each). 4 vCPU, 8GB RAM.',specs:[{label:'10 nodes',type:'hot'},{label:'4 vCPU'},{label:'<5ms check'}]},{name:'Prefix Trie',icon:'📖',tech:'Redis Sorted Set',desc:'Top-K completions per prefix. O(K) lookup.',why:'Redis ZSET for prefix trie. Top-10 completions weighted by frequency.',calc:'100M terms × 100B = 10GB. Redis 10 shards × 32GB. <1ms lookup.',specs:[{label:'10 shards',type:'hot'},{label:'10GB'},{label:'<1ms'}]},{name:'Aggregation Service',icon:'📊',tech:'Go',desc:'Aggregates per-query results for multi-source ranking.',why:'Combines prefix trie, personalized history, trending into ranked list.',calc:'200K QPS → 5 nodes. 4 vCPU, 8GB RAM. Merge latency <2ms.',specs:[{label:'5 nodes',type:'hot'},{label:'4 vCPU'},{label:'<2ms'}]},{name:'Kafka Stream',icon:'📨',tech:'Kafka',desc:'Query log stream for trie updates and personalization.',why:'Kafka for durable query log. Trie rebuilt hourly. Trending refreshed every 5min.',calc:'200K QPS × 100B = 20MB/s. 12 brokers. 7-day retention.',specs:[{label:'12 brokers',type:'hot'},{label:'20MB/s'},{label:'7d retention'}]},{name:'Search Cache',icon:'⚡',tech:'Redis',desc:'Cache hot query results at edge for instant returns.',why:'80% traffic from top 10K queries. Cache them at edge.',calc:'10K hot queries × 1KB = 10MB. 6 Redis nodes. 80% hit rate.',specs:[{label:'6 nodes',type:'hot'},{label:'80% hit'},{label:'10MB'}]}],patterns:[{name:'Prefix Trie',where:'Redis ZSET for O(K) prefix completion',why:'Prefix trie in Redis. Top-10 completions per prefix. O(1) lookup per char, O(K) for top-K. Rebuilt hourly from query log.'},{name:'Power Law Caching',where:'Redis: top 10K queries = 80% traffic',why:'Cache hot prefixes at edge. Top 10K queries cover 80% of traffic. 10MB cache saves 80% of backend load.'},{name:'Probabilistic Early Expiry',where:'Redis: cache TTL with jitter',why:'Prevents thundering herd at cache expiry. TTL ± 10% jitter spreads refresh.'},{name:'Eventual Consistency',where:'Trie: rebuilt hourly from query log',why:'Prefix trie can lag 1hr behind query log. Freshness via second-stage ranking from real-time trending.'},{name:'Personalization Layer',where:'Aggregation: re-rank by user history',why:'Personalization via session cache, not per-keystroke DB hit. Merge trie results with user history.'},{name:'Sub-100ms Budget',where:'API+Prefix+Merge+Cache < 100ms',why:'Every keystroke triggers a suggestion request. 100ms is the maximum tolerable latency.'}],dataFlows:[{from:'Client',to:'API Gateway',protocol:'HTTPS',latency:'<20ms'},{from:'API Gateway',to:'Prefix Trie',protocol:'RESP',latency:'<1ms'},{from:'API Gateway',to:'Aggregation',protocol:'gRPC',latency:'<2ms'},{from:'API Gateway',to:'Search Cache',protocol:'RESP',latency:'<1ms'},{from:'API Gateway',to:'Kafka',protocol:'TCP/9092',latency:'<5ms'},{from:'Kafka',to:'Trie Builder',protocol:'TCP/9092',latency:'<1hr'},{from:'Trie Builder',to:'Redis',protocol:'RESP',latency:'<1hr'}]},
+    ,
   },
   {
     id: 'nearby',
@@ -6969,7 +6984,7 @@ const SCENARIOS = [
       tradeoffs: '(1) Geohash vs Quadtree: geohash is simple, fixed grid, works great for uniform density. Quadtree adapts to density (better for cities vs rural), harder to implement. (2) Redis GEO commands vs manual ZSET: GEO commands are simpler but less control over ranking. Manual ZSET lets you score by distance × rating. (3) Sharding strategy: geo-sharding gives locality but uneven if some regions are denser.',
       staffMoves: 'Start simple: PostGIS on Postgres, single region, no caching. Once QPS >1K, add Redis ZSET geo index as cache layer. At 10M POIs, shard MySQL by geohash prefix. Add Kafka for async geo index updates. At 100M POIs, distribute Redis cluster by geohash range.',
     },
-    lld:{components:[{name:'API Gateway',icon:'🚪',tech:'Go',desc:'Geo-search routing, auth, rate limiting.',why:'Go for low latency. Geo-search routing to nearest region.',calc:'5K QPS → 3 nodes. 4 vCPU, 8GB RAM. <5ms auth.',specs:[{label:'3 nodes',type:'hot'},{label:'4 vCPU'},{label:'<5ms'}]},{name:'Geo Index',icon:'🗺️',tech:'Redis GEOADD/PostGIS',desc:'Geospatial index for nearby POI queries.',why:'Redis GEOADD for sub-ms queries. H3 hex grid for efficient cell lookup.',calc:'200M POIs × 100B = 20GB. Redis 10 shards × 32GB. <1ms GEORADIUS.',specs:[{label:'10 shards',type:'hot'},{label:'20GB'},{label:'<1ms'}]},{name:'POI Database',icon:'🛢️',tech:'Postgres sharded',desc:'POI metadata, reviews, photos, hours.',why:'Postgres for relational data. Sharded by geohash prefix.',calc:'200M POIs × 5KB = 1TB. 50 shards × 2TB SSD. <10ms read.',specs:[{label:'50 shards',type:'hot'},{label:'1TB data'},{label:'<10ms'}]},{name:'Review Service',icon:'⭐',tech:'Postgres',desc:'Reviews, ratings, photos, tips.',why:'Postgres for structured review data. Async via Kafka.',calc:'50K reviews/day × 2KB = 100MB/day. 10 nodes. 10-year: 365GB.',specs:[{label:'10 nodes',type:'hot'},{label:'100MB/day'},{label:'365GB/10yr'}]},{name:'Kafka',icon:'📨',tech:'Kafka',desc:'Async geo index updates from POI changes.',why:'Kafka for async geo index updates. Decouples POI writes from geo queries.',calc:'1K POI updates/sec × 5KB = 5MB/s. 6 brokers. 7-day retention.',specs:[{label:'6 brokers',type:'hot'},{label:'5MB/s'},{label:'7d retention'}]},{name:'CDN',icon:'📡',tech:'CloudFront',desc:'Photos, static assets, map tiles.',why:'CDN for photos and static assets. Reduces origin load by 90%.',calc:'50K photos/day × 500KB = 25GB/day. CDN hit: 90%.',specs:[{label:'25GB/day',type:'hot'},{label:'90% hit'}]}],patterns:[{name:'H3 Hex Grid',where:'Redis: H3 hex cells for geo queries',why:'H3 provides O(1) cell lookup. Check cell+7 neighbors for nearby POIs.'},{name:'Sharded by Geohash',where:'Postgres: shard by geohash prefix',why:'Geohash prefix keeps nearby POIs in same shard. Efficient geo-range queries.'},{name:'Async Geo Index',where:'Kafka: POI changes → Redis update',why:'Decouple POI writes from geo queries. Redis geo index updated async.'},{name:'Cache-First Read',where:'Redis: geo queries cache',why:'Redis GEOADD for sub-ms reads. Postgres for durable storage.'},{name:'Proximity Scoring',where:'Redis GEORADIUS: score by distance+rating+price',why:'Multi-factor scoring: distance (proximity), rating (quality), price (budget).'},{name:'CDN Offload',where:'CDN: photos, map tiles, static assets',why:'CDN reduces origin load by 90%. Cache-Control for freshness.'}],dataFlows:[{from:'Client',to:'API Gateway',protocol:'HTTPS',latency:'<50ms'},{from:'API Gateway',to:'Geo Index',protocol:'RESP',latency:'<1ms'},{from:'API Gateway',to:'POI DB',protocol:'TCP/5432',latency:'<10ms'},{from:'API Gateway',to:'Review Service',protocol:'gRPC',latency:'<10ms'},{from:'POI DB',to:'Kafka',protocol:'TCP/9092',latency:'<5ms'},{from:'Kafka',to:'Geo Index',protocol:'RESP',latency:'<100ms'},{from:'Client',to:'CDN',protocol:'HTTPS',latency:'<50ms'}]},
+    ,
   },
   {
     id: 'crawler',
@@ -7084,7 +7099,7 @@ const SCENARIOS = [
       tradeoffs: '(1) BFS vs priority BFS: pure BFS crawls low-value pages and wastes quota on spam sites. Priority BFS with PageRank/freshness signal dramatically improves crawl quality. (2) Bloom filter FP rate: lower FP = larger filter. 0.1% FP at 10B URLs = 120GB. 1% FP = 60GB. Accept 1% re-crawl overhead to halve memory. (3) Store raw HTML vs parsed: raw is universal but large; parsed loses original fidelity. Store both in tiered storage.',
       staffMoves: 'Start with simple BFS queue (Redis sorted set). Add politeness and robots.txt at week 1. Add Bloom filter when frontier dedup becomes expensive. Move frontier to Kafka for scale. Add SimHash for near-dup detection. Add priority tiers when raw QPS reaches quota but quality is poor.',
     },
-    lld:{components:[{name:'URL Frontier',icon:'🗺️',tech:'Priority Queue',desc:'Distributed frontier: prioritize by PageRank, freshness, depth.',why:'Priority queue: high-PageRank pages crawled first. BFS for new domains.',calc:'10B URLs/30d = 3.9K URLs/sec. 50 frontier nodes. 4 vCPU each.',specs:[{label:'50 nodes',type:'hot'},{label:'3.9K/s'},{label:'BFS+priority'}]},{name:'Fetcher',icon:'🕷️',tech:'Go/C++',desc:'HTTP client: respect robots.txt, crawl-delay, politeness.',why:'Go/C++ for high throughput. Politeness: 1-5s delay per domain.',calc:'3.9K URLs/sec → 100 fetcher nodes. Each: 8 vCPU, 16GB RAM. 10Gbps NIC.',specs:[{label:'100 nodes',type:'hot'},{label:'8 vCPU'},{label:'10Gbps'}]},{name:'DNS Resolver',icon:'🌐',tech:'Custom DNS cache',desc:'Resolve domain→IP. Local cache for DNS lookups.',why:'DNS lookup adds 50-200ms latency. Local cache reduces DNS overhead.',calc:'1B domains × 256B = 256GB DNS cache. 10 nodes. 99% hit rate.',specs:[{label:'10 nodes',type:'hot'},{label:'256GB'},{label:'99% hit'}]},{name:'Robots.txt Cache',icon:'📋',tech:'Redis',desc:'Cache robots.txt per domain. Refresh periodically.',why:'Robots.txt check required on every crawl. Cache to avoid per-URL fetch.',calc:'100M domains × 1KB = 100MB. Redis 3 nodes. 99% hit. TTL 1hr.',specs:[{label:'3 nodes',type:'hot'},{label:'100MB'},{label:'1hr TTL'}]},{name:'Bloom Filter',icon:'🌻',tech:'RedisBloom',desc:'URL dedup: check if URL already crawled.',why:'Bloom filter O(1) check. 0.1% false positive = skip some new pages (acceptable).',calc:'10B URLs × 10 bits = 12.5GB Bloom filter. 10 RedisBloom nodes.',specs:[{label:'10 nodes',type:'hot'},{label:'12.5GB'},{label:'0.1% FP'}]},{name:'Parser',icon:'⚙️',tech:'Go',desc:'Parse HTML, extract text, links, metadata.',why:'HTML parsing: extract text, links, metadata. Compute SimHash for dedup.',calc:'3.9K pages/sec → 50 parser nodes. 8 vCPU, 16GB RAM. <50ms per page.',specs:[{label:'50 nodes',type:'hot'},{label:'8 vCPU'},{label:'<50ms'}]},{name:'Storage',icon:'🗄️',tech:'GFS/Colossus',desc:'Store raw pages + parsed content + inverted index.',why:'GFS/Colossus for durable storage. Raw pages stored once. Indexed for search.',calc:'30B pages × 100KB = 3PB raw. 5-year: 15PB. 5000 Colossus nodes.',specs:[{label:'5000 nodes',type:'hot'},{label:'15PB'},{label:'5yr retention'}]}],patterns:[{name:'URL Frontier',where:'Priority queue: PageRank > freshness > depth',why:'Crawl high-value pages first. BFS for broad discovery. Politely throttle per domain.'},{name:'Bloom Filter Dedup',where:'Check URL in Bloom filter before fetch',why:'O(1) check. 0.1% false positive acceptable at scale. Saves GBs of hash table memory.'},{name:'Politeness',where:'Fetcher: 1-5s delay per domain, robots.txt',why:'Respect robots.txt and crawl-delay. Avoid getting blocked by target servers.'},{name:'SimHash Dedup',where:'Parser: compute SimHash for near-duplicate detection',why:'Near-identical pages (mirrors, spam) detected via SimHash. Skips duplicate content.'},{name:'Distributed Crawl',where:'Multiple fetchers, shared frontier, Bloom filter',why:'Distributed crawl: multiple fetchers share URL frontier. Bloom filter prevents re-crawling same URL.'},{name:'Incremental Re-crawl',where:'Priority based on freshness signals',why:'News sites: re-crawl every few minutes. Static pages: every 30 days. Priority based on change frequency.'}],dataFlows:[{from:'URL Frontier',to:'Fetcher',protocol:'gRPC',latency:'<10ms'},{from:'Fetcher',to:'DNS Resolver',protocol:'DNS',latency:'<50ms'},{from:'Fetcher',to:'Robots.txt Cache',protocol:'RESP',latency:'<1ms'},{from:'Fetcher',to:'Web Server',protocol:'HTTPS',latency:'100-500ms'},{from:'Fetcher',to:'Bloom Filter',protocol:'RESP',latency:'<1ms'},{from:'Fetcher',to:'Parser',protocol:'gRPC',latency:'<10ms'},{from:'Parser',to:'Storage',protocol:'gRPC',latency:'<100ms'},{from:'Parser',to:'URL Frontier',protocol:'gRPC',latency:'<10ms'}]},
+    ,
   },
 ].filter(Boolean);function estimateCost(servers, vcpuPerServer, ramPerServer, storPerDay, bwOut, cacheGB, hasDB) {
   const compute = servers * (vcpuPerServer * COST.server_per_vcpu + ramPerServer * COST.server_per_gb_ram);

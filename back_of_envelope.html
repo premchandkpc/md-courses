@@ -33,9 +33,66 @@
 }
 }
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-body { background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size: 14px; line-height: 1.5; min-height: 100vh; }
-.app { max-width: 960px; margin: 0 auto; padding: 24px 16px 60px; }
-.top-bar { display: flex; align-items: center; gap: 12px; margin-bottom: 6px; }
+html { scroll-behavior: smooth; }
+body {
+  background:
+    radial-gradient(circle at top left, color-mix(in srgb, var(--teal-bg) 28%, transparent), transparent 34%),
+    radial-gradient(circle at top right, color-mix(in srgb, var(--blue-bg) 22%, transparent), transparent 30%),
+    linear-gradient(180deg, var(--bg), color-mix(in srgb, var(--bg) 86%, var(--bg3)));
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+  min-height: 100vh;
+}
+body::before,
+body::after {
+  content: '';
+  position: fixed;
+  inset: auto;
+  pointer-events: none;
+  z-index: -1;
+  opacity: .55;
+  filter: blur(18px);
+}
+body::before {
+  top: -80px;
+  right: -40px;
+  width: 240px;
+  height: 240px;
+  background: radial-gradient(circle, color-mix(in srgb, var(--purple-bg) 45%, transparent), transparent 70%);
+}
+body::after {
+  left: -70px;
+  bottom: -90px;
+  width: 280px;
+  height: 280px;
+  background: radial-gradient(circle, color-mix(in srgb, var(--amber-bg) 40%, transparent), transparent 70%);
+}
+.app { max-width: 1120px; margin: 0 auto; padding: 24px 16px 60px; position: relative; isolation: isolate; }
+.top-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+  position: relative;
+  padding: 14px 16px;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  background: color-mix(in srgb, var(--bg2) 84%, transparent);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.06);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  flex-wrap: wrap;
+}
+.top-bar::after {
+  content: '';
+  position: absolute;
+  inset: auto 16px 0 16px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--border2), transparent);
+  pointer-events: none;
+}
 .app-title { font-size: 22px; font-weight: 600; letter-spacing: -0.01em; }
 .app-sub { font-size: 13px; color: var(--text2); }
 .scenario-nav { display: flex; flex-wrap: wrap; gap: 6px; margin: 18px 0 20px; }
@@ -103,6 +160,7 @@ input[type=range]::-moz-range-thumb { width: 16px; height: 16px; border-radius: 
 .o-card { background: var(--bg3); border-radius: var(--radius-sm); padding: 10px 12px; }
 .o-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.07em; color: var(--text3); margin-bottom: 3px; }
 .o-val { font-family: var(--mono); font-size: 14px; font-weight: 600; color: var(--text); }
+.o-sub { font-size: 10px; color: var(--text3); line-height: 1.45; margin-top: 4px; }
 .o-card.teal { background: var(--teal-bg); } .o-card.teal .o-val { color: var(--teal); }
 .o-card.amber { background: var(--amber-bg); } .o-card.amber .o-val { color: var(--amber); }
 .o-card.blue { background: var(--blue-bg); } .o-card.blue .o-val { color: var(--blue); }
@@ -145,6 +203,26 @@ input[type=range]::-moz-range-thumb { width: 16px; height: 16px; border-radius: 
 .arch-explain .ae-body.ae-hot{border-left-color:var(--teal)}
 .arch-explain .ae-body.ae-async{border-left-color:var(--amber)}
 .arch-explain .ae-body.ae-scale{border-left-color:var(--blue)}
+.arch-explain-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.arch-flow-card,.arch-node-card,.arch-rule-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px}
+.arch-flow-card.hot{border-top:2px solid var(--teal)}
+.arch-flow-card.async{border-top:2px solid var(--amber)}
+.arch-node-card{border-top:2px solid var(--blue)}
+.arch-rule-card{border-top:2px solid var(--purple)}
+.arch-flow-card-head,.arch-node-card-head,.arch-rule-card-head{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:6px}
+.arch-flow-card-title,.arch-node-card-title,.arch-rule-card-title{font-size:12px;font-weight:700;color:var(--text)}
+.arch-flow-card-sub,.arch-node-card-sub,.arch-rule-card-sub{font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);font-weight:700}
+.arch-flow-card-body,.arch-node-card-body,.arch-rule-card-body{font-size:12px;color:var(--text2);line-height:1.6}
+.arch-step-list{display:flex;flex-direction:column;gap:6px;margin-top:10px}
+.arch-step-row{display:grid;grid-template-columns:20px 1fr;gap:8px;align-items:start}
+.arch-step-num{width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:var(--bg3);color:var(--text3);font-size:10px;font-weight:700}
+.arch-step-main{font-size:12px;color:var(--text2);line-height:1.5}
+.arch-node-chip-row{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.arch-node-chip{font-size:10px;padding:2px 8px;border-radius:999px;background:var(--bg3);color:var(--text3);border:1px solid var(--border);text-transform:uppercase;letter-spacing:.05em;font-weight:700}
+.arch-node-chip.teal{background:var(--teal-bg);color:var(--teal);border-color:color-mix(in srgb,var(--teal) 22%, transparent)}
+.arch-node-chip.amber{background:var(--amber-bg);color:var(--amber);border-color:color-mix(in srgb,var(--amber) 22%, transparent)}
+.arch-node-chip.blue{background:var(--blue-bg);color:var(--blue);border-color:color-mix(in srgb,var(--blue) 22%, transparent)}
+.arch-node-chip.purple{background:var(--purple-bg);color:var(--purple);border-color:color-mix(in srgb,var(--purple) 22%, transparent)}
 .filter-chips{display:flex;gap:6px;margin:0 0 10px;flex-wrap:wrap}
 .chip{padding:3px 11px;border-radius:100px;border:1px solid var(--border2);background:transparent;color:var(--text3);font-size:11px;font-family:inherit;cursor:pointer;transition:all .12s;white-space:nowrap}
 .chip:hover{border-color:var(--text2);color:var(--text2)}
@@ -426,6 +504,56 @@ input[type=range]::-moz-range-thumb { width: 16px; height: 16px; border-radius: 
 .scenario-total-badge{font-size:10px;padding:2px 8px;border-radius:100px;background:var(--bg3);color:var(--text3);margin-left:4px;font-weight:600}
 :focus-visible{outline:2px solid var(--text);outline-offset:3px;border-radius:3px}
 button:focus:not(:focus-visible){outline:none}
+/* ══════════════════════════════════════════
+   LOW-LEVEL DESIGN (LLD) PANELS
+   ══════════════════════════════════════════ */
+
+.lld-section { margin-bottom: 16px; }
+.lld-title {
+  font-size: 12px; font-weight: 700; color: var(--text);
+  text-transform: uppercase; letter-spacing: .06em;
+  margin-bottom: 10px; padding-bottom: 6px;
+  border-bottom: 2px solid var(--border);
+  display: flex; align-items: center; gap: 8px;
+}
+.lld-title i { color: var(--teal); font-size: 14px; }
+
+.lld-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 10px; }
+.lld-card {
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 14px;
+  transition: border-color .15s, box-shadow .15s;
+}
+.lld-card:hover { border-color: var(--teal); box-shadow: 0 4px 12px rgba(15,110,86,.08); }
+.lld-card-head { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+.lld-card-icon { font-size: 18px; flex-shrink: 0; }
+.lld-card-name { font-size: 13px; font-weight: 700; color: var(--text); }
+.lld-card-tech { font-size: 10px; color: var(--text3); font-family: var(--mono); margin-top: 2px; }
+.lld-card-body { font-size: 12px; color: var(--text2); line-height: 1.5; }
+.lld-card-why { margin-top: 8px; padding: 8px 10px; background: var(--bg3); border-radius: 6px; border-left: 3px solid var(--teal); font-size: 11px; color: var(--text2); }
+.lld-card-calc { margin-top: 6px; font-family: var(--mono); font-size: 10px; color: var(--text3); padding: 4px 8px; background: var(--bg3); border-radius: 4px; }
+.lld-card-specs { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.lld-spec { font-size: 10px; padding: 2px 8px; border-radius: 100px; background: var(--bg3); color: var(--text3); border: 1px solid var(--border); }
+.lld-spec.hot { background: var(--teal-bg); color: var(--teal); border-color: color-mix(in srgb, var(--teal) 20%, transparent); }
+.lld-spec.warn { background: var(--amber-bg); color: var(--amber); border-color: color-mix(in srgb, var(--amber) 20%, transparent); }
+
+.lld-pattern-list { display: flex; flex-direction: column; gap: 8px; }
+.lld-pattern { display: flex; gap: 10px; padding: 10px 12px; background: var(--bg3); border-radius: var(--radius-sm); border-left: 3px solid var(--purple); }
+.lld-pattern-name { font-size: 12px; font-weight: 700; color: var(--text); }
+.lld-pattern-where { font-size: 11px; color: var(--text2); margin-top: 2px; }
+.lld-pattern-why { font-size: 11px; color: var(--text3); margin-top: 4px; font-style: italic; }
+
+.lld-flow-list { display: flex; flex-direction: column; gap: 6px; }
+.lld-flow { display: flex; align-items: center; gap: 8px; padding: 8px 12px; background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 11px; }
+.lld-flow-arrow { color: var(--teal); font-weight: 700; flex-shrink: 0; }
+.lld-flow-src, .lld-flow-dst { font-weight: 600; color: var(--text); }
+.lld-flow-protocol { font-family: var(--mono); font-size: 10px; color: var(--text3); padding: 2px 6px; background: var(--bg3); border-radius: 4px; }
+.lld-flow-latency { font-family: var(--mono); font-size: 10px; color: var(--amber); }
+
+@media (max-width: 640px) {
+  .lld-grid { grid-template-columns: 1fr; }
+}
+
 @media(max-width:640px){.app{padding:16px 10px 40px}.content-grid{grid-template-columns:1fr}.ticker-bar{grid-template-columns:repeat(2,1fr)}.compare-panel.open{grid-template-columns:1fr}.ref-grid{grid-template-columns:1fr}.insights-row{grid-template-columns:1fr}.bot-grid{grid-template-columns:1fr}.reqs-grid{grid-template-columns:1fr}.assum-grid{grid-template-columns:1fr}#cmp-delta-col{width:100%;min-width:auto}.tabs{gap:0}.tab-btn{padding:8px 10px;font-size:11px}}
 
 /* ── Bottleneck Analyzer ── */
@@ -574,6 +702,7 @@ button:focus:not(:focus-visible){outline:none}
 .slo-card{background:var(--bg3);border-radius:var(--radius-sm);padding:10px 12px;text-align:center}
 .slo-card-val{font-family:var(--mono);font-size:15px;font-weight:700;color:var(--teal);margin-bottom:2px}
 .slo-card-label{font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--text3)}
+.slo-card-sub{font-size:10px;color:var(--text2);line-height:1.45;margin-top:4px}
 .slo-budget-row{margin-top:10px;font-size:12px;color:var(--text2);padding:8px 12px;background:var(--amber-bg);border-radius:var(--radius-sm);border-left:3px solid var(--amber-light);display:flex;gap:6px;align-items:flex-start}
 
 /* ── Quick Math Notepad ── */
@@ -634,7 +763,117 @@ button:focus:not(:focus-visible){outline:none}
 .compl-dot:hover .compl-tooltip{opacity:1}
 
 /* ── Timer float show/hide button in top bar ── */
-.top-bar-actions{display:flex;gap:8px;margin-left:auto;align-items:center}
+.top-bar-actions{display:flex;gap:8px;margin-left:auto;align-items:center;flex-wrap:wrap;justify-content:flex-end}
+.hero-strip {
+  display: grid;
+  grid-template-columns: 1.15fr .95fr .9fr .9fr;
+  gap: 10px;
+  margin: 0 0 16px;
+}
+.hero-card {
+  background: linear-gradient(180deg, var(--bg2), color-mix(in srgb, var(--bg2) 86%, var(--bg3)));
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 14px 16px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+  position: relative;
+}
+.hero-card::after {
+  content: '';
+  position: absolute;
+  inset: auto -18px -24px auto;
+  width: 112px;
+  height: 112px;
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--hero-accent, var(--teal-bg)), transparent 72%);
+  pointer-events: none;
+  opacity: .8;
+}
+.hero-card.scenario { --hero-accent: var(--teal-bg); }
+.hero-card.difficulty { --hero-accent: var(--amber-bg); }
+.hero-card.bottleneck { --hero-accent: var(--coral-bg); }
+.hero-card.arch { --hero-accent: var(--blue-bg); }
+.hero-label {
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: .12em;
+  color: var(--text3);
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+.hero-value {
+  font-family: var(--mono);
+  font-size: 20px;
+  font-weight: 800;
+  line-height: 1.15;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+.hero-sub {
+  font-size: 12px;
+  color: var(--text2);
+  line-height: 1.45;
+}
+.hero-pill-row {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-top: 10px;
+}
+.hero-pill {
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  color: var(--text3);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+.hero-pill.teal { background: var(--teal-bg); color: var(--teal); border-color: color-mix(in srgb, var(--teal) 24%, transparent); }
+.hero-pill.amber { background: var(--amber-bg); color: var(--amber); border-color: color-mix(in srgb, var(--amber) 24%, transparent); }
+.hero-pill.blue { background: var(--blue-bg); color: var(--blue); border-color: color-mix(in srgb, var(--blue) 24%, transparent); }
+.hero-pill.coral { background: var(--coral-bg); color: var(--coral); border-color: color-mix(in srgb, var(--coral) 24%, transparent); }
+.playbook-strip {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  margin: 0 0 16px;
+}
+.playbook-card {
+  background: linear-gradient(180deg, var(--bg2), color-mix(in srgb, var(--bg2) 82%, var(--bg3)));
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 12px 14px;
+  box-shadow: 0 10px 26px rgba(0,0,0,.05);
+  min-height: 108px;
+}
+.playbook-kicker {
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: .12em;
+  color: var(--text3);
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+.playbook-value {
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--text);
+  line-height: 1.25;
+  margin-bottom: 5px;
+}
+.playbook-sub {
+  font-size: 12px;
+  color: var(--text2);
+  line-height: 1.5;
+}
+.playbook-card.start { border-top: 2px solid var(--teal); }
+.playbook-card.risk { border-top: 2px solid var(--coral); }
+.playbook-card.scale { border-top: 2px solid var(--blue); }
+.playbook-card.answer { border-top: 2px solid var(--purple); }
 .tbar-btn{display:flex;align-items:center;gap:5px;padding:5px 12px;border:1px solid var(--border2);border-radius:100px;background:transparent;color:var(--text2);font-size:11px;font-family:inherit;cursor:pointer;transition:all .12s;font-weight:500}
 .tbar-btn:hover{background:var(--bg3);color:var(--text)}
 .tbar-btn.active{background:var(--text);color:var(--bg);border-color:var(--text)}
@@ -655,6 +894,13 @@ button:focus:not(:focus-visible){outline:none}
   .tbar-btn{padding:5px 8px}
   .slo-presets{gap:4px}
   .slo-preset{padding:4px 8px;font-size:10px}
+  .hero-strip{grid-template-columns:1fr 1fr}
+  .hero-card:first-child{grid-column:1/-1}
+  .playbook-strip{grid-template-columns:1fr 1fr}
+  .playbook-card:first-child{grid-column:1/-1}
+  .arch-explain-grid{grid-template-columns:1fr 1fr}
+  .concept-glossary-meta{grid-template-columns:1fr}
+  .concept-detail-body{grid-template-columns:1fr}
 }
 
 /* ── Workspace / Snapshot Lab ── */
@@ -731,7 +977,7 @@ body[data-theme="light"]{color-scheme:light}
 body[data-theme="dark"]{color-scheme:dark}
 .theme-toast{position:fixed;top:18px;right:18px;z-index:600;padding:10px 14px;border-radius:12px;background:var(--bg2);border:1px solid var(--border2);box-shadow:0 14px 36px rgba(0,0,0,.18);font-size:12px;color:var(--text2);opacity:0;transform:translateY(-8px);pointer-events:none;transition:all .2s}
 .theme-toast.show{opacity:1;transform:translateY(0)}
-@media(max-width:980px){.workspace-dashboard{grid-template-columns:1fr 1fr}.dash-hero{grid-column:1/-1}}
+@media(max-width:980px){.workspace-dashboard{grid-template-columns:1fr 1fr}.dash-hero{grid-column:1/-1}.hero-strip{grid-template-columns:1fr 1fr}.hero-card:first-child{grid-column:1/-1}.playbook-strip{grid-template-columns:1fr 1fr}.playbook-card:first-child{grid-column:1/-1}}
 @media(max-width:640px){.workspace-dashboard{grid-template-columns:1fr}.dash-big{font-size:24px}}
 
 /* ══════════════════════════════════════════
@@ -811,12 +1057,62 @@ body[data-theme="dark"]{color-scheme:dark}
 .concept-grid {
   display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 8px;
 }
+.concept-glossary-meta {
+  display: grid;
+  grid-template-columns: 1.2fr .8fr .8fr;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+.concept-glossary-note {
+  background: linear-gradient(180deg, var(--bg2), color-mix(in srgb, var(--bg2) 84%, var(--bg3)));
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 12px 14px;
+}
+.concept-glossary-note.kick { border-top: 2px solid var(--teal); }
+.concept-glossary-note.warn { border-top: 2px solid var(--amber); }
+.concept-glossary-note.focus { border-top: 2px solid var(--blue); }
+.concept-glossary-note-title {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: .1em;
+  color: var(--text3);
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+.concept-glossary-note-body { font-size: 12px; color: var(--text2); line-height: 1.55; }
+.concept-search-row { display:flex; gap:8px; align-items:center; margin:0 0 12px; }
+.concept-search-wrap { position: relative; flex: 1; }
+.concept-search-wrap i {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text3);
+  font-size: 15px;
+  pointer-events: none;
+}
+.concept-search {
+  width: 100%;
+  padding: 9px 12px 9px 38px;
+  border: 1px solid var(--border2);
+  border-radius: 100px;
+  background: var(--bg2);
+  color: var(--text);
+  font-size: 13px;
+  font-family: inherit;
+  outline: none;
+  transition: border .15s;
+}
+.concept-search:focus { border-color: var(--text); }
+.concept-search-count { font-size: 11px; color: var(--text3); white-space: nowrap; flex-shrink: 0; }
 .concept-card {
   background: var(--bg3); border-radius: var(--radius-sm); padding: 10px 12px;
   border-left: 3px solid var(--border2); cursor: help; transition: all .15s;
   position: relative;
 }
 .concept-card:hover { border-left-color: var(--teal); background: var(--teal-bg); }
+.concept-card.active { border-left-color: var(--text); background: color-mix(in srgb, var(--bg3) 70%, var(--teal-bg)); }
 .concept-card.cap { border-left-color: var(--blue); }
 .concept-card.cap:hover { background: var(--blue-bg); }
 .concept-card.storage { border-left-color: var(--amber); }
@@ -835,6 +1131,31 @@ body[data-theme="dark"]{color-scheme:dark}
 .concept-badge.pattern { background: var(--green-bg); color: var(--green); }
 .concept-badge.reliability { background: var(--coral-bg); color: var(--coral); }
 .concept-def { font-size: 11px; color: var(--text2); line-height: 1.5; }
+.concept-detail {
+  margin-bottom: 12px;
+  padding: 14px 16px;
+  background: linear-gradient(135deg, var(--bg2), color-mix(in srgb, var(--bg2) 78%, var(--bg3)));
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+.concept-detail-head { display:flex; align-items:flex-start; gap:10px; justify-content:space-between; flex-wrap:wrap; margin-bottom:8px; }
+.concept-detail-name { font-size: 15px; font-weight: 800; color: var(--text); }
+.concept-detail-badges { display:flex; gap:6px; flex-wrap:wrap; }
+.concept-detail-badge {
+  font-size: 9px;
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: var(--bg3);
+  color: var(--text3);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+}
+.concept-detail-body { display:grid; grid-template-columns: 1.2fr .8fr; gap:10px; }
+.concept-detail-box { background: var(--bg3); border-radius: var(--radius-sm); padding: 10px 12px; }
+.concept-detail-label { font-size: 10px; text-transform: uppercase; letter-spacing: .08em; color: var(--text3); font-weight: 700; margin-bottom: 4px; }
+.concept-detail-text { font-size: 12px; color: var(--text2); line-height: 1.55; }
+.concept-detail-example { font-family: var(--mono); font-size: 11px; color: var(--text3); }
 .concept-example { margin-top: 4px; font-size: 10px; color: var(--text3); font-family: var(--mono); padding: 2px 6px; background: var(--bg2); border-radius: 3px; display: inline-block; }
 .concept-filter-row { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px; }
 
@@ -874,29 +1195,6 @@ body[data-theme="dark"]{color-scheme:dark}
 .pattern-card.fan-out .pattern-signal::before { color: var(--amber); }
 .pattern-card.real-time .pattern-signal::before { color: var(--purple); }
 .pattern-card.geo .pattern-signal::before { color: var(--blue); }
-
-/* ── Capacity Visual Bars ── */
-.cap-bars-panel {
-  background: var(--bg2); border: 1px solid var(--border);
-  border-radius: var(--radius); padding: 16px; margin-bottom: 14px;
-}
-.cap-bars-title {
-  font-size: 11px; text-transform: uppercase; letter-spacing: .09em;
-  color: var(--text3); font-weight: 600; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;
-}
-.cap-compare-grid { display: flex; flex-direction: column; gap: 10px; }
-.cap-compare-row { display: grid; grid-template-columns: 130px 1fr 80px; align-items: center; gap: 10px; font-size: 11px; }
-.cap-compare-label { color: var(--text2); }
-.cap-compare-track { height: 20px; background: var(--bg3); border-radius: 4px; overflow: hidden; position: relative; }
-.cap-compare-fill {
-  height: 100%; border-radius: 4px; display: flex; align-items: center;
-  justify-content: flex-end; padding-right: 8px;
-  font-size: 9px; font-weight: 700; color: #fff; font-family: var(--mono);
-  transition: width .7s cubic-bezier(.4,0,.2,1);
-  min-width: 4px;
-}
-.cap-compare-val { font-family: var(--mono); font-size: 11px; font-weight: 700; color: var(--text); text-align: right; }
-.cap-section-label { font-size: 10px; text-transform: uppercase; letter-spacing: .07em; color: var(--text3); font-weight: 600; margin: 12px 0 6px; border-bottom: 1px solid var(--border); padding-bottom: 4px; }
 
 /* ── Decision Tree / Trade-offs Visual ── */
 .tradeoff-matrix {
@@ -1047,6 +1345,96 @@ body[data-theme="dark"]{color-scheme:dark}
   border-radius: 4px; display: inline-block;
   background: var(--bg3); color: var(--text3); font-family: var(--mono);
 }
+.cost-bar-note {
+  margin-bottom: 8px;
+  font-size: 11px;
+  color: var(--text2);
+  line-height: 1.5;
+}
+
+/* Estimation explainers */
+.est-explain-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 12px; }
+.est-explain-card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 12px 14px;
+  box-shadow: 0 10px 24px rgba(0,0,0,.04);
+}
+.est-explain-card.teal { border-top: 2px solid var(--teal); }
+.est-explain-card.amber { border-top: 2px solid var(--amber); }
+.est-explain-card.blue { border-top: 2px solid var(--blue); }
+.est-explain-card.purple { border-top: 2px solid var(--purple); }
+.est-explain-kicker {
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: .12em;
+  color: var(--text3);
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+.est-explain-value {
+  font-family: var(--mono);
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--text);
+  line-height: 1.15;
+  margin-bottom: 4px;
+}
+.est-explain-sub {
+  font-size: 12px;
+  color: var(--text2);
+  line-height: 1.5;
+}
+
+.service-lang-grid { display: grid; grid-template-columns: 1.1fr .9fr; gap: 12px; margin-bottom: 12px; }
+.service-type-list { display: flex; flex-direction: column; gap: 8px; }
+.service-type-card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 12px 14px;
+}
+.service-type-card.recommended {
+  border-color: color-mix(in srgb, var(--teal) 30%, var(--border));
+  background: linear-gradient(180deg, var(--bg2), color-mix(in srgb, var(--teal-bg) 20%, var(--bg2)));
+}
+.service-type-top { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; flex-wrap: wrap; }
+.service-type-name { font-size: 13px; font-weight: 700; color: var(--text); }
+.service-type-lang { font-size: 10px; padding: 2px 8px; border-radius: 999px; background: var(--bg3); color: var(--text3); font-weight: 700; text-transform: uppercase; letter-spacing: .05em; }
+.service-type-reason { font-size: 12px; color: var(--text2); line-height: 1.5; }
+.service-type-foot { margin-top: 8px; font-size: 10px; color: var(--text3); font-family: var(--mono); }
+.service-lang-summary {
+  background: linear-gradient(180deg, var(--bg2), color-mix(in srgb, var(--bg2) 85%, var(--bg3)));
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px;
+}
+.service-lang-summary-title {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: .09em;
+  color: var(--text3);
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+.service-lang-summary-body {
+  font-size: 12px;
+  color: var(--text2);
+  line-height: 1.55;
+}
+.service-lang-summary-code {
+  margin-top: 10px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: var(--bg3);
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--text2);
+  line-height: 1.6;
+  overflow-x: auto;
+  white-space: pre-wrap;
+}
 
 /* Metrics grid */
 .est-metrics-grid {
@@ -1163,6 +1551,233 @@ body[data-theme="dark"]{color-scheme:dark}
   .est-formula-card { border-right: none; }
   .est-timeline-grid { grid-template-columns: repeat(4, 1fr); }
   .est-tl-col:nth-child(n+5) { display: none; }
+  .est-explain-grid { grid-template-columns: 1fr 1fr; }
+  .service-lang-grid { grid-template-columns: 1fr; }
+}
+
+/* ══════════════════════════════════════════
+   ENHANCED VISUALIZATIONS v3
+   ══════════════════════════════════════════ */
+
+/* ── Animated number counting ── */
+@keyframes countPulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+.t-val.counting { animation: countPulse 0.3s ease-out; }
+
+/* ── Panel entrance animations ── */
+@keyframes fadeSlideIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.viz-panel { animation: fadeSlideIn 0.4s ease-out both; }
+.viz-panel:nth-child(2) { animation-delay: 0.08s; }
+.viz-panel:nth-child(3) { animation-delay: 0.16s; }
+.viz-panel:nth-child(4) { animation-delay: 0.24s; }
+
+/* ── Cost Donut Chart ── */
+.cost-donut-wrap {
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 16px; margin-bottom: 14px;
+  position: relative;
+}
+.cost-donut-title {
+  font-size: 11px; text-transform: uppercase; letter-spacing: .09em;
+  color: var(--text3); font-weight: 600; margin-bottom: 12px;
+  display: flex; align-items: center; gap: 8px;
+}
+.cost-donut-container {
+  display: flex; align-items: center; gap: 20px; flex-wrap: wrap;
+}
+.cost-donut-canvas-wrap {
+  position: relative; width: 160px; height: 160px; flex-shrink: 0;
+}
+.cost-donut-canvas-wrap canvas { width: 100%; height: 100%; }
+.cost-donut-center {
+  position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+  text-align: center;
+}
+.cost-donut-center-val {
+  font-family: var(--mono); font-size: 18px; font-weight: 800; color: var(--text);
+}
+.cost-donut-center-label {
+  font-size: 9px; text-transform: uppercase; letter-spacing: .08em; color: var(--text3);
+}
+.cost-donut-legend {
+  flex: 1; min-width: 180px; display: flex; flex-direction: column; gap: 8px;
+}
+.cost-donut-legend-item {
+  display: flex; align-items: center; gap: 10px; padding: 6px 10px;
+  background: var(--bg3); border-radius: var(--radius-sm); transition: background 0.15s;
+}
+.cost-donut-legend-item:hover { background: var(--bg2); }
+.cost-donut-legend-dot {
+  width: 10px; height: 10px; border-radius: 3px; flex-shrink: 0;
+}
+.cost-donut-legend-label { font-size: 12px; color: var(--text2); flex: 1; }
+.cost-donut-legend-val { font-family: var(--mono); font-size: 12px; font-weight: 600; color: var(--text); }
+.cost-donut-legend-pct { font-size: 10px; color: var(--text3); margin-left: 4px; }
+
+/* ── Storage Growth Projection ── */
+.storage-proj-wrap {
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 16px; margin-bottom: 14px;
+}
+.storage-proj-title {
+  font-size: 11px; text-transform: uppercase; letter-spacing: .09em;
+  color: var(--text3); font-weight: 600; margin-bottom: 12px;
+  display: flex; align-items: center; gap: 8px;
+}
+.storage-proj-bars {
+  display: flex; align-items: flex-end; gap: 8px; height: 120px; padding: 0 8px;
+}
+.storage-proj-bar-wrap {
+  flex: 1; display: flex; flex-direction: column; align-items: center; gap: 6px; height: 100%;
+  justify-content: flex-end;
+}
+.storage-proj-bar {
+  width: 100%; max-width: 48px; border-radius: 6px 6px 0 0;
+  background: linear-gradient(180deg, var(--blue), var(--teal));
+  transition: height 0.8s cubic-bezier(.4,0,.2,1);
+  position: relative; min-height: 4px;
+}
+.storage-proj-bar::after {
+  content: attr(data-val); position: absolute; top: -18px; left: 50%;
+  transform: translateX(-50%); font-size: 9px; font-family: var(--mono);
+  font-weight: 700; color: var(--text); white-space: nowrap;
+}
+.storage-proj-bar-label {
+  font-size: 9px; text-transform: uppercase; letter-spacing: .06em;
+  color: var(--text3); font-weight: 600; text-align: center;
+}
+
+/* ── Capacity Gauge ── */
+.capacity-gauge-wrap {
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 16px; margin-bottom: 14px;
+}
+.capacity-gauge-title {
+  font-size: 11px; text-transform: uppercase; letter-spacing: .09em;
+  color: var(--text3); font-weight: 600; margin-bottom: 12px;
+  display: flex; align-items: center; gap: 8px;
+}
+.capacity-gauge-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px;
+}
+.capacity-gauge-item {
+  display: flex; flex-direction: column; gap: 6px; padding: 10px 12px;
+  background: var(--bg3); border-radius: var(--radius-sm);
+}
+.capacity-gauge-label { font-size: 10px; text-transform: uppercase; letter-spacing: .06em; color: var(--text3); font-weight: 600; }
+.capacity-gauge-bar-wrap { height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; }
+.capacity-gauge-bar {
+  height: 100%; border-radius: 3px; transition: width 0.6s cubic-bezier(.4,0,.2,1), background 0.3s;
+}
+.capacity-gauge-bar.safe { background: var(--teal); }
+.capacity-gauge-bar.warn { background: var(--amber); }
+.capacity-gauge-bar.critical { background: var(--coral); }
+.capacity-gauge-val { font-family: var(--mono); font-size: 12px; font-weight: 700; color: var(--text); }
+.capacity-gauge-sub { font-size: 10px; color: var(--text3); }
+
+/* ── Used-By Badges ── */
+.used-by-row {
+  display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px;
+}
+.used-by-badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 3px 10px; border-radius: 100px;
+  background: var(--bg3); border: 1px solid var(--border);
+  font-size: 10px; color: var(--text3); font-weight: 600;
+  letter-spacing: .03em;
+}
+.used-by-badge i { font-size: 11px; color: var(--teal); }
+
+/* ── Enhanced Bottleneck Pulse ── */
+@keyframes bottleneckPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(163, 45, 45, 0.3); }
+  50% { box-shadow: 0 0 0 6px rgba(163, 45, 45, 0); }
+}
+.bn-card.critical { animation: bottleneckPulse 2s ease-in-out infinite; }
+
+/* ── Sparkline in ticker cards ── */
+.t-sparkline {
+  position: absolute; bottom: 6px; right: 8px; width: 48px; height: 16px; opacity: 0.5;
+}
+
+/* ── Read/Write Ratio Visual ── */
+.rw-ratio-wrap {
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 16px; margin-bottom: 14px;
+}
+.rw-ratio-title {
+  font-size: 11px; text-transform: uppercase; letter-spacing: .09em;
+  color: var(--text3); font-weight: 600; margin-bottom: 12px;
+  display: flex; align-items: center; gap: 8px;
+}
+.rw-ratio-bar {
+  display: flex; height: 24px; border-radius: 6px; overflow: hidden; margin-bottom: 8px;
+}
+.rw-ratio-read {
+  background: var(--teal); transition: width 0.6s cubic-bezier(.4,0,.2,1);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 10px; font-weight: 700; color: #fff; font-family: var(--mono);
+}
+.rw-ratio-write {
+  background: var(--amber); transition: width 0.6s cubic-bezier(.4,0,.2,1);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 10px; font-weight: 700; color: #fff; font-family: var(--mono);
+}
+.rw-ratio-labels {
+  display: flex; justify-content: space-between; font-size: 11px; color: var(--text2);
+}
+.rw-ratio-labels span { display: flex; align-items: center; gap: 4px; }
+.rw-ratio-labels .dot { width: 8px; height: 8px; border-radius: 2px; }
+.rw-ratio-labels .dot.read { background: var(--teal); }
+.rw-ratio-labels .dot.write { background: var(--amber); }
+
+/* ── Server Scaling Visual ── */
+.server-scale-wrap {
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 16px; margin-bottom: 14px;
+}
+.server-scale-title {
+  font-size: 11px; text-transform: uppercase; letter-spacing: .09em;
+  color: var(--text3); font-weight: 600; margin-bottom: 12px;
+  display: flex; align-items: center; gap: 8px;
+}
+.server-scale-grid {
+  display: flex; gap: 4px; flex-wrap: wrap; align-items: flex-end;
+}
+.server-scale-unit {
+  width: 14px; border-radius: 3px 3px 0 0;
+  background: var(--blue); transition: height 0.4s ease-out;
+  opacity: 0.8;
+}
+.server-scale-unit:hover { opacity: 1; }
+.server-scale-info {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-top: 10px; font-size: 11px; color: var(--text2);
+}
+.server-scale-info .val { font-family: var(--mono); font-weight: 700; color: var(--text); }
+
+/* ── Scenario real-world examples ── */
+.scenario-examples {
+  display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px;
+}
+.scenario-example-chip {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 3px 10px; border-radius: 100px;
+  background: var(--teal-bg); border: 1px solid color-mix(in srgb, var(--teal) 20%, transparent);
+  font-size: 10px; color: var(--teal); font-weight: 600;
+}
+
+@media (max-width: 640px) {
+  .cost-donut-container { flex-direction: column; align-items: stretch; }
+  .cost-donut-canvas-wrap { width: 120px; height: 120px; margin: 0 auto; }
+  .storage-proj-bars { height: 80px; }
+  .capacity-gauge-grid { grid-template-columns: 1fr 1fr; }
 }
 </style>
 </head>
@@ -1183,6 +1798,63 @@ body[data-theme="dark"]{color-scheme:dark}
       <label class="tbar-btn import-btn" title="Import workspace"><i class="ti ti-upload"></i> Import<input type="file" id="workspace-import-input" accept="application/json" hidden></label>
       <button class="tbar-btn" id="theme-toggle-btn" title="Theme"><i class="ti ti-sun-moon"></i> Theme</button>
       <button class="tbar-btn" id="focus-mode-btn" title="Focus mode"><i class="ti ti-focus-2"></i> Focus</button>
+    </div>
+  </div>
+  <div class="hero-strip" id="hero-strip">
+    <div class="hero-card scenario">
+      <div class="hero-label">Current Scenario</div>
+      <div class="hero-value" id="hero-scenario-name">URL Shortener</div>
+      <div class="hero-sub" id="hero-scenario-desc">Use this as the headline problem: if the hot path cannot avoid the database, the design is already too expensive.</div>
+      <div class="hero-pill-row" id="hero-scenario-pills">
+        <span class="hero-pill teal">infra</span>
+        <span class="hero-pill blue">eventual</span>
+      </div>
+    </div>
+    <div class="hero-card difficulty">
+      <div class="hero-label">Difficulty</div>
+      <div class="hero-value" id="hero-difficulty">senior</div>
+      <div class="hero-sub" id="hero-difficulty-sub">This tells you how deep the interviewer expects the trade-off discussion to go.</div>
+      <div class="hero-pill-row" id="hero-difficulty-pills">
+        <span class="hero-pill amber">read-heavy</span>
+      </div>
+    </div>
+    <div class="hero-card bottleneck">
+      <div class="hero-label">Bottleneck</div>
+      <div class="hero-value" id="hero-bottleneck">db-writes</div>
+      <div class="hero-sub" id="hero-bottleneck-sub">Name this first, because every scaling decision should point back to the same pressure point.</div>
+      <div class="hero-pill-row" id="hero-bottleneck-pills">
+        <span class="hero-pill coral">cache-aside</span>
+      </div>
+    </div>
+    <div class="hero-card arch">
+      <div class="hero-label">Design Lens</div>
+      <div class="hero-value" id="hero-architecture">Postgres + Redis</div>
+      <div class="hero-sub" id="hero-architecture-sub">This is the 30-second explanation of why the system is built this way.</div>
+      <div class="hero-pill-row" id="hero-architecture-pills">
+        <span class="hero-pill blue">CAP: AP</span>
+      </div>
+    </div>
+  </div>
+  <div class="playbook-strip" id="playbook-strip">
+    <div class="playbook-card start">
+      <div class="playbook-kicker">Start Here</div>
+      <div class="playbook-value" id="playbook-start">Single service + cache</div>
+      <div class="playbook-sub" id="playbook-start-sub">Start with the smallest architecture that still preserves the critical path, then expand only when the math forces you to.</div>
+    </div>
+    <div class="playbook-card risk">
+      <div class="playbook-kicker">Biggest Risk</div>
+      <div class="playbook-value" id="playbook-risk">DB writes</div>
+      <div class="playbook-sub" id="playbook-risk-sub">This is the first thing to stress-test, because a fancy diagram does not matter if the write path is already overloaded.</div>
+    </div>
+    <div class="playbook-card scale">
+      <div class="playbook-kicker">Scale Lever</div>
+      <div class="playbook-value" id="playbook-scale">Redis + async queue</div>
+      <div class="playbook-sub" id="playbook-scale-sub">Pick the lever that buys the next order of magnitude with the fewest new failure modes.</div>
+    </div>
+    <div class="playbook-card answer">
+      <div class="playbook-kicker">One-Line Answer</div>
+      <div class="playbook-value" id="playbook-answer">Cache-first, then partition</div>
+      <div class="playbook-sub" id="playbook-answer-sub">This is the phrasing that turns your design into a confident spoken answer.</div>
     </div>
   </div>
 
@@ -1302,10 +1974,10 @@ body[data-theme="dark"]{color-scheme:dark}
   </div>
   <div class="tab-content active" id="tab-overview">
   <div class="ticker-bar sticky" id="ticker-bar">
-      <div class="t-card teal"><div class="t-label">Avg Read QPS</div><div class="t-val" id="t-rqps">—</div><div class="t-sub" id="t-rqps-sub">peak: —</div><button class="metric-copy" title="Copy" onclick="copyMetric('t-rqps')"><i class="ti ti-copy"></i></button></div>
-      <div class="t-card amber"><div class="t-label">Avg Write QPS</div><div class="t-val" id="t-wqps">—</div><div class="t-sub" id="t-wqps-sub">peak: —</div><button class="metric-copy" title="Copy" onclick="copyMetric('t-wqps')"><i class="ti ti-copy"></i></button></div>
-      <div class="t-card blue"><div class="t-label">Storage / Day</div><div class="t-val" id="t-stor">—</div><div class="t-sub" id="t-stor-sub">5-year: —</div><button class="metric-copy" title="Copy" onclick="copyMetric('t-stor')"><i class="ti ti-copy"></i></button></div>
-      <div class="t-card purple"><div class="t-label">Est. Monthly Cost</div><div class="t-val" id="t-cost">—</div><div class="t-sub" id="t-cost-sub">servers + infra</div><button class="metric-copy" title="Copy" onclick="copyMetric('t-cost')"><i class="ti ti-copy"></i></button></div>
+      <div class="t-card teal"><div class="t-label">Avg Read QPS</div><div class="t-val" id="t-rqps">—</div><div class="t-sub" id="t-rqps-sub">steady-state read load that drives cache and replica sizing</div><button class="metric-copy" title="Copy" onclick="copyMetric('t-rqps')"><i class="ti ti-copy"></i></button></div>
+      <div class="t-card amber"><div class="t-label">Avg Write QPS</div><div class="t-val" id="t-wqps">—</div><div class="t-sub" id="t-wqps-sub">hot-path write pressure that usually becomes the first bottleneck</div><button class="metric-copy" title="Copy" onclick="copyMetric('t-wqps')"><i class="ti ti-copy"></i></button></div>
+      <div class="t-card blue"><div class="t-label">Storage / Day</div><div class="t-val" id="t-stor">—</div><div class="t-sub" id="t-stor-sub">daily growth that compounds into retention and backup cost</div><button class="metric-copy" title="Copy" onclick="copyMetric('t-stor')"><i class="ti ti-copy"></i></button></div>
+      <div class="t-card purple"><div class="t-label">Est. Monthly Cost</div><div class="t-val" id="t-cost">—</div><div class="t-sub" id="t-cost-sub">compute + storage + bandwidth + cache budget</div><button class="metric-copy" title="Copy" onclick="copyMetric('t-cost')"><i class="ti ti-copy"></i></button></div>
     </div>
   <div id="scenario-desc" class="scenario-desc"></div>
   <div id="insight-highlight-box" class="insight-highlight" style="display:none">
@@ -1357,7 +2029,7 @@ body[data-theme="dark"]{color-scheme:dark}
       </table>
     </div>
   </div>
-  <div class="section-divider">Cost Breakdown <span id="cost-badge"></span></div>
+  <div class="section-divider">Cost Breakdown <span class="sn">— where the money actually goes</span> <span id="cost-badge"></span></div>
   <div class="bot-grid" id="cost-grid">
     <div class="panel" id="lang-panel">
       <div class="panel-title">Language Cost Comparison</div>
@@ -1368,10 +2040,61 @@ body[data-theme="dark"]{color-scheme:dark}
       <div id="cost-breakdown"></div>
     </div>
   </div>
-  <div class="section-divider">Key Insights <span id="scenario-name-badge"></span></div>
+
+  <!-- ══ COST DONUT CHART ══ -->
+  <div class="cost-donut-wrap viz-panel" id="cost-donut-wrap">
+    <div class="cost-donut-title"><i class="ti ti-chart-donut-3" style="color:var(--purple)"></i> Cost Distribution <span class="sn">— where every dollar goes</span></div>
+    <div class="cost-donut-container">
+      <div class="cost-donut-canvas-wrap">
+        <canvas id="cost-donut-canvas" width="320" height="320"></canvas>
+        <div class="cost-donut-center">
+          <div class="cost-donut-center-val" id="cost-donut-total">—</div>
+          <div class="cost-donut-center-label">/month</div>
+        </div>
+      </div>
+      <div class="cost-donut-legend" id="cost-donut-legend"></div>
+    </div>
+  </div>
+
+  <!-- ══ READ/WRITE RATIO VISUAL ══ -->
+  <div class="rw-ratio-wrap viz-panel" id="rw-ratio-wrap">
+    <div class="rw-ratio-title"><i class="ti ti-arrows-left-right" style="color:var(--teal)"></i> Read vs Write Load <span class="sn">— the ratio that shapes the architecture</span></div>
+    <div class="rw-ratio-bar" id="rw-ratio-bar">
+      <div class="rw-ratio-read" id="rw-ratio-read"></div>
+      <div class="rw-ratio-write" id="rw-ratio-write"></div>
+    </div>
+    <div class="rw-ratio-labels">
+      <span><span class="dot read"></span> Read: <strong id="rw-read-val">—</strong></span>
+      <span><span class="dot write"></span> Write: <strong id="rw-write-val">—</strong></span>
+    </div>
+  </div>
+
+  <!-- ══ STORAGE GROWTH PROJECTION ══ -->
+  <div class="storage-proj-wrap viz-panel" id="storage-proj-wrap">
+    <div class="storage-proj-title"><i class="ti ti-chart-bar" style="color:var(--blue)"></i> Storage Growth Projection <span class="sn">— cumulative data at rest</span></div>
+    <div class="storage-proj-bars" id="storage-proj-bars"></div>
+  </div>
+
+  <!-- ══ CAPACITY GAUGE ══ -->
+  <div class="capacity-gauge-wrap viz-panel" id="capacity-gauge-wrap">
+    <div class="capacity-gauge-title"><i class="ti ti-gauge" style="color:var(--coral)"></i> Resource Utilization <span class="sn">— how close to the limit</span></div>
+    <div class="capacity-gauge-grid" id="capacity-gauge-grid"></div>
+  </div>
+
+  <!-- ══ SERVER SCALING VISUAL ══ -->
+  <div class="server-scale-wrap viz-panel" id="server-scale-wrap">
+    <div class="server-scale-title"><i class="ti ti-server" style="color:var(--blue)"></i> Server Fleet <span class="sn">— visual scale of compute</span></div>
+    <div class="server-scale-grid" id="server-scale-grid"></div>
+    <div class="server-scale-info">
+      <span>Total: <span class="val" id="server-scale-total">—</span> servers</span>
+      <span id="server-scale-detail">—</span>
+    </div>
+  </div>
+
+  <div class="section-divider">Key Insights <span class="sn">— the takeaways you should say out loud</span> <span id="scenario-name-badge"></span></div>
   <div class="insights-row" id="insights-row"></div>
     <!-- What-If Stress Panel -->
-  <div class="section-divider">What If? <span class="sn">— stress-test assumptions</span></div>
+  <div class="section-divider">What If? <span class="sn">— stress-test assumptions and expose the real bottleneck</span></div>
   <div class="whatif-panel" id="whatif-panel">
     <div class="whatif-btns">
       <button class="whatif-btn" data-mult="2">2× traffic</button>
@@ -1514,7 +2237,7 @@ body[data-theme="dark"]{color-scheme:dark}
   <div class="concept-glossary-wrap">
     <div class="concept-glossary-head" id="concept-glossary-head">
       <i class="ti ti-book" style="font-size:15px;color:var(--teal)"></i>
-      <span class="concept-glossary-title">50+ Core Concepts — hover for quick definition</span>
+      <span class="concept-glossary-title">50+ Core Concepts — search, filter, and click a term for a deeper explanation</span>
       <div class="concept-filter-row" id="concept-filter-row" style="margin:0;flex:1;justify-content:flex-end" onclick="event.stopPropagation()">
         <button class="chip active" data-cfilter="all">All</button>
         <button class="chip" data-cfilter="cap">CAP / Consistency</button>
@@ -1526,6 +2249,28 @@ body[data-theme="dark"]{color-scheme:dark}
       <i class="ti ti-chevron-down" style="color:var(--text3);margin-left:8px" id="concept-chevron"></i>
     </div>
     <div class="concept-glossary-body open" id="concept-glossary-body">
+      <div class="concept-glossary-meta">
+        <div class="concept-glossary-note kick">
+          <div class="concept-glossary-note-title">How to use it</div>
+          <div class="concept-glossary-note-body">Start with the category filter, then click terms to see the interview cue, the common trap, and the example that helps you say it out loud.</div>
+        </div>
+        <div class="concept-glossary-note warn">
+          <div class="concept-glossary-note-title">What interviewers want</div>
+          <div class="concept-glossary-note-body">Not memorized definitions. They want to know when to use the term, what it buys you, and what it costs you.</div>
+        </div>
+        <div class="concept-glossary-note focus">
+          <div class="concept-glossary-note-title">Search intent</div>
+          <div class="concept-glossary-note-body">Use the search box for “what is X?” and the category chips for “which family does X belong to?”</div>
+        </div>
+      </div>
+      <div class="concept-search-row">
+        <div class="concept-search-wrap">
+          <i class="ti ti-search"></i>
+          <input class="concept-search" id="concept-search" placeholder="Search concepts, examples, or interview cues…" autocomplete="off">
+        </div>
+        <span class="concept-search-count" id="concept-search-count">0 concepts</span>
+      </div>
+      <div class="concept-detail" id="concept-detail"></div>
       <div class="concept-grid" id="concept-grid">
         <!-- populated by JS -->
       </div>
@@ -1586,7 +2331,8 @@ body[data-theme="dark"]{color-scheme:dark}
 
   </div>
   <div class="tab-content" id="tab-requirements">
-  <div class="section-divider">Functional &amp; Non-Functional Requirements <span id="reqs-badge" class="sn"></span></div>
+  <div class="section-divider">Functional &amp; Non-Functional Requirements <span class="sn">— turn scope into system pressure</span> <span id="reqs-badge" class="sn"></span></div>
+  <div class="rd">Start with functional scope to define the user journey, then use the non-functional targets to decide what kind of architecture the journey can survive.</div>
   <div class="reqs-grid" id="reqs-grid">
     <div class="reqs-panel">
       <div class="panel-title">Functional Requirements <span class="sn2">— what the system must do</span></div>
@@ -1622,6 +2368,8 @@ body[data-theme="dark"]{color-scheme:dark}
     <div id="arch-choices"></div>
         <div class="section-divider">Architecture Breakdown <span class="sn">— request lifecycle &amp; design rationale</span></div>
     <div id="arch-explain" class="arch-explain"></div>
+    <div class="section-divider">Low-Level Design <span class="sn">— component specs, DB choices, languages, patterns</span></div>
+    <div id="lld-content"></div>
     <div class="section-divider">Assumptions <span class="sn">— what goes into the math</span></div>
     <div id="assumptions-panel"></div>
     <div class="section-divider">Production Incidents <span class="sn">— what breaks and why</span></div>
@@ -1635,7 +2383,7 @@ body[data-theme="dark"]{color-scheme:dark}
     </div>
 
     <!-- ── Core metrics grid ── -->
-    <div class="section-divider">Capacity Numbers <span class="sn" id="est-scenario-label"></span></div>
+    <div class="section-divider">Capacity Numbers <span class="sn">— the numbers that force the design choice</span> <span id="est-scenario-label" class="sn"></span></div>
     <div id="est-metrics-grid" class="est-metrics-grid">
       <!-- populated by renderEstimateTab() -->
     </div>
@@ -1652,19 +2400,13 @@ body[data-theme="dark"]{color-scheme:dark}
       <!-- populated by renderEstimateTab() -->
     </div>
 
-    <!-- ── Cross-scenario capacity bars ── -->
-    <div class="section-divider">Cross-Scenario Comparison <span class="sn">— where this scenario sits among all 29</span></div>
-    <div class="cap-bars-panel" id="cap-bars-panel">
-      <div class="cap-bars-title">
-        <i class="ti ti-chart-bar" style="color:var(--blue)"></i>
-        Capacity at a Glance
-        <span style="font-size:10px;color:var(--text3);margin-left:auto">★ = current scenario</span>
-      </div>
-      <div class="cap-section-label">Read Throughput (QPS)</div>
-      <div class="cap-compare-grid" id="cap-bars-qps"></div>
-      <div class="cap-section-label" style="margin-top:14px">Storage / Day</div>
-      <div class="cap-compare-grid" id="cap-bars-stor"></div>
-    </div>
+    <!-- ── Calculation explainer ── -->
+    <div class="section-divider">How the Math Works <span class="sn">— from assumptions to capacity</span></div>
+    <div id="est-explain" class="est-explain-grid"></div>
+
+    <!-- ── Service type + language choice ── -->
+    <div class="section-divider">Service Types &amp; Language Choice <span class="sn">— pick the runtime for the workload</span></div>
+    <div id="service-lang-fit" class="service-lang-grid"></div>
 
     <!-- ── Hidden legacy placeholders (keep for compat) ── -->
     <div id="estimate-content" style="display:none"></div>
@@ -1718,10 +2460,11 @@ body[data-theme="dark"]{color-scheme:dark}
       <div id="sim-summary-area" style="display:none"></div>
     </div>
   </div>
-  <div class="section-divider">Interview Reference</div>
+  <div class="section-divider">Interview Reference <span class="sn">— the constants and phrasing to reach for first</span></div>
   <div class="ref-wrap">
     <button class="ref-toggle open" id="ref-toggle">Rules of Thumb &amp; Constants <i class="ti ti-chevron-up"></i></button>
     <div class="ref-body open" id="ref-body">
+      <div class="rd">Use this reference to sanity-check estimates, choose realistic targets, and justify why one architecture is better than another under interview pressure.</div>
       <div class="ref-grid">
         <div>
           <div class="ref-group-title">Latency Numbers</div>
@@ -1954,6 +2697,7 @@ const SCENARIOS = [
     name: 'URL Shortener',
     icon: 'ti-link',
     desc: 'bit.ly / TinyURL at Twitter scale. Write-once, read-many. Key challenge: generating unique 7-char codes fast and at scale.',
+    usedBy: ['bit.ly', 'TinyURL', 'short.io', 'yourls.org'],
     params: [
       { id: 'mau', label: 'Monthly Active Users', val: 100, min: 10, max: 1000, step: 10, unit: 'M', mult: 1e6 },
       { id: 'shortens_per_user', label: 'Shortens / User / Day', val: 1, min: 1, max: 20, step: 1, unit: '', mult: 1 },
@@ -2070,13 +2814,46 @@ const SCENARIOS = [
       architecture: 'Read path: Client → CDN (20% hottest) → LB → API → Redis cache (95% hit) → miss → DB → populate cache → 301 redirect. Write path: Client → LB → API → KGS (pre-generated key from Redis pool) → DB insert.',
       tradeoffs: '(1) Cache vs consistency: 95% cache hit means 5% stale reads. Acceptable for redirects. (2) Push vs pull for key generation: KGS pre-generates keys vs on-demand generation. (3) SQL vs NoSQL: Postgres handles this scale easily (350 writes/sec).',
       staffMoves: 'Start monolithic: single API service + Postgres + Redis. Split: (1) Redirect service (fast, cache aggressive). (2) Creation service (validates URLs, manages keys). (3) Analytics service (async Kafka consumer).',
-    }
+    },
+    lld: {
+      components: [
+        { name: 'API Gateway', icon: '🚪', tech: 'Kong / Envoy', desc: 'L7 routing, TLS termination, rate limiting (10K/s per IP). Routes /:shortcode to redirect service, /api/shorten to creation service.', why: 'Centralizes cross-cutting concerns. Prevents each service from reimplementing auth, rate limits, and TLS.', calc: '200K req/s peak → 4 gateway nodes (50K req/s each). 4 vCPU, 8GB RAM per node.', specs: [{ label: '4 vCPU', type: 'hot' }, { label: '8GB RAM' }, { label: '10Gbps NIC' }, { label: '4 nodes' }] },
+        { name: 'Redirect Service', icon: '⚡', tech: 'Go (net/http)', desc: 'Stateless redirect handler. Redis cache → DB fallback → 301 redirect. Sub-10ms P99 latency target.', why: 'Go chosen for low latency (goroutine per request, <1ms GC pauses). 30K QPS per node → 4 nodes for 105K peak QPS.', calc: '105K peak QPS / 30K per node = 4 nodes. Each: 4 vCPU, 4GB RAM. Memory: 500MB for local LRU cache (10K entries).', specs: [{ label: '4 vCPU', type: 'hot' }, { label: '4GB RAM' }, { label: '30K QPS/node' }, { label: '4 nodes' }] },
+        { name: 'Creation Service', icon: '✍️', tech: 'Java (Spring Boot)', desc: 'URL validation, custom alias uniqueness check, KGS key allocation, DB insert. Can tolerate higher latency (100ms).', why: 'Java chosen for rich validation libraries (Hibernate Validator) and transactional DB access. Lower QPS (350/s) → 2 nodes sufficient.', calc: '350 writes/s / 5K per node = 1 node (with headroom). 4 vCPU, 8GB RAM for JVM heap + connection pools.', specs: [{ label: '4 vCPU' }, { label: '8GB RAM' }, { label: '5K QPS/node' }, { label: '2 nodes' }] },
+        { name: 'Redis Cluster', icon: '🗄️', tech: 'Redis 7.x Cluster', desc: 'Cache layer for hot URLs. 95% hit rate. Sharded by shortcode hash. TTL = 24h with ±10% jitter to prevent thundering herd.', why: 'Redis chosen for sub-ms reads, LRU eviction, and TTL support. Cluster mode for horizontal scaling beyond single-node 100K QPS limit.', calc: 'Cache size: 35K QPS × 550 bytes × 24h × 0.2 (20% of URLs) = 825GB. 6-node cluster (3 primary + 3 replica) × 256GB each.', specs: [{ label: '825GB total', type: 'hot' }, { label: '6 nodes' }, { label: '256GB/node' }, { label: '95% hit rate' }] },
+        { name: 'PostgreSQL', icon: '🛢️', tech: 'PostgreSQL 15', desc: 'Source of truth for URL mappings. Sharded by shortcode first-char (62 shards). Each shard: 1 primary + 2 read replicas.', why: 'Postgres chosen for ACID compliance (uniqueness constraints), mature sharding tools (Citus), and strong consistency for writes.', calc: '350 writes/s / 5K per shard = 1 shard needed initially. 62 shards for future scale. Each shard: 4 vCPU, 16GB RAM, 500GB SSD.', specs: [{ label: '4 vCPU', type: 'hot' }, { label: '16GB RAM' }, { label: '500GB SSD' }, { label: '62 shards' }] },
+        { name: 'KGS (Key Gen Service)', icon: '🔑', tech: 'Go + Redis', desc: 'Pre-generates batches of 10K unique shortcodes per DB shard. Stores in Redis SET. App servers pull from pool on demand.', why: 'Avoids DB contention at write time. O(1) key allocation from Redis SET (SPOP). Each shard has dedicated pool to prevent cross-shard coordination.', calc: '350 writes/s → 350 keys/sec consumed. Each batch: 10K keys → refill every 28s. 62 shards × 10K keys = 620K keys in Redis (620MB).', specs: [{ label: '620K keys', type: 'warn' }, { label: '620MB Redis' }, { label: '28s refill' }] },
+        { name: 'Kafka', icon: '📨', tech: 'Kafka 3.x', desc: 'Buffers click events from redirect service. 3 brokers, replication factor 3. Retention: 7 days for replay.', why: 'Decouples analytics from redirect path. Redirect service publishes click event (non-blocking) → Kafka → Flink consumer. Prevents analytics latency from impacting redirect P99.', calc: '35K clicks/s × 200 bytes/event = 7MB/s ingest. 3 brokers × 4 vCPU, 16GB RAM, 2TB SSD each. Throughput: 100K msg/s per broker.', specs: [{ label: '3 brokers', type: 'hot' }, { label: '4 vCPU/broker' }, { label: '2TB SSD/broker' }, { label: '7-day retention' }] },
+        { name: 'Flink Analytics', icon: '📊', tech: 'Apache Flink', desc: 'Stream processing of click events. Aggregates by URL, time window (1min tumbling), geo. Writes to OLAP DB (ClickHouse).', why: 'Flink chosen for exactly-once semantics, stateful aggregations, and low-latency (sub-second) windowed computations. ClickHouse for fast analytical queries.', calc: '35K events/s → 4 TaskManagers (10K events/s each). Each: 8 vCPU, 32GB RAM. ClickHouse: 3 nodes, 1TB SSD each for 1-year retention.', specs: [{ label: '4 TaskManagers' }, { label: '8 vCPU/TM' }, { label: '32GB RAM/TM' }, { label: 'ClickHouse 3 nodes' }] },
+      ],
+      patterns: [
+        { name: 'Cache-Aside (Lazy Loading)', where: 'Redirect service: check Redis → miss → query DB → populate cache', why: 'Read-heavy workload (100:1 R/W). Cache absorbs 95% of reads. DB only hit on cache miss. Simple to implement, no cache invalidation complexity.' },
+        { name: 'Write-Behind (Async Write)', where: 'Analytics pipeline: redirect service → Kafka → Flink → ClickHouse', why: 'Analytics must never block redirect path. Async write via Kafka decouples services. Flink provides exactly-once semantics for aggregations.' },
+        { name: 'Circuit Breaker', where: 'Redirect service → Redis cache fallback', why: 'If Redis unavailable, degrade to local LRU cache (10K entries) instead of hammering DB. Prevents cascading failure. Hystrix pattern.' },
+        { name: 'Sharding (Range-Based)', where: 'PostgreSQL: shard by shortcode first-char (62 shards)', why: 'Even distribution: base62 charset → 62 shards. Each shard handles ~1.6% of traffic. Simple routing: shard_id = first_char_to_index(shortcode).' },
+        { name: 'Pre-Generation (KGS)', where: 'Key Generation Service: pre-generate 10K keys per shard', why: 'Avoids DB contention at write time. O(1) key allocation from Redis SET. Each shard has dedicated pool → no cross-shard coordination.' },
+        { name: 'TTL with Jitter', where: 'Redis cache: TTL = 24h ± 10% (21.6h to 26.4h)', why: 'Prevents thundering herd: if all keys expire at same time, DB gets hammered. Jitter spreads expiry over 4.8h window.' },
+      ],
+      dataFlows: [
+        { from: 'Client', to: 'CDN', protocol: 'HTTPS', latency: '< 5ms' },
+        { from: 'CDN', to: 'API Gateway', protocol: 'HTTPS', latency: '< 10ms' },
+        { from: 'API Gateway', to: 'Redirect Service', protocol: 'gRPC', latency: '< 2ms' },
+        { from: 'Redirect Service', to: 'Redis', protocol: 'RESP', latency: '< 1ms' },
+        { from: 'Redirect Service', to: 'PostgreSQL', protocol: 'TCP/5432', latency: '< 5ms (cache miss)' },
+        { from: 'Redirect Service', to: 'Kafka', protocol: 'TCP/9092', latency: '< 10ms (async)' },
+        { from: 'Creation Service', to: 'KGS', protocol: 'gRPC', latency: '< 2ms' },
+        { from: 'Creation Service', to: 'PostgreSQL', protocol: 'TCP/5432', latency: '< 10ms' },
+        { from: 'Kafka', to: 'Flink', protocol: 'TCP/9092', latency: '< 100ms (streaming)' },
+        { from: 'Flink', to: 'ClickHouse', protocol: 'HTTP/8123', latency: '< 50ms (batch)' },
+      ],
+    },
   },
   {
     id: 'twitter',
     name: 'Twitter Feed',
     icon: 'ti-brand-x',
     desc: 'Social feed at Twitter scale. Fan-out on write (push) vs fan-out on read (pull) is the core design decision.',
+    usedBy: ['Twitter/X', 'Instagram', 'Facebook', 'Threads'],
     params: [
       { id: 'dau', label: 'Daily Active Users', val: 200, min: 10, max: 1000, step: 10, unit: 'M', mult: 1e6 },
       { id: 'tweets_per_user', label: 'Tweets / User / Day', val: 2, min: 1, max: 20, step: 1, unit: '', mult: 1 },
@@ -2196,13 +2973,47 @@ const SCENARIOS = [
       architecture: 'Divide into services: Tweet Service (write), Timeline Service (read), Media Service, Search Service. Write path: tweet → Kafka → fan-out worker → push to followers\' ZSETs (if <1M followers) or skip (if celebrity). Read path: load ZSET from Redis → fetch tweet details from cache/DB.',
       tradeoffs: '(1) Push vs pull: hybrid — push for normal users (90% tweets, low fan-out), pull for celebrities (10% tweets but 90% followers). (2) Inbox table vs ZSET: inbox table (MySQL) doesn\'t scale to 200M users. ZSET (Redis) is memory-heavy but sub-ms reads.',
       staffMoves: 'Start monolith. Split when tweet writes impact timeline read latency. First split: add Kafka for async fan-out. Celebrity optimization: identify via follower count histogram. 90% = 200 followers. 99.9% = 100K. 99.99% = 1M+. Only last group needs pull.',
-    }
+    },
+    lld: {
+      components: [
+        { name: 'Tweet Service', icon: '✍️', tech: 'Go (gRPC)', desc: 'Handles tweet creation, validation, media attachment. Writes to Kafka for fan-out. Stateless, scales horizontally.', why: 'Go chosen for low latency and high throughput. gRPC for efficient binary serialization between services. 50K tweets/sec peak → 10 nodes (5K tweets/sec each).', calc: '13.8K peak writes/s / 5K per node = 3 nodes (with headroom). Each: 4 vCPU, 8GB RAM. Kafka producer: 10MB/s throughput.', specs: [{ label: '4 vCPU', type: 'hot' }, { label: '8GB RAM' }, { label: '5K tweets/s/node' }, { label: '10 nodes' }] },
+        { name: 'Timeline Service', icon: '📰', tech: 'Java (Spring WebFlux)', desc: 'Hybrid push/pull timeline assembly. Loads ZSET from Redis → fetches tweet details from cache/DB. Sub-200ms P99.', why: 'Java chosen for reactive programming (WebFlux) and rich ecosystem. Handles 460K reads/sec → 20 nodes (23K reads/sec each).', calc: '1.4M peak reads/s / 23K per node = 61 nodes. Each: 8 vCPU, 16GB RAM. Redis client pool: 100 connections per node.', specs: [{ label: '8 vCPU', type: 'hot' }, { label: '16GB RAM' }, { label: '23K reads/s/node' }, { label: '61 nodes' }] },
+        { name: 'Redis Cluster (Timeline)', icon: '🗄️', tech: 'Redis 7.x Cluster', desc: 'ZSET per user holds recent 800 tweet IDs. ZREVRANGE for timeline query. 1.3TB total for 200M DAU.', why: 'Redis ZSET provides O(log N) insert and O(log N + M) range query. Sub-ms reads. Cluster mode for horizontal scaling beyond single-node limit.', calc: '200M users × 6.4KB/user = 1.28TB. 40-node cluster (32 primary + 8 replica) × 64GB each. Throughput: 1M ops/sec.', specs: [{ label: '1.3TB total', type: 'hot' }, { label: '40 nodes' }, { label: '64GB/node' }, { label: '1M ops/s' }] },
+        { name: 'Cassandra (Tweet Store)', icon: '🛢️', tech: 'Apache Cassandra 4.x', desc: 'Stores tweet content (text, media URLs, metadata). Partition by tweet_id. 3× replication. 440TB/year storage growth.', why: 'Cassandra chosen for high write throughput (50K+ writes/sec) and horizontal scaling. Tunable consistency (ONE for writes, QUORUM for reads).', calc: '400M tweets/day × 1KB = 400GB/day → 146TB/year. 3× replication = 438TB. 30 nodes × 16TB SSD each. Write throughput: 10K writes/sec per node.', specs: [{ label: '30 nodes', type: 'hot' }, { label: '16TB SSD/node' }, { label: '10K writes/s/node' }, { label: '438TB total' }] },
+        { name: 'Fan-out Workers', icon: '🔀', tech: 'Go (Kafka Consumer)', desc: 'Read tweets from Kafka, decide push vs pull per follower. Push: INSERT into ZSET. Pull: skip (served on read).', why: 'Go chosen for concurrent processing (goroutines). Each worker processes 1K tweets/sec. Auto-scale based on Kafka lag.', calc: '13.8K peak tweets/s / 1K per worker = 14 workers. Each: 4 vCPU, 8GB RAM. Kafka consumer group: 14 partitions.', specs: [{ label: '4 vCPU' }, { label: '8GB RAM' }, { label: '1K tweets/s/worker' }, { label: '14 workers' }] },
+        { name: 'Media Service', icon: '🖼️', tech: 'Go + S3 + Lambda', desc: 'Presigned upload URLs. Async transcode pipeline (FFmpeg). CDN delivery. Three sizes: thumb, standard, full.', why: 'S3 for durable object storage. Lambda for serverless transcode (pay-per-use). CloudFront CDN for global delivery. Presigned URLs decouple client from server.', calc: '20% of tweets have media → 2.76K media uploads/sec. S3: 50K requests/sec. Lambda: 1000 concurrent executions. CDN: 100K req/s.', specs: [{ label: 'S3 50K req/s', type: 'hot' }, { label: 'Lambda 1000 concurrent' }, { label: 'CDN 100K req/s' }, { label: '3 sizes' }] },
+        { name: 'Kafka', icon: '📨', tech: 'Kafka 3.x', desc: 'Buffers tweet creation events. 12 brokers, replication factor 3. Retention: 7 days. Partitioned by tweet_id.', why: 'Kafka decouples tweet creation from fan-out. Handles 50K tweets/sec peak. Fan-out workers can be throttled independently. Replay for timeline rebuild.', calc: '13.8K tweets/s × 1KB = 13.8MB/s ingest. 12 brokers × 4 vCPU, 16GB RAM, 4TB SSD each. Throughput: 100K msg/s per broker.', specs: [{ label: '12 brokers', type: 'hot' }, { label: '4 vCPU/broker' }, { label: '4TB SSD/broker' }, { label: '7-day retention' }] },
+        { name: 'Elasticsearch', icon: '🔍', tech: 'Elasticsearch 8.x', desc: 'Full-text search on tweets. Inverted index. Near-real-time indexing from Kafka. 50ms P99 search latency.', why: 'Elasticsearch chosen for fast full-text search and aggregations. Inverted index enables sub-100ms query latency. 30 data nodes for 400GB/day ingest.', calc: '400M tweets/day × 1KB = 400GB/day ingest. 30 data nodes × 8 vCPU, 32GB RAM, 4TB SSD each. Search throughput: 10K queries/sec.', specs: [{ label: '30 data nodes', type: 'hot' }, { label: '8 vCPU/node' }, { label: '32GB RAM/node' }, { label: '4TB SSD/node' }] },
+      ],
+      patterns: [
+        { name: 'Fan-out on Write (Push)', where: 'Normal users (<1M followers): tweet → fan-out worker → INSERT into each follower\'s ZSET', why: 'Pre-computes timeline at write time. O(1) read latency. Works for 90% of tweets (users with <1M followers). Trade-off: write amplification (1 tweet → N writes).' },
+        { name: 'Fan-out on Read (Pull)', where: 'Celebrities (>1M followers): tweet → Cassandra only. Timeline load → merge from followed celebrities', why: 'Avoids write amplification for celebrities (1 tweet → 10M writes). Trade-off: higher read latency (merge N timelines). Only 0.1% of users are celebrities.' },
+        { name: 'Hybrid Push/Pull', where: 'Timeline Service: check follower count → push if <1M, pull if >1M', why: 'Balances write amplification vs read latency. 90% of tweets use push (fast reads), 10% use pull (avoids write explosion). Optimal for Twitter-scale.' },
+        { name: 'CQRS (Command Query)', where: 'Tweet Service (write) vs Timeline Service (read)', why: 'Separates write and read paths. Tweet Service optimized for write throughput (Kafka). Timeline Service optimized for read latency (Redis). Independent scaling.' },
+        { name: 'Event Sourcing', where: 'Kafka: tweet creation → fan-out → search indexing → analytics', why: 'Kafka acts as event log. Multiple consumers (fan-out, search, analytics) process same event. Replay capability for rebuild. Decouples services.' },
+        { name: 'Cache-Aside', where: 'Timeline Service: Redis ZSET → miss → Cassandra → populate cache', why: 'Tweet details cached after first read. Subsequent reads from Redis (sub-ms). TTL: 1 hour. Cache hit rate: 80%.' },
+      ],
+      dataFlows: [
+        { from: 'Client', to: 'API Gateway', protocol: 'HTTPS', latency: '< 50ms' },
+        { from: 'API Gateway', to: 'Tweet Service', protocol: 'gRPC', latency: '< 10ms' },
+        { from: 'Tweet Service', to: 'Kafka', protocol: 'TCP/9092', latency: '< 5ms (async)' },
+        { from: 'Kafka', to: 'Fan-out Workers', protocol: 'TCP/9092', latency: '< 100ms (streaming)' },
+        { from: 'Fan-out Workers', to: 'Redis', protocol: 'RESP', latency: '< 1ms' },
+        { from: 'API Gateway', to: 'Timeline Service', protocol: 'gRPC', latency: '< 10ms' },
+        { from: 'Timeline Service', to: 'Redis', protocol: 'RESP', latency: '< 1ms' },
+        { from: 'Timeline Service', to: 'Cassandra', protocol: 'TCP/9042', latency: '< 10ms (cache miss)' },
+        { from: 'Client', to: 'Media Service', protocol: 'HTTPS (presigned)', latency: '< 500ms' },
+        { from: 'Media Service', to: 'S3', protocol: 'HTTPS', latency: '< 100ms' },
+        { from: 'Kafka', to: 'Elasticsearch', protocol: 'HTTP/9200', latency: '< 200ms (indexing)' },
+      ],
+    },
   },
   {
     id: 'whatsapp',
     name: 'WhatsApp',
     icon: 'ti-message-circle',
     desc: 'End-to-end encrypted chat. Core challenge: message delivery guarantees (at-least-once), offline queuing, and presence.',
+    usedBy: ['WhatsApp', 'Signal', 'Telegram', 'iMessage'],
     params: [
       { id: 'dau', label: 'Daily Active Users', val: 500, min: 50, max: 2000, step: 50, unit: 'M', mult: 1e6 },
       { id: 'msgs_per_user', label: 'Messages / User / Day', val: 40, min: 10, max: 200, step: 5, unit: '', mult: 1 },
@@ -2334,13 +3145,46 @@ const SCENARIOS = [
       architecture: 'Client → NLB (L4, sticky) → Chat Server (Erlang/BEAM, WebSocket) → Kafka (partitioned by user_id) → message DB (Cassandra, 30d TTL). Media: client → S3 presigned URL → CDN. Presence: Redis SETEX 15s TTL, heartbeat every 5s. Offline: messages queued in Cassandra, push via FCM/APNs on reconnect.',
       tradeoffs: '(1) Erlang vs Java/Go: Erlang handles 1M connections/node vs 65K for Linux threads. Tradeoff: hiring pool. (2) Cassandra for message storage vs Postgres: write-dominated workload (99% writes) favors Cassandra over Postgres. (3) E2EE: zero server-side content features (search, spam detection). Tradeoff: privacy vs functionality.',
       staffMoves: 'Start: monolithic Erlang app + Cassandra. Split: (1) Connection tier — dedicated Erlang nodes (CPU-bound, socket handling). (2) Message persistence — Cassandra (storage-heavy). (3) Media — S3 + CDN. (4) Presence — Redis. Add Kafka between connection tier and persistence for multi-device fan-out and backpressure during write spikes.',
-    }
+    },
+    lld: {
+      components: [
+        { name: 'Chat Server (Erlang/BEAM)', icon: '🔌', tech: 'Erlang/BEAM', desc: 'Handles 500M persistent WebSocket connections. Each process = 1 connection (1KB memory). Actor model, fault-tolerant, hot code swapping.', why: 'Erlang chosen for massive connection density (1M+ connections/node vs 65K for Linux threads). BEAM scheduler handles millions of lightweight processes. Built-in fault tolerance (let it crash).', calc: '500M connections / 1M per node = 500 Erlang nodes. Each: 16 vCPU, 64GB RAM, 10Gbps NIC. Memory: 500M × 1KB = 500GB total.', specs: [{ label: '500 nodes', type: 'hot' }, { label: '16 vCPU/node' }, { label: '64GB RAM/node' }, { label: '1M conn/node' }] },
+        { name: 'Cassandra (Message Store)', icon: '🛢️', tech: 'Apache Cassandra 4.x', desc: 'Stores messages with 30-day TTL. Partition by (user_id, bucket_week). Write-heavy (99% ops). 3× replication.', why: 'Cassandra chosen for high write throughput (231K writes/sec) and horizontal scaling. Partition-per-user gives O(1) writes. TTL built-in for automatic expiry.', calc: '20B msgs/day × 115 bytes = 2.3TB/day. 30-day retention = 69TB. 3× replication = 207TB. 50 nodes × 8TB SSD each. Write throughput: 10K writes/sec per node.', specs: [{ label: '50 nodes', type: 'hot' }, { label: '8TB SSD/node' }, { label: '10K writes/s/node' }, { label: '207TB total' }] },
+        { name: 'Kafka', icon: '📨', tech: 'Kafka 3.x', desc: 'Message delivery pipeline. Partitioned by user_id for ordered delivery. Multi-device fan-out (each device = consumer group).', why: 'Kafka provides ordered delivery per user (partition by user_id). Multi-device: each device is separate consumer group. At-least-once semantics with consumer offset ACK.', calc: '231K msgs/s × 115 bytes = 26.6MB/s ingest. 24 brokers × 4 vCPU, 16GB RAM, 4TB SSD each. Throughput: 100K msg/s per broker.', specs: [{ label: '24 brokers', type: 'hot' }, { label: '4 vCPU/broker' }, { label: '4TB SSD/broker' }, { label: '7-day retention' }] },
+        { name: 'Redis Cluster (Presence)', icon: '⚡', tech: 'Redis 7.x Cluster', desc: 'Presence tracking: SETEX per user with 15s TTL. Heartbeat every 5s resets TTL. Group membership cached.', why: 'Redis chosen for sub-ms reads and TTL support. SETEX is atomic. Cluster mode for horizontal scaling beyond single-node limit.', calc: '500M users × 100 bytes = 50GB. 6-node cluster (3 primary + 3 replica) × 32GB each. Throughput: 1M ops/sec. Heartbeat: 100M writes/sec (500M / 5s).', specs: [{ label: '50GB total', type: 'hot' }, { label: '6 nodes' }, { label: '32GB/node' }, { label: '100M writes/s' }] },
+        { name: 'Media Service', icon: '🖼️', tech: 'S3 + CloudFront', desc: 'Media uploaded to S3 via presigned URL. CDN delivers with 1hr expiring URLs. E2EE: media key exchanged separately.', why: 'S3 for durable object storage. CloudFront CDN for global delivery. Presigned URLs decouple client from server. 1hr TTL prevents unauthorized sharing.', calc: '30% of 20B msgs = 6B media msgs/day × 200KB = 1.2PB/day. S3: 50K requests/sec. CloudFront: 100K req/s. Cost: $0.085/GB × 1.2PB = $102K/day.', specs: [{ label: '1.2PB/day', type: 'hot' }, { label: 'S3 50K req/s' }, { label: 'CDN 100K req/s' }, { label: '$102K/day' }] },
+        { name: 'Group Service', icon: '👥', tech: 'Cassandra + Redis', desc: 'Group metadata, membership list, admin roles, mute settings. Group chat messages fanned out by Chat Server using stored membership.', why: 'Cassandra for durable group metadata. Redis for read-only cache (group membership). Group chat fan-out: fetch membership → send to each participant.', calc: '10M groups × 256 members avg = 2.56B membership entries. Cassandra: 10 nodes × 2TB SSD. Redis cache: 50GB for hot groups.', specs: [{ label: '10 Cassandra nodes' }, { label: '2TB SSD/node' }, { label: '50GB Redis cache' }, { label: '256 members/group' }] },
+        { name: 'Key Store (Signal Protocol)', icon: '🔐', tech: 'Cassandra + Redis', desc: 'Signal Protocol pre-key bundles stored per user. Clients fetch on first message exchange. Pre-key rotation: replenish when <10% remaining.', why: 'Cassandra for durable key storage. Redis for hot key cache. Signal Protocol requires pre-key bundles for E2EE. Pre-key rotation prevents key exhaustion.', calc: '500M users × 100 pre-keys × 256 bytes = 12.8TB. Cassandra: 20 nodes × 2TB SSD. Redis cache: 100GB for active users.', specs: [{ label: '20 Cassandra nodes', type: 'warn' }, { label: '2TB SSD/node' }, { label: '100GB Redis cache' }, { label: '100 pre-keys/user' }] },
+        { name: 'Push Gateway', icon: '🔔', tech: 'FCM / APNs', desc: 'Offline fallback: if WebSocket disconnected, route via FCM/APNs. Wake the app, then re-establish WebSocket for actual message delivery.', why: 'FCM/APNs are the only way to wake iOS/Android apps when backgrounded. Gateway aggregates per-device push tokens, manages provider rate limits (FCM: 100K/s, APNs: 50K/s).', calc: '10% of messages go to offline users = 23K push/sec. FCM: 100K/s limit → 1 gateway. APNs: 50K/s limit → 1 gateway. Exponential backoff on failure.', specs: [{ label: '23K push/s', type: 'warn' }, { label: 'FCM 100K/s limit' }, { label: 'APNs 50K/s limit' }, { label: '2 gateways' }] },
+      ],
+      patterns: [
+        { name: 'Actor Model (Erlang)', where: 'Chat Server: each WebSocket connection = 1 Erlang process (1KB memory)', why: 'Erlang processes are lightweight (1KB vs 2MB for OS threads). 1M+ connections per node. No shared state → no locks. Let it crash philosophy: restart failed processes automatically.' },
+        { name: 'Partition by User ID', where: 'Kafka: partition by user_id for ordered delivery', why: 'Messages for same user go to same partition → ordered delivery. Multi-device: each device is separate consumer group with same partition assignment. Prevents out-of-order delivery.' },
+        { name: 'At-Least-Once Delivery', where: 'Kafka → Cassandra: consumer ACK after write', why: 'Message delivery cannot fail. Kafka consumer writes to Cassandra, then ACKs offset. On failure: retry from last committed offset. Idempotent writes prevent duplicates.' },
+        { name: 'TTL-Based Expiry', where: 'Cassandra: 30-day TTL on messages. Redis: 15s TTL on presence', why: 'Automatic cleanup without background jobs. Cassandra TTL: messages deleted after 30 days. Redis TTL: presence marked offline after 15s (heartbeat every 5s).' },
+        { name: 'Presigned URLs', where: 'Media upload: client → S3 via presigned URL (1hr TTL)', why: 'Decouples client from server. Server generates signed URL (1hr expiry) → client uploads directly to S3. No media traffic through app servers. CDN delivers with expiring URLs.' },
+        { name: 'Circuit Breaker (Push Gateway)', where: 'Push Gateway → FCM/APNs: exponential backoff on failure', why: 'FCM/APNs rate limits: 100K/s, 50K/s. Circuit breaker trips after 5 consecutive errors. Exponential backoff: 1s → 2s → 4s → ... → 1hr. Prevents thundering herd on provider recovery.' },
+      ],
+      dataFlows: [
+        { from: 'Client', to: 'NLB', protocol: 'WebSocket/TLS', latency: '< 50ms' },
+        { from: 'NLB', to: 'Chat Server', protocol: 'WebSocket', latency: '< 5ms' },
+        { from: 'Chat Server', to: 'Kafka', protocol: 'TCP/9092', latency: '< 5ms (async)' },
+        { from: 'Kafka', to: 'Cassandra', protocol: 'TCP/9042', latency: '< 10ms' },
+        { from: 'Chat Server', to: 'Redis', protocol: 'RESP', latency: '< 1ms' },
+        { from: 'Client', to: 'Media Service', protocol: 'HTTPS (presigned)', latency: '< 500ms' },
+        { from: 'Media Service', to: 'S3', protocol: 'HTTPS', latency: '< 100ms' },
+        { from: 'S3', to: 'CloudFront', protocol: 'HTTPS', latency: '< 50ms' },
+        { from: 'Chat Server', to: 'Push Gateway', protocol: 'HTTP/REST', latency: '< 100ms (offline)' },
+        { from: 'Push Gateway', to: 'FCM/APNs', protocol: 'HTTP/2', latency: '< 200ms' },
+      ],
+    },
   },
   {
     id: 'youtube',
     name: 'YouTube',
     icon: 'ti-brand-youtube',
     desc: 'Video streaming at YouTube scale. Ingestion, transcoding pipeline, and CDN delivery are the key design pillars.',
+    usedBy: ['YouTube', 'Netflix', 'Twitch', 'Vimeo'],
     params: [
       { id: 'dau', label: 'Daily Active Users', val: 100, min: 10, max: 500, step: 10, unit: 'M', mult: 1e6 },
       { id: 'videos_watched', label: 'Videos Watched / User / Day', val: 5, min: 1, max: 20, step: 1, unit: '', mult: 1 },
@@ -2468,13 +3312,47 @@ const SCENARIOS = [
       architecture: 'Ingest: upload → GCS raw bucket → Kafka → GPU transcode farm → GCS renditions. Playback: client → CDN (Google Global Cache at ISP) → origin miss → GCS. Metadata: Spanner (global consistency). View count: Redis INCR → batched to Spanner every 60s. Search: Elasticsearch. Recommendations: Spark ML → pre-computed in Cassandra.',
       tradeoffs: '(1) GPU vs CPU transcode: GPU (NVENC) 5× faster but quality slightly lower than CPU x264 veryslow. Tradeoff: throughput vs quality. (2) Hot vs cold storage: hot 90 days S3, then Glacier. 20% of catalog = 80% of views. Cache hot only. (3) VBR vs CBR encoding: VBR saves 20% bandwidth but requires more transcode compute.',
       staffMoves: 'Phase 1: single ingest + transcode pipeline on GCP. Phase 2: split streaming control plane (Spanner) from content plane (GCS + CDN). Phase 3: global CDN — deploy GGC boxes at tier-1 ISPs. Phase 4: per-viewer ABR optimization using ML to predict bandwidth drops before they happen.',
-    }
+    },
+    lld: {
+      components: [
+        { name: 'CDN (Google GGC)', icon: '🌐', tech: 'Google Global Cache', desc: 'Edge cache deployed at ISPs. 90% of views served from edge. Hot videos pre-positioned. Cold videos fetched from origin on miss.', why: 'CDN cost is #1 expense. Google deploys GGC boxes directly at ISPs, eliminating egress fees. 90% of views from edge. Cold-cache miss hits GCS origin, which is also inside Google network.', calc: '7.6 Tbps egress × 90% from edge = 6.84 Tbps edge, 0.76 Tbps origin. 1000+ GGC nodes at ISPs. Each: 100Gbps capacity. Cache: 20% of catalog (10M videos × 6 renditions × 500MB = 30PB).', specs: [{ label: '1000+ nodes', type: 'hot' }, { label: '100Gbps/node' }, { label: '30PB cache' }, { label: '90% hit rate' }] },
+        { name: 'Stream Service', icon: '▶️', tech: 'Go (Borg)', desc: 'Manages playback sessions, generates signed CDN URLs, tracks view counts. Stateless. Scales with viewer count.', why: 'Go chosen for low latency and high throughput. Stateless → easy horizontal scaling. Runs on Borg (Google internal Kubernetes). View count: Redis INCR → batched to Spanner every 60s.', calc: '5,800 views/sec → 20 nodes (300 views/sec each). Each: 4 vCPU, 8GB RAM. Redis INCR: 5,800 ops/sec. Spanner batch write: 5,800 × 60 = 348K writes/min.', specs: [{ label: '20 nodes', type: 'hot' }, { label: '4 vCPU/node' }, { label: '8GB RAM/node' }, { label: '300 views/s/node' }] },
+        { name: 'Ingest Service', icon: '📤', tech: 'Go', desc: 'Receives raw video upload. Validates format, size, copyright fingerprint (ContentID). Writes to GCS raw bucket. Emits Kafka event for transcode.', why: 'Go chosen for high throughput and streaming support. ContentID fingerprinting runs in parallel with upload. Kafka event triggers transcode pipeline asynchronously.', calc: '40 uploads/sec × 7min × 300Mbps = 150 Gbps ingest. 10 nodes (4 uploads/sec each). Each: 8 vCPU, 16GB RAM, 10Gbps NIC. GCS write: 40 × 7min × 300MB = 84GB/min.', specs: [{ label: '10 nodes', type: 'hot' }, { label: '8 vCPU/node' }, { label: '16GB RAM/node' }, { label: '150 Gbps ingest' }] },
+        { name: 'Transcoder (GPU)', icon: '⚙️', tech: 'Borg GPU (NVENC)', desc: 'GPU encoding (NVENC) 5× faster than CPU. Priority queue: popular channels get faster slots. Outputs 4-6 renditions (360p→4K) + audio tracks.', why: 'GPU encoding (NVENC) 5× faster than CPU FFmpeg. 500hrs video uploaded/min needs massive parallel transcode. Priority queue ensures popular creators get faster publish latency.', calc: '500 hrs/min × 10× real-time factor = 5,000 GPU workers. Each: 8 vCPU, 32GB RAM, 1× NVIDIA T4. Output: 4-6 renditions × 500hrs = 2,000-3,000 hrs/min. Storage: 6.5 PB/day.', specs: [{ label: '5,000 GPU workers', type: 'hot' }, { label: 'NVIDIA T4' }, { label: '32GB RAM/worker' }, { label: '6.5 PB/day output' }] },
+        { name: 'GCS (Video Storage)', icon: '🗄️', tech: 'Google Colossus', desc: 'Raw + transcoded segments stored in Google Colossus (internal GFS). Segments ~10s each. CDN pulls from GCS on cache miss.', why: 'GCS (Colossus) provides durable, scalable object storage. Segments enable ABR streaming. Hot tier: 90 days. Cold tier: Glacier after 90 days. 5× storage multiplier (raw + 4-6 renditions).', calc: '6.5 PB/day × 90 days hot = 585PB hot. 5-year cold: 6.5 PB/day × 365 × 5 × 0.5 = 5.9 EB. 10,000 Colossus nodes × 100TB each. Throughput: 10 Tbps.', specs: [{ label: '10,000 nodes', type: 'hot' }, { label: '100TB/node' }, { label: '585PB hot' }, { label: '5.9 EB cold' }] },
+        { name: 'Spanner (Metadata)', icon: '🛢️', tech: 'Google Spanner', desc: 'Video metadata (title, channel, likes) in Spanner for global consistency. View counts batched from Redis every 60s.', why: 'Spanner chosen for global consistency and automatic sharding. Video metadata needs strong consistency (likes, view counts). TrueTime API provides globally consistent timestamps.', calc: '10M videos × 10KB = 100GB metadata. 10 Spanner nodes × 16 vCPU, 64GB RAM, 4TB SSD. Read throughput: 100K queries/sec. Write throughput: 10K writes/sec.', specs: [{ label: '10 nodes', type: 'hot' }, { label: '16 vCPU/node' }, { label: '64GB RAM/node' }, { label: '100K reads/s' }] },
+        { name: 'Redis (View Counts)', icon: '⚡', tech: 'Redis Cluster', desc: 'View counts: INCR per video. Batched to Spanner every 60s. Also caches video metadata for hot videos.', why: 'Redis INCR is atomic and sub-ms. Batching to Spanner reduces write load (5,800 writes/sec → 96 writes/sec). Cache hot video metadata (20% of catalog = 80% of views).', calc: '5,800 INCR/sec. 6-node cluster (3 primary + 3 replica) × 32GB each. Batch write: 5,800 × 60 = 348K writes/min. Cache: 2M videos × 10KB = 20GB.', specs: [{ label: '6 nodes', type: 'hot' }, { label: '32GB/node' }, { label: '5,800 INCR/s' }, { label: '20GB cache' }] },
+        { name: 'Elasticsearch', icon: '🔍', tech: 'Elasticsearch 8.x', desc: 'Full-text on title, description, tags. Refreshed async from Kafka. Autocomplete via prefix trie in Redis.', why: 'Elasticsearch chosen for fast full-text search and aggregations. Inverted index enables sub-100ms query latency. 30 data nodes for 40 uploads/sec ingest.', calc: '40 uploads/sec × 10KB = 400KB/s ingest. 30 data nodes × 8 vCPU, 32GB RAM, 4TB SSD each. Search throughput: 10K queries/sec. Index size: 10M videos × 10KB = 100GB.', specs: [{ label: '30 data nodes', type: 'hot' }, { label: '8 vCPU/node' }, { label: '32GB RAM/node' }, { label: '10K queries/s' }] },
+      ],
+      patterns: [
+        { name: 'Adaptive Bitrate Streaming (ABR)', where: 'Client requests video segments at resolution matching current bandwidth', why: 'Video segmented into 2-10s chunks at multiple bitrates (360p→4K). Client player requests next segment at resolution matching bandwidth. Eliminates buffer stalls vs fixed-resolution streaming.' },
+        { name: 'Priority Queue (Transcode)', where: 'Transcoder: popular channels get dedicated GPU slots', why: 'Popular creators (1M+ subscribers) get faster publish latency. Priority queue: high-priority jobs preempt low-priority. Graceful degradation: low-priority jobs wait during peak load.' },
+        { name: 'Batched Writes', where: 'Redis INCR → Spanner every 60s', why: 'Reduces Spanner write load (5,800 writes/sec → 96 writes/sec). View counts eventually consistent (60s lag acceptable). Redis provides atomic INCR. Spanner batch write is efficient.' },
+        { name: 'Hot/Cold Storage Tiering', where: 'GCS: hot 90 days, then Glacier', why: '90% of views on 5% of videos. Hot tier: expensive SSD, low latency. Cold tier: cheap HDD, higher latency. Automatic lifecycle policy moves videos after 90 days. 80% cost savings.' },
+        { name: 'CDN Edge Caching', where: 'Google GGC at ISPs: 20% of catalog = 80% of views', why: 'CDN cost is #1 expense. Edge cache reduces origin load by 90%. Hot videos pre-positioned at edge. Cold videos fetched from origin on miss. Versioned URLs prevent cache poisoning.' },
+        { name: 'Event-Driven Transcode', where: 'Ingest → Kafka → Transcoder → GCS → CDN', why: 'Decouples ingest from transcode. Ingest returns immediately (async). Kafka buffers transcode requests. Transcoder scales independently. CDN invalidates cache on new rendition.' },
+      ],
+      dataFlows: [
+        { from: 'Client', to: 'CDN (GGC)', protocol: 'HTTPS', latency: '< 50ms' },
+        { from: 'CDN', to: 'GCS', protocol: 'HTTPS', latency: '< 100ms (cache miss)' },
+        { from: 'Client', to: 'Stream Service', protocol: 'HTTPS', latency: '< 50ms' },
+        { from: 'Stream Service', to: 'Spanner', protocol: 'gRPC', latency: '< 10ms' },
+        { from: 'Stream Service', to: 'Redis', protocol: 'RESP', latency: '< 1ms' },
+        { from: 'Client', to: 'Ingest Service', protocol: 'HTTPS', latency: '< 500ms' },
+        { from: 'Ingest Service', to: 'GCS', protocol: 'gRPC', latency: '< 100ms' },
+        { from: 'Ingest Service', to: 'Kafka', protocol: 'TCP/9092', latency: '< 5ms (async)' },
+        { from: 'Kafka', to: 'Transcoder', protocol: 'TCP/9092', latency: '< 100ms (streaming)' },
+        { from: 'Transcoder', to: 'GCS', protocol: 'gRPC', latency: '< 100ms' },
+        { from: 'Kafka', to: 'Elasticsearch', protocol: 'HTTP/9200', latency: '< 200ms (indexing)' },
+      ],
+    },
   },
   {
     id: 'uber',
     name: 'Uber / Lyft',
     icon: 'ti-car',
     desc: 'Real-time ride matching. Location streaming from millions of drivers is the hardest scaling challenge.',
+    usedBy: ['Uber', 'Lyft', 'Grab', 'Ola'],
     params: [
       { id: 'active_drivers', label: 'Active Drivers (peak)', val: 1, min: 0.1, max: 10, step: 0.1, unit: 'M', mult: 1e6 },
       { id: 'active_riders', label: 'Active Riders (peak)', val: 10, min: 1, max: 100, step: 1, unit: 'M', mult: 1e6 },
@@ -2605,13 +3483,47 @@ const SCENARIOS = [
       architecture: 'Location stream: driver app → NLB → location service → Kafka (H3-partitioned) → Flink → Redis GEOADD. Match: rider request → dispatch → candidate search (H3 cell lookup) → score by distance/rating → offer via WebSocket push. ETA: ML inference with traffic features. Surge: Flink tumbling window per H3 cell.',
       tradeoffs: '(1) H3 vs S2 vs PostGIS: H3 gives O(1) cell lookup. S2 (Google/Lyft) has more precise geometry but complex indexing. (2) Redis GEORADIUS vs GeoHash + sorted set: Redis is simpler but memory-heavy (all driver locations in RAM). (3) ML ETA vs map routing: ML faster (<50ms) but less accurate than full route computation (>200ms). Hybrid: ML for initial, route for confirmed.',
       staffMoves: 'Monolith first: one dispatch service handles everything. Split: (1) Location ingestion (Kafka + Flink) — high throughput, stateless. (2) Dispatch (matching logic) — low throughput but complex. (3) ETA (ML inference) — GPU-accelerated. (4) Trip history (Cassandra) — write-heavy archive. (5) Surge (Flink) — stateful stream processing. Key insight: separate driver GPS firehose from match logic.',
-    }
+    },
+    lld: {
+      components: [
+        { name: 'Location Service', icon: '📍', tech: 'Go + Kafka', desc: 'Receives 250K+ location writes/sec from drivers. Writes to Kafka (partitioned by driver_id). Flink consumer updates Redis GEOADD.', why: 'Go chosen for high throughput and low latency. Kafka partitions by driver_id for ordered delivery. Flink processes location updates and updates Redis GEOADD in real-time.', calc: '250K writes/sec → 10 nodes (25K writes/sec each). Each: 8 vCPU, 16GB RAM, 10Gbps NIC. Kafka producer: 250K × 40 bytes = 10MB/s.', specs: [{ label: '10 nodes', type: 'hot' }, { label: '8 vCPU/node' }, { label: '16GB RAM/node' }, { label: '25K writes/s/node' }] },
+        { name: 'Dispatch Service', icon: '⚡', tech: 'Go', desc: 'Core matching logic: rider request → find candidate drivers in H3 cell → score → send offer → wait for accept. Manages match state machine.', why: 'Go chosen for low latency (<100ms P99) and concurrent processing (goroutines). Stateless → easy horizontal scaling. Match logic: H3 cell lookup + scoring algorithm.', calc: '174 match QPS → 5 nodes (35 match/sec each). Each: 4 vCPU, 8GB RAM. Redis GEORADIUS: 174 queries/sec. WebSocket push: 174 offers/sec.', specs: [{ label: '5 nodes', type: 'hot' }, { label: '4 vCPU/node' }, { label: '8GB RAM/node' }, { label: '35 match/s/node' }] },
+        { name: 'ETA Service', icon: '⏱️', tech: 'Python (TensorFlow) + Redis', desc: 'ML model: features = realtime traffic (MapR/HERE), driver speed history, time of day, weather. ~50ms inference. Cache common routes in Redis.', why: 'Python chosen for ML ecosystem (TensorFlow, scikit-learn). Model inference: 50ms P99. Redis cache for common routes (80% hit rate). GPU acceleration for batch inference.', calc: '348 ETA QPS → 3 nodes (116 ETA/sec each). Each: 8 vCPU, 32GB RAM, 1× NVIDIA T4. Redis cache: 10GB for common routes. Model size: 500MB.', specs: [{ label: '3 nodes', type: 'hot' }, { label: 'NVIDIA T4' }, { label: '32GB RAM/node' }, { label: '50ms inference' }] },
+        { name: 'Redis GEOADD', icon: '🗺️', tech: 'Redis Cluster', desc: 'GEOADD stores (driver_id, lat, lng). GEORADIUS query: find all drivers within 5km. O(N+log M) where N=results. Seconds-TTL per driver point.', why: 'Redis GEOADD is O(log N) per point. GEORADIUS is sub-ms for small radius. Cluster mode for horizontal scaling. TTL prevents stale driver locations.', calc: '1M drivers × 40 bytes = 40MB. 6-node cluster (3 primary + 3 replica) × 32GB each. Throughput: 250K GEOADD/sec + 174 GEORADIUS/sec. TTL: 10s.', specs: [{ label: '6 nodes', type: 'hot' }, { label: '32GB/node' }, { label: '250K GEOADD/s' }, { label: '10s TTL' }] },
+        { name: 'Cassandra (Trip DB)', icon: '🛢️', tech: 'Apache Cassandra 4.x', desc: 'Partition by (week, trip_id). Trip lifecycle events appended. Historical data for receipts, ML training, driver earnings.', why: 'Cassandra chosen for high write throughput (58 trips/sec) and horizontal scaling. Partition-per-week enables efficient time-range queries. 3× replication for durability.', calc: '5M trips/day × 2KB = 10GB/day. 5-year retention = 18.25TB. 3× replication = 54.75TB. 10 nodes × 8TB SSD each. Write throughput: 1K writes/sec per node.', specs: [{ label: '10 nodes', type: 'hot' }, { label: '8TB SSD/node' }, { label: '1K writes/s/node' }, { label: '54.75TB total' }] },
+        { name: 'Kafka', icon: '📨', tech: 'Kafka 3.x', desc: 'Location stream partitioned by H3 hex cell. Flink consumer reads and updates Redis GEOADD. Kafka also carries trip events for history.', why: 'Kafka partitions by H3 cell for geographic locality. Flink consumer processes one cell at a time, enabling efficient stateful aggregation for surge. 7-day retention for replay.', calc: '250K location writes/sec × 40 bytes = 10MB/s ingest. 24 brokers × 4 vCPU, 16GB RAM, 4TB SSD each. Throughput: 100K msg/s per broker.', specs: [{ label: '24 brokers', type: 'hot' }, { label: '4 vCPU/broker' }, { label: '4TB SSD/broker' }, { label: '7-day retention' }] },
+        { name: 'Flink (Surge Pricing)', icon: '📈', tech: 'Apache Flink', desc: 'Flink tumbling window: count drivers/riders per H3 cell every 60s. Multiplier = demand/supply × elasticity. Push updated prices to apps.', why: 'Flink chosen for stateful stream processing. Tumbling window: count drivers/riders per H3 cell. Stateful = can maintain count across micro-batches. Low latency vs Spark batch.', calc: '16.6K surge QPS → 4 TaskManagers (4K QPS each). Each: 8 vCPU, 32GB RAM. Window: 60s tumbling. State size: 10K H3 cells × 100 bytes = 1MB.', specs: [{ label: '4 TaskManagers', type: 'hot' }, { label: '8 vCPU/TM' }, { label: '32GB RAM/TM' }, { label: '60s window' }] },
+        { name: 'H3 Hex Grid', icon: '🗺️', tech: 'Uber H3 Library', desc: 'Uber invented H3. Each hex cell has a string ID. driver_in_cell[hex_id] = Redis SET. Matching = check rider cell + 7 neighbors. O(1) cell lookup.', why: 'H3 provides O(1) cell lookup. Each hex cell is a string ID. Matching: check rider cell + 7 neighbors. Resolution 9 = ~5m² cells. Dynamic cell splitting for hotspots.', calc: '1M drivers / 10K H3 cells = 100 drivers/cell avg. Redis SET per cell: 100 × 8 bytes = 800 bytes/cell. Total: 10K × 800 bytes = 8MB. Lookup: O(1) + 7 neighbors.', specs: [{ label: '10K H3 cells', type: 'warn' }, { label: 'Resolution 9' }, { label: '5m² cells' }, { label: 'O(1) lookup' }] },
+      ],
+      patterns: [
+        { name: 'Geospatial Indexing (H3)', where: 'Redis GEOADD + H3 hex grid for driver location indexing', why: 'H3 provides O(1) cell lookup. Each hex cell is a string ID. Matching: check rider cell + 7 neighbors. Resolution 9 = ~5m² cells. Dynamic cell splitting for hotspots.' },
+        { name: 'Stream Processing (Flink)', where: 'Kafka → Flink → Redis GEOADD for real-time location updates', why: 'Flink processes location updates in real-time. Stateful aggregation for surge pricing. Tumbling window: count drivers/riders per H3 cell every 60s. Low latency vs Spark batch.' },
+        { name: 'ML Inference (ETA)', where: 'ETA Service: TensorFlow model with traffic features', why: 'ML model predicts travel time from driver to pickup. Features: realtime traffic, driver speed history, time of day, weather. 50ms inference. Redis cache for common routes (80% hit rate).' },
+        { name: 'State Machine (Trip Lifecycle)', where: 'Dispatch Service: request→accept→pickup→dropoff→payment', why: 'Trip lifecycle managed as state machine. Each state transition is idempotent. Kafka event log for each transition. Compensating transactions for cancellations.' },
+        { name: 'Surge Pricing (Supply/Demand)', where: 'Flink tumbling window per H3 cell every 60s', why: 'Supply/demand imbalance detected via Flink tumbling window per H3 cell. ML model predicts surge multiplier. Updates every 60s. Capped at 5× with transparency to rider.' },
+        { name: 'WebSocket Push', where: 'Dispatch → driver/rider apps via WebSocket', why: 'Real-time push of match offers and ETA updates. WebSocket provides bidirectional communication. Sticky sessions via consistent hash. Connection density: 10K connections/node.' },
+      ],
+      dataFlows: [
+        { from: 'Driver App', to: 'NLB', protocol: 'WebSocket/TLS', latency: '< 50ms' },
+        { from: 'NLB', to: 'Location Service', protocol: 'WebSocket', latency: '< 5ms' },
+        { from: 'Location Service', to: 'Kafka', protocol: 'TCP/9092', latency: '< 5ms (async)' },
+        { from: 'Kafka', to: 'Flink', protocol: 'TCP/9092', latency: '< 100ms (streaming)' },
+        { from: 'Flink', to: 'Redis GEOADD', protocol: 'RESP', latency: '< 1ms' },
+        { from: 'Rider App', to: 'Dispatch Service', protocol: 'HTTPS', latency: '< 50ms' },
+        { from: 'Dispatch Service', to: 'Redis GEORADIUS', protocol: 'RESP', latency: '< 1ms' },
+        { from: 'Dispatch Service', to: 'ETA Service', protocol: 'gRPC', latency: '< 10ms' },
+        { from: 'ETA Service', to: 'Redis', protocol: 'RESP', latency: '< 1ms' },
+        { from: 'Dispatch Service', to: 'Driver App', protocol: 'WebSocket', latency: '< 50ms (push)' },
+        { from: 'Dispatch Service', to: 'Cassandra', protocol: 'TCP/9042', latency: '< 10ms' },
+      ],
+    },
   },
   {
     id: 'payment',
     name: 'Payment System',
     icon: 'ti-currency-dollar',
     desc: 'Payment processing at JPMC/Stripe scale. Correctness and auditability matter more than raw throughput. Idempotency is everything.',
+    usedBy: ['Stripe', 'Square', 'PayPal', 'Adyen'],
     params: [
       { id: 'txns_per_day', label: 'Transactions / Day', val: 5, min: 0.5, max: 50, step: 0.5, unit: 'M', mult: 1e6 },
       { id: 'txn_size', label: 'Transaction Record Size', val: 2, min: 0.5, max: 10, step: 0.5, unit: 'KB', mult: 1024 },
@@ -2737,13 +3649,46 @@ const SCENARIOS = [
       architecture: 'Client SDK tokenizes card → API gateway (WAF, rate limit) → Payment Service (Saga orchestrator) → Idempotency Store (Redis + Postgres) → Gateway Router (circuit breaker) → External PSP. Async: Transactional Outbox → Kafka → Ledger (immutable), Reconciliation (Spark batch). Multi-region active-active.',
       tradeoffs: '(1) Saga vs 2PC: Saga with compensating transactions is faster and more resilient but requires careful failure handling. 2PC blocks resources. (2) Idempotency in Redis vs Postgres: Redis for fast path (24h TTL), Postgres for durable fallback. (3) Append-only ledger vs mutable: auditability vs query simplicity. Use CQRS: event store for write, materialized views for read.',
       staffMoves: 'Start: Payment Service monolith with Postgres. Split: (1) Auth Service (synchronous, latency-sensitive). (2) Settlement Service (async batch, T+1). (3) Ledger Service (append-only, immutable). (4) Reconciliation (Spark batch, daily). Add Transactional Outbox before Kafka when you need to emit events without dual-write bugs. Add dedicated fraud ML service when chargeback rate > 0.5%.',
-    }
+    },
+    lld: {
+      components: [
+        { name: 'Payment Service', icon: '💳', tech: 'Java (Spring Boot)', desc: 'Core orchestrator: validates request → check idempotency → authorize → route to gateway → capture → update ledger. Saga pattern for distributed txn.', why: 'Java chosen for rich transaction management (Spring TX) and mature ecosystem. Saga pattern for distributed transactions. 58 txns/sec → 3 nodes (20 txns/sec each).', calc: '58 txns/sec → 3 nodes (20 txns/sec each). Each: 4 vCPU, 16GB RAM. DB connection pool: 50 connections per node. Gateway timeout: 2s max.', specs: [{ label: '3 nodes', type: 'hot' }, { label: '4 vCPU/node' }, { label: '16GB RAM/node' }, { label: '20 txns/s/node' }] },
+        { name: 'Idempotency Store', icon: '🔑', tech: 'Redis + Postgres', desc: 'Redis: fast idempotency key lookup (TTL 24h). Postgres: durable storage for idempotency + result. Prevents duplicate charges on retry.', why: 'Redis for O(1) lookup (sub-ms). Postgres as durable fallback. Same idempotency_key + same merchant = same result, always. Prevents double charges on network retries.', calc: '58 txns/sec × 1.5 (retries) = 87 idempotency checks/sec. Redis: 6-node cluster × 32GB. Postgres: 3 nodes × 4 vCPU, 16GB RAM, 2TB SSD. TTL: 24h.', specs: [{ label: '6 Redis nodes', type: 'hot' }, { label: '32GB/node' }, { label: '3 Postgres nodes' }, { label: '24h TTL' }] },
+        { name: 'Gateway Router', icon: '⚡', tech: 'Go + Circuit Breaker', desc: 'Routes to primary/secondary/tertiary gateways. Circuit breaker trips at >1% error or >2s latency. Failover in <100ms.', why: 'Go chosen for low latency and concurrent processing. Circuit breaker pattern: trips after 5 consecutive errors or >2s latency. Half-open after 30s for retry. Fallback chain: primary → secondary → tertiary.', calc: '116 auth req/sec → 2 nodes (58 req/sec each). Each: 4 vCPU, 8GB RAM. Circuit breaker: 60s window, 5 errors threshold. Failover latency: <100ms.', specs: [{ label: '2 nodes', type: 'hot' }, { label: '4 vCPU/node' }, { label: '8GB RAM/node' }, { label: '<100ms failover' }] },
+        { name: 'External Gateway', icon: '🏦', tech: 'Stripe/Adyen/Braintree', desc: 'External PSP. Synchronous call: authorization (~100-300ms). Settlement is async (T+1 batch). Separate gateway per region for compliance.', why: 'External PSP handles card network integration. Synchronous auth (100-300ms). Async settlement (T+1). Separate gateway per region for PCI-DSS compliance. Idempotency per gateway.', calc: '116 auth req/sec × 300ms = 35 concurrent connections per gateway. 3 gateways (primary, secondary, tertiary). Rate limit: 1000 req/s per gateway.', specs: [{ label: '3 gateways', type: 'hot' }, { label: '100-300ms auth' }, { label: 'T+1 settlement' }, { label: '1000 req/s limit' }] },
+        { name: 'Transactional Outbox', icon: '📤', tech: 'Postgres table', desc: 'Solves dual-write: write payment record + outbox event in same DB transaction. Kafka relay reads outbox and publishes. Guarantees no lost events.', why: 'Dual-write problem: cannot atomically write to Postgres AND publish to Kafka. Outbox pattern: write both in same Postgres txn, then relay reads outbox and publishes to Kafka. Zero message loss.', calc: '58 txns/sec × 4 events/txn = 232 events/sec. Outbox table: 10GB/day. Kafka relay: 3 nodes. Retention: 7 days. Relay lag: <5s.', specs: [{ label: '10GB/day', type: 'warn' }, { label: '3 relay nodes' }, { label: '7-day retention' }, { label: '<5s lag' }] },
+        { name: 'Ledger DB', icon: '📒', tech: 'PostgreSQL (append-only)', desc: 'Immutable append-only ledger. INSERT only, no UPDATE/DELETE. Double-entry bookkeeping. Every state change = new row. Auditable forever.', why: 'Financial systems: never mutate records. Each state change = new row. Current balance = sum of all entries. Enables point-in-time reconstruction, audit trails, and SOX compliance.', calc: '58 txns/sec × 4 events/txn = 232 inserts/sec. 7-year retention: 232 × 300 bytes × 86400 × 365 × 7 = 126TB. 10 nodes × 16TB SSD. Read replicas: 3.', specs: [{ label: '10 nodes', type: 'hot' }, { label: '16TB SSD/node' }, { label: '126TB total' }, { label: '3 read replicas' }] },
+        { name: 'Kafka', icon: '📨', tech: 'Kafka 3.x', desc: 'Payment events (authorized, captured, refunded, failed) published here. Consumers: audit service, reconciliation, fraud, notifications.', why: 'Kafka provides durable event log. Multiple consumers (audit, reconciliation, fraud, notifications) process same event. Replay capability for rebuild. Exactly-once semantics.', calc: '232 events/sec × 300 bytes = 69.6KB/s ingest. 12 brokers × 4 vCPU, 16GB RAM, 4TB SSD each. Throughput: 100K msg/s per broker. Retention: 7 days.', specs: [{ label: '12 brokers', type: 'hot' }, { label: '4 vCPU/broker' }, { label: '4TB SSD/broker' }, { label: '7-day retention' }] },
+        { name: 'Reconciliation (Spark)', icon: '📊', tech: 'Apache Spark', desc: 'Daily batch: compare internal ledger vs bank settlement files. Flag mismatches. 95%+ auto-matched. Remainder to manual review queue.', why: 'Spark chosen for large-scale batch processing. Daily reconciliation: 5M txns vs bank settlement files. Fuzzy matching on amount + timestamp + merchant_id. 95%+ auto-matched.', calc: '5M txns/day × 2KB = 10GB. Bank file: 5M × 500 bytes = 2.5GB. Spark cluster: 10 nodes × 16 vCPU, 64GB RAM. Job duration: 2 hours. Mismatch rate: <0.01%.', specs: [{ label: '10 Spark nodes', type: 'hot' }, { label: '16 vCPU/node' }, { label: '64GB RAM/node' }, { label: '2hr job duration' }] },
+      ],
+      patterns: [
+        { name: 'Idempotency Key', where: 'Every payment request has unique UUID. Server stores (idempotency_key, result) in Redis.', why: 'Same idempotency_key + same merchant = same result, always. Prevents double charges on network retries. Redis for fast O(1) lookup (24h TTL). Postgres as durable fallback.' },
+        { name: 'Saga Pattern', where: 'Payment Service: authorize → capture → settle with compensating transactions', why: 'Distributed transactions via choreography of local transactions with compensating rollbacks. No 2PC needed. Faster and more resilient than 2PC. Requires idempotent steps and careful failure handling.' },
+        { name: 'Transactional Outbox', where: 'Payment Service: write payment record + outbox event in same Postgres txn', why: 'Solves dual-write problem: cannot atomically write to Postgres AND publish to Kafka. Outbox pattern: write both in same Postgres txn, then relay reads outbox and publishes to Kafka. Zero message loss.' },
+        { name: 'Circuit Breaker', where: 'Gateway Router: trips after 5 consecutive errors or >2s latency', why: 'External payment gateways fail unpredictably. Circuit breaker trips after 5 consecutive errors or >2s latency within 60s window. Half-open after 30s for retry. Fallback chain: primary → secondary → tertiary.' },
+        { name: 'Append-Only Ledger', where: 'Ledger DB: INSERT only, no UPDATE/DELETE', why: 'Financial systems: never mutate records. Each state change = new row. Current balance = sum of all entries. Enables point-in-time reconstruction, audit trails, and SOX compliance.' },
+        { name: 'CQRS (Command Query)', where: 'Ledger: event store for write, materialized views for read', why: 'Separates write model (append-only ledger) from read model (materialized views for balance queries). Read model can be denormalized and cached. Helps at scale.' },
+      ],
+      dataFlows: [
+        { from: 'Client SDK', to: 'API Gateway', protocol: 'HTTPS/TLS', latency: '< 50ms' },
+        { from: 'API Gateway', to: 'Payment Service', protocol: 'gRPC', latency: '< 10ms' },
+        { from: 'Payment Service', to: 'Redis (Idempotency)', protocol: 'RESP', latency: '< 1ms' },
+        { from: 'Payment Service', to: 'Gateway Router', protocol: 'gRPC', latency: '< 5ms' },
+        { from: 'Gateway Router', to: 'External Gateway', protocol: 'HTTPS', latency: '100-300ms' },
+        { from: 'Payment Service', to: 'Postgres (Outbox)', protocol: 'TCP/5432', latency: '< 10ms' },
+        { from: 'Postgres (Outbox)', to: 'Kafka', protocol: 'TCP/9092', latency: '< 5ms (relay)' },
+        { from: 'Kafka', to: 'Ledger DB', protocol: 'TCP/5432', latency: '< 10ms' },
+        { from: 'Ledger DB', to: 'Spark (Reconciliation)', protocol: 'JDBC', latency: '< 1hr (batch)' },
+        { from: 'Spark', to: 'Bank Settlement', protocol: 'SFTP', latency: '< 2hr (daily)' },
+      ],
+    },
   },
   {
     id: 'notifications',
     name: 'Notification System',
     icon: 'ti-bell',
     desc: 'Multi-channel notification delivery (push, email, SMS). Fan-out and rate-limiting to external providers are the bottlenecks.',
+    usedBy: ['Firebase Cloud Messaging', 'AWS SNS', 'Twilio', 'SendGrid'],
     params: [
       { id: 'dau', label: 'Daily Active Users', val: 100, min: 10, max: 500, step: 10, unit: 'M', mult: 1e6 },
       { id: 'notifs_per_user', label: 'Notifications / User / Day', val: 10, min: 1, max: 50, step: 1, unit: '', mult: 1 },
@@ -2881,6 +3826,7 @@ const SCENARIOS = [
     name: 'RAG / LLM Chat',
     icon: 'ti-brain',
     desc: 'Retrieval-Augmented Generation system. Vector DB retrieval + LLM inference. The bottleneck is GPU cost and latency.',
+    usedBy: ['ChatGPT', 'Perplexity', 'You.com', 'Enterprise RAG'],
     params: [
       { id: 'dau', label: 'Daily Active Users', val: 10, min: 1, max: 100, step: 1, unit: 'M', mult: 1e6 },
       { id: 'queries_per_user', label: 'Queries / User / Day', val: 5, min: 1, max: 20, step: 1, unit: '', mult: 1 },
@@ -3033,6 +3979,7 @@ const SCENARIOS = [
     name: 'Rate Limiter',
     icon: 'ti-shield-lock',
     desc: 'Distributed rate limiting across API gateway. Token bucket or sliding window are the common algorithms.',
+    usedBy: ['Cloudflare', 'Stripe', 'GitHub API', 'Twilio'],
     params: [
       { id: 'services', label: 'API Services', val: 100, min: 10, max: 500, step: 10, unit: '', mult: 1 },
       { id: 'rps_per_service', label: 'RPS per Service', val: 10000, min: 1000, max: 100000, step: 1000, unit: 'RPS', mult: 1 },
@@ -3168,6 +4115,7 @@ const SCENARIOS = [
     name: 'Google Search',
     icon: 'ti-search',
     desc: 'Web-scale search engine. Crawling, indexing, and sub-100ms query serving across 30B+ pages.',
+    usedBy: ['Google Search', 'Bing', 'Elasticsearch', 'Algolia'],
     params: [
       { id: 'pages_indexed', label: 'Pages Indexed', val: 30, min: 1, max: 100, step: 1, unit: 'B', mult: 1e9 },
       { id: 'page_size', label: 'Avg Page (raw)', val: 100, min: 20, max: 500, step: 10, unit: 'KB', mult: 1024 },
@@ -3300,6 +4248,7 @@ const SCENARIOS = [
     name: 'E-commerce',
     icon: 'ti-shopping-cart',
     desc: 'E-commerce at Amazon scale. Product catalog, inventory, order processing, and recommendation engine.',
+    usedBy: ['Amazon', 'Shopify', 'eBay', 'Alibaba'],
     params: [
       { id: 'products', label: 'Products in Catalog', val: 500, min: 10, max: 2000, step: 10, unit: 'M', mult: 1e6 },
       { id: 'dau', label: 'Daily Active Users', val: 50, min: 5, max: 200, step: 5, unit: 'M', mult: 1e6 },
@@ -3440,6 +4389,7 @@ const SCENARIOS = [
     name: 'Netflix',
     icon: 'ti-player-play',
     desc: 'Video streaming at Netflix scale. CDN delivery with Open Connect appliances at ISP edges. Pre-positioned content.',
+    usedBy: ['Netflix', 'Disney+', 'HBO Max', 'Hulu'],
     params: [
       { id: 'subs', label: 'Subscribers', val: 250, min: 10, max: 500, step: 10, unit: 'M', mult: 1e6 },
       { id: 'hours_per_sub', label: 'Hours Streamed / Month / Sub', val: 50, min: 10, max: 200, step: 10, unit: '', mult: 1 },
@@ -3574,6 +4524,7 @@ const SCENARIOS = [
     name: 'Instagram',
     icon: 'ti-camera',
     desc: 'Short-form video platform architecture for Reels/Shorts: upload, transcoding, feed ranking, and engagement at massive scale.',
+    usedBy: ['TikTok', 'Instagram Reels', 'YouTube Shorts', 'Snapchat Spotlight'],
     params: [
       { id: 'dau', label: 'Daily Active Users', val: 250, min: 50, max: 1000, step: 50, unit: 'M', mult: 1e6 },
       { id: 'reels_watched', label: 'Reels Watched / User / Day', val: 30, min: 5, max: 50, step: 1, unit: '', mult: 1 },
@@ -3709,6 +4660,7 @@ const SCENARIOS = [
     name: 'Dropbox / Drive',
     icon: 'ti-cloud-upload',
     desc: 'Cloud file sync. Chunk-level dedup, delta sync, LAN sync, conflict resolution.',
+    usedBy: ['Dropbox', 'Google Drive', 'OneDrive', 'Box'],
     params: [
       { id: 'users', label: 'Total Users', val: 500, min: 50, max: 1000, step: 50, unit: 'M', mult: 1e6 },
       { id: 'files_per_user', label: 'Files Stored / User', val: 500, min: 100, max: 2000, step: 100, unit: '', mult: 1 },
@@ -3850,6 +4802,7 @@ const SCENARIOS = [
     name: 'Live Streaming',
     icon: 'ti-broadcast',
     desc: 'Live video at Twitch/Zoom scale. Low-latency ingest + fan-out delivery to millions of viewers.',
+    usedBy: ['Twitch', 'YouTube Live', 'Facebook Live', 'Twitter Spaces'],
     params: [
       { id: 'concurrent', label: 'Peak Concurrent Streams', val: 5, min: 0.5, max: 20, step: 0.5, unit: 'M', mult: 1e6 },
       { id: 'viewers_per_stream', label: 'Avg Viewers / Stream', val: 500, min: 50, max: 10000, step: 50, unit: '', mult: 1 },
@@ -3984,6 +4937,7 @@ const SCENARIOS = [
     name: 'Zoom / Video',
     icon: 'ti-video',
     desc: 'Video conferencing at Zoom scale. WebRTC media routing, SFU/MCU architecture. Real-time is non-negotiable.',
+    usedBy: ['Zoom', 'Google Meet', 'Microsoft Teams', 'Webex'],
     params: [
       { id: 'dau', label: 'Daily Active Users', val: 300, min: 10, max: 500, step: 10, unit: 'M', mult: 1e6 },
       { id: 'meetings_per_user', label: 'Meetings / User / Day', val: 3, min: 1, max: 10, step: 1, unit: '', mult: 1 },
@@ -4119,6 +5073,7 @@ const SCENARIOS = [
     name: 'Slack / Team Chat',
     icon: 'ti-message-2',
     desc: 'Team messaging at Slack scale. Channels, threads, search, file sharing. Workspace isolation matters.',
+    usedBy: ['Slack', 'Microsoft Teams', 'Discord', 'Mattermost'],
     params: [
       { id: 'dau', label: 'Daily Active Users', val: 50, min: 5, max: 200, step: 5, unit: 'M', mult: 1e6 },
       { id: 'msgs_per_user', label: 'Messages / User / Day', val: 200, min: 50, max: 1000, step: 50, unit: '', mult: 1 },
@@ -4254,6 +5209,7 @@ const SCENARIOS = [
     name: 'Food Delivery',
     icon: 'ti-truck-delivery',
     desc: 'DoorDash / Swiggy / Zomato. Real-time order dispatch, tracking, and ETA prediction. Multi-sided marketplace.',
+    usedBy: ['DoorDash', 'Uber Eats', 'Swiggy', 'Zomato'],
     params: [
       { id: 'dau', label: 'Daily Active Users', val: 50, min: 5, max: 200, step: 5, unit: 'M', mult: 1e6 },
       { id: 'orders_per_user', label: 'Orders / User / Month', val: 4, min: 1, max: 20, step: 1, unit: '', mult: 1 },
@@ -4389,6 +5345,7 @@ const SCENARIOS = [
     name: 'Flash Sale',
     icon: 'ti-bolt',
     desc: 'Limited-time product sale (Amazon Prime Day / Apple launch). Traffic spike handling, inventory accuracy.',
+    usedBy: ['Amazon Prime Day', 'Shopify Flash Sales', 'Ticketmaster', 'Nike SNKRS'],
     params: [
       { id: 'dau', label: 'Normal DAU', val: 50, min: 10, max: 200, step: 10, unit: 'M', mult: 1e6 },
       { id: 'sale_dau_mult', label: 'Sale Traffic Multiplier', val: 10, min: 3, max: 50, step: 1, unit: '×', mult: 1 },
@@ -4524,6 +5481,7 @@ const SCENARIOS = [
     name: 'ETL / Data Pipeline',
     icon: 'ti-database',
     desc: 'Analytics data pipeline at scale. Kafka → Spark/Flink → Data Lake → Query Engine. Batch + streaming.',
+    usedBy: ['Snowflake', 'Databricks', 'Uber data platform', 'LinkedIn'],
     params: [
       { id: 'events_per_day', label: 'Events / Day', val: 10, min: 0.5, max: 100, step: 0.5, unit: 'B', mult: 1e9 },
       { id: 'event_size', label: 'Avg Event Size', val: 500, min: 100, max: 2000, step: 100, unit: 'bytes', mult: 1 },
@@ -4664,6 +5622,7 @@ const SCENARIOS = [
     name: 'API Gateway / BFF',
     icon: 'ti-route',
     desc: 'Central ingress for microservices: auth, rate limiting, routing, retries, canary, tenant isolation, and request shaping. Good case study for cross-cutting concerns, not just “put Nginx in front and pray.”',
+    usedBy: ['Kong', 'Envoy', 'AWS API Gateway', 'Cloudflare'],
     params: [
       { id: 'rps', label: 'Incoming Requests / Sec', val: 200000, min: 10000, max: 2000000, step: 10000, unit: 'rps', mult: 1 },
       { id: 'avg_req_kb', label: 'Avg Request Size', val: 2, min: 1, max: 64, step: 1, unit: 'KB', mult: 1024 },
@@ -4766,6 +5725,7 @@ const SCENARIOS = [
     name: 'Kafka Event Bus',
     icon: 'ti-arrows-shuffle',
     desc: 'Company-wide event backbone for microservices. Topic design, partitioning, ordering, replay, consumer lag, DLQ, schema evolution, and exactly-once illusions humans keep falling for.',
+    usedBy: ['LinkedIn', 'Uber', 'Netflix', 'Stripe'],
     params: [
       { id: 'events_per_day', label: 'Events / Day', val: 2000, min: 100, max: 20000, step: 100, unit: 'M', mult: 1e6 },
       { id: 'event_size', label: 'Avg Event Size', val: 2, min: 1, max: 32, step: 1, unit: 'KB', mult: 1024 },
@@ -4862,6 +5822,7 @@ const SCENARIOS = [
     name: 'Feature Flag / Config Platform',
     icon: 'ti-toggle-right',
     desc: 'LaunchDarkly-style control plane for feature flags, dynamic config, kill switches, experiments, and tenant targeting. Because shipping code is fun until you need to unship it in 30 seconds.',
+    usedBy: ['LaunchDarkly', 'Split.io', 'Firebase Remote Config', 'Unleash'],
     params: [
       { id: 'clients', label: 'SDK Clients', val: 50, min: 1, max: 500, step: 1, unit: 'M', mult: 1e6 },
       { id: 'flags', label: 'Active Flags', val: 5000, min: 100, max: 50000, step: 100, unit: '', mult: 1 },
@@ -4955,6 +5916,7 @@ const SCENARIOS = [
     name: 'Fraud Detection / Risk Engine',
     icon: 'ti-shield-lock',
     desc: 'Real-time payment/account risk scoring with feature lookup, rules, ML scoring, and asynchronous case review. Great for event-driven architecture, latency budgets, and “you can’t be strongly consistent with every upstream system” conversations.',
+    usedBy: ['Stripe Radar', 'PayPal Braintree', 'Square', 'Adyen'],
     params: [
       { id:'txn_per_day', label:'Transactions / Day', val: 150, min: 10, max: 2000, step: 10, unit:'M', mult:1e6 },
       { id:'feature_count', label:'Features / Score', val: 120, min:20, max:500, step:10, unit:'', mult:1 },
@@ -5047,6 +6009,7 @@ const SCENARIOS = [
     name: 'LLM Agent Platform',
     icon: 'ti-sparkles',
     desc: 'Multi-tenant AI platform for chat, RAG, tool calling, agents, memory, evals, guardrails, and cost controls. Basically the modern way to burn GPUs while pretending it is “just a backend service.”',
+    usedBy: ['OpenAI Platform', 'Anthropic Claude', 'Google Gemini', 'AWS Bedrock'],
     params: [
       { id:'dau', label:'Daily Active Users', val: 5, min:1, max:100, step:1, unit:'M', mult:1e6 },
       { id:'msgs_per_user', label:'Messages / User / Day', val: 8, min:1, max:100, step:1, unit:'', mult:1 },
@@ -5145,6 +6108,7 @@ const SCENARIOS = [
     name: 'Observability Platform',
     icon: 'ti-chart-line',
     desc: 'Metrics + logs + traces platform for microservices/Kubernetes. A nice case study because everybody wants observability until they see the cardinality bill.',
+    usedBy: ['Datadog', 'New Relic', 'Grafana Cloud', 'Dynatrace'],
     params:[
       { id:'services', label:'Services', val: 400, min:10, max:5000, step:10, unit:'', mult:1 },
       { id:'pods', label:'Pods / Instances', val: 8000, min:100, max:100000, step:100, unit:'', mult:1 },
@@ -5238,6 +6202,7 @@ const SCENARIOS = [
     name: 'Search Typeahead',
     icon: 'ti-search',
     desc: 'Google-style instant suggestions on every keypress. The hard part: sub-100ms P99 at 200K QPS while keeping suggestions fresh, ranked, and personalized.',
+    usedBy: ['Google Search', 'Bing', 'Amazon Search', 'Spotify'],
     params: [
       { id: 'dau', label: 'Daily Active Users', val: 50, min: 5, max: 500, step: 5, unit: 'M', mult: 1e6 },
       { id: 'searches_per_user', label: 'Searches / User / Day', val: 20, min: 5, max: 100, step: 5, unit: '', mult: 1 },
@@ -5350,6 +6315,7 @@ const SCENARIOS = [
     name: 'Nearby Places',
     icon: 'ti-map-pin',
     desc: 'Yelp/Google Places: find restaurants, shops, POIs near a location. The real problem is efficient geo-spatial indexing at 200M places and sub-200ms P99 query latency.',
+    usedBy: ['Google Maps', 'Yelp', 'Foursquare', 'Apple Maps'],
     params: [
       { id: 'dau', label: 'Daily Active Users', val: 30, min: 1, max: 200, step: 5, unit: 'M', mult: 1e6 },
       { id: 'searches_per_user', label: 'Searches / User / Day', val: 5, min: 1, max: 30, step: 1, unit: '', mult: 1 },
@@ -5464,6 +6430,7 @@ const SCENARIOS = [
     name: 'Web Crawler',
     icon: 'ti-world-www',
     desc: 'Google-scale distributed web crawler. Crawl 10B URLs in 30 days, de-duplicate content, respect robots.txt, and stay polite. The enemy is infinite loops, duplicate content, and server overload.',
+    usedBy: ['Googlebot', 'Bingbot', 'Common Crawl', 'Semantic Scholar'],
     params: [
       { id: 'target_urls_b', label: 'Target URLs to Crawl', val: 10, min: 1, max: 100, step: 1, unit: 'B', mult: 1e9 },
       { id: 'crawl_days', label: 'Target Crawl Duration', val: 30, min: 7, max: 90, step: 1, unit: 'days', mult: 1 },
@@ -5646,6 +6613,26 @@ const CATEGORIES = [
   { cat: 'ml', label: 'ML/LLM' },
   { cat: 'pipeline', label: 'Pipeline' },
 ];
+
+function renderUsedBy(scenario) {
+  let el = document.getElementById('scenario-used-by');
+  if (!el) {
+    el = document.createElement('div');
+    el.id = 'scenario-used-by';
+    el.className = 'used-by-row';
+    const desc = document.getElementById('scenario-desc');
+    if (desc) desc.parentNode.insertBefore(el, desc.nextSibling);
+  }
+  if (!el) return;
+  if (!scenario.usedBy || !scenario.usedBy.length) {
+    el.innerHTML = '';
+    el.style.display = 'none';
+    return;
+  }
+  el.style.display = 'flex';
+  el.innerHTML = '<span style="font-size:10px;color:var(--text3);font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-right:4px">Used by:</span>' +
+    scenario.usedBy.map(name => `<span class="scenario-example-chip"><i class="ti ti-building"></i>${name}</span>`).join('');
+}
 
 function renderFilterChips() {
   const el = document.getElementById('filter-chips');
@@ -5922,25 +6909,176 @@ function renderEstimateTab(scenario, r) {
     }
   }
 
-  // ── Cross-scenario capacity bars ──
-  // Defined in the second <script> block below (loads after this one), so
-  // guard against calling it before it exists — otherwise the very first
-  // renderAll() on page load throws here uncaught, which (same as the
-  // CAP_MAP bug above) silently kills every line of script AFTER this call:
-  // timer, SLO calculator, quick-math notepad, snapshots, done-tracking.
-  if (typeof _renderCapBars === 'function') _renderCapBars();
+  renderEstimateExplainer(scenario, r);
+  renderServiceLanguageFit(scenario, r);
+
+}
+
+function renderEstimateExplainer(scenario, r) {
+  const el = document.getElementById('est-explain');
+  if (!el) return;
+
+  const peakQps = Math.max(r.rqps || 0, r.wqps || 0) * state.peakMult;
+  const dailyReads = (r.rqps || 0) * DAY;
+  const dailyWrites = (r.wqps || 0) * DAY;
+  const storage5y = (r.storPerDay || 0) * 365 * 5;
+  const replication = (scenario.assumptions || []).find(a => /replication/i.test(a.key || ''))?.val || '3×';
+  const firstFormula = scenario.formulas?.[0];
+  const secondFormula = scenario.formulas?.[1];
+  const thirdFormula = scenario.formulas?.[2];
+  const lastFormula = scenario.formulas?.[scenario.formulas.length - 1];
+
+  const cards = [
+    {
+      cls: 'teal',
+      kicker: '1. Start With Inputs',
+      value: scenario.params.map(p => `${p.label}: ${formatParamDisplay(p, state.params[p.id])}`).slice(0, 3).join(' · '),
+      sub: `These are the knobs the interviewer changes first. Everything else is derived from them.`,
+    },
+    {
+      cls: 'amber',
+      kicker: '2. Convert To Daily Volume',
+      value: `${fmtQPS(r.wqps || 0)} writes/s`,
+      sub: `Writes/day = ${fmtNum(dailyWrites)} · Reads/day = ${fmtNum(dailyReads)}. We normalize to 86,400 seconds so every scenario is comparable.`,
+    },
+    {
+      cls: 'blue',
+      kicker: '3. Apply Peak Factor',
+      value: `${fmtQPS(peakQps)} peak QPS`,
+      sub: `Peak = max(read QPS, write QPS) × ${state.peakMult}×. This is the number that decides the server count, not the average.`,
+    },
+    {
+      cls: 'purple',
+      kicker: '4. Size Storage & Cost',
+      value: `${fmtBytes(r.storPerDay || 0)} / day`,
+      sub: `5-year storage ≈ ${fmtBytes(storage5y)} at ${replication} replication. Cost is then compute + storage + bandwidth + cache.`,
+    },
+  ];
+
+  el.innerHTML = cards.map(card => `
+    <div class="est-explain-card ${card.cls}">
+      <div class="est-explain-kicker">${card.kicker}</div>
+      <div class="est-explain-value">${card.value || '—'}</div>
+      <div class="est-explain-sub">${card.sub}</div>
+    </div>
+  `).join('');
+
+  if (firstFormula || secondFormula || thirdFormula || lastFormula) {
+    const extras = [
+      firstFormula ? `Step 1: ${firstFormula.label} = ${firstFormula.expr || 'derived from inputs'}` : null,
+      secondFormula ? `Step 2: ${secondFormula.label} = ${secondFormula.expr || 'derived from outputs'}` : null,
+      thirdFormula ? `Step 3: ${thirdFormula.label} = ${thirdFormula.expr || 'size the hot path'}` : null,
+      lastFormula ? `Final check: ${lastFormula.label} = ${lastFormula.result || lastFormula.expr || 'sanity check'}` : null,
+    ].filter(Boolean);
+    const firstCard = el.querySelector('.est-explain-card');
+    if (firstCard && extras.length) {
+      const pre = document.createElement('div');
+      pre.className = 'service-lang-summary-code';
+      pre.style.marginTop = '10px';
+      pre.textContent = extras.join('\n');
+      firstCard.appendChild(pre);
+    }
+  }
+}
+
+function renderServiceLanguageFit(scenario, r) {
+  const grid = document.getElementById('service-lang-fit');
+  if (!grid) return;
+
+  const peakQps = Math.max(r.rqps || 0, r.wqps || 0) * state.peakMult;
+  const serviceType = (() => {
+    const pattern = scenario.meta?.pattern;
+    const bottleneck = scenario.meta?.dominantBottleneck;
+    if (pattern === 'read-heavy') return 'Hot API / read path';
+    if (pattern === 'write-heavy') return bottleneck === 'fanout' ? 'Async worker / fan-out service' : 'Write path / ingestion service';
+    if (pattern === 'batch' || pattern === 'batch-pipeline') return 'Batch job / ETL service';
+    if (pattern === 'streaming' || pattern === 'event-driven') return 'Stream processor / consumer';
+    if (pattern === 'balanced') return 'Core transactional service';
+    return 'General API service';
+  })();
+
+  const candidates = [
+    {
+      lang: LANG_QPS.go,
+      type: 'Hot API / low-latency service',
+      why: 'Best when you need high concurrency, small memory footprint, and predictable p99 latency.',
+      fit: peakQps >= 10000 ? 'Strong fit for the hot path' : 'Still safe, but maybe overkill for tiny workloads.',
+    },
+    {
+      lang: LANG_QPS.java,
+      type: 'Core business service / transaction service',
+      why: 'Great for mature service boundaries, strong tooling, and steady throughput with a large ecosystem.',
+      fit: scenario.meta?.consistency === 'strong' ? 'Strong fit when correctness and observability matter' : 'Good default for medium-to-large services.',
+    },
+    {
+      lang: LANG_QPS.python_async,
+      type: 'Async worker / I-O service',
+      why: 'Use when the service spends more time waiting on network or queues than doing CPU work.',
+      fit: scenario.meta?.cacheStrategy?.includes('cache') || scenario.meta?.dominantBottleneck === 'queue-lag' ? 'Very good for queue consumers and webhook processors' : 'Good for I/O-heavy support services.',
+    },
+    {
+      lang: LANG_QPS.python_sync,
+      type: 'Batch / ETL / admin job',
+      why: 'Best for low-QPS, script-heavy, or offline jobs where developer speed matters more than raw throughput.',
+      fit: peakQps < 1000 ? 'Best fit for low-volume jobs and automation' : 'Use only when the workload is not latency-sensitive.',
+    },
+  ];
+
+  const ranked = [...candidates].sort((a, b) => {
+    const score = item => {
+      let s = 0;
+      if (item.lang.qps >= peakQps) s += 3;
+      if (item.lang === LANG_QPS.go && (scenario.meta?.pattern === 'read-heavy' || scenario.meta?.pattern === 'write-heavy')) s += 2;
+      if (item.lang === LANG_QPS.java && scenario.meta?.consistency === 'strong') s += 2;
+      if (item.lang === LANG_QPS.python_async && (scenario.meta?.pattern === 'write-heavy' || scenario.meta?.dominantBottleneck === 'queue-lag')) s += 2;
+      if (item.lang === LANG_QPS.python_sync && peakQps < 1000) s += 3;
+      return s;
+    };
+    return score(b) - score(a);
+  });
+  const recommended = ranked[0];
+
+  grid.innerHTML = `
+    <div class="service-type-list">
+      ${candidates.map(c => `
+        <div class="service-type-card ${c === recommended ? 'recommended' : ''}">
+          <div class="service-type-top">
+            <div class="service-type-name">${c.type}</div>
+            <span class="service-type-lang">${c.lang.label}</span>
+            ${c === recommended ? '<span class="service-type-lang" style="background:var(--teal-bg);color:var(--teal)">Recommended</span>' : ''}
+          </div>
+          <div class="service-type-reason">${c.why}</div>
+          <div class="service-type-foot">${c.fit}</div>
+        </div>
+      `).join('')}
+    </div>
+    <div class="service-lang-summary">
+      <div class="service-lang-summary-title">Why the math picks this runtime</div>
+      <div class="service-lang-summary-body">
+        We size the service from the workload first: <strong>${serviceType}</strong>. Then we estimate the required capacity from
+        <span style="font-family:var(--mono)">peak QPS = max(read QPS, write QPS) × peak factor</span>.
+        After that, each language is just a throughput budget: <span style="font-family:var(--mono)">instances = ceil(peak QPS / throughput per instance)</span>.
+        That is why the language table is not opinion-based; it is a math shortcut for <em>how many boxes and how much monthly compute</em> the scenario needs.
+      </div>
+      <div class="service-lang-summary-code">
+peakQPS = max(${fmtQPS(r.rqps || 0)}, ${fmtQPS(r.wqps || 0)}) × ${state.peakMult} = ${fmtQPS(peakQps)}
+instances(lang) = ceil(peakQPS / lang.qps)
+computeCost(lang) = instances × (lang.cpu × server_cpu + lang.mem × server_ram)
+      </div>
+    </div>
+  `;
 }
 
 function updateTicker(r) {
   document.getElementById('t-rqps').textContent = fmtQPS(r.rqps);
-  document.getElementById('t-rqps-sub').textContent = 'peak: ' + fmtQPS(r.rqps * state.peakMult);
+  document.getElementById('t-rqps-sub').textContent = 'steady-state read load; peak: ' + fmtQPS(r.rqps * state.peakMult);
   document.getElementById('t-wqps').textContent = fmtQPS(r.wqps);
-  document.getElementById('t-wqps-sub').textContent = 'peak: ' + fmtQPS(r.wqps * state.peakMult);
+  document.getElementById('t-wqps-sub').textContent = 'write pressure; peak: ' + fmtQPS(r.wqps * state.peakMult);
   document.getElementById('t-stor').textContent = fmtBytes(r.storPerDay);
-  document.getElementById('t-stor-sub').textContent = '5-yr: ' + fmtBytes(r.storPerDay * 365 * 5);
+  document.getElementById('t-stor-sub').textContent = 'daily growth; 5-yr: ' + fmtBytes(r.storPerDay * 365 * 5);
   const costTotal = (r.cost && r.cost.total) ? r.cost.total : (r.monthlyCost || 0);
   document.getElementById('t-cost').textContent = costTotal ? fmtMoney(costTotal) : '—';
-  document.getElementById('t-cost-sub').textContent = r.servers ? r.servers + ' servers + infra' : 'adjust params';
+  document.getElementById('t-cost-sub').textContent = r.servers ? 'compute + storage + network + cache' : 'adjust params';
 }
 
 function detectBottleneck(r) {
@@ -5960,17 +7098,17 @@ function updateOutputs(r) {
   const outGrid = document.getElementById('output-grid');
   const colors = ['teal','amber','blue','purple','coral','green'];
   const defaultExtras = [
-    { label: 'Bandwidth', val: fmtBW(r.bwOut), color: 'teal' },
-    { label: 'Cache Size', val: fmtBytes(r.cacheGB * 1e9), color: 'green' },
-    { label: 'Servers Needed', val: r.servers.toLocaleString(), color: 'blue' },
+    { label: 'Bandwidth', val: fmtBW(r.bwOut), sub: 'egress pressure on the hot path', color: 'teal' },
+    { label: 'Cache Size', val: fmtBytes(r.cacheGB * 1e9), sub: 'working set to keep reads cheap', color: 'green' },
+    { label: 'Servers Needed', val: r.servers.toLocaleString(), sub: 'replicas needed for peak traffic', color: 'blue' },
   ];
   const bottleneck = detectBottleneck(r);
   const allExtras = [
     ...(bottleneck ? [bottleneck] : []),
-    ...(extras.length > 0 ? extras : defaultExtras)
+    ...(extras.length > 0 ? extras.map(e => ({ ...e, sub: e.sub || 'Use this number to decide the next scaling move.' })) : defaultExtras)
   ].slice(0, 5);
   outGrid.innerHTML = allExtras.map(e =>
-    `<div class="o-card ${e.color}"${e.full ? ' style="grid-column:1/-1"' : ''}><div class="o-label">${e.label}</div><div class="o-val">${e.val}</div></div>`
+    `<div class="o-card ${e.color}"${e.full ? ' style="grid-column:1/-1"' : ''}><div class="o-label">${e.label}</div><div class="o-val">${e.val}</div><div class="o-sub">${e.sub || ''}</div></div>`
   ).join('');
 
   const tbody = document.getElementById('storage-tbody');
@@ -6009,6 +7147,7 @@ function updateCost(r) {
     items.push({ label: 'Database', value: c.db, color: 'purple', pct: c.db/total*100 });
   }
   grid.innerHTML = `
+    <div class="cost-bar-note">Read the biggest segment first. That is usually the cheapest optimization because it removes the most monthly spend for the least change.</div>
     <div class="cost-bar-wrap">
       <div class="cost-bar">
         ${items.map(i => `<div class="cost-bar-seg ${i.color === 'blue' ? 'compute' : i.color === 'amber' ? 'storage' : i.color === 'coral' ? 'bandwidth' : 'cache'}" style="width:${Math.max(i.pct, 1)}%"></div>`).join('')}
@@ -6059,6 +7198,7 @@ function renderAll() {
   if (!scenario) return;
   state.flowIdx = 0;
   document.getElementById('scenario-desc').textContent = scenario.desc;
+  renderUsedBy(scenario);
   renderFilterChips();
   renderScenarioNav();
   renderParams(scenario);
@@ -6067,6 +7207,7 @@ function renderAll() {
   renderScenarioSnapshot(scenario);
   recalcAndUpdate(scenario);
   renderArchitecture(scenario);
+  renderLLD(scenario);
   renderAssumptions(scenario);
   renderIncidents(scenario);
   renderInterview(scenario);
@@ -6242,12 +7383,12 @@ function renderCompareScenario(scenario) {
   const costTotal = r.cost ? r.cost.total : (r.monthlyCost || 0);
   const storLine = r.storPerDay > 0 ? `<div class="cmp-storage">Daily: <span>${fmtBytes(r.storPerDay)}</span> · 5yr: <span>${fmtBytes(r.storPerDay * 365 * 5)}</span></div>` : '';
   const extras = (r.extras || []).slice(0, 4).map(e =>
-    `<div class="o-card ${e.color}"><div class="o-label">${e.label}</div><div class="o-val">${e.val}</div></div>`
+    `<div class="o-card ${e.color}"><div class="o-label">${e.label}</div><div class="o-val">${e.val}</div><div class="o-sub">${e.sub || 'Use this figure to compare the options.'}</div></div>`
   ).join('');
   return `
     <div class="ticker-bar">
-      <div class="t-card teal"><div class="t-label">Read QPS</div><div class="t-val">${fmtQPS(r.rqps)}</div><div class="t-sub">peak: ${fmtQPS(r.rqps * state.peakMult)}</div></div>
-      <div class="t-card amber"><div class="t-label">Write QPS</div><div class="t-val">${fmtQPS(r.wqps)}</div><div class="t-sub">peak: ${fmtQPS(r.wqps * state.peakMult)}</div></div>
+      <div class="t-card teal"><div class="t-label">Read QPS</div><div class="t-val">${fmtQPS(r.rqps)}</div><div class="t-sub">steady-state read load; peak: ${fmtQPS(r.rqps * state.peakMult)}</div></div>
+      <div class="t-card amber"><div class="t-label">Write QPS</div><div class="t-val">${fmtQPS(r.wqps)}</div><div class="t-sub">write pressure; peak: ${fmtQPS(r.wqps * state.peakMult)}</div></div>
     </div>
     <div class="out-grid">${extras}</div>
     <div class="cmp-storage">Monthly cost: <span>${costTotal ? fmtMoney(costTotal) : '—'}</span></div>
@@ -6620,9 +7761,20 @@ function renderArchitecture(scenario) {
 
   // Component choices
   if (scenario.arch.choices && choicesContainer) {
-    choicesContainer.innerHTML = scenario.arch.choices.map(c =>
-      `<div class="insight-item"><i class="ti ti-${c.icon}" style="color:var(--${c.color})"></i><span><strong>${c.component}:</strong> ${c.why} <span class="f11c3">Alternatives: ${c.alternatives}</span></span></div>`
-    ).join('');
+    choicesContainer.innerHTML = scenario.arch.choices.map(c => `
+      <div class="arch-node-card" style="margin-bottom:10px">
+        <div class="arch-node-card-head">
+          <i class="ti ti-${c.icon}" style="color:var(--${c.color})"></i>
+          <div class="arch-node-card-title">${c.component}</div>
+          <div class="arch-node-card-sub">LLD choice</div>
+        </div>
+        <div class="arch-node-card-body">${c.why}</div>
+        <div class="arch-node-chip-row">
+          <span class="arch-node-chip ${c.color}">Why this box</span>
+          <span class="arch-node-chip">Alternatives: ${c.alternatives}</span>
+        </div>
+      </div>
+    `).join('');
   } else if (choicesContainer) choicesContainer.innerHTML = '';
 
   document.getElementById('arch-detail-close').onclick = () => {
@@ -7017,6 +8169,69 @@ function updateFormulas(scenario) {
 }
 
 // ── Architecture explain mode ──
+function renderLLD(scenario) {
+  const el = document.getElementById('lld-content');
+  if (!el) return;
+  const lld = scenario.lld;
+  if (!lld) {
+    el.innerHTML = '<p class="cmp-empty">Low-level design details not yet available for this scenario.</p>';
+    return;
+  }
+  const esc = s => String(s ?? '').replace(/[&<>"']/g, ch => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;', "'":'&#39;' }[ch]));
+
+  let html = '';
+
+  if (lld.components && lld.components.length) {
+    html += '<div class="lld-section"><div class="lld-title"><i class="ti ti-cpu"></i> Components &amp; Hardware</div><div class="lld-grid">';
+    html += lld.components.map(c => `
+      <div class="lld-card">
+        <div class="lld-card-head">
+          <span class="lld-card-icon">${c.icon || '⚙️'}</span>
+          <div>
+            <div class="lld-card-name">${esc(c.name)}</div>
+            <div class="lld-card-tech">${esc(c.tech)}</div>
+          </div>
+        </div>
+        <div class="lld-card-body">${esc(c.desc)}</div>
+        ${c.why ? `<div class="lld-card-why"><strong>Why:</strong> ${esc(c.why)}</div>` : ''}
+        ${c.calc ? `<div class="lld-card-calc">${esc(c.calc)}</div>` : ''}
+        ${c.specs && c.specs.length ? `<div class="lld-card-specs">${c.specs.map(s => `<span class="lld-spec ${s.type || ''}">${esc(s.label)}</span>`).join('')}</div>` : ''}
+      </div>
+    `).join('');
+    html += '</div></div>';
+  }
+
+  if (lld.patterns && lld.patterns.length) {
+    html += '<div class="lld-section"><div class="lld-title"><i class="ti ti-shape"></i> Design Patterns</div><div class="lld-pattern-list">';
+    html += lld.patterns.map(p => `
+      <div class="lld-pattern">
+        <div style="flex:1">
+          <div class="lld-pattern-name">${esc(p.name)}</div>
+          <div class="lld-pattern-where"><strong>Where:</strong> ${esc(p.where)}</div>
+          <div class="lld-pattern-why">${esc(p.why)}</div>
+        </div>
+      </div>
+    `).join('');
+    html += '</div></div>';
+  }
+
+  if (lld.dataFlows && lld.dataFlows.length) {
+    html += '<div class="lld-section"><div class="lld-title"><i class="ti ti-arrows-right-left"></i> Data Flows</div><div class="lld-flow-list">';
+    html += lld.dataFlows.map(f => `
+      <div class="lld-flow">
+        <span class="lld-flow-src">${esc(f.from)}</span>
+        <span class="lld-flow-arrow">→</span>
+        <span class="lld-flow-dst">${esc(f.to)}</span>
+        <span class="lld-flow-protocol">${esc(f.protocol)}</span>
+        ${f.latency ? `<span class="lld-flow-latency">${esc(f.latency)}</span>` : ''}
+      </div>
+    `).join('');
+    html += '</div></div>';
+  }
+
+  el.innerHTML = html;
+}
+
 function renderArchExplain(scenario) {
   const el = document.getElementById('arch-explain');
   if (!el) return;
@@ -7025,31 +8240,131 @@ function renderArchExplain(scenario) {
     el.innerHTML = '';
     return;
   }
-  const parts = [];
-  // Request lifecycle from flows
-  if (arch.flows && arch.flows.length) {
-    const primaryFlow = arch.flows[0];
-    if (primaryFlow.nodes && primaryFlow.nodes.length) {
-      const stepLabels = primaryFlow.nodes.map(id => {
-        const n = arch.nodes.find(node => node.id === id);
-        return n ? `${n.label} (${n.tech || n.id})` : id;
-      });
-      parts.push(`<div class="ae-section"><div class="ae-title">Request Lifecycle</div><div class="ae-body ae-${primaryFlow.type || 'hot'}">${stepLabels.join(' → ')}</div></div>`);
-    }
+  const esc = s => String(s ?? '').replace(/[&<>"']/g, ch => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;', "'":'&#39;' }[ch]));
+  const flowCards = [];
+  const flows = arch.flows || [];
+  const nodesById = new Map(arch.nodes.map(n => [n.id, n]));
+  const primaryFlow = flows[0];
+
+  if (primaryFlow && primaryFlow.nodes && primaryFlow.nodes.length) {
+    const stepLines = primaryFlow.nodes.map((id, idx) => {
+      const n = nodesById.get(id);
+      const label = n ? n.label : id;
+      const tech = n?.tech || n?.layer || 'component';
+      const why = n?.why || 'Part of the hot path.';
+      return `
+        <div class="arch-step-row">
+          <div class="arch-step-num">${idx + 1}</div>
+          <div class="arch-step-main"><strong>${esc(label)}</strong> (${esc(tech)}): ${esc(why.split('. ')[0])}.</div>
+        </div>
+      `;
+    }).join('');
+    flowCards.push(`
+      <div class="arch-flow-card ${primaryFlow.type || 'hot'}">
+        <div class="arch-flow-card-head">
+          <div class="arch-flow-card-title">${esc(primaryFlow.label || 'Primary flow')}</div>
+          <div class="arch-flow-card-sub">${esc(primaryFlow.type || 'hot')} path</div>
+        </div>
+        <div class="arch-flow-card-body">
+          This is the main request path you should narrate first. It shows where latency is spent and where the system can fail.
+          <div class="arch-step-list">${stepLines}</div>
+        </div>
+      </div>
+    `);
   }
-  // Why this stack from choices
+
+  flows.slice(1, 3).forEach(flow => {
+    const steps = (flow.nodes || []).map((id, idx) => {
+      const n = nodesById.get(id);
+      return `<div class="arch-step-row"><div class="arch-step-num">${idx + 1}</div><div class="arch-step-main">${esc(n ? n.label : id)} ${n?.tech ? `(${esc(n.tech)})` : ''}</div></div>`;
+    }).join('');
+    flowCards.push(`
+      <div class="arch-flow-card ${flow.type || 'async'}">
+        <div class="arch-flow-card-head">
+          <div class="arch-flow-card-title">${esc(flow.label || 'Supporting flow')}</div>
+          <div class="arch-flow-card-sub">${esc(flow.type || 'async')} path</div>
+        </div>
+        <div class="arch-flow-card-body">
+          Use this flow to explain a secondary concern like retries, background work, or a miss path.
+          <div class="arch-step-list">${steps}</div>
+        </div>
+      </div>
+    `);
+  });
+
+  const nodeCards = [];
+  const lldNodes = (primaryFlow?.nodes || []).slice(0, 4).map(id => nodesById.get(id)).filter(Boolean);
+  const fallbackNodes = arch.nodes.slice(0, 4);
+  const deepDiveNodes = lldNodes.length ? lldNodes : fallbackNodes;
+  deepDiveNodes.forEach(node => {
+    const layerLabel = LAYER_META[node.layer || 'infra']?.label || (node.layer || 'infra');
+    const chips = [
+      node.layer || 'infra',
+      node.tech || 'component',
+      layerLabel,
+    ];
+    nodeCards.push(`
+      <div class="arch-node-card">
+        <div class="arch-node-card-head">
+          <span style="font-size:16px">${esc(node.icon || '◻')}</span>
+          <div class="arch-node-card-title">${esc(node.label)}</div>
+          <div class="arch-node-card-sub">${esc(layerLabel)} layer</div>
+        </div>
+        <div class="arch-node-card-body">
+          <strong>${esc(node.tech || 'Tech stack')}</strong>: ${esc(node.why || 'Core building block in the architecture.')}
+        </div>
+        <div class="arch-node-chip-row">
+          ${chips.map((chip, idx) => `<span class="arch-node-chip ${['teal','blue','amber'][idx % 3]}">${esc(chip)}</span>`).join('')}
+        </div>
+      </div>
+    `);
+  });
+
+  const scaleHint = (scenario.insights || []).find(i =>
+    /shard|partition|scale|cache|replica|fan-out|queue|throughput|latency/i.test(i)
+  ) || scenario.insights?.[0] || 'Start with the simplest architecture and split only when a bottleneck is proven.';
+  const ruleCards = [];
+  ruleCards.push(`
+    <div class="arch-rule-card">
+      <div class="arch-rule-card-head">
+        <div class="arch-rule-card-title">Scale trigger</div>
+        <div class="arch-rule-card-sub">what forces the next split</div>
+      </div>
+      <div class="arch-rule-card-body">${esc(scaleHint)}</div>
+    </div>
+  `);
   if (arch.choices && arch.choices.length) {
-    const choiceText = arch.choices.slice(0, 3).map(c =>
-      `<strong>${c.component}</strong>: ${c.why.split('. ')[0]}.`
-    ).join(' ');
-    parts.push(`<div class="ae-section"><div class="ae-title">Key Design Decisions</div><div class="ae-body">${choiceText}</div></div>`);
+    const primaryChoice = arch.choices[0];
+    ruleCards.push(`
+      <div class="arch-rule-card">
+        <div class="arch-rule-card-head">
+          <div class="arch-rule-card-title">LLD choice</div>
+          <div class="arch-rule-card-sub">why this component exists</div>
+        </div>
+        <div class="arch-rule-card-body"><strong>${esc(primaryChoice.component)}</strong>: ${esc(primaryChoice.why.split('. ')[0])}.</div>
+      </div>
+    `);
   }
-  // Scale strategy from insights
-  if (scenario.insights && scenario.insights.length) {
-    const scaleHint = scenario.insights.find(i => i.toLowerCase().includes('shard') || i.toLowerCase().includes('scale') || i.toLowerCase().includes('consistent')) || scenario.insights[0];
-    parts.push(`<div class="ae-section"><div class="ae-title">Scale &amp; Partitioning</div><div class="ae-body ae-scale">${scaleHint}</div></div>`);
+  if (scenario.incidents && scenario.incidents.length) {
+    const incident = scenario.incidents[0];
+    ruleCards.push(`
+      <div class="arch-rule-card">
+        <div class="arch-rule-card-head">
+          <div class="arch-rule-card-title">Failure mode</div>
+          <div class="arch-rule-card-sub">what breaks first</div>
+        </div>
+        <div class="arch-rule-card-body"><strong>${esc(incident.incident)}</strong>: ${esc(incident.symptom.split('. ')[0])}.</div>
+      </div>
+    `);
   }
-  el.innerHTML = parts.join('');
+
+  el.innerHTML = `
+    <div class="arch-explain-grid">
+      ${flowCards.join('')}
+      ${nodeCards.join('')}
+      ${ruleCards.join('')}
+    </div>
+  `;
 }
 
 // ── What-if stress panel ──
@@ -7244,16 +8559,22 @@ function calcSLO(pct) {
 
 function renderSLO(pct) {
   const results = calcSLO(pct);
+  const subMap = {
+    'Per Year': 'Annual downtime budget for the service or contract.',
+    'Per Month': 'Useful for release planning and incident review.',
+    'Per Week': 'Good for monitoring how fast error budget burns.',
+    'Per Day': 'Shows whether the service can survive a bad day.',
+  };
   document.getElementById('slo-grid').innerHTML = results.map(r =>
-    `<div class="slo-card"><div class="slo-card-val">${r.val}</div><div class="slo-card-label">${r.label}</div></div>`
+    `<div class="slo-card"><div class="slo-card-val">${r.val}</div><div class="slo-card-label">${r.label}</div><div class="slo-card-sub">${subMap[r.label] || 'Translate uptime into a real operational budget.'}</div></div>`
   ).join('');
   // Error budget tip
   const budgetMins = (1 - pct / 100) * 30 * 24 * 60;
   let tip = '';
-  if (pct >= 99.99) tip = '⚡ This is "four nines". Deployment windows < 1 min. Zero-downtime deploy mandatory.';
-  else if (pct >= 99.9) tip = '✅ "Three nines" is the sweet spot for most services. ~43 min/month budget.';
-  else if (pct >= 99) tip = '⚠️ Two nines = ~7 hrs/month. OK for non-critical internal tools only.';
-  else tip = '❌ <99% is essentially unacceptable for any user-facing service.';
+  if (pct >= 99.99) tip = `⚡ Four nines leaves about ${budgetMins.toFixed(1)} min/month. Treat deploys, failover, and rollback as product features.`;
+  else if (pct >= 99.9) tip = `✅ Three nines leaves about ${budgetMins.toFixed(0)} min/month. You still have maintenance room, but not for sloppy releases.`;
+  else if (pct >= 99) tip = `⚠️ Two nines leaves about ${budgetMins.toFixed(0)} min/month. Fine for internal tools, but user-facing systems usually need tighter targets.`;
+  else tip = `❌ Under 99% leaves about ${budgetMins.toFixed(0)} min/month, which is usually too much downtime for a serious product.`;
   document.getElementById('slo-budget').innerHTML = tip;
 }
 
@@ -7345,6 +8666,107 @@ function renderScenarioMeta(scenario) {
     parts.push(`<span class="cap-badge ${cap.cls}" title="${cap.title}">CAP: ${cap.label}</span>`);
   }
   el.innerHTML = parts.join('');
+  renderHeroStrip(scenario);
+}
+
+function renderHeroStrip(scenario) {
+  const meta = scenario.meta || {};
+  const setText = (id, value) => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = value || '—';
+  };
+  const setPills = (id, values) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const palette = ['teal', 'blue', 'amber', 'coral'];
+    const pills = values.filter(Boolean).map((v, i) => `<span class="hero-pill ${palette[i % palette.length]}">${v}</span>`).join('');
+    el.innerHTML = pills || '<span class="hero-pill">—</span>';
+  };
+  const cap = meta.consistency ? (CAP_MAP[meta.consistency] || { label: meta.consistency.toUpperCase() }) : null;
+  const designLens = scenario.arch?.choices?.[0]?.component || scenario.arch?.nodes?.[0]?.tech || 'Start simple';
+  const architectureSub = meta.cacheStrategy
+    ? `${meta.cacheStrategy} · ${cap ? `CAP: ${cap.label}` : 'CAP: n/a'}`
+    : `${cap ? `CAP: ${cap.label}` : 'CAP: n/a'} · ${scenario.arch?.flows?.length || 0} flows`;
+
+  setText('hero-scenario-name', scenario.name);
+  setText('hero-scenario-desc', scenario.desc);
+  setText('hero-difficulty', meta.difficulty || '—');
+  setText('hero-difficulty-sub', meta.pattern ? `Pattern: ${meta.pattern} · Category: ${meta.category || 'general'}` : `Category: ${meta.category || 'general'}`);
+  setText('hero-bottleneck', meta.dominantBottleneck || '—');
+  setText('hero-bottleneck-sub', meta.storageEngine ? `Backed by ${meta.storageEngine} · cache ${meta.cacheStrategy || 'none'}` : 'Follow the hot path first.');
+  setText('hero-architecture', designLens);
+  setText('hero-architecture-sub', architectureSub);
+
+  setPills('hero-scenario-pills', [
+    meta.category,
+    meta.consistency ? `cap:${cap.label}` : null,
+    meta.storageEngine,
+  ].map(v => v && String(v).toUpperCase()));
+  setPills('hero-difficulty-pills', [
+    meta.pattern,
+    meta.difficulty,
+  ]);
+  setPills('hero-bottleneck-pills', [
+    meta.dominantBottleneck,
+    meta.cacheStrategy,
+  ]);
+  setPills('hero-architecture-pills', [
+    cap ? `cap:${cap.label}` : null,
+    scenario.arch?.flows ? `${scenario.arch.flows.length} flows` : null,
+  ].map(v => v && String(v).toUpperCase()));
+  renderPlaybook(scenario);
+}
+
+function renderPlaybook(scenario) {
+  const meta = scenario.meta || {};
+  const arch = scenario.arch || {};
+  const choices = arch.choices || [];
+  const bottleneck = meta.dominantBottleneck || 'the hot path';
+  const start = choices[0]?.component || meta.cacheStrategy || 'single service';
+  const riskByBottleneck = {
+    'db-writes': 'database write saturation',
+    'fanout': 'fan-out amplification',
+    'hot-partitions': 'uneven key distribution',
+    'network-egress': 'bandwidth and CDN cost',
+    'queue-lag': 'consumer backlog',
+    'storage': 'growth and retention',
+    'cache-memory': 'cache pressure',
+    'gateway-cpu': 'edge saturation',
+    'feature-lookup': 'slow model or feature fetches',
+  };
+  const scaleByPattern = {
+    'read-heavy': 'cache-first + read replicas',
+    'write-heavy': 'queue + async persistence',
+    'balanced': 'monolith first, split by boundary',
+    'batch': 'workers + scheduled pipelines',
+    'event-driven': 'event bus + consumers',
+    'streaming': 'partitioned stream processors',
+  };
+  const answerByMeta = {
+    'eventual': 'Accept stale reads, protect writes, and keep the hot path lean.',
+    'causal': 'Preserve user-visible order while keeping the system horizontally scalable.',
+    'strong': 'Keep the source of truth centralized and use replicas only for safe reads.',
+    'n/a': 'Separate the synchronous path from the background work as early as possible.',
+  };
+  const oneLine = [
+    meta.cacheStrategy ? `${meta.cacheStrategy} cache` : null,
+    meta.pattern ? scaleByPattern[meta.pattern] : null,
+    meta.consistency ? answerByMeta[meta.consistency] : null,
+  ].filter(Boolean).join(' · ');
+
+  const set = (id, value) => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = value || '—';
+  };
+
+  set('playbook-start', start);
+  set('playbook-start-sub', choices[0]?.why || scenario.desc || 'Lead with the smallest credible design, then scale from measured pain.');
+  set('playbook-risk', riskByBottleneck[bottleneck] || bottleneck);
+  set('playbook-risk-sub', meta.dominantBottleneck ? `This is the first constraint to make explicit.` : 'Name the bottleneck before you start optimizing.');
+  set('playbook-scale', scaleByPattern[meta.pattern] || meta.cacheStrategy || 'add cache and queueing');
+  set('playbook-scale-sub', arch.flows?.length ? `${arch.flows.length} major flow(s) to explain.` : 'Use one lever that buys the next order of magnitude.');
+  set('playbook-answer', oneLine || 'Cache the hot path and partition the rest.');
+  set('playbook-answer-sub', arch.choices?.[0]?.alternatives ? `Trade-off: ${arch.choices[0].alternatives}` : 'Trade-off framing matters more than perfect numbers.');
 }
 
 function renderScenarioSnapshot(scenario) {
@@ -7913,9 +9335,9 @@ window.addEventListener('resize', () => {
     if(coverageBar) coverageBar.style.width=coverage+'%';
     if(favEl) favEl.textContent=favorites;
     if(chips){
-      const senior=SCENARIOS.filter(s=>s.level==='senior').length;
-      const staff=SCENARIOS.filter(s=>s.level==='staff').length;
-      const architect=SCENARIOS.filter(s=>s.level==='architect').length;
+      const senior=SCENARIOS.filter(s=>s.meta?.difficulty==='senior').length;
+      const staff=SCENARIOS.filter(s=>s.meta?.difficulty==='staff').length;
+      const architect=SCENARIOS.filter(s=>s.meta?.difficulty==='architect').length;
       chips.innerHTML=`
         <span class="dash-chip"><i class="ti ti-brain"></i> ${SCENARIOS.length} scenarios</span>
         <span class="dash-chip"><i class="ti ti-user-star"></i> ${senior} senior</span>
@@ -8363,7 +9785,7 @@ window.addEventListener('resize', () => {
 
   container.innerHTML = LATENCY_DATA.map(d => {
     const logPos = Math.log10(d.ns);
-    const pct = ((logLog = (logPos - minLog) / (maxLog - minLog)) * 85 + 5);
+    const pct = (((logPos - minLog) / (maxLog - minLog)) * 85 + 5);
     return `
       <div class="lat-bar-row">
         <div class="lat-bar-label">${d.label}</div>
@@ -8408,6 +9830,42 @@ window.addEventListener('resize', () => {
 
 /* ── Concept Glossary ── */
 (function(){
+  const CONCEPT_META = {
+    cap: {
+      badge: 'Consistency',
+      cue: 'Use this when the interviewer asks about stale reads, leader election, or strict correctness.',
+      trap: 'Do not say “strong consistency” unless you can explain the coordination cost.',
+      use: 'Use to frame trade-offs between latency, availability, and correctness.',
+    },
+    network: {
+      badge: 'Network',
+      cue: 'Use this when the workload is connection-heavy, distributed, or latency-sensitive.',
+      trap: 'Do not treat network hops like free function calls; every hop changes failure modes.',
+      use: 'Use to explain why protocol choice and connection management matter.',
+    },
+    storage: {
+      badge: 'Storage',
+      cue: 'Use this when the problem is about data shape, query pattern, retention, or write amplification.',
+      trap: 'Do not pick a database by brand name; pick it by access pattern.',
+      use: 'Use to tie workload shape to indexes, partitions, and replication.',
+    },
+    pattern: {
+      badge: 'Pattern',
+      cue: 'Use this when the interviewer wants a reusable design move, not a product feature.',
+      trap: 'Do not present the pattern as magic; explain what bottleneck it solves.',
+      use: 'Use to justify fan-out, CQRS, caching, queues, and event-driven flows.',
+    },
+    reliability: {
+      badge: 'Reliability',
+      cue: 'Use this when the discussion moves to downtime, retries, resilience, or blast radius.',
+      trap: 'Do not stop at “add retries”; explain backoff, idempotency, and failure isolation.',
+      use: 'Use to show how the system behaves when dependencies fail.',
+    },
+  };
+
+  const sanitize = s => String(s ?? '').replace(/[&<>"']/g, ch => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;', "'":'&#39;' }[ch]));
+  let selectedTerm = 'CAP Theorem';
+
   const CONCEPTS = [
     // CAP / Consistency
     { term: 'CAP Theorem', cat: 'cap', def: 'A distributed system can guarantee only 2 of 3: Consistency, Availability, Partition Tolerance. In practice, partition tolerance is mandatory, so the real choice is CP vs AP.', example: 'CP: Zookeeper, HBase | AP: Cassandra, DynamoDB' },
@@ -8446,24 +9904,309 @@ window.addEventListener('resize', () => {
     { term: 'Bulkhead', cat: 'reliability', def: 'Isolate resources into pools per client/service. Failure in one pool doesn\'t cascade. Like ship compartments. Thread pool per dependency.', example: 'Separate DB connection pools per service, rate limits per tenant' },
   ];
 
+  const TERM_NOTES = {
+    'CAP Theorem': {
+      practice: 'Use it when the interviewer wants you to explain what happens during a partition and which side of the trade-off you are choosing.',
+      example: 'If two replicas cannot talk, a CP system may reject writes to stay correct, while an AP system may keep serving and reconcile later.',
+      impact: 'Helps you explain why distributed systems need explicit policies for failover, quorum, and stale reads.',
+      answer: 'I would frame this as a choice between correctness and availability during a network split, then state which behavior the product needs most.',
+    },
+    'Strong Consistency': {
+      practice: 'Use when stale data would cause a visible bug or a safety issue.',
+      example: 'A bank balance update should not let one region show old money after the other region already committed the withdrawal.',
+      impact: 'Usually implies leader routing, quorum reads, or synchronous replication.',
+      answer: 'I would say the system must pay coordination cost so every read reflects the latest committed write.',
+    },
+    'Eventual Consistency': {
+      practice: 'Use for feeds, counters, and global systems where speed matters more than instant agreement.',
+      example: 'A like count can lag by a few seconds, and the app can still feel correct to the user.',
+      impact: 'Usually means async replication, retries, and conflict resolution are part of the design.',
+      answer: 'I would say the system tolerates temporary staleness in exchange for higher availability and lower latency.',
+    },
+    'Read-Your-Writes': {
+      practice: 'Use when a user must immediately see the effect of their own action.',
+      example: 'After editing a profile photo, the same user should not refresh into an old version because the read hit a lagging replica.',
+      impact: 'Often solved with sticky sessions, session-aware routing, or writer reads for that user.',
+      answer: 'I would say we do not need global consistency, but we do need the session to observe its own writes.',
+    },
+    'Linearizability': {
+      practice: 'Use for coordination primitives, leader election, and critical metadata.',
+      example: 'A lock service should never hand the same lock to two clients at the same time, even briefly.',
+      impact: 'Usually pushes you toward a single authority or quorum-backed read/write path.',
+      answer: 'I would say each operation should appear to happen at one instant, which makes coordination predictable.',
+    },
+    CRDT: {
+      practice: 'Use for collaborative editing or shared counters where offline merges are acceptable.',
+      example: 'Two people editing separate parts of a document can later merge without losing one person\'s work.',
+      impact: 'Removes coordination from the hot path, but you trade away simple, globally ordered writes.',
+      answer: 'I would say the data type is designed so concurrent updates converge safely without central locking.',
+    },
+    'Consistent Hashing': {
+      practice: 'Use when you need to spread keys across shards or caches and keep movement low when the cluster changes.',
+      example: 'If one cache node leaves, only a small slice of keys remap instead of rehashing the whole dataset.',
+      impact: 'Good for minimizing cache churn, rebalancing cost, and shard migration pain.',
+      answer: 'I would say we place keys on a ring so node membership changes only affect nearby keys.',
+    },
+    'Long Polling': {
+      practice: 'Use when real-time push is needed but a WebSocket is too heavy or not worth the complexity.',
+      example: 'A notification endpoint can hold the request open until a new event arrives, then the client immediately reconnects.',
+      impact: 'Simple to implement, but it adds request churn and still uses server resources while waiting.',
+      answer: 'I would say we keep the HTTP request open until there is new data or a timeout, then retry.',
+    },
+    WebSocket: {
+      practice: 'Use for bidirectional, low-latency interaction like chat, trading, or live collaboration.',
+      example: 'A chat app can deliver messages and typing indicators over one long-lived connection.',
+      impact: 'Makes connection management, backpressure, and fan-out central design concerns.',
+      answer: 'I would say the connection stays open after the HTTP upgrade so both sides can push events anytime.',
+    },
+    'Server-Sent Events': {
+      practice: 'Use when the server only needs to push updates one way.',
+      example: 'A dashboard can stream status updates from the server without needing the browser to send messages back on the same channel.',
+      impact: 'Cheaper than a WebSocket when the client is mostly a subscriber.',
+      answer: 'I would say SSE is a simpler one-way stream that works well for live feeds and progress updates.',
+    },
+    gRPC: {
+      practice: 'Use for service-to-service calls where speed, schema, and streaming matter more than browser compatibility.',
+      example: 'An internal payment service can call inventory and fraud services using compact protobuf messages over HTTP/2.',
+      impact: 'Usually improves latency and payload size, but adds schema discipline and codegen overhead.',
+      answer: 'I would say gRPC is a strong fit when internal APIs need efficient, typed, and streaming-friendly transport.',
+    },
+    CDN: {
+      practice: 'Use whenever traffic is globally distributed or the same asset is requested repeatedly.',
+      example: 'A video thumbnail can be served from a nearby edge node instead of waking the origin for every request.',
+      impact: 'Cuts latency and origin cost, but cache rules and invalidation become part of product design.',
+      answer: 'I would say we push hot or static content close to users to lower latency and shield the origin.',
+    },
+    'LSM Tree': {
+      practice: 'Use to explain write-optimized storage engines and high ingest workloads.',
+      example: 'A write-heavy metrics store can batch writes in memory, flush sequentially, then compact later for read efficiency.',
+      impact: 'Great write throughput, but reads may need to check several levels or SSTables.',
+      answer: 'I would say the engine favors sequential writes and later compaction, which is why it suits heavy ingestion.',
+    },
+    'B-Tree Index': {
+      practice: 'Use for balanced read/write workloads and range queries.',
+      example: 'A user table indexed by created_at can efficiently return the newest rows in order.',
+      impact: 'Often the best general-purpose structure for OLTP databases.',
+      answer: 'I would say B-trees are good when you need ordered access, range scans, and predictable random reads.',
+    },
+    'Write-Behind Cache': {
+      practice: 'Use when write speed matters more than immediate durability.',
+      example: 'A counter service can accept increments quickly and flush them to the database in batches later.',
+      impact: 'Fast and cheap on the hot path, but recovery logic must handle loss on crash.',
+      answer: 'I would say the cache absorbs writes first and the database is updated asynchronously.',
+    },
+    'Write-Through Cache': {
+      practice: 'Use when consistency matters more than write latency.',
+      example: 'An auth token update should be in cache and database at the same moment so reads never see a mismatch.',
+      impact: 'Simplifies correctness, but every write pays the cost of the backing store.',
+      answer: 'I would say the cache is always kept in sync with the source of truth before the write returns.',
+    },
+    'Bloom Filter': {
+      practice: 'Use to cheaply answer "definitely not" before paying for a heavier lookup.',
+      example: 'A URL shortener can use a Bloom filter to skip database checks for keys that are clearly absent.',
+      impact: 'Saves read work at scale, but false positives mean it cannot be the final authority.',
+      answer: 'I would say it is a probabilistic pre-check that protects the database from unnecessary misses.',
+    },
+    Sharding: {
+      practice: 'Use when a single database no longer fits the throughput or storage needs.',
+      example: 'A user_id hash can route writes to one of many shards so each shard owns only part of the total load.',
+      impact: 'Solves scale, but cross-shard queries, rebalancing, and hot keys get harder.',
+      answer: 'I would say we split data horizontally so no single node becomes the bottleneck.',
+    },
+    'Fan-out on Write': {
+      practice: 'Use for feeds that must read quickly for most users.',
+      example: 'When someone posts, the platform immediately copies that post into each follower\'s feed inbox.',
+      impact: 'Moves cost to write time, which is fine when followers are few and reads are frequent.',
+      answer: 'I would say we pay the write amplification once so reads become cheap and fast.',
+    },
+    'Fan-out on Read': {
+      practice: 'Use when write amplification would explode for high-follower accounts.',
+      example: 'A celebrity profile can have their posts merged at read time instead of pushing to millions of inboxes.',
+      impact: 'Keeps writes cheap, but every read does more work and may need cache help.',
+      answer: 'I would say the system assembles the feed when requested because precomputing it would be too expensive.',
+    },
+    CQRS: {
+      practice: 'Use when the write model and read model have different shape or performance needs.',
+      example: 'An order service can write normalized transactions while a read replica stores denormalized customer views.',
+      impact: 'Lets you optimize reads independently, but introduces eventual consistency between models.',
+      answer: 'I would say we separate commands from queries so each path can be tuned for its own workload.',
+    },
+    'Saga Pattern': {
+      practice: 'Use for multi-service workflows that need rollback without a global distributed transaction.',
+      example: 'An order can reserve inventory, charge payment, and then confirm shipping, with compensating actions if one step fails.',
+      impact: 'Improves resilience over 2PC, but you need idempotent steps and careful failure handling.',
+      answer: 'I would say each local transaction is coordinated with a compensating action if the workflow later fails.',
+    },
+    'Circuit Breaker': {
+      practice: 'Use when a dependency is failing and you want to stop making the problem worse.',
+      example: 'If the payment service is timing out, open the breaker so callers fail fast instead of piling up threads.',
+      impact: 'Protects the system from cascading failures and gives the downstream time to recover.',
+      answer: 'I would say the breaker stops calls after repeated failures, then probes the service again later.',
+    },
+    Backpressure: {
+      practice: 'Use when producers can outpace consumers and queue growth becomes dangerous.',
+      example: 'A Kafka consumer group can slow upstream ingest if lag grows too large.',
+      impact: 'Keeps memory and latency under control by letting the system absorb load rather than collapse.',
+      answer: 'I would say the producer needs to feel consumer pressure so the pipeline stays stable.',
+    },
+    'Idempotency Key': {
+      practice: 'Use for retries on non-repeatable actions like payments or order creation.',
+      example: 'If a payment request is retried, the server uses the same idempotency key and returns the original result instead of charging twice.',
+      impact: 'Turns uncertain networks into safe retries, which is huge for correctness.',
+      answer: 'I would say each request gets a unique token so retries collapse to one logical operation.',
+    },
+    'SLO / SLA / SLI': {
+      practice: 'Use to turn reliability into measurable targets instead of vague promises.',
+      example: 'If the p99 latency SLO is 200ms, then the team can reason about whether a deploy broke the target.',
+      impact: 'Gives the team a shared language for tracking service health and external commitments.',
+      answer: 'I would say the metric is the SLI, the target is the SLO, and the customer contract is the SLA.',
+    },
+    'Error Budget': {
+      practice: 'Use to decide when to slow down feature work and stabilize the system.',
+      example: 'A service with a 99.9% SLO only has a small downtime budget for the year, so repeated incidents quickly consume it.',
+      impact: 'Aligns engineering trade-offs with reliability goals.',
+      answer: 'I would say the remaining error budget tells us how much risk we can still afford to take.',
+    },
+    'Thundering Herd': {
+      practice: 'Use when many clients retry at once after a shared failure or cache expiry.',
+      example: 'If a popular cache entry expires, thousands of requests may simultaneously try to refill it.',
+      impact: 'Can melt the origin unless you add jitter, locks, request coalescing, or stale serving.',
+      answer: 'I would say the problem is synchronized retries, so the fix is to spread or collapse the load.',
+    },
+    'Hot Partition': {
+      practice: 'Use when one key or shard receives far more traffic than the others.',
+      example: 'A trending celebrity user may put all writes onto one partition and create a queue even if the rest of the cluster is idle.',
+      impact: 'Forces better shard keys, salting, or partition splitting.',
+      answer: 'I would say the issue is not total load, but uneven load concentrated on one partition.',
+    },
+    Bulkhead: {
+      practice: 'Use to isolate dependencies so one failure does not consume all shared resources.',
+      example: 'Separate connection pools can keep a slow analytics service from starving checkout traffic.',
+      impact: 'Limits blast radius and keeps one tenant or feature from taking down the whole system.',
+      answer: 'I would say we partition resources into compartments so a failure stays contained.',
+    },
+  };
+
   const grid = document.getElementById('concept-grid');
-  if(!grid) return;
+  const detail = document.getElementById('concept-detail');
+  const searchInput = document.getElementById('concept-search');
+  const countEl = document.getElementById('concept-search-count');
+  if(!grid || !detail) return;
+
+  function conceptMeta(c) {
+    return CONCEPT_META[c.cat] || { badge: c.cat, cue: 'Use this when the interviewer wants a quick label for a familiar design decision.', trap: 'Do not use the label without describing the trade-off.', use: 'Use to connect a pattern to the bottleneck it solves.' };
+  }
+
+  function conceptNotes(c) {
+    return TERM_NOTES[c.term] || {
+      practice: 'Use this concept when it directly changes a bottleneck, failure mode, or scaling choice.',
+      example: 'A good example is one where the system behavior changes because this concept is present.',
+      impact: 'It should affect correctness, latency, or operational complexity in a visible way.',
+      answer: 'I would explain the term, then tie it to the specific trade-off it introduces.',
+    };
+  }
+
+  function renderDetail(c) {
+    if (!c) {
+      detail.innerHTML = '<div class="cmp-empty">Select a concept to see a deeper explanation.</div>';
+      return;
+    }
+    const meta = conceptMeta(c);
+    const notes = conceptNotes(c);
+    detail.innerHTML = `
+      <div class="concept-detail-head">
+        <div>
+          <div class="concept-detail-name">${sanitize(c.term)}</div>
+          <div class="concept-detail-badges">
+            <span class="concept-detail-badge ${sanitize(c.cat)}">${sanitize(meta.badge)}</span>
+            <span class="concept-detail-badge">Interview cue</span>
+          </div>
+        </div>
+        <div class="concept-detail-badges">
+          <span class="concept-detail-badge">${sanitize(c.cat)}</span>
+        </div>
+      </div>
+      <div class="concept-detail-body">
+        <div class="concept-detail-box">
+          <div class="concept-detail-label">Definition</div>
+          <div class="concept-detail-text">${sanitize(c.def)}</div>
+        </div>
+        <div class="concept-detail-box">
+          <div class="concept-detail-label">Example</div>
+          <div class="concept-detail-example">${sanitize(c.example)}</div>
+        </div>
+      </div>
+      <div class="concept-detail-body" style="margin-top:10px">
+        <div class="concept-detail-box">
+          <div class="concept-detail-label">When to use it</div>
+          <div class="concept-detail-text">${sanitize(meta.use)}</div>
+        </div>
+        <div class="concept-detail-box">
+          <div class="concept-detail-label">Common trap</div>
+          <div class="concept-detail-text">${sanitize(meta.trap)}</div>
+        </div>
+      </div>
+      <div class="concept-detail-body" style="margin-top:10px">
+        <div class="concept-detail-box">
+          <div class="concept-detail-label">What it looks like in a system</div>
+          <div class="concept-detail-text">${sanitize(notes.impact)}</div>
+        </div>
+        <div class="concept-detail-box">
+          <div class="concept-detail-label">Concrete example</div>
+          <div class="concept-detail-text">${sanitize(notes.example)}</div>
+        </div>
+      </div>
+      <div class="concept-detail-box" style="margin-top:10px">
+        <div class="concept-detail-label">Interview answer shape</div>
+        <div class="concept-detail-text">${sanitize(notes.answer)}</div>
+      </div>
+      <div class="concept-detail-box" style="margin-top:10px">
+        <div class="concept-detail-label">How to say it in an interview</div>
+        <div class="concept-detail-text">${sanitize(meta.cue)}</div>
+      </div>
+      <div class="concept-detail-box" style="margin-top:10px">
+        <div class="concept-detail-label">How to remember it</div>
+        <div class="concept-detail-text">${sanitize(notes.practice)}</div>
+      </div>
+    `;
+  }
 
   function render(filter){
-    const items = filter === 'all' ? CONCEPTS : CONCEPTS.filter(c => c.cat === filter);
+    const q = (searchInput?.value || '').trim().toLowerCase();
+    const items = (filter === 'all' ? CONCEPTS : CONCEPTS.filter(c => c.cat === filter))
+      .filter(c => !q || [c.term, c.def, c.example, conceptMeta(c).cue, conceptMeta(c).trap, conceptMeta(c).use].join(' ').toLowerCase().includes(q));
+    if (!items.length) {
+      grid.innerHTML = '<div class="cmp-empty" style="grid-column:1/-1">No concepts matched your filter.</div>';
+      detail.innerHTML = '<div class="cmp-empty">Try a different search term or category.</div>';
+      if (countEl) countEl.textContent = '0 concepts';
+      return;
+    }
+    if (!items.some(c => c.term === selectedTerm)) selectedTerm = items[0].term;
+    const selected = items.find(c => c.term === selectedTerm) || items[0];
+    if (countEl) countEl.textContent = `${items.length} concept${items.length !== 1 ? 's' : ''}`;
+    renderDetail(selected);
     grid.innerHTML = items.map(c => `
-      <div class="concept-card ${c.cat}" title="${c.term}">
+      <div class="concept-card ${c.cat} ${c.term === selected.term ? 'active' : ''}" title="${c.term}" data-term="${sanitize(c.term)}">
         <div class="concept-term">
-          ${c.term}
-          <span class="concept-badge ${c.cat}">${c.cat.replace('cap','consistency').replace('network','network').replace('storage','storage').replace('pattern','pattern').replace('reliability','reliability')}</span>
+          ${sanitize(c.term)}
+          <span class="concept-badge ${c.cat}">${sanitize(conceptMeta(c).badge)}</span>
         </div>
-        <div class="concept-def">${c.def}</div>
-        <span class="concept-example">${c.example}</span>
+        <div class="concept-def">${sanitize(c.def)}</div>
+        <span class="concept-example">${sanitize(c.example)}</span>
       </div>
     `).join('');
   }
 
   render('all');
+
+  searchInput?.addEventListener('input', () => render(document.querySelector('[data-cfilter].active')?.dataset.cfilter || 'all'));
+
+  grid.addEventListener('click', e => {
+    const card = e.target.closest('.concept-card');
+    if (!card) return;
+    selectedTerm = card.dataset.term || selectedTerm;
+    render(document.querySelector('[data-cfilter].active')?.dataset.cfilter || 'all');
+  });
 
   document.querySelectorAll('[data-cfilter]').forEach(btn => {
     btn.addEventListener('click', e => {
@@ -8542,52 +10285,260 @@ window.addEventListener('resize', () => {
   });
 })();
 
-/* ── Cross-scenario Capacity Bars ── */
-function _renderCapBars(){
-  if(!window.SCENARIOS || !window.state) return;
-  const allCalcs = SCENARIOS.map(s => {
-    try {
-      const pVals = {};
-      s.params.forEach(p => pVals[p.id] = p.val * (p.mult||1));
-      const r = s.calc(pVals);
-      return { name: s.name, id: s.id, rqps: r.rqps||0, wqps: r.wqps||0, stor: r.storPerDay||0 };
-    } catch(e){ return null; }
-  }).filter(Boolean);
+/* ══════════════════════════════════════════
+   ENHANCED VISUALIZATION FUNCTIONS v3
+   ══════════════════════════════════════════ */
 
-  const maxRqps = Math.max(...allCalcs.map(c => c.rqps), 1);
-  const maxStor  = Math.max(...allCalcs.map(c => c.stor), 1);
+/* ── Cost Donut Chart ── */
+function drawCostDonut(cost) {
+  const canvas = document.getElementById('cost-donut-canvas');
+  const legendEl = document.getElementById('cost-donut-legend');
+  const totalEl = document.getElementById('cost-donut-total');
+  if (!canvas || !legendEl || !totalEl || !cost) return;
 
-  function fmtQ(n){ if(n>=1e6) return (n/1e6).toFixed(1)+'M/s'; if(n>=1e3) return (n/1e3).toFixed(0)+'K/s'; return Math.round(n)+'/s'; }
-  function fmtS(n){ if(n>=1e12) return (n/1e12).toFixed(1)+' TB'; if(n>=1e9) return (n/1e9).toFixed(1)+' GB'; if(n>=1e6) return (n/1e6).toFixed(1)+' MB'; return Math.round(n)+' B'; }
+  const ctx = canvas.getContext('2d');
+  const dpr = window.devicePixelRatio || 1;
+  const size = 160;
+  canvas.width = size * dpr;
+  canvas.height = size * dpr;
+  canvas.style.width = size + 'px';
+  canvas.style.height = size + 'px';
+  ctx.scale(dpr, dpr);
 
-  const colors = ['#0F6E56','#185FA5','#534AB7','#3B6D11','#EF9F27','#D85A30','#993C1D','#854F0B'];
+  const cx = size / 2, cy = size / 2, r = 62, lineWidth = 18;
+  const total = cost.total || 1;
+  const segments = [
+    { label: 'Compute', val: cost.compute, color: '#378ADD' },
+    { label: 'Storage', val: cost.storage, color: '#EF9F27' },
+    { label: 'Bandwidth', val: cost.bandwidth, color: '#D85A30' },
+    { label: 'Cache', val: cost.cache, color: '#5DCAA5' },
+    { label: 'Database', val: cost.db || 0, color: '#7F77DD' },
+  ].filter(s => s.val > 0);
 
-  function makeRows(list, maxVal, fmtFn, prop) {
-    const sorted = [...list].sort((a,b) => b[prop]-a[prop]).slice(0,10);
-    return sorted.map((item, i) => {
-      const pct = (item[prop]/maxVal)*100;
-      const isCurrent = item.id === state.scenarioId;
-      const color = isCurrent ? 'var(--teal)' : colors[i%colors.length];
-      const label = isCurrent ? `★ ${item.name}` : item.name;
-      return `
-        <div class="cap-compare-row">
-          <div class="cap-compare-label" style="${isCurrent?'font-weight:800;color:var(--teal)':''}">${label}</div>
-          <div class="cap-compare-track">
-            <div class="cap-compare-fill" style="width:${Math.max(pct,1.5).toFixed(1)}%;background:${color}">
-              ${pct > 18 ? fmtFn(item[prop]) : ''}
-            </div>
-          </div>
-          <div class="cap-compare-val" style="${isCurrent?'color:var(--teal);font-weight:800':''}">${fmtFn(item[prop])}</div>
-        </div>`;
-    }).join('');
-  }
+  totalEl.textContent = fmtMoney(total);
 
-  const qpsEl = document.getElementById('cap-bars-qps');
-  const storEl = document.getElementById('cap-bars-stor');
-  if(qpsEl) qpsEl.innerHTML = makeRows(allCalcs, maxRqps, fmtQ, 'rqps');
-  if(storEl) storEl.innerHTML = makeRows(allCalcs, maxStor, fmtS, 'stor');
+  let startAngle = -Math.PI / 2;
+  const gap = 0.04;
+
+  segments.forEach((seg, i) => {
+    const pct = seg.val / total;
+    const sweep = pct * Math.PI * 2 - gap;
+    if (sweep <= 0) return;
+
+    ctx.beginPath();
+    ctx.arc(cx, cy, r, startAngle, startAngle + sweep);
+    ctx.lineWidth = lineWidth;
+    ctx.strokeStyle = seg.color;
+    ctx.lineCap = 'round';
+    ctx.stroke();
+
+    startAngle += sweep + gap;
+  });
+
+  legendEl.innerHTML = segments.map(s => {
+    const pct = ((s.val / total) * 100).toFixed(1);
+    return `<div class="cost-donut-legend-item">
+      <div class="cost-donut-legend-dot" style="background:${s.color}"></div>
+      <span class="cost-donut-legend-label">${s.label}</span>
+      <span class="cost-donut-legend-val">${fmtMoney(s.val)}</span>
+      <span class="cost-donut-legend-pct">${pct}%</span>
+    </div>`;
+  }).join('');
 }
-_renderCapBars();
+
+/* ── Storage Growth Projection ── */
+function drawStorageProjection(storPerDay) {
+  const container = document.getElementById('storage-proj-bars');
+  if (!container || !storPerDay) return;
+
+  const periods = [
+    { label: '1 Month', days: 30 },
+    { label: '6 Months', days: 180 },
+    { label: '1 Year', days: 365 },
+    { label: '3 Years', days: 1095 },
+    { label: '5 Years', days: 1825 },
+  ];
+
+  const values = periods.map(p => storPerDay * p.days);
+  const maxVal = Math.max(...values, 1);
+
+  container.innerHTML = periods.map((p, i) => {
+    const val = values[i];
+    const pct = (val / maxVal) * 100;
+    const h = Math.max(4, pct);
+    return `<div class="storage-proj-bar-wrap">
+      <div class="storage-proj-bar" style="height:${h}%" data-val="${fmtBytes(val)}"></div>
+      <div class="storage-proj-bar-label">${p.label}</div>
+    </div>`;
+  }).join('');
+
+  requestAnimationFrame(() => {
+    container.querySelectorAll('.storage-proj-bar').forEach(bar => {
+      const h = bar.style.height;
+      bar.style.height = '0%';
+      requestAnimationFrame(() => { bar.style.height = h; });
+    });
+  });
+}
+
+/* ── Capacity Gauge ── */
+function drawCapacityGauge(scenario, result) {
+  const grid = document.getElementById('capacity-gauge-grid');
+  if (!grid || !result) return;
+
+  const r = result;
+  const peakMult = state.peakMult || 5;
+
+  const gauges = [
+    {
+      label: 'Read Throughput',
+      val: r.rqps,
+      max: 500000,
+      fmt: v => fmtQPS(v) + ' QPS',
+      sub: `peak: ${fmtQPS(r.rqps * peakMult)}`,
+    },
+    {
+      label: 'Write Throughput',
+      val: r.wqps,
+      max: 100000,
+      fmt: v => fmtQPS(v) + ' QPS',
+      sub: `peak: ${fmtQPS(r.wqps * peakMult)}`,
+    },
+    {
+      label: 'Storage / Day',
+      val: r.storPerDay,
+      max: 10 * 1e12,
+      fmt: v => fmtBytes(v) + '/day',
+      sub: `5yr: ${fmtBytes(r.storPerDay * 365 * 5)}`,
+    },
+    {
+      label: 'Bandwidth',
+      val: r.bwOut,
+      max: 100 * 1e9,
+      fmt: v => fmtBW(v),
+      sub: 'egress throughput',
+    },
+    {
+      label: 'Cache',
+      val: r.cacheGB || 0,
+      max: 1000,
+      fmt: v => fmtBytes(v * 1e9),
+      sub: 'Redis footprint',
+    },
+    {
+      label: 'Server Count',
+      val: r.servers || 0,
+      max: 2000,
+      fmt: v => v.toLocaleString() + ' servers',
+      sub: `at ${fmtQPS(r.rqps)} QPS`,
+    },
+  ];
+
+  grid.innerHTML = gauges.map(g => {
+    const pct = Math.min((g.val / g.max) * 100, 100);
+    const cls = pct > 80 ? 'critical' : pct > 50 ? 'warn' : 'safe';
+    return `<div class="capacity-gauge-item">
+      <div class="capacity-gauge-label">${g.label}</div>
+      <div class="capacity-gauge-bar-wrap">
+        <div class="capacity-gauge-bar ${cls}" style="width:${Math.max(pct, 2).toFixed(0)}%"></div>
+      </div>
+      <div class="capacity-gauge-val">${g.fmt(g.val)}</div>
+      <div class="capacity-gauge-sub">${g.sub}</div>
+    </div>`;
+  }).join('');
+}
+
+/* ── Read/Write Ratio Visual ── */
+function drawRWRatio(rqps, wqps) {
+  const readEl = document.getElementById('rw-ratio-read');
+  const writeEl = document.getElementById('rw-ratio-write');
+  const readValEl = document.getElementById('rw-read-val');
+  const writeValEl = document.getElementById('rw-write-val');
+  if (!readEl || !writeEl) return;
+
+  const total = rqps + wqps;
+  if (total === 0) return;
+
+  const readPct = (rqps / total * 100).toFixed(1);
+  const writePct = (wqps / total * 100).toFixed(1);
+
+  readEl.style.width = readPct + '%';
+  writeEl.style.width = writePct + '%';
+  readEl.textContent = readPct > 10 ? readPct + '%' : '';
+  writeEl.textContent = writePct > 10 ? writePct + '%' : '';
+
+  if (readValEl) readValEl.textContent = fmtQPS(rqps);
+  if (writeValEl) writeValEl.textContent = fmtQPS(wqps);
+}
+
+/* ── Server Scaling Visual ── */
+function drawServerScale(servers) {
+  const grid = document.getElementById('server-scale-grid');
+  const totalEl = document.getElementById('server-scale-total');
+  const detailEl = document.getElementById('server-scale-detail');
+  if (!grid) return;
+
+  const maxDisplay = Math.min(servers || 0, 200);
+  const maxH = 48;
+  const unitW = 14;
+
+  let html = '';
+  for (let i = 0; i < maxDisplay; i++) {
+    const h = 8 + Math.random() * (maxH - 8);
+    const opacity = 0.5 + (i / maxDisplay) * 0.5;
+    html += `<div class="server-scale-unit" style="height:${h}px;opacity:${opacity}" title="Server ${i+1}"></div>`;
+  }
+  if (servers > 200) {
+    html += `<div style="display:flex;align-items:center;font-size:10px;color:var(--text3);padding:0 6px">+${servers - 200} more</div>`;
+  }
+  grid.innerHTML = html;
+
+  if (totalEl) totalEl.textContent = (servers || 0).toLocaleString();
+  if (detailEl) {
+    const azCount = Math.ceil((servers || 1) / 3);
+    detailEl.textContent = `~${azCount} availability zones × 3`;
+  }
+}
+
+/* ── Panel entrance animation observer ── */
+(function(){
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.style.opacity = '1';
+        entry.target.style.transform = 'translateY(0)';
+      }
+    });
+  }, { threshold: 0.1 });
+
+  document.querySelectorAll('.viz-panel').forEach(panel => {
+    panel.style.opacity = '0';
+    panel.style.transform = 'translateY(12px)';
+    panel.style.transition = 'opacity 0.4s ease-out, transform 0.4s ease-out';
+    observer.observe(panel);
+  });
+})();
+
+/* ── Hook visualizations into render flow ── */
+(function(){
+  const origRecalc = window.recalcAndUpdate;
+  if (typeof origRecalc === 'function') {
+    window.recalcAndUpdate = function(scenario) {
+      origRecalc.call(this, scenario);
+      const mp = getParamMultiplied(scenario, state.params);
+      const result = scenario.calc(mp);
+      if (result) {
+        requestAnimationFrame(() => {
+          if (result.cost) drawCostDonut(result.cost);
+          drawStorageProjection(result.storPerDay);
+          drawCapacityGauge(scenario, result);
+          drawRWRatio(result.rqps, result.wqps);
+          drawServerScale(result.servers);
+        });
+      }
+    };
+  }
+})();
 
 </script>
 </body>

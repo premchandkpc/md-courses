@@ -1,0 +1,1758 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Amazon EKS Cluster Simulator</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg0:#060b18;--bg1:#0b1120;--bg2:#111827;--bg3:#1a2234;
+  --border:#1e2d4a;--border2:#2a3f5f;
+  --green:#10b981;--blue:#3b82f6;--cyan:#22d3ee;
+  --purple:#8b5cf6;--amber:#f59e0b;--red:#ef4444;--pink:#ec4899;
+  --text:#e2e8f0;--text2:#94a3b8;--text3:#64748b;
+  --mono:'Consolas','Monaco','Courier New',monospace;
+}
+[data-theme="light"]{
+  --bg0:#f1f5f9;--bg1:#ffffff;--bg2:#f8fafc;--bg3:#e2e8f0;
+  --border:#cbd5e1;--border2:#94a3b8;
+  --text:#0f172a;--text2:#334155;--text3:#64748b;
+}
+[data-theme="light"] .scode{color:#1e293b;background:rgba(0,0,0,.05);border-left-color:var(--amber)}
+[data-theme="light"] .logo-icon{color:#fff}
+[data-theme="light"] .scard{background:var(--bg2)}
+[data-theme="light"] .scard:hover{background:var(--bg3)}
+[data-theme="light"] .search-input{background:var(--bg1)}
+[data-theme="light"] .filter-chip{background:var(--bg1)}
+[data-theme="light"] .lang-tab{background:var(--bg0)}
+[data-theme="light"] .lang-tab.active{background:var(--bg2)}
+[data-theme="light"] .toast{background:var(--bg1);border-color:var(--border)}
+[data-theme="light"] .toast-t{color:var(--text)}
+[data-theme="light"] .shortcuts-modal{background:var(--bg2)}
+[data-theme="light"] .modal-box{background:var(--bg2)}
+[data-theme="light"] .stats-panel{background:var(--bg2)}
+[data-theme="light"] .stat-card{background:var(--bg1)}
+[data-theme="light"] .preset-btn{background:var(--bg1)}
+[data-theme="light"] .bm-chip{background:rgba(245,158,11,.06)}
+[data-theme="light"] .sim-timer{background:var(--bg1)}
+[data-theme="light"] .step-badge{background:var(--bg1)}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg0);color:var(--text);min-height:100vh;overflow-x:hidden}
+.header{
+  background:var(--bg1);border-bottom:1px solid var(--border);
+  padding:10px 16px;display:flex;align-items:center;justify-content:space-between;
+  position:sticky;top:0;z-index:100;gap:10px;flex-wrap:wrap;
+}
+.logo{display:flex;align-items:center;gap:8px}
+.logo-icon{width:32px;height:32px;background:linear-gradient(135deg,var(--amber),var(--purple));border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:900;color:#000}
+.logo-text h1{font-size:14px;font-weight:700;color:var(--amber);letter-spacing:.3px}
+.logo-text p{font-size:9px;color:var(--text3);font-family:var(--mono)}
+.controls{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.step-badge{font-family:var(--mono);font-size:11px;color:var(--text2);background:var(--bg2);padding:4px 8px;border-radius:4px;border:1px solid var(--border);white-space:nowrap}
+.step-badge em{color:var(--amber);font-style:normal;font-weight:700}
+.btn{padding:6px 12px;border-radius:5px;border:1px solid;cursor:pointer;font-size:11px;font-weight:600;transition:all .2s;white-space:nowrap}
+.btn-play{background:var(--blue);border-color:var(--blue);color:#fff}
+.btn-play:hover{background:#2563eb}
+.btn-play.playing{background:var(--amber);border-color:var(--amber);color:#000}
+.btn-sm{background:transparent;border-color:var(--border2);color:var(--text2)}
+.btn-sm:hover{border-color:var(--blue);color:var(--blue)}
+.btn-reset{background:transparent;border-color:var(--border);color:var(--text3)}
+.btn-reset:hover{border-color:var(--red);color:var(--red)}
+.progress-bar{height:2px;background:var(--border);overflow:hidden}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--amber),var(--purple));transition:width .4s;border-radius:0 2px 2px 0}
+.info-bar{display:flex;align-items:center;gap:8px;padding:5px 10px;background:var(--bg1);border-bottom:1px solid var(--border);font-size:10px}
+.info-bar span{color:var(--text3);font-family:var(--mono)}
+.info-bar em{color:var(--amber);font-style:normal}
+.main{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0;min-height:calc(100vh - 110px)}
+.panel{display:flex;flex-direction:column;border-right:1px solid var(--border);background:var(--bg0);overflow:hidden}
+.panel:last-child{border-right:none}
+.panel-head{display:flex;align-items:center;gap:6px;padding:7px 10px;border-bottom:1px solid var(--border);flex-shrink:0}
+.panel-num{width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;flex-shrink:0}
+.panel-title{font-size:11px;font-weight:700;letter-spacing:.3px}
+.panel-sub{font-size:8px;color:var(--text3);margin-left:auto;font-family:var(--mono)}
+.aws .panel-head{background:rgba(245,158,11,.07)}
+.aws .panel-num{background:var(--amber);color:#000}
+.aws .panel-title{color:var(--amber)}
+.eks .panel-head{background:rgba(139,92,246,.07)}
+.eks .panel-num{background:var(--purple);color:#fff}
+.eks .panel-title{color:var(--purple)}
+.comp .panel-head{background:rgba(16,185,129,.07)}
+.comp .panel-num{background:var(--green);color:#000}
+.comp .panel-title{color:var(--green)}
+.panel-body{overflow-y:auto;flex:1}
+.panel-body::-webkit-scrollbar{width:3px}
+.panel-body::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
+.steps{padding:6px;display:flex;flex-direction:column;gap:4px}
+.scard{background:var(--bg2);border:1px solid var(--border);border-radius:6px;padding:7px 9px;cursor:pointer;transition:all .25s ease;position:relative;overflow:hidden}
+.scard::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:transparent;transition:background .25s}
+.scard:hover{background:var(--bg3);border-color:var(--border2)}
+.scard.done{border-color:rgba(16,185,129,.2)}
+.scard.done::before{background:var(--green)}
+.scard.active{background:var(--bg3);border-color:var(--border2)}
+.aws .scard.active{border-color:var(--amber);background:rgba(245,158,11,.05);box-shadow:0 0 12px rgba(245,158,11,.12)}
+.aws .scard.active::before{background:var(--amber)}
+.eks .scard.active{border-color:var(--purple);background:rgba(139,92,246,.05);box-shadow:0 0 12px rgba(139,92,246,.12)}
+.eks .scard.active::before{background:var(--purple)}
+.comp .scard.active{border-color:var(--green);background:rgba(16,185,129,.05);box-shadow:0 0 12px rgba(16,185,129,.12)}
+.comp .scard.active::before{background:var(--green)}
+.scard-head{display:flex;align-items:center;gap:6px}
+.snum{width:18px;height:18px;border-radius:50%;background:var(--border);display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:800;color:var(--text3);flex-shrink:0;transition:all .25s}
+.scard.done .snum{background:var(--green);color:#000}
+.stitle{font-size:10px;font-weight:600;color:var(--text);line-height:1.3}
+.sdot{width:5px;height:5px;border-radius:50%;background:var(--cyan);margin-left:auto;flex-shrink:0;animation:blink 1s infinite;display:none}
+.scard.active .sdot{display:block}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
+.sexpand{display:none;margin-top:6px;padding-top:6px;border-top:1px solid var(--border)}
+.scard.active .sexpand{display:block}
+.sdesc{font-size:9.5px;color:var(--text2);line-height:1.5;margin-bottom:5px}
+.scode{font-family:var(--mono);font-size:9px;color:#a8d8ff;background:rgba(0,0,0,.35);padding:5px 7px;border-radius:3px;border-left:2px solid var(--amber);line-height:1.5;white-space:pre;overflow-x:auto;display:block}
+.stags{display:flex;flex-wrap:wrap;gap:2px;margin-top:4px}
+.tag{display:inline-block;padding:1px 5px;border-radius:2px;font-size:8px;font-weight:700;font-family:var(--mono)}
+.tg{background:rgba(16,185,129,.15);color:var(--green)}
+.tb{background:rgba(59,130,246,.15);color:var(--blue)}
+.ta{background:rgba(245,158,11,.15);color:var(--amber)}
+.tr{background:rgba(239,68,68,.15);color:var(--red)}
+.tp{background:rgba(139,92,246,.15);color:var(--purple)}
+.tc{background:rgba(34,211,238,.15);color:var(--cyan)}
+.eks-section{margin:6px 8px;padding:6px 8px;background:var(--bg1);border:1px solid var(--border);border-radius:5px}
+.eks-title{font-size:9px;font-weight:700;color:var(--text3);margin-bottom:4px;text-transform:uppercase;letter-spacing:.5px}
+.vpc-viz{display:flex;flex-direction:column;gap:3px;padding:5px;background:rgba(0,0,0,.2);border-radius:4px}
+.vpc-row{display:flex;align-items:center;gap:4px;font-size:8px;font-family:var(--mono);color:var(--text3)}
+.vpc-box{padding:3px 8px;border-radius:3px;border:1px solid var(--border);font-size:8px;font-family:var(--mono)}
+.vpc-vpc{background:rgba(59,130,246,.08);border-color:rgba(59,130,246,.3);color:var(--blue)}
+.vpc-subnet{background:rgba(16,185,129,.08);border-color:rgba(16,185,129,.3);color:var(--green)}
+.vpc-igw{background:rgba(245,158,11,.08);border-color:rgba(245,158,11,.3);color:var(--amber)}
+.vpc-nlb{background:rgba(139,92,246,.08);border-color:rgba(139,92,246,.3);color:var(--purple)}
+.vpc-sg{background:rgba(239,68,68,.08);border-color:rgba(239,68,68,.3);color:var(--red)}
+.fargate-viz{display:flex;gap:4px;flex-wrap:wrap}
+.fargate-pod{padding:4px 8px;border-radius:4px;border:1px solid var(--border);font-family:var(--mono);font-size:8px;background:var(--bg2);color:var(--text3);transition:all .3s}
+.fargate-pod.active{border-color:var(--green);color:var(--green);background:rgba(16,185,129,.08)}
+.fargate-pod.pending{border-color:var(--amber);color:var(--amber);background:rgba(245,158,11,.08)}
+.ng-row{display:flex;gap:4px;flex-wrap:wrap}
+.ng-card{padding:5px 8px;border-radius:4px;border:1px solid var(--border);background:var(--bg2);font-family:var(--mono);font-size:8px;text-align:center;transition:all .3s;flex:1;min-width:70px}
+.ng-card.active{border-color:var(--green);background:rgba(16,185,129,.08);color:var(--green)}
+.ng-card .ng-bar{height:4px;background:var(--border);border-radius:2px;margin-top:3px;overflow:hidden}
+.ng-card .ng-bar-fill{height:100%;background:var(--green);border-radius:2px;transition:width .4s}
+.ng-status{padding:2px 6px;border-radius:3px;font-family:var(--mono);font-size:8px;display:inline-block}
+.ng-status.creating{background:rgba(245,158,11,.1);color:var(--amber)}
+.ng-status.active-s{background:rgba(16,185,129,.1);color:var(--green)}
+.ng-status.deleting{background:rgba(239,68,68,.1);color:var(--red)}
+.ng-status.upgrading{background:rgba(59,130,246,.1);color:var(--blue)}
+.toast{position:fixed;bottom:16px;right:16px;z-index:9999;background:var(--bg1);border:1px solid var(--border2);border-radius:8px;padding:10px 14px;max-width:320px;transform:translateY(120%);transition:transform .35s ease;box-shadow:0 4px 20px rgba(0,0,0,.4)}
+.toast.show{transform:translateY(0)}
+.toast-t{font-size:11px;font-weight:700;margin-bottom:2px}
+.toast-b{font-size:9px;color:var(--text2);line-height:1.4}
+.toast.err .toast-t{color:var(--red)}
+.toast.ok .toast-t{color:var(--green)}
+
+/* ── SEARCH & FILTER ── */
+.search-bar{display:flex;gap:6px;padding:5px 10px;align-items:center;background:var(--bg1);border-bottom:1px solid var(--border)}
+.search-input{flex:1;background:var(--bg2);border:1px solid var(--border);color:var(--text2);padding:5px 8px;border-radius:4px;font-size:10px;font-family:inherit;outline:none;transition:border .2s}
+.search-input:focus{border-color:var(--amber)}
+.search-input::placeholder{color:var(--text3)}
+.filter-chips{display:flex;gap:3px;flex-shrink:0}
+.filter-chip{padding:2px 7px;border-radius:3px;background:var(--bg2);border:1px solid var(--border);color:var(--text3);font-size:9px;cursor:pointer;transition:all .2s;font-family:var(--mono)}
+.filter-chip:hover{border-color:var(--text2);color:var(--text2)}
+.filter-chip.active{background:rgba(245,158,11,.12);border-color:var(--amber);color:var(--amber)}
+.search-count{font-size:9px;color:var(--text3);font-family:var(--mono);white-space:nowrap}
+
+/* ── LANGUAGE TOGGLE ── */
+.lang-tabs{display:flex;gap:2px;padding:3px 10px;background:var(--bg1);border-bottom:1px solid var(--border)}
+.lang-tab{padding:3px 9px;border-radius:3px 3px 0 0;border:1px solid var(--border);border-bottom:none;background:var(--bg1);color:var(--text3);font-size:9px;cursor:pointer;transition:all .2s;font-family:var(--mono);font-weight:700}
+.lang-tab:hover{color:var(--text2)}
+.lang-tab.active{background:var(--bg2);color:var(--amber)}
+
+/* ── PRESETS ── */
+.presets{display:flex;gap:3px;padding:3px 10px;align-items:center;flex-wrap:wrap;background:var(--bg1);border-bottom:1px solid var(--border)}
+.preset-btn{padding:3px 9px;border-radius:3px;background:var(--bg2);border:1px solid var(--border);color:var(--text3);font-size:9px;cursor:pointer;transition:all .2s;font-family:var(--mono);font-weight:600}
+.preset-btn:hover{background:var(--bg3);color:var(--text2)}
+.preset-btn.active{background:rgba(245,158,11,.1);border-color:var(--amber);color:var(--amber)}
+
+/* ── BOOKMARKS ── */
+.bookmark-btn{background:none;border:none;color:var(--text3);cursor:pointer;font-size:11px;padding:0 2px;transition:all .2s;line-height:1;margin-left:2px}
+.bookmark-btn:hover{color:var(--amber)}
+.bookmark-btn.on{color:var(--amber);text-shadow:0 0 6px rgba(245,158,11,.4)}
+.bookmarks-bar{display:flex;gap:3px;padding:3px 10px;overflow-x:auto;min-height:20px;background:var(--bg1);border-bottom:1px solid var(--border)}
+.bookmarks-bar:empty{display:none}
+.bm-chip{display:flex;align-items:center;gap:3px;padding:2px 6px;border-radius:3px;background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.2);font-size:8px;color:var(--amber);cursor:pointer;font-family:var(--mono);white-space:nowrap}
+.bm-chip:hover{background:rgba(245,158,11,.2)}
+.bm-chip .bm-del{color:var(--text3);cursor:pointer;font-size:9px;margin-left:2px}
+.bm-chip .bm-del:hover{color:var(--red)}
+.bm-label{font-size:8px;color:var(--text3);padding:3px 0}
+
+/* ── STATS PANEL ── */
+.stats-panel{background:var(--bg1);border-top:1px solid var(--border);padding:8px 14px}
+.stats-header{display:flex;align-items:center;gap:8px;cursor:pointer;user-select:none;font-size:11px;font-weight:700;color:var(--text2)}
+.stats-header:hover{color:var(--text)}
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:6px;margin-top:8px}
+.stat-card{background:var(--bg2);border:1px solid var(--border);border-radius:5px;padding:6px 8px;text-align:center}
+.stat-num{font-size:16px;font-weight:800;font-family:var(--mono);color:var(--amber);line-height:1.2}
+.stat-num.purple{color:var(--purple)}
+.stat-num.green{color:var(--green)}
+.stat-num.red{color:var(--red)}
+.stat-label{font-size:8px;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-top:2px}
+
+/* ── SIM TIMER ── */
+.sim-timer{font-family:var(--mono);font-size:10px;color:var(--text3);background:var(--bg2);padding:3px 7px;border-radius:3px;border:1px solid var(--border);white-space:nowrap}
+
+/* ── SHORTCUTS OVERLAY ── */
+.shortcuts-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:9999;align-items:center;justify-content:center}
+.shortcuts-overlay.show{display:flex}
+.shortcuts-modal{background:var(--bg1);border:1px solid var(--border);border-radius:10px;padding:18px;max-width:400px;width:90%;max-height:80vh;overflow-y:auto}
+.shortcuts-modal h2{font-size:13px;color:var(--amber);margin-bottom:8px}
+.sc-grid{display:grid;grid-template-columns:1fr 1fr;gap:4px}
+.sc-item{display:flex;align-items:center;gap:7px;padding:3px 5px;border-radius:3px;font-size:10px}
+.sc-item:hover{background:var(--bg2)}
+.sc-key{background:var(--bg2);border:1px solid var(--border);border-radius:3px;padding:2px 5px;font-family:var(--mono);font-size:8px;color:var(--text);min-width:28px;text-align:center}
+.sc-desc{color:var(--text2)}
+
+/* ── CONFIRM MODAL ── */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:9998;align-items:center;justify-content:center}
+.modal-overlay.show{display:flex}
+.modal-box{background:var(--bg1);border:1px solid var(--border);border-radius:10px;padding:18px;max-width:320px;width:90%;text-align:center}
+.modal-box h3{font-size:12px;margin-bottom:5px}
+.modal-box p{font-size:10px;color:var(--text2);margin-bottom:12px}
+.modal-btns{display:flex;gap:8px;justify-content:center}
+.modal-btns .btn{min-width:65px}
+
+/* ── BENCHMARK ── */
+.bench-btn{padding:3px 7px;border-radius:3px;border:1px solid var(--border);background:var(--bg2);color:var(--text3);font-size:9px;cursor:pointer;font-family:var(--mono);transition:all .2s}
+.bench-btn:hover{border-color:var(--cyan);color:var(--cyan)}
+.bench-btn.running{background:rgba(34,211,238,.1);border-color:var(--cyan);color:var(--cyan);animation:benchPulse .8s infinite}
+@keyframes benchPulse{0%,100%{opacity:1}50%{opacity:.5}}
+.bench-result{font-size:9px;color:var(--green);font-family:var(--mono);padding:3px 7px;background:rgba(16,185,129,.06);border-radius:3px;display:none}
+.bench-result.show{display:inline-block}
+
+@media(max-width:900px){.main{grid-template-columns:1fr}}
+
+/* ── COMPONENT HEALTH ── */
+.health-grid{display:flex;gap:4px;flex-wrap:wrap}
+.health-item{display:flex;align-items:center;gap:4px;padding:3px 6px;background:var(--bg2);border:1px solid var(--border);border-radius:4px}
+.health-dot{width:8px;height:8px;border-radius:50%;background:var(--border);flex-shrink:0;transition:all .3s}
+.health-dot.green{background:var(--green);box-shadow:0 0 6px rgba(16,185,129,.5)}
+.health-dot.yellow{background:var(--amber);box-shadow:0 0 6px rgba(245,158,11,.5)}
+.health-dot.red{background:var(--red);box-shadow:0 0 6px rgba(239,68,68,.5)}
+.health-dot.gray{background:var(--border2)}
+.health-label{font-size:8px;font-family:var(--mono);color:var(--text3);white-space:nowrap}
+
+/* ── MILESTONE ── */
+.scard.milestone{border-color:rgba(245,158,11,.3)}
+.milestone-icon{font-size:10px;color:var(--amber);margin-left:auto;flex-shrink:0}
+
+/* ── HISTORY BAR ── */
+.history-bar{display:flex;gap:2px;padding:4px 10px;background:var(--bg1);border-bottom:1px solid var(--border)}
+.history-dot{width:10px;height:10px;border-radius:50%;border:2px solid var(--border);font-size:7px;font-weight:700;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .2s;color:transparent;line-height:1}
+.history-dot.visited{background:var(--blue);border-color:var(--blue);color:#fff}
+.history-dot.current{background:var(--amber);border-color:var(--amber);box-shadow:0 0 6px rgba(245,158,11,.6);color:#000}
+
+/* ── ARCHITECTURE SVG ── */
+.arch-section{margin:6px 8px;background:var(--bg0);border:1px solid var(--border);border-radius:5px;padding:6px 8px;overflow:hidden}
+.arch-section svg text{fill:var(--text2)}
+.arch-section svg rect{transition:opacity .4s,filter .4s}
+
+/* ── PHASE BADGES ── */
+.phase-row{display:flex;gap:6px;padding:4px 10px;border-bottom:1px solid var(--border);background:var(--bg1)}
+.phase-badge{padding:3px 10px;border-radius:4px;font-size:9px;font-family:var(--mono);font-weight:700;transition:all .3s}
+.phase-badge.pending{background:var(--bg2);color:var(--text3);border:1px solid var(--border)}
+.phase-badge.active{background:rgba(245,158,11,.1);color:var(--amber);border:1px solid var(--amber)}
+.phase-badge.done{background:rgba(16,185,129,.1);color:var(--green);border:1px solid var(--green)}
+
+/* ── ERROR TOGGLE ── */
+.err-toggle{display:inline-flex;align-items:center;gap:4px;cursor:pointer;font-size:9px;font-family:var(--mono);color:var(--text3);padding:3px 8px;border-radius:4px;border:1px solid var(--border);transition:all .2s;user-select:none}
+.err-toggle:hover{border-color:var(--red);color:var(--red)}
+.err-toggle.on{color:var(--red);border-color:var(--red);background:rgba(239,68,68,.08)}
+
+/* ── CONFIG DIFF ── */
+.diff-section{margin:6px 8px}
+.diff-line{font-family:var(--mono);font-size:8px;padding:1px 6px;border-radius:2px;line-height:1.6}
+.diff-add{background:rgba(16,185,129,.1);color:var(--green)}
+.diff-rem{background:rgba(239,68,68,.1);color:var(--red)}
+
+/* ── COST ESTIMATOR ── */
+.cost-est{padding:4px 0;font-family:var(--mono);font-size:8px}
+.cost-card{background:var(--bg2);border:1px solid var(--border);border-radius:4px;padding:4px 8px;text-align:center;flex:1;min-width:60px}
+.cost-num{font-size:14px;font-weight:800;color:var(--amber);line-height:1.2}
+.cost-label{font-size:7px;color:var(--text3);text-transform:uppercase;letter-spacing:.3px;margin-top:1px}
+</style>
+</head>
+<body>
+<div class="header">
+  <div class="logo">
+    <div class="logo-icon">EKS</div>
+    <div class="logo-text">
+      <h1>Amazon EKS Cluster Simulator</h1>
+      <p>AWS Console → EKS Control Plane → Compute · 16 Steps</p>
+    </div>
+  </div>
+  <div class="controls">
+    <span class="sim-timer" id="sim-timer">⏱ 00:00</span>
+    <div class="step-badge">Step <em id="cur-step">0</em> / <em>16</em></div>
+    <button class="btn btn-sm" onclick="prevStep()">← Prev</button>
+    <button class="btn btn-play" id="play-btn" onclick="togglePlay()">▶ Play All</button>
+    <button class="btn btn-sm" onclick="nextStep()">Next →</button>
+    <select id="speed-sel" onchange="updateSpeed()">
+      <option value="2000">0.5x</option><option value="1200" selected>1x</option>
+      <option value="700">2x</option><option value="350">4x</option>
+    </select>
+    <button class="btn btn-sm" onclick="toggleTheme()" title="Toggle light/dark theme">☀</button>
+    <button class="btn btn-sm" onclick="toggleShortcuts()" title="Keyboard shortcuts (?)">⌨</button>
+    <span class="err-toggle" id="err-toggle" onclick="toggleErrors()">⚠ Errors</span>
+    <span class="bench-btn" id="bench-btn" onclick="runBenchmark()">⏱ Benchmark</span>
+    <span class="bench-result" id="bench-result"></span>
+    <button class="btn btn-reset" onclick="confirmReset()">↺ Reset</button>
+  </div>
+</div>
+<div class="progress-bar"><div class="progress-fill" id="progress" style="width:0%"></div></div>
+<div class="history-bar" id="history-bar"></div>
+<div class="phase-row" id="phase-row">
+  <span class="phase-badge pending" id="phase-aws">☁ AWS Console</span>
+  <span class="phase-badge pending" id="phase-eks">☸ EKS CP</span>
+  <span class="phase-badge pending" id="phase-comp">⚡ Compute</span>
+</div>
+<div class="info-bar">
+  <span>Step <em id="step-num">0</em> — <em id="step-title">Ready</em></span>
+  <span id="step-tags" style="margin-left:auto"></span>
+</div>
+
+<!-- BOOKMARKS BAR -->
+<div class="bookmarks-bar" id="bookmarks-bar"><span class="bm-label">★</span></div>
+
+<!-- SEARCH & FILTER -->
+<div class="search-bar">
+  <input class="search-input" id="search-input" placeholder="Filter steps by title, tag, or description…" oninput="filterSteps()">
+  <span class="search-count" id="search-count">16/16</span>
+  <div class="filter-chips">
+    <span class="filter-chip active" data-tag="all" onclick="setFilter('all')">all</span>
+    <span class="filter-chip" data-tag="aws" onclick="setFilter('aws')">aws</span>
+    <span class="filter-chip" data-tag="eks" onclick="setFilter('eks')">eks</span>
+    <span class="filter-chip" data-tag="comp" onclick="setFilter('comp')">comp</span>
+  </div>
+</div>
+
+<!-- LANGUAGE TABS -->
+<div class="lang-tabs">
+  <span class="lang-tab active" data-lang="eksctl" onclick="setLang('eksctl')">AWS CLI (eksctl)</span>
+  <span class="lang-tab" data-lang="console" onclick="setLang('console')">AWS Console</span>
+  <span class="lang-tab" data-lang="kubectl" onclick="setLang('kubectl')">kubectl</span>
+</div>
+
+<!-- PRESETS -->
+<div class="presets">
+  <span style="font-size:9px;color:var(--text3);font-weight:600;margin-right:4px">Presets:</span>
+  <span class="preset-btn" onclick="applyPreset('normal')">Normal</span>
+  <span class="preset-btn" onclick="applyPreset('fast')">Fast</span>
+  <span class="preset-btn" onclick="applyPreset('deep-dive')">Deep Dive</span>
+  <span class="preset-btn" onclick="applyPreset('demo')">Demo</span>
+</div>
+
+<div class="main">
+  <div class="panel aws">
+    <div class="panel-head">
+      <div class="panel-num">1</div>
+      <div class="panel-title">AWS Console / CLI</div>
+      <div class="panel-sub">Steps 1-5</div>
+    </div>
+    <div class="panel-body">
+      <div class="steps" id="aws-steps"></div>
+      <div class="eks-section">
+        <div class="eks-title">VPC Topology</div>
+        <div class="vpc-viz" id="vpc-viz"></div>
+      </div>
+      <div class="arch-section">
+        <div class="eks-title">Architecture</div>
+        <svg viewBox="0 0 500 130" id="arch-svg" style="width:100%;max-width:500px;display:block;margin:0 auto">
+          <defs>
+            <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+              <path d="M0,0 L10,5 L0,10 Z" fill="#64748b"/>
+            </marker>
+          </defs>
+          <rect id="arch-aws" x="25" y="15" width="70" height="28" rx="4" fill="rgba(245,158,11,.2)" stroke="#f59e0b" stroke-width="1.5" opacity="0.3"/>
+          <text x="60" y="33" text-anchor="middle" font-size="9" fill="#f59e0b" font-family="Consolas,monospace" font-weight="600">AWS CLI</text>
+          <path d="M95 29 L120 29" stroke="#64748b" stroke-width="1.5" marker-end="url(#arr)"/>
+          <rect id="arch-eks" x="130" y="15" width="70" height="28" rx="4" fill="rgba(139,92,246,.2)" stroke="#8b5cf6" stroke-width="1.5" opacity="0.3"/>
+          <text x="165" y="33" text-anchor="middle" font-size="9" fill="#8b5cf6" font-family="Consolas,monospace" font-weight="600">EKS API</text>
+          <path d="M200 29 L225 29" stroke="#64748b" stroke-width="1.5" marker-end="url(#arr)"/>
+          <rect id="arch-etcd" x="230" y="15" width="55" height="28" rx="4" fill="rgba(34,211,238,.2)" stroke="#22d3ee" stroke-width="1.5" opacity="0.3"/>
+          <text x="257" y="33" text-anchor="middle" font-size="9" fill="#22d3ee" font-family="Consolas,monospace" font-weight="600">etcd</text>
+          <path d="M165 43 L165 55 L100 55 L100 67" stroke="#64748b" stroke-width="1.5" fill="none" marker-end="url(#arr)"/>
+          <rect id="arch-vpc" x="25" y="72" width="60" height="28" rx="4" fill="rgba(59,130,246,.2)" stroke="#3b82f6" stroke-width="1.5" opacity="0.3"/>
+          <text x="55" y="90" text-anchor="middle" font-size="9" fill="#3b82f6" font-family="Consolas,monospace" font-weight="600">VPC</text>
+          <path d="M85 86 L110 86" stroke="#64748b" stroke-width="1.5" marker-end="url(#arr)"/>
+          <rect id="arch-ng" x="115" y="72" width="85" height="28" rx="4" fill="rgba(16,185,129,.2)" stroke="#10b981" stroke-width="1.5" opacity="0.3"/>
+          <text x="157" y="90" text-anchor="middle" font-size="8" fill="#10b981" font-family="Consolas,monospace" font-weight="600">Node Groups</text>
+          <path d="M200 86 L220 86" stroke="#64748b" stroke-width="1.5" marker-end="url(#arr)"/>
+          <rect id="arch-fargate" x="225" y="72" width="65" height="28" rx="4" fill="rgba(20,184,166,.2)" stroke="#14b8a6" stroke-width="1.5" opacity="0.3"/>
+          <text x="257" y="90" text-anchor="middle" font-size="9" fill="#14b8a6" font-family="Consolas,monospace" font-weight="600">Fargate</text>
+          <path d="M290 86 L310 86" stroke="#64748b" stroke-width="1.5" marker-end="url(#arr)"/>
+          <rect id="arch-svcs" x="315" y="72" width="70" height="28" rx="4" fill="rgba(139,92,246,.2)" stroke="#8b5cf6" stroke-width="1.5" opacity="0.3"/>
+          <text x="350" y="90" text-anchor="middle" font-size="9" fill="#8b5cf6" font-family="Consolas,monospace" font-weight="600">Services</text>
+        </svg>
+      </div>
+    </div>
+  </div>
+  <div class="panel eks">
+    <div class="panel-head">
+      <div class="panel-num">2</div>
+      <div class="panel-title">EKS Control Plane</div>
+      <div class="panel-sub">Steps 6-11</div>
+    </div>
+    <div class="panel-body">
+      <div class="steps" id="eks-steps"></div>
+      <div class="eks-section">
+        <div class="eks-title">Cluster Status</div>
+        <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap" id="cluster-status">
+          <span class="ng-status" id="eks-status-badge">Pending</span>
+          <span style="font-size:9px;color:var(--text3);font-family:var(--mono)" id="eks-version">K8s 1.29</span>
+          <span style="font-size:9px;color:var(--text3);font-family:var(--mono)" id="eks-endpoint">api.eks.region.aws.com</span>
+        </div>
+      </div>
+      <div class="eks-section">
+        <div class="eks-title">IRSA — IAM Roles for SA</div>
+        <div style="display:flex;gap:4px;flex-wrap:wrap;font-size:8px;font-family:var(--mono);color:var(--text3)" id="irsa-viz">
+          <span style="color:var(--text3)">OIDC provider not configured</span>
+        </div>
+      </div>
+      <div class="eks-section">
+        <div class="eks-title">Service Health</div>
+        <div class="health-grid" id="health-grid"></div>
+      </div>
+      <div class="diff-section" id="diff-section" style="display:none">
+        <div class="eks-title">Config Changes</div>
+        <div id="diff-content"></div>
+      </div>
+    </div>
+  </div>
+  <div class="panel comp">
+    <div class="panel-head">
+      <div class="panel-num">3</div>
+      <div class="panel-title">Compute (EC2 / Fargate)</div>
+      <div class="panel-sub">Steps 12-16</div>
+    </div>
+    <div class="panel-body">
+      <div class="steps" id="comp-steps"></div>
+      <div class="eks-section">
+        <div class="eks-title">Node Groups</div>
+        <div class="ng-row" id="ng-row"></div>
+      </div>
+      <div class="eks-section">
+        <div class="eks-title">Fargate Profiles</div>
+        <div class="fargate-viz" id="fargate-viz"></div>
+      </div>
+      <div class="eks-section">
+        <div class="eks-title">Monthly Cost Estimate</div>
+        <div class="cost-est" id="cost-est"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- STATS SUMMARY -->
+<div class="stats-panel" id="stats-panel">
+  <div class="stats-header" onclick="toggleStats()">
+    <span id="stats-arrow">▶</span> Statistics Summary
+    <span style="flex:1"></span>
+    <span style="font-size:9px;color:var(--text3)" id="stats-sub">tracked across steps</span>
+  </div>
+  <div class="stats-grid" id="stats-grid" style="display:none">
+    <div class="stat-card"><div class="stat-num" id="stat-steps">0</div><div class="stat-label">Steps Completed</div></div>
+    <div class="stat-card"><div class="stat-num" id="stat-total">16</div><div class="stat-label">Total Steps</div></div>
+    <div class="stat-card"><div class="stat-num purple" id="stat-phase">—</div><div class="stat-label">Current Phase</div></div>
+    <div class="stat-card"><div class="stat-num red" id="stat-fails">0</div><div class="stat-label">Failures</div></div>
+    <div class="stat-card"><div class="stat-num green" id="stat-time">00:00</div><div class="stat-label">Sim Time</div></div>
+  </div>
+</div>
+
+<!-- SHORTCUTS OVERLAY -->
+<div class="shortcuts-overlay" id="shortcuts-overlay" onclick="closeShortcuts(event)">
+  <div class="shortcuts-modal" onclick="event.stopPropagation()">
+    <h2>⌨ Keyboard Shortcuts</h2>
+    <div class="sc-grid">
+      <div class="sc-item"><span class="sc-key">→</span><span class="sc-desc">Next step</span></div>
+      <div class="sc-item"><span class="sc-key">←</span><span class="sc-desc">Previous step</span></div>
+      <div class="sc-item"><span class="sc-key">Space</span><span class="sc-desc">Next step</span></div>
+      <div class="sc-item"><span class="sc-key">P</span><span class="sc-desc">Play / Pause</span></div>
+      <div class="sc-item"><span class="sc-key">R</span><span class="sc-desc">Reset simulator</span></div>
+      <div class="sc-item"><span class="sc-key">T</span><span class="sc-desc">Toggle theme</span></div>
+      <div class="sc-item"><span class="sc-key">?</span><span class="sc-desc">Toggle this menu</span></div>
+      <div class="sc-item"><span class="sc-key">S</span><span class="sc-desc">Toggle stats</span></div>
+      <div class="sc-item"><span class="sc-key">Esc</span><span class="sc-desc">Close modals</span></div>
+    </div>
+    <div style="margin-top:10px;font-size:9px;color:var(--text3);text-align:center">Click outside or press Esc to close</div>
+  </div>
+</div>
+
+<!-- RESET CONFIRM MODAL -->
+<div class="modal-overlay" id="reset-modal">
+  <div class="modal-box">
+    <h3>↺ Reset Simulator?</h3>
+    <p>This will clear all progress and return to step 0.</p>
+    <div class="modal-btns">
+      <button class="btn btn-reset" onclick="doReset()">↺ Reset</button>
+      <button class="btn btn-sm" onclick="closeResetModal()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast">
+  <div class="toast-t" id="toast-t">Title</div>
+  <div class="toast-b" id="toast-b">Body</div>
+</div>
+<script>
+const STEPS = [
+  { id:1, panel:'aws', title:'Create EKS Cluster (CLI)', milestone:true,
+    code:`$ eksctl create cluster --name prod-cluster \\
+  --region us-west-2 \\
+  --version 1.29 \\
+  --nodegroup-name standard-workers \\
+  --node-type t3.medium \\
+  --nodes 3 --nodes-min 2 --nodes-max 10 \\
+  --managed
+
+# Or via AWS Console:
+# EKS → Create Cluster → name: prod-cluster
+# K8s version: 1.29 → Role: eks-service-role
+# VPC: default + 3 private subnets`,
+    codes:{
+      eksctl:`$ eksctl create cluster --name prod-cluster \\
+  --region us-west-2 \\
+  --version 1.29 \\
+  --nodegroup-name standard-workers \\
+  --node-type t3.medium \\
+  --nodes 3 --nodes-min 2 --nodes-max 10 \\
+  --managed
+
+# eksctl creates: VPC, IAM, Security Groups
+# CloudFormation stack under the hood`,
+      console:`# AWS Console → EKS → Create Cluster
+# Name: prod-cluster
+# Kubernetes version: 1.29
+# IAM role: eks-service-role
+# VPC: default with 3 private subnets
+# Security groups: cluster-sg
+# Endpoint: public + private access`,
+      kubectl:`# Cluster must exist first
+$ aws eks update-kubeconfig \\
+  --region us-west-2 --name prod-cluster
+
+$ kubectl cluster-info
+# Kubernetes control plane is running
+# CoreDNS is running
+# kube-proxy is running`
+    },
+    desc:'Developer creates an EKS cluster via eksctl or the AWS Console. This provisions the managed control plane across 3 AZs for HA. Requires an IAM service role (eks-service-role) and a VPC with subnets.',
+    tags:['eksctl','AWS Console','VPC'], colors:['ta','ta','tb'] },
+
+  { id:2, panel:'aws', title:'VPC & Networking',
+    code:`# VPC Configuration:
+# 3 Private Subnets (AZ-a, b, c)
+# 3 Public Subnets (for NAT/ALB)
+# Internet Gateway
+# NAT Gateway (for private subnets)
+# Security Groups:
+#   cluster-sg: control plane → workers
+#   node-sg:    worker → worker, 1025-65535
+# Endpoints:
+#   S3 Gateway Endpoint (for image pulls)
+#   ECR, CloudWatch, Autoscaling VPC endpoints`,
+    codes:{
+      eksctl:`# VPC Configuration:
+# 3 Private Subnets (AZ-a, b, c)
+# 3 Public Subnets (for NAT/ALB)
+# Internet Gateway
+# NAT Gateway (for private subnets)
+# Security Groups:
+#   cluster-sg: control plane → workers
+#   node-sg:    worker → worker, 1025-65535
+# Endpoints:
+#   S3 Gateway Endpoint (for image pulls)
+#   ECR, CloudWatch, Autoscaling VPC endpoints`,
+      console:`# AWS Console → VPC → Your VPCs
+# Create VPC with 3 public + 3 private subnets
+# Enable DNS hostnames + DNS resolution
+# Create Internet Gateway + attach to VPC
+# Create NAT Gateway in public subnet
+# Create VPC endpoints for S3, ECR, CloudWatch`,
+      kubectl:`# VPC is an AWS resource — not managed via kubectl
+# Verify via AWS CLI:
+$ aws ec2 describe-subnets \\
+  --filters Name=vpc-id,Values=vpc-xxxxx
+$ kubectl get nodes -o wide
+# Shows node IPs in the VPC subnets`
+    },
+    desc:'EKS requires a properly configured VPC. Private subnets for pods (no direct internet), public subnets for load balancers. Security groups control traffic between control plane and workers. VPC endpoints for AWS services.',
+    tags:['VPC','Subnets','Security Groups','Endpoints'], colors:['tb','tg','tr','tc'] },
+
+  { id:3, panel:'aws', title:'IAM Roles & Policies',
+    code:`# EKS Cluster IAM Role (service-linked):
+#   eks-service-role
+#   Policies: AmazonEKSClusterPolicy
+#             AmazonEKSVPCResourceController
+#             AmazonEKSServicePolicy
+#
+# Node Group IAM Role:
+#   Policies: AmazonEKSWorkerNodePolicy
+#             AmazonEKS_CNI_Policy
+#             AmazonEC2ContainerRegistryReadOnly
+#             AmazonSSMManagedInstanceCore
+#
+# OIDC Provider (for IRSA):
+#   aws iam create-open-id-connect-provider
+#   --url oidc.eks.region.amazonaws.com/id/EX...`,
+    codes:{
+      eksctl:`# EKS Cluster IAM Role (service-linked):
+#   eks-service-role
+#   Policies: AmazonEKSClusterPolicy
+#             AmazonEKSVPCResourceController
+#             AmazonEKSServicePolicy
+#
+# Node Group IAM Role:
+#   Policies: AmazonEKSWorkerNodePolicy
+#             AmazonEKS_CNI_Policy
+#             AmazonEC2ContainerRegistryReadOnly
+#             AmazonSSMManagedInstanceCore
+#
+# OIDC Provider:
+# aws iam create-open-id-connect-provider
+#   --url oidc.eks.region.amazonaws.com/id/EX...`,
+      console:`# AWS Console → IAM → Roles
+# Create role: EKS → EKS service role
+# Attach: AmazonEKSClusterPolicy
+# Attach: AmazonEKSVPCResourceController
+#
+# Create role: EC2 → EKS worker node role
+# Attach: AmazonEKSWorkerNodePolicy
+# Attach: AmazonEKS_CNI_Policy
+# Attach: AmazonEC2ContainerRegistryReadOnly`,
+      kubectl:`# IAM is an AWS construct — not kubectl
+# Verify IRSA mapping:
+$ kubectl describe sa aws-load-balancer-controller -n kube-system
+# Annotations: eks.amazonaws.com/role-arn
+
+$ kubectl get pods -n kube-system -o yaml | grep AWS_ROLE_ARN`
+    },
+    desc:'IAM roles are critical. The cluster role lets EKS manage AWS resources (ENIs, load balancers). Node role lets instances join the cluster and pull images. OIDC provider enables IAM Roles for Service Accounts (IRSA).',
+    tags:['IAM Roles','IRSA','OIDC'], colors:['tr','tp','tc'] },
+
+  { id:4, panel:'aws', title:'Configure kubectl',
+    code:`# Update kubeconfig
+$ aws eks update-kubeconfig \\
+  --region us-west-2 \\
+  --name prod-cluster
+
+# Test connection
+$ kubectl get nodes
+NAME                          STATUS   ROLES    AGE
+ip-10-0-1-12.ec2.internal    Ready    <none>   2m
+ip-10-0-2-45.ec2.internal    Ready    <none>   2m
+ip-10-0-3-78.ec2.internal    Ready    <none>   2m
+
+# — aws eks update-kubeconfig:
+#   authenticates with IAM user/role
+#   generates temporary credentials
+#   maps IAM → K8s RBAC user`,
+    codes:{
+      eksctl:`# Update kubeconfig
+$ aws eks update-kubeconfig \\
+  --region us-west-2 \\
+  --name prod-cluster
+
+# Test connection
+$ kubectl get nodes
+# aws eks update-kubeconfig:
+#   authenticates with IAM user/role
+#   generates temporary credentials via STS
+#   maps IAM → K8s RBAC user`,
+      console:`# AWS Console → EKS → Clusters → prod-cluster
+# Click "Access" tab
+# "Update kubeconfig" — shows CLI command
+# Or use "Cloud Shell" for browser-based kubectl
+# IAM user mapped via aws-auth ConfigMap`,
+      kubectl:`$ aws eks update-kubeconfig \\
+  --region us-west-2 \\
+  --name prod-cluster
+
+$ kubectl get nodes
+NAME                          STATUS   ROLES    AGE
+ip-10-0-1-12.ec2.internal    Ready    <none>   2m
+ip-10-0-2-45.ec2.internal    Ready    <none>   2m
+ip-10-0-3-78.ec2.internal    Ready    <none>   2m
+
+$ kubectl get svc
+NAME         TYPE        CLUSTER-IP   EXTERNAL-IP   PORT(S)   AGE
+kubernetes   ClusterIP   10.100.0.1   <none>        443/TCP   5m`
+    },
+    desc:'AWS CLI generates a kubeconfig with IAM-based authentication. The aws eks get-token command produces a bearer token signed by the IAM caller\'s credentials. This token authenticates to the EKS API server endpoint.',
+    tags:['kubeconfig','IAM Auth','STS'], colors:['tb','tr','tc'] },
+
+  { id:5, panel:'aws', title:'Deploy Sample App', milestone:true,
+    code:`$ kubectl create deployment nginx \\
+  --image nginx:1.25 --replicas 3
+
+$ kubectl expose deployment nginx \\
+  --port 80 --target-port 80 \\
+  --type LoadBalancer
+
+$ kubectl get svc nginx
+NAME    TYPE           CLUSTER-IP   EXTERNAL-IP   PORT(S)
+nginx   LoadBalancer  10.100.0.1   xxxx.elb.aws  80:31234/TCP
+
+# AWS provisions an ALB/NLB via
+# AWS Load Balancer Controller`,
+    codes:{
+      eksctl:`$ kubectl create deployment nginx \\
+  --image nginx:1.25 --replicas 3
+
+$ kubectl expose deployment nginx \\
+  --port 80 --target-port 80 \\
+  --type LoadBalancer
+
+# eksctl not needed — pure kubectl operation
+# eksctl create cluster already handled infra`,
+      console:`# AWS Console → EKS → Clusters → prod-cluster
+# "Resources" tab → "Deploy" 
+# Or use Cloud Shell:
+$ kubectl create deployment nginx --image nginx:1.25 --replicas 3
+$ kubectl expose deployment nginx --port 80 --type LoadBalancer`,
+      kubectl:`$ kubectl create deployment nginx \\
+  --image nginx:1.25 --replicas 3
+
+$ kubectl expose deployment nginx \\
+  --port 80 --target-port 80 \\
+  --type LoadBalancer
+
+$ kubectl get pods -w
+NAME                     READY   STATUS    RESTARTS   AGE
+nginx-85b98974db-6xq2p   1/1     Running   0          10s
+nginx-85b98974db-7m3k9   1/1     Running   0          10s
+nginx-85b98974db-9t2vq   1/1     Running   0          10s`
+    },
+    desc:'Deploy a sample application to verify the cluster works. Creating a LoadBalancer-type Service triggers the AWS Load Balancer Controller to provision an ALB (Layer 7) or NLB (Layer 4) in the VPC\'s public subnets.',
+    tags:['Deploy','LoadBalancer','ALB/NLB'], colors:['tg','tb','ta'] },
+
+  { id:6, panel:'eks', title:'Control Plane Architecture',
+    code:`# EKS Managed Control Plane (AWS-managed):
+# ┌─────────────────────────────┐
+# │  API Server (x2 per AZ)     │  ← HA across 3 AZs
+# │  etcd (x1 per AZ)           │  ← Raft consensus
+# │  Controller Manager         │
+# │  Cloud Controller Manager   │  ← AWS-specific
+# │  Scheduler                  │
+# │  VPC Resource Controller    │  ← ENI management
+# │  CoreDNS                    │
+# │  kube-proxy                 │
+# └─────────────────────────────┘
+# 
+# AWS manages control plane upgrades,
+# patches, scaling, and monitoring.
+# Customer only manages worker nodes.`,
+    codes:{
+      eksctl:`# EKS Managed Control Plane (AWS-managed):
+# ┌─────────────────────────────┐
+# │  API Server (x2 per AZ)     │  ← HA across 3 AZs
+# │  etcd (x1 per AZ)           │  ← Raft consensus
+# │  Controller Manager         │
+# │  Cloud Controller Manager   │  ← AWS-specific
+# │  Scheduler                  │
+# │  VPC Resource Controller    │  ← ENI management
+# │  CoreDNS                    │
+# │  kube-proxy                 │
+# └─────────────────────────────┘
+# AWS manages upgrades, patches, scaling`,
+      console:`# AWS Console → EKS → Clusters → prod-cluster
+# "Overview" tab:
+# Status: ACTIVE
+# Endpoint: api.eks.region.aws.com
+# Kubernetes version: 1.29
+# VPC, subnets, security groups
+# All control plane metrics visible in CloudWatch`,
+      kubectl:`# Verify control plane components:
+$ kubectl get pods -n kube-system
+NAME                       READY   STATUS
+aws-node-xxxxx             1/1     Running
+coredns-xxxxx              1/1     Running
+kube-proxy-xxxxx           1/1     Running
+
+$ kubectl get componentstatuses
+# Note: deprecated — use cluster-info instead`
+    },
+    desc:'AWS fully manages the EKS control plane — API server, etcd, scheduler, controller manager. It runs in an AWS-owned account. AWS handles availability, scaling, patching. You only see the API server endpoint.',
+    tags:['Managed CP','HA','AWS-owned'], colors:['tp','tg','tb'] },
+
+  { id:7, panel:'eks', title:'Cluster Autoscaler Setup',
+    code:`# Deploy Cluster Autoscaler
+$ kubectl apply -f https://raw.githubusercontent.com/kubernetes/autoscaler/master/cluster-autoscaler/cloudprovider/aws/examples/cluster-autoscaler-autodiscover.yaml
+
+# Annotate for IAM (IRSA):
+$ kubectl annotate sa cluster-autoscaler \\
+  eks.amazonaws.com/role-arn=arn:aws:iam::...:role/ca-role
+
+# Config:
+# --balance-similar-node-groups
+# --skip-nodes-with-system-pods=false
+# --scale-down-delay-after-add=10m`,
+    codes:{
+      eksctl:`# Deploy Cluster Autoscaler
+$ kubectl apply -f https://raw.githubusercontent.com/kubernetes/autoscaler/master/cluster-autoscaler/cloudprovider/aws/examples/cluster-autoscaler-autodiscover.yaml
+
+# Annotate for IAM (IRSA):
+$ kubectl annotate sa cluster-autoscaler \\
+  eks.amazonaws.com/role-arn=arn:aws:iam::...:role/ca-role`,
+      console:`# AWS Console → EKS → Clusters → prod-cluster
+# "Add-ons" tab → "Get more add-ons"
+# Search: "Cluster Autoscaler"
+# Or deploy via Cloud Shell
+# Requires IRSA role for ASG access`,
+      kubectl:`$ kubectl apply -f https://raw.githubusercontent.com/kubernetes/autoscaler/master/cluster-autoscaler/cloudprovider/aws/examples/cluster-autoscaler-autodiscover.yaml
+
+$ kubectl get deployment -n kube-system cluster-autoscaler
+
+$ kubectl logs -n kube-system deployment/cluster-autoscaler
+# I0526 10:00:00.000000       1 static_autoscaler.go:239] 
+# Scale down: standard-workers, node ip-10-0-1-12, utilization 0.15`
+    },
+    desc:'Cluster Autoscaler scales node groups based on pending pods. It uses AWS Auto Scaling Groups under the hood. When pods are unschedulable, CA increases ASG desired count. When nodes are underutilized, it drains and terminates them.',
+    tags:['Cluster Autoscaler','ASG','IRSA'], colors:['tp','tb','tg'] },
+
+  { id:8, panel:'eks', title:'IRSA — IAM Roles for SA', milestone:true,
+    code:`# Create IAM role with trust policy:
+{
+  "Effect": "Allow",
+  "Principal": {
+    "Federated": "arn:aws:iam::...:oidc-provider/..."
+  },
+  "Condition": {
+    "StringEquals": {
+      "oidc.eks.region.amazonaws.com/id/...:sub": "system:serviceaccount:kube-system:aws-load-balancer-controller"
+    }
+  }
+}
+
+# Annotate K8s service account:
+$ kubectl annotate sa aws-load-balancer-controller \\
+  eks.amazonaws.com/role-arn=arn:aws:iam::...:role/lbc-role`,
+    codes:{
+      eksctl:`# eksctl automatically creates OIDC provider:
+$ eksctl utils associate-iam-oidc-provider \\
+  --cluster prod-cluster --approve
+
+# Create IAM role with eksctl:
+$ eksctl create iamserviceaccount \\
+  --cluster prod-cluster \\
+  --name aws-load-balancer-controller \\
+  --namespace kube-system \\
+  --attach-policy-arn arn:aws:iam::aws:policy/AWSLoadBalancerControllerIAMPolicy`,
+      console:`# AWS Console → IAM → Identity Providers
+# Add provider: OIDC
+# URL: oidc.eks.region.amazonaws.com/id/EX...
+# Audience: sts.amazonaws.com
+#
+# Create role with trust policy for OIDC
+# Annotate K8s SA with role ARN`,
+      kubectl:`# Annotate service account:
+$ kubectl annotate sa aws-load-balancer-controller \\
+  -n kube-system \\
+  eks.amazonaws.com/role-arn=arn:aws:iam::...:role/lbc-role
+
+# Verify:
+$ kubectl describe pod -n kube-system -l app.kubernetes.io/name=aws-load-balancer-controller
+# Environment:
+#   AWS_ROLE_ARN: arn:aws:iam::...:role/lbc-role
+#   AWS_WEB_IDENTITY_TOKEN_FILE: /var/run/secrets/eks.amazonaws.com/serviceaccount/token`
+    },
+    desc:'IRSA maps K8s ServiceAccounts to IAM roles via an OIDC identity provider. A mutating webhook injects AWS environment variables (AWS_ROLE_ARN, AWS_WEB_IDENTITY_TOKEN_FILE) into pods. This eliminates static AWS credentials.',
+    tags:['IRSA','OIDC','IAM','Security'], colors:['tr','tc','tp','tg'] },
+
+  { id:9, panel:'eks', title:'AWS Load Balancer Controller',
+    code:`# Install LBC (Helm):
+$ helm repo add eks https://aws.github.io/eks-charts
+$ helm install aws-load-balancer-controller eks/aws-load-balancer-controller \\
+  --set clusterName=prod-cluster \\
+  --set serviceAccount.create=false \\
+  --set serviceAccount.name=aws-load-balancer-controller
+
+# Creates:
+# - ALB for Ingress resources (HTTP/HTTPS)
+# - NLB for LoadBalancer-type Services (TCP/UDP)
+# - Target Group management
+# - Security Group rules auto-mgmt`,
+    codes:{
+      eksctl:`# Install LBC (Helm):
+$ helm repo add eks https://aws.github.io/eks-charts
+$ helm install aws-load-balancer-controller eks/aws-load-balancer-controller \\
+  --set clusterName=prod-cluster \\
+  --set serviceAccount.create=false \\
+  --set serviceAccount.name=aws-load-balancer-controller
+
+# eksctl can also manage add-ons`,
+      console:`# AWS Console → EKS → Add-ons → Get more add-ons
+# Search: "AWS Load Balancer Controller"
+# Select version → Install
+# Requires IRSA pre-configured
+# Or use Cloud Shell for Helm install`,
+      kubectl:`$ helm repo add eks https://aws.github.io/eks-charts
+$ helm install aws-load-balancer-controller eks/aws-load-balancer-controller \\
+  --set clusterName=prod-cluster \\
+  --set serviceAccount.create=false \\
+  --set serviceAccount.name=aws-load-balancer-controller
+
+$ kubectl get deployment -n kube-system aws-load-balancer-controller
+
+$ kubectl get ingress
+# When Ingress resources are created, LBC
+# provisions ALB in AWS automatically`
+    },
+    desc:'The AWS Load Balancer Controller provisions ALBs (for Ingress) and NLBs (for LoadBalancer Services). It watches K8s resources, creates AWS LBs, manages target groups, and updates security group rules automatically.',
+    tags:['ALB','NLB','Ingress','Helm'], colors:['ta','tb','tg','tc'] },
+
+  { id:10, panel:'eks', title:'Cluster Upgrade', milestone:true,
+    code:`# Check available versions
+$ eksctl upgrade cluster --name prod-cluster
+
+# Upgrade control plane (sequential)
+$ eksctl upgrade cluster --name prod-cluster \\
+  --version 1.30 --approve
+
+# Upgrade node groups
+$ eksctl upgrade nodegroup --cluster prod-cluster \\
+  --name standard-workers --kubernetes-version 1.30
+
+# During upgrade:
+# 1. API server updated (API version change)
+# 2. etcd updated (data format migration)
+# 3. CoreDNS / kube-proxy addon updates
+# 4. Node group replacement (rolling)`,
+    codes:{
+      eksctl:`# Check available versions
+$ eksctl upgrade cluster --name prod-cluster
+
+# Upgrade control plane (sequential)
+$ eksctl upgrade cluster --name prod-cluster \\
+  --version 1.30 --approve
+
+# Upgrade node groups
+$ eksctl upgrade nodegroup --cluster prod-cluster \\
+  --name standard-workers --kubernetes-version 1.30`,
+      console:`# AWS Console → EKS → Clusters → prod-cluster
+# "Overview" tab → "Update"
+# Select 1.30 → Update
+# Control plane upgraded first (AWS-managed)
+# Then update node groups (separately)
+# Rolling update — one node at a time`,
+      kubectl:`# Check current version:
+$ kubectl version --short
+# Server Version: v1.29.x
+
+# After upgrade:
+$ kubectl version --short
+# Server Version: v1.30.x
+
+# Verify nodes upgrade:
+$ kubectl get nodes -o wide
+# STATUS   VERSION
+# Ready    v1.30.x
+# Ready    v1.30.x`
+    },
+    desc:'EKS supports in-place control plane upgrades (limited to minor versions). Control plane upgrades first (AWS-managed), then node groups. You can only skip one minor version (e.g., 1.29 → 1.30). Node groups use rolling updates.',
+    tags:['Upgrade','Rolling Update','Version'], colors:['tb','tg','ta'] },
+
+  { id:11, panel:'eks', title:'Observability',
+    code:`# CloudWatch Container Insights
+$ helm install aws-for-fluent-bit \\
+  --set cloudwatch.logs=true
+
+# Metrics Server (for HPA)
+$ kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
+
+# Prometheus + Grafana (optional)
+$ helm install prometheus prometheus-community/kube-prometheus-stack
+
+# Key metrics:
+# - container_cpu_utilization
+# - container_memory_utilization
+# - cluster_failed_node_count`,
+    codes:{
+      eksctl:`# CloudWatch Container Insights
+$ helm install aws-for-fluent-bit \\
+  --set cloudwatch.logs=true
+
+# Metrics Server (for HPA)
+$ kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
+
+# Prometheus + Grafana (optional)
+$ helm install prometheus prometheus-community/kube-prometheus-stack`,
+      console:`# AWS Console → CloudWatch → Container Insights
+# Enable Container Insights for EKS
+# View: CPU, Memory, Network, Disk metrics
+# 
+# Or EKS → Clusters → Insights
+# Built-in observability dashboards
+# Also: X-Ray tracing integration`,
+      kubectl:`# Metrics Server for resource metrics:
+$ kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
+
+$ kubectl top nodes
+NAME                          CPU(cores)   MEMORY(%)
+ip-10-0-1-12.ec2.internal    125m         45%
+
+$ kubectl top pods -n default
+NAME                     CPU(cores)   MEMORY
+nginx-85b98974db-6xq2p  2m           18Mi`
+    },
+    desc:'AWS provides Container Insights for CloudWatch (logs, metrics, traces). Metrics Server enables HPA. For deeper observability, deploy Prometheus/Grafana or use AWS Managed Prometheus + Grafana workspaces.',
+    tags:['CloudWatch','Metrics','Prometheus','Grafana'], colors:['tb','tg','tp','ta'] },
+
+  { id:12, panel:'comp', title:'Managed Node Groups', milestone:true,
+    code:`# Managed Node Group (via eksctl):
+apiVersion: eksctl.io/v1alpha5
+kind: ClusterConfig
+metadata: {name: prod-cluster, region: us-west-2}
+managedNodeGroups:
+- name: standard-workers
+  instanceType: t3.medium
+  minSize: 2
+  maxSize: 10
+  desiredCapacity: 3
+  privateNetworking: true
+  ssh: {allow: false}
+  labels: {role: worker}
+
+# AWS creates:
+# 1. Launch Template
+# 2. Auto Scaling Group
+# 3. AMI with EKS bootstrap script`,
+    codes:{
+      eksctl:`# Managed Node Group (via eksctl):
+apiVersion: eksctl.io/v1alpha5
+kind: ClusterConfig
+metadata: {name: prod-cluster, region: us-west-2}
+managedNodeGroups:
+- name: standard-workers
+  instanceType: t3.medium
+  minSize: 2
+  maxSize: 10
+  desiredCapacity: 3
+  privateNetworking: true
+  labels: {role: worker}`,
+      console:`# AWS Console → EKS → Clusters → prod-cluster
+# "Compute" tab → "Add node group"
+# Name: standard-workers
+# IAM role: (existing node role)
+# Subnets: private subnets
+# Instance type: t3.medium
+# Desired: 3, Min: 2, Max: 10
+# AMI: Amazon Linux 2 (EKS-optimized)`,
+      kubectl:`# Verify node group:
+$ kubectl get nodes
+NAME                          STATUS   ROLES    AGE
+ip-10-0-1-12.ec2.internal    Ready    <none>   2m
+ip-10-0-2-45.ec2.internal    Ready    <none>   2m
+ip-10-0-3-78.ec2.internal    Ready    <none>   2m
+
+$ kubectl describe node ip-10-0-1-12
+# Labels: beta.kubernetes.io/instance-type=t3.medium
+# Capacity: cpu=2, memory=3.8Gi, pods=17`
+    },
+    desc:'Managed Node Groups are ASGs with EKS-optimized AMIs. AWS handles: AMI updates, security group rules, node health replacement, and draining on termination. The bootstrap script registers each instance with the cluster.',
+    tags:['Managed NG','ASG','Launch Template'], colors:['tg','tb','ta'] },
+
+  { id:13, panel:'comp', title:'Node Health & Replacement',
+    code:`# AWS manages node health:
+# 1. EC2 health check fails → ASG replaces
+# 2. Node status NotReady → AWS drains
+# 3. New instance launches → joins cluster
+# 
+# Customize via:
+# - ec2:SpotInstanceRequest (Spot Instances)
+# - aws:Ec2ImageId (custom AMI)
+# - lifecycle hook (pre-termination)
+#
+# Node Replacement strategies:
+# - Rolling update (default)
+# - Blue/green via AWS Nodegroup
+# - Force update (drain immediately)`,
+    codes:{
+      eksctl:`# AWS manages node health:
+# 1. EC2 health check fails → ASG replaces
+# 2. Node status NotReady → AWS drains
+# 3. New instance launches → joins cluster
+# 
+# Customize via:
+# - ec2:SpotInstanceRequest (Spot Instances)
+# - lifecycle hook (pre-termination)`,
+      console:`# AWS Console → EC2 → Auto Scaling Groups
+# Select ASG → "Instance management"
+# See health status of each node
+# Replace unhealthy instances manually or auto
+# CloudWatch alarms for node health`,
+      kubectl:`# Check node health:
+$ kubectl get nodes -o wide
+# STATUS   ROLES    AGE   VERSION
+# Ready    <none>   2m    v1.29.x
+# NotReady <none>   1h    v1.29.x  ← unhealthy!
+
+$ kubectl describe node <name>
+# Conditions:
+#   Ready   False   NodeStatusUnknown
+# AWS will replace this node automatically`
+    },
+    desc:'AWS monitors node health. Unhealthy nodes are automatically terminated and replaced. You can configure update strategies: rolling (default — terminates one at a time), or blue/green (creates new group, shifts traffic).',
+    tags:['Health Checks','Auto Repair','Lifecycle Hooks'], colors:['tg','tr','tb'] },
+
+  { id:14, panel:'comp', title:'Fargate Profiles', milestone:true,
+    code:`# Fargate profile (eksctl):
+fargateProfiles:
+- name: fargate-default
+  selectors:
+  - namespace: default
+    labels: {fargate: "yes"}
+  - namespace: kube-system
+    labels: {k8s-app: aws-node}
+
+# Fargate pods:
+# - No node management
+# - No daemonsets (except aws-node)
+# - Each pod gets dedicated vCPU/memory
+# - Billed per pod-second
+# - 30GB max ephemeral storage
+# - Network: ENI trunking`,
+    codes:{
+      eksctl:`# Fargate profile (eksctl):
+fargateProfiles:
+- name: fargate-default
+  selectors:
+  - namespace: default
+    labels: {fargate: "yes"}
+  - namespace: kube-system
+    labels: {k8s-app: aws-node}
+
+# Create with eksctl:
+# eksctl create fargateprofile ...`,
+      console:`# AWS Console → EKS → Clusters → prod-cluster
+# "Compute" tab → "Fargate profiles" → Add
+# Name: fargate-default
+# Pod execution role: (create new)
+# Subnets: private subnets
+# Namespace: default
+# Labels: fargate=yes`,
+      kubectl:`# Schedule a Fargate pod:
+$ kubectl run fargate-app --image nginx \\
+  --labels fargate=yes \\
+  --overrides='{"spec":{"nodeSelector":{"eks.amazonaws.com/compute-type":"fargate"}}}'
+
+# Verify:
+$ kubectl get pods -o wide
+# NAME          STATUS   NODE
+# fargate-app   Running  fargate-ip-10-0-1-100.ec2.internal`
+    },
+    desc:'Fargate removes node management — you define profiles with namespace/label selectors. Matching pods run on AWS-managed infrastructure. No nodes to manage, no ASG, no upgrades. Best for burst, batch, or serverless workloads.',
+    tags:['Fargate','Serverless','No Nodes'], colors:['tg','tp','tb'] },
+
+  { id:15, panel:'comp', title:'Add-On Management',
+    code:`# EKS Add-ons (managed):
+$ eksctl create addon --name vpc-cni --cluster prod-cluster
+$ eksctl create addon --name coredns --cluster prod-cluster
+$ eksctl create addon --name kube-proxy --cluster prod-cluster
+
+# Key addons:
+# - vpc-cni: VPC IP-based pod networking
+#   (no overlay, native VPC IPs)
+# - coredns: cluster DNS
+# - kube-proxy: service networking (iptables/IPVS)
+# - aws-ebs-csi-driver: EBS volumes
+# - aws-efs-csi-driver: EFS volumes
+# - metrics-server: resource metrics`,
+    codes:{
+      eksctl:`# EKS Add-ons (managed):
+$ eksctl create addon --name vpc-cni --cluster prod-cluster
+$ eksctl create addon --name coredns --cluster prod-cluster
+$ eksctl create addon --name kube-proxy --cluster prod-cluster
+
+# Update addon:
+$ eksctl update addon --name vpc-cni --cluster prod-cluster --version latest`,
+      console:`# AWS Console → EKS → Clusters → prod-cluster
+# "Add-ons" tab → "Get more add-ons"
+# Available: vpc-cni, coredns, kube-proxy
+# aws-ebs-csi-driver, aws-efs-csi-driver
+# metrics-server, and more
+# Click addon → Install → Select version → Next`,
+      kubectl:`# Verify addons:
+$ kubectl get pods -n kube-system
+NAME              READY   STATUS
+aws-node-xxxxx    1/1     Running     # vpc-cni
+coredns-xxxxx     1/1     Running     # CoreDNS
+kube-proxy-xxxxx  1/1     Running     # kube-proxy
+
+# Check vpc-cni config:
+$ kubectl get daemonset -n kube-system aws-node -o yaml`
+    },
+    desc:'EKS add-ons are AWS-managed Kubernetes components. vpc-cni gives each pod a VPC IP address (no CNI overlay). CSI drivers enable persistent storage. AWS handles version compatibility and patching for these add-ons.',
+    tags:['VPC CNI','CoreDNS','CSI Drivers','Add-ons'], colors:['tb','tc','tg','tp'] },
+
+  { id:16, panel:'comp', title:'Teardown & Cleanup', milestone:true,
+    code:`# Delete Fargate profiles first
+$ eksctl delete fargateprofile --cluster prod-cluster --name fargate-default
+
+# Delete node groups (drains nodes)
+$ eksctl delete nodegroup --cluster prod-cluster --name standard-workers
+
+# Delete cluster (ASG + ENIs + SG cleaned)
+$ eksctl delete cluster --name prod-cluster
+
+# Manual cleanup:
+# Check CloudFormation stacks
+# aws cloudformation list-stacks
+# Delete ALB/NLB (if LBC created)
+# Delete EBS volumes (if PVCs exist)
+# Delete VPC endpoints (if created)`,
+    codes:{
+      eksctl:`# Delete Fargate profiles first
+$ eksctl delete fargateprofile --cluster prod-cluster --name fargate-default
+
+# Delete node groups (drains nodes)
+$ eksctl delete nodegroup --cluster prod-cluster --name standard-workers
+
+# Delete cluster (ASG + ENIs + SG cleaned)
+$ eksctl delete cluster --name prod-cluster
+
+# Manual cleanup:
+# Check CloudFormation stacks
+# aws cloudformation list-stacks`,
+      console:`# AWS Console → CloudFormation → Stacks
+# Delete eksctl-prod-cluster stack
+# (cleans up cluster, node groups, VPC)
+# 
+# Or EKS → Clusters → prod-cluster → Delete
+# Deletes control plane (ASG + ENIs + SG)
+# Manual cleanup: EBS, ALB, VPC endpoints`,
+      kubectl:`# Drain and delete nodes:
+$ kubectl drain <node> --ignore-daemonsets --delete-emptydir-data
+$ kubectl delete node <node>
+
+# After cluster deletion, verify:
+$ kubectl cluster-info
+# Unable to connect to the server
+# (expected — cluster is gone)
+
+# Clean up local kubeconfig:
+$ kubectl config delete-context prod-cluster`
+    },
+    desc:'Cleanup follows dependency order: Fargate profiles → node groups (drains nodes) → cluster. eksctl handles most cleanup via CloudFormation. Manual steps: check for leftover ALBs, EBS volumes, and VPC endpoints to avoid orphaned resources.',
+    tags:['Teardown','Cleanup','CFN Stack'], colors:['tr','ta','tb'] }
+];
+
+let currentStep = 0, isPlaying = false, playTimer = null, speed = 1200;
+let darkTheme = true;
+let currentLang = 'eksctl';
+let currentFilter = 'all';
+let statsOpen = false;
+let bookmarks = [];
+let isBenchmarking = false;
+let simTimer = 0, timerInterval = null;
+
+const PHASES = { aws:'AWS Console/CLI', eks:'EKS Control Plane', comp:'Compute (EC2/Fargate)' };
+const STATS = { steps:0, total:16, phase:'—', failures:0, time:'00:00' };
+
+const VPC_NODES = [
+  {label:'VPC', cls:'vpc-vpc', text:'10.0.0.0/16'},
+  {label:'Subnet-A', cls:'vpc-subnet', text:'10.0.1.0/24'},
+  {label:'Subnet-B', cls:'vpc-subnet', text:'10.0.2.0/24'},
+  {label:'Subnet-C', cls:'vpc-subnet', text:'10.0.3.0/24'},
+  {label:'IGW', cls:'vpc-igw', text:'Internet GW'},
+  {label:'NLB', cls:'vpc-nlb', text:'ALB/NLB'},
+  {label:'SG', cls:'vpc-sg', text:'Sec Group'},
+];
+
+function renderSteps() {
+  ['aws','eks','comp'].forEach(p => document.getElementById(p+'-steps').innerHTML = '');
+  STEPS.forEach(s => {
+    const done = s.id < currentStep, active = s.id === currentStep;
+    const card = document.createElement('div');
+    card.className = 'scard '+(active?'active ':'')+(done?'done':'')+(s.milestone?' milestone':'');
+    card.id = 'scard-'+s.id;
+    card.onclick = () => goToStep(s.id);
+    const tags = (s.tags||[]).map((t,i)=>'<span class="tag '+(s.colors?.[i]||'tc')+'">'+t+'</span>').join('');
+    const stepCode = s.codes ? (s.codes[currentLang] || s.code) : s.code;
+    const code = stepCode ? '<code class="scode">'+escHtml(stepCode)+'</code>' : '';
+    const bm = isBookmarked(s.id);
+    card.innerHTML = '<div class="scard-head"><div class="snum">'+(done?'✓':s.id)+'</div><div class="stitle">'+s.title+'</div>'+(s.milestone?'<span class="milestone-icon">★</span>':'')+'<button class="bookmark-btn '+(bm?'on':'')+'" onclick="event.stopPropagation();toggleBookmark('+s.id+')" title="'+(bm?'Remove':'Add')+' bookmark">'+(bm?'★':'☆')+'</button><div class="sdot"></div></div><div class="sexpand"><div class="sdesc">'+s.desc+'</div>'+code+'<div class="stags">'+tags+'</div></div>';
+    document.getElementById(s.panel+'-steps').appendChild(card);
+  });
+  filterSteps();
+}
+function escHtml(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function updateUI() {
+  document.getElementById('cur-step').textContent = currentStep;
+  document.getElementById('progress').style.width = (currentStep/16*100)+'%';
+  if(currentStep === 0) { document.getElementById('step-num').textContent = '0'; document.getElementById('step-title').textContent = 'Ready'; }
+  else { const s = STEPS[currentStep-1]; document.getElementById('step-num').textContent = s.id; document.getElementById('step-title').textContent = s.title; }
+  updateCluster();
+  if(statsOpen) updateStats();
+  updateHealth(currentStep);
+  updateHistory();
+  updateArch(currentStep);
+  updatePhases(currentStep);
+  updateDiff(currentStep);
+  updateCost(currentStep);
+  checkErrors(currentStep);
+}
+
+function updateCluster() {
+  const s = currentStep;
+  const vpc = document.getElementById('vpc-viz');
+  const vpcShow = Math.min(Math.ceil(s/2), VPC_NODES.length);
+  vpc.innerHTML = VPC_NODES.slice(0, vpcShow).map(n => '<span class="vpc-box '+n.cls+'">'+n.label+': '+n.text+'</span>').join('');
+
+  const badge = document.getElementById('eks-status-badge');
+  if(s === 0) { badge.textContent = '—'; badge.className = 'ng-status'; }
+  else if(s < 6) { badge.textContent = 'CREATING'; badge.className = 'ng-status creating'; }
+  else if(s < 16) { badge.textContent = 'ACTIVE'; badge.className = 'ng-status active-s'; }
+  else { badge.textContent = 'DELETING'; badge.className = 'ng-status deleting'; }
+  document.getElementById('eks-version').textContent = s >= 10 ? 'K8s 1.30 (upgraded)' : 'K8s 1.29';
+
+  const irsa = document.getElementById('irsa-viz');
+  if(s >= 8) irsa.innerHTML = '<span class="vpc-box" style="background:rgba(239,68,68,.08);border-color:rgba(239,68,68,.3);color:var(--red)">IAM Role: app-role</span><span style="color:var(--text3)">→</span><span class="vpc-box" style="background:rgba(139,92,246,.08);border-color:rgba(139,92,246,.3);color:var(--purple)">OIDC: eks.region.amazonaws.com/id/EX…</span><span style="color:var(--text3)">→</span><span class="vpc-box vpc-subnet">SA: app-sa</span>';
+  else irsa.innerHTML = '<span style="color:var(--text3)">OIDC provider not configured</span>';
+
+  const ng = document.getElementById('ng-row');
+  ng.innerHTML = '';
+  const ngs = [
+    {name:'standard', type:'t3.medium', count:s>=12?3:0, desired:3, max:10, ready:s>=13},
+    {name:'spot-workers', type:'t3.small', count:s>=12?2:0, desired:2, max:5, ready:s>=13},
+  ];
+  ngs.forEach(n => {
+    if(s < 12) return;
+    const el = document.createElement('div');
+    el.className = 'ng-card'+(n.ready?' active':'');
+    el.innerHTML = '<div>'+n.name+'</div><div style="font-size:7px;color:var(--text3)">'+n.type+'</div><div class="ng-bar"><div class="ng-bar-fill" style="width:'+(n.desired/n.max*100)+'%"></div></div><div style="font-size:7px;color:var(--text3)">'+n.count+'/'+n.max+' nodes</div>';
+    ng.appendChild(el);
+  });
+
+  const fg = document.getElementById('fargate-viz');
+  fg.innerHTML = '';
+  if(s >= 14) {
+    const pods = [
+      {name:'app-a', status:s>=15?'active':'pending'},
+      {name:'app-b', status:s>=15?'active':'pending'},
+      {name:'batch-job', status:'active'},
+    ];
+    pods.forEach(p => {
+      const el = document.createElement('span');
+      el.className = 'fargate-pod '+p.status;
+      el.textContent = p.name+' ('+p.status+')';
+      fg.appendChild(el);
+    });
+  } else fg.innerHTML = '<span style="font-size:8px;color:var(--text3)">No Fargate profiles active</span>';
+}
+
+let stepHistory = [];
+function goToStep(n) {
+  currentStep = Math.max(0, Math.min(16, n));
+  if(n > 0 && (!stepHistory.length || stepHistory[stepHistory.length-1] !== n)) {
+    stepHistory.push(n);
+    if(stepHistory.length > 8) stepHistory.shift();
+  }
+  renderSteps();
+  updateUI();
+  scrollActiveIntoView();
+  saveState();
+}
+function nextStep() { if(currentStep < 16) goToStep(currentStep+1); else stopPlay(); }
+function prevStep() { if(currentStep > 0) goToStep(currentStep-1); }
+function togglePlay() { if(isPlaying) stopPlay(); else startPlay(); }
+function startPlay() { if(currentStep >= 16) { currentStep = 0; renderSteps(); } isPlaying = true; document.getElementById('play-btn').textContent = '⏸ Pause'; document.getElementById('play-btn').classList.add('playing'); startTimer(); scheduleNext(); }
+function stopPlay() { isPlaying = false; clearTimeout(playTimer); document.getElementById('play-btn').textContent = '▶ Play All'; document.getElementById('play-btn').classList.remove('playing'); stopTimer(); }
+function scheduleNext() { playTimer = setTimeout(()=>{ nextStep(); if(isPlaying && currentStep < 16) scheduleNext(); else stopPlay(); }, speed); }
+function updateSpeed() { speed = parseInt(document.getElementById('speed-sel').value); if(isPlaying) { stopPlay(); startPlay(); } }
+function resetSim() { stopPlay(); currentStep = 0; renderSteps(); updateUI(); resetTimer(); }
+
+let toastTimer;
+function showToast(type, title, body) {
+  const t = document.getElementById('toast');
+  document.getElementById('toast-t').textContent = title;
+  document.getElementById('toast-b').textContent = body.length > 80 ? body.substring(0,80)+'...' : body;
+  t.className = 'toast '+type+' show';
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>{ t.classList.remove('show'); }, 3500);
+}
+
+document.addEventListener('keydown', e => {
+  if(e.key==='ArrowRight'||e.key===' ') { e.preventDefault(); nextStep(); }
+  if(e.key==='ArrowLeft') { e.preventDefault(); prevStep(); }
+  if(e.key==='r'||e.key==='R') { e.preventDefault(); confirmReset(); }
+  if(e.key==='p'||e.key==='P') { e.preventDefault(); togglePlay(); }
+  if(e.key==='t'||e.key==='T') { e.preventDefault(); toggleTheme(); }
+  if(e.key==='?') { e.preventDefault(); toggleShortcuts(); }
+  if(e.key==='s'||e.key==='S') { e.preventDefault(); toggleStats(); }
+  if(e.key==='Escape') { e.preventDefault(); closeShortcuts({target:document.getElementById('shortcuts-overlay'),currentTarget:document.getElementById('shortcuts-overlay')}); closeResetModal(); }
+});
+
+// ═══════════════════════════════════════════════════════
+// THEME TOGGLE
+// ═══════════════════════════════════════════════════════
+function toggleTheme() {
+  darkTheme = !darkTheme;
+  document.documentElement.setAttribute('data-theme', darkTheme ? '' : 'light');
+  showToast('ok', darkTheme ? 'Dark Mode' : 'Light Mode', 'Theme toggled');
+  saveState();
+}
+
+// ═══════════════════════════════════════════════════════
+// SHORTCUTS OVERLAY
+// ═══════════════════════════════════════════════════════
+function toggleShortcuts() {
+  document.getElementById('shortcuts-overlay').classList.toggle('show');
+}
+function closeShortcuts(e) {
+  if(e && e.target === e.currentTarget) toggleShortcuts();
+}
+
+// ═══════════════════════════════════════════════════════
+// SEARCH / FILTER
+// ═══════════════════════════════════════════════════════
+function setFilter(tag) {
+  currentFilter = tag;
+  document.querySelectorAll('.filter-chip').forEach(c => c.classList.toggle('active', c.dataset.tag === tag));
+  filterSteps();
+}
+function filterSteps() {
+  const q = document.getElementById('search-input').value.toLowerCase();
+  let visible = 0;
+  STEPS.forEach(s => {
+    const card = document.getElementById('scard-'+s.id);
+    const matchTag = currentFilter === 'all' || s.panel === currentFilter;
+    const matchSearch = !q || s.title.toLowerCase().includes(q) || s.desc.toLowerCase().includes(q) || s.tags.some(t => t.toLowerCase().includes(q));
+    const show = matchTag && matchSearch;
+    card.style.display = show ? '' : 'none';
+    if(show) visible++;
+  });
+  document.getElementById('search-count').textContent = visible+'/16';
+}
+
+// ═══════════════════════════════════════════════════════
+// LANGUAGE TOGGLE
+// ═══════════════════════════════════════════════════════
+function setLang(lang) {
+  currentLang = lang;
+  document.querySelectorAll('.lang-tab').forEach(t => t.classList.toggle('active', t.dataset.lang === lang));
+  renderSteps();
+  updateUI();
+  scrollActiveIntoView();
+  saveState();
+}
+
+// ═══════════════════════════════════════════════════════
+// CONFIG PRESETS
+// ═══════════════════════════════════════════════════════
+function applyPreset(name) {
+  const presets = {
+    'normal':     { speed:1200, label:'Normal' },
+    'fast':       { speed:700,  label:'Fast' },
+    'deep-dive':  { speed:2000, label:'Deep Dive' },
+    'demo':       { speed:350,  label:'Demo' },
+  };
+  const p = presets[name];
+  if(!p) return;
+  document.getElementById('speed-sel').value = p.speed;
+  updateSpeed();
+  document.querySelectorAll('.preset-btn').forEach(b => b.classList.toggle('active', b.textContent.trim() === p.label));
+  showToast('ok', 'Preset: '+p.label, 'Speed set to '+(p.speed===1200?'1x':p.speed===700?'2x':p.speed===2000?'0.5x':'4x'));
+}
+
+// ═══════════════════════════════════════════════════════
+// BENCHMARK MODE
+// ═══════════════════════════════════════════════════════
+function runBenchmark() {
+  if(isBenchmarking) return;
+  if(currentStep !== 0) { showToast('err','Reset First','Please reset before running benchmark'); return; }
+  isBenchmarking = true;
+  const btn = document.getElementById('bench-btn');
+  const res = document.getElementById('bench-result');
+  btn.classList.add('running');
+  btn.textContent = '⏱ Running…';
+  res.classList.remove('show');
+
+  const startMs = Date.now();
+  let i = 0;
+  function stepBench() {
+    if(i >= 16) {
+      const elapsed = Date.now() - startMs;
+      isBenchmarking = false;
+      btn.classList.remove('running');
+      btn.textContent = '⏱ Benchmark';
+      res.textContent = '✓ '+(elapsed/1000).toFixed(1)+'s total · '+(elapsed/16).toFixed(0)+'ms/step';
+      res.classList.add('show');
+      showToast('ok', 'Benchmark Complete', (elapsed/1000).toFixed(1)+'s for 16 steps');
+      return;
+    }
+    i++;
+    goToStep(i);
+    setTimeout(stepBench, 100);
+  }
+  stepBench();
+}
+
+// ═══════════════════════════════════════════════════════
+// BOOKMARKS
+// ═══════════════════════════════════════════════════════
+function loadBookmarks() {
+  try { const r = localStorage.getItem('eks_bookmarks'); if(r) bookmarks = JSON.parse(r); } catch(e) {}
+}
+function saveBookmarks() {
+  try { localStorage.setItem('eks_bookmarks', JSON.stringify(bookmarks)); } catch(e) {}
+  renderBookmarks();
+}
+function toggleBookmark(id) {
+  const i = bookmarks.indexOf(id);
+  if(i >= 0) bookmarks.splice(i,1); else bookmarks.push(id);
+  saveBookmarks();
+  renderSteps();
+}
+function renderBookmarks() {
+  const bar = document.getElementById('bookmarks-bar');
+  if(!bar) return;
+  bar.innerHTML = '<span class="bm-label">★</span>';
+  bookmarks.forEach(id => {
+    const chip = document.createElement('span');
+    chip.className = 'bm-chip';
+    chip.innerHTML = '★ Step '+id+' <span class="bm-del" onclick="event.stopPropagation();toggleBookmark('+id+')">×</span>';
+    chip.onclick = () => goToStep(id);
+    chip.title = 'Go to step '+id;
+    bar.appendChild(chip);
+  });
+}
+function isBookmarked(id) { return bookmarks.includes(id); }
+
+// ═══════════════════════════════════════════════════════
+// SIMULATION TIMER
+// ═══════════════════════════════════════════════════════
+function startTimer() {
+  if(timerInterval) return;
+  timerInterval = setInterval(() => {
+    simTimer++;
+    const m = String(Math.floor(simTimer/60)).padStart(2,'0');
+    const sec = String(simTimer%60).padStart(2,'0');
+    document.getElementById('sim-timer').textContent = '⏱ '+m+':'+sec;
+    if(statsOpen) document.getElementById('stat-time').textContent = m+':'+sec;
+  }, 1000);
+}
+function stopTimer() {
+  if(timerInterval) { clearInterval(timerInterval); timerInterval = null; }
+}
+function resetTimer() {
+  stopTimer();
+  simTimer = 0;
+  document.getElementById('sim-timer').textContent = '⏱ 00:00';
+  if(statsOpen) document.getElementById('stat-time').textContent = '00:00';
+}
+
+// ═══════════════════════════════════════════════════════
+// STATS SUMMARY
+// ═══════════════════════════════════════════════════════
+function updateStats() {
+  STATS.steps = currentStep;
+  if(currentStep === 0) STATS.phase = '—';
+  else {
+    const s = STEPS[currentStep-1];
+    STATS.phase = PHASES[s.panel] || s.panel;
+  }
+  const m = String(Math.floor(simTimer/60)).padStart(2,'0');
+  const sec = String(simTimer%60).padStart(2,'0');
+  STATS.time = m+':'+sec;
+  document.getElementById('stat-steps').textContent = STATS.steps;
+  document.getElementById('stat-total').textContent = STATS.total;
+  document.getElementById('stat-phase').textContent = STATS.phase;
+  document.getElementById('stat-fails').textContent = STATS.failures;
+  document.getElementById('stat-time').textContent = STATS.time;
+}
+function toggleStats() {
+  statsOpen = !statsOpen;
+  document.getElementById('stats-grid').style.display = statsOpen ? '' : 'none';
+  document.getElementById('stats-arrow').textContent = statsOpen ? '▼' : '▶';
+  if(statsOpen) updateStats();
+}
+
+// ═══════════════════════════════════════════════════════
+// RESET CONFIRMATION
+// ═══════════════════════════════════════════════════════
+function confirmReset() {
+  if(currentStep === 0) { resetSim(); return; }
+  document.getElementById('reset-modal').classList.add('show');
+}
+function doReset() {
+  closeResetModal();
+  resetSim();
+  resetTimer();
+  STATS.failures = 0;
+  updateStats();
+}
+function closeResetModal() {
+  document.getElementById('reset-modal').classList.remove('show');
+}
+
+// ═══════════════════════════════════════════════════════
+// LOCALSTORAGE PERSISTENCE
+// ═══════════════════════════════════════════════════════
+const STORAGE_KEY = 'eks_sim';
+function saveState() {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify({
+    theme:darkTheme?'dark':'light', lang:currentLang, step:currentStep
+  })); } catch(e) {}
+}
+function loadState() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(!raw) return;
+    const s = JSON.parse(raw);
+    if(s.theme === 'light') { darkTheme = false; document.documentElement.setAttribute('data-theme','light'); }
+    if(s.lang) { currentLang = s.lang; document.querySelectorAll('.lang-tab').forEach(t => t.classList.toggle('active', t.dataset.lang === s.lang)); }
+  } catch(e) {}
+}
+
+// ═══════════════════════════════════════════════════════
+// SCROLL ACTIVE INTO VIEW
+// ═══════════════════════════════════════════════════════
+function scrollActiveIntoView() {
+  const active = document.querySelector('.scard.active');
+  if(active) active.scrollIntoView({behavior:'smooth', block:'nearest'});
+}
+
+// ═══════════════════════════════════════════════════════
+// COMPONENT HEALTH
+// ═══════════════════════════════════════════════════════
+const COMPONENTS = [
+  {id:'eks-api',label:'EKS API',green:1},
+  {id:'etcd',label:'etcd',green:6},
+  {id:'vpc-cni',label:'VPC CNI',green:12},
+  {id:'coredns',label:'CoreDNS',green:6},
+  {id:'kube-proxy',label:'kube-proxy',green:6},
+  {id:'lb-ctrl',label:'LB Controller',green:9},
+];
+function initHealth() {
+  const grid = document.getElementById('health-grid');
+  if(!grid) return;
+  grid.innerHTML = COMPONENTS.map(c => '<div class="health-item"><span class="health-dot gray" id="hd-'+c.id+'"></span><span class="health-label">'+c.label+'</span></div>').join('');
+}
+function updateHealth(s) {
+  COMPONENTS.forEach(c => {
+    const dot = document.getElementById('hd-'+c.id);
+    if(dot) dot.className = 'health-dot '+(s >= c.green ? 'green' : 'gray');
+  });
+}
+
+// ═══════════════════════════════════════════════════════
+// STEP HISTORY
+// ═══════════════════════════════════════════════════════
+function updateHistory() {
+  const bar = document.getElementById('history-bar');
+  if(!bar) return;
+  bar.innerHTML = '';
+  for(let i=1; i<=16; i++) {
+    const dot = document.createElement('span');
+    dot.className = 'history-dot';
+    if(stepHistory.includes(i)) dot.classList.add('visited');
+    if(i === currentStep) dot.classList.add('current');
+    dot.textContent = i;
+    dot.onclick = () => goToStep(i);
+    bar.appendChild(dot);
+  }
+}
+
+// ═══════════════════════════════════════════════════════
+// ARCHITECTURE SVG
+// ═══════════════════════════════════════════════════════
+function updateArch(s) {
+  const ids = ['arch-aws','arch-eks','arch-etcd','arch-vpc','arch-ng','arch-fargate','arch-svcs'];
+  const thresholds = { 'arch-aws':1, 'arch-eks':1, 'arch-etcd':1, 'arch-vpc':2, 'arch-ng':12, 'arch-fargate':14, 'arch-svcs':5 };
+  ids.forEach(id => {
+    const el = document.getElementById(id);
+    if(el) el.setAttribute('opacity', s >= thresholds[id] ? '1' : '0.25');
+  });
+}
+
+// ═══════════════════════════════════════════════════════
+// PHASE BADGES
+// ═══════════════════════════════════════════════════════
+function updatePhases(s) {
+  const phases = [
+    {el:'phase-aws', done:s>5, active:s>=1&&s<=5},
+    {el:'phase-eks', done:s>11, active:s>=6&&s<=11},
+    {el:'phase-comp', done:s>16, active:s>=12&&s<=16},
+  ];
+  phases.forEach(p => {
+    const badge = document.getElementById(p.el);
+    if(!badge) return;
+    if(p.done) badge.className = 'phase-badge done';
+    else if(p.active) badge.className = 'phase-badge active';
+    else badge.className = 'phase-badge pending';
+  });
+}
+
+// ═══════════════════════════════════════════════════════
+// ERROR SIMULATION
+// ═══════════════════════════════════════════════════════
+let errorsOn = false;
+const ERROR_STEPS = {3:'IAM AccessDenied — role eks-service-role missing',7:'ASG quota exceeded — max 5 groups reached',9:'ALB provision failed — subnet has no internet gateway',13:'Instance health check failed — replacing node',16:'VPC dependency — ENIs still attached, cleanup blocked'};
+function toggleErrors() {
+  errorsOn = !errorsOn;
+  document.getElementById('err-toggle').classList.toggle('on', errorsOn);
+  showToast('ok', errorsOn?'Error Simulation ON':'Error Simulation OFF', errorsOn?'AWS failures will be injected':'Normal operation');
+}
+function checkErrors(s) {
+  if(errorsOn && ERROR_STEPS[s]) {
+    showToast('err', '⚠ AWS Error: '+ERROR_STEPS[s].split(' — ')[0], ERROR_STEPS[s]);
+    STATS.failures++;
+    updateStats();
+  }
+}
+
+// ═══════════════════════════════════════════════════════
+// CONFIG DIFF
+// ═══════════════════════════════════════════════════════
+const STEPS_DIFF = ['','+ eksctl create cluster: prod-cluster, 3 AZ, K8s 1.29','+ VPC: 10.0.0.0/16, 3 private subnets, IGW','+ IAM: eks-service-role, node-instance-role, OIDC','+ kubeconfig: aws eks update-kubeconfig → connected','+ Deployment: nginx:1.25, 3 replicas + LoadBalancer svc','EKS CP: API server x2 per AZ, etcd, scheduler active','+ Cluster Autoscaler: IRSA, ASG integration','+ IRSA: OIDC provider, IAM→SA mapping','+ AWS LB Controller: Helm install, ALB/NLB support','+ Upgrade: control plane 1.29→1.30, node groups rolling','+ CloudWatch: Container Insights, Metrics Server','+ Managed NG: standard-workers (t3.medium×3)','+ Health: ASG auto-repair, rolling update configured','+ Fargate: fargate-default profile, selector: fargate=yes','+ Add-ons: VPC CNI, CoreDNS, kube-proxy, CSI drivers','- Teardown: Fargate→NodeGroup→Cluster→CFN cleanup'];
+function updateDiff(s) {
+  const section = document.getElementById('diff-section');
+  const content = document.getElementById('diff-content');
+  if(!section || !content) return;
+  if(s <= 1) { section.style.display = 'none'; return; }
+  section.style.display = 'block';
+  content.innerHTML = '<div class="diff-line diff-add">'+escHtml(STEPS_DIFF[s])+'</div>';
+}
+
+// ═══════════════════════════════════════════════════════
+// COST ESTIMATOR
+// ═══════════════════════════════════════════════════════
+function updateCost(s) {
+  const grid = document.getElementById('cost-est');
+  if(!grid) return;
+  const eksFee = 73;
+  const t3medium = 30, t3small = 15;
+  const ngCount = s>=12?3:0, spotCount = s>=12?2:0;
+  const fargatePods = s>=14?3:0;
+  const fargateCost = fargatePods*20;
+  const total = eksFee + ngCount*t3medium + spotCount*t3small + fargateCost;
+  const dataTx = s>=5?10:0;
+  grid.innerHTML = '<div style="display:flex;gap:6px;flex-wrap:wrap">' +
+    '<div class="cost-card"><div class="cost-num">$'+eksFee+'</div><div class="cost-label">EKS Cluster</div></div>' +
+    '<div class="cost-card"><div class="cost-num">$'+(ngCount*t3medium)+'</div><div class="cost-label">'+ngCount+'× t3.medium</div></div>' +
+    '<div class="cost-card"><div class="cost-num">$'+(spotCount*t3small)+'</div><div class="cost-label">'+spotCount+'× t3.small</div></div>' +
+    '<div class="cost-card"><div class="cost-num">$'+fargateCost+'</div><div class="cost-label">Fargate ('+fargatePods+' pods)</div></div>' +
+    '<div class="cost-card"><div class="cost-num">$'+dataTx+'</div><div class="cost-label">Data Transfer</div></div>' +
+    '<div class="cost-card" style="border-color:var(--green)"><div class="cost-num" style="color:var(--green)">$'+(total+dataTx)+'</div><div class="cost-label">Total/mo</div></div>' +
+  '</div>';
+}
+
+// ═══════════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════════
+loadBookmarks();
+loadState();
+initHealth();
+renderSteps();
+renderBookmarks();
+updateUI();
+
+setTimeout(()=> showToast('ok','EKS Simulator Ready','Press Space/→ to step, P to play, ? for shortcuts. 16 steps from cluster creation to teardown!'), 500);
+</script>
+</body>
+</html>

@@ -1,0 +1,1973 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kubernetes Pod Lifecycle Simulator</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg0:#060b18;--bg1:#0b1120;--bg2:#111827;--bg3:#1a2234;
+  --border:#1e2d4a;--border2:#2a3f5f;
+  --green:#10b981;--blue:#3b82f6;--cyan:#22d3ee;
+  --purple:#8b5cf6;--amber:#f59e0b;--red:#ef4444;--pink:#ec4899;
+  --text:#e2e8f0;--text2:#94a3b8;--text3:#64748b;
+  --mono:'Consolas','Monaco','Courier New',monospace;
+}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg0);color:var(--text);min-height:100vh;overflow-x:hidden}
+
+/* ── HEADER ── */
+.header{
+  background:var(--bg1);border-bottom:1px solid var(--border);
+  padding:10px 16px;display:flex;align-items:center;justify-content:space-between;
+  position:sticky;top:0;z-index:100;gap:10px;flex-wrap:wrap;
+}
+.logo{display:flex;align-items:center;gap:8px}
+.logo-icon{
+  width:32px;height:32px;background:linear-gradient(135deg,var(--blue),var(--cyan));
+  border-radius:6px;display:flex;align-items:center;justify-content:center;
+  font-size:16px;font-weight:900;color:#000;
+}
+.logo-text h1{font-size:14px;font-weight:700;color:var(--cyan);letter-spacing:.3px}
+.logo-text p{font-size:9px;color:var(--text3);font-family:var(--mono)}
+.controls{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.step-badge{
+  font-family:var(--mono);font-size:11px;color:var(--text2);
+  background:var(--bg2);padding:4px 8px;border-radius:4px;border:1px solid var(--border);white-space:nowrap;
+}
+.step-badge em{color:var(--cyan);font-style:normal;font-weight:700}
+.btn{
+  padding:6px 12px;border-radius:5px;border:1px solid;cursor:pointer;
+  font-size:11px;font-weight:600;transition:all .2s;white-space:nowrap;
+}
+.btn-play{background:var(--blue);border-color:var(--blue);color:#fff}
+.btn-play:hover{background:#2563eb}
+.btn-play.playing{background:var(--amber);border-color:var(--amber);color:#000}
+.btn-sm{background:transparent;border-color:var(--border2);color:var(--text2)}
+.btn-sm:hover{border-color:var(--blue);color:var(--blue)}
+.btn-reset{background:transparent;border-color:var(--border);color:var(--text3)}
+.btn-reset:hover{border-color:var(--red);color:var(--red)}
+
+/* ── PROGRESS ── */
+.progress-bar{height:2px;background:var(--border);overflow:hidden}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--blue),var(--cyan));transition:width .4s;border-radius:0 2px 2px 0}
+.info-bar{
+  display:flex;align-items:center;gap:8px;padding:5px 10px;
+  background:var(--bg1);border-bottom:1px solid var(--border);font-size:10px;
+}
+.info-bar span{color:var(--text3);font-family:var(--mono)}
+.info-bar em{color:var(--cyan);font-style:normal}
+
+/* ── MAIN GRID ── */
+.main{
+  display:grid;grid-template-columns:1fr 1fr 1fr;gap:0;
+  min-height:calc(100vh - 110px)
+}
+.panel{
+  display:flex;flex-direction:column;border-right:1px solid var(--border);
+  background:var(--bg0);overflow:hidden;
+}
+.panel:last-child{border-right:none}
+.panel-head{
+  display:flex;align-items:center;gap:6px;padding:7px 10px;
+  border-bottom:1px solid var(--border);flex-shrink:0;
+}
+.panel-num{
+  width:20px;height:20px;border-radius:50%;display:flex;align-items:center;
+  justify-content:center;font-size:9px;font-weight:800;flex-shrink:0;
+}
+.panel-title{font-size:11px;font-weight:700;letter-spacing:.3px}
+.panel-sub{font-size:8px;color:var(--text3);margin-left:auto;font-family:var(--mono)}
+
+.dev .panel-head{background:rgba(16,185,129,.07)}
+.dev .panel-num{background:var(--green);color:#000}
+.dev .panel-title{color:var(--green)}
+.cplane .panel-head{background:rgba(59,130,246,.07)}
+.cplane .panel-num{background:var(--blue);color:#fff}
+.cplane .panel-title{color:var(--blue)}
+.nodes .panel-head{background:rgba(139,92,246,.07)}
+.nodes .panel-num{background:var(--purple);color:#fff}
+.nodes .panel-title{color:var(--purple)}
+
+.panel-body{overflow-y:auto;flex:1}
+.panel-body::-webkit-scrollbar{width:3px}
+.panel-body::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
+
+/* ── STEP CARDS ── */
+.steps{padding:6px;display:flex;flex-direction:column;gap:4px}
+.scard{
+  background:var(--bg2);border:1px solid var(--border);border-radius:6px;
+  padding:7px 9px;cursor:pointer;transition:all .25s ease;position:relative;
+  overflow:hidden;
+}
+.scard::before{
+  content:'';position:absolute;left:0;top:0;bottom:0;width:3px;
+  background:transparent;transition:background .25s;
+}
+.scard:hover{background:var(--bg3);border-color:var(--border2)}
+.scard.done{border-color:rgba(16,185,129,.2)}
+.scard.done::before{background:var(--green)}
+.scard.active{background:var(--bg3);border-color:var(--border2)}
+
+.dev .scard.active{border-color:var(--green);background:rgba(16,185,129,.05);box-shadow:0 0 12px rgba(16,185,129,.12)}
+.dev .scard.active::before{background:var(--green)}
+.cplane .scard.active{border-color:var(--blue);background:rgba(59,130,246,.05);box-shadow:0 0 12px rgba(59,130,246,.12)}
+.cplane .scard.active::before{background:var(--blue)}
+.nodes .scard.active{border-color:var(--purple);background:rgba(139,92,246,.05);box-shadow:0 0 12px rgba(139,92,246,.12)}
+.nodes .scard.active::before{background:var(--purple)}
+
+.scard-head{display:flex;align-items:center;gap:6px}
+.snum{
+  width:18px;height:18px;border-radius:50%;background:var(--border);
+  display:flex;align-items:center;justify-content:center;font-size:8px;
+  font-weight:800;color:var(--text3);flex-shrink:0;transition:all .25s;
+}
+.scard.done .snum{background:var(--green);color:#000}
+.stitle{font-size:10px;font-weight:600;color:var(--text);line-height:1.3}
+.sdot{
+  width:5px;height:5px;border-radius:50%;background:var(--cyan);
+  margin-left:auto;flex-shrink:0;animation:blink 1s infinite;display:none;
+}
+.scard.active .sdot{display:block}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
+
+.sexpand{display:none;margin-top:6px;padding-top:6px;border-top:1px solid var(--border)}
+.scard.active .sexpand{display:block}
+.sdesc{font-size:9.5px;color:var(--text2);line-height:1.5;margin-bottom:5px}
+.scode{
+  font-family:var(--mono);font-size:9px;color:#a8d8ff;
+  background:rgba(0,0,0,.35);padding:5px 7px;border-radius:3px;
+  border-left:2px solid var(--cyan);line-height:1.5;white-space:pre;
+  overflow-x:auto;display:block;
+}
+.stags{display:flex;flex-wrap:wrap;gap:2px;margin-top:4px}
+.tag{
+  display:inline-block;padding:1px 5px;border-radius:2px;
+  font-size:8px;font-weight:700;font-family:var(--mono);
+}
+.tg{background:rgba(16,185,129,.15);color:var(--green)}
+.tb{background:rgba(59,130,246,.15);color:var(--blue)}
+.ta{background:rgba(245,158,11,.15);color:var(--amber)}
+.tr{background:rgba(239,68,68,.15);color:var(--red)}
+.tp{background:rgba(139,92,246,.15);color:var(--purple)}
+.tc{background:rgba(34,211,238,.15);color:var(--cyan)}
+
+/* ── CLUSTER VIZ ── */
+.cluster-section{margin:6px 8px;padding:6px 8px;background:var(--bg1);border:1px solid var(--border);border-radius:5px}
+.cs-title{font-size:9px;font-weight:700;color:var(--text3);margin-bottom:4px;text-transform:uppercase;letter-spacing:.5px}
+
+.nodepool{display:flex;gap:4px;flex-wrap:wrap}
+.node-card{
+  background:var(--bg2);border:1px solid var(--border);border-radius:4px;
+  padding:4px 6px;font-size:8px;font-family:var(--mono);flex:1;min-width:60px;text-align:center;
+  color:var(--text3);transition:all .3s;
+}
+.node-card.active{border-color:var(--purple);background:rgba(139,92,246,.08);color:var(--purple)}
+.node-card.ready{background:rgba(16,185,129,.08);border-color:var(--green);color:var(--green)}
+.node-card .node-cpu{height:3px;background:var(--border);border-radius:2px;margin-top:3px;overflow:hidden}
+.node-card .node-cpu-fill{height:100%;background:var(--cyan);border-radius:2px;transition:width .4s}
+
+/* ── POD STATUS ── */
+.pod-row{display:flex;gap:3px;flex-wrap:wrap;margin-top:4px}
+.pod-badge{
+  padding:2px 6px;border-radius:3px;font-family:var(--mono);font-size:8px;
+  transition:all .3s;border:1px solid transparent;
+}
+.pod-badge.pending{background:rgba(245,158,11,.1);color:var(--amber);border-color:rgba(245,158,11,.2)}
+.pod-badge.running{background:rgba(16,185,129,.1);color:var(--green);border-color:rgba(16,185,129,.2)}
+.pod-badge.succeeded{background:rgba(59,130,246,.1);color:var(--blue);border-color:rgba(59,130,246,.2)}
+.pod-badge.failed{background:rgba(239,68,68,.1);color:var(--red);border-color:rgba(239,68,68,.2)}
+.pod-badge.active{border-color:var(--cyan);box-shadow:0 0 6px rgba(34,211,238,.2)}
+
+/* ── SCHEDULER PIPELINE ── */
+.sched-steps{display:flex;gap:3px;margin-top:4px}
+.sched-step{
+  flex:1;padding:4px;border-radius:3px;background:var(--bg2);border:1px solid var(--border);
+  text-align:center;font-size:7px;color:var(--text3);font-family:var(--mono);transition:all .3s;
+}
+.sched-step.done{border-color:var(--green);color:var(--green);background:rgba(16,185,129,.06)}
+.sched-step.active{border-color:var(--cyan);color:var(--cyan);background:rgba(34,211,238,.06);box-shadow:0 0 6px rgba(34,211,238,.15)}
+
+/* ── TOAST ── */
+.toast{
+  position:fixed;bottom:16px;right:16px;z-index:9999;
+  background:var(--bg1);border:1px solid var(--border2);border-radius:8px;
+  padding:10px 14px;max-width:320px;transform:translateY(120%);transition:transform .35s ease;box-shadow:0 4px 20px rgba(0,0,0,.4);
+}
+.toast.show{transform:translateY(0)}
+.toast-t{font-size:11px;font-weight:700;margin-bottom:2px}
+.toast-b{font-size:9px;color:var(--text2);line-height:1.4}
+.toast.err .toast-t{color:var(--red)}
+.toast.ok .toast-t{color:var(--green)}
+
+/* ── SERVICE VIZ ── */
+.svc-viz{display:flex;align-items:center;gap:4px;margin-top:4px;flex-wrap:wrap}
+.svc-label{padding:2px 6px;border-radius:3px;font-family:var(--mono);font-size:8px}
+.svc-svc{background:rgba(59,130,246,.12);color:var(--blue);border:1px solid rgba(59,130,246,.25)}
+.svc-pod{background:rgba(16,185,129,.12);color:var(--green);border:1px solid rgba(16,185,129,.25)}
+.svc-arrow{color:var(--text3);font-size:8px}
+
+/* ── HPA VIZ ── */
+.hpa-bar{margin-top:4px;display:flex;gap:2px;align-items:flex-end;height:28px}
+.hpa-col{width:16px;background:var(--border);border-radius:2px 2px 0 0;transition:all .4s;min-height:4px}
+.hpa-col.utilized{background:var(--amber)}
+.hpa-col.scaled{background:var(--green)}
+
+/* ── RESPONSIVE ── */
+@media(max-width:900px){
+  .main{grid-template-columns:1fr}
+}
+
+/* ════════════════════════════════════════════════════════════ */
+/* NEW FEATURES                                            */
+/* ════════════════════════════════════════════════════════════ */
+
+/* ── LIGHT THEME ── */
+[data-theme="light"]{
+  --bg0:#f1f5f9;--bg1:#ffffff;--bg2:#f8fafc;--bg3:#e2e8f0;
+  --border:#cbd5e1;--border2:#94a3b8;
+  --text:#0f172a;--text2:#334155;--text3:#64748b;
+}
+[data-theme="light"] .scode{color:#1e293b;background:rgba(0,0,0,.05);border-left-color:var(--blue)}
+[data-theme="light"] .logo-icon{color:#fff}
+[data-theme="light"] .scard{background:var(--bg2)}
+[data-theme="light"] .scard:hover{background:var(--bg3)}
+[data-theme="light"] .toast{background:var(--bg1);border-color:var(--border)}
+[data-theme="light"] .toast-t{color:var(--text)}
+[data-theme="light"] .search-input{background:var(--bg1)}
+[data-theme="light"] .filter-chip{background:var(--bg1)}
+[data-theme="light"] .lang-tab{background:var(--bg0)}
+[data-theme="light"] .lang-tab.active{background:var(--bg2)}
+[data-theme="light"] .modal-box{background:var(--bg2)}
+[data-theme="light"] .shortcuts-modal{background:var(--bg2)}
+[data-theme="light"] .stat-card{background:var(--bg1)}
+[data-theme="light"] .cluster-section{background:var(--bg2)}
+[data-theme="light"] .preset-btn{background:var(--bg1)}
+[data-theme="light"] .bm-chip{background:rgba(245,158,11,.06)}
+[data-theme="light"] .bench-btn{background:var(--bg1)}
+[data-theme="light"] .sim-timer{background:var(--bg1)}
+[data-theme="light"] .step-badge{background:var(--bg1)}
+[data-theme="light"] .node-card{background:var(--bg0)}
+[data-theme="light"] .sched-step{background:var(--bg0)}
+[data-theme="light"] .select{background:var(--bg1)}
+
+/* ── SEARCH & FILTER ── */
+.search-bar{
+  display:flex;gap:6px;padding:5px 10px;align-items:center;
+  background:var(--bg1);border-bottom:1px solid var(--border);
+}
+.search-input{
+  flex:1;background:var(--bg2);border:1px solid var(--border);color:var(--text2);
+  padding:5px 8px;border-radius:4px;font-size:10px;font-family:inherit;outline:none;transition:border .2s;
+}
+.search-input:focus{border-color:var(--cyan)}
+.search-input::placeholder{color:var(--text3)}
+.filter-chips{display:flex;gap:3px;flex-shrink:0}
+.filter-chip{
+  padding:2px 7px;border-radius:3px;background:var(--bg2);border:1px solid var(--border);
+  color:var(--text3);font-size:8px;cursor:pointer;transition:all .2s;font-family:var(--mono);
+}
+.filter-chip:hover{border-color:var(--text2);color:var(--text2)}
+.filter-chip.active{background:rgba(34,211,238,.12);border-color:var(--cyan);color:var(--cyan)}
+.search-count{font-size:8px;color:var(--text3);font-family:var(--mono);white-space:nowrap}
+
+/* ── LANGUAGE TOGGLE ── */
+.lang-tabs{display:flex;gap:2px;padding:3px 10px 0;background:var(--bg1);border-bottom:1px solid var(--border)}
+.lang-tab{
+  padding:3px 8px;border-radius:3px 3px 0 0;border:1px solid var(--border);
+  border-bottom:none;background:var(--bg1);color:var(--text3);font-size:8px;
+  cursor:pointer;transition:all .2s;font-family:var(--mono);font-weight:700;
+}
+.lang-tab:hover{color:var(--text2)}
+.lang-tab.active{background:var(--bg2);color:var(--cyan)}
+
+/* ── CONFIG PRESETS ── */
+.presets{display:flex;gap:3px;padding:4px 10px;background:var(--bg1);border-bottom:1px solid var(--border);align-items:center}
+.presets span{font-size:8px;color:var(--text3);font-weight:600}
+.preset-btn{
+  padding:3px 8px;border-radius:3px;background:var(--bg2);border:1px solid var(--border);
+  color:var(--text3);font-size:8px;cursor:pointer;transition:all .2s;font-family:var(--mono);font-weight:600;
+}
+.preset-btn:hover{background:var(--bg3);color:var(--text2)}
+.preset-btn.active{background:rgba(34,211,238,.1);border-color:var(--cyan);color:var(--cyan)}
+
+/* ── BOOKMARKS ── */
+.bookmark-btn{
+  background:none;border:none;color:var(--text3);cursor:pointer;font-size:11px;
+  padding:0 2px;transition:all .2s;line-height:1;margin-left:2px;
+}
+.bookmark-btn:hover{color:var(--amber)}
+.bookmark-btn.on{color:var(--amber);text-shadow:0 0 6px rgba(245,158,11,.4)}
+.bookmarks-bar{
+  display:flex;gap:3px;padding:3px 10px;overflow-x:auto;min-height:18px;
+  background:var(--bg1);border-bottom:1px solid var(--border);align-items:center;
+}
+.bookmarks-bar:empty{display:none}
+.bm-chip{
+  display:flex;align-items:center;gap:3px;padding:2px 6px;border-radius:3px;
+  background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.2);
+  font-size:8px;color:var(--amber);cursor:pointer;font-family:var(--mono);white-space:nowrap;
+}
+.bm-chip:hover{background:rgba(245,158,11,.2)}
+.bm-chip .bm-del{color:var(--text3);cursor:pointer;font-size:9px;margin-left:2px}
+.bm-chip .bm-del:hover{color:var(--red)}
+.bm-label{font-size:8px;color:var(--text3)}
+
+/* ── MODAL / CONFIRM ── */
+.modal-overlay{
+  display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:9998;
+  align-items:center;justify-content:center;
+}
+.modal-overlay.show{display:flex}
+.modal-box{
+  background:var(--bg1);border:1px solid var(--border);border-radius:8px;
+  padding:16px;max-width:320px;width:90%;text-align:center;
+}
+.modal-box h3{font-size:12px;margin-bottom:6px}
+.modal-box p{font-size:10px;color:var(--text2);margin-bottom:12px}
+.modal-btns{display:flex;gap:8px;justify-content:center}
+.modal-btns .btn{min-width:60px}
+
+/* ── SHORTCUTS OVERLAY ── */
+.shortcuts-overlay{
+  display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:9999;
+  align-items:center;justify-content:center;
+}
+.shortcuts-overlay.show{display:flex}
+.shortcuts-modal{
+  background:var(--bg1);border:1px solid var(--border);border-radius:8px;
+  padding:16px;max-width:380px;width:90%;max-height:80vh;overflow-y:auto;
+}
+.shortcuts-modal h2{font-size:13px;color:var(--cyan);margin-bottom:8px}
+.sc-grid{display:grid;grid-template-columns:1fr 1fr;gap:4px}
+.sc-item{display:flex;align-items:center;gap:6px;padding:3px 5px;border-radius:3px;font-size:9px}
+.sc-item:hover{background:var(--bg2)}
+.sc-key{
+  background:var(--bg2);border:1px solid var(--border);border-radius:3px;
+  padding:2px 5px;font-family:var(--mono);font-size:8px;color:var(--text);min-width:28px;text-align:center;
+}
+.sc-desc{color:var(--text2)}
+
+/* ── STATS SUMMARY ── */
+.stats-panel{
+  background:var(--bg1);border:1px solid var(--border);border-radius:5px;
+  margin:6px 8px;padding:8px 10px;overflow:hidden;transition:all .3s;
+}
+.stats-header{
+  display:flex;align-items:center;gap:6px;cursor:pointer;user-select:none;
+  font-size:10px;font-weight:700;color:var(--text2);
+}
+.stats-header:hover{color:var(--text)}
+.stats-grid{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(90px,1fr));
+  gap:5px;margin-top:6px;
+}
+.stat-card{
+  background:var(--bg2);border:1px solid var(--border);border-radius:4px;
+  padding:5px 7px;text-align:center;
+}
+.stat-num{font-size:16px;font-weight:800;font-family:var(--mono);color:var(--cyan);line-height:1.2}
+.stat-label{font-size:7px;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-top:2px}
+
+/* ── SIM TIMER ── */
+.sim-timer{
+  font-family:var(--mono);font-size:10px;color:var(--text3);
+  background:var(--bg2);padding:4px 6px;border-radius:3px;border:1px solid var(--border);
+  white-space:nowrap;
+}
+
+/* ── BENCHMARK ── */
+.bench-btn{
+  padding:3px 7px;border-radius:3px;border:1px solid var(--border);
+  background:var(--bg2);color:var(--text3);font-size:9px;cursor:pointer;font-family:var(--mono);
+  transition:all .2s;
+}
+.bench-btn:hover{border-color:var(--cyan);color:var(--cyan)}
+.bench-btn.running{background:rgba(34,211,238,.1);border-color:var(--cyan);color:var(--cyan);animation:benchPulse .8s infinite}
+@keyframes benchPulse{0%,100%{opacity:1}50%{opacity:.5}}
+.bench-result{
+  font-size:9px;color:var(--green);font-family:var(--mono);padding:2px 7px;
+  background:rgba(16,185,129,.06);border-radius:3px;display:none;
+}
+.bench-result.show{display:inline-block}
+
+/* ── FEATURE 1: Component Health ── */
+.health-grid{display:flex;flex-direction:row;gap:4px;flex-wrap:wrap}
+.health-item{display:flex;align-items:center;gap:4px;background:var(--bg2);border:1px solid var(--border);border-radius:4px;padding:3px 6px;flex:1;min-width:70px}
+.health-dot{width:8px;height:8px;border-radius:50%;background:var(--border);flex-shrink:0;transition:all .3s}
+.health-dot.green{background:var(--green);box-shadow:0 0 6px var(--green)}
+.health-dot.yellow{background:var(--amber);box-shadow:0 0 6px var(--amber)}
+.health-dot.red{background:var(--red);box-shadow:0 0 6px var(--red)}
+.health-label{font-size:8px;font-family:var(--mono);color:var(--text3);white-space:nowrap}
+
+/* ── FEATURE 2: Milestone ── */
+.scard.milestone{border-color:rgba(245,158,11,.3)}
+.scard.milestone::before{background:var(--amber)}
+.milestone-icon{margin-left:auto;font-size:10px;color:var(--amber);flex-shrink:0}
+
+/* ── FEATURE 3: History Bar ── */
+.history-bar{display:flex;gap:2px;padding:4px 10px;background:var(--bg1);border-bottom:1px solid var(--border);overflow-x:auto;align-items:center}
+.history-dot{width:10px;height:10px;border-radius:50%;border:2px solid var(--border);background:var(--bg0);font-size:7px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;flex-shrink:0;color:transparent}
+.history-dot.visited{background:var(--blue);border-color:var(--blue);color:#fff}
+.history-dot.current{background:var(--cyan);border-color:var(--cyan);box-shadow:0 0 6px var(--cyan);color:#fff}
+
+/* ── FEATURE 4: Architecture SVG ── */
+.arch-section{margin:0;background:var(--bg0);border-radius:4px;overflow:hidden}
+.arch-svg{width:100%;height:auto;display:block}
+.arch-svg text{fill:var(--text2);font-size:7px;font-family:var(--mono);text-anchor:middle;dominant-baseline:central}
+.arch-box{transition:opacity .3s,fill .3s}
+.arch-box.inactive{opacity:.2}
+
+/* ── FEATURE 5: Phase Badges ── */
+.phase-row{display:flex;gap:6px;padding:4px 10px;border-bottom:1px solid var(--border);background:var(--bg1);align-items:center}
+.phase-badge{padding:3px 10px;border-radius:4px;font-size:9px;font-family:var(--mono);font-weight:700;transition:all .3s;border:1px solid transparent}
+.phase-badge.pending{background:var(--bg2);color:var(--text3);border-color:var(--border)}
+.phase-badge.active{background:rgba(59,130,246,.1);color:var(--blue);border-color:var(--blue)}
+.phase-badge.done{background:rgba(16,185,129,.1);color:var(--green);border-color:var(--green)}
+
+/* ── FEATURE 6: Error Toggle ── */
+.err-toggle{display:flex;align-items:center;gap:4px;cursor:pointer;font-size:9px;font-family:var(--mono);color:var(--text3);padding:3px 8px;border-radius:4px;border:1px solid var(--border);transition:all .2s;user-select:none}
+.err-toggle:hover{border-color:var(--text2)}
+.err-toggle.on{color:var(--red);border-color:var(--red);background:rgba(239,68,68,.08)}
+
+/* ── FEATURE 7: Config Diff ── */
+.diff-section{margin:0;padding:5px 10px;background:var(--bg1);border-bottom:1px solid var(--border)}
+.diff-line{font-family:var(--mono);font-size:8px;padding:1px 6px;border-radius:2px;line-height:1.6}
+.diff-add{background:rgba(16,185,129,.1);color:var(--green)}
+.diff-rem{background:rgba(239,68,68,.1);color:var(--red)}
+.diff-ctx{color:var(--text3)}
+
+/* ── FEATURE 8: Resource Estimator ── */
+.res-est{display:flex;gap:8px;flex-wrap:wrap;font-family:var(--mono);font-size:8px;color:var(--text3)}
+.res-card{background:var(--bg2);border:1px solid var(--border);border-radius:4px;padding:4px 8px;text-align:center;flex:1;min-width:60px}
+.res-num{font-size:14px;font-weight:800;color:var(--cyan);line-height:1.3}
+.res-label{font-size:7px;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-top:2px}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="logo">
+    <div class="logo-icon">K8s</div>
+    <div class="logo-text">
+      <h1>Kubernetes Pod Lifecycle Simulator</h1>
+      <p>Developer → Control Plane → Worker Nodes · 18 Steps</p>
+    </div>
+  </div>
+  <div class="controls">
+    <div class="step-badge">Step <em id="cur-step">0</em> / <em>18</em></div>
+    <span class="sim-timer" id="sim-timer">⏱ 00:00</span>
+    <button class="btn btn-sm" onclick="prevStep()">← Prev</button>
+    <button class="btn btn-play" id="play-btn" onclick="togglePlay()">▶ Play All</button>
+    <button class="btn btn-sm" onclick="nextStep()">Next →</button>
+    <select id="speed-sel" onchange="updateSpeed()">
+      <option value="2000">0.5x</option><option value="1200" selected>1x</option>
+      <option value="700">2x</option><option value="350">4x</option>
+    </select>
+    <span class="err-toggle" id="err-toggle" onclick="toggleErrors()">⚠ Errors</span>
+    <button class="btn btn-sm" onclick="toggleTheme()" title="Toggle light/dark theme">☀</button>
+    <button class="btn btn-sm" onclick="toggleShortcuts()" title="Keyboard shortcuts (?)">⌨</button>
+    <span class="bench-btn" id="bench-btn" onclick="runBenchmark()">⏱ Benchmark</span>
+    <span class="bench-result" id="bench-result"></span>
+    <button class="btn btn-sm" onclick="confirmReset()">↺ Reset</button>
+  </div>
+</div>
+<div class="progress-bar"><div class="progress-fill" id="progress" style="width:0%"></div></div>
+<div class="history-bar" id="history-bar"></div>
+<div class="phase-row" id="phase-row"><span class="phase-badge" id="phase-dev">⚙ Dev</span><span class="phase-badge" id="phase-cp">☸ Control Plane</span><span class="phase-badge" id="phase-nodes">⛏ Worker Nodes</span></div>
+<div class="diff-section" id="diff-section" style="display:none"><div class="cs-title">Config Changes</div><div id="diff-content"></div></div>
+<div class="info-bar">
+  <span>Step <em id="step-num">0</em> — <em id="step-title">Ready</em></span>
+  <span id="step-tags" style="margin-left:auto"></span>
+</div>
+
+<!-- BOOKMARKS BAR -->
+<div class="bookmarks-bar" id="bookmarks-bar">
+  <span class="bm-label">★</span>
+</div>
+
+<!-- PRESETS -->
+<div class="presets" id="presets">
+  <span>Presets:</span>
+  <span class="preset-btn" onclick="applyPreset('normal')">Normal</span>
+  <span class="preset-btn" onclick="applyPreset('fast')">Fast</span>
+  <span class="preset-btn" onclick="applyPreset('debug')">Debug</span>
+  <span class="preset-btn" onclick="applyPreset('demo')">Demo</span>
+</div>
+
+<!-- LANGUAGE TABS -->
+<div class="lang-tabs">
+  <span class="lang-tab active" data-lang="kubectl" onclick="setLang('kubectl')">kubectl (k8s)</span>
+  <span class="lang-tab" data-lang="yaml" onclick="setLang('yaml')">YAML</span>
+  <span class="lang-tab" data-lang="aws" onclick="setLang('aws')">AWS</span>
+</div>
+
+<!-- SEARCH & FILTER -->
+<div class="search-bar">
+  <input class="search-input" id="search-input" placeholder="Filter steps by title, tag, or description…" oninput="filterSteps()">
+  <span class="search-count" id="search-count">18/18</span>
+  <div class="filter-chips">
+    <span class="filter-chip active" data-tag="all" onclick="setFilter('all')">all</span>
+    <span class="filter-chip" data-tag="dev" onclick="setFilter('dev')">dev</span>
+    <span class="filter-chip" data-tag="cplane" onclick="setFilter('cplane')">cplane</span>
+    <span class="filter-chip" data-tag="nodes" onclick="setFilter('nodes')">nodes</span>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+  <!-- PANEL 1: Developer -->
+  <div class="panel dev">
+    <div class="panel-head">
+      <div class="panel-num">1</div>
+      <div class="panel-title">Developer</div>
+      <div class="panel-sub">Steps 1-5</div>
+    </div>
+    <div class="panel-body">
+      <div class="steps" id="dev-steps"></div>
+      <div class="cluster-section">
+        <div class="cs-title">Architecture Flow</div>
+        <div class="arch-section">
+          <svg class="arch-svg" viewBox="0 0 500 140">
+            <defs>
+              <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+                <path d="M0,0 L10,5 L0,10 Z" fill="var(--border2)"/>
+              </marker>
+              <marker id="arrow-down" viewBox="0 0 10 10" refX="5" refY="8" markerWidth="6" markerHeight="6" orient="auto">
+                <path d="M0,0 L5,10 L10,0 Z" fill="var(--border2)"/>
+              </marker>
+            </defs>
+            <g class="arch-group" id="arch-dev">
+              <rect x="10" y="14" width="50" height="22" rx="4" fill="rgba(16,185,129,.2)" stroke="var(--green)" stroke-width="1"/>
+              <text x="35" y="25" fill="var(--green)">Dev</text>
+            </g>
+            <path d="M60,25 L80,25" stroke="var(--border2)" stroke-width="1.5" marker-end="url(#arrow)"/>
+            <g class="arch-group" id="arch-api-server">
+              <rect x="85" y="14" width="70" height="22" rx="4" fill="rgba(59,130,246,.2)" stroke="var(--blue)" stroke-width="1"/>
+              <text x="120" y="25" fill="var(--blue)">API Server</text>
+            </g>
+            <path d="M155,25 L175,25" stroke="var(--border2)" stroke-width="1.5" marker-end="url(#arrow)"/>
+            <g class="arch-group" id="arch-etcd">
+              <rect x="180" y="14" width="55" height="22" rx="4" fill="rgba(34,211,238,.2)" stroke="var(--cyan)" stroke-width="1"/>
+              <text x="207" y="25" fill="var(--cyan)">etcd</text>
+            </g>
+            <g class="arch-group" id="arch-controller-mgr">
+              <rect x="10" y="76" width="85" height="22" rx="4" fill="rgba(59,130,246,.2)" stroke="var(--blue)" stroke-width="1"/>
+              <text x="52" y="87" fill="var(--blue)">Contr. Mgr</text>
+            </g>
+            <path d="M95,87 L115,87" stroke="var(--border2)" stroke-width="1.5" marker-end="url(#arrow)"/>
+            <g class="arch-group" id="arch-scheduler">
+              <rect x="120" y="76" width="65" height="22" rx="4" fill="rgba(139,92,246,.2)" stroke="var(--purple)" stroke-width="1"/>
+              <text x="152" y="87" fill="var(--purple)">Scheduler</text>
+            </g>
+            <path d="M185,87 L205,87" stroke="var(--border2)" stroke-width="1.5" marker-end="url(#arrow)"/>
+            <g class="arch-group" id="arch-kubelet">
+              <rect x="210" y="76" width="55" height="22" rx="4" fill="rgba(139,92,246,.2)" stroke="var(--purple)" stroke-width="1"/>
+              <text x="237" y="87" fill="var(--purple)">kubelet</text>
+            </g>
+            <path d="M265,87 L285,87" stroke="var(--border2)" stroke-width="1.5" marker-end="url(#arrow)"/>
+            <g class="arch-group" id="arch-pod">
+              <rect x="290" y="76" width="45" height="22" rx="4" fill="rgba(16,185,129,.2)" stroke="var(--green)" stroke-width="1"/>
+              <text x="312" y="87" fill="var(--green)">Pod</text>
+            </g>
+            <path d="M120,36 L120,71" stroke="var(--border2)" stroke-width="1.2" marker-end="url(#arrow-down)" stroke-dasharray="3,2"/>
+            <path d="M207,36 L207,71" stroke="var(--border2)" stroke-width="1.2" marker-end="url(#arrow-down)" stroke-dasharray="3,2"/>
+            <path d="M207,71 L207,36" stroke="var(--border2)" stroke-width="1.2" marker-end="url(#arrow-down)" stroke-dasharray="3,2"/>
+          </svg>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PANEL 2: Control Plane -->
+  <div class="panel cplane">
+    <div class="panel-head">
+      <div class="panel-num">2</div>
+      <div class="panel-title">Control Plane</div>
+      <div class="panel-sub">Steps 6-12</div>
+    </div>
+    <div class="panel-body">
+      <div class="steps" id="cplane-steps"></div>
+
+      <!-- STATS PANEL -->
+      <div class="stats-panel" id="stats-panel">
+        <div class="stats-header" onclick="toggleStats()">
+          <span id="stats-arrow">▶</span> Statistics Summary
+          <span style="flex:1"></span>
+          <span style="font-size:8px;color:var(--text3)" id="stats-sub">tracked across steps</span>
+        </div>
+        <div class="stats-grid" id="stats-grid" style="display:none">
+          <div class="stat-card"><div class="stat-num" id="stat-completed">0</div><div class="stat-label">Steps Completed</div></div>
+          <div class="stat-card"><div class="stat-num" id="stat-total">18</div><div class="stat-label">Total Steps</div></div>
+          <div class="stat-card"><div class="stat-num" id="stat-phase">—</div><div class="stat-label">Current Phase</div></div>
+          <div class="stat-card"><div class="stat-num" id="stat-fails">0</div><div class="stat-label">Failures</div></div>
+          <div class="stat-card"><div class="stat-num" id="stat-elapsed">0s</div><div class="stat-label">Time Elapsed</div></div>
+        </div>
+      </div>
+
+      <!-- Cluster topology -->
+      <div class="cluster-section">
+        <div class="cs-title">Node Topology</div>
+        <div class="nodepool" id="nodepool"></div>
+      </div>
+
+      <!-- Scheduler pipeline -->
+      <div class="cluster-section">
+        <div class="cs-title">Scheduler Pipeline</div>
+        <div class="sched-steps">
+          <div class="sched-step" id="sched-filter">Filter</div>
+          <div class="sched-step" id="sched-score">Score</div>
+          <div class="sched-step" id="sched-bind">Bind</div>
+          <div class="sched-step" id="sched-reserve">Reserve</div>
+        </div>
+      </div>
+
+      <!-- HPA -->
+      <div class="cluster-section">
+        <div class="cs-title">HPA — Target CPU: 50%</div>
+        <div class="hpa-bar" id="hpa-bar"></div>
+      </div>
+
+      <!-- Component Health -->
+      <div class="cluster-section">
+        <div class="cs-title">Component Health</div>
+        <div class="health-grid" id="health-grid"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PANEL 3: Worker Nodes -->
+  <div class="panel nodes">
+    <div class="panel-head">
+      <div class="panel-num">3</div>
+      <div class="panel-title">Worker Nodes</div>
+      <div class="panel-sub">Steps 13-18</div>
+    </div>
+    <div class="panel-body">
+      <div class="steps" id="nodes-steps"></div>
+
+      <!-- Pod status -->
+      <div class="cluster-section">
+        <div class="cs-title">Pod Status (nginx)</div>
+        <div class="pod-row" id="pod-row"></div>
+      </div>
+
+      <!-- Service -->
+      <div class="cluster-section">
+        <div class="cs-title">Service: nginx-svc</div>
+        <div class="svc-viz" id="svc-viz"></div>
+      </div>
+
+      <!-- Resource Estimator -->
+      <div class="cluster-section">
+        <div class="cs-title">Resource Estimator</div>
+        <div class="res-est" id="res-est"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- RESET CONFIRM MODAL -->
+<div class="modal-overlay" id="reset-modal">
+  <div class="modal-box">
+    <h3>↺ Reset Simulator?</h3>
+    <p>This will clear all progress and return to step 0.</p>
+    <div class="modal-btns">
+      <button class="btn btn-sm" onclick="doReset()">↺ Reset</button>
+      <button class="btn btn-sm" onclick="closeResetModal()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- SHORTCUTS OVERLAY -->
+<div class="shortcuts-overlay" id="shortcuts-overlay" onclick="closeShortcuts(event)">
+  <div class="shortcuts-modal" onclick="event.stopPropagation()">
+    <h2>⌨ Keyboard Shortcuts</h2>
+    <div class="sc-grid">
+      <div class="sc-item"><span class="sc-key">→</span><span class="sc-desc">Next step</span></div>
+      <div class="sc-item"><span class="sc-key">←</span><span class="sc-desc">Previous step</span></div>
+      <div class="sc-item"><span class="sc-key">Space</span><span class="sc-desc">Next step</span></div>
+      <div class="sc-item"><span class="sc-key">P</span><span class="sc-desc">Play / Pause</span></div>
+      <div class="sc-item"><span class="sc-key">R</span><span class="sc-desc">Reset simulator</span></div>
+      <div class="sc-item"><span class="sc-key">T</span><span class="sc-desc">Toggle theme</span></div>
+      <div class="sc-item"><span class="sc-key">?</span><span class="sc-desc">Toggle this menu</span></div>
+      <div class="sc-item"><span class="sc-key">S</span><span class="sc-desc">Toggle stats</span></div>
+      <div class="sc-item"><span class="sc-key">Esc</span><span class="sc-desc">Close modals</span></div>
+    </div>
+    <div style="margin-top:8px;font-size:8px;color:var(--text3);text-align:center">Click outside or press Esc to close</div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast">
+  <div class="toast-t" id="toast-t">Title</div>
+  <div class="toast-b" id="toast-b">Body</div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════════
+// STEP DATA
+// ═══════════════════════════════════════════════════════════════
+const STEPS = [
+  // ── DEVELOPER ──
+  { id:1, panel:'dev', title:'Write Deployment YAML',
+    desc:'Developer creates a Kubernetes Deployment manifest for nginx with 3 replicas, resource requests/limits, and a readiness probe.',
+    code:`apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deploy
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:1.25
+        ports: [{containerPort: 80}]
+        resources:
+          requests: {cpu: "100m", memory: "128Mi"}
+          limits:  {cpu: "200m", memory: "256Mi"}
+        readinessProbe:
+          httpGet: {path: /, port: 80}`,
+    codes:{
+      kubectl:`apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deploy
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:1.25
+        ports: [{containerPort: 80}]
+        resources:
+          requests: {cpu: "100m", memory: "128Mi"}
+          limits:  {cpu: "200m", memory: "256Mi"}
+        readinessProbe:
+          httpGet: {path: /, port: 80}`,
+      yaml:`# YAML manifest (same as kubectl input)
+# Apply with: kubectl apply -f deploy.yaml
+# 
+# Key fields:
+# - apiVersion: apps/v1
+# - kind: Deployment
+# - spec.replicas: 3
+# - spec.template.spec.containers[0]
+#   - image: nginx:1.25
+#   - resources.requests.cpu: 100m
+#   - readinessProbe.httpGet.path: /`,
+      aws:`# AWS EKS equivalent (eksctl)
+eksctl create nodegroup \\
+  --cluster my-cluster \\
+  --name nginx-group \\
+  --nodes 3 \\
+  --instance-types t3.medium
+
+# Deploy via kubectl (EKS uses standard K8s API)
+# aws eks update-kubeconfig --region us-east-1 --name my-cluster
+# kubectl apply -f deploy.yaml`
+    },
+    tags:['Deployment','YAML','Manifest'], colors:['tg','tc','tb'] },
+
+  { id:2, panel:'dev', title:'kubectl apply',
+    desc:'Developer runs kubectl apply -f deploy.yaml. The command sends the manifest to the API server via REST. kubectl first resolves the kubeconfig context and authenticates with the cluster.',
+    code:`$ kubectl apply -f deploy.yaml
+deployment.apps/nginx-deploy created
+
+# The API server receives:
+# POST /apis/apps/v1/namespaces/default/deployments
+# Returns 201 Created`,
+    codes:{
+      kubectl:`$ kubectl apply -f deploy.yaml
+deployment.apps/nginx-deploy created
+
+# API: POST /apis/apps/v1/namespaces/default/deployments`,
+      yaml:`# The applied YAML is sent as the request body
+# kubectl converts to JSON before sending
+# API response: 201 Created
+# 
+# The manifest becomes the desired state
+# stored in etcd under:
+# /registry/deployments/default/nginx-deploy`,
+      aws:`# EKS: authenticate then apply
+aws eks update-kubeconfig \\
+  --region us-east-1 \\
+  --name production-cluster
+
+# Same kubectl command against EKS
+kubectl apply -f deploy.yaml
+
+# Or use AWS CLI + CloudFormation
+aws cloudformation create-stack \\
+  --stack-name nginx-deploy \\
+  --template-body file://eks-deploy.yaml`
+    },
+    tags:['kubectl','API Server','REST'], colors:['tg','tb','tc'] },
+
+  { id:3, panel:'dev', title:'ConfigMap & Secret',
+    desc:'Application configuration injected via ConfigMap (non-sensitive) and Secret (base64-encoded sensitive data). These are mounted as volumes or environment variables in the pod.',
+    code:`apiVersion: v1
+kind: ConfigMap
+metadata: {name: nginx-config}
+data:
+  nginx.conf: |
+    server { listen 80; }
+
+---
+apiVersion: v1
+kind: Secret
+metadata: {name: nginx-tls}
+type: Opaque
+data:
+  tls.crt: LS0tLS1CRUdJTi...=`, tags:['ConfigMap','Secret','Volume'], colors:['tc','tr','ta'] },
+
+  { id:4, panel:'dev', title:'Create Service',
+    desc:'Developer creates a ClusterIP Service to expose nginx internally. The service uses label selector to find matching pods. kube-proxy programs iptables rules on every node.',
+    code:`apiVersion: v1
+kind: Service
+metadata: {name: nginx-svc}
+spec:
+  selector: {app: nginx}
+  ports:
+  - port: 80
+    targetPort: 80
+  type: ClusterIP`,
+    codes:{
+      kubectl:`apiVersion: v1
+kind: Service
+metadata: {name: nginx-svc}
+spec:
+  selector: {app: nginx}
+  ports:
+  - port: 80
+    targetPort: 80
+  type: ClusterIP`,
+      yaml:`# Service manifest
+# type: ClusterIP (default) — internal only
+# NodePort — exposes on each node's IP
+# LoadBalancer — provisions cloud LB
+#
+# kubectl expose deployment nginx-deploy \\
+#   --name nginx-svc --port 80 --target-port 80
+#
+# kubectl create service clusterip nginx-svc \\
+#   --tcp=80:80`,
+      aws:`# EKS LoadBalancer Service (AWS NLB)
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-svc
+  annotations:
+    service.beta.kubernetes.io/aws-load-balancer-type: nlb
+spec:
+  selector: {app: nginx}
+  ports:
+  - port: 80
+    targetPort: 80
+  type: LoadBalancer`
+    },
+    tags:['Service','ClusterIP','Label Selector'], colors:['tb','tg','tc'] },
+
+  { id:5, panel:'dev', title:'Create HPA', milestone:true,
+    desc:'HorizontalPodAutoscaler targets 50% CPU utilization. HPA controller polls metrics-server every 15s. If actual CPU deviates from target, it calculates desired replicas: ceil(currentReplicas * (currentUtilization / targetUtilization)).',
+    code:`apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata: {name: nginx-hpa}
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: nginx-deploy
+  minReplicas: 3
+  maxReplicas: 10
+  metrics:
+  - type: Resource
+    resource: {name: cpu, target: {type: Utilization, averageUtilization: 50}}`,
+    codes:{
+      kubectl:`apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata: {name: nginx-hpa}
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: nginx-deploy
+  minReplicas: 3
+  maxReplicas: 10
+  metrics:
+  - type: Resource
+    resource: {name: cpu, target: {type: Utilization, averageUtilization: 50}}`,
+      yaml:`# kubectl autoscale deployment nginx-deploy \\
+#   --min=3 --max=10 --cpu-percent=50
+#
+# HPA formula:
+# desiredReplicas = ceil(currentReplicas × (currentMetric / desiredMetric))
+# Example: 3 × (73 / 50) = 4.38 → ceil = 5`,
+      aws:`# AWS Auto Scaling equivalent
+# EKS Cluster Autoscaler (node-level)
+kubectl apply -f https://raw.githubusercontent.com/kubernetes/autoscaler/master/cluster-autoscaler/cloudprovider/aws/examples/cluster-autoscaler-autodiscover.yaml
+
+# Karpenter (provisioner-level)
+apiVersion: karpenter.sh/v1beta1
+kind: NodePool
+metadata: {name: default}
+spec:
+  limits: {cpu: 100}
+  template:
+    spec:
+      requirements:
+      - key: karpenter.sh/capacity-type
+        operator: In
+        values: ["on-demand"]`
+    },
+    tags:['HPA','Autoscaling','Metrics'], colors:['ta','tg','tb'] },
+
+  // ── CONTROL PLANE ──
+  { id:6, panel:'cplane', title:'API Server Validates',
+    desc:'API Server receives the Deployment object. Steps: authentication (TLS cert/token), authorization (RBAC), admission control (MutatingWebhook → ValidatingWebhook), schema validation, then persist to etcd.',
+    code:`// Authentication: TLS client cert OK
+// Authorization: RBAC allows create deployments
+// Admission:
+//   - MutatingWebhook: inject sidecar (istio?)
+//   - ValidatingWebhook: check pod security
+// Schema validation: apiVersion apps/v1 OK
+// → Persist to etcd
+// → Return 201 Created`,
+    codes:{
+      kubectl:`// Authentication: TLS client cert OK
+// Authorization: RBAC allows create deployments
+// Admission:
+//   - MutatingWebhook: inject sidecar (istio?)
+//   - ValidatingWebhook: check pod security
+// Schema validation: apiVersion apps/v1 OK
+// → Persist to etcd
+// → Return 201 Created`,
+      yaml:`# API Server request flow:
+# 1. AuthN: TLS cert / bearer token / OIDC
+# 2. AuthZ: RBAC RoleBinding check
+# 3. Admission:
+#    - MutatingWebhookConfiguration
+#    - ValidatingWebhookConfiguration
+# 4. Schema validation
+# 5. Persist to etcd (Raft consensus)
+# 6. Response: 201 Created + object`,
+      aws:`# EKS API Server (AWS-managed control plane)
+# No direct access to etcd or control plane nodes
+# AWS manages control plane availability
+#
+# Audit logs → CloudWatch
+aws eks describe-cluster --name my-cluster
+aws eks update-kubeconfig --name my-cluster
+
+# IAM Roles for Service Accounts (IRSA)
+# maps K8s SA → IAM role for pod-level permissions`
+    },
+    tags:['Auth','RBAC','Admission','etcd'], colors:['tb','tr','ta','tc'] },
+
+  { id:7, panel:'cplane', title:'etcd Stores Desired State',
+    desc:'etcd is the source of truth. It stores the Deployment object under /registry/deployments/default/nginx-deploy. Only the API server talks to etcd. etcd uses Raft consensus for high availability.',
+    code:`# etcd key-value store
+/registry/deployments/default/nginx-deploy
+→ {replicas:3, selector:{app:nginx}, ...}
+
+# etcd cluster (3 nodes)
+# Leader handles all writes
+# Follower replicates via Raft
+# Majority (2/3) required for commit`, tags:['etcd','Raft','Source of Truth'], colors:['tc','tb','tg'] },
+
+  { id:8, panel:'cplane', title:'Controller Manager Watches', milestone:true,
+    desc:'Deployment controller (part of kube-controller-manager) watches for Deployment changes via list-watch. It reconciles desired state (3 replicas) with current state (0). Creates a ReplicaSet to manage pods.',
+    code:`// Deployment Controller Reconciliation
+// 1. Watch /deployments
+// 2. Desired replicas = 3
+// 3. Current replicas = 0
+// 4. Create ReplicaSet nginx-deploy-xxx
+//    replicas = 3
+//    template = pod spec from deployment
+// 5. Update status: progressing=True`, tags:['Controller','Reconciler','ReplicaSet'], colors:['tb','tg','ta'] },
+
+  { id:9, panel:'cplane', title:'Scheduler — Filtering',
+    desc:'Scheduler runs a predicates/filtering phase to find feasible nodes. Checks: PodFitsResources, PodFitsHost, PodSelectorMatches, PodToleratesNodeTaints, CheckNodeMemoryPressure, etc.',
+    code:`// Filtering (Predicates)
+// Input: pod, all nodes (n=5)
+// Node-1: PodFitsResources ✓ (2 CPU free)
+// Node-2: PodFitsResources ✓ (1.5 CPU free)
+// Node-3: ✗ tainted (NoExecute)
+// Node-4: PodFitsResources ✓ (3 CPU free)
+// Node-5: ✗ disk pressure
+// Feasible nodes: [1, 2, 4]`, tags:['Scheduler','Filtering','Predicates'], colors:['tb','tg','ta'] },
+
+  { id:10, panel:'cplane', title:'Scheduler — Scoring',
+    desc:'Scoring phase ranks feasible nodes. Default scoring: LeastRequestedPriority (spreads pods) and SelectorSpreadPriority. Can use custom scoring via scheduler plugins.',
+    code:`// Scoring (Priorities)
+// Node-1: CPU=70% → score 30
+// Node-2: CPU=80% → score 20
+// Node-4: CPU=40% → score 60  ← HIGHEST
+// 
+// Winner: Node-4 (most resources free)
+// → Bind pod to Node-4`, tags:['Scheduler','Scoring','Priorities'], colors:['tb','tg','ta'] },
+
+  { id:11, panel:'cplane', title:'Bind Pod → Node', milestone:true,
+    desc:'Scheduler creates a Binding object linking the pod to the chosen node. It writes to the pod\'s spec.nodeName field. The API server persists to etcd. kubelet on that node watches for new pod assignments.',
+    code:`// Binding Object (Scheduler → API Server)
+POST /api/v1/namespaces/default/pods/nginx-deploy-xxx/binding
+{
+  "target": {"apiVersion": "v1", "kind": "Node", "name": "node-4"}
+}
+
+// etcd now has:
+// pod.spec.nodeName = "node-4"
+// kubelet picks it up via watch`, tags:['Binding','nodeName','kubelet Watch'], colors:['tc','tg','tb'] },
+
+  { id:12, panel:'cplane', title:'HPA Scales Up', milestone:true,
+    desc:'HPA controller detects CPU utilization rising above 50% target. Current: 3 pods at 73% CPU. Desired replicas = 3 * (73/50) = 4.38 → ceil(4.38) = 5. Deployment controller creates 2 more pods.',
+    code:`// HPA Calculation:
+// currentReplicas = 3
+// currentUtilization = 73%
+// targetUtilization = 50%
+// desiredReplicas = 3 * (73/50) = 5
+// 
+// → Updated replicas: 3 → 5
+// → Deployment creates 2 more pods
+// → Scheduler places them`, tags:['HPA','Scale Up','CPU Threshold'], colors:['ta','tg','tb'] },
+
+  // ── WORKER NODES ──
+  { id:13, panel:'nodes', title:'kubelet Creates Pod',
+    desc:'kubelet on the assigned node watches the API server for pods with spec.nodeName matching its node. It calls the CRI (Container Runtime Interface) to create the pod sandbox. Then pulls the container image.',
+    code:`// kubelet sync loop (periodic: 1s)
+// 1. Watch for assigned pods
+// 2. Found: nginx-deploy-xxx → node-4
+// 3. Call CRI: RunPodSandbox
+// 4. CRI: create network namespace
+// 5. Image not cached → pull nginx:1.25
+// 6. Status: PodInitializing`,
+    codes:{
+      kubectl:`// kubelet sync loop (periodic: 1s)
+// 1. Watch for assigned pods
+// 2. Found: nginx-deploy-xxx → node-4
+// 3. Call CRI: RunPodSandbox
+// 4. CRI: create network namespace
+// 5. Image not cached → pull nginx:1.25
+// 6. Status: PodInitializing`,
+      yaml:`# Pod status phases:
+# Pending → ContainerCreating → PodInitializing → Running
+#
+# kubectl get pod nginx-deploy-xxx -o yaml
+# .status.phase: Running
+# .status.containerStatuses[0].ready: true
+#
+# Events:
+# 0s    Normal  Scheduled  node-4 assigned
+# 0s    Normal  Pulling   pulling image nginx:1.25
+# 5s    Normal  Started   started container`,
+      aws:`# EKS (AWS-managed):
+# kubelet is managed by EKS control plane
+# Node groups handle AMI, updates, scaling
+#
+# Container images pulled from ECR:
+aws ecr get-login-password --region us-east-1 | \\
+  kubectl create secret docker-registry ecr-secret \\
+  --docker-server=<account>.dkr.ecr.us-east-1.amazonaws.com \\
+  --docker-username=AWS \\
+  --docker-password-stdin
+
+# cgroupv2 enabled by default on Bottlerocket OS`
+    },
+    tags:['kubelet','CRI','Sandbox','Image Pull'], colors:['tp','tb','ta','tg'] },
+
+  { id:14, panel:'nodes', title:'Container Runtime Starts',
+    desc:'CRI (containerd) creates the container in the sandbox. It mounts volumes (ConfigMap, Secret), sets environment variables, applies resource limits via cgroups, and starts the container process (nginx).',
+    code:`// CRI operations (containerd):
+// 1. Create container spec
+//    - image: nginx:1.25
+//    - command: nginx -g daemon off;
+//    - mounts: config → /etc/nginx/conf.d
+//             secret → /etc/nginx/tls
+// 2. Create cgroups (CPU=200m, MEM=256Mi)
+// 3. Start container
+// 4. Status: Running`,
+    codes:{
+      kubectl:`// CRI operations (containerd):
+// 1. Create container spec
+//    - image: nginx:1.25
+//    - command: nginx -g daemon off;
+//    - mounts: config → /etc/nginx/conf.d
+//             secret → /etc/nginx/tls
+// 2. Create cgroups (CPU=200m, MEM=256Mi)
+// 3. Start container
+// 4. Status: Running`,
+      yaml:`# Container spec in pod YAML:
+spec:
+  containers:
+  - name: nginx
+    image: nginx:1.25
+    command: ["nginx", "-g", "daemon off;"]
+    volumeMounts:
+    - name: config
+      mountPath: /etc/nginx/conf.d
+    - name: tls
+      mountPath: /etc/nginx/tls
+    resources:
+      limits: {cpu: "200m", memory: "256Mi"}
+      requests: {cpu: "100m", memory: "128Mi"}`,
+      aws:`# EKS uses containerd as CRI runtime
+# Bottlerocket OS: container-native, minimal
+# Amazon Linux 2: EKS-optimized AMI
+#
+# cgroups v2 is default on Bottlerocket
+# Resource isolation via Linux kernel namespaces
+#
+# Node SSH is NOT available on Bottlerocket
+# Debug via: kubectl debug node/node-4`
+    },
+    tags:['containerd','cgroups','Container'], colors:['tp','ta','tg'] },
+
+  { id:15, panel:'nodes', title:'Readiness Probe', milestone:true,
+    desc:'kubelet executes the readiness probe (HTTP GET /:80). While the pod is not ready, it is removed from the Service\'s endpoints. Once ready, traffic is routed to it. Failed probes remove it again.',
+    code:`// Readiness Probe (kubelet)
+// Period: 10s, InitialDelay: 5s
+// HTTP GET http://podIP:80/
+//
+// Attempt 1: connection refused (starting)
+// Attempt 2: 200 OK ← pod is ready!
+//
+// → kubelet updates pod status
+// → EndpointController adds pod
+//   to nginx-svc endpoints
+// → kube-proxy updates iptables`,
+    codes:{
+      kubectl:`// Readiness Probe (kubelet)
+// Period: 10s, InitialDelay: 5s
+// HTTP GET http://podIP:80/
+//
+// Attempt 1: connection refused (starting)
+// Attempt 2: 200 OK ← pod is ready!
+//
+// → kubelet updates pod status
+// → EndpointController adds pod
+//   to nginx-svc endpoints
+// → kube-proxy updates iptables`,
+      yaml:`# Readiness probe in Deployment YAML:
+readinessProbe:
+  httpGet:
+    path: /
+    port: 80
+  initialDelaySeconds: 5
+  periodSeconds: 10
+  failureThreshold: 3
+  successThreshold: 1
+#
+# Alternatives:
+# - tcpSocket: check port open
+# - exec: run command in container
+# - grpc: gRPC health check`,
+      aws:`# AWS NLB Target Group health checks
+# Similar concept at ELB level:
+# HealthCheck path: /healthz
+# Healthy threshold: 2
+# Unhealthy threshold: 3
+# Interval: 10s
+#
+# Pod readiness ≠ NLB health check
+# Both must pass for traffic
+#
+# CloudWatch: TargetGroupHealthCheckMetrics`
+    },
+    tags:['Readiness Probe','Endpoint','kube-proxy'], colors:['tp','tg','tb'] },
+
+  { id:16, panel:'nodes', title:'Traffic Routed via Service',
+    desc:'kube-proxy watches for Service/Endpoint changes. It programs iptables (or IPVS) rules to load-balance traffic to ready pods. Round-robin across all ready backend pods.',
+    code:`// iptables rules (per node):
+// -A PREROUTING -d <ClusterIP>/32 -j DNAT --to-destination <pod1-IP>:80
+// -A PREROUTING -d <ClusterIP>/32 -j DNAT --to-destination <pod2-IP>:80
+// -A PREROUTING -d <ClusterIP>/32 -j DNAT --to-destination <pod3-IP>:80
+//
+// kube-proxy syncs when endpoints change
+// Mode: iptables (default), IPVS, or userspace`, tags:['kube-proxy','iptables','Load Balancer'], colors:['tp','tb','tg'] },
+
+  { id:17, panel:'nodes', title:'Logs & Exec',
+    desc:'Developer debugs the pod using kubectl logs and kubectl exec. kubelet exposes these via the API server proxy. Logs are read from the container runtime\'s log driver (usually JSON file per container).',
+    code:`$ kubectl logs -l app=nginx
+10.0.1.5 - - [26/Jun/2026] "GET / HTTP/1.1" 200
+10.0.1.7 - - [26/Jun/2026] "GET / HTTP/1.1" 200
+
+$ kubectl exec deploy/nginx-deploy -- nginx -T
+# dumps nginx config from running container
+
+$ kubectl describe pod nginx-deploy-xxx
+# shows full pod lifecycle events`,
+    codes:{
+      kubectl:`$ kubectl logs -l app=nginx
+10.0.1.5 - - [26/Jun/2026] "GET / HTTP/1.1" 200
+
+$ kubectl exec deploy/nginx-deploy -- nginx -T
+
+$ kubectl describe pod nginx-deploy-xxx`,
+      yaml:`# Container log configuration:
+spec:
+  containers:
+  - name: nginx
+    env:
+    - name: NGINX_ACCESS_LOG
+      value: /dev/stdout  # ← to stdout
+#
+# kubectl logs --tail=50 -f deployment/nginx-deploy
+# kubectl logs --previous pod/nginx-deploy-xxx
+#
+# K8s log levels:
+# --v=0  (default)
+# --v=4  (debug)
+# --v=9  (verbose)`,
+      aws:`# EKS logging options:
+# 1. CloudWatch Logs for control plane
+# 2. Fluent Bit DaemonSet for node logs
+# 3. Amazon OpenSearch (ELK stack)
+#
+# kubectl logs still works on EKS
+# For historic logs:
+aws logs get-log-events \\
+  --log-group-name /aws/eks/my-cluster/pods \\
+  --log-stream-name nginx-deploy-xxx
+
+# kubectl exec works identically on EKS`
+    },
+    tags:['kubectl logs','kubectl exec','Debug'], colors:['tp','tc','tg'] },
+
+  { id:18, panel:'nodes', title:'Pod Termination', milestone:true,
+    desc:'When deleting a deployment, pods enter Termination phase: preStop hook executes, SIGTERM sent, grace period (30s default), then SIGKILL. Endpoints are removed before termination starts.',
+    code:`$ kubectl delete deployment nginx-deploy
+# 1. PreStop hook (if defined) executes
+# 2. SIGTERM → nginx gracefully shuts down
+# 3. Endpoint removed from Service
+# 4. kubelet waits terminationGracePeriod (30s)
+# 5. SIGKILL if still running
+# 6. Pod status: Terminating → Succeeded
+# 7. etcd deletes pod object`,
+    codes:{
+      kubectl:`$ kubectl delete deployment nginx-deploy
+# 1. PreStop hook (if defined) executes
+# 2. SIGTERM → nginx gracefully shuts down
+# 3. Endpoint removed from Service
+# 4. kubelet waits terminationGracePeriod (30s)
+# 5. SIGKILL if still running
+# 6. Terminating → Succeeded`,
+      yaml:`# Pod spec termination config:
+spec:
+  terminationGracePeriodSeconds: 30
+  containers:
+  - name: nginx
+    lifecycle:
+      preStop:
+        exec:
+          command: ["nginx", "-s", "quit"]
+#
+# Termination sequence:
+# 1. preStop hook runs (blocking)
+# 2. SIGTERM sent (PID 1)
+# 3. Grace period countdown
+# 4. SIGKILL if still running
+# 5. Pod removed from endpoints`,
+      aws:`# EKS termination:
+# AWS manages node termination gracefully
+# Node Termination Handler:
+# - EC2 spot instance interruptions
+# - ASG scale-in events
+# - AZ rebalancing
+#
+# kubectl drain node-4 \\
+#   --ignore-daemonsets \\
+#   --delete-emptydir-data \\
+#   --grace-period=120
+#
+# PodDisruptionBudget protects critical workloads:`,
+    },
+    tags:['Termination','Graceful Shutdown','PreStop'], colors:['tr','ta','tp'] }
+];
+
+// ═══════════════════════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════════════════════
+let currentStep = 0, isPlaying = false, playTimer = null, speed = 1200;
+
+// ═══════════════════════════════════════════════════════════════
+// RENDER
+// ═══════════════════════════════════════════════════════════════
+function renderSteps() {
+  ['dev','cplane','nodes'].forEach(p => document.getElementById(p+'-steps').innerHTML = '');
+  STEPS.forEach(s => {
+    const done = s.id < currentStep, active = s.id === currentStep;
+    const card = document.createElement('div');
+    card.className = 'scard '+(active?'active ':'')+(done?'done':'')+(s.milestone?' milestone':'');
+    card.id = 'scard-'+s.id;
+    card.onclick = () => goToStep(s.id);
+    if(currentFilter !== 'all') card.style.display = filterStepCard(s) ? '' : 'none';
+    const tags = (s.tags||[]).map((t,i)=>'<span class="tag '+(s.colors?.[i]||'tc')+'">'+t+'</span>').join('');
+    const stepCode = s.codes && s.codes[currentLang] ? s.codes[currentLang] : s.code;
+    const code = stepCode ? '<code class="scode">'+escHtml(stepCode)+'</code>' : '';
+    const bm = isBookmarked(s.id);
+    card.innerHTML =
+      '<div class="scard-head"><div class="snum">'+(done?'✓':s.id)+'</div><div class="stitle">'+s.title+'</div>'+(s.milestone?'<span class="milestone-icon">★</span>':'')+'<button class="bookmark-btn '+(bm?'on':'')+'" onclick="event.stopPropagation();toggleBookmark('+s.id+')" title="'+(bm?'Remove':'Add')+' bookmark">'+(bm?'★':'☆')+'</button><div class="sdot"></div></div>'+
+      '<div class="sexpand"><div class="sdesc">'+s.desc+'</div>'+code+'<div class="stags">'+tags+'</div></div>';
+    document.getElementById(s.panel+'-steps').appendChild(card);
+  });
+}
+
+function escHtml(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+// ═══════════════════════════════════════════════════════════════
+// UI UPDATES
+// ═══════════════════════════════════════════════════════════════
+function updateUI() {
+  const s = currentStep;
+  document.getElementById('cur-step').textContent = s;
+  document.getElementById('progress').style.width = (s/18*100)+'%';
+  if(s === 0) {
+    document.getElementById('step-num').textContent = '0';
+    document.getElementById('step-title').textContent = 'Ready';
+  } else {
+    const step = STEPS[s-1];
+    document.getElementById('step-num').textContent = step.id;
+    document.getElementById('step-title').textContent = step.title;
+  }
+  updateCluster();
+  updateHealth(s);
+  updateHistory();
+  updateArch(s);
+  updatePhases(s);
+  updateDiff(s);
+  updateEstimator(s);
+  if(statsOpen) updateStats();
+}
+
+function updateCluster() {
+  const s = currentStep;
+  // Node pool
+  const pool = document.getElementById('nodepool');
+  pool.innerHTML = '';
+  const nodes = [
+    {name:'node-1', cpu:30, active:s>=11, ready:true},
+    {name:'node-2', cpu:60, active:s>=11, ready:true},
+    {name:'node-3', cpu:100, active:s>=11, ready:false},
+    {name:'node-4', cpu:20, active:s>=11, ready:true, chosen:s===11||s===12},
+    {name:'node-5', cpu:50, active:s>=11, ready:true},
+  ];
+  nodes.forEach(n => {
+    const el = document.createElement('div');
+    el.className = 'node-card'+(n.chosen?' active':'')+(n.ready?' ready':'');
+    el.innerHTML = `<div>${n.name}</div><div class="node-cpu"><div class="node-cpu-fill" style="width:${n.cpu}%"></div></div><div style="font-size:7px;color:var(--text3)">CPU ${n.cpu}%</div>`;
+    pool.appendChild(el);
+  });
+
+  // Scheduler pipeline
+  ['sched-filter','sched-score','sched-bind','sched-reserve'].forEach((id,i) => {
+    const el = document.getElementById(id);
+    el.className = 'sched-step';
+    if(s > 9+i) el.classList.add('done');
+    if(s === 9+i) el.classList.add('active');
+  });
+
+  // Pod status
+  const pods = document.getElementById('pod-row');
+  pods.innerHTML = '';
+  const podStates = [
+    {name:'nginx-a', status:s>=15?'Running':s>=13?'Pending':'Pending', active:s===13},
+    {name:'nginx-b', status:s>=15?'Running':s>=13?'Pending':'Pending', active:s===14},
+    {name:'nginx-c', status:s>=15?'Running':s>=13?'Pending':'Pending', active:s===15},
+  ];
+  if(s >= 12) podStates.push({name:'nginx-d', status:s>=15?'Running':'Pending', active:s===12});
+  if(s >= 12) podStates.push({name:'nginx-e', status:s>=15?'Running':'Pending', active:false});
+  podStates.forEach(p => {
+    const el = document.createElement('span');
+    el.className = 'pod-badge '+p.status.toLowerCase()+(p.active?' active':'');
+    el.textContent = p.name+' ('+p.status+')';
+    pods.appendChild(el);
+  });
+
+  // Service viz
+  const svc = document.getElementById('svc-viz');
+  svc.innerHTML = s >= 16 ?
+    '<span class="svc-label svc-svc">nginx-svc (ClusterIP:10.0.0.1)</span><span class="svc-arrow">→</span>'+
+    '<span class="svc-label svc-pod">nginx-a:80</span><span class="svc-arrow">→</span>'+
+    '<span class="svc-label svc-pod">nginx-b:80</span><span class="svc-arrow">→</span>'+
+    '<span class="svc-label svc-pod">nginx-c:80</span>' :
+    '<span style="font-size:8px;color:var(--text3)">Waiting for ready pods…</span>';
+
+  // HPA bar
+  const hpa = document.getElementById('hpa-bar');
+  hpa.innerHTML = '';
+  const hpaCount = s >= 12 ? 5 : s >= 6 ? 3 : 0;
+  for(let i = 0; i < 10; i++) {
+    const col = document.createElement('div');
+    col.className = 'hpa-col';
+    col.style.height = (8+Math.random()*20)+'px';
+    if(i < hpaCount) col.classList.add(i < 3 && s >= 15 ? 'scaled' : 'utilized');
+    hpa.appendChild(col);
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════
+// NAVIGATION
+// ═══════════════════════════════════════════════════════════════
+function goToStep(n) {
+  if(n === currentStep || n < 0 || n > 18) return;
+  const prev = currentStep;
+
+  // Error simulation check
+  if(errorsOn && n > prev && n > 0) {
+    const err = ERROR_STEPS[n];
+    if(err) {
+      showToast('err', '⚠ Simulation Error', err);
+      STATS.fails = (STATS.fails||0) + 1;
+      if(statsOpen) updateStats();
+      // Still proceed but with a delay
+      setTimeout(() => {
+        currentStep = Math.max(0, Math.min(18, n));
+        renderSteps();
+        updateUI();
+        saveState();
+      }, 600);
+      return;
+    }
+  }
+
+  currentStep = Math.max(0, Math.min(18, n));
+
+  // Track history (max 10, no adjacent duplicates)
+  if(stepHistory.length === 0 || stepHistory[stepHistory.length-1] !== currentStep) {
+    stepHistory.push(currentStep);
+    if(stepHistory.length > 10) stepHistory.shift();
+  }
+
+  renderSteps();
+  updateUI();
+  saveState();
+}
+
+function nextStep() { if(currentStep < 18) goToStep(currentStep+1); else stopPlay(); }
+function prevStep() { if(currentStep > 0) goToStep(currentStep-1); }
+
+function togglePlay() { if(isPlaying) stopPlay(); else startPlay(); }
+function startPlay() {
+  if(currentStep >= 18) { currentStep = 0; renderSteps(); }
+  isPlaying = true;
+  document.getElementById('play-btn').textContent = '⏸ Pause';
+  document.getElementById('play-btn').classList.add('playing');
+  startTimer();
+  scheduleNext();
+}
+function stopPlay() {
+  isPlaying = false;
+  clearTimeout(playTimer);
+  stopTimer();
+  document.getElementById('play-btn').textContent = '▶ Play All';
+  document.getElementById('play-btn').classList.remove('playing');
+}
+function scheduleNext() {
+  playTimer = setTimeout(()=>{ nextStep(); if(isPlaying && currentStep < 18) scheduleNext(); else stopPlay(); }, speed);
+}
+function updateSpeed() {
+  speed = parseInt(document.getElementById('speed-sel').value);
+  if(isPlaying) { stopPlay(); startPlay(); }
+}
+
+function resetSim() {
+  stopPlay();
+  currentStep = 0;
+  stepHistory = [];
+  errorsOn = false;
+  document.getElementById('err-toggle').classList.remove('on');
+  renderSteps();
+  updateUI();
+  resetTimer();
+}
+
+// ═══════════════════════════════════════════════════════════════
+// TOAST
+// ═══════════════════════════════════════════════════════════════
+let toastTimer;
+function showToast(type, title, body) {
+  const t = document.getElementById('toast');
+  document.getElementById('toast-t').textContent = title;
+  document.getElementById('toast-b').textContent = body.length > 80 ? body.substring(0,80)+'...' : body;
+  t.className = 'toast '+type+' show';
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>{ t.classList.remove('show'); }, 3500);
+}
+
+// ═══════════════════════════════════════════════════════════════
+// KEYBOARD
+// ═══════════════════════════════════════════════════════════════
+document.addEventListener('keydown', e => {
+  if(e.key==='ArrowRight'||e.key===' ') { e.preventDefault(); nextStep(); }
+  if(e.key==='ArrowLeft') { e.preventDefault(); prevStep(); }
+  if(e.key==='r'||e.key==='R') { e.preventDefault(); confirmReset(); }
+  if(e.key==='p'||e.key==='P') { e.preventDefault(); togglePlay(); }
+  if(e.key==='t'||e.key==='T') { e.preventDefault(); toggleTheme(); }
+  if(e.key==='?') { e.preventDefault(); toggleShortcuts(); }
+  if(e.key==='s'||e.key==='S') { e.preventDefault(); toggleStats(); }
+  if(e.key==='Escape') { e.preventDefault();
+    document.getElementById('shortcuts-overlay').classList.remove('show');
+    document.getElementById('reset-modal').classList.remove('show');
+  }
+});
+
+// ═══════════════════════════════════════════════════════════════
+// THEME TOGGLE
+// ═══════════════════════════════════════════════════════════════
+let darkTheme = true;
+function toggleTheme() {
+  darkTheme = !darkTheme;
+  document.documentElement.setAttribute('data-theme', darkTheme ? '' : 'light');
+  showToast('ok', darkTheme ? 'Dark Mode' : 'Light Mode', 'Theme toggled');
+  saveState();
+}
+
+// ═══════════════════════════════════════════════════════════════
+// SHORTCUTS OVERLAY
+// ═══════════════════════════════════════════════════════════════
+function toggleShortcuts() {
+  document.getElementById('shortcuts-overlay').classList.toggle('show');
+}
+function closeShortcuts(e) {
+  if(e.target === e.currentTarget) toggleShortcuts();
+}
+
+// ═══════════════════════════════════════════════════════════════
+// SEARCH / FILTER
+// ═══════════════════════════════════════════════════════════════
+let currentFilter = 'all';
+
+function setFilter(tag) {
+  currentFilter = tag;
+  document.querySelectorAll('.filter-chip').forEach(c => c.classList.toggle('active', c.dataset.tag === tag));
+  filterSteps();
+}
+
+function filterStepCard(s) {
+  const q = document.getElementById('search-input').value.toLowerCase();
+  const matchTag = currentFilter === 'all' || s.panel === currentFilter || (s.tags||[]).some(t => t.toLowerCase().includes(currentFilter.toLowerCase()));
+  const matchSearch = !q || s.title.toLowerCase().includes(q) || s.desc.toLowerCase().includes(q) || (s.tags||[]).some(t => t.toLowerCase().includes(q));
+  return matchTag && matchSearch;
+}
+
+function filterSteps() {
+  const q = document.getElementById('search-input').value.toLowerCase();
+  let visible = 0;
+  STEPS.forEach(s => {
+    const card = document.getElementById('scard-'+s.id);
+    if(!card) return;
+    const matchTag = currentFilter === 'all' || s.panel === currentFilter || (s.tags||[]).some(t => t.toLowerCase().includes(currentFilter.toLowerCase()));
+    const matchSearch = !q || s.title.toLowerCase().includes(q) || s.desc.toLowerCase().includes(q) || (s.tags||[]).some(t => t.toLowerCase().includes(q));
+    const show = matchTag && matchSearch;
+    card.style.display = show ? '' : 'none';
+    if(show) visible++;
+  });
+  document.getElementById('search-count').textContent = visible+'/18';
+}
+
+// ═══════════════════════════════════════════════════════════════
+// RESET CONFIRMATION
+// ═══════════════════════════════════════════════════════════════
+function confirmReset() {
+  if(currentStep === 0) { doReset(); return; }
+  document.getElementById('reset-modal').classList.add('show');
+}
+function doReset() {
+  closeResetModal();
+  resetSim();
+  STATS.completed = 0; STATS.fails = 0; STATS.elapsed = 0;
+  updateStats();
+  saveState();
+}
+function closeResetModal() {
+  document.getElementById('reset-modal').classList.remove('show');
+}
+
+// ═══════════════════════════════════════════════════════════════
+// STATS SUMMARY
+// ═══════════════════════════════════════════════════════════════
+let statsOpen = false;
+const STATS = { completed:0, fails:0, elapsed:0 };
+
+function updateStats() {
+  STATS.completed = currentStep;
+  const phaseNames = ['dev','cplane','nodes'];
+  let phase = '—';
+  if(currentStep > 0) {
+    const s = STEPS[currentStep-1];
+    phase = s.panel === 'dev' ? 'Developer' : s.panel === 'cplane' ? 'Control Plane' : 'Worker Nodes';
+  }
+  document.getElementById('stat-completed').textContent = STATS.completed;
+  document.getElementById('stat-total').textContent = '18';
+  document.getElementById('stat-phase').textContent = phase;
+  document.getElementById('stat-fails').textContent = STATS.fails;
+  document.getElementById('stat-elapsed').textContent = STATS.elapsed + 's';
+}
+
+function toggleStats() {
+  statsOpen = !statsOpen;
+  document.getElementById('stats-grid').style.display = statsOpen ? '' : 'none';
+  document.getElementById('stats-arrow').textContent = statsOpen ? '▼' : '▶';
+  if(statsOpen) updateStats();
+}
+
+// ═══════════════════════════════════════════════════════════════
+// CONFIG PRESETS
+// ═══════════════════════════════════════════════════════════════
+function applyPreset(name) {
+  const presets = {
+    normal: { speed:1200, label:'Normal' },
+    fast:   { speed:350,  label:'Fast' },
+    debug:  { speed:2000, label:'Debug' },
+    demo:   { speed:700,  label:'Demo' },
+  };
+  const p = presets[name];
+  if(!p) return;
+  speed = p.speed;
+  document.getElementById('speed-sel').value = p.speed;
+  if(isPlaying) { stopPlay(); startPlay(); }
+  document.querySelectorAll('.preset-btn').forEach(b => b.classList.toggle('active', b.textContent.trim() === p.label));
+  showToast('ok', 'Preset: ' + p.label, 'Speed set to ' + p.speed + 'ms per step');
+  saveState();
+}
+
+// ═══════════════════════════════════════════════════════════════
+// BENCHMARK MODE
+// ═══════════════════════════════════════════════════════════════
+let isBenchmarking = false;
+
+function runBenchmark() {
+  if(isBenchmarking) return;
+  if(currentStep !== 0) { showToast('err','Reset First','Please reset before running benchmark'); return; }
+  isBenchmarking = true;
+  const btn = document.getElementById('bench-btn');
+  const res = document.getElementById('bench-result');
+  btn.classList.add('running');
+  btn.textContent = '⏱ Running…';
+  res.classList.remove('show');
+
+  const startMs = Date.now();
+  let i = 0;
+  function stepBench() {
+    if(i >= 18) {
+      const elapsed = Date.now() - startMs;
+      isBenchmarking = false;
+      btn.classList.remove('running');
+      btn.textContent = '⏱ Benchmark';
+      res.textContent = '✓ ' + (elapsed/1000).toFixed(1) + 's total · ' + (elapsed/18).toFixed(0) + 'ms/step';
+      res.classList.add('show');
+      showToast('ok', 'Benchmark Complete', (elapsed/1000).toFixed(1) + 's for 18 steps');
+      return;
+    }
+    i++;
+    goToStep(i);
+    setTimeout(stepBench, 100);
+  }
+  stepBench();
+}
+
+// ═══════════════════════════════════════════════════════════════
+// STEP BOOKMARKS
+// ═══════════════════════════════════════════════════════════════
+let bookmarks = [];
+
+function loadBookmarks() {
+  try { const r = localStorage.getItem('k8s_bookmarks'); if(r) bookmarks = JSON.parse(r); } catch(e) {}
+}
+function saveBookmarks() {
+  try { localStorage.setItem('k8s_bookmarks', JSON.stringify(bookmarks)); } catch(e) {}
+  renderBookmarks();
+}
+function toggleBookmark(id) {
+  const i = bookmarks.indexOf(id);
+  if(i >= 0) bookmarks.splice(i,1); else bookmarks.push(id);
+  saveBookmarks();
+  renderSteps();
+}
+function renderBookmarks() {
+  const bar = document.getElementById('bookmarks-bar');
+  if(!bar) return;
+  bar.innerHTML = '<span class="bm-label">★</span>';
+  bookmarks.forEach(id => {
+    const chip = document.createElement('span');
+    chip.className = 'bm-chip';
+    chip.innerHTML = '★ Step ' + id + ' <span class="bm-del" onclick="event.stopPropagation();toggleBookmark(' + id + ')">×</span>';
+    chip.onclick = () => goToStep(id);
+    chip.title = 'Go to step ' + id;
+    bar.appendChild(chip);
+  });
+}
+function isBookmarked(id) { return bookmarks.includes(id); }
+
+// ═══════════════════════════════════════════════════════════════
+// SIMULATION TIMER
+// ═══════════════════════════════════════════════════════════════
+let simTimer = 0, timerInterval = null;
+
+function startTimer() {
+  if(timerInterval) return;
+  timerInterval = setInterval(() => {
+    simTimer++;
+    const m = String(Math.floor(simTimer/60)).padStart(2,'0');
+    const sec = String(simTimer%60).padStart(2,'0');
+    document.getElementById('sim-timer').textContent = '⏱ ' + m + ':' + sec;
+    STATS.elapsed = simTimer;
+    if(statsOpen) updateStats();
+  }, 1000);
+}
+
+function stopTimer() {
+  if(timerInterval) { clearInterval(timerInterval); timerInterval = null; }
+}
+
+function resetTimer() {
+  stopTimer();
+  simTimer = 0;
+  document.getElementById('sim-timer').textContent = '⏱ 00:00';
+}
+
+// ═══════════════════════════════════════════════════════════════
+// LANGUAGE TOGGLE
+// ═══════════════════════════════════════════════════════════════
+let currentLang = 'kubectl';
+
+function setLang(lang) {
+  currentLang = lang;
+  document.querySelectorAll('.lang-tab').forEach(t => t.classList.toggle('active', t.dataset.lang === lang));
+  renderSteps();
+  updateUI();
+  saveState();
+}
+
+// ═══════════════════════════════════════════════════════════════
+// LOCALSTORAGE PERSISTENCE
+// ═══════════════════════════════════════════════════════════════
+const STORAGE_KEY = 'k8s_sim';
+
+function saveState() {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({
+      theme: darkTheme ? 'dark' : 'light',
+      step: currentStep,
+      lang: currentLang,
+      speed: speed,
+    }));
+  } catch(e) {}
+}
+
+function loadState() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(!raw) return;
+    const s = JSON.parse(raw);
+    if(s.theme === 'light') { darkTheme = false; document.documentElement.setAttribute('data-theme','light'); }
+    if(s.lang) { currentLang = s.lang; document.querySelectorAll('.lang-tab').forEach(t => t.classList.toggle('active', t.dataset.lang === s.lang)); }
+    if(s.step) { currentStep = s.step; }
+    if(s.speed) { speed = s.speed; document.getElementById('speed-sel').value = s.speed; }
+  } catch(e) {}
+}
+
+// ═══════════════════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════════════════
+loadBookmarks();
+loadState();
+renderSteps();
+renderBookmarks();
+updateUI();
+setTimeout(()=> showToast('ok','K8s Simulator Ready','Press Space/→ to step, P to play, ← to go back. 18 steps from YAML to pod!'), 500);
+
+// ═══════════════════════════════════════════════════════════════
+// FEATURE 1: Component Health
+// ═══════════════════════════════════════════════════════════════
+const COMPONENTS = [
+  {id:'api-server', label:'API Server', stepGreen:6, stepYellow:2},
+  {id:'etcd', label:'etcd', stepGreen:7, stepYellow:2},
+  {id:'scheduler', label:'Scheduler', stepGreen:9, stepYellow:3},
+  {id:'controller-mgr', label:'Controller Mgr', stepGreen:8, stepYellow:3},
+  {id:'kubelet', label:'kubelet', stepGreen:13, stepYellow:9},
+  {id:'kube-proxy', label:'kube-proxy', stepGreen:16, stepYellow:9},
+];
+
+function updateHealth(s) {
+  const grid = document.getElementById('health-grid');
+  if(!grid) return;
+  if(s === 0) { grid.innerHTML = '<span style="font-size:8px;color:var(--text3);font-family:var(--mono)">Waiting for activity…</span>'; return; }
+  grid.innerHTML = '';
+  COMPONENTS.forEach(c => {
+    const item = document.createElement('div');
+    item.className = 'health-item';
+    let cls = '';
+    if(s >= c.stepGreen) cls = 'green';
+    else if(s >= c.stepYellow) cls = 'yellow';
+    else cls = 'red';
+    item.innerHTML = '<div class="health-dot '+cls+'"></div><span class="health-label">'+c.label+'</span>';
+    grid.appendChild(item);
+  });
+}
+
+// ═══════════════════════════════════════════════════════════════
+// FEATURE 3: Step History Bar
+// ═══════════════════════════════════════════════════════════════
+let stepHistory = [];
+
+function updateHistory() {
+  const bar = document.getElementById('history-bar');
+  if(!bar) return;
+  bar.innerHTML = '';
+  for(let i = 1; i <= 18; i++) {
+    const dot = document.createElement('div');
+    dot.className = 'history-dot';
+    dot.textContent = i;
+    if(stepHistory.includes(i)) dot.classList.add('visited');
+    if(i === currentStep) dot.classList.add('current');
+    dot.onclick = () => goToStep(i);
+    dot.title = 'Step '+i;
+    bar.appendChild(dot);
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════
+// FEATURE 4: Architecture SVG Highlights
+// ═══════════════════════════════════════════════════════════════
+function updateArch(s) {
+  const groups = document.querySelectorAll('.arch-group');
+  groups.forEach(g => g.classList.remove('inactive'));
+  if(s === 0) { groups.forEach(g => g.classList.add('inactive')); return; }
+  // Determine which components are active based on current step
+  const activeMap = {
+    'arch-dev': s >= 1 && s <= 5,
+    'arch-api-server': s >= 2,
+    'arch-etcd': s >= 6,
+    'arch-controller-mgr': s >= 8,
+    'arch-scheduler': s >= 9 && s <= 18,
+    'arch-kubelet': s >= 13,
+    'arch-pod': s >= 13,
+  };
+  groups.forEach(g => {
+    const id = g.id;
+    if(!activeMap[id]) g.classList.add('inactive');
+  });
+}
+
+// ═══════════════════════════════════════════════════════════════
+// FEATURE 5: Phase Completion Badges
+// ═══════════════════════════════════════════════════════════════
+function updatePhases(s) {
+  const badges = ['phase-dev','phase-cp','phase-nodes'];
+  badges.forEach(id => {
+    const el = document.getElementById(id);
+    if(!el) return;
+    el.className = 'phase-badge';
+    if(id === 'phase-dev') {
+      if(s > 5) el.classList.add('done');
+      else if(s > 0 && s <= 5) el.classList.add('active');
+      else el.classList.add('pending');
+    } else if(id === 'phase-cp') {
+      if(s > 12) el.classList.add('done');
+      else if(s > 5 && s <= 12) el.classList.add('active');
+      else el.classList.add('pending');
+    } else if(id === 'phase-nodes') {
+      if(s > 12 && s <= 18) el.classList.add('done');
+      else if(s > 12) el.classList.add('done');
+      else if(s > 12) el.classList.add('done');
+      else el.classList.add('pending');
+      if(s > 12) {
+        el.classList.remove('pending');
+        el.classList.add(s >= 18 ? 'done' : 'active');
+      }
+    }
+  });
+}
+
+// ═══════════════════════════════════════════════════════════════
+// FEATURE 6: Error Simulation Toggle
+// ═══════════════════════════════════════════════════════════════
+let errorsOn = false;
+
+const ERROR_STEPS = {
+  5: 'API Server timeout — retrying connection to kube-apiserver:443…',
+  9: 'SCHEDULER_FAILURE: Insufficient memory on node-3 (node-3 has 100% CPU)',
+  13: 'ImagePullBackOff — nginx:1.25 not found in registry, falling back to nginx:latest',
+  16: 'Service endpoint not ready — nginx-c readiness probe failing (HTTP 503)',
+};
+
+function toggleErrors() {
+  errorsOn = !errorsOn;
+  document.getElementById('err-toggle').classList.toggle('on', errorsOn);
+  showToast(errorsOn ? 'err' : 'ok', errorsOn ? '⚠ Error Simulation ON' : 'Error Simulation OFF',
+    errorsOn ? 'Failures will simulate at steps 5, 9, 13, 16' : 'Normal operation');
+  saveState();
+}
+
+// ═══════════════════════════════════════════════════════════════
+// FEATURE 7: Config Diff View
+// ═══════════════════════════════════════════════════════════════
+const STEPS_CONFIG = {
+  1: { type:'add', lines:['+ apiVersion: apps/v1','+ kind: Deployment','+ metadata:','+   name: nginx-deploy','+ spec:','+   replicas: 3'] },
+  2: { type:'add', lines:['+ kubectl apply -f deploy.yaml','+ POST /apis/apps/v1/namespaces/default/deployments','+ → 201 Created'] },
+  3: { type:'add', lines:['+ apiVersion: v1','+ kind: ConfigMap','+   name: nginx-config','+ ---','+ kind: Secret','+   name: nginx-tls'] },
+  4: { type:'add', lines:['+ apiVersion: v1','+ kind: Service','+   name: nginx-svc','+ spec:','+   selector: {app: nginx}'] },
+  5: { type:'add', lines:['+ apiVersion: autoscaling/v2','+ kind: HorizontalPodAutoscaler','+   name: nginx-hpa','+ spec:','+   minReplicas: 3','+   maxReplicas: 10'] },
+  6: { type:'add', lines:['+ API Server: authentication OK','+ RBAC authorization: allowed','+ Admission: passed webhooks','+ Persisted to etcd'] },
+  7: { type:'add', lines:['+ etcd: /registry/deployments/...','+ Raft consensus: committed','+ Source of truth updated'] },
+  8: { type:'add', lines:['+ Deployment Controller: watching','+ ReplicaSet nginx-deploy-xxx created','+ Desired: 3 replicas, Current: 0'] },
+  9: { type:'add', lines:['+ Scheduler: Filtering phase','+ Nodes filtered: 5 → 3 feasible','+ PodFitsResources ✓ on node-1,2,4'] },
+  10:{ type:'add', lines:['+ Scheduler: Scoring phase','+ Node-4: score 60 (most resources free)','+ Winner: node-4 selected'] },
+  11:{ type:'add', lines:['+ Scheduler: Binding pod → node-4','+ POST /api/v1/.../binding','+ pod.spec.nodeName = node-4'] },
+  12:{ type:'add', lines:['+ HPA: replicas 3 → 5','+ desiredReplicas: 5','+ Creating 2 additional pods'] },
+  13:{ type:'add', lines:['+ kubelet: watching for assigned pods','+ CRI: RunPodSandbox created','+ Pulling image nginx:1.25'] },
+  14:{ type:'add', lines:['+ CRI: container spec created','+ cgroups: CPU=200m, MEM=256Mi','+ Container started: Running'] },
+  15:{ type:'add', lines:['+ Readiness probe: HTTP GET /:80','+ Attempt 1: connection refused','+ Attempt 2: 200 OK → Ready'] },
+  16:{ type:'add', lines:['+ kube-proxy: iptables updated','+ Endpoints: nginx-a, nginx-b, nginx-c','+ Traffic routed: Round-robin'] },
+  17:{ type:'add', lines:['+ kubectl logs -l app=nginx','+ kubectl exec deploy/nginx-deploy','+ Debugging running containers'] },
+  18:{ type:'rem', lines:['- kubectl delete deployment nginx-deploy','- SIGTERM → graceful shutdown','- Pod status: Terminating','- etcd: object deleted'] },
+};
+
+function updateDiff(s) {
+  const section = document.getElementById('diff-section');
+  if(!section) return;
+  if(s <= 0) { section.style.display = 'none'; return; }
+  section.style.display = 'block';
+  const content = document.getElementById('diff-content');
+  const cfg = STEPS_CONFIG[s];
+  if(!cfg) { content.innerHTML = '<div class="diff-line diff-ctx">No config changes tracked for this step</div>'; return; }
+  let html = '';
+  cfg.lines.forEach(line => {
+    const cls = line.startsWith('+') ? 'diff-add' : line.startsWith('-') ? 'diff-rem' : 'diff-ctx';
+    html += '<div class="diff-line '+cls+'">'+escHtml(line)+'</div>';
+  });
+  content.innerHTML = html;
+}
+
+// ═══════════════════════════════════════════════════════════════
+// FEATURE 8: Resource Estimator
+// ═══════════════════════════════════════════════════════════════
+function updateEstimator(s) {
+  const el = document.getElementById('res-est');
+  if(!el) return;
+  let pods = 0, cpu = 0, mem = 0;
+  if(s >= 1 && s < 6) { pods = 0; cpu = 0; mem = 0; }
+  else if(s >= 6 && s < 12) { pods = 3; cpu = 300; mem = 384; }
+  else if(s >= 12 && s < 15) { pods = 5; cpu = 500; mem = 640; }
+  else if(s >= 15 && s < 18) { pods = 5; cpu = 500; mem = 640; }
+  else if(s >= 18) { pods = 0; cpu = 0; mem = 0; }
+  const capacity = s >= 6 && s < 18 ? Math.round((cpu / 1000) * 100) : 0;
+  el.innerHTML =
+    '<div class="res-card"><div class="res-num">'+pods+'</div><div class="res-label">Pods</div></div>'+
+    '<div class="res-card"><div class="res-num">'+cpu+'m</div><div class="res-label">CPU Requests</div></div>'+
+    '<div class="res-card"><div class="res-num">'+mem+'Mi</div><div class="res-label">Memory Requests</div></div>'+
+    '<div class="res-card"><div class="res-num">'+(s >= 6 && s < 18 ? capacity+'%' : '—')+'</div><div class="res-label">Cluster Capacity</div></div>';
+}
+</script>
+</body>
+</html>

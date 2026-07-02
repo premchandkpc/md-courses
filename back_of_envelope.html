@@ -600,6 +600,14 @@ button:focus:not(:focus-visible){outline:none}
 .scenario-meta-row{display:flex;align-items:center;gap:6px;flex-wrap:wrap;font-size:11px;color:var(--text3);margin-bottom:0;padding-bottom:12px;min-height:0}
 .scenario-meta-row:empty{padding-bottom:0}
 .scenario-meta-tag{padding:2px 8px;border-radius:100px;background:var(--bg3);border:1px solid var(--border)}
+.scenario-snapshot{display:grid;gap:10px;padding:12px 14px;margin:0 0 12px;background:linear-gradient(135deg,var(--bg2),var(--bg3));border:1px solid var(--border);border-radius:var(--radius)}
+.scenario-snapshot-head{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.scenario-snapshot-title{font-size:11px;text-transform:uppercase;letter-spacing:.09em;color:var(--text3);font-weight:700}
+.scenario-snapshot-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.scenario-snapshot-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 12px}
+.scenario-snapshot-card .k{font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);font-weight:700;margin-bottom:6px}
+.scenario-snapshot-card .v{font-size:12px;color:var(--text2);line-height:1.5}
+.scenario-snapshot-card .v strong{color:var(--text)}
 
 /* ── Keyboard Shortcuts Modal ── */
 .kbd-modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:500;display:none;align-items:center;justify-content:center;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)}
@@ -1309,6 +1317,13 @@ body[data-theme="dark"]{color-scheme:dark}
     </div>
   </div>
   <div class="scenario-meta-row" id="scenario-meta-row"></div>
+  <div class="scenario-snapshot" id="scenario-snapshot" style="display:none">
+    <div class="scenario-snapshot-head">
+      <div class="scenario-snapshot-title">Scenario Snapshot</div>
+      <button class="copy-btn" id="snapshot-copy-btn" type="button"><i class="ti ti-copy"></i> Copy brief</button>
+    </div>
+    <div class="scenario-snapshot-grid" id="scenario-snapshot-grid"></div>
+  </div>
   <div class="chart-panel" style="margin-top:12px">
     <div class="chart-title">24-Hour Traffic Pattern (simulated)</div>
     <canvas id="traffic-canvas" height="120" role="img" aria-label="24-hour traffic chart showing read and write QPS"></canvas>
@@ -1866,6 +1881,18 @@ const COST = {
   s3_per_gb: 0.023,         // $0.023/GB/month S3 standard
   egress_per_gb: 0.09,      // $0.09/GB out to internet
   kafka_per_broker: 300,    // $300/month per Kafka broker (m5.large × 2 + storage)
+};
+
+// CAP theorem badge lookup — declared here (top-level, before renderAll()
+// runs) because it was previously declared ~5400 lines further down with
+// `const`. renderScenarioMeta() (called from renderAll() on first load)
+// referenced it before that line ever executed → TDZ ReferenceError →
+// uncaught → every line of script AFTER that point silently never ran:
+// interview timer, SLO calculator, quick-math notepad, snapshots, done-tracking.
+const CAP_MAP = {
+  strong:   { label: 'CP', cls: 'cp', title: 'Consistency + Partition Tolerance — sacrifices Availability' },
+  eventual: { label: 'AP', cls: 'ap', title: 'Availability + Partition Tolerance — sacrifices strong Consistency' },
+  causal:   { label: 'AP*', cls: 'ap', title: 'Causal Consistency (Availability + Partition Tolerance)' },
 };
 
 // Language throughput estimates (QPS per instance)
@@ -3546,121 +3573,121 @@ const SCENARIOS = [
     id: 'instagram',
     name: 'Instagram',
     icon: 'ti-camera',
-    desc: 'Photo sharing at Instagram scale. Write-heavy uploads, read-heavy feed, media storage dominates.',
+    desc: 'Short-form video platform architecture for Reels/Shorts: upload, transcoding, feed ranking, and engagement at massive scale.',
     params: [
-      { id: 'dau', label: 'Daily Active Users', val: 500, min: 50, max: 1000, step: 50, unit: 'M', mult: 1e6 },
-      { id: 'photos_per_day', label: 'Photos Uploaded / Day', val: 100, min: 10, max: 500, step: 10, unit: 'M', mult: 1e6 },
-      { id: 'freq_per_user', label: 'Feed Refreshes / User / Day', val: 8, min: 2, max: 30, step: 2, unit: '', mult: 1 },
-      { id: 'p_size', label: 'Avg Upload Photo Size', val: 2, min: 0.5, max: 10, step: 0.5, unit: 'MB', mult: 1e6 },
-      { id: 'stories_per_day', label: 'Stories Uploaded / Day', val: 500, min: 50, max: 2000, step: 50, unit: 'M', mult: 1e6 },
-      { id: 'story_ttl_hrs', label: 'Story TTL', val: 24, min: 12, max: 48, step: 6, unit: 'hrs', mult: 1 },
-      { id: 'reel_views_user', label: 'Reels Watched / User / Day', val: 6, min: 1, max: 20, step: 1, unit: '', mult: 1 },
+      { id: 'dau', label: 'Daily Active Users', val: 250, min: 50, max: 1000, step: 50, unit: 'M', mult: 1e6 },
+      { id: 'reels_watched', label: 'Reels Watched / User / Day', val: 30, min: 5, max: 50, step: 1, unit: '', mult: 1 },
+      { id: 'avg_video_size_mb', label: 'Avg Video Size', val: 7, min: 1, max: 20, step: 1, unit: 'MB', mult: 1e6 },
+      { id: 'uploads_per_day', label: 'Video Uploads / Day', val: 25, min: 1, max: 100, step: 1, unit: 'M', mult: 1e6 },
+      { id: 'storage_per_reel_mb', label: 'Storage per Reel', val: 40, min: 10, max: 100, step: 5, unit: 'MB', mult: 1e6 },
+      { id: 'peak_start_rps', label: 'Peak Video Start RPS', val: 400, min: 50, max: 1000, step: 50, unit: 'K', mult: 1000 },
     ],
     calc(p) {
       const dau = p.dau;
-      const photos = p.photos_per_day;
-      const stories = p.stories_per_day;
-      const wqps = (photos + stories) / DAY;
-      const feedRPS = (dau * p.freq_per_user) / DAY;
-      const reelRPS = (dau * p.reel_views_user) / DAY;
-      const rqps = feedRPS + reelRPS;
-      const rawIngest = photos * p.p_size * 1e6;
-      const storyStorActive = stories * p.p_size * 1e6 * 2 * (p.story_ttl_hrs / 24);
-      const storPerDay = rawIngest * 0.3 + photos * 100 * 1024 * 3 + storyStorActive / 30;
-      const stor5yr = storPerDay * 365 * 5;
-      const bwOut = (feedRPS * 300 * 1024 * 3 + reelRPS * 2 * 1e6) * 8;
-      const servers = Math.ceil(rqps / 3000) + Math.ceil(wqps / 2000);
-      const cacheGB = (dau * 50 * 200 * 1024) / 1e9;
-      const cost = estimateCost(servers, 4, 16, storPerDay, bwOut, cacheGB);
-      return { wqps, rqps, storPerDay, bwOut, servers, cacheGB, cost,
+      const dailyViews = dau * p.reels_watched;
+      const dailyBandwidthBytes = dailyViews * p.avg_video_size_mb * 1e6;
+      const uploadsPerDay = p.uploads_per_day;
+      const storPerDay = uploadsPerDay * p.storage_per_reel_mb * 1e6;
+      const wqps = uploadsPerDay / DAY;
+      const rqps = p.peak_start_rps;
+      const servers = Math.ceil(rqps / 5000) + Math.ceil(wqps / 3000);
+      const cacheGB = Math.max(100, Math.ceil((dailyViews * 0.01 * 100 * 1024 * 1024) / 1e9));
+      const cost = estimateCost(servers, 4, 12, storPerDay, dailyBandwidthBytes, cacheGB);
+      return { wqps, rqps, storPerDay, bwOut: dailyBandwidthBytes, servers, cacheGB, cost,
         extras: [
-          { label: 'Raw image ingest / day', val: fmtBytes(rawIngest), color: 'coral' },
-          { label: 'Stories active storage', val: fmtBytes(storyStorActive), color: 'purple' },
-          { label: 'Reels QPS', val: fmtNum(reelRPS), color: 'teal' },
-          { label: 'Feed refresh QPS', val: fmtNum(feedRPS), color: 'amber' },
-          { label: '5-year photo storage', val: fmtBytes(stor5yr), color: 'green' },
-          { label: 'S3 storage cost / month', val: fmtMoney(storPerDay * 30 / 1e9 * 0.023), color: 'blue' },
+          { label: 'Daily video views', val: fmtNum(dailyViews), color: 'teal' },
+          { label: 'Bandwidth / day', val: fmtBytes(dailyBandwidthBytes), color: 'coral' },
+          { label: 'Upload ingest / day', val: fmtBytes(storPerDay), color: 'purple' },
+          { label: 'Peak start requests', val: fmtNum(rqps), color: 'amber' },
+          { label: 'Upload QPS', val: fmtNum(wqps), color: 'blue' },
+          { label: 'Projected CDN cost / month', val: fmtMoney(storPerDay * 30 / 1e9 * 0.023 + dailyBandwidthBytes * 30 / 1e12 * 0.02), color: 'green' },
         ]
       };
     },
     insights: [
-      'Upload: S3 → async transcode to 3 sizes (thumbnail ~50KB, standard ~200KB, full ~1MB). CDN delivers all sizes',
-      'Feed: push model for follows < 10K. Pull + cache for celebrities. Hybrid at scale — each user gets a pre-computed feed ZSET in Redis',
-      'Stories: temp storage on S3 with 24h TTL. S3 lifecycle rule auto-deletes. Storage cost is 1/365 of permanent photos',
-      'Reels: video chunks pre-fetched by client. CDN edge cache with 30-min TTL. TikTok-style recommendation via cosine similarity on embeddings',
-      'CDN edge serves media — app servers never touch image blobs. API servers are metadata-only, running on cheap CPU instances',
-      'Metadata: Postgres sharded by user_id (1000+ shards). Comments/likes in Redis sorted sets (ZADD/ZRANGE). Like counts in Redis counter',
-      'Facebook uses TAO (graph DB) for social graph; IG adapted it for photo relationships. TAO is read-optimized, caching at every tier',
+      'Short videos are uploaded as <90s clips and go through a four-phase pipeline: session init, object-store upload, transcoding, and multi-region replication.',
+      'Phase A creates reel metadata with a distributed Snowflake-style ID and status (init, processing, ready, failed, blocked). Phase B writes raw chunks directly to object storage. Phase C transcodes into 240p/360p/480p/720p renditions and splits them into ~2s segments. Phase D replicates the processed video durably across regions.',
+      'Adaptive bitrate streaming is the core playback strategy: the player can switch between quality levels on the fly based on the network conditions and device capabilities.',
+      'Candidate generation combines followed-user reels, similarity-based “reels you may like,” and trending/viral reels, then ranks the best 20 per user with an ML model.',
+      'Prefetching the next video segments makes playback feel instant as users scroll, which is essential for infinite-scroll short-form feeds.',
+      'Engagement events are not written one-by-one to the main DB; likes are stored as relationships, while like/view/comment events are published to Kafka, batched, and aggregated to reduce write amplification.',
+      'Redis is the hot read path for counts and feed state, while object storage and CDN handle the bandwidth-heavy video delivery path.',
+      'The design is CDN-dominated: the platform must absorb billions of views/day and petabytes of egress while keeping latency low.',
     ],
     fnReqs: [
-      { feat: 'Photo upload', req: 'Upload and process 100M+ photos/day with filters and compression', why: 'S3 for raw storage → async transcode to 3 sizes: thumbnail (50KB), standard (200KB), full (1MB). CDN delivers all sizes. Exif stripping for privacy. High-quality compression (JPEG/MozJPEG)' },
-      { feat: 'Feed generation', req: 'Show recent photos from followed users in reverse chronological order', why: 'Push model for users with <10K followers: pre-compute feed ZSET in Redis. Pull for celebrities >1M followers. Hybrid: most users get push, celeb follows get pull' },
-      { feat: 'Stories', req: 'Ephemeral photo/video stories that auto-delete after 24h', why: 'Temp S3 storage with 24h TTL. S3 lifecycle rule auto-deletes. Storage cost is 1/365 of permanent photos. Ordered by creation time, displayed as slideshow' },
-      { feat: 'Reels / short video', req: 'Short-form video feed with ML-based personalized ranking', why: 'TikTok-style recommendation: embeddings → cosine similarity → ranking. Video chunks pre-fetched by client. CDN edge cache with 30-min TTL. Pre-compute for active users' },
-      { feat: 'Social graph', req: 'Follow/unfollow, like, comment, share with notifications', why: 'TAO graph DB (Facebook): read-optimized, caching at every tier. Follows in Redis (user_id → following ZSET). Comments in sharded Postgres. Notifications via Kafka → push' },
+      { feat: 'Short video upload', req: 'Accept short-form uploads (<90s) and make them playable quickly', why: 'The upload flow creates reel metadata, writes raw chunks to object storage, then kicks off transcoding into multiple bitrates and 2s segments.' },
+      { feat: 'Content moderation', req: 'Moderate uploads and flag blocked/failed content', why: 'Every reel transitions through init → processing → ready/failed/blocked so the platform can reject unsafe or invalid uploads early.' },
+      { feat: 'Personalized feed', req: 'Serve a custom short-video feed with instant autoplay', why: 'The system combines followed-user reels, similarity-based candidates, and trending signals, then ranks the top 20 per user with ML features such as watch time and completion rate.' },
+      { feat: 'Real-time engagement', req: 'Track views, likes, comments, and watch milestones continuously', why: 'Engagement metrics are emitted as events, aggregated in batches, and surfaced through Redis-backed counters to keep ranking and UI feedback low-latency.' },
+      { feat: 'Adaptive streaming', req: 'Deliver video smoothly across devices and network conditions', why: 'ABR renditions and chunked playback let the client switch between 240p/360p/480p/720p without stalls or buffering.' },
+      { feat: 'Social notifications', req: 'Notify followers when creators publish new reels', why: 'The ready event is emitted to Kafka and consumed by a push notification service so viewers see fresh content fast.' },
     ],
     nfnReqs: [
-      { attr: 'Ingest throughput', val: '100M+ photos/day = 1,200+ uploads/sec', why: 'Uploads are write-heavy but small per-file. S3 accepts unlimited concurrent uploads. Transcode pipeline: prioritize popular accounts. Cold storage for old content' },
-      { attr: 'Feed read QPS', val: '500M DAU × 8 refreshes/day = 46K+ feed reads/sec', why: 'Pre-computed feed in Redis ZSET: ZREVRANGE 0 19 is O(log N + M). Cache feed for 30s. Refresh triggered by: new post, scroll, app foreground. CDN for static stories' },
-      { attr: 'Storage growth', val: '200+ TB/day permanent + ephemeral', why: 'S3 lifecycle: photos permanent, stories 24h TTL, reels 30d. CDN cache for thumbs: 7d TTL. Archive after 1 year to Glacier. 80% of storage = rarely viewed content' },
-      { attr: 'Cache hit ratio', val: '95%+ for CDN, 90%+ for feed', why: 'Photos served from CDN edge (cache first miss). Feed cached in Redis per user. Story seen-once semantics: cache short TTL. Hot 10% of photos get 90% of views' },
-      { attr: 'Latency (P99)', val: '< 100ms feed load', why: 'Pre-computed feed avoids DB query at read time. CDN delivers photos from edge. API servers are metadata-only, running on cheap CPU instances. No image processing on read path' },
+      { attr: 'Throughput', val: '~400K peak video starts/sec', why: 'Short-form platforms see bursty playback demand, so the read path must be optimized for start requests and segment fetches rather than ordinary page loads.' },
+      { attr: 'Bandwidth', val: '7.5B views/day × 7MB ≈ 52 PB/day', why: 'Video delivery dominates cost and architecture. A CDN-first design is mandatory to keep origin egress and latency under control.' },
+      { attr: 'Storage growth', val: '25M uploads/day × 40MB ≈ 1 PB/day of processed storage', why: 'The system stores multiple renditions and chunked segments, so storage per reel is far larger than the raw upload size.' },
+      { attr: 'Latency', val: '< 20ms metadata writes, ~1ms read from Redis', why: 'Metadata must be strongly consistent and fast for upload state; engagement counters need sub-millisecond read latency for ranking and UI updates.' },
+      { attr: 'Availability', val: 'Multi-region replication with durability-first semantics', why: 'Processed video segments are replicated synchronously within a region and asynchronously across regions to sacrify some availability for stronger durability.' },
     ],
     meta: {category:'messaging', difficulty:'staff', pattern:'write-heavy', consistency:'eventual', dominantBottleneck:'storage', storageEngine:'cassandra', cacheStrategy:'cache-aside'},
     formulas: [
-      { label: 'Photo uploads/sec', expr: '100M / 86400', result: '1,157' },
-      { label: 'Story uploads/sec', expr: '500M / 86400', result: '5,787' },
-      { label: 'Feed refresh QPS', expr: 'DAU × freq / 86400 = 500M × 8 / 86400', result: '46,296' },
-      { label: 'Reels QPS', expr: 'DAU × reels_watched / 86400 = 500M × 6 / 86400', result: '34,722' },
-      { label: 'Raw image ingest/day', expr: '100M photos × 2 MB', result: '200 TB' },
-      { label: 'Stories active storage', expr: '500M × 2 MB × 2 copies × 24h TTL', result: '2 PB' },
-      { label: 'Server estimate', expr: 'ceil(rqps/3000) + ceil(wqps/2000)', result: '~31' },
+      { label: 'Daily video views', expr: 'DAU × reels_watched / user / day', result: '250M × 30 = 7.5B' },
+      { label: 'Bandwidth / day', expr: 'Daily views × avg video size', result: '7.5B × 7MB ≈ 52 PB' },
+      { label: 'Upload ingest / day', expr: 'Uploads/day × storage per reel', result: '25M × 40MB ≈ 1 PB' },
+      { label: 'Peak start RPS', expr: 'Video start requests / sec', result: '~400K' },
+      { label: 'Upload QPS', expr: 'Uploads/day / 86400', result: '25M / 86400 ≈ 289' },
+      { label: 'Server estimate', expr: 'ceil(peak_rps/5000) + ceil(upload_qps/3000)', result: '~81' },
     ],
     arch: {
       nodes: [
-        { id: 'client',    label: 'Client',           icon: '📷', tech: 'iOS / Android', layer: 'client',
-          why: 'Client-side image compression before upload. Lazy-loads feed. Sends engagement events (view, like, share) batched every 30s.' },
-        { id: 'cdn',       label: 'CDN',              icon: '📡', tech: 'Facebook CDN', layer: 'edge',
-          why: 'Images served from CDN edge in multiple resolutions (thumbnail, standard, full). Aggressive caching. ~0 origin hits for popular posts.' },
-        { id: 'gw',        label: 'API Gateway',      icon: '🚪', tech: 'Facebook Proxygen', layer: 'edge',
-          why: 'Handles HTTP/2, gRPC. Auth via session token. Routes: feed→feed service, upload→media, explore→explore service.' },
-        { id: 'feed_svc',  label: 'Feed Service',     icon: '📰', tech: 'Python / C++', layer: 'app',
-          why: 'Assembles home feed. Mix of ranked posts from followed accounts + explore content. Redis-cached per user (precomputed). ML ranking at read time.' },
-        { id: 'media_svc', label: 'Media Service',    icon: '🖼️', tech: 'Go + S3', layer: 'app',
-          why: 'Photo upload: receive → validate → compress → generate thumbnails → store in S3. Video: transcode to multiple resolutions + HLS for Reels.' },
-        { id: 'user_graph',label: 'Social Graph',     icon: '👥', tech: 'TAO (Graph DB)', layer: 'data',
-          why: 'Facebook TAO: optimized for social graph reads. Follow relationships. Bidirectional edges. Cache-heavy (95%+ hit rate). Read-path critical.' },
-        { id: 'redis',     label: 'Feed Cache',       icon: '⚡', tech: 'Redis Cluster', layer: 'data',
-          why: 'Pre-computed feed lists per user (push model for <10K followers). Celebrity posts read on-demand (pull). ~800 post IDs per user cached.' },
-        { id: 'kafka',     label: 'Event Bus',        icon: '📨', tech: 'Kafka', layer: 'async',
-          why: 'New post → Kafka → fan-out workers write to followers feed cache. Also: like events, view events for ML training and notifications.' },
-        { id: 'media_db',  label: 'Media DB',         icon: '🛢️', tech: 'Cassandra + S3', layer: 'data',
-          why: 'S3 for blob storage. Cassandra for media metadata (user_id, post_id, timestamp, CDN_url). Partition by user_id, ordered by created_at.' },
-        { id: 'explore',   label: 'Explore Service',  icon: '🔍', tech: 'ML (GNN)', layer: 'app',
-          why: 'Graph neural network on social graph + engagement signals. Surfaces non-followed content. Refreshed hourly. Candidate generation → ranking → filter.' },
+        { id: 'client',       label: 'Client App',        icon: '📱', tech: 'iOS / Android / Web', layer: 'client',
+          why: 'Uploads reels, plays the feed, and sends engagement events like watch-complete, like, and comment as the session progresses.' },
+        { id: 'cdn',          label: 'CDN',               icon: '📡', tech: 'Edge cache', layer: 'edge',
+          why: 'Serves video segments and thumbnails from edge caches so viewers get low-latency playback and origin egress stays manageable.' },
+        { id: 'gw',           label: 'API Gateway',       icon: '🚪', tech: 'LB + auth', layer: 'edge',
+          why: 'Routes upload, feed, and engagement traffic to the correct service and validates auth tokens before work begins.' },
+        { id: 'upload_svc',   label: 'Upload Service',     icon: '⬆️', tech: 'Metadata + sessions', layer: 'app',
+          why: 'Creates the reel record, writes metadata to a distributed SQL DB, and initiates direct-to-storage upload sessions.' },
+        { id: 'object_store', label: 'Object Storage',     icon: '🗄️', tech: 'S3 / GCS / Azure Blob', layer: 'data',
+          why: 'Stores raw video chunks durably with replication and indexing, avoiding CPU-heavy backend work during upload.' },
+        { id: 'kafka',        label: 'Kafka',             icon: '📨', tech: 'Event stream', layer: 'async',
+          why: 'Carries upload-complete and engagement events to downstream workers and analytics services without blocking the write path.' },
+        { id: 'transcoder',   label: 'Transcoding Workers', icon: '🎞️', tech: 'FFmpeg / GPU', layer: 'app',
+          why: 'Consumes raw videos, generates 240p/360p/480p/720p renditions, and splits them into ~2s segments for ABR playback.' },
+        { id: 'meta_db',      label: 'Metadata DB',       icon: '🛢️', tech: 'Distributed SQL', layer: 'data',
+          why: 'Stores reel metadata such as creator ID, status, duration, visibility, and timestamps with strong consistency and <20ms writes.' },
+        { id: 'feed_svc',     label: 'Feed Service',      icon: '📰', tech: 'Ranking service', layer: 'app',
+          why: 'Retrieves candidate reels from social graph, embedding similarity, and trending queues, then ranks the best 20 for the user.' },
+        { id: 'graph_db',     label: 'Graph DB',          icon: '👥', tech: 'Social graph', layer: 'data',
+          why: 'Provides follow relationships and graph-based candidate generation for user-specific feeds.' },
+        { id: 'feature_store',label: 'Feature Store',     icon: '🧠', tech: 'Embedding + features', layer: 'data',
+          why: 'Holds user and reel embeddings as well as engagement features used by the ranking model.' },
+        { id: 'redis',        label: 'Redis',             icon: '⚡', tech: 'Low-latency cache', layer: 'data',
+          why: 'Caches candidate pools, engagement counters, and recent reel stats so the feed and ranking path stay fast.' },
+        { id: 'stats_agg',    label: 'Stats Aggregator',  icon: '📊', tech: 'Batching service', layer: 'app',
+          why: 'Consumes Kafka events, maintains in-memory counters, batches writes, and updates Redis after DB commits to prevent DB hot spots.' },
       ],
       flows: [
-        { label: 'Hot: Feed Load',        type: 'hot',   nodes: ['client','gw','feed_svc','redis','user_graph'] },
-        { label: 'Hot: Photo View',        type: 'hot',   nodes: ['client','cdn','media_db'] },
-        { label: 'Post Upload',           type: 'async', nodes: ['client','gw','media_svc','kafka','redis','media_db'] },
-        { label: 'Async: Fan-out',        type: 'async', nodes: ['kafka','feed_svc','redis'] },
+        { label: 'Upload flow',        type: 'async', nodes: ['client','gw','upload_svc','meta_db','object_store','kafka','transcoder','cdn'] },
+        { label: 'Feed retrieval',     type: 'hot',   nodes: ['client','gw','feed_svc','graph_db','feature_store','redis','cdn'] },
+        { label: 'Engagement pipeline', type: 'async', nodes: ['client','kafka','stats_agg','meta_db','redis'] },
       ],
       choices: [
-        { component: 'Hybrid Push/Pull (same as Twitter)', icon: 'git-branch', color: 'teal', why: 'Push feed to followers cache for normal users (<10K followers). For celebrities (>1M followers), skip push and serve via pull-on-read. Single celebrity post: 10M writes vs 10M reads — reads are cheaper because followers share CDN-cached content.', alternatives: 'Full push (doesnt scale for celebrities), full pull (slow feed assembly with many followed accounts), Facebook uses the same hybrid approach' },
-        { component: 'TAO Social Graph', icon: 'users', color: 'amber', why: 'Follow relationships need O(1) lookup for "does user A follow user B?" and "list all followers of user A". Facebook TAO is a distributed graph cache purpose-built for social graph reads. 99%+ cache hit rate.', alternatives: 'Postgres adjacency list (works but not at 100M DAU), Neo4j (better graph queries, less throughput), custom in-memory graph (Facebook considered this)' },
-        { component: 'Client-side Compression + CDN', icon: 'photo', color: 'purple', why: 'Instagram compresses images client-side before upload (reduces upload bandwidth 5-10×). Server then generates 3 resolutions for CDN. Popular posts: 0 origin hits. Unpopular: one CDN miss → warm cache for next viewer.', alternatives: 'Server-side compression only (wastes upload bandwidth), no CDN (origin would collapse instantly)' },
-        { component: 'Stories (Ephemeral Storage)', icon: 'clock', color: 'coral', why: 'Stories are short-lived (24h), high-write (500M+ daily story creators). Segmented upload: first 5s displayed while rest loads. Redis TTL for story metadata. Object store (S3) with bucket lifecycle policy for auto-deletion after 24h. Each story viewed in order, marked as seen.', alternatives: 'Permanent storage (storage waste, 24× more storage), client-side deletion (unreliable), no stories (feature gap vs Snapchat/TikTok)' },
+        { component: 'Snowflake-style IDs', icon: 'hash', color: 'teal', why: 'Distributed unique IDs avoid collisions across shards and regions for reel identity and ordering.', alternatives: 'UUIDs (too large and less sortable), DB sequence (not global across nodes)' },
+        { component: 'Object storage upload', icon: 'database', color: 'amber', why: 'Uploading directly to object storage decouples the backend from chunking and replication, which keeps the write path simple and scalable.', alternatives: 'Backend-mediated upload (too much CPU and network pressure)' },
+        { component: 'Kafka + stats aggregation', icon: 'broadcast', color: 'purple', why: 'Event streaming plus batching turns millions of like/view events into a small number of durable writes while keeping the read path fast.', alternatives: 'Direct DB updates per event (too much write amplification and DB contention)' },
+        { component: 'ABR + prefetch', icon: 'arrows-right-left', color: 'coral', why: 'Segmenting the video and prefetching the next few chunks creates instant transitions and smooth playback on changing networks.', alternatives: 'Single large file streaming (high startup latency, poor quality adaptation)' },
       ]
     },
     assumptions: [
-      { key: 'DAU', val: '500M' },
-      { key: 'Photo uploads/day', val: '100M' },
-      { key: 'Stories uploads/day', val: '500M' },
-      { key: 'Feed refreshes/user/day', val: '8' },
-      { key: 'Reels watched/user/day', val: '6' },
-      { key: 'Avg photo size', val: '2 MB' },
-      { key: 'Story TTL', val: '24 hrs' },
-      { key: 'Photo renditions', val: '3 (thumb ~50KB, standard ~200KB, full ~1MB)' },
+      { key: 'DAU', val: '250M' },
+      { key: 'Reels watched/user/day', val: '30' },
+      { key: 'Avg video size', val: '7 MB' },
+      { key: 'Video uploads/day', val: '25M' },
+      { key: 'Storage per reel', val: '40 MB' },
+      { key: 'Peak start requests', val: '~400K/sec' },
+      { key: 'Playback segments', val: '~2s each' },
+      { key: 'Watch milestones', val: '3s + full watch' },
     ],
     incidents: [
       { incident: 'Feed Fan-out Storm from Celebrity', symptom: 'Celebrity posts a photo. 50M followers get write to feed ZSET simultaneously. Redis write QPS spikes 50×. Hot partition drops writes. Timeline load fails for 20% of users.', fix: 'Celebrity detection: accounts with >10M followers flagged at signup. Always pull-on-read for flagged accounts. Background migration: move existing celebrities from push to pull model. Cache their recent posts in a dedicated Redis instance for fast reads.' },
@@ -3668,13 +3695,13 @@ const SCENARIOS = [
       { incident: 'CDN Origin Thundering Herd', symptom: 'Viral photo hits front page of Reddit. 100K requests/second to the same CDN URL. CDN cache miss → all requests hit S3 origin simultaneously. S3 GET latency spikes to 5s.', fix: 'CDN cache prefetch: detect viral potential via upload rate velocity (uploads/sec > threshold → pre-warm CDN). Origin shield: CDN aggregation layer that deduplicates requests to origin. Cache stampede prevention: probabilistic early expiry (self-propagating cache refresh).' },
     ],
     interview: {
-      clarifying: '"Are we building Instagram or a generic photo-sharing app? MVP: upload photo, apply filters, share to followers, see feed, stories (24h). Scale: 500M DAU, 100M photos uploaded/day. Mobile-first, iOS + Android."',
-      functional: '(1) Photo upload: upload from camera/gallery, apply filters, add caption, share to followers. (2) Feed generation: show recent photos from followed users and ranked explore content. (3) Stories: ephemeral photo/video visible for 24h, auto-delete. (4) Reels: short-form video feed with ML-based personalized ranking. (5) Social graph: follow/unfollow, like, comment, share with notification. (6) Explore: discover new content beyond follow graph using GNN-based recommendations.',
-      nonFunctional: 'Ingest throughput: 100M photos/day = 1,200 uploads/sec. Feed reads: 46K QPS (pre-computed Redis ZSET). Storage: 200+ TB/day photos + 30-day TTL stories. Latency: <100ms feed load P99. CDN hit ratio: 95%+ for photos (edge cache). Cache hit ratio: 90%+ for feed (Redis per-user cache).',
-      capacity: '500M DAU × 8 feed refreshes = 4B feed loads/day → 46K feed QPS. 100M photos uploaded/day → 1,157 uploads/sec. Storage: 100M × 2MB = 200 TB/day raw → ~70 TB after compression → 3 renditions = 210 TB/day managed. Feed cache: 500M users × 800 post IDs × 8 bytes per ZSET entry = 3.2 TB Redis. Stories: 500M/day × 2MB × 24h TTL = 1 TB active storage.',
-      architecture: 'Upload: client → API → Media Service → S3 → async transcode (3 sizes) → CDN. Feed: pre-computed list in Redis ZSET (push for <10K followers, pull for celebrities). Social graph: TAO graph DB (Facebook) — read-optimized, cache-heavy. Explore: GNN model on social graph + engagement signals → candidate generation → ranking. Stories: S3 with 24h TTL lifecycle rule. Reels: video chunks from CDN, ML ranking.',
-      tradeoffs: '(1) Push vs Pull feed: push for followers <10K (pre-compute at write time), pull for celebrities >10M (compute at read time). Twitter hybrid model adapted for photo-sharing. (2) S3 vs dedicated media storage: S3 is cost-effective at 200TB/day but has eventual consistency. Need strong consistency for metadata (Postgres/Cassandra). (3) Client-side vs server-side compression: client-side saves 5× upload bandwidth but quality control is harder.',
-      staffMoves: 'Start: monolith Rails app + Postgres + S3. Split: (1) Media Upload Service (Go, handles S3 + transcode). (2) Feed Service (reads pre-computed Redis ZSETs). (3) Social Graph Service (TAO). (4) Explore (ML ranking, compute-heavy). (5) Stories (ephemeral, S3 lifecycle). Key: separate upload pipeline from feed rendering early — upload is write-heavy, feed is read-heavy. Add Kafka between them when write volume impacts read latency.',
+      clarifying: '"Are we building a short-video platform like Reels or Shorts, or a broader social feed with photo/video support? MVP: upload short clips, transcode them, serve an autoplay feed, track likes/comments/views, and support adaptive streaming."',
+      functional: '(1) Accept short-video uploads (<90s) and store metadata. (2) Upload raw video to object storage and transcode it into multiple renditions and 2s segments. (3) Generate a personalized feed from followed users, similarity-based candidates, and trending content. (4) Support instant autoplay, prefetching, and real-time engagement tracking. (5) Moderate and block unsafe content. (6) Notify followers when a creator publishes a new reel.',
+      nonFunctional: 'Daily views: 250M DAU × 30 reels/day = 7.5B views/day. Bandwidth: ~52 PB/day. Peak video starts: ~400K/sec. Uploads: 25M/day. Metadata write latency: <20ms. Redis read latency: ~1ms. Storage: ~1 PB/day of processed video storage plus replicas.',
+      capacity: 'Write path: upload session → metadata DB → object storage → Kafka → transcoder. Read path: candidate generation → ranking model → Redis-backed feed → CDN segment delivery. The storage and egress cost dominates, so the design is heavily CDN-centric and cache-oriented.',
+      architecture: 'Upload: client → gateway → upload service → metadata DB + object storage → Kafka → transcoding workers → multi-region storage/CDN. Feed: client → gateway → feed service → graph DB + feature store + Redis → ranked top-20 reels → CDN segments. Engagement: client events → Kafka → stats aggregator → DB + Redis. Prefetching and ABR on the client side keep the user experience seamless.',
+      tradeoffs: '(1) Durability vs availability: video segments are replicated synchronously within a region but asynchronously across regions, favoring durability. (2) Push vs pull ranking: candidate generation is mostly pull/compute-heavy, but the final top-20 list is dynamic and per-user. (3) Event batching: stats aggregation reduces DB writes, but adds small delay before counters become fully accurate.',
+      staffMoves: 'Phase 1: start with a single-region upload service, object storage, and a simple feed service. Phase 2: split transcoding into workers, add Kafka, and introduce Redis for counters and candidate caching. Phase 3: add feature store + ranking model, multi-region replication, and CDN prefetch. Key lesson: metadata and feed logic can scale horizontally, but video storage and egress dominate the budget.',
     }
   },
   {
@@ -5896,7 +5923,12 @@ function renderEstimateTab(scenario, r) {
   }
 
   // ── Cross-scenario capacity bars ──
-  _renderCapBars();
+  // Defined in the second <script> block below (loads after this one), so
+  // guard against calling it before it exists — otherwise the very first
+  // renderAll() on page load throws here uncaught, which (same as the
+  // CAP_MAP bug above) silently kills every line of script AFTER this call:
+  // timer, SLO calculator, quick-math notepad, snapshots, done-tracking.
+  if (typeof _renderCapBars === 'function') _renderCapBars();
 }
 
 function updateTicker(r) {
@@ -6031,6 +6063,8 @@ function renderAll() {
   renderScenarioNav();
   renderParams(scenario);
   renderInsights(scenario);
+  renderScenarioMeta(scenario);
+  renderScenarioSnapshot(scenario);
   recalcAndUpdate(scenario);
   renderArchitecture(scenario);
   renderAssumptions(scenario);
@@ -7296,12 +7330,6 @@ document.getElementById('qmath-input').addEventListener('keydown', e => {
 // ══════════════════════════════════════════
 // CAP THEOREM BADGE + SCENARIO META ROW
 // ══════════════════════════════════════════
-const CAP_MAP = {
-  strong:   { label: 'CP', cls: 'cp', title: 'Consistency + Partition Tolerance — sacrifices Availability' },
-  eventual: { label: 'AP', cls: 'ap', title: 'Availability + Partition Tolerance — sacrifices strong Consistency' },
-  causal:   { label: 'AP*', cls: 'ap', title: 'Causal Consistency (Availability + Partition Tolerance)' },
-};
-
 function renderScenarioMeta(scenario) {
   const meta = scenario.meta || {};
   const el = document.getElementById('scenario-meta-row');
@@ -7317,6 +7345,35 @@ function renderScenarioMeta(scenario) {
     parts.push(`<span class="cap-badge ${cap.cls}" title="${cap.title}">CAP: ${cap.label}</span>`);
   }
   el.innerHTML = parts.join('');
+}
+
+function renderScenarioSnapshot(scenario) {
+  const wrap = document.getElementById('scenario-snapshot');
+  const grid = document.getElementById('scenario-snapshot-grid');
+  const copyBtn = document.getElementById('snapshot-copy-btn');
+  if (!wrap || !grid) return;
+
+  const meta = scenario.meta || {};
+  const bottleneck = meta.dominantBottleneck || (scenario.insights && scenario.insights[0] ? scenario.insights[0].split('.')[0] : 'the main throughput constraint');
+  const choice = (scenario.arch && scenario.arch.choices && scenario.arch.choices[0]) || null;
+  const starter = choice ? choice.component : 'Start with a single primary service and introduce cache or queueing once the bottleneck becomes visible.';
+  const hook = scenario.tradeoffs || scenario.arch?.choices?.[0]?.why || scenario.desc || 'Frame the design around the biggest bottleneck and explain the scaling path.';
+
+  grid.innerHTML = [
+    `<div class="scenario-snapshot-card"><div class="k">Primary bottleneck</div><div class="v"><strong>${bottleneck}</strong></div></div>`,
+    `<div class="scenario-snapshot-card"><div class="k">Best first move</div><div class="v">${starter}</div></div>`,
+    `<div class="scenario-snapshot-card"><div class="k">Interview hook</div><div class="v">${hook}</div></div>`
+  ].join('');
+  wrap.style.display = 'grid';
+
+  if (copyBtn) {
+    copyBtn.onclick = async () => {
+      const text = `Scenario: ${scenario.name}\nPrimary bottleneck: ${bottleneck}\nBest first move: ${starter}\nInterview hook: ${hook}`;
+      const ok = await window.__boeCopyText?.(text);
+      copyBtn.innerHTML = ok ? '<i class="ti ti-check"></i> Copied' : '<i class="ti ti-copy"></i> Copy brief';
+      if (ok) setTimeout(() => { copyBtn.innerHTML = '<i class="ti ti-copy"></i> Copy brief'; }, 1400);
+    };
+  }
 }
 
 // Patch renderAll to also call renderScenarioMeta
@@ -8530,6 +8587,7 @@ function _renderCapBars(){
   if(qpsEl) qpsEl.innerHTML = makeRows(allCalcs, maxRqps, fmtQ, 'rqps');
   if(storEl) storEl.innerHTML = makeRows(allCalcs, maxStor, fmtS, 'stor');
 }
+_renderCapBars();
 
 </script>
 </body>

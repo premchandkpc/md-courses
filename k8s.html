@@ -1,0 +1,1206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>EKS Control Deck — Deep Dive Flow Simulator</title>
+<style>
+  :root{
+    --bg:#070a10; --panel:#0f1520; --line:#1c2635;
+    --cyan:#22d3ee; --cyan-dim:#22d3ee55;
+    --magenta:#ff2e88; --magenta-dim:#ff2e8855;
+    --amber:#ffb703; --amber-dim:#ffb70355;
+    --green:#39ff88; --green-dim:#39ff8855;
+    --text:#dfe8f5; --muted:#7688a3;
+    --mono: 'JetBrains Mono','Fira Code','Consolas',monospace;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;background:radial-gradient(1200px 600px at 15% -10%, #101a2b 0%, var(--bg) 55%);color:var(--text);font-family:var(--mono);}
+  .wrap{max-width:1240px;margin:0 auto;padding:22px 18px 60px;}
+  .hero{position:relative;padding:18px 20px;border:1px solid var(--line);border-radius:14px;background:linear-gradient(135deg,#0d1420,#0a0f18);overflow:hidden;margin-bottom:16px;}
+  .hero::before{content:"";position:absolute;inset:0;background:
+    linear-gradient(90deg, transparent 0, transparent 24px, #ffffff05 24px, #ffffff05 25px),
+    linear-gradient(0deg, transparent 0, transparent 24px, #ffffff05 24px, #ffffff05 25px);
+    background-size:25px 25px;opacity:.6;pointer-events:none;}
+  .eyebrow{color:var(--cyan);font-size:11px;letter-spacing:3px;text-transform:uppercase;}
+  h1{margin:6px 0 4px;font-size:26px;letter-spacing:1px;color:#fff;text-shadow:0 0 18px var(--cyan-dim);}
+  .sub{color:var(--muted);font-size:12.5px;line-height:1.5;max-width:820px;}
+  .accent{color:var(--magenta);}
+  .tabs{display:flex;flex-wrap:wrap;gap:6px;margin:16px 0 14px;}
+  .tab{border:1px solid var(--line);background:var(--panel);color:var(--muted);padding:7px 12px;border-radius:8px;font-size:11.5px;cursor:pointer;letter-spacing:.3px;transition:.15s;white-space:nowrap;}
+  .tab:hover{color:var(--text);border-color:var(--cyan-dim);}
+  .tab.active{color:#04141a;background:var(--cyan);border-color:var(--cyan);box-shadow:0 0 16px var(--cyan-dim);font-weight:700;}
+  .stage{border:1px solid var(--line);border-radius:14px;background:var(--panel);padding:14px 14px 16px;}
+  .stage-head{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:6px;}
+  .ftitle{font-size:15px;color:#fff;font-weight:700;}
+  .fsub{color:var(--muted);font-size:11.5px;margin-top:2px;max-width:640px;line-height:1.5;}
+  .controls{display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
+  .btn{border:1px solid var(--line);background:#0c1420;color:var(--text);padding:7px 11px;border-radius:8px;cursor:pointer;font-family:var(--mono);font-size:12px;transition:.15s;}
+  .btn:hover{border-color:var(--cyan);color:var(--cyan);}
+  .btn.play{border-color:var(--green-dim);color:var(--green);}
+  .btn.play:hover{border-color:var(--green);box-shadow:0 0 12px var(--green-dim);}
+  .stepcount{color:var(--muted);font-size:11px;min-width:46px;text-align:center;}
+  .stepnav{display:flex;gap:5px;flex-wrap:wrap;margin:8px 0;}
+  .stepdot{width:24px;height:22px;border-radius:6px;border:1px solid var(--line);background:#0b111c;color:var(--muted);font-size:10px;display:flex;align-items:center;justify-content:center;cursor:pointer;}
+  .stepdot:hover{border-color:var(--cyan-dim);color:var(--text);}
+  .stepdot.on{background:var(--cyan);color:#04141a;border-color:var(--cyan);font-weight:700;}
+  .svgbox{width:100%;border-radius:10px;background:radial-gradient(600px 300px at 80% 10%, #10182600, #05070b 70%);border:1px solid #10182a;}
+  .caption{margin:10px 0 4px;padding:11px 14px;border-radius:10px;background:#0a121ecc;border:1px solid var(--cyan-dim);min-height:20px;font-size:12.5px;line-height:1.55;color:#eaf3ff;}
+  .caption b{color:var(--cyan);}
+  .deep{margin:8px 0 4px;padding:12px 14px;border-radius:10px;background:#0c0f18;border:1px solid #2a3346;font-size:12px;line-height:1.7;color:#c7d3e6;}
+  .deep .tag{color:var(--magenta);font-weight:700;letter-spacing:1px;font-size:10px;text-transform:uppercase;display:block;margin-bottom:5px;}
+  .deep code{background:#151d2c;padding:1px 5px;border-radius:4px;color:var(--amber);}
+  .qa{margin:8px 0 4px;padding:12px 14px;border-radius:10px;background:#0a1710;border:1px solid var(--green-dim);font-size:12px;line-height:1.6;}
+  .qa .q{color:var(--green);font-weight:700;}
+  .qa .a{color:#d7e7dc;margin-top:4px;}
+  .legend{display:flex;gap:16px;flex-wrap:wrap;margin:10px 2px 4px;font-size:10.5px;color:var(--muted);}
+  .lg{display:inline-flex;align-items:center;gap:6px;}
+  .dot{width:9px;height:9px;border-radius:2px;display:inline-block;}
+  .traps{margin-top:12px;padding:12px 14px;border-radius:10px;border:1px dashed var(--amber-dim);}
+  .traps h4{margin:0 0 6px;color:var(--amber);font-size:11.5px;letter-spacing:1px;text-transform:uppercase;}
+  .traps ul{margin:0;padding-left:18px;font-size:12px;line-height:1.7;color:#e9dcc0;}
+  .traps li b{color:#fff;}
+  .cheat{margin-top:12px;padding:12px 14px;border-radius:10px;border:1px solid #2a3850;background:#080d15;}
+  .cheat h4{margin:0 0 8px;color:var(--cyan);font-size:11.5px;letter-spacing:1px;text-transform:uppercase;}
+  .cheat pre{margin:0;white-space:pre-wrap;font-size:11.5px;line-height:1.75;color:#9fe6c8;}
+  .cheat .c1{color:#6b7c99;}
+  footer{margin-top:16px;color:var(--muted);font-size:10.5px;text-align:center;}
+  text{font-family:var(--mono);}
+  .nlabel{font-size:12.5px;font-weight:700;fill:#f5f9ff;}
+  .nsub{font-size:9.5px;fill:#9fb0c8;}
+  .edge{fill:none;stroke:#2a3850;stroke-width:1.6;}
+  .edge.on{stroke:var(--cyan);stroke-width:2.6;filter:drop-shadow(0 0 6px var(--cyan));}
+  .node-rect{stroke-width:1.4;transition:filter .2s;}
+  .node.on .node-rect{filter:drop-shadow(0 0 10px currentColor);stroke-width:2.4;}
+  .pulse{opacity:0;}
+
+  .progress-wrap{margin:0 0 14px;padding:10px 14px;border-radius:10px;background:var(--panel);border:1px solid var(--line);}
+  .progress-label{display:flex;justify-content:space-between;margin-bottom:6px;font-size:10.5px;color:var(--muted);}
+  .progress-bar{height:6px;border-radius:3px;background:#0b111c;overflow:hidden;}
+  .progress-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--cyan),var(--green));transition:width .4s ease;width:0%;}
+
+  .search-wrap{position:relative;margin:0 0 14px;}
+  .search-input{width:100%;padding:8px 12px 8px 34px;border:1px solid var(--line);border-radius:8px;background:var(--panel);color:var(--text);font-family:var(--mono);font-size:12px;outline:none;transition:.15s;}
+  .search-input:focus{border-color:var(--cyan);box-shadow:0 0 0 2px var(--cyan-dim);}
+  .search-input::placeholder{color:var(--muted);}
+  .search-icon{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:13px;pointer-events:none;}
+
+  .controls-right{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+  .speed-wrap{display:flex;align-items:center;gap:5px;}
+  .speed-label{color:var(--muted);font-size:10px;letter-spacing:.5px;}
+  .speed-slider{width:60px;height:4px;-webkit-appearance:none;appearance:none;background:var(--line);border-radius:2px;outline:none;cursor:pointer;}
+  .speed-slider::-webkit-slider-thumb{-webkit-appearance:none;width:12px;height:12px;border-radius:50%;background:var(--cyan);border:none;cursor:pointer;transition:.15s;}
+  .speed-slider::-webkit-slider-thumb:hover{transform:scale(1.3);box-shadow:0 0 8px var(--cyan-dim);}
+  .speed-val{color:var(--cyan);font-size:11px;min-width:28px;text-align:center;}
+
+  .btn-help{border:1px solid var(--line);background:#0c1420;color:var(--muted);padding:7px 11px;border-radius:8px;cursor:pointer;font-family:var(--mono);font-size:12px;transition:.15s;}
+  .btn-help:hover{border-color:var(--amber);color:var(--amber);}
+
+  .copy-btn{border:1px solid var(--line);background:#0b111c;color:var(--muted);padding:3px 8px;border-radius:5px;cursor:pointer;font-family:var(--mono);font-size:10px;transition:.15s;margin-left:auto;flex-shrink:0;}
+  .copy-btn:hover{border-color:var(--green);color:var(--green);}
+  .copy-btn.copied{border-color:var(--green);color:var(--green);background:#39ff8810;}
+
+  .cheat-header{display:flex;align-items:center;gap:8px;margin-bottom:8px;}
+  .cheat-header h4{margin:0;color:var(--cyan);font-size:11.5px;letter-spacing:1px;text-transform:uppercase;}
+
+  .collapse-toggle{cursor:pointer;user-select:none;}
+  .collapse-toggle::after{content:' ▾';font-size:10px;color:var(--muted);transition:transform .2s;display:inline-block;}
+  .collapse-toggle.collapsed::after{transform:rotate(-90deg);}
+  .collapsible-body{overflow:hidden;transition:max-height .3s ease,opacity .2s ease;max-height:2000px;opacity:1;}
+  .collapsible-body.collapsed{max-height:0!important;opacity:0;}
+
+  .kbd{display:inline-block;padding:2px 6px;border:1px solid var(--line);border-radius:4px;background:#0b111c;color:var(--text);font-family:var(--mono);font-size:10px;line-height:1.4;vertical-align:middle;}
+
+  .help-overlay{position:fixed;inset:0;background:#070a10e6;z-index:1000;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .2s;}
+  .help-overlay.show{opacity:1;pointer-events:auto;}
+  .help-card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:24px 28px;max-width:460px;width:90%;box-shadow:0 20px 60px #0008;}
+  .help-card h3{margin:0 0 14px;color:#fff;font-size:16px;}
+  .help-card .row{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid #1a2233;font-size:12px;color:var(--text);}
+  .help-card .row:last-child{border-bottom:none;}
+  .help-card .close-btn{position:absolute;top:12px;right:16px;background:none;border:none;color:var(--muted);font-size:18px;cursor:pointer;transition:.15s;}
+  .help-card .close-btn:hover{color:#fff;}
+
+  .bookmark-btn{border:1px solid var(--line);background:#0c1420;color:var(--muted);padding:5px 10px;border-radius:8px;cursor:pointer;font-size:12px;transition:.15s;line-height:1;}
+  .bookmark-btn:hover{border-color:var(--amber);color:var(--amber);}
+  .bookmark-btn.active{border-color:var(--amber);color:var(--amber);background:#ffb70310;}
+
+  .tab .bk{display:inline-block;margin-left:4px;font-size:9px;opacity:0;transition:.15s;}
+  .tab:hover .bk,.tab.active .bk{opacity:.7;}
+  .tab.bookmarked .bk{opacity:1;}
+
+  .node-rect{stroke-width:1.4;transition:filter .25s,stroke-width .25s;}
+  .node.on .node-rect{stroke-width:2.2;}
+  @keyframes nodeGlow{0%,100%{filter:drop-shadow(0 0 6px currentColor);}50%{filter:drop-shadow(0 0 14px currentColor);}}
+  .node.on .node-rect{animation:nodeGlow 1.6s ease-in-out infinite;}
+
+  .edge{fill:none;stroke:#2a3850;stroke-width:1.6;transition:stroke .25s,stroke-width .25s;}
+  .edge.on{stroke:var(--cyan);stroke-width:2.6;filter:drop-shadow(0 0 6px var(--cyan));}
+
+  @keyframes pulseDot{0%,100%{r:5;opacity:1;}50%{r:8;opacity:.7;}}
+  .stepdot.on{background:var(--cyan);color:#04141a;border-color:var(--cyan);font-weight:700;animation:none;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="hero">
+    <div class="eyebrow">Cyberabad Control Deck // AWS EKS // Deep-Dive Build</div>
+    <h1>EKS Complete Flow — <span class="accent">Deep Dive Simulator</span></h1>
+    <div class="sub">16 flows — control plane through image supply chain, secrets, node failure/Spot, cluster upgrades &amp; observability. Every step has a technical deep-dive + a likely follow-up question, plus a real command cheatsheet per flow. Narrate it, don't just watch it.</div>
+  </div>
+
+  <div class="progress-wrap" id="progressWrap">
+    <div class="progress-label"><span id="progressLabel">Flow 1 / 15</span><span id="progressPct">0%</span></div>
+    <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+  </div>
+
+  <div class="search-wrap">
+    <span class="search-icon">⌕</span>
+    <input type="text" class="search-input" id="searchInput" placeholder="Search flows... (e.g. 'IRSA', 'Karpenter', 'etcd')" />
+  </div>
+
+  <div class="tabs" id="tabs"></div>
+
+  <div class="stage">
+    <div class="stage-head">
+      <div>
+        <div class="ftitle" id="ftitle"></div>
+        <div class="fsub" id="fsub"></div>
+      </div>
+      <div class="controls">
+        <button class="btn" id="prevBtn">⏮ Prev</button>
+        <button class="btn play" id="playBtn">▶ Play</button>
+        <button class="btn" id="nextBtn">Next ⏭</button>
+        <button class="btn" id="resetBtn">↺ Reset</button>
+        <span class="stepcount" id="stepcount">0/0</span>
+      </div>
+    </div>
+
+    <div class="stepnav" id="stepnav"></div>
+
+    <svg id="svg" class="svgbox" viewBox="0 0 1200 700" xmlns="http://www.w3.org/2000/svg"></svg>
+
+    <div class="legend">
+      <span class="lg"><span class="dot" style="background:#39ff88"></span>Client / External</span>
+      <span class="lg"><span class="dot" style="background:#22d3ee"></span>Kubernetes Control-plane object</span>
+      <span class="lg"><span class="dot" style="background:#ff2e88"></span>Data-plane (node / pod / kubelet)</span>
+      <span class="lg"><span class="dot" style="background:#ffb703"></span>AWS-managed service / API</span>
+    </div>
+
+    <div class="caption" id="caption">Press ▶ Play to start the simulation.</div>
+    <div class="deep" id="deep" style="display:none"><span class="tag">Deep Dive</span><span id="deeptext"></span></div>
+    <div class="qa" id="qa" style="display:none"><div class="q" id="qtext"></div><div class="a" id="atext"></div></div>
+
+    <div class="traps">
+      <h4>⚠ Interview Traps for this flow</h4>
+      <ul id="traps"></ul>
+    </div>
+
+    <div class="cheat">
+      <h4>▣ Command Cheatsheet</h4>
+      <pre id="cheatpre"></pre>
+    </div>
+  </div>
+  <footer>Built for Prem's L5/L6 grind · not affiliated with AWS · redraw every flow on a whiteboard from memory until you don't need this crutch</footer>
+</div>
+
+<script>
+function cx(n){return n.x+n.w/2;}
+function cy(n){return n.y+n.h/2;}
+function edgePath(a,b){
+  const ax=cx(a),ay=cy(a),bx=cx(b),by=cy(b);
+  let x1,y1,x2,y2;
+  if(Math.abs(bx-ax) >= Math.abs(by-ay)){
+    if(bx>=ax){x1=a.x+a.w;y1=ay;x2=b.x;y2=by;} else {x1=a.x;y1=ay;x2=b.x+b.w;y2=by;}
+  } else {
+    if(by>=ay){x1=ax;y1=a.y+a.h;x2=bx;y2=b.y;} else {x1=ax;y1=a.y;x2=bx;y2=b.y+b.h;}
+  }
+  const mx=(x1+x2)/2, my=(y1+y2)/2;
+  return `M ${x1} ${y1} Q ${mx} ${my} ${x2} ${y2}`;
+}
+const COLORS={client:'#39ff88',ctrl:'#22d3ee',data:'#ff2e88',aws:'#ffb703'};
+
+const FLOWS = [
+
+{ id:'control', name:'Control Plane', title:'EKS Control Plane (AWS-Managed)',
+  sub:'API server, etcd, scheduler & controller-manager run in AWS-owned VPC across ≥2 AZs. You never SSH into these.',
+  nodes:[
+    {id:'kubectl',x:40,y:300,w:150,h:70,cat:'client',label:'kubectl / IaC',sub:'user request'},
+    {id:'api',x:330,y:100,w:170,h:70,cat:'ctrl',label:'kube-apiserver',sub:'auth + validate'},
+    {id:'etcd',x:330,y:300,w:170,h:70,cat:'ctrl',label:'etcd',sub:'source of truth'},
+    {id:'sched',x:330,y:500,w:170,h:70,cat:'ctrl',label:'kube-scheduler',sub:'bind decisions'},
+    {id:'cm',x:640,y:100,w:190,h:70,cat:'ctrl',label:'controller-manager',sub:'reconcile loops'},
+    {id:'ccm',x:640,y:300,w:190,h:70,cat:'aws',label:'cloud-controller-mgr',sub:'AWS-specific ctrls'},
+    {id:'awsapi',x:960,y:300,w:200,h:70,cat:'aws',label:'AWS APIs',sub:'EC2 / ELB / IAM'},
+  ],
+  edges:[
+    {id:'e1',from:'kubectl',to:'api'},{id:'e2',from:'api',to:'etcd'},{id:'e3',from:'api',to:'sched'},
+    {id:'e4',from:'api',to:'cm'},{id:'e5',from:'cm',to:'ccm'},{id:'e6',from:'ccm',to:'awsapi'},
+  ],
+  steps:[
+    {edge:'e1',nodes:['kubectl','api'],cap:'<b>1.</b> kubectl sends the manifest over HTTPS (mTLS) to the API server — the only front door into the cluster.',
+      detail:'Auth happens in three layers, in order: <code>authentication</code> (who are you — IAM via aws-iam-authenticator/EKS access entries, or x509 cert), <code>authorization</code> (RBAC — can you do this verb on this resource), then <code>admission control</code> (mutating then validating webhooks). All three run before anything touches etcd.',
+      qa:{q:'Q: How does IAM map to Kubernetes RBAC in EKS?',a:'A: The aws-auth ConfigMap (or newer EKS Access Entries API) maps an IAM principal (user/role) to a Kubernetes username/group. RBAC RoleBindings then bind that group to actual permissions — IAM only answers "who," RBAC answers "what."'}},
+    {edge:'e2',nodes:['api','etcd'],cap:'<b>2.</b> API server persists desired state as a versioned key in <b>etcd</b> under a path like <code>/registry/pods/default/mypod</code>.',
+      detail:'etcd is a distributed key-value store using the <b>Raft</b> consensus algorithm — needs a quorum (typically 3 or 5 nodes) to accept writes. EKS runs this for you across AZs; you cannot query it directly, only through the API server. Every object write bumps a <code>resourceVersion</code> used for optimistic concurrency control.',
+      qa:{q:'Q: What happens if etcd loses quorum?',a:'A: The cluster becomes read-only at best — no new writes (deployments, scaling) succeed, though already-running pods keep running since kubelet caches its last-known state. This is exactly why etcd health is the top control-plane SLA metric.'}},
+    {edge:'e3',nodes:['api','sched'],cap:'<b>3.</b> kube-scheduler watches the API server (via a long-poll <code>watch</code>, not polling) for Pods with an empty <code>spec.nodeName</code>.',
+      detail:'Scheduling runs two phases per pod: <b>filter</b> (predicates — taints/tolerations, nodeAffinity, resource requests, PodDisruptionBudget) eliminate impossible nodes, then <b>score</b> (priorities — spread pods across AZs, prefer nodes with least fragmented resources) ranks survivors. Highest score wins.',
+      qa:{q:'Q: Can you have more than one scheduler?',a:'A: Yes — custom schedulers can run alongside the default via <code>spec.schedulerName</code>, useful for batch/ML workloads needing gang-scheduling (e.g. Volcano) that the default scheduler doesn\'t support natively.'}},
+    {edge:'e4',nodes:['api','cm'],cap:'<b>4.</b> controller-manager runs dozens of independent reconciliation loops (Deployment, ReplicaSet, Node, Job controllers) inside one binary.',
+      detail:'Each controller follows the same pattern: <code>observe → diff (desired vs actual) → act</code>, repeated forever. E.g. the Deployment controller only manages ReplicaSets; it never touches Pods directly — that\'s the ReplicaSet controller\'s job. This layering is why you can kubectl delete a pod under a Deployment and watch it self-heal in under a second.',
+      qa:{q:'Q: Why does Kubernetes split Deployment → ReplicaSet → Pod into three objects instead of one?',a:'A: Separation of concerns enables rolling updates — a Deployment can own multiple ReplicaSets (old + new revision) simultaneously during a rollout, which a flat single-object model couldn\'t represent.'}},
+    {edge:'e5',nodes:['cm','ccm'],cap:'<b>5.</b> cloud-controller-manager runs AWS-specific controllers split out of the generic controller-manager: node lifecycle, route controller, service controller.',
+      detail:'This split (in-tree vs out-of-tree cloud providers) was a deliberate Kubernetes upstream decision so AWS-specific code isn\'t compiled into core Kubernetes — it ships and versions independently, which is also why CCM version compatibility with your cluster version matters.',
+      qa:{q:'Q: What specifically does the node controller inside CCM do?',a:'A: It checks with AWS whether an EC2 instance backing a Node object still exists; if EC2 says terminated but Kubernetes still shows the Node, CCM deletes the stale Node object so pods get rescheduled elsewhere instead of waiting on a dead host.'}},
+    {edge:'e6',nodes:['ccm','awsapi'],cap:'<b>6.</b> CCM calls real AWS APIs — EC2 DescribeInstances, ELB CreateLoadBalancer, IAM — this is the seam between Kubernetes objects and real cloud resources.',
+      detail:'AWS publishes 99.95% SLA on the EKS control plane (API server availability) when spanning ≥2 AZs. Note this SLA covers control-plane API availability, not your workloads\' uptime — your data plane HA is entirely on you.',
+      qa:{q:'Q: If the control plane SLA is 99.95%, why did my app still go down?',a:'A: Because app uptime depends on your data-plane design — pod replica count, PodDisruptionBudgets, multi-AZ node spread, readiness probes. The control plane staying up doesn\'t stop your own single-replica deployment from going down with the node it\'s on.'}},
+  ],
+  traps:[
+    'You <b>cannot</b> access etcd or the API server VMs directly in EKS — only via kubeconfig/API. Don\'t say "SSH into master" in an interview.',
+    'EKS runs control plane across <b>multiple AZs</b> automatically — you don\'t configure HA for it, only for your data plane.',
+    'Know the split: <b>controller-manager</b> = generic k8s logic, <b>cloud-controller-manager</b> = AWS-specific glue, versioned separately.',
+    'etcd uses <b>Raft</b>, needs quorum (⌈n/2⌉+1) — a 3-node etcd tolerates 1 failure, 5-node tolerates 2. This maps directly to "why odd numbers" questions.',
+  ],
+  cheat:[
+    'aws eks update-kubeconfig --name my-cluster --region ap-south-1',
+    'kubectl get componentstatuses          # legacy, often deprecated on EKS',
+    'kubectl get --raw /healthz',
+    'kubectl auth can-i create deployments --as=system:serviceaccount:default:myapp',
+    'aws eks describe-cluster --name my-cluster --query "cluster.status"',
+  ]},
+
+{ id:'nodes', name:'Node Groups', title:'Data Plane: Managed / Self-Managed / Fargate',
+  sub:'Three ways to run compute in EKS — trade-off is control vs operational burden.',
+  nodes:[
+    {id:'cp',x:40,y:300,w:160,h:70,cat:'ctrl',label:'Control Plane',sub:'schedules pods'},
+    {id:'mng',x:400,y:80,w:200,h:70,cat:'aws',label:'Managed Node Group',sub:'AWS-owned ASG+AMI'},
+    {id:'self',x:400,y:300,w:200,h:70,cat:'data',label:'Self-Managed Nodes',sub:'you own ASG+AMI'},
+    {id:'fg',x:400,y:520,w:200,h:70,cat:'aws',label:'Fargate Profile',sub:'serverless per-pod'},
+    {id:'k1',x:800,y:80,w:170,h:70,cat:'data',label:'EC2 + kubelet',sub:'patched by AWS'},
+    {id:'k2',x:800,y:300,w:170,h:70,cat:'data',label:'EC2 + kubelet',sub:'you patch AMI/CVE'},
+    {id:'k3',x:800,y:520,w:170,h:70,cat:'data',label:'Firecracker microVM',sub:'1 pod = 1 microVM'},
+  ],
+  edges:[
+    {id:'e1',from:'cp',to:'mng'},{id:'e2',from:'cp',to:'self'},{id:'e3',from:'cp',to:'fg'},
+    {id:'e4',from:'mng',to:'k1'},{id:'e5',from:'self',to:'k2'},{id:'e6',from:'fg',to:'k3'},
+  ],
+  steps:[
+    {edge:'e1',nodes:['cp','mng'],cap:'<b>1.</b> Managed Node Groups — you pick instance type/size, AWS manages the ASG lifecycle, AMI patching, and graceful drain during updates.',
+      detail:'A Managed Node Group update does a rolling replace: it launches new instances with the new AMI/launch template, cordons + drains old ones respecting PodDisruptionBudgets, one batch at a time. If your PDB is too strict (e.g. minAvailable=100%), the update can stall indefinitely.',
+      qa:{q:'Q: What happens if a Managed Node Group update can\'t drain a node because of a PDB?',a:'A: The update pauses on that node — AWS won\'t force-evict past your PDB by default, so it can hang the whole rollout. You either fix the PDB, or accept AWS will eventually force it after a timeout depending on config.'}},
+    {edge:'e4',nodes:['mng','k1'],cap:'<b>2.</b> Nodes register as EC2 instances running kubelet; the AWS-provided AMI is kept current via a managed launch template.',
+      detail:'Under the hood this is still a standard EC2 Auto Scaling Group — Managed Node Groups are an abstraction on top of ASG + Launch Template + bootstrap script, not a fundamentally different compute primitive.',
+      qa:{q:'Q: Is a Managed Node Group a different underlying resource than self-managed?',a:'A: No — same EC2 + ASG underneath. The difference is purely operational: who owns the lifecycle automation (AMI builds, drain-and-replace orchestration, scaling hooks).'}},
+    {edge:'e2',nodes:['cp','self'],cap:'<b>3.</b> Self-Managed Nodes — full control over AMI, bootstrap userdata, and ASG config, but you own patching, CVEs, and lifecycle scripts yourself.',
+      detail:'Common reason to go self-managed: custom AMI requirements (specific kernel modules, GPU drivers with pinned versions, compliance-hardened base images) that the AWS-managed AMI pipeline doesn\'t support, or needing non-standard bootstrap logic beyond what launch templates expose.',
+      qa:{q:'Q: When would you choose self-managed nodes over managed?',a:'A: When you need a custom AMI (e.g. specific GPU driver version for ML workloads, CIS-hardened base image for compliance) or non-standard node bootstrap logic that the managed node group launch template can\'t express.'}},
+    {edge:'e5',nodes:['self','k2'],cap:'<b>4.</b> Same kubelet/EC2 model, zero AWS abstraction — max flexibility, but you\'re on the hook for the entire patch cadence.',
+      detail:'You register these with the cluster via the <code>aws-auth</code> ConfigMap / access entries mapping the node IAM role to <code>system:bootstrappers</code> and <code>system:nodes</code> groups — miss this and nodes join EC2 fine but never actually join the Kubernetes cluster.',
+      qa:{q:'Q: A self-managed EC2 instance is running but never shows up in kubectl get nodes — why?',a:'A: Usually the node\'s IAM instance role isn\'t mapped in aws-auth/access entries, so it can\'t authenticate to the API server as a node — check the ConfigMap or access entry mapping first.'}},
+    {edge:'e3',nodes:['cp','fg'],cap:'<b>5.</b> Fargate profile matches pods by namespace + optional labels — no EC2 node to provision or manage at all.',
+      detail:'Fargate pricing is per vCPU-second and per GB-memory-second at the pod level, rounded up to the nearest supported size combination — you\'re not paying for a whole idle node, but you also can\'t bin-pack multiple small pods onto shared spare capacity like you can on EC2.',
+      qa:{q:'Q: What workloads are a bad fit for Fargate?',a:'A: Anything needing DaemonSets, privileged containers, hostNetwork/hostPath, or very bursty many-small-pods patterns where EC2 bin-packing would be cheaper — Fargate\'s per-pod isolation has a fixed overhead that adds up at high pod density.'}},
+    {edge:'e6',nodes:['fg','k3'],cap:'<b>6.</b> Each Fargate pod gets its own Firecracker microVM — the same lightweight VM tech behind AWS Lambda — for strong kernel-level isolation.',
+      detail:'Because each pod is its own microVM, there\'s no shared kernel between pods on "the same node" the way there is on EC2 — this is why Fargate can\'t support privileged/hostPath workloads: there\'s no persistent host filesystem to reach into.',
+      qa:{q:'Q: Why can\'t Fargate pods use hostPath volumes?',a:'A: Because there is no long-lived, shared host — each pod is its own ephemeral Firecracker microVM with no meaningful "host filesystem" to mount from.'}},
+  ],
+  traps:[
+    'Fargate <b>cannot</b> run DaemonSets — so no node-level log agents; you sidecar instead (e.g. Fluent Bit sidecar container per pod).',
+    'Managed node groups still let CVEs sit until you trigger an <b>update</b> — AWS builds the AMI, you decide when to roll it out.',
+    'Cost angle: Fargate = pay per pod vCPU/mem-second (rounded to fixed sizes), EC2 = pay per instance regardless of bin-packing efficiency.',
+    'Self-managed nodes need correct <b>aws-auth</b>/access-entry mapping or they\'ll join EC2 but never appear as a Kubernetes Node — a real production incident pattern.',
+  ],
+  cheat:[
+    'eksctl create nodegroup --cluster my-cluster --managed --node-type m5.large',
+    'kubectl get nodes -o wide',
+    'aws eks describe-nodegroup --cluster-name my-cluster --nodegroup-name ng-1',
+    'kubectl get fargateprofile -A   # (via aws eks list-fargate-profiles, not kubectl directly)',
+    'aws eks list-fargate-profiles --cluster-name my-cluster',
+  ]},
+
+{ id:'cni', name:'VPC CNI', title:'Pod Networking — Amazon VPC CNI',
+  sub:'Pods get real VPC IPs (no overlay) via secondary IPs on node ENIs. This is the #1 "why is my pod stuck Pending" cause.',
+  nodes:[
+    {id:'node',x:60,y:280,w:180,h:100,cat:'data',label:'EC2 Node',sub:'primary ENI'},
+    {id:'ipamd',x:340,y:280,w:190,h:100,cat:'data',label:'aws-node (ipamd)',sub:'DaemonSet agent'},
+    {id:'eni2',x:640,y:120,w:170,h:70,cat:'aws',label:'Secondary ENI',sub:'attached via EC2 API'},
+    {id:'pool',x:640,y:440,w:170,h:70,cat:'aws',label:'Warm IP Pool',sub:'pre-allocated /VPC subnet'},
+    {id:'pod1',x:960,y:60,w:170,h:60,cat:'data',label:'Pod A',sub:'real VPC IP'},
+    {id:'pod2',x:960,y:200,w:170,h:60,cat:'data',label:'Pod B',sub:'real VPC IP'},
+    {id:'pod3',x:960,y:440,w:170,h:60,cat:'data',label:'Pod C',sub:'real VPC IP'},
+  ],
+  edges:[
+    {id:'e1',from:'node',to:'ipamd'},{id:'e2',from:'ipamd',to:'eni2'},{id:'e3',from:'ipamd',to:'pool'},
+    {id:'e4',from:'eni2',to:'pod1'},{id:'e5',from:'eni2',to:'pod2'},{id:'e6',from:'pool',to:'pod3'},
+  ],
+  steps:[
+    {edge:'e1',nodes:['node','ipamd'],cap:'<b>1.</b> Every node runs the <code>aws-node</code> DaemonSet (ipamd) that manages ENIs and IPs for that node — installed as an EKS add-on.',
+      detail:'ipamd runs a local gRPC server on the node that the CNI plugin (invoked by containerd/kubelet at pod-create time) calls to request an IP — this is why a crashed aws-node pod can strand new pod creation on that node even if the node itself is healthy.',
+      qa:{q:'Q: A node is Ready but new pods on it stay Pending / ContainerCreating forever — what do you check?',a:'A: Check the aws-node (ipamd) pod\'s logs on that node first — if it\'s crash-looping or out of IPs, CNI can\'t assign an address and the pod sandbox can\'t be created.'}},
+    {edge:'e2',nodes:['ipamd','eni2'],cap:'<b>2.</b> ipamd attaches secondary ENIs via the EC2 API, up to the ENI limit for that instance type (e.g. m5.large supports 3 ENIs).',
+      detail:'ENI limits and IPs-per-ENI are both determined by instance type and published in AWS\'s ENI limits table — this is a hard ceiling, not a soft quota, and directly caps max pod density unless you change strategy.',
+      qa:{q:'Q: Why does a larger instance type support more pods, even with the same vCPU/mem headroom?',a:'A: Larger instance types get more ENI slots and more IPs per ENI — pod density on VPC CNI is bounded by network interface limits as much as by CPU/memory requests.'}},
+    {edge:'e3',nodes:['ipamd','pool'],cap:'<b>3.</b> ipamd pre-allocates a "warm pool" of secondary IPs (and optionally warm ENIs) so pod scheduling doesn\'t block on a live AWS API call per pod.',
+      detail:'Tunable via <code>WARM_IP_TARGET</code> / <code>WARM_ENI_TARGET</code> env vars on the aws-node DaemonSet — too low and you get scheduling latency spikes during scale-out, too high and you waste VPC IP space across the fleet.',
+      qa:{q:'Q: Pods take an unusually long time to get an IP during a scale-out event — what\'s a likely fix?',a:'A: Increase WARM_IP_TARGET / WARM_ENI_TARGET on the aws-node DaemonSet so ipamd keeps more spare IPs pre-allocated instead of calling the EC2 API synchronously per pod.'}},
+    {edge:'e4',nodes:['eni2','pod1'],cap:'<b>4.</b> When a Pod is scheduled, it gets a secondary IP straight from the VPC subnet CIDR — same address space as EC2 instances, not an overlay network.',
+      detail:'This is fundamentally different from Calico/Flannel-style overlay CNIs, which give pods addresses from a separate overlay CIDR and require VXLAN/IPIP encapsulation for pod-to-pod traffic across nodes.',
+      qa:{q:'Q: Compare VPC CNI to an overlay CNI like Calico in terms of network performance.',a:'A: VPC CNI has near-native performance since packets are routed directly by the VPC with no encapsulation overhead; overlay CNIs add per-packet encapsulation (VXLAN headers) costing some throughput/latency, but they aren\'t constrained by VPC IP address space.'}},
+    {edge:'e5',nodes:['eni2','pod2'],cap:'<b>5.</b> Because pods sit on real VPC IPs, VPC-native features apply directly: security groups per pod, VPC Flow Logs capture pod traffic, Transit Gateway routing works unmodified.',
+      detail:'This enables <code>SecurityGroupPolicy</code> — a CRD that lets you attach specific EC2 security groups to specific pods (matched by label), giving you network segmentation at the pod level without a service mesh.',
+      qa:{q:'Q: How do you restrict network access for one specific pod without deploying a service mesh?',a:'A: SecurityGroupPolicy CRD (VPC CNI security groups for pods) — attach an EC2 security group directly to pods matching a label selector, enforced at the ENI level.'}},
+    {edge:'e6',nodes:['pool','pod3'],cap:'<b>6.</b> Once the warm pool runs low, ipamd allocates more IPs (or ENIs) proactively — but small instance types exhaust their ENI/IP budget fast under bursty scheduling.',
+      detail:'The standard production fix for IP exhaustion without upsizing instances is enabling <b>prefix delegation</b> (<code>ENABLE_PREFIX_DELEGATION=true</code>), which assigns a /28 IPv4 prefix (16 IPs) per ENI slot instead of one IP at a time — multiplying max pods per node roughly by an order of magnitude.',
+      qa:{q:'Q: Your t3.medium nodes keep hitting "Pending: no available IP addresses" under load — two possible fixes?',a:'A: (1) Enable prefix delegation to get 16 IPs per ENI slot instead of 1, or (2) move to a larger instance type with more ENI slots — prefix delegation is usually the cheaper fix since it needs no instance change.'}},
+  ],
+  traps:[
+    '<b>IP exhaustion</b>: a t3.medium supports only 3 ENIs × 6 IPs = 18 pod IPs max — classic "Pending: no available IP" interview scenario.',
+    'Fix pattern: enable <b>prefix delegation</b> (assign /28 prefixes instead of single IPs per ENI) to multiply pod density per node.',
+    'Because pods use real VPC IPs, your <b>security groups</b> can apply per-pod (via SecurityGroupPolicy) — a VPC-CNI-only superpower most overlay CNIs can\'t match.',
+    'aws-node runs as a <b>DaemonSet</b> — if it crash-loops, that single node silently can\'t schedule new pods even though kubectl shows the node Ready.',
+  ],
+  cheat:[
+    'kubectl -n kube-system get ds aws-node -o wide',
+    'kubectl -n kube-system logs -l k8s-app=aws-node --tail=100',
+    'kubectl -n kube-system set env ds aws-node ENABLE_PREFIX_DELEGATION=true',
+    'aws ec2 describe-instance-types --instance-types m5.large --query "InstanceTypes[].NetworkInfo"',
+    'kubectl describe node <node> | grep -A5 Allocatable',
+  ]},
+
+{ id:'schedule', name:'Pod Scheduling', title:'End-to-End: kubectl apply → Running Pod',
+  sub:'The full request lifecycle every interviewer expects you to narrate without hesitation.',
+  nodes:[
+    {id:'kubectl',x:20,y:300,w:150,h:70,cat:'client',label:'kubectl apply',sub:'Deployment yaml'},
+    {id:'api',x:230,y:300,w:160,h:70,cat:'ctrl',label:'API Server',sub:'admission chain'},
+    {id:'etcd',x:230,y:520,w:160,h:70,cat:'ctrl',label:'etcd',sub:'pod: Pending'},
+    {id:'sched',x:460,y:120,w:170,h:70,cat:'ctrl',label:'Scheduler',sub:'filter → score → bind'},
+    {id:'kubelet',x:730,y:300,w:170,h:70,cat:'data',label:'kubelet',sub:'node agent'},
+    {id:'cri',x:970,y:180,w:170,h:70,cat:'data',label:'containerd (CRI)',sub:'pull + create'},
+    {id:'pause',x:970,y:420,w:170,h:70,cat:'data',label:'Pod Running',sub:'pause+app container'},
+  ],
+  edges:[
+    {id:'e1',from:'kubectl',to:'api'},{id:'e2',from:'api',to:'etcd'},{id:'e3',from:'api',to:'sched'},
+    {id:'e4',from:'sched',to:'api'},{id:'e5',from:'api',to:'kubelet'},{id:'e6',from:'kubelet',to:'cri'},{id:'e7',from:'cri',to:'pause'},
+  ],
+  steps:[
+    {edge:'e1',nodes:['kubectl','api'],cap:'<b>1.</b> kubectl apply hits the API server. It runs through <b>mutating</b> then <b>validating</b> admission webhooks in that fixed order.',
+      detail:'Mutating webhooks run first (e.g. Istio/App Mesh sidecar injection adds a container to the pod spec) because they can still change the object; validating webhooks run last as a final gate and cannot modify anything, only accept/reject.',
+      qa:{q:'Q: Why must mutating webhooks run before validating webhooks, never the reverse?',a:'A: Because validating webhooks are meant to check the final, fully-formed object — if mutation happened after validation, you could validate a spec that then gets silently changed, defeating the point of validation.'}},
+    {edge:'e2',nodes:['api','etcd'],cap:'<b>2.</b> Object persisted to etcd with <code>status.phase=Pending</code>, no <code>nodeName</code> assigned yet.',
+      detail:'This etcd write is the durability guarantee — if the API server crashes right after this, the object survives and scheduling resumes from here on restart; nothing about scheduling has happened yet, only "I intend for this pod to exist" is recorded.',
+      qa:{q:'Q: If the API server pod restarts right after a pod is created but before it\'s scheduled, is that pod lost?',a:'A: No — the pod spec already lives in etcd. Once a new API server instance comes up, the scheduler resumes its watch and picks up the still-unscheduled pod normally.'}},
+    {edge:'e3',nodes:['api','sched'],cap:'<b>3.</b> Scheduler\'s watch loop picks it up: <b>filter</b> nodes (taints/tolerations, resource requests, node affinity, PodDisruptionBudget) then <b>score</b> the survivors.',
+      detail:'Scoring plugins include things like <code>ImageLocality</code> (prefer a node that already has the image cached — faster startup) and <code>PodTopologySpread</code> (spread replicas across zones/nodes for HA) — these are pluggable via the scheduler framework, not hardcoded.',
+      qa:{q:'Q: Two nodes pass filtering with identical CPU/memory — what could still make the scheduler prefer one over the other?',a:'A: Scoring plugins like ImageLocality (image already cached there) or topology spread constraints trying to balance replicas across zones — filtering is binary pass/fail, scoring is what breaks ties.'}},
+    {edge:'e4',nodes:['sched','api'],cap:'<b>4.</b> Scheduler writes a <b>bind</b> back to the API server — this is the only direct mutation the scheduler makes.',
+      detail:'A "bind" is technically a subresource POST (<code>pods/binding</code>) that sets <code>spec.nodeName</code> — the scheduler never contacts kubelet or the node directly at any point in this process.',
+      qa:{q:'Q: Does the scheduler tell kubelet directly which pod to run?',a:'A: No — the scheduler only ever talks to the API server (via the bind subresource). kubelet independently watches the API server and reacts when it sees a pod bound to its own node name.'}},
+    {edge:'e5',nodes:['api','kubelet'],cap:'<b>5.</b> kubelet on the chosen node is watching the API server for pods bound to itself, and picks up the spec via its own watch.',
+      detail:'kubelet then runs admission checks locally too (e.g. re-verifying resource limits against actual node capacity, since scheduler\'s view can be milliseconds stale) before proceeding — this is why a pod can rarely still fail at the node with "OutOfPods" or similar even after passing scheduling.',
+      qa:{q:'Q: A pod was successfully scheduled to a node but then fails to start with a node-level resource error — how is that possible if the scheduler already checked resources?',a:'A: The scheduler\'s view of node capacity can be slightly stale under high churn; kubelet re-validates locally and can reject if actual free capacity changed between scoring and binding.'}},
+    {edge:'e6',nodes:['kubelet','cri'],cap:'<b>6.</b> kubelet talks to containerd over the CRI (Container Runtime Interface, a gRPC API) — pull image, create sandbox.',
+      detail:'CRI is what decoupled Kubernetes from Docker specifically — any runtime implementing CRI (containerd, CRI-O) works, which is why "Docker support removed" in later Kubernetes versions only removed the dockershim CRI-shim, not container support in general.',
+      qa:{q:'Q: Kubernetes "removed Docker support" — does that mean you can\'t run Docker-built images anymore?',a:'A: No — OCI images built by Docker run fine under containerd. What was removed is dockershim, the compatibility shim that let the Docker daemon itself act as a CRI runtime; containerd is now used directly instead.'}},
+    {edge:'e7',nodes:['cri','pause'],cap:'<b>7.</b> containerd creates the <b>pause container</b> first (holds the network namespace) then your app container(s) join that same namespace. Pod → Running.',
+      detail:'All containers in a pod share the pause container\'s network namespace (same IP, same loopback) and can optionally share other namespaces (PID with <code>shareProcessNamespace</code>) — the pause container itself does nothing but sleep, existing purely as a namespace anchor that outlives container restarts.',
+      qa:{q:'Q: Why does a pod keep the same IP address even if its main container crashes and restarts?',a:'A: Because the IP belongs to the pause container\'s network namespace, not the app container — restarting the app container just recreates it inside the same still-running network namespace.'}},
+  ],
+  traps:[
+    'Say "<b>bind</b>" specifically — many candidates skip it and say "scheduler tells kubelet directly," which is wrong; scheduler only talks to the API server.',
+    'The <b>pause container</b> question trips people up: it exists purely to hold the shared network namespace for all containers in the pod.',
+    'kubelet never talks to the scheduler — it only watches the API server. Direction of communication matters in L5/L6 rounds.',
+    '"Docker removed" ≠ "Docker images don\'t work" — only the dockershim CRI adapter was removed; OCI images run fine under containerd.',
+  ],
+  cheat:[
+    'kubectl get pod mypod -o jsonpath="{.spec.nodeName}"',
+    'kubectl get events --field-selector involvedObject.name=mypod --sort-by=.lastTimestamp',
+    'kubectl describe pod mypod   # shows scheduling + admission failures',
+    'crictl ps -a       # inspect containerd-level containers on a node',
+    'kubectl get pod mypod -o jsonpath="{.status.phase}"',
+  ]},
+
+{ id:'docker', name:'Docker Fundamentals', title:'From Dockerfile to a Running Container',
+  sub:'What actually happens under containerd/CRI — images, layers, namespaces, cgroups, and the OCI spec that makes it all portable.',
+  nodes:[
+    {id:'dockerfile',x:20,y:300,w:170,h:70,cat:'client',label:'Dockerfile',sub:'build instructions'},
+    {id:'daemon',x:250,y:300,w:170,h:70,cat:'data',label:'docker build',sub:'layer-by-layer'},
+    {id:'layers',x:250,y:100,w:190,h:70,cat:'data',label:'Image Layers',sub:'overlay2, read-only'},
+    {id:'registry',x:520,y:100,w:190,h:70,cat:'aws',label:'Registry (ECR)',sub:'push/pull by digest'},
+    {id:'runcall',x:520,y:300,w:190,h:70,cat:'data',label:'docker run',sub:'→ containerd → shim'},
+    {id:'runc',x:800,y:300,w:170,h:70,cat:'data',label:'runc',sub:'OCI runtime'},
+    {id:'ns',x:1010,y:170,w:180,h:70,cat:'ctrl',label:'Namespaces',sub:'PID/NET/MNT/UTS/IPC'},
+    {id:'cgroups',x:1010,y:420,w:180,h:70,cat:'ctrl',label:'cgroups',sub:'CPU/mem limits'},
+  ],
+  edges:[
+    {id:'e1',from:'dockerfile',to:'daemon'},{id:'e2',from:'daemon',to:'layers'},{id:'e3',from:'layers',to:'registry'},
+    {id:'e4',from:'daemon',to:'runcall'},{id:'e5',from:'runcall',to:'runc'},{id:'e6',from:'runc',to:'ns'},{id:'e7',from:'runc',to:'cgroups'},
+  ],
+  steps:[
+    {edge:'e1',nodes:['dockerfile','daemon'],cap:'<b>1.</b> <code>docker build</code> reads the Dockerfile top to bottom, executing <b>one instruction per layer</b> — each RUN/COPY/ADD produces a new, immutable filesystem diff.',
+      detail:'The build cache is keyed per-instruction: if a layer\'s instruction and its inputs are unchanged since the last build, Docker reuses the cached layer instead of re-executing it. This is exactly why Dockerfile instruction <b>order</b> matters — put rarely-changing steps (installing OS packages) before frequently-changing ones (COPY ing your source code), or every code change invalidates the cache from that line down.',
+      qa:{q:'Q: Your CI build takes 4 minutes even for a 1-line code change — likely cause?',a:'A: The Dockerfile probably COPYs source code before installing dependencies (e.g. npm install after COPY . .), so every code change invalidates the dependency-install layer\'s cache too, forcing a full reinstall. Reorder: copy dependency manifests + install first, copy source last.'}},
+    {edge:'e2',nodes:['daemon','layers'],cap:'<b>2.</b> Layers stack via a <b>union filesystem</b> (overlay2 driver) — each layer is read-only; at runtime Docker adds one thin writable layer on top for the running container.',
+      detail:'This is why "the container filesystem" feels like one coherent tree even though it\'s actually N stacked read-only diffs plus one writable layer — and why deleting a file in a container doesn\'t shrink the image: it adds a "whiteout" marker in the writable layer hiding the file from lower layers, the underlying bytes are still there in the image.',
+      qa:{q:'Q: I deleted a large file inside a running container with rm — why didn\'t the image get smaller?',a:'A: The file lives in a lower read-only layer; rm only adds a whiteout marker in the top writable layer that hides it from view. The image itself (all its layers) is unchanged — you\'d need a multi-stage build or squash to actually remove the bytes.'}},
+    {edge:'e3',nodes:['layers','registry'],cap:'<b>3.</b> <code>docker push</code> uploads each layer to the registry (e.g. ECR) by <b>content-addressable digest</b> (SHA256) — layers already present in the registry are skipped entirely.',
+      detail:'This digest-based dedup works <b>across images</b>, not just across pushes of the same image — if two completely different images share a base layer (e.g. both FROM the same python:3.11-slim), that shared layer is stored and transferred only once. This is also why multi-stage builds and small base images (alpine, distroless) matter so much for both storage cost and pull latency at scale.',
+      qa:{q:'Q: Why do two unrelated microservices both using FROM node:20-alpine pull so fast the second time?',a:'A: The base image layers are content-addressed by digest — once node:20-alpine\'s layers exist on a node (pulled for the first service), the second service\'s pull reuses those identical cached layers instead of re-downloading them.'}},
+    {edge:'e4',nodes:['daemon','runcall'],cap:'<b>4.</b> <code>docker run</code> doesn\'t itself create the container — the Docker daemon (dockerd) delegates to <b>containerd</b>, which spawns a <b>containerd-shim</b> process per container.',
+      detail:'The shim exists so the actual container process can be <b>reparented to init (PID 1 of the host)</b> if containerd or dockerd restarts — without a shim, restarting the daemon would kill every running container, since they\'d be child processes of the dead daemon. This decoupling is also exactly what lets Kubernetes use containerd directly without Docker installed at all.',
+      qa:{q:'Q: If dockerd crashes and restarts, do your running containers die?',a:'A: No — containerd-shim keeps the actual container process alive, reparented under host PID 1, independent of dockerd\'s lifecycle. This is deliberate: the daemon supervising builds/CLI shouldn\'t be a single point of failure for already-running workloads.'}},
+    {edge:'e5',nodes:['runcall','runc'],cap:'<b>5.</b> containerd-shim invokes <b>runc</b> — the actual low-level OCI runtime that does the real work of creating the container process.',
+      detail:'runc is a small CLI tool, not a daemon — it reads an OCI runtime-spec JSON (generated by containerd from your image config), makes a handful of Linux syscalls (clone with namespace flags, cgroup setup, pivot_root), and exits. It doesn\'t keep running or supervise anything; the shim does that.',
+      qa:{q:'Q: Is runc a long-running daemon that manages containers over their lifetime?',a:'A: No — runc runs once to create/start the container via a burst of syscalls (clone, pivot_root, cgroup setup) and then exits. Ongoing supervision (I/O, exit code, restart) is the shim\'s job, not runc\'s.'}},
+    {edge:'e6',nodes:['runc','ns'],cap:'<b>6.</b> runc creates the container by calling <code>clone()</code> with namespace flags — PID (own process tree, container\'s process sees itself as PID 1), NET (own virtual interfaces), MNT (own filesystem view), UTS (own hostname), IPC (own shared memory/semaphores).',
+      detail:'This is why "containers aren\'t VMs" is more than a slogan: there is <b>no hypervisor, no separate kernel</b> — a container is just a regular Linux process with a restricted view of the same host kernel via namespaces. A kernel-level exploit or vulnerable syscall can, in principle, cross that isolation boundary — which is precisely the extra hard-isolation guarantee Fargate\'s Firecracker microVMs (from the EKS Node Groups flow) add on top of plain namespace isolation.',
+      qa:{q:'Q: Why is container isolation considered weaker than VM isolation?',a:'A: Containers share the host kernel — namespaces restrict what a process can see, but a kernel bug can potentially let a process escape its namespace boundary. VMs have a hardware-virtualized separate kernel per guest, a fundamentally stronger boundary — which is why sensitive multi-tenant workloads sometimes use microVMs (Firecracker/Fargate) instead of plain containers.'}},
+    {edge:'e7',nodes:['runc','cgroups'],cap:'<b>7.</b> runc also configures <b>cgroups</b> (control groups) for the container — enforcing CPU shares/quota and memory limits at the kernel level, which is what Kubernetes <code>resources.limits</code> actually compiles down to.',
+      detail:'A container hitting its memory cgroup limit doesn\'t get gracefully throttled — the kernel\'s <b>OOM killer</b> sends SIGKILL, and the container exits with code <b>137</b> (128 + SIGKILL\'s signal number 9). CPU limits work differently: hitting a CPU quota doesn\'t kill anything, it just throttles — the process gets scheduled less often, showing up as increased latency rather than a crash.',
+      qa:{q:'Q: Your pod keeps exiting with code 137 under load — what is that, and how do you fix it?',a:'A: 137 = 128+9, meaning the container was SIGKILLed — almost always the kernel OOM killer because it hit its memory cgroup limit (Kubernetes memory limits). Fix by raising the memory limit or reducing actual usage, not by adjusting CPU.'}},
+  ],
+  traps:[
+    'Exit code <b>137</b> = SIGKILL (128+9), almost always an <b>OOM kill</b> from hitting a memory cgroup limit — different root cause from exit code 1 (app-level crash) or 143 (SIGTERM, graceful stop).',
+    'CPU limits <b>throttle</b>, they don\'t kill — a CPU-starved container shows up as latency/slowness, never a restart, unlike memory limits.',
+    'Containers are <b>not VMs</b> — no hypervisor, shared host kernel, isolation via namespaces + cgroups only. Know this distinction cold; it\'s asked constantly to test real understanding vs buzzwords.',
+    'Multi-stage builds exist specifically to keep build toolchains (compilers, dev dependencies) out of the final image — smaller image, smaller attack surface, faster pulls.',
+    '<code>docker run</code> → dockerd → containerd → containerd-shim → runc is the real chain — Kubernetes talks to containerd directly via CRI and skips dockerd entirely.',
+  ],
+  cheat:[
+    'docker build -t myapp:v1 .',
+    'docker history myapp:v1                     # see each layer + size',
+    'docker inspect myapp:v1 --format="{{.RootFS.Layers}}"',
+    'docker run --memory=512m --cpus=1 myapp:v1',
+    'docker exec -it <container_id> sh',
+    'docker system df                             # layer/image disk usage',
+    'ctr -n k8s.io containers list                # inspect containerd directly on a node',
+  ]},
+
+{ id:'svc', name:'Service Discovery', title:'ClusterIP, CoreDNS & kube-proxy',
+  sub:'How "myservice.default.svc.cluster.local" becomes a real pod connection.',
+  nodes:[
+    {id:'client',x:30,y:300,w:150,h:70,cat:'data',label:'Client Pod',sub:'app code'},
+    {id:'dns',x:300,y:120,w:180,h:70,cat:'ctrl',label:'CoreDNS',sub:'resolves Service name'},
+    {id:'kproxy',x:300,y:500,w:180,h:70,cat:'ctrl',label:'kube-proxy',sub:'iptables / IPVS rules'},
+    {id:'vip',x:620,y:300,w:180,h:70,cat:'ctrl',label:'Service ClusterIP',sub:'virtual IP, no listener'},
+    {id:'p1',x:940,y:140,w:180,h:70,cat:'data',label:'Backend Pod 1',sub:'endpoint'},
+    {id:'p2',x:940,y:460,w:180,h:70,cat:'data',label:'Backend Pod 2',sub:'endpoint'},
+  ],
+  edges:[
+    {id:'e1',from:'client',to:'dns'},{id:'e2',from:'client',to:'kproxy'},{id:'e3',from:'kproxy',to:'vip'},
+    {id:'e4',from:'vip',to:'p1'},{id:'e5',from:'vip',to:'p2'},
+  ],
+  steps:[
+    {edge:'e1',nodes:['client','dns'],cap:'<b>1.</b> App does a DNS lookup for <code>myservice.default.svc.cluster.local</code>; CoreDNS resolves it to the Service\'s ClusterIP.',
+      detail:'CoreDNS itself runs as regular pods behind its own Service (kube-dns by legacy name), watching Service/Endpoint objects via the Kubernetes API to build its zone data dynamically — it isn\'t a static zone file, it reacts to cluster changes in near real time.',
+      qa:{q:'Q: You create a new Service — how quickly can other pods resolve its DNS name?',a:'A: Almost immediately — CoreDNS watches the Kubernetes API directly for Service/Endpoint changes and updates its in-memory zone, it doesn\'t poll or need a reload.'}},
+    {edge:'e2',nodes:['client','kproxy'],cap:'<b>2.</b> The ClusterIP itself has <b>no listening process</b> anywhere — it\'s virtual. kube-proxy programs rules on every node that intercept traffic destined for it.',
+      detail:'kube-proxy watches Services/EndpointSlices and, in iptables mode, writes DNAT rules into the node\'s netfilter tables so that any packet to the ClusterIP gets its destination rewritten to a real pod IP before the kernel routes it — all in-kernel, no proxy process actually in the data path per-packet.',
+      qa:{q:'Q: Is kube-proxy actually "proxying" traffic through itself in iptables mode?',a:'A: No, despite the name — in iptables mode it only programs netfilter rules once; the actual packet rewriting happens in-kernel via those rules, kube-proxy isn\'t in the per-packet path at all.'}},
+    {edge:'e3',nodes:['kproxy','vip'],cap:'<b>3.</b> On EKS, kube-proxy runs in <b>iptables</b> mode by default (IPVS is opt-in) — DNAT rules rewrite destination to a real pod IP.',
+      detail:'IPVS mode uses a kernel hash table instead of a long linear iptables chain, giving O(1) lookup regardless of Service count — at very high Service counts (thousands), iptables mode\'s rule-chain traversal can add measurable latency that IPVS avoids.',
+      qa:{q:'Q: At what scale does iptables-mode kube-proxy start to become a real bottleneck, and what\'s the alternative?',a:'A: Once you have thousands of Services, iptables rule chains grow linearly and lookups slow down; IPVS mode uses kernel hash tables for near-constant-time lookups regardless of Service count.'}},
+    {edge:'e4',nodes:['vip','p1'],cap:'<b>4.</b> Traffic is load-balanced across all Ready endpoints tracked in an <b>EndpointSlice</b> — here, Pod 1...',
+      detail:'EndpointSlices replaced the older single monolithic Endpoints object specifically to scale better — a Service with thousands of backend pods used to mean one giant Endpoints object rewritten on every pod change; EndpointSlices shard that into multiple smaller, independently-updatable objects.',
+      qa:{q:'Q: Why did Kubernetes introduce EndpointSlices instead of just using the Endpoints object?',a:'A: A single Endpoints object for a Service with thousands of pods became a huge object rewritten on every single pod change, causing massive API server/etcd churn; EndpointSlices shard endpoints into smaller chunks to reduce that write amplification.'}},
+    {edge:'e5',nodes:['vip','p2'],cap:'<b>5.</b> ...or Pod 2 — selection is roughly random per-connection in iptables mode (true round robin in IPVS mode). Only <b>Ready</b> pods receive traffic at all.',
+      detail:'A pod passing its startup checks but later failing readinessProbe is pulled from the EndpointSlice within one probe interval (default every 10s) without being killed — this graceful "remove from load balancing without restarting" behavior is exactly what readinessProbe is for, distinct from livenessProbe which restarts the container.',
+      qa:{q:'Q: Your app is temporarily overloaded and slow — should you use livenessProbe or readinessProbe to protect it?',a:'A: readinessProbe — it pulls the pod out of Service endpoints (no new traffic) without killing it, letting it recover and rejoin; livenessProbe would restart the container, which doesn\'t help an overload problem and could cause a restart storm.'}},
+  ],
+  traps:[
+    'ClusterIP is <b>not a real listening socket</b> — a very common trick question. It\'s a routing rule (iptables/IPVS), not a process.',
+    'iptables mode does roughly <b>random</b> selection per-connection, not true round robin; IPVS mode gives you real load-balancing algorithms (rr, lc, sh).',
+    'A pod failing its <b>readinessProbe</b> is removed from Endpoints instantly but keeps running — differentiate clearly from livenessProbe (which restarts it).',
+    '<b>EndpointSlices</b> replaced monolithic Endpoints objects specifically to reduce write amplification at high pod-count Services — know why, not just the name.',
+  ],
+  cheat:[
+    'kubectl get endpointslices -l kubernetes.io/service-name=myservice',
+    'kubectl -n kube-system get cm coredns -o yaml',
+    'kubectl get svc myservice -o jsonpath="{.spec.clusterIP}"',
+    'kubectl -n kube-system logs -l k8s-app=kube-proxy --tail=50',
+    'kubectl exec -it debugpod -- nslookup myservice.default.svc.cluster.local',
+  ]},
+
+{ id:'ingress', name:'Ingress / ALB', title:'AWS Load Balancer Controller → ALB',
+  sub:'Ingress objects don\'t create load balancers by themselves — a controller pod watches and provisions AWS resources for you.',
+  nodes:[
+    {id:'net',x:20,y:300,w:140,h:70,cat:'client',label:'Internet',sub:'user traffic'},
+    {id:'alb',x:270,y:300,w:170,h:70,cat:'aws',label:'ALB',sub:'provisioned by controller'},
+    {id:'ctrl',x:270,y:520,w:220,h:70,cat:'ctrl',label:'AWS LB Controller',sub:'watches Ingress/Service'},
+    {id:'tg',x:580,y:300,w:180,h:70,cat:'aws',label:'Target Group',sub:'IP target mode'},
+    {id:'p1',x:900,y:140,w:170,h:70,cat:'data',label:'Pod A',sub:'registered directly'},
+    {id:'p2',x:900,y:300,w:170,h:70,cat:'data',label:'Pod B',sub:'registered directly'},
+    {id:'p3',x:900,y:460,w:170,h:70,cat:'data',label:'Pod C',sub:'registered directly'},
+  ],
+  edges:[
+    {id:'e1',from:'ctrl',to:'alb'},{id:'e2',from:'net',to:'alb'},{id:'e3',from:'alb',to:'tg'},
+    {id:'e4',from:'tg',to:'p1'},{id:'e5',from:'tg',to:'p2'},{id:'e6',from:'tg',to:'p3'},
+  ],
+  steps:[
+    {edge:'e1',nodes:['ctrl','alb'],cap:'<b>1.</b> You create an Ingress resource; the AWS Load Balancer Controller (runs as a pod, uses IRSA) watches it and calls the AWS API to <b>provision an ALB</b>.',
+      detail:'This is a real, third-party-style controller — a bare EKS cluster ships with no Ingress implementation at all. You install the controller as a Helm chart / add-on first; without it, an Ingress object just sits there doing nothing, no error even.',
+      qa:{q:'Q: You created an Ingress resource on a fresh EKS cluster but no load balancer ever appears — why?',a:'A: A bare EKS cluster has no Ingress controller installed by default. You must install the AWS Load Balancer Controller (or another Ingress controller) yourself — the Ingress API object alone provisions nothing.'}},
+    {edge:'e2',nodes:['net','alb'],cap:'<b>2.</b> The ALB is a real AWS-managed layer-7 load balancer sitting at the VPC edge, terminating internet traffic (TLS termination usually happens here via ACM).',
+      detail:'ALB supports host-based and path-based routing rules generated from your Ingress spec, plus can fan a single ALB across multiple Ingress objects/namespaces using <code>IngressGroup</code> annotations — avoiding one ALB per Ingress, which saves cost at scale.',
+      qa:{q:'Q: You have 20 microservices each with their own Ingress — must you provision 20 ALBs?',a:'A: No — use the IngressGroup annotation to have the AWS Load Balancer Controller consolidate multiple Ingress objects onto a single shared ALB with different routing rules, cutting cost significantly.'}},
+    {edge:'e3',nodes:['alb','tg'],cap:'<b>3.</b> ALB routes matched paths/hosts to a Target Group the controller also created and continuously reconciles.',
+      detail:'The controller runs a reconciliation loop just like any Kubernetes controller: watch Ingress/Service/EndpointSlice → diff against actual AWS Target Group registrations → call AWS API to add/remove targets — same pattern as controller-manager, just targeting AWS resources instead of Kubernetes objects.',
+      qa:{q:'Q: Is the relationship between the Ingress controller and AWS resources a one-time provisioning, or ongoing?',a:'A: Ongoing — it\'s a continuous reconciliation loop, just like any Kubernetes controller, constantly syncing desired Ingress/Service state to actual ALB/Target Group state.'}},
+    {edge:'e4',nodes:['tg','p1'],cap:'<b>4.</b> In <b>IP target mode</b> (the recommended EKS mode), the Target Group registers pod IPs directly, requiring VPC CNI (pods must have real VPC IPs).',
+      detail:'IP target mode is what makes ALB compatible with Fargate pods at all — Instance target mode routes to a NodePort on an EC2 instance, which simply doesn\'t exist as a concept for a Fargate pod with no backing EC2 instance to register.',
+      qa:{q:'Q: Can you use an ALB Ingress in front of Fargate pods?',a:'A: Yes, but only in IP target mode — Instance target mode requires a NodePort on an EC2 instance, which doesn\'t apply to Fargate since there\'s no EC2 instance backing the pod.'}},
+    {edge:'e5',nodes:['tg','p2'],cap:'<b>5.</b> ...bypassing kube-proxy/iptables entirely — traffic goes ALB → pod directly in one hop, lower latency than the older Instance mode\'s extra NodePort hop.',
+      detail:'Instance mode (the older default) routes ALB → NodePort on some node → kube-proxy DNAT → possibly a different node\'s pod — an extra network hop and an extra layer of iptables/IPVS translation that IP mode skips entirely.',
+      qa:{q:'Q: Why is IP target mode generally preferred over Instance target mode for latency-sensitive services?',a:'A: IP mode routes ALB directly to the pod IP in one hop; Instance mode adds an extra hop through a NodePort and kube-proxy\'s DNAT rules, which can also cross to a different node than where the pod actually lives.'}},
+    {edge:'e6',nodes:['tg','p3'],cap:'<b>6.</b> The controller keeps Target Group registrations in sync with pod churn via the EndpointSlice watch, deregistering draining pods gracefully with connection draining delay.',
+      detail:'ALB target deregistration delay (default 300s, configurable) lets in-flight requests finish before a pod is fully removed from rotation — this needs to be coordinated with your pod\'s terminationGracePeriodSeconds so the pod doesn\'t get SIGKILLed by Kubernetes before ALB stops sending it traffic.',
+      qa:{q:'Q: You see occasional 502s during rolling deploys even though pods pass readinessProbe fine — likely cause?',a:'A: ALB deregistration delay and pod terminationGracePeriodSeconds are misaligned — the pod may be killed by Kubernetes before ALB finishes draining in-flight connections to it; align the two timers.'}},
+  ],
+  traps:[
+    'Ingress resource alone does <b>nothing</b> without the AWS Load Balancer Controller installed — a bare EKS cluster has no ingress implementation by default.',
+    '<b>IP target mode</b> vs <b>Instance target mode</b>: IP mode skips kube-proxy (lower latency, required for Fargate); instance mode routes via NodePort.',
+    'ALB = Layer 7 (HTTP/HTTPS, path routing). Need Layer 4 or extreme low latency? That\'s an <b>NLB</b>, provisioned via a Service of type LoadBalancer instead.',
+    'Misaligned ALB <b>deregistration delay</b> vs pod <b>terminationGracePeriodSeconds</b> is a classic silent-502-during-deploy production bug.',
+  ],
+  cheat:[
+    'kubectl get ingress -A',
+    'kubectl describe ingress my-ingress',
+    'kubectl -n kube-system logs -l app.kubernetes.io/name=aws-load-balancer-controller',
+    'aws elbv2 describe-target-health --target-group-arn <arn>',
+    'kubectl get targetgroupbindings -A   # CRD used internally by the controller',
+  ]},
+
+{ id:'irsa', name:'IRSA', title:'IAM Roles for Service Accounts (IRSA)',
+  sub:'How a pod gets scoped AWS permissions without ever holding a long-lived access key.',
+  nodes:[
+    {id:'pod',x:20,y:300,w:170,h:80,cat:'data',label:'Pod',sub:'ServiceAccount annotated'},
+    {id:'oidc',x:320,y:120,w:190,h:80,cat:'aws',label:'Cluster OIDC Provider',sub:'issues signed token'},
+    {id:'sts',x:320,y:500,w:190,h:80,cat:'aws',label:'AWS STS',sub:'AssumeRoleWithWebIdentity'},
+    {id:'role',x:660,y:300,w:190,h:80,cat:'aws',label:'IAM Role',sub:'trust policy = OIDC'},
+    {id:'s3',x:970,y:300,w:170,h:80,cat:'aws',label:'S3 / DynamoDB',sub:'scoped access only'},
+  ],
+  edges:[
+    {id:'e1',from:'pod',to:'oidc'},{id:'e2',from:'pod',to:'sts'},{id:'e3',from:'sts',to:'role'},{id:'e4',from:'role',to:'s3'},
+  ],
+  steps:[
+    {edge:'e1',nodes:['pod','oidc'],cap:'<b>1.</b> The Pod\'s ServiceAccount is annotated with an IAM role ARN. A mutating webhook injects a projected, auto-rotated JWT (default TTL 1 hour) signed by the cluster\'s own <b>OIDC issuer</b>.',
+      detail:'Every EKS cluster gets a unique OIDC issuer URL the moment you enable it — this must be registered as an IAM OIDC Identity Provider in your AWS account once per cluster, which is the setup step people forget and then wonder why AssumeRoleWithWebIdentity fails.',
+      qa:{q:'Q: You configured IRSA correctly on the pod/role side but AssumeRoleWithWebIdentity still fails — what\'s a common root cause?',a:'A: The cluster\'s OIDC provider was never registered as an IAM Identity Provider in the AWS account, or its thumbprint is stale — STS can\'t validate a token from an issuer it doesn\'t trust.'}},
+    {edge:'e2',nodes:['pod','sts'],cap:'<b>2.</b> The AWS SDK inside the app automatically detects the injected token file path via env vars and calls <b>STS AssumeRoleWithWebIdentity</b> — no code changes needed for any AWS SDK ≥ a certain version.',
+      detail:'The webhook sets two env vars on the pod: <code>AWS_ROLE_ARN</code> and <code>AWS_WEB_IDENTITY_TOKEN_FILE</code> — any AWS SDK (boto3, aws-sdk-go, etc.) checks for these automatically as part of its default credential provider chain, which is why this is called "zero code change."',
+      qa:{q:'Q: How does the AWS SDK inside your app know to use IRSA instead of, say, an instance profile?',a:'A: The IRSA webhook sets AWS_ROLE_ARN and AWS_WEB_IDENTITY_TOKEN_FILE env vars on the pod; the SDK\'s default credential chain checks for these before falling back to instance metadata, so it "just works" without code changes.'}},
+    {edge:'e3',nodes:['sts','role'],cap:'<b>3.</b> STS validates the token against the IAM role\'s trust policy — which contains a <code>Condition</code> matching the exact <code>namespace:serviceaccount</code> pair — and returns temporary credentials (default 1 hour, refreshed automatically).',
+      detail:'The trust policy condition looks like <code>"oidc.eks...:sub": "system:serviceaccount:default:myapp"</code> — copy-pasting a role\'s trust policy for a different namespace or service account name without updating this condition is probably the single most common IRSA misconfiguration in production.',
+      qa:{q:'Q: You copy an existing IRSA-enabled IAM role for a new microservice in a different namespace, and it doesn\'t work — why?',a:'A: The role\'s trust policy condition is scoped to a specific namespace:serviceaccount string; unless you update that condition to match the new namespace/SA, STS will reject the AssumeRoleWithWebIdentity call.'}},
+    {edge:'e4',nodes:['role','s3'],cap:'<b>4.</b> The pod calls S3/DynamoDB with short-lived, auto-expiring credentials scoped exactly to that IAM role\'s policy — least privilege, per-workload, no shared blast radius.',
+      detail:'Compare to the old anti-pattern: attaching a broad IAM policy to the <b>node\'s instance profile</b> meant every pod scheduled on that node — regardless of which team or app owned it — could access anything the node\'s role permitted, via the EC2 instance metadata service (IMDS).',
+      qa:{q:'Q: Why is giving IAM permissions via the node\'s instance profile considered bad practice compared to IRSA?',a:'A: Any pod scheduled on that node inherits those permissions through IMDS, regardless of which workload it is — there\'s no per-pod isolation, so a compromised low-privilege app on a shared node can access everything the node role allows.'}},
+  ],
+  traps:[
+    'IRSA replaces the old anti-pattern of giving the whole <b>node\'s instance profile</b> broad IAM permissions that every pod on that node could then use via IMDS.',
+    'Trust policy has a <b>condition</b> matching the exact namespace:serviceaccount pair — copy-pasting a role for the wrong SA is a classic misconfig.',
+    'The cluster\'s <b>OIDC provider must be registered</b> as an IAM Identity Provider once per cluster — a forgotten one-time setup step that breaks everything downstream.',
+    'Newer alternative: <b>EKS Pod Identity</b> — simplifies this further (no OIDC-provider math, uses an EKS-managed auth mechanism), but most existing interview questions still assume IRSA.',
+  ],
+  cheat:[
+    'aws eks describe-cluster --name my-cluster --query "cluster.identity.oidc.issuer"',
+    'aws iam list-open-id-connect-providers',
+    'kubectl -n default get sa myapp -o yaml   # check eks.amazonaws.com/role-arn annotation',
+    'aws sts assume-role-with-web-identity --role-arn <arn> --role-session-name test --web-identity-token file://token',
+    'kubectl exec -it mypod -- env | grep AWS_',
+  ]},
+
+{ id:'scale', name:'Autoscaling', title:'HPA + Cluster Autoscaler / Karpenter',
+  sub:'Two independent loops: one scales pod replicas, the other scales nodes when pods can\'t fit.',
+  nodes:[
+    {id:'metrics',x:20,y:80,w:180,h:70,cat:'ctrl',label:'metrics-server',sub:'CPU/mem scrape'},
+    {id:'hpa',x:20,y:300,w:180,h:70,cat:'ctrl',label:'HPA Controller',sub:'loop every 15s'},
+    {id:'deploy',x:320,y:300,w:190,h:70,cat:'ctrl',label:'Deployment',sub:'replicas 2 → 5'},
+    {id:'pending',x:320,y:520,w:190,h:70,cat:'data',label:'Pending Pod',sub:'insufficient capacity'},
+    {id:'karp',x:640,y:520,w:200,h:70,cat:'aws',label:'Karpenter / CA',sub:'watches unschedulable'},
+    {id:'newnode',x:960,y:520,w:190,h:70,cat:'aws',label:'New EC2 Node',sub:'right-sized, seconds'},
+  ],
+  edges:[
+    {id:'e1',from:'metrics',to:'hpa'},{id:'e2',from:'hpa',to:'deploy'},{id:'e3',from:'deploy',to:'pending'},
+    {id:'e4',from:'pending',to:'karp'},{id:'e5',from:'karp',to:'newnode'},
+  ],
+  steps:[
+    {edge:'e1',nodes:['metrics','hpa'],cap:'<b>1.</b> metrics-server scrapes CPU/memory from kubelet\'s Summary API on every node; HPA controller polls it roughly every 15 seconds.',
+      detail:'metrics-server only exposes point-in-time resource metrics (CPU/mem), not custom or historical metrics — that\'s why HPA scaling on request-rate, queue depth, or other custom metrics needs the Custom/External Metrics API, often backed by Prometheus Adapter or KEDA instead.',
+      qa:{q:'Q: You want HPA to scale based on SQS queue depth, not CPU — does metrics-server support this?',a:'A: No — metrics-server only handles CPU/memory. For custom metrics like queue depth, you need the External Metrics API, typically implemented via KEDA or Prometheus Adapter, which HPA can then reference.'}},
+    {edge:'e2',nodes:['hpa','deploy'],cap:'<b>2.</b> If current utilization exceeds target (say average CPU > 70% across all pods), HPA patches the Deployment\'s <code>replicas</code> field upward using a specific scaling algorithm, not a naive linear step.',
+      detail:'The formula is roughly <code>desiredReplicas = ceil(currentReplicas × currentMetric / targetMetric)</code>, with built-in stabilization windows to prevent flapping — by default scale-up reacts within seconds but scale-down has a cooldown (stabilizationWindowSeconds) to avoid thrashing on noisy metrics.',
+      qa:{q:'Q: Your HPA keeps oscillating replica count up and down every minute under fluctuating load — how do you fix it?',a:'A: Tune the HPA\'s behavior.scaleDown.stabilizationWindowSeconds (and scaleUp if needed) to require sustained metric changes over a longer window before acting, damping the flapping.'}},
+    {edge:'e3',nodes:['deploy','pending'],cap:'<b>3.</b> New pods are created — but if the cluster has no room, they sit as <b>Unschedulable / Pending</b>, visible via the scheduler\'s FailedScheduling event.',
+      detail:'This Pending state is the actual trigger signal both Cluster Autoscaler and Karpenter watch for — neither of them proactively pre-scales based on HPA\'s intent; they react only after the scheduler has already tried and failed to place a pod.',
+      qa:{q:'Q: Does Karpenter/Cluster Autoscaler scale nodes in anticipation of an HPA scale-up event, or only after?',a:'A: Only after — they react to actual unschedulable/Pending pods (a FailedScheduling event), they don\'t look ahead at HPA\'s target or predict future demand.'}},
+    {edge:'e4',nodes:['pending','karp'],cap:'<b>4.</b> Karpenter (or Cluster Autoscaler) watches for exactly this signal: pods that can\'t be scheduled anywhere with current capacity.',
+      detail:'Cluster Autoscaler works at the level of a pre-defined Auto Scaling Group — it can only pick from instance types already configured in that ASG\'s launch template, and it scales in discrete increments tied to ASG desired-count changes.',
+      qa:{q:'Q: Why is Cluster Autoscaler considered less flexible than Karpenter in a heterogeneous workload cluster?',a:'A: Cluster Autoscaler is bound to whatever instance types are pre-configured in a given ASG/node group; it can\'t dynamically pick a "best-fit" instance type per pending pod the way Karpenter can across a wide instance-type pool.'}},
+    {edge:'e5',nodes:['karp','newnode'],cap:'<b>5.</b> Karpenter provisions a <b>right-sized</b> EC2 instance directly via the EC2 Fleet API in seconds, choosing from a broad instance-type pool based on the exact pending pod\'s requests; Cluster Autoscaler instead resizes a pre-defined ASG.',
+      detail:'Karpenter also handles consolidation — periodically checking if pods could be repacked onto fewer/cheaper nodes and proactively draining+terminating underutilized ones, something Cluster Autoscaler does more conservatively and only for scale-down of clearly-empty nodes.',
+      qa:{q:'Q: Besides scale-up speed, what\'s another operational advantage Karpenter has over Cluster Autoscaler?',a:'A: Bin-packing consolidation — Karpenter actively looks for opportunities to repack workloads onto fewer or cheaper nodes and terminates the freed-up ones, optimizing cost continuously rather than just reacting to scale-up demand.'}},
+  ],
+  traps:[
+    'HPA scales <b>pods</b>, Cluster Autoscaler/Karpenter scales <b>nodes</b> — conflating the two is the #1 mistake in this topic.',
+    '<b>Karpenter</b> picks instance type/size dynamically per pending pod\'s exact requests; <b>Cluster Autoscaler</b> is limited to whatever instance types are in the pre-defined node group/ASG.',
+    'metrics-server only does <b>CPU/memory</b> — custom metric scaling (queue depth, request rate) needs KEDA or Prometheus Adapter via the External Metrics API.',
+    'Also know <b>VPA</b> (Vertical Pod Autoscaler) — resizes container requests/limits, and generally shouldn\'t run in "Auto" mode alongside HPA on the same metric (they can fight each other).',
+  ],
+  cheat:[
+    'kubectl get hpa -A',
+    'kubectl describe hpa my-hpa',
+    'kubectl top pods',
+    'kubectl get events --field-selector reason=FailedScheduling',
+    'kubectl -n karpenter logs -l app.kubernetes.io/name=karpenter --tail=100',
+  ]},
+
+{ id:'storage', name:'Storage (EBS CSI)', title:'Dynamic Volume Provisioning via EBS CSI Driver',
+  sub:'PVC → real EBS volume, attached and mounted automatically — but EBS is AZ-locked, which bites people constantly.',
+  nodes:[
+    {id:'pod',x:20,y:300,w:160,h:70,cat:'data',label:'Pod',sub:'has volumeClaim'},
+    {id:'pvc',x:260,y:300,w:160,h:70,cat:'ctrl',label:'PVC',sub:'requests storage'},
+    {id:'sc',x:260,y:100,w:170,h:70,cat:'ctrl',label:'StorageClass gp3',sub:'dynamic provisioner'},
+    {id:'csictl',x:530,y:100,w:200,h:70,cat:'aws',label:'EBS CSI Controller',sub:'calls CreateVolume'},
+    {id:'vol',x:530,y:300,w:180,h:70,cat:'aws',label:'EBS Volume',sub:'AZ-locked!'},
+    {id:'csinode',x:800,y:480,w:200,h:70,cat:'data',label:'EBS CSI Node plugin',sub:'DaemonSet, attach+mount'},
+    {id:'kubelet',x:1040,y:300,w:150,h:70,cat:'data',label:'kubelet',sub:'mounts into pod'},
+  ],
+  edges:[
+    {id:'e1',from:'pod',to:'pvc'},{id:'e2',from:'pvc',to:'sc'},{id:'e3',from:'sc',to:'csictl'},
+    {id:'e4',from:'csictl',to:'vol'},{id:'e5',from:'vol',to:'csinode'},{id:'e6',from:'csinode',to:'kubelet'},
+  ],
+  steps:[
+    {edge:'e1',nodes:['pod','pvc'],cap:'<b>1.</b> Pod spec references a PersistentVolumeClaim asking for, say, 20Gi — the pod doesn\'t know or care which specific volume backs it.',
+      detail:'If the PVC uses <code>WaitForFirstConsumer</code> volume binding mode (the recommended default for topology-aware provisioning), the actual volume isn\'t created until a pod referencing it is scheduled — avoiding a chicken-and-egg problem where a volume is created in the "wrong" AZ before the scheduler even decides where the pod goes.',
+      qa:{q:'Q: Why does the default StorageClass binding mode matter for a multi-AZ cluster?',a:'A: With Immediate binding, the PV could be created in an AZ that later turns out to have no room for the pod; WaitForFirstConsumer delays volume creation until the scheduler picks a node, ensuring the volume is provisioned in the correct AZ upfront.'}},
+    {edge:'e2',nodes:['pvc','sc'],cap:'<b>2.</b> The PVC references a StorageClass (e.g. gp3) configured for dynamic provisioning — no PV pre-created by a human, no manual EBS console click.',
+      detail:'gp3 (vs the older gp2) lets you configure IOPS and throughput independently of volume size — a common cost optimization is right-sizing gp3 IOPS/throughput to actual workload needs instead of over-provisioning size just to get more baseline IOPS the way gp2 forced you to.',
+      qa:{q:'Q: Why might you choose gp3 over gp2 for a StorageClass even for the same volume size?',a:'A: gp3 decouples IOPS/throughput from volume size — you can provision the exact performance you need without buying extra unneeded capacity, which gp2 required since its IOPS scaled with size.'}},
+    {edge:'e3',nodes:['sc','csictl'],cap:'<b>3.</b> The EBS CSI <b>controller</b> pod (a Deployment, runs with its own IRSA role) calls the AWS EC2 API\'s <code>CreateVolume</code> — this is the "control plane" half of the CSI driver.',
+      detail:'The CSI spec formally splits every driver into a controller plugin (cluster-level: create/delete/attach/detach, calls the cloud API) and a node plugin (per-node: format/mount the already-attached device) — this split exists precisely so the controller can run anywhere while node-specific mount operations happen exactly where the volume lands.',
+      qa:{q:'Q: Why does the CSI spec split drivers into a "controller" and a "node" component instead of one binary doing everything?',a:'A: Controller-level operations (create/attach volumes via cloud API) are cluster-wide and don\'t need to run on a specific node, while mount/format operations must happen on the exact node where the volume attaches — splitting lets each run with the right scope and permissions.'}},
+    {edge:'e4',nodes:['csictl','vol'],cap:'<b>4.</b> A real EBS volume is created — critically, in one specific <b>Availability Zone</b> — and a matching PV object is bound to the PVC.',
+      detail:'EBS volumes cannot span AZs and cannot be attached to an instance in a different AZ, full stop — this single fact is the root cause of nearly every "pod stuck Pending after being rescheduled" storage incident in EKS.',
+      qa:{q:'Q: A pod using an EBS-backed PVC gets evicted and rescheduled to a node in a different AZ — what happens?',a:'A: It stays Pending — the EBS volume can\'t attach to an instance outside its AZ. You need topology-aware scheduling (via topology.kubernetes.io/zone node affinity, which the CSI driver sets automatically) to keep the pod pinned to the volume\'s AZ, or switch to EFS for cross-AZ needs.'}},
+    {edge:'e5',nodes:['vol','csinode'],cap:'<b>5.</b> The EBS CSI <b>node</b> plugin (a DaemonSet) running on the pod\'s chosen node attaches the volume via the OS block device layer and formats/mounts it.',
+      detail:'This is where <code>fsType</code> (ext4/xfs) from the StorageClass actually gets applied — first-time volume use includes a format step, so a very large fresh volume can add measurable pod startup latency the first time versus a volume already formatted from a previous mount.',
+      qa:{q:'Q: Why might a brand-new large EBS-backed pod take noticeably longer to reach Running than one reusing an existing volume?',a:'A: A fresh volume needs to be formatted (mkfs) by the node plugin before mounting — larger volumes take longer to format, adding one-time startup latency that a pre-formatted, reused volume doesn\'t incur.'}},
+    {edge:'e6',nodes:['csinode','kubelet'],cap:'<b>6.</b> kubelet bind-mounts that already-mounted host path into the pod\'s filesystem namespace. Pod finally starts with usable storage.',
+      detail:'For StatefulSets, each replica\'s PVC is generated from a <code>volumeClaimTemplate</code> — meaning replica-0, replica-1, replica-2 each get their own independent EBS volume, not a shared one; a shared ReadWriteMany volume across replicas needs EFS CSI instead, since EBS only supports ReadWriteOnce.',
+      qa:{q:'Q: Can multiple pod replicas in a StatefulSet share the same EBS volume?',a:'A: No — EBS only supports ReadWriteOnce (single node/pod at a time). Each StatefulSet replica gets its own separate volume via volumeClaimTemplates; true shared ReadWriteMany access needs EFS CSI instead.'}},
+  ],
+  traps:[
+    'EBS volumes are <b>zonal</b> — if your pod later gets rescheduled to a node in a different AZ, it <b>cannot</b> reattach. Use topology-aware provisioning or EFS for cross-AZ needs.',
+    'CSI has <b>two components</b>: controller (talks to AWS API, needs IRSA) and node plugin (attach/mount on the host) — interviewers love asking you to separate these.',
+    'EBS only supports <b>ReadWriteOnce</b> — StatefulSets get one volume per replica via volumeClaimTemplates; a shared ReadWriteMany volume needs EFS CSI instead.',
+    '<b>WaitForFirstConsumer</b> binding mode avoids provisioning a volume in the wrong AZ before the scheduler decides — Immediate mode can silently strand pods.',
+  ],
+  cheat:[
+    'kubectl get pvc -A',
+    'kubectl get pv',
+    'kubectl -n kube-system get pods -l app=ebs-csi-controller',
+    'kubectl describe pvc mypvc   # shows binding/provisioning failures',
+    'aws ec2 describe-volumes --filters "Name=tag:kubernetes.io/created-for/pvc/name,Values=mypvc"',
+  ]},
+
+{ id:'rollout', name:'Deployment Rollout', title:'Rolling Update: v1 → v2 with Zero Downtime',
+  sub:'How Deployment, ReplicaSet and readiness probes cooperate to ship a new version safely.',
+  nodes:[
+    {id:'deploy',x:20,y:300,w:170,h:70,cat:'ctrl',label:'Deployment',sub:'kubectl set image'},
+    {id:'oldrs',x:320,y:120,w:180,h:70,cat:'ctrl',label:'ReplicaSet v1',sub:'scaling down'},
+    {id:'newrs',x:320,y:500,w:180,h:70,cat:'ctrl',label:'ReplicaSet v2',sub:'scaling up'},
+    {id:'oldpods',x:640,y:120,w:170,h:70,cat:'data',label:'Pods v1',sub:'maxUnavailable'},
+    {id:'newpods',x:640,y:500,w:170,h:70,cat:'data',label:'Pods v2',sub:'maxSurge, readinessProbe'},
+    {id:'svc',x:960,y:300,w:180,h:70,cat:'ctrl',label:'Service Endpoints',sub:'only Ready pods'},
+  ],
+  edges:[
+    {id:'e1',from:'deploy',to:'newrs'},{id:'e2',from:'deploy',to:'oldrs'},{id:'e3',from:'newrs',to:'newpods'},
+    {id:'e4',from:'oldrs',to:'oldpods'},{id:'e5',from:'newpods',to:'svc'},{id:'e6',from:'oldpods',to:'svc'},
+  ],
+  steps:[
+    {edge:'e1',nodes:['deploy','newrs'],cap:'<b>1.</b> <code>kubectl set image</code> triggers the Deployment controller to create a <b>new ReplicaSet v2</b> alongside the old one — never deletes v1 immediately.',
+      detail:'The new ReplicaSet\'s name includes a hash of the pod template (<code>pod-template-hash</code> label) — this is how the Deployment controller distinguishes "this is a genuinely new version" from "same spec, no-op apply," and it\'s also the label Service selectors implicitly avoid so old and new pods don\'t both instantly receive traffic mixed together during the transition unless intended.',
+      qa:{q:'Q: How does Kubernetes know a kubectl apply with no actual spec change shouldn\'t trigger a new rollout?',a:'A: The pod template hash (used to name/label the ReplicaSet) only changes if the pod template itself changes; an identical re-apply produces the same hash, so the Deployment controller sees no diff and no new ReplicaSet is created.'}},
+    {edge:'e3',nodes:['newrs','newpods'],cap:'<b>2.</b> v2 scales up by <code>maxSurge</code> pods at a time (default 25% of desired replicas, rounded up), each gated by its readinessProbe before counting as "available."',
+      detail:'"Available" is stricter than "Ready" — a pod must be Ready continuously for <code>minReadySeconds</code> (default 0, but often set to 10-30s in production) before the Deployment controller counts it as available and proceeds with the next surge step, preventing a flapping pod from fooling the rollout into thinking it succeeded.',
+      qa:{q:'Q: Why would you deliberately set minReadySeconds to a nonzero value on a Deployment?',a:'A: To require a pod to stay Ready for a sustained period before being counted as "available" for rollout progress — protects against a pod that passes the readiness check once, then immediately flaps, from falsely advancing the rollout.'}},
+    {edge:'e2',nodes:['deploy','oldrs'],cap:'<b>3.</b> In lockstep, the Deployment tells old ReplicaSet v1 to scale down, respecting <code>maxUnavailable</code> (default 25%) so total capacity never drops below desired − maxUnavailable.',
+      detail:'maxSurge and maxUnavailable together define the "safety corridor" of the rollout — at any instant, total pod count is bounded between (desired − maxUnavailable) and (desired + maxSurge); setting both to 0 means no pod can ever be added or removed, which deadlocks the rollout entirely.',
+      qa:{q:'Q: What happens if you set both maxSurge and maxUnavailable to 0 on a Deployment and then trigger a rollout?',a:'A: It deadlocks — with no allowed surge above desired and no allowed unavailability below desired, the controller has no room to create new pods or remove old ones, so the rollout can never progress.'}},
+    {edge:'e4',nodes:['oldrs','oldpods'],cap:'<b>4.</b> v1 pods are terminated gracefully: sent SIGTERM, given <code>terminationGracePeriodSeconds</code> (default 30s) to shut down cleanly, then SIGKILLed if still alive.',
+      detail:'Before SIGTERM is even sent, the pod is first removed from Service Endpoints — but there\'s a well-known race where in-flight requests can still land on a pod mid-termination if your app doesn\'t handle SIGTERM by first entering a "stop accepting new connections, finish existing ones" drain state; a common fix is a small preStop sleep hook to let endpoint removal propagate before SIGTERM lands.',
+      qa:{q:'Q: You see occasional connection resets during rolling deploys even with a correct readinessProbe — what\'s a common fix?',a:'A: Add a short preStop hook (e.g. sleep 5-10s) before SIGTERM — this buys time for the pod\'s removal from Service Endpoints to propagate across all nodes\' kube-proxy rules before the app actually stops accepting connections.'}},
+    {edge:'e5',nodes:['newpods','svc'],cap:'<b>5.</b> Only once a v2 pod passes readinessProbe (and stays Ready for minReadySeconds) does it get added to Service Endpoints and start receiving live traffic.',
+      detail:'This is why "Running" and "Ready" are different states worth stating explicitly in an interview — a pod can be Running (process started) but not yet Ready (still warming caches, connecting to a DB pool), and during that window it correctly receives zero production traffic.',
+      qa:{q:'Q: Is a pod in "Running" phase guaranteed to be receiving traffic from its Service?',a:'A: No — Running only means the containers have started; readinessProbe determines whether it\'s added to Endpoints and actually receives traffic. A Running-but-not-Ready pod correctly gets zero traffic.'}},
+    {edge:'e6',nodes:['oldpods','svc'],cap:'<b>6.</b> v1 pods are removed from Endpoints the moment they start terminating — no new traffic sent to a dying pod. Rollout completes when v2 replicas = desired and v1 = 0.',
+      detail:'Old ReplicaSets aren\'t deleted after a successful rollout — by default the last <code>revisionHistoryLimit</code> (default 10) ReplicaSets are kept, scaled to zero, purely so <code>kubectl rollout undo</code> has something to scale back up to instantly instead of rebuilding from scratch.',
+      qa:{q:'Q: How does kubectl rollout undo work so quickly, without rebuilding images or pulling anything new?',a:'A: The Deployment controller keeps old ReplicaSets around (scaled to zero) up to revisionHistoryLimit; undo just points the Deployment back at the previous ReplicaSet and scales it up again — no image rebuild, no new pull needed if the image is still cached.'}},
+  ],
+  traps:[
+    'A pod being "Running" ≠ "receiving traffic" — only <b>Ready</b> (readinessProbe passing, sustained for minReadySeconds) pods are in Endpoints. Asked constantly.',
+    '<code>kubectl rollout undo</code> works by pointing the Deployment back at a <b>kept, scaled-to-zero</b> previous ReplicaSet revision — not a rebuild.',
+    '<code>maxSurge</code> / <code>maxUnavailable</code> together define a safety corridor — setting both to 0 deadlocks the rollout completely.',
+    'Endpoint removal and SIGTERM aren\'t perfectly synchronized across the cluster — a short <b>preStop sleep</b> is the standard fix for connection-reset-during-deploy issues.',
+  ],
+  cheat:[
+    'kubectl rollout status deployment/myapp',
+    'kubectl rollout history deployment/myapp',
+    'kubectl rollout undo deployment/myapp --to-revision=2',
+    'kubectl get rs -l app=myapp',
+    'kubectl patch deployment myapp -p \'{"spec":{"strategy":{"rollingUpdate":{"maxSurge":"50%","maxUnavailable":"0%"}}}}\'',
+  ]},
+
+{ id:'ecr', name:'ECR & Image Pull', title:'Container Supply Chain: Push, Scan, Pull, Cache',
+  sub:'What actually happens between docker push and a Pod\'s containers starting — and why ImagePullBackOff happens.',
+  nodes:[
+    {id:'ci',x:20,y:300,w:170,h:70,cat:'client',label:'CI/CD Pipeline',sub:'docker build && push'},
+    {id:'ecr',x:300,y:120,w:190,h:70,cat:'aws',label:'Amazon ECR',sub:'private registry, per-repo'},
+    {id:'scan',x:300,y:480,w:190,h:70,cat:'aws',label:'ECR Image Scanning',sub:'Inspector, CVEs on push'},
+    {id:'vpce',x:600,y:300,w:210,h:80,cat:'aws',label:'ECR VPC Endpoints',sub:'api + dkr + S3 gateway'},
+    {id:'kubelet',x:900,y:120,w:200,h:80,cat:'data',label:'kubelet + containerd',sub:'CRI image pull request'},
+    {id:'cache',x:900,y:480,w:200,h:70,cat:'data',label:'Node Content Store',sub:'digest-addressed cache'},
+  ],
+  edges:[
+    {id:'e1',from:'ci',to:'ecr'},{id:'e2',from:'ecr',to:'scan'},{id:'e3',from:'ecr',to:'vpce'},
+    {id:'e4',from:'vpce',to:'kubelet'},{id:'e5',from:'kubelet',to:'cache'},
+  ],
+  steps:[
+    {edge:'e1',nodes:['ci','ecr'],cap:'<b>1.</b> CI/CD assumes an IAM role, calls <code>ecr:GetAuthorizationToken</code> to get a 12-hour Docker login token, then <code>docker push</code>s each layer by content digest.',
+      detail:'ECR repository policies can grant cross-account pull without any imagePullSecret at all — the node\'s own IAM role is what authenticates, not a Kubernetes Secret, as long as source and destination are wired up correctly. Cross-account pulls need both a resource policy on the ECR repo <b>and</b> the consuming account\'s node/IRSA role granted ecr:GetDownloadUrlForLayer/BatchGetImage.',
+      qa:{q:'Q: Do you need an imagePullSecret to pull from ECR in the same AWS account as your EKS cluster?',a:'A: No — the node IAM role already has ECR pull permissions baked into the standard EKS node policy; imagePullSecrets are typically only needed for cross-account or third-party registries.'}},
+    {edge:'e2',nodes:['ecr','scan'],cap:'<b>2.</b> On push, ECR triggers a vulnerability scan (basic = on-push only, enhanced = continuous rescanning via Inspector as new CVEs are published against already-pushed images).',
+      detail:'Basic scanning only re-checks an image against the CVE database at push time — a new CVE published a month later against a library baked into an old, unchanged image won\'t surface unless enhanced scanning (continuous) is enabled. This is a common "why didn\'t we catch this CVE" gap in interviews and real incidents.',
+      qa:{q:'Q: A critical CVE was published last week for a library in an image you pushed three months ago. Basic ECR scanning shows it clean — why?',a:'A: Basic scanning only evaluates against the CVE database at push time; it never rescans existing images. Enhanced scanning (Inspector-backed, continuous) rescans stored images as new CVEs are published — basic scanning alone will miss this entirely.'}},
+    {edge:'e3',nodes:['ecr','vpce'],cap:'<b>3.</b> In a <b>private cluster</b> (no NAT gateway, no public subnets for nodes), pulling from ECR needs interface VPC endpoints for <code>ecr.api</code> and <code>ecr.dkr</code>, plus an S3 gateway endpoint — ECR layers are actually stored in S3 behind the scenes.',
+      detail:'Missing any one of these three endpoints gives a specific failure mode: the API calls (ecr.api) might succeed but the actual layer download (which redirects to S3) times out, or vice versa — partial connectivity is a classic private-cluster ECR debugging trap because it looks like "ECR is half-working."',
+      qa:{q:'Q: Nodes in a private-subnet-only EKS cluster can authenticate to ECR but image pulls hang and time out — what\'s missing?',a:'A: Almost certainly the S3 gateway VPC endpoint — ECR image layers are physically stored in S3, and while ecr.api/ecr.dkr interface endpoints handle registry API calls, actual layer bytes are fetched from S3, which needs its own endpoint or NAT path.'}},
+    {edge:'e4',nodes:['vpce','kubelet'],cap:'<b>4.</b> kubelet asks containerd (via CRI) to pull the image; <code>imagePullPolicy</code> decides whether that\'s even necessary — <code>Always</code> checks the registry every time, <code>IfNotPresent</code> trusts the local tag.',
+      detail:'The classic footgun: tagging images <code>:latest</code> combined with <code>imagePullPolicy: IfNotPresent</code> means a node that already has some old <code>:latest</code> cached will silently keep running that stale image forever, since the tag alone doesn\'t tell containerd anything changed. Pin to immutable digests or unique tags (git SHA) in production, and enable ECR tag immutability to make this a hard rule, not just a convention.',
+      qa:{q:'Q: You redeployed with a new image under the same :latest tag, but pods on some nodes are still running the old code — why?',a:'A: imagePullPolicy is probably IfNotPresent and those nodes already had a locally cached image under that tag, so containerd never re-pulled. Fix: use immutable digests/unique tags plus imagePullPolicy: Always, or enable ECR tag immutability.'}},
+    {edge:'e5',nodes:['kubelet','cache'],cap:'<b>5.</b> containerd checks its local, digest-addressed content store first — if this node already pulled a shared base-layer digest for a different image, it\'s reused with zero network transfer.',
+      detail:'This is the same content-addressable dedup mechanism from the Docker Fundamentals flow, just observed from the node side: pod density and image-pull latency both benefit heavily from small, shared base images (alpine/distroless) since more of the pull is "already have it" rather than "download it."',
+      qa:{q:'Q: Two unrelated services both share a large base image layer — does the second pod on the same node pay the pull cost again?',a:'A: No — containerd\'s content store is keyed by layer digest, not by image name; if that digest is already present on the node from any image, it\'s reused instantly with no network transfer.'}},
+    {edge:'e5',nodes:['kubelet','cache'],cap:'<b>6.</b> Only once every required layer is present does the CRI report success and the pod sandbox actually starts — a failure anywhere in this chain shows as <code>ErrImagePull</code> then <code>ImagePullBackOff</code> with exponential backoff.',
+      detail:'ImagePullBackOff\'s backoff is exponential (roughly 10s, 20s, 40s... capped at 5 minutes) specifically so a broken image reference or auth failure doesn\'t hammer the registry every second across potentially hundreds of nodes simultaneously trying the same failing pull.',
+      qa:{q:'Q: A pod is stuck in ImagePullBackOff — what\'s your triage order?',a:'A: kubectl describe pod for the exact error message first (auth denied vs manifest not found vs network timeout), then check imagePullSecrets/IAM role for auth issues, the exact image digest/tag for typos, and VPC endpoint/NAT connectivity if it\'s a private cluster — the error text almost always tells you which of these three it is.'}},
+  ],
+  traps:[
+    '<code>:latest</code> + <code>imagePullPolicy: IfNotPresent</code> = silent stale-image risk. Use immutable digests/unique tags plus ECR tag immutability in production.',
+    'ECR <b>basic</b> scanning only runs at push time — it never rescans old images for newly published CVEs. <b>Enhanced</b> scanning (Inspector) does continuous rescanning.',
+    'Private clusters need <b>three</b> VPC endpoints for ECR to work: <code>ecr.api</code>, <code>ecr.dkr</code>, and an <b>S3 gateway endpoint</b> (layers live in S3) — missing any one gives confusing partial-failure symptoms.',
+    '<code>ImagePullBackOff</code> uses <b>exponential backoff</b> (deliberately) to avoid hammering the registry from every node at once during an outage or bad tag.',
+  ],
+  cheat:[
+    'aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin <acct>.dkr.ecr.ap-south-1.amazonaws.com',
+    'aws ecr describe-image-scan-findings --repository-name myapp --image-id imageTag=v1',
+    'aws ecr batch-get-image --repository-name myapp --image-ids imageTag=v1',
+    'kubectl describe pod mypod   # check Events for the exact pull failure reason',
+    'crictl pull <image>          # test the pull directly on a node, bypassing kubelet',
+  ]},
+
+{ id:'secrets', name:'Secrets & Config', title:'Secrets Manager, IRSA & External Secrets Operator',
+  sub:'How a secret gets from AWS into a running container without ever being a long-lived static credential.',
+  nodes:[
+    {id:'eso',x:20,y:300,w:200,h:80,cat:'ctrl',label:'External Secrets Operator',sub:'ExternalSecret CRD'},
+    {id:'oidc',x:320,y:100,w:200,h:70,cat:'aws',label:'EKS OIDC Provider',sub:'IRSA token exchange'},
+    {id:'sm',x:640,y:100,w:200,h:70,cat:'aws',label:'AWS Secrets Manager',sub:'source of truth'},
+    {id:'rotate',x:640,y:280,w:200,h:70,cat:'aws',label:'Rotation Lambda',sub:'auto-rotates on schedule'},
+    {id:'k8ssecret',x:640,y:480,w:200,h:70,cat:'ctrl',label:'Kubernetes Secret',sub:'base64 — not encrypted'},
+    {id:'kmsenc',x:940,y:600,w:200,h:70,cat:'aws',label:'KMS Envelope Encryption',sub:'protects etcd at rest'},
+    {id:'pod',x:960,y:300,w:180,h:80,cat:'data',label:'Pod',sub:'env var or volume mount'},
+  ],
+  edges:[
+    {id:'e1',from:'eso',to:'oidc'},{id:'e2',from:'oidc',to:'sm'},{id:'e3',from:'sm',to:'k8ssecret'},
+    {id:'e4',from:'rotate',to:'sm'},{id:'e5',from:'k8ssecret',to:'kmsenc'},{id:'e6',from:'k8ssecret',to:'pod'},
+  ],
+  steps:[
+    {edge:'e1',nodes:['eso','oidc'],cap:'<b>1.</b> External Secrets Operator\'s ServiceAccount is IRSA-annotated — exactly the same OIDC token-exchange mechanism as any other pod needing AWS access, no static AWS keys stored anywhere in the cluster.',
+      detail:'ESO itself is just a controller reconciling an <code>ExternalSecret</code> custom resource — it has no special privilege of its own beyond whatever IAM role its ServiceAccount is bound to, so scoping that role\'s policy tightly (specific secret ARNs, not <code>secretsmanager:*</code>) directly limits blast radius if the operator pod itself is ever compromised.',
+      qa:{q:'Q: Why use External Secrets Operator with IRSA instead of just mounting AWS credentials as a Kubernetes Secret and reading Secrets Manager from app code?',a:'A: Storing AWS credentials as a Secret reintroduces the exact long-lived-credential risk IRSA was designed to eliminate; ESO with IRSA means no static AWS keys exist in the cluster at all, and the fetch logic is centralized and auditable in one controller instead of duplicated across every app.'}},
+    {edge:'e2',nodes:['oidc','sm'],cap:'<b>2.</b> The exchanged short-lived STS credentials let ESO call <code>secretsmanager:GetSecretValue</code> for exactly the ARNs its IAM policy allows — least privilege per operator instance/namespace if you run one ESO per team.',
+      detail:'ESO polls on a configurable <code>refreshInterval</code> (e.g. every hour) rather than reacting instantly to changes in Secrets Manager — there is no push notification from Secrets Manager into the cluster, so there\'s always a window between a secret changing upstream and the cluster catching up, bounded by that interval.',
+      qa:{q:'Q: You rotated a secret in Secrets Manager — how quickly does the running Pod see the new value?',a:'A: Not instantly — ESO only picks it up on its next refreshInterval poll, and even after the Kubernetes Secret updates, whether the Pod sees the change depends on whether it reads the secret from a mounted volume (auto-refreshes) or an env var (frozen at container start).'}},
+    {edge:'e3',nodes:['sm','k8ssecret'],cap:'<b>3.</b> ESO writes the fetched value into a native Kubernetes <code>Secret</code> object in the target namespace — which is only <b>base64-encoded</b>, not encrypted, by default.',
+      detail:'Anyone with RBAC read access to Secrets in that namespace (or etcd access, or a cluster-admin) can trivially decode base64 — Kubernetes Secrets are an access-control boundary via RBAC, not a cryptographic one, unless you separately enable envelope encryption at rest.',
+      qa:{q:'Q: Is a Kubernetes Secret object actually encrypted?',a:'A: Not by default — the value is only base64-encoded, which is trivially reversible. Confidentiality comes from RBAC restricting who can read Secret objects, plus optionally KMS envelope encryption for etcd at-rest protection; base64 itself provides zero cryptographic protection.'}},
+    {edge:'e4',nodes:['rotate','sm'],cap:'<b>4.</b> Independently, a Secrets Manager rotation Lambda can rotate the underlying credential (e.g. an RDS password) on a schedule — this is entirely decoupled from whether or how Kubernetes has cached a copy.',
+      detail:'This creates a real edge case: if the rotation Lambda rotates a DB password and the old one is immediately invalidated, but ESO\'s refreshInterval hasn\'t fired yet and your app reads secrets only as env vars (frozen at pod start), the app will get authentication failures against the DB until either the pod restarts or the refresh plus a rolling restart happens.',
+      qa:{q:'Q: After a scheduled Secrets Manager rotation, some pods start failing DB auth while others are fine — likely cause?',a:'A: Pods reading the secret as an env var only pick up the value at container start, so they\'re stuck on the old, now-rotated-out credential until restarted; pods using a volume-mounted secret would have picked up the refreshed value automatically once ESO synced — the fix is to prefer volume mounts for anything that rotates, or trigger a rolling restart on rotation.'}},
+    {edge:'e5',nodes:['k8ssecret','kmsenc'],cap:'<b>5.</b> Separately, EKS supports <b>envelope encryption</b> for Secret objects at rest in etcd using a customer-managed KMS key — this must be explicitly enabled and is a different control from anything Secrets Manager does.',
+      detail:'This is a genuinely separate axis from "Secrets Manager rotation": envelope encryption protects the etcd disk/snapshot from being readable if exfiltrated, while Secrets Manager + ESO is about not hardcoding credentials and centralizing rotation. Both are commonly needed together, and conflating them is a common interview miss.',
+      qa:{q:'Q: If you\'ve set up External Secrets Operator pulling from Secrets Manager, is your cluster\'s etcd data automatically encrypted?',a:'A: No — those are unrelated controls. ESO/Secrets Manager governs where the source of truth lives and how it\'s synced in; etcd envelope encryption (a separate EKS cluster-level KMS setting) governs whether the resulting Kubernetes Secret object is encrypted at rest on disk. You need both for defense in depth.'}},
+    {edge:'e6',nodes:['k8ssecret','pod'],cap:'<b>6.</b> The Secret is finally mounted into the Pod — as a <b>volume</b> (kubelet re-syncs it roughly every 60-90 seconds on change) or an <b>env var</b> (fixed for the container\'s entire lifetime).',
+      detail:'This single choice — volume vs env var — is the most consequential decision in this whole flow for anything that ever rotates: env vars are simpler to wire up in app code but require a pod restart to ever see a new value, while volume mounts add a small amount of complexity (watching a file for changes) but stay current automatically.',
+      qa:{q:'Q: For a database password that rotates automatically, should you inject it via env var or volume mount?',a:'A: Volume mount — kubelet automatically re-syncs mounted Secret volumes on change (within roughly a minute), so the app can pick up rotated credentials without a pod restart, whereas an env var is fixed at container start and would require restarting every pod to see the new value.'}},
+  ],
+  traps:[
+    'Kubernetes Secrets are <b>base64, not encrypted</b> — confidentiality comes from RBAC (and optionally KMS envelope encryption for etcd), not from the encoding itself.',
+    'Env var secrets are <b>frozen at container start</b> — only volume-mounted secrets auto-refresh (~60-90s) when the underlying Secret object changes.',
+    'Secrets Manager rotation and EKS <b>etcd envelope encryption</b> are two independent controls that solve different problems — don\'t conflate "we rotate secrets" with "our cluster data is encrypted at rest."',
+    'ESO polls on a <code>refreshInterval</code> — there is no push notification from Secrets Manager, so there is always some propagation delay after a rotation.',
+  ],
+  cheat:[
+    'kubectl get secret mysecret -o jsonpath="{.data.password}" | base64 -d',
+    'aws secretsmanager get-secret-value --secret-id myapp/db-password',
+    'kubectl describe externalsecret myapp-secret',
+    'kubectl get sa myapp -o yaml   # check eks.amazonaws.com/role-arn annotation',
+    'aws eks describe-cluster --name my-cluster --query "cluster.encryptionConfig"',
+  ]},
+
+{ id:'nodefail', name:'Node Failure / Spot', title:'Node Failure, Spot Interruption & Reprovisioning',
+  sub:'Two very different paths — a warned, graceful exit vs. a silent, unwarned death — and why they behave nothing alike.',
+  nodes:[
+    {id:'notice',x:20,y:100,w:210,h:70,cat:'aws',label:'Spot Interruption Notice',sub:'2-min warning via IMDS'},
+    {id:'hardfail',x:20,y:500,w:210,h:70,cat:'aws',label:'Instance Hard Failure',sub:'no warning, just vanishes'},
+    {id:'handler',x:320,y:100,w:210,h:70,cat:'ctrl',label:'Interruption Handler',sub:'NTH / Karpenter built-in'},
+    {id:'nodectrl',x:320,y:500,w:230,h:80,cat:'aws',label:'Node Lifecycle Controller',sub:'confirms via EC2 API, 40s heartbeat'},
+    {id:'taint',x:660,y:300,w:210,h:80,cat:'ctrl',label:'NoExecute Taint',sub:'graceful drain / unreachable'},
+    {id:'evict',x:960,y:100,w:200,h:70,cat:'ctrl',label:'Pod Eviction',sub:'respects PodDisruptionBudget'},
+    {id:'karpenter',x:960,y:500,w:200,h:70,cat:'aws',label:'Karpenter Reprovision',sub:'right-sized replacement, direct EC2'},
+  ],
+  edges:[
+    {id:'e1',from:'notice',to:'handler'},{id:'e2',from:'hardfail',to:'nodectrl'},{id:'e3',from:'handler',to:'taint'},
+    {id:'e4',from:'nodectrl',to:'taint'},{id:'e5',from:'taint',to:'evict'},{id:'e6',from:'evict',to:'karpenter'},
+  ],
+  steps:[
+    {edge:'e1',nodes:['notice','handler'],cap:'<b>1. Graceful path:</b> AWS publishes a Spot interruption notice to the instance metadata service <b>2 minutes</b> before reclaiming the instance — Karpenter\'s built-in handler (or the standalone aws-node-termination-handler) polls IMDS and reacts immediately.',
+      detail:'Karpenter watches for both the mandatory 2-minute interruption notice and the earlier, non-mandatory "rebalance recommendation" signal — the latter fires when AWS predicts elevated interruption risk before it\'s certain, letting Karpenter proactively move workloads before the hard 2-minute clock even starts.',
+      qa:{q:'Q: What\'s the difference between a Spot rebalance recommendation and a Spot interruption notice?',a:'A: A rebalance recommendation is an earlier, probabilistic signal that a Spot instance has an elevated chance of being reclaimed soon — no guaranteed timeline; the interruption notice is the hard, mandatory 2-minute warning that reclamation is definitely happening. Reacting to the rebalance signal gives more lead time to migrate workloads cleanly.'}},
+    {edge:'e2',nodes:['hardfail','nodectrl'],cap:'<b>2. Ungraceful path:</b> a plain instance failure (hardware fault, kernel panic) gives <b>zero warning</b> — kubelet simply stops sending heartbeats, and the node is marked <code>NotReady</code> after the node-monitor-grace-period (default 40s).',
+      detail:'The cloud-controller-manager\'s node lifecycle controller then independently calls the EC2 API to check if the instance actually still exists — this confirmation step exists specifically so a node that\'s merely network-partitioned (but still alive and running pods) isn\'t treated the same as one that\'s truly gone, avoiding split-brain pod duplication.',
+      qa:{q:'Q: A node goes NotReady — does Kubernetes immediately assume it\'s dead and reschedule its pods elsewhere?',a:'A: Not immediately — the node lifecycle controller (part of cloud-controller-manager on EKS) checks with the EC2 API to confirm the instance is actually gone before acting aggressively; this guards against treating a merely network-partitioned-but-alive node the same as a genuinely terminated one, which could otherwise cause the same pod to run twice.'}},
+    {edge:'e5',nodes:['taint','evict'],cap:'<b>3.</b> In the <b>graceful</b> path, the handler cordons and drains the node itself before termination — pods are evicted through the normal Eviction API, which honors PodDisruptionBudgets, right away, in an orderly fashion.',
+      detail:'This orderly drain is exactly the same mechanism used for planned node-group upgrades — the only difference is what triggered it (a 2-minute countdown vs. an admin-initiated rolling update). If a PDB is too strict (e.g. minAvailable=100% on a single-replica-tolerant app), the drain can stall right up against the 2-minute deadline and the node gets force-terminated anyway by AWS regardless of Kubernetes\' wishes.',
+      qa:{q:'Q: Your PDB is blocking eviction of the last pod on a node that\'s about to be Spot-reclaimed in 30 seconds — what happens?',a:'A: AWS reclaims the instance on its own schedule regardless of Kubernetes\' PDB — the PDB can delay a voluntary, Kubernetes-initiated eviction, but it cannot stop AWS from terminating the underlying EC2 instance. The pod goes down abruptly once the hardware disappears, PDB or not.'}},
+    {edge:'e4',nodes:['nodectrl','taint'],cap:'<b>4.</b> In the <b>ungraceful</b> path, once EC2 confirms the instance is gone, the node gets a <code>node.kubernetes.io/unreachable</code> <b>NoExecute</b> taint, and pods without a matching toleration start a <code>pod-eviction-timeout</code> countdown (default 5 minutes) before being force-deleted.',
+      detail:'Those 5 minutes matter operationally: until the timeout fires (or an admin force-deletes the pods), Kubernetes still considers them "running" from a scheduling perspective — a StatefulSet\'s pod won\'t be recreated elsewhere until the old one is definitively gone, which is a deliberate safety measure against split-brain (two copies of a stateful workload writing to the same volume simultaneously).',
+      qa:{q:'Q: Why doesn\'t Kubernetes immediately reschedule a StatefulSet pod the instant its node goes NotReady?',a:'A: Because the node might still be alive but network-partitioned, meaning the old pod could still be running and writing to shared storage; immediately starting a duplicate elsewhere risks two instances of the same stateful workload corrupting shared state. The 5-minute pod-eviction-timeout exists to prevent exactly that split-brain scenario.'}},
+    {edge:'e6',nodes:['evict','karpenter'],cap:'<b>5.</b> Whichever path triggered it, evicted/pending pods surface to the autoscaler. <b>Karpenter</b> provisions a right-sized replacement by calling the EC2 Fleet API <b>directly</b> — no Auto Scaling Group in the loop at all, unlike Cluster Autoscaler.',
+      detail:'This is Karpenter\'s core architectural difference from Cluster Autoscaler: CA scales a pre-defined ASG (so instance type is fixed by the ASG\'s launch template ahead of time), while Karpenter looks at the actual pending pods\' resource requests and picks the best-fitting instance type/AZ on demand — generally faster to provision and better bin-packed, at the cost of being a newer, separately-operated component.',
+      qa:{q:'Q: How does Karpenter decide what EC2 instance type to launch, compared to Cluster Autoscaler?',a:'A: Cluster Autoscaler scales an existing ASG, so the instance type is whatever that ASG\'s launch template already specifies — fixed ahead of time. Karpenter instead looks at the actual pending pods\' CPU/memory requests and constraints, then calls the EC2 Fleet API directly to launch whichever instance type best fits right now, with no ASG involved.'}},
+    {edge:'e3',nodes:['handler','taint'],cap:'<b>6. Edge case — consolidation:</b> Karpenter doesn\'t only react to failures — it proactively terminates <b>underutilized</b> nodes during normal operation (consolidation) using this exact same drain protocol, to save cost.',
+      detail:'Consolidation is opt-in and configurable (disruption budgets similar in spirit to PDBs) precisely because aggressively repacking workloads has the same disruption risk as any other drain — a workload that assumes its node never changes underneath it (e.g. relying on local ephemeral disk state) will suffer the same way it would during a Spot interruption.',
+      qa:{q:'Q: Karpenter is deleting and replacing nodes even though nothing is failing — is this a bug?',a:'A: No — that\'s consolidation: Karpenter continuously looks for opportunities to replace multiple underutilized nodes with fewer, better-packed ones (or cheaper instance types) to reduce cost, using the same graceful drain mechanism as any other node replacement. It respects disruption budgets/PDBs the same way a planned upgrade would.'}},
+  ],
+  traps:[
+    'A Spot <b>rebalance recommendation</b> (early, probabilistic) is not the same as the <b>interruption notice</b> (mandatory, 2-minute) — know both.',
+    'PDBs can delay a <b>voluntary</b> Kubernetes-initiated eviction, but cannot stop AWS from terminating the underlying EC2 instance on its own schedule.',
+    'The 5-minute <code>pod-eviction-timeout</code> after a node goes <code>NotReady</code>+unreachable exists specifically to avoid split-brain on stateful workloads — it is a safety feature, not a bug.',
+    'Karpenter bypasses ASGs entirely, calling the EC2 Fleet API directly — this is the key architectural difference from Cluster Autoscaler, not just "a newer autoscaler."',
+  ],
+  cheat:[
+    'kubectl get nodes -o wide --watch',
+    'kubectl describe node <node>   # check Taints and Conditions',
+    'kubectl get events --field-selector involvedObject.kind=Node',
+    'kubectl delete pod <pod> --grace-period=0 --force   # only for a confirmed-dead node',
+    'kubectl get nodeclaims,nodepools   # Karpenter-specific resources',
+  ]},
+
+{ id:'upgrade', name:'Cluster Upgrade', title:'EKS Version Upgrade: Control Plane → Add-ons → Nodes',
+  sub:'Three separate, sequential upgrades you own — the control plane moving does not move anything else for you.',
+  nodes:[
+    {id:'precheck',x:20,y:300,w:190,h:70,cat:'client',label:'Pre-Upgrade Check',sub:'deprecated/removed API scan'},
+    {id:'cp',x:320,y:120,w:200,h:70,cat:'ctrl',label:'Control Plane Upgrade',sub:'update-cluster-version'},
+    {id:'addons',x:320,y:500,w:200,h:70,cat:'aws',label:'Add-on Upgrade',sub:'CoreDNS / kube-proxy / VPC CNI'},
+    {id:'skew',x:660,y:300,w:210,h:90,cat:'ctrl',label:'Version Skew Window',sub:'kubelet up to n-3 behind (temporary)'},
+    {id:'nodeupgrade',x:980,y:120,w:200,h:70,cat:'data',label:'Node Group Upgrade',sub:'new AMI, rolling replace'},
+    {id:'validate',x:980,y:500,w:200,h:70,cat:'client',label:'Post-Upgrade Validation',sub:'confirm versions + health'},
+  ],
+  edges:[
+    {id:'e1',from:'precheck',to:'cp'},{id:'e2',from:'cp',to:'addons'},{id:'e3',from:'cp',to:'skew'},
+    {id:'e4',from:'addons',to:'skew'},{id:'e5',from:'skew',to:'nodeupgrade'},{id:'e6',from:'nodeupgrade',to:'validate'},
+  ],
+  steps:[
+    {edge:'e1',nodes:['precheck','cp'],cap:'<b>1.</b> Before touching anything, scan the cluster for usage of <b>deprecated or removed</b> API versions for the target minor version — EKS control-plane upgrades are <b>one minor version at a time</b>, no skipping.',
+      detail:'A manifest still using a removed API version (e.g. an old <code>Ingress</code> or <code>PodSecurityPolicy</code> API) will silently stop being served the moment the control plane crosses that version boundary — existing running workloads keep running, but any future create/update against that API group fails outright, often discovered only during the next deploy, well after the upgrade "succeeded."',
+      qa:{q:'Q: Can you upgrade an EKS cluster directly from 1.27 to 1.30 in one step?',a:'A: No — EKS control-plane upgrades must go one minor version at a time (1.27→1.28→1.29→1.30), each a separate update-cluster-version call; this is an explicit AWS/Kubernetes constraint, not just a best practice.'}},
+    {edge:'e2',nodes:['cp','addons'],cap:'<b>2.</b> <code>aws eks update-cluster-version</code> upgrades the control plane <b>in place</b> — API server, etcd data migration, scheduler, controller-manager — with no user-visible "old vs new" cluster; this is irreversible, there is no downgrade path.',
+      detail:'Because this is irreversible, the pre-upgrade check in step 1 is the entire safety net — once the control plane is upgraded, the only way back to an older minor version is restoring from a backup/snapshot into a brand-new cluster, not an in-place rollback.',
+      qa:{q:'Q: You upgraded the control plane and something broke — can you roll back to the previous Kubernetes minor version?',a:'A: No — EKS control-plane version upgrades are one-way. There is no in-place downgrade; recovering means restoring workloads onto a new cluster pinned to the old version, or fixing forward. This is exactly why the pre-upgrade deprecated-API check matters so much.'}},
+    {edge:'e4',nodes:['addons','skew'],cap:'<b>3.</b> Managed add-ons — CoreDNS, kube-proxy, VPC CNI — are versioned <b>independently</b> of the control plane and must be explicitly upgraded to versions compatible with the new minor version; the control-plane bump does not touch these automatically.',
+      detail:'Each add-on has its own compatibility matrix against control-plane versions, checkable via <code>aws eks describe-addon-versions</code> — running a too-old kube-proxy against a much newer API server is exactly the kind of thing the version skew policy tolerates briefly but not indefinitely.',
+      qa:{q:'Q: You upgraded the EKS control plane to 1.30 — are CoreDNS, kube-proxy, and VPC CNI now automatically on compatible versions?',a:'A: No — managed add-ons are versioned and upgraded independently; the control-plane bump alone does nothing to them. You must explicitly update each add-on (or let EKS auto-update policies handle it if configured) to a version compatible with 1.30.'}},
+    {edge:'e5',nodes:['skew','nodeupgrade'],cap:'<b>4.</b> Node groups get new AMIs matching the target minor version and are rolled out via the same cordon/drain/replace mechanism as any managed node group update — the control plane being newer doesn\'t force this, it just permits it.',
+      detail:'During the rollout, some nodes run the old kubelet version and some run the new one simultaneously — Kubernetes\' version skew policy on EKS tolerates kubelet being up to <b>3 minor versions behind</b> (n-3) the API server temporarily, which is exactly the window this rolling upgrade lives inside, but it is not meant as a long-term steady state.',
+      qa:{q:'Q: Right after a control-plane upgrade, some of your nodes are still on the old kubelet version — is the cluster broken?',a:'A: No, this is expected and tolerated — EKS\'s version skew policy allows kubelet to run up to n-3 minor versions behind the API server temporarily, which is exactly the transient state during a rolling node-group upgrade. It should not, however, be left in that state indefinitely.'}},
+    {edge:'e6',nodes:['nodeupgrade','validate'],cap:'<b>5.</b> Post-upgrade, re-run the deprecated-API scan (now against the version you just moved <i>to</i>, in preparation for the <i>next</i> upgrade), and confirm every node reports the new kubelet version.',
+      detail:'This closes the loop into a repeatable pattern: pre-check → control plane → add-ons → nodes → post-check, one minor version at a time — teams that automate this as a pipeline (rather than a manual annual scramble) tend to stay much closer to the AWS-supported version window and avoid forced, larger, riskier jumps.',
+      qa:{q:'Q: What\'s a practical strategy for avoiding painful, high-risk EKS upgrades?',a:'A: Upgrade one minor version at a time on a regular cadence (e.g. every quarter) rather than waiting until you\'re forced by end-of-support — each individual hop is small, well-tested, and reversible-by-restore-only in the worst case, versus a rare, high-stakes multi-version jump under deadline pressure.'}},
+  ],
+  traps:[
+    'EKS control-plane upgrades are <b>one minor version at a time</b>, strictly sequential — no skipping versions in a single call.',
+    'Upgrading the control plane does <b>not</b> upgrade add-ons (CoreDNS/kube-proxy/VPC CNI) or node groups — three separate, explicit steps you own.',
+    'Control-plane upgrades are <b>irreversible</b> — no in-place downgrade; recovery means restore-to-a-new-cluster, not rollback.',
+    'Version skew policy allows kubelet up to <b>n-3</b> behind the API server on EKS, but only as a <i>transient</i> rollout state, not a target architecture.',
+  ],
+  cheat:[
+    'aws eks update-cluster-version --name my-cluster --kubernetes-version 1.30',
+    'aws eks describe-update --name my-cluster --update-id <id>',
+    'aws eks describe-addon-versions --addon-name vpc-cni --kubernetes-version 1.30',
+    'kubectl get nodes -o custom-columns=NAME:.metadata.name,KUBELET:.status.nodeInfo.kubeletVersion',
+    'pluto detect-api-resources -d ./manifests   # scan for deprecated/removed APIs',
+  ]},
+
+{ id:'observability', name:'Observability', title:'Logs & Metrics: Fluent Bit, CloudWatch & Managed Prometheus',
+  sub:'Two separate pipelines — logs and metrics — that people constantly conflate, especially around what actually powers HPA.',
+  nodes:[
+    {id:'podlogs',x:20,y:100,w:200,h:70,cat:'data',label:'Pod stdout/stderr',sub:'captured by containerd'},
+    {id:'fluentbit',x:320,y:100,w:200,h:70,cat:'data',label:'Fluent Bit DaemonSet',sub:'tails node log files'},
+    {id:'cwlogs',x:640,y:60,w:200,h:70,cat:'aws',label:'CloudWatch Logs',sub:'per-namespace log groups'},
+    {id:'cadvisor',x:20,y:500,w:200,h:70,cat:'data',label:'cAdvisor (in kubelet)',sub:'per-container resource metrics'},
+    {id:'metricsrv',x:320,y:500,w:200,h:70,cat:'ctrl',label:'metrics-server',sub:'lightweight — powers HPA'},
+    {id:'amp',x:640,y:420,w:210,h:80,cat:'aws',label:'Amazon Managed Prometheus',sub:'PromQL, long retention'},
+    {id:'grafana',x:980,y:250,w:200,h:70,cat:'aws',label:'Amazon Managed Grafana',sub:'unified dashboards'},
+  ],
+  edges:[
+    {id:'e1',from:'podlogs',to:'fluentbit'},{id:'e2',from:'fluentbit',to:'cwlogs'},{id:'e3',from:'cadvisor',to:'metricsrv'},
+    {id:'e4',from:'cadvisor',to:'amp'},{id:'e5',from:'amp',to:'grafana'},{id:'e6',from:'cwlogs',to:'grafana'},
+  ],
+  steps:[
+    {edge:'e1',nodes:['podlogs','fluentbit'],cap:'<b>1.</b> Containers\' stdout/stderr is captured by containerd and written to node-local log files — this is the <b>entire</b> data source behind <code>kubectl logs</code>, nothing more sophisticated is happening underneath.',
+      detail:'kubectl logs reads from whichever node the pod is/was on, via the kubelet API proxying to that local file — if the node itself is gone (terminated, Spot-reclaimed) before something else shipped those logs elsewhere, they are permanently gone, not recoverable from the API server or anywhere else.',
+      qa:{q:'Q: A pod crashed, its node was then terminated by the cluster autoscaler, and now kubectl logs --previous returns nothing — why?',a:'A: kubectl logs reads local log files on the node via the kubelet API; once that node is gone, those files are gone with it. Unless a log shipper like Fluent Bit had already forwarded them off-node before termination, there is no other copy anywhere in the cluster.'}},
+    {edge:'e2',nodes:['fluentbit','cwlogs'],cap:'<b>2.</b> A Fluent Bit <b>DaemonSet</b> (one pod per node) tails those local log files, enriches each line with Kubernetes metadata (namespace, pod labels) by watching the API, and ships batches to CloudWatch Logs — this is what actually gets logs off-node.',
+      detail:'Because shipping is batched and buffered, there\'s a real edge case: if a node is terminated abruptly (hard failure, ungraceful Spot reclaim with too-short a grace period) before Fluent Bit flushes its current buffer, that last batch of log lines is lost — tuning buffer size/flush interval trades off shipping latency against this loss window.',
+      qa:{q:'Q: Why might you lose the last few seconds of logs from a pod during an abrupt node termination, even with Fluent Bit running?',a:'A: Fluent Bit batches and buffers log lines before shipping for efficiency; if the node disappears before the current buffer flushes to CloudWatch, that unflushed batch is lost. Shorter flush intervals reduce this loss window at the cost of more frequent, smaller API calls.'}},
+    {edge:'e3',nodes:['cadvisor','metricsrv'],cap:'<b>3.</b> <b>cAdvisor</b> is built directly into kubelet (not a separate DaemonSet you install) and exposes per-container CPU/memory usage; the lightweight <b>metrics-server</b> scrapes this cluster-wide and is specifically what <code>kubectl top</code> and <b>HPA</b> read from.',
+      detail:'metrics-server deliberately keeps no history — it only exposes current, real-time usage, which is all HPA needs to make scaling decisions every sync period (default 15s). This is why metrics-server cannot answer "what was CPU usage an hour ago," and why it is architecturally distinct from and much simpler than a full Prometheus/Container Insights setup.',
+      qa:{q:'Q: Does HPA query Prometheus or CloudWatch Container Insights to decide when to scale?',a:'A: No, by default — HPA reads from the Kubernetes metrics API, which metrics-server (a separate, minimal, no-history component built on cAdvisor data) provides. To let HPA scale on custom Prometheus metrics instead, you need an adapter like prometheus-adapter exposing those metrics through the same custom-metrics API shape.'}},
+    {edge:'e4',nodes:['cadvisor','amp'],cap:'<b>4.</b> The <b>same</b> underlying per-container metrics (plus node-exporter and kube-state-metrics for broader cluster state) can also be scraped by an ADOT (OpenTelemetry) collector and remote-written into <b>Amazon Managed Prometheus</b> — a parallel, richer path alongside metrics-server, not a replacement for it.',
+      detail:'AMP gives full PromQL and long-term retention that neither metrics-server (no history) nor CloudWatch Container Insights (fixed dashboards, not arbitrary queries) provide — teams commonly run all three simultaneously, each for a different job: metrics-server for HPA, Container Insights for quick built-in dashboards, AMP for deep custom querying and alerting rules.',
+      qa:{q:'Q: If you already have CloudWatch Container Insights running, why would you also set up Amazon Managed Prometheus?',a:'A: Container Insights gives fixed, pre-built dashboards and coarser metric granularity; AMP gives full PromQL for arbitrary custom queries, Prometheus-native alerting rules, and typically finer-grained/longer retention — many teams run both because they solve different problems, not as competing alternatives.'}},
+    {edge:'e5',nodes:['amp','grafana'],cap:'<b>5.</b> <b>Amazon Managed Grafana</b> visualizes AMP (and CloudWatch) as data sources side by side, without you self-hosting Grafana/Prometheus HA, storage, or upgrade burden — genuinely offloaded, not just "someone else\'s VM."',
+      detail:'Because AMP is remote-write compatible with standard Prometheus exposition format, migrating an existing self-hosted Prometheus setup to AMP is usually a config change (remote_write endpoint + IAM SigV4 auth) rather than a rewrite of every existing dashboard/alerting rule.',
+      qa:{q:'Q: You have an existing self-managed Prometheus setup with custom dashboards and alert rules — what does migrating to Amazon Managed Prometheus actually involve?',a:'A: Typically just repointing your existing scrape/remote-write configuration at the AMP workspace endpoint (with SigV4-signed requests), since AMP is wire-compatible with standard Prometheus — existing PromQL dashboards and alerting rules generally carry over with little to no rewriting.'}},
+    {edge:'e6',nodes:['cwlogs','grafana'],cap:'<b>6.</b> Managed Grafana can also pull in CloudWatch Logs Insights queries as a data source, giving one pane of glass across logs (CloudWatch) and metrics (AMP) — closing the loop between the two pipelines this whole flow walked through.',
+      detail:'This dual-pipeline reality — one path entirely for logs (containerd → Fluent Bit → CloudWatch Logs) and a completely separate path for metrics (cAdvisor → metrics-server/ADOT → AMP/Container Insights) — is worth stating explicitly in an interview: they share almost no infrastructure, and a failure in one (e.g. Fluent Bit crash-looping) has zero effect on the other (HPA keeps working fine).',
+      qa:{q:'Q: Fluent Bit is crash-looping cluster-wide and no new logs are reaching CloudWatch — does this affect HPA\'s ability to scale pods?',a:'A: No — HPA reads from metrics-server, which is fed by cAdvisor via kubelet directly, completely independent of the logging pipeline (Fluent Bit → CloudWatch). The two pipelines share no infrastructure, so a total logging outage has zero effect on autoscaling decisions.'}},
+  ],
+  traps:[
+    '<code>kubectl logs</code> only ever reads <b>local node log files</b> via kubelet — if the node is gone before shipping happened, the logs are gone, period.',
+    '<b>metrics-server</b> (minimal, no history, powers HPA/kubectl top) is architecturally distinct from full Prometheus/Container Insights — do not conflate them.',
+    'HPA cannot query Prometheus/AMP directly — it needs an adapter (e.g. prometheus-adapter) exposing custom metrics through the Kubernetes custom-metrics API.',
+    '<b>cAdvisor</b> is baked into kubelet already — it is not a separate DaemonSet you need to deploy, unlike Fluent Bit or node-exporter.',
+  ],
+  cheat:[
+    'kubectl logs pod --previous',
+    'kubectl top pod / kubectl top node   # requires metrics-server',
+    'aws logs tail /aws/containerinsights/my-cluster/application --follow',
+    'kubectl get apiservices | grep metrics   # confirm metrics-server registered',
+    'aws amp create-workspace --alias my-cluster-metrics',
+  ]},
+];
+
+let current = 0, step = -1, playing = false, timer = null;
+
+const tabsEl = document.getElementById('tabs');
+const svg = document.getElementById('svg');
+const ftitle = document.getElementById('ftitle');
+const fsub = document.getElementById('fsub');
+const caption = document.getElementById('caption');
+const deepBox = document.getElementById('deep');
+const deepText = document.getElementById('deeptext');
+const qaBox = document.getElementById('qa');
+const qtext = document.getElementById('qtext');
+const atext = document.getElementById('atext');
+const stepcount = document.getElementById('stepcount');
+const trapsEl = document.getElementById('traps');
+const cheatEl = document.getElementById('cheatpre');
+const stepnavEl = document.getElementById('stepnav');
+
+function buildTabs(){
+  FLOWS.forEach((f,i)=>{
+    const b = document.createElement('button');
+    b.className = 'tab' + (i===current?' active':'');
+    b.textContent = (i+1)+'. '+f.name;
+    b.onclick = ()=>{ selectFlow(i); };
+    tabsEl.appendChild(b);
+  });
+}
+function ns(tag){ return document.createElementNS('http://www.w3.org/2000/svg', tag); }
+
+function buildStepNav(){
+  stepnavEl.innerHTML = '';
+  const f = FLOWS[current];
+  f.steps.forEach((s,i)=>{
+    const d = document.createElement('div');
+    d.className = 'stepdot';
+    d.textContent = i+1;
+    d.onclick = ()=>{ stopPlay(); step = i; showStep(step); };
+    stepnavEl.appendChild(d);
+  });
+}
+function markStepNav(i){
+  [...stepnavEl.children].forEach((el,idx)=>el.classList.toggle('on', idx===i));
+}
+
+function renderFlow(){
+  const f = FLOWS[current];
+  svg.innerHTML = '';
+  ftitle.textContent = f.title;
+  fsub.textContent = f.sub;
+  trapsEl.innerHTML = f.traps.map(t=>'<li>'+t+'</li>').join('');
+  cheatEl.innerHTML = f.cheat.map(c=>'<span class="c1">$</span> '+c).join('\n');
+  buildStepNav();
+
+  const nodeMap = {};
+  f.nodes.forEach(n=>nodeMap[n.id]=n);
+
+  f.edges.forEach(e=>{
+    const a = nodeMap[e.from], b = nodeMap[e.to];
+    const p = ns('path');
+    p.setAttribute('id','path-'+e.id);
+    p.setAttribute('d', edgePath(a,b));
+    p.setAttribute('class','edge');
+    p.setAttribute('marker-end','url(#arrow)');
+    svg.appendChild(p);
+  });
+
+  const defs = ns('defs');
+  defs.innerHTML = `<marker id="arrow" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto" markerUnits="strokeWidth">
+    <path d="M0,0 L0,6 L7,3 z" fill="#2a3850"/></marker>`;
+  svg.insertBefore(defs, svg.firstChild);
+
+  const dot = ns('circle');
+  dot.setAttribute('id','traveldot');
+  dot.setAttribute('r','6');
+  dot.setAttribute('fill','#ffffff');
+  dot.setAttribute('class','pulse');
+  dot.style.filter = 'drop-shadow(0 0 8px #22d3ee)';
+  svg.appendChild(dot);
+
+  f.nodes.forEach(n=>{
+    const g = ns('g');
+    g.setAttribute('class','node');
+    g.setAttribute('id','node-'+n.id);
+    const color = COLORS[n.cat] || '#888';
+    g.style.color = color;
+
+    const rect = ns('rect');
+    rect.setAttribute('x',n.x); rect.setAttribute('y',n.y);
+    rect.setAttribute('width',n.w); rect.setAttribute('height',n.h);
+    rect.setAttribute('rx',10);
+    rect.setAttribute('class','node-rect');
+    rect.setAttribute('fill', color+'14');
+    rect.setAttribute('stroke', color);
+    g.appendChild(rect);
+
+    const t1 = ns('text');
+    t1.setAttribute('x', n.x+14); t1.setAttribute('y', n.y+n.h/2 - (n.sub? 4 : -5));
+    t1.setAttribute('class','nlabel');
+    t1.textContent = n.label;
+    g.appendChild(t1);
+
+    if(n.sub){
+      const t2 = ns('text');
+      t2.setAttribute('x', n.x+14); t2.setAttribute('y', n.y+n.h/2 + 14);
+      t2.setAttribute('class','nsub');
+      t2.textContent = n.sub;
+      g.appendChild(t2);
+    }
+    svg.appendChild(g);
+  });
+
+  stepcount.textContent = '0/'+f.steps.length;
+  caption.innerHTML = 'Press ▶ Play to start the simulation, or click a step number below the controls to jump directly.';
+  deepBox.style.display = 'none';
+  qaBox.style.display = 'none';
+  clearHighlights();
+  markStepNav(-1);
+}
+
+function clearHighlights(){
+  svg.querySelectorAll('.edge').forEach(e=>e.classList.remove('on'));
+  svg.querySelectorAll('.node').forEach(n=>n.classList.remove('on'));
+  const dot = document.getElementById('traveldot');
+  if(dot) dot.style.opacity = 0;
+}
+
+function showStep(i){
+  const f = FLOWS[current];
+  if(i<0 || i>=f.steps.length) return;
+  clearHighlights();
+  const s = f.steps[i];
+  const edgeEl = document.getElementById('path-'+s.edge);
+  if(edgeEl) edgeEl.classList.add('on');
+  s.nodes.forEach(nid=>{
+    const nEl = document.getElementById('node-'+nid);
+    if(nEl) nEl.classList.add('on');
+  });
+  caption.innerHTML = s.cap;
+  deepBox.style.display = 'block';
+  deepText.innerHTML = s.detail || '';
+  if(s.qa){
+    qaBox.style.display = 'block';
+    qtext.textContent = s.qa.q;
+    atext.textContent = s.qa.a;
+  } else {
+    qaBox.style.display = 'none';
+  }
+  stepcount.textContent = (i+1)+'/'+f.steps.length;
+  markStepNav(i);
+
+  if(edgeEl){
+    const dot = document.getElementById('traveldot');
+    const len = edgeEl.getTotalLength();
+    dot.style.opacity = 1;
+    const dur = 900;
+    const start = performance.now();
+    function frame(now){
+      const t = Math.min(1, (now-start)/dur);
+      const pt = edgeEl.getPointAtLength(t*len);
+      dot.setAttribute('cx', pt.x);
+      dot.setAttribute('cy', pt.y);
+      if(t<1 && step===i) requestAnimationFrame(frame);
+    }
+    requestAnimationFrame(frame);
+  }
+}
+
+function selectFlow(i){
+  current = i;
+  stopPlay();
+  step = -1;
+  [...tabsEl.children].forEach((el,idx)=>el.classList.toggle('active', idx===i));
+  renderFlow();
+}
+function nextStep(){
+  const f = FLOWS[current];
+  if(step >= f.steps.length-1){ stopPlay(); return; }
+  step++;
+  showStep(step);
+}
+function prevStep(){
+  if(step<=0){ step=-1; clearHighlights(); caption.innerHTML='Press ▶ Play to start the simulation.'; deepBox.style.display='none'; qaBox.style.display='none'; stepcount.textContent='0/'+FLOWS[current].steps.length; markStepNav(-1); return; }
+  step--;
+  showStep(step);
+}
+function stopPlay(){
+  playing=false;
+  document.getElementById('playBtn').textContent='▶ Play';
+  if(timer) clearInterval(timer);
+}
+function togglePlay(){
+  const f = FLOWS[current];
+  if(playing){ stopPlay(); return; }
+  if(step>=f.steps.length-1) step=-1;
+  playing = true;
+  document.getElementById('playBtn').textContent='⏸ Pause';
+  nextStep();
+  timer = setInterval(()=>{
+    if(step>=f.steps.length-1){ stopPlay(); return; }
+    nextStep();
+  }, 3400);
+}
+
+document.getElementById('playBtn').onclick = togglePlay;
+document.getElementById('nextBtn').onclick = ()=>{ stopPlay(); nextStep(); };
+document.getElementById('prevBtn').onclick = ()=>{ stopPlay(); prevStep(); };
+document.getElementById('resetBtn').onclick = ()=>{ stopPlay(); step=-1; clearHighlights(); caption.innerHTML='Press ▶ Play to start the simulation.'; deepBox.style.display='none'; qaBox.style.display='none'; stepcount.textContent='0/'+FLOWS[current].steps.length; markStepNav(-1); };
+
+buildTabs();
+renderFlow();
+</script>
+</body>
+</html>

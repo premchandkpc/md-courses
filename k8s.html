@@ -67,10 +67,6 @@
   text{font-family:var(--mono);}
   .nlabel{font-size:12.5px;font-weight:700;fill:#f5f9ff;}
   .nsub{font-size:9.5px;fill:#9fb0c8;}
-  .edge{fill:none;stroke:#2a3850;stroke-width:1.6;}
-  .edge.on{stroke:var(--cyan);stroke-width:2.6;filter:drop-shadow(0 0 6px var(--cyan));}
-  .node-rect{stroke-width:1.4;transition:filter .2s;}
-  .node.on .node-rect{filter:drop-shadow(0 0 10px currentColor);stroke-width:2.4;}
   .pulse{opacity:0;}
 
   .progress-wrap{margin:0 0 14px;padding:10px 14px;border-radius:10px;background:var(--panel);border:1px solid var(--line);}
@@ -128,9 +124,8 @@
   .tab.bookmarked .bk{opacity:1;}
 
   .node-rect{stroke-width:1.4;transition:filter .25s,stroke-width .25s;}
-  .node.on .node-rect{stroke-width:2.2;}
   @keyframes nodeGlow{0%,100%{filter:drop-shadow(0 0 6px currentColor);}50%{filter:drop-shadow(0 0 14px currentColor);}}
-  .node.on .node-rect{animation:nodeGlow 1.6s ease-in-out infinite;}
+  .node.on .node-rect{stroke-width:2.2;animation:nodeGlow 1.6s ease-in-out infinite;}
 
   .edge{fill:none;stroke:#2a3850;stroke-width:1.6;transition:stroke .25s,stroke-width .25s;}
   .edge.on{stroke:var(--cyan);stroke-width:2.6;filter:drop-shadow(0 0 6px var(--cyan));}
@@ -171,6 +166,15 @@
         <button class="btn" id="nextBtn">Next ⏭</button>
         <button class="btn" id="resetBtn">↺ Reset</button>
         <span class="stepcount" id="stepcount">0/0</span>
+        <div class="controls-right">
+          <div class="speed-wrap">
+            <span class="speed-label">Speed</span>
+            <input type="range" class="speed-slider" id="speedSlider" min="0.5" max="4" step="0.25" value="1">
+            <span class="speed-val" id="speedVal">1×</span>
+          </div>
+          <button class="bookmark-btn" id="bookmarkBtn" title="Bookmark this flow">☆</button>
+          <button class="btn-help" id="helpBtn" title="Keyboard shortcuts">⌨</button>
+        </div>
       </div>
     </div>
 
@@ -186,8 +190,8 @@
     </div>
 
     <div class="caption" id="caption">Press ▶ Play to start the simulation.</div>
-    <div class="deep" id="deep" style="display:none"><span class="tag">Deep Dive</span><span id="deeptext"></span></div>
-    <div class="qa" id="qa" style="display:none"><div class="q" id="qtext"></div><div class="a" id="atext"></div></div>
+    <div class="deep" id="deep" style="display:none"><span class="collapse-toggle tag" id="deepToggle">Deep Dive</span><div class="collapsible-body" id="deepBody"><span id="deeptext"></span></div></div>
+    <div class="qa" id="qa" style="display:none"><div class="q collapse-toggle" id="qaToggle">Follow-up Question</div><div class="collapsible-body" id="qaBody"><div id="qtext"></div><div class="a" id="atext"></div></div></div>
 
     <div class="traps">
       <h4>⚠ Interview Traps for this flow</h4>
@@ -195,11 +199,31 @@
     </div>
 
     <div class="cheat">
-      <h4>▣ Command Cheatsheet</h4>
+      <div class="cheat-header">
+        <h4>▣ Command Cheatsheet</h4>
+        <button class="copy-btn" id="copyAllBtn" title="Copy all commands">Copy all</button>
+      </div>
       <pre id="cheatpre"></pre>
     </div>
   </div>
   <footer>Built for Prem's L5/L6 grind · not affiliated with AWS · redraw every flow on a whiteboard from memory until you don't need this crutch</footer>
+</div>
+
+<div class="help-overlay" id="helpOverlay">
+  <div class="help-card" style="position:relative;">
+    <button class="close-btn" id="helpClose">✕</button>
+    <h3>Keyboard Shortcuts</h3>
+    <div class="row"><span>Next step</span><span><span class="kbd">→</span> or <span class="kbd">L</span></span></div>
+    <div class="row"><span>Previous step</span><span><span class="kbd">←</span> or <span class="kbd">H</span></span></div>
+    <div class="row"><span>Play / Pause</span><span><span class="kbd">Space</span></span></div>
+    <div class="row"><span>Next flow</span><span><span class="kbd">↓</span> or <span class="kbd">J</span></span></div>
+    <div class="row"><span>Previous flow</span><span><span class="kbd">↑</span> or <span class="kbd">K</span></span></div>
+    <div class="row"><span>Reset current flow</span><span><span class="kbd">R</span></span></div>
+    <div class="row"><span>Bookmark current flow</span><span><span class="kbd">B</span></span></div>
+    <div class="row"><span>Toggle Deep Dive</span><span><span class="kbd">D</span></span></div>
+    <div class="row"><span>Focus search</span><span><span class="kbd">/</span></span></div>
+    <div class="row"><span>Close overlay / blur search</span><span><span class="kbd">Esc</span></span></div>
+  </div>
 </div>
 
 <script>
@@ -992,7 +1016,8 @@ const FLOWS = [
   ]},
 ];
 
-let current = 0, step = -1, playing = false, timer = null;
+let current = 0, step = -1, playing = false, timer = null, speed = 1;
+let bookmarks = new Set(JSON.parse(localStorage.getItem('k8s-bm') || '[]'));
 
 const tabsEl = document.getElementById('tabs');
 const svg = document.getElementById('svg');
@@ -1000,20 +1025,38 @@ const ftitle = document.getElementById('ftitle');
 const fsub = document.getElementById('fsub');
 const caption = document.getElementById('caption');
 const deepBox = document.getElementById('deep');
+const deepBody = document.getElementById('deepBody');
+const deepToggle = document.getElementById('deepToggle');
 const deepText = document.getElementById('deeptext');
 const qaBox = document.getElementById('qa');
+const qaBody = document.getElementById('qaBody');
+const qaToggle = document.getElementById('qaToggle');
 const qtext = document.getElementById('qtext');
 const atext = document.getElementById('atext');
 const stepcount = document.getElementById('stepcount');
 const trapsEl = document.getElementById('traps');
 const cheatEl = document.getElementById('cheatpre');
 const stepnavEl = document.getElementById('stepnav');
+const searchInput = document.getElementById('searchInput');
+const progressFill = document.getElementById('progressFill');
+const progressLabel = document.getElementById('progressLabel');
+const progressPct = document.getElementById('progressPct');
+const speedSlider = document.getElementById('speedSlider');
+const speedVal = document.getElementById('speedVal');
+const bookmarkBtn = document.getElementById('bookmarkBtn');
+const helpBtn = document.getElementById('helpBtn');
+const helpOverlay = document.getElementById('helpOverlay');
+const helpClose = document.getElementById('helpClose');
+const copyAllBtn = document.getElementById('copyAllBtn');
 
 function buildTabs(){
+  tabsEl.innerHTML = '';
+  const q = searchInput.value.toLowerCase();
   FLOWS.forEach((f,i)=>{
+    const match = !q || f.name.toLowerCase().includes(q) || f.title.toLowerCase().includes(q) || f.sub.toLowerCase().includes(q);
     const b = document.createElement('button');
-    b.className = 'tab' + (i===current?' active':'');
-    b.textContent = (i+1)+'. '+f.name;
+    b.className = 'tab' + (i===current?' active':'') + (bookmarks.has(i)?' bookmarked':'') + (match?'':'" style="display:none');
+    b.innerHTML = (i+1)+'. '+f.name+'<span class="bk">'+(bookmarks.has(i)?'★':'☆')+'</span>';
     b.onclick = ()=>{ selectFlow(i); };
     tabsEl.appendChild(b);
   });
@@ -1035,6 +1078,14 @@ function markStepNav(i){
   [...stepnavEl.children].forEach((el,idx)=>el.classList.toggle('on', idx===i));
 }
 
+function updateProgress(){
+  const total = FLOWS.length;
+  const pct = Math.round(((current) / total) * 100);
+  progressFill.style.width = pct + '%';
+  progressLabel.textContent = 'Flow ' + (current+1) + ' / ' + total;
+  progressPct.textContent = pct + '%';
+}
+
 function renderFlow(){
   const f = FLOWS[current];
   svg.innerHTML = '';
@@ -1043,6 +1094,11 @@ function renderFlow(){
   trapsEl.innerHTML = f.traps.map(t=>'<li>'+t+'</li>').join('');
   cheatEl.innerHTML = f.cheat.map(c=>'<span class="c1">$</span> '+c).join('\n');
   buildStepNav();
+  updateProgress();
+  bookmarkBtn.textContent = bookmarks.has(current) ? '★' : '☆';
+  bookmarkBtn.className = 'bookmark-btn' + (bookmarks.has(current) ? ' active' : '');
+  deepBox.style.display = 'none';
+  qaBox.style.display = 'none';
 
   const nodeMap = {};
   f.nodes.forEach(n=>nodeMap[n.id]=n);
@@ -1130,9 +1186,13 @@ function showStep(i){
   });
   caption.innerHTML = s.cap;
   deepBox.style.display = 'block';
+  deepBody.classList.remove('collapsed');
+  deepToggle.classList.remove('collapsed');
   deepText.innerHTML = s.detail || '';
   if(s.qa){
     qaBox.style.display = 'block';
+    qaBody.classList.remove('collapsed');
+    qaToggle.classList.remove('collapsed');
     qtext.textContent = s.qa.q;
     atext.textContent = s.qa.a;
   } else {
@@ -1188,16 +1248,80 @@ function togglePlay(){
   playing = true;
   document.getElementById('playBtn').textContent='⏸ Pause';
   nextStep();
+  const interval = Math.round(3400 / speed);
   timer = setInterval(()=>{
     if(step>=f.steps.length-1){ stopPlay(); return; }
     nextStep();
-  }, 3400);
+  }, interval);
+}
+
+function toggleBookmark(){
+  if(bookmarks.has(current)) bookmarks.delete(current);
+  else bookmarks.add(current);
+  localStorage.setItem('k8s-bm', JSON.stringify([...bookmarks]));
+  buildTabs();
+  bookmarkBtn.textContent = bookmarks.has(current) ? '★' : '☆';
+  bookmarkBtn.className = 'bookmark-btn' + (bookmarks.has(current) ? ' active' : '');
+}
+
+function toggleSection(box, body, toggleEl){
+  if(box.style.display === 'none') return;
+  body.classList.toggle('collapsed');
+  toggleEl.classList.toggle('collapsed');
+}
+
+function copyCheatsheet(){
+  const f = FLOWS[current];
+  const text = f.cheat.join('\n');
+  navigator.clipboard.writeText(text).then(()=>{
+    copyAllBtn.textContent = 'Copied!';
+    copyAllBtn.classList.add('copied');
+    setTimeout(()=>{ copyAllBtn.textContent = 'Copy all'; copyAllBtn.classList.remove('copied'); }, 1500);
+  });
+}
+
+function showHelp(){ helpOverlay.classList.add('show'); }
+function hideHelp(){ helpOverlay.classList.remove('show'); }
+
+function nextFlow(){
+  if(current < FLOWS.length - 1) selectFlow(current + 1);
+}
+function prevFlow(){
+  if(current > 0) selectFlow(current - 1);
 }
 
 document.getElementById('playBtn').onclick = togglePlay;
 document.getElementById('nextBtn').onclick = ()=>{ stopPlay(); nextStep(); };
 document.getElementById('prevBtn').onclick = ()=>{ stopPlay(); prevStep(); };
 document.getElementById('resetBtn').onclick = ()=>{ stopPlay(); step=-1; clearHighlights(); caption.innerHTML='Press ▶ Play to start the simulation.'; deepBox.style.display='none'; qaBox.style.display='none'; stepcount.textContent='0/'+FLOWS[current].steps.length; markStepNav(-1); };
+speedSlider.oninput = ()=>{ speed = parseFloat(speedSlider.value); speedVal.textContent = speed + '×'; if(playing){ stopPlay(); togglePlay(); } };
+bookmarkBtn.onclick = toggleBookmark;
+helpBtn.onclick = showHelp;
+helpClose.onclick = hideHelp;
+helpOverlay.onclick = (e)=>{ if(e.target === helpOverlay) hideHelp(); };
+copyAllBtn.onclick = copyCheatsheet;
+deepToggle.onclick = ()=> toggleSection(deepBox, deepBody, deepToggle);
+qaToggle.onclick = ()=> toggleSection(qaBox, qaBody, qaToggle);
+searchInput.oninput = ()=> buildTabs();
+
+document.addEventListener('keydown', (e)=>{
+  if(e.target.tagName === 'INPUT' && e.target !== searchInput) return;
+  if(e.target === searchInput && e.key !== 'Escape') return;
+
+  switch(e.key){
+    case 'ArrowRight': case 'l': case 'L': e.preventDefault(); stopPlay(); nextStep(); break;
+    case 'ArrowLeft': case 'h': case 'H': e.preventDefault(); stopPlay(); prevStep(); break;
+    case ' ': e.preventDefault(); togglePlay(); break;
+    case 'ArrowDown': case 'j': case 'J': e.preventDefault(); nextFlow(); break;
+    case 'ArrowUp': case 'k': case 'K': e.preventDefault(); prevFlow(); break;
+    case 'r': case 'R': e.preventDefault(); document.getElementById('resetBtn').click(); break;
+    case 'b': case 'B': e.preventDefault(); toggleBookmark(); break;
+    case 'd': case 'D': e.preventDefault(); toggleSection(deepBox, deepBody, deepToggle); break;
+    case '/': e.preventDefault(); searchInput.focus(); break;
+    case 'Escape': e.preventDefault(); searchInput.blur(); hideHelp(); break;
+    case '?': e.preventDefault(); showHelp(); break;
+  }
+});
 
 buildTabs();
 renderFlow();

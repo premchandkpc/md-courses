@@ -68,7 +68,7 @@ export function VisualizationGallery({ filePath }: Props) {
         {visuals.map((v) => (
           <a
             key={v.path}
-            href={`/view?path=${encodeURIComponent(v.path)}`}
+            href={`/api/file?path=${encodeURIComponent(v.path)}`}
             target="_blank"
             rel="noopener noreferrer"
             className="block rounded-lg border border-infra-700 bg-infra-800/50 p-3 hover:border-accent-cyan/50 hover:bg-infra-800 transition-all group"

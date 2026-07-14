@@ -27,7 +27,7 @@ frontend-typecheck:
 	@npm run typecheck -w packages/react-frontend
 
 python:
-	@/opt/homebrew/bin/python3 packages/python-server/server.py
+	@python3 packages/python-server/server.py
 
 viz:
 	@echo "Starting API server on :3000 and frontend on :5173..."

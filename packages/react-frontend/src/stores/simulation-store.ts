@@ -60,8 +60,9 @@ export const useSimulationStore = create<SimulationStore>((set, get) => ({
 
   removeEntity: (id) =>
     set((s) => {
-      const { [id]: _, ...rest } = s.entities
-      return { entities: rest }
+      const entities = { ...s.entities }
+      delete entities[id]
+      return { entities }
     }),
 
   updateEntity: (id, updates) =>

@@ -72,10 +72,6 @@ export function InfrastructureCanvas() {
     appRef.current = app
 
     let destroyed = false
-    const unsubscribe = useSimulationStore.subscribe(
-      (state) => state.entities,
-      () => {} // noop — we just need latest on init
-    )
 
     ;(async () => {
       try {
@@ -97,7 +93,6 @@ export function InfrastructureCanvas() {
 
     return () => {
       destroyed = true
-      unsubscribe()
       if (app.renderer) {
         app.destroy(true)
       }

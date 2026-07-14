@@ -52,15 +52,15 @@ function escapeHtml(s: string): string {
   return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
 }
 
-function renderMarkdown(md: string, _filePath: string): string {
-  let lines = md.split('\n')
+function renderMarkdown(md: string): string {
+  const lines = md.split('\n')
   let html = ''
   let inCodeBlock = false
   let codeBuffer: string[] = []
   let codeLang = ''
 
   for (let i = 0; i < lines.length; i++) {
-    let line = lines[i]
+    const line = lines[i]
 
     if (line.startsWith('```')) {
       if (inCodeBlock) {
@@ -83,7 +83,7 @@ function renderMarkdown(md: string, _filePath: string): string {
 
     if (line.startsWith('#')) {
       const level = line.match(/^#+/)![0].length
-      const text = line.replace(/^#+\s*/, '').replace(/[🖼️📝🌐🐘🔧⚙️🗄️📦🏛️📉🔥]/g, '').trim()
+      const text = line.replace(/^#+\s*/, '').replace(/\p{Emoji_Presentation}/gu, '').trim()
       const sizeClass = level === 1 ? 'text-lg font-bold text-infra-50 mt-5 mb-2'
         : level === 2 ? 'text-base font-bold text-accent-cyan mt-5 mb-1'
         : 'text-sm font-bold text-infra-100 mt-4 mb-1'
@@ -155,7 +155,7 @@ function DifficultyBadge({ difficulty }: { difficulty?: string }) {
   )
 }
 
-function WhatToReadNext({ frontmatter, currentPath: _currentPath, onSelect }: { frontmatter: Frontmatter; currentPath: string; onSelect?: (path: string) => void }) {
+function WhatToReadNext({ frontmatter, onSelect }: { frontmatter: Frontmatter; currentPath: string; onSelect?: (path: string) => void }) {
   const hasLinks = (frontmatter.prerequisites && frontmatter.prerequisites.length > 0) ||
     (frontmatter.related && frontmatter.related.length > 0)
 
@@ -251,8 +251,8 @@ export function FileContentViewer({ filePath, onSelect }: Props) {
 
   const html = useMemo(() => {
     if (!content || isHtml) return ''
-    return renderMarkdown(content, filePath || '')
-  }, [content, filePath, isHtml])
+    return renderMarkdown(content)
+  }, [content, isHtml])
 
   if (!filePath) {
     return (

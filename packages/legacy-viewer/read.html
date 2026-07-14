@@ -593,7 +593,7 @@ function attachEventDelegation() {
     if (meta && e.key === 'ArrowUp') { e.preventDefault(); scrollContentToTop(); }
     if (meta && e.key === '-') { e.preventDefault(); changeZoom(-CONFIG.zoomStep); }
     if (meta && e.key === '+' || meta && e.key === '=') { e.preventDefault(); changeZoom(CONFIG.zoomStep); }
-    if (meta && e.key === 'f') { e.preventDefault(); toggleFullscreen(); }
+    if (meta && e.key === 'f') { e.preventDefault(); openInpageSearch(); }
     if (e.key === 'Escape') { closeLightbox(); closeKeyboardPanel(); }
     if (e.key >= '1' && e.key <= '5') { toggleLayer(e.key); }
   });
@@ -1777,6 +1777,10 @@ document.addEventListener('keydown', (e) => {
     if (searchOverlay.classList.contains('open')) return;
     openInpageSearch();
   }
+  if (meta && e.key === 'r') {
+    e.preventDefault();
+    toggleFullscreen();
+  }
   if (meta && e.key === 't') {
     e.preventDefault();
     document.getElementById('themeBtn').click();
@@ -1838,7 +1842,6 @@ document.getElementById('fullscreenBtn').addEventListener('click', toggleFullscr
 document.getElementById('zoomOut').addEventListener('click', () => changeZoom(-CONFIG.zoomStep));
 document.getElementById('zoomReset').addEventListener('click', () => changeZoom(0));
 document.getElementById('zoomIn').addEventListener('click', () => changeZoom(CONFIG.zoomStep));
-document.getElementById('zoomReset').addEventListener('click', () => changeZoom(0));
 document.getElementById('lightbox').addEventListener('click', closeLightbox);
 
 // ═══════════════════════════════════════════════════════════════
